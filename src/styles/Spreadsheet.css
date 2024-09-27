@@ -1,0 +1,62 @@
+:root {
+  --blue-50: #ebf8ff;
+  --blue-100: #bee3f8;
+  --blue-200: #90cdf4;
+  --blue-300: #63b3ed;
+  --blue-400: #4299e1;
+  --blue-500: #3182ce;
+  --blue-600: #2b6cb0;
+  --blue-700: #2c5282;
+  --blue-800: #2a4365;
+  --blue-900: #1a365d;
+  --selected-first-cell: white;
+  --light-grey: #d3d3d3;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid var(--light-grey);
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--light-grey);
+}
+tr {
+}
+
+td {
+  user-select: none;
+  cursor: pointer;
+}
+
+.table-cell {
+  /* border: 2px solid white; */
+}
+
+.selected {
+  background-color: var(--blue-200);
+}
+
+.selected-first-cell {
+  background-color: var(--selected-first-cell);
+}
+
+.border-top {
+  border-top: 2px solid var(--blue-500) !important;
+}
+
+.border-bottom {
+  border-bottom: 2px solid var(--blue-500) !important;
+}
+
+.border-left {
+  border-left: 2px solid var(--blue-500) !important;
+}
+
+.border-right {
+  border-right: 2px solid var(--blue-500) !important;
+}
