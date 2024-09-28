@@ -73,10 +73,10 @@ const useSelection = (rows: { [key: string]: any }[], headers: string[]) => {
 
   const getBorderClass = (rowIndex: number, colIndex: number) => {
     const classes = [];
-    if (!isSelected(rowIndex - 1, colIndex)) classes.push("border-top");
-    if (!isSelected(rowIndex + 1, colIndex)) classes.push("border-bottom");
-    if (!isSelected(rowIndex, colIndex - 1)) classes.push("border-left");
-    if (!isSelected(rowIndex, colIndex + 1)) classes.push("border-right");
+    if (!isSelected(rowIndex - 1, colIndex)) classes.push("border-top-blue");
+    if (!isSelected(rowIndex + 1, colIndex)) classes.push("border-bottom-blue");
+    if (!isSelected(rowIndex, colIndex - 1)) classes.push("border-left-blue");
+    if (!isSelected(rowIndex, colIndex + 1)) classes.push("border-right-blue");
     return classes.join(" ");
   };
 

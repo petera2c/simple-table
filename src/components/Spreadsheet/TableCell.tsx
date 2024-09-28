@@ -21,17 +21,20 @@ const TableCell = ({
 }: TableCellProps) => {
   return (
     <td
-      className={`table-cell ${
-        isSelected
-          ? isTopLeftCell
-            ? `selected-first-cell ${borderClass}`
-            : `selected ${borderClass}`
-          : "unselected"
-      }`}
       onMouseDown={() => onMouseDown(rowIndex, colIndex)}
       onMouseOver={() => onMouseOver(rowIndex, colIndex)}
     >
-      {content}
+      <div
+        className={`table-cell ${
+          isSelected
+            ? isTopLeftCell
+              ? `selected-first-cell ${borderClass}`
+              : `selected ${borderClass}`
+            : ""
+        }`}
+      >
+        {content}
+      </div>
     </td>
   );
 };

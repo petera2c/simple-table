@@ -11,30 +11,43 @@
   --blue-900: #1a365d;
   --selected-first-cell: white;
   --light-grey: #d3d3d3;
+  --border-radius: 4px;
+  --border-width: 1px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Add a new class for the table wrapper */
+.table-wrapper {
+  border: 1px solid var(--light-grey);
+  border-radius: var(--border-radius);
+  overflow: hidden; /* Ensures the table stays within the rounded corners */
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
-  border: 1px solid var(--light-grey);
+}
+
+thead tr,
+tr:not(:last-child) {
+  border-bottom: 1px solid var(--light-grey);
 }
 
 th,
-td {
-  text-align: left;
-  padding: 8px;
-  border-bottom: 1px solid var(--light-grey);
-}
-tr {
-}
-
-td {
+.table-cell {
   user-select: none;
   cursor: pointer;
+  padding: 8px;
+  text-align: left;
 }
 
 .table-cell {
-  /* border: 2px solid white; */
+  border: var(--border-width) solid transparent;
 }
 
 .selected {
@@ -45,18 +58,23 @@ td {
   background-color: var(--selected-first-cell);
 }
 
-.border-top {
-  border-top: 2px solid var(--blue-500) !important;
+/* Add classes based on color */
+.border-top-blue {
+  border-top: var(--border-width) solid var(--blue-500);
 }
 
-.border-bottom {
-  border-bottom: 2px solid var(--blue-500) !important;
+.border-bottom-blue {
+  border-bottom: var(--border-width) solid var(--blue-500);
 }
 
-.border-left {
-  border-left: 2px solid var(--blue-500) !important;
+.border-left-blue {
+  border-left: var(--border-width) solid var(--blue-500);
 }
 
-.border-right {
-  border-right: 2px solid var(--blue-500) !important;
+.border-right-blue {
+  border-right: var(--border-width) solid var(--blue-500);
+}
+
+.border-top-white {
+  border-top: var(--border-width) solid white;
 }

@@ -9,7 +9,6 @@ interface SpreadsheetProps {
 
 const Spreadsheet = ({ headers, rows }: SpreadsheetProps) => {
   const {
-    // selectedCells,
     handleMouseDown,
     handleMouseOver,
     handleMouseUp,
@@ -19,16 +18,22 @@ const Spreadsheet = ({ headers, rows }: SpreadsheetProps) => {
   } = useSelection(rows, headers);
 
   return (
-    <div>
-      <table onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-        <thead>
+    <div className="table-wrapper">
+      <table
+        className="table"
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <thead className="table-header">
           <tr>
             {headers.map((header, index) => (
-              <th key={index}>{header}</th>
+              <th className="table-header-cell" key={index}>
+                {header}
+              </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="table-body">
           {rows.map((row, rowIndex) => (
             <TableRow
               key={rowIndex}
