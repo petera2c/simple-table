@@ -1,4 +1,3 @@
-import React from "react";
 import TableCell from "./TableCell";
 
 interface TableRowProps {
@@ -10,6 +9,7 @@ interface TableRowProps {
   getBorderClass: (rowIndex: number, colIndex: number) => string;
   handleMouseDown: (rowIndex: number, colIndex: number) => void;
   handleMouseOver: (rowIndex: number, colIndex: number) => void;
+  className?: string;
 }
 
 const TableRow = ({
@@ -21,9 +21,10 @@ const TableRow = ({
   getBorderClass,
   handleMouseDown,
   handleMouseOver,
+  className,
 }: TableRowProps) => {
   return (
-    <tr>
+    <tr key={rowIndex} className={className}>
       {headers.map((header, colIndex) => (
         <TableCell
           key={colIndex}

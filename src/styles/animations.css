@@ -1,0 +1,13 @@
+.table-row {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.table-row.animate {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.table-row.animate-exit {
+  transform: translateY(20px);
+  opacity: 0;
+}
