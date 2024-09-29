@@ -1,12 +1,12 @@
 import { Children, ReactNode } from "react";
 
 interface BoundingBox {
-  top: number;
+  bottom: number;
+  height: number;
   left: number;
   right: number;
-  bottom: number;
+  top: number;
   width: number;
-  height: number;
 }
 
 const calculateBoundingBoxes = (

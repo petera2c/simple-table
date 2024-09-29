@@ -12,6 +12,7 @@ interface SpreadsheetProps {
 }
 
 const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
+  const [headersState, setHeaders] = useState(headers);
   const [sortedRows, setSortedRows] = useState(rows);
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -37,6 +38,9 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
     setSortedRows(sortedData);
     setSortConfig(newSortConfig);
   };
+  const onDragEnd = (newHeaders: string[]) => {
+    setHeaders(newHeaders);
+  };
 
   return (
     <div className="table-wrapper">
@@ -45,7 +49,11 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        <TableHeader headers={headers} onSort={handleSort} />
+        <TableHeader
+          headers={headersState}
+          onSort={handleSort}
+          onDragEnd={onDragEnd}
+        />
         <tbody>
           <AnimateRows>
             {sortedRows.map((row, rowIndex) => (
