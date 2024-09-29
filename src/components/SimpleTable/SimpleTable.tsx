@@ -4,7 +4,6 @@ import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
 import Animate from "../Animate";
 import TableRow from "./TableRow";
-import shuffleArray from "../../helpers/shuffleArray";
 
 interface SpreadsheetProps {
   headers: string[];
@@ -42,10 +41,6 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
     setHeaders(newHeaders);
   };
 
-  const shuffleHeaders = () => {
-    setHeaders(shuffleArray(headers));
-  };
-
   return (
     <div className="table-wrapper">
       <table
@@ -77,7 +72,6 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
           </Animate>
         </tbody>
       </table>
-      <button onClick={shuffleHeaders}>Shuffle Headers</button>
     </div>
   );
 };

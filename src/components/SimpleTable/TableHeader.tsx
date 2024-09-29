@@ -1,5 +1,6 @@
-import React, { createRef, useState } from "react";
+import { createRef, useState } from "react";
 import Animate from "../Animate";
+import TableHeaderCell from "./TableHeaderCell";
 
 interface TableHeaderProps {
   headers: string[];
@@ -11,52 +12,23 @@ const TableHeader = ({ headers, onSort, onDragEnd }: TableHeaderProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
-  };
-
-  const handleDragOver = (index: number, event: React.DragEvent) => {
-    event.preventDefault();
-    setHoveredIndex(index);
-  };
-
-  const handleDrop = (index: number) => {
-    if (draggedIndex === null) return;
-
-    const newHeaders = [...headers];
-    const [draggedHeader] = newHeaders.splice(draggedIndex, 1);
-    newHeaders.splice(index, 0, draggedHeader);
-
-    setDraggedIndex(null);
-    setHoveredIndex(null);
-    onDragEnd(newHeaders);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-    setHoveredIndex(null);
-  };
-
   return (
     <thead className="table-header">
       <tr>
         <Animate>
           {headers.map((header, index) => (
-            <th
-              className={`table-header-cell ${
-                index === hoveredIndex ? "hovered" : ""
-              }`}
+            <TableHeaderCell
+              draggedIndex={draggedIndex}
+              headers={headers}
+              hoveredIndex={hoveredIndex}
+              index={index}
               key={header}
-              draggable
-              onDragStart={() => handleDragStart(index)}
-              onDragOver={(event) => handleDragOver(index, event)}
-              onDrop={() => handleDrop(index)}
-              onDragEnd={handleDragEnd}
-              onClick={() => onSort(index)}
+              onDragEnd={onDragEnd}
+              onSort={onSort}
               ref={createRef()}
-            >
-              {header}
-            </th>
+              setDraggedIndex={setDraggedIndex}
+              setHoveredIndex={setHoveredIndex}
+            />
           ))}
         </Animate>
       </tr>
