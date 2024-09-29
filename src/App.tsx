@@ -1,10 +1,10 @@
-import Spreadsheet from "./components/Spreadsheet/Spreadsheet";
+import SimpleTable from "./components/SimpleTable/SimpleTable";
 import { sampleData } from "./consts/SampleData";
 
 const App = () => {
   return (
     <div className="app" style={{ padding: "2rem" }}>
-      <Spreadsheet
+      <SimpleTable
         headers={["id", "name", "age", "email", "address"]}
         rows={sampleData}
       />

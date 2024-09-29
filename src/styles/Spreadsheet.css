@@ -38,6 +38,11 @@ tr:not(:last-child) {
   border-bottom: 1px solid var(--light-grey);
 }
 
+tr {
+  transition: transform 0.4s, top 0.4s, opacity 0.2s;
+  transform: translateY(0);
+}
+
 th,
 .table-cell {
   user-select: none;

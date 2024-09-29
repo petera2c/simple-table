@@ -1,0 +1,29 @@
+import { Children, ReactNode } from "react";
+
+interface BoundingBox {
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
+  width: number;
+  height: number;
+}
+
+const calculateBoundingBoxes = (
+  children: ReactNode
+): { [key: string]: BoundingBox } => {
+  const boundingBoxes: { [key: string]: BoundingBox } = {};
+
+  Children.forEach(children, (child: any) => {
+    if (child.ref && child.ref.current) {
+      const domNode = child.ref.current;
+      const nodeBoundingBox = domNode.getBoundingClientRect();
+
+      boundingBoxes[child.key] = nodeBoundingBox;
+    }
+  });
+
+  return boundingBoxes;
+};
+
+export default calculateBoundingBoxes;
