@@ -1,6 +1,6 @@
-import React, { createRef, forwardRef, LegacyRef } from "react";
-import AnimateRows from "../AnimateRows";
+import { createRef, forwardRef, LegacyRef } from "react";
 import TableCell from "./TableCell";
+import Animate from "../Animate";
 
 interface TableRowProps {
   rowIndex: number;
@@ -26,23 +26,28 @@ const TableRow = forwardRef(
       handleMouseOver,
     }: TableRowProps,
     ref: LegacyRef<HTMLTableRowElement>
-  ) => (
-    <tr key={row.id} ref={ref}>
-      {headers.map((header, columnIndex) => (
-        <TableCell
-          key={columnIndex}
-          rowIndex={rowIndex}
-          colIndex={columnIndex}
-          content={row[header]}
-          isSelected={isSelected(rowIndex, columnIndex)}
-          isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
-          borderClass={getBorderClass(rowIndex, columnIndex)}
-          onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
-          onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
-        />
-      ))}
-    </tr>
-  )
+  ) => {
+    return (
+      <tr key={row.id} ref={ref}>
+        <Animate>
+          {headers.map((header, columnIndex) => (
+            <TableCell
+              key={header}
+              rowIndex={rowIndex}
+              colIndex={columnIndex}
+              content={row[header]}
+              isSelected={isSelected(rowIndex, columnIndex)}
+              isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
+              borderClass={getBorderClass(rowIndex, columnIndex)}
+              onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
+              onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
+              ref={createRef()}
+            />
+          ))}
+        </Animate>
+      </tr>
+    );
+  }
 );
 
 export default TableRow;

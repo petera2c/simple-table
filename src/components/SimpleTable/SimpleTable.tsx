@@ -2,9 +2,9 @@ import { useState, createRef } from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
-import AnimateRows from "../AnimateRows";
-import shuffleArray from "../../helpers/shuffleArray";
+import Animate from "../Animate";
 import TableRow from "./TableRow";
+import shuffleArray from "../../helpers/shuffleArray";
 
 interface SpreadsheetProps {
   headers: string[];
@@ -42,6 +42,10 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
     setHeaders(newHeaders);
   };
 
+  const shuffleHeaders = () => {
+    setHeaders(shuffleArray(headers));
+  };
+
   return (
     <div className="table-wrapper">
       <table
@@ -55,13 +59,13 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
           onDragEnd={onDragEnd}
         />
         <tbody>
-          <AnimateRows>
+          <Animate animateRow={true}>
             {sortedRows.map((row, rowIndex) => (
               <TableRow
                 getBorderClass={getBorderClass}
                 handleMouseDown={handleMouseDown}
                 handleMouseOver={handleMouseOver}
-                headers={headers}
+                headers={headersState}
                 isSelected={isSelected}
                 isTopLeftCell={isTopLeftCell}
                 key={row.id}
@@ -70,9 +74,10 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
                 rowIndex={rowIndex}
               />
             ))}
-          </AnimateRows>
+          </Animate>
         </tbody>
       </table>
+      <button onClick={shuffleHeaders}>Shuffle Headers</button>
     </div>
   );
 };

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { createRef, useState } from "react";
+import Animate from "../Animate";
 
 interface TableHeaderProps {
   headers: string[];
@@ -39,22 +40,25 @@ const TableHeader = ({ headers, onSort, onDragEnd }: TableHeaderProps) => {
   return (
     <thead className="table-header">
       <tr>
-        {headers.map((header, index) => (
-          <th
-            className={`table-header-cell ${
-              index === hoveredIndex ? "hovered" : ""
-            }`}
-            key={index}
-            draggable
-            onDragStart={() => handleDragStart(index)}
-            onDragOver={(event) => handleDragOver(index, event)}
-            onDrop={() => handleDrop(index)}
-            onDragEnd={handleDragEnd}
-            onClick={() => onSort(index)}
-          >
-            {header}
-          </th>
-        ))}
+        <Animate>
+          {headers.map((header, index) => (
+            <th
+              className={`table-header-cell ${
+                index === hoveredIndex ? "hovered" : ""
+              }`}
+              key={header}
+              draggable
+              onDragStart={() => handleDragStart(index)}
+              onDragOver={(event) => handleDragOver(index, event)}
+              onDrop={() => handleDrop(index)}
+              onDragEnd={handleDragEnd}
+              onClick={() => onSort(index)}
+              ref={createRef()}
+            >
+              {header}
+            </th>
+          ))}
+        </Animate>
       </tr>
     </thead>
   );

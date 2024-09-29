@@ -2,7 +2,12 @@ import React, { useState, useLayoutEffect, useEffect } from "react";
 import usePrevious from "../hooks/usePrevious";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 
-const AnimateRows = ({ children }: any) => {
+interface AnimateProps {
+  children: any;
+  animateRow?: boolean;
+}
+
+const Animate = ({ children, animateRow }: AnimateProps) => {
   const [boundingBox, setBoundingBox] = useState<any>({});
   const [prevBoundingBox, setPrevBoundingBox] = useState<any>({});
   const prevChildren = usePrevious(children);
@@ -25,17 +30,21 @@ const AnimateRows = ({ children }: any) => {
         const domNode = child.ref.current;
         const firstBox = prevBoundingBox[child.key];
         const lastBox = boundingBox[child.key];
-        const changeInY = firstBox.top - lastBox.top;
+        const changeInPosition = animateRow
+          ? firstBox.top - lastBox.top
+          : firstBox.left - lastBox.left;
 
-        if (changeInY) {
+        if (changeInPosition) {
           requestAnimationFrame(() => {
             // Before the DOM paints, invert child to old position
-            domNode.style.transform = `translateY(${changeInY}px)`;
+            domNode.style.transform = animateRow
+              ? `translateY(${changeInPosition}px)`
+              : `translateX(${changeInPosition}px)`;
             domNode.style.transition = "transform 0s";
 
             requestAnimationFrame(() => {
               // After the previous frame, remove
-              // the transistion to play the animation
+              // the transition to play the animation
               domNode.style.transform = "";
               domNode.style.transition = "transform 500ms";
             });
@@ -43,9 +52,9 @@ const AnimateRows = ({ children }: any) => {
         }
       });
     }
-  }, [boundingBox, prevBoundingBox, children]);
+  }, [boundingBox, prevBoundingBox, children, animateRow]);
 
   return children;
 };
 
-export default AnimateRows;
+export default Animate;

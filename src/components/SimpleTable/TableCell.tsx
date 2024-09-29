@@ -1,3 +1,5 @@
+import { forwardRef, LegacyRef } from "react";
+
 interface TableCellProps {
   rowIndex: number;
   colIndex: number;
@@ -9,34 +11,40 @@ interface TableCellProps {
   onMouseOver: (rowIndex: number, colIndex: number) => void;
 }
 
-const TableCell = ({
-  rowIndex,
-  colIndex,
-  content,
-  isSelected,
-  isTopLeftCell,
-  borderClass,
-  onMouseDown,
-  onMouseOver,
-}: TableCellProps) => {
-  return (
-    <td
-      onMouseDown={() => onMouseDown(rowIndex, colIndex)}
-      onMouseOver={() => onMouseOver(rowIndex, colIndex)}
-    >
-      <div
-        className={`table-cell ${
-          isSelected
-            ? isTopLeftCell
-              ? `selected-first-cell ${borderClass}`
-              : `selected ${borderClass}`
-            : ""
-        }`}
+const TableCell = forwardRef(
+  (
+    {
+      rowIndex,
+      colIndex,
+      content,
+      isSelected,
+      isTopLeftCell,
+      borderClass,
+      onMouseDown,
+      onMouseOver,
+    }: TableCellProps,
+    ref: LegacyRef<HTMLTableCellElement>
+  ) => {
+    return (
+      <td
+        onMouseDown={() => onMouseDown(rowIndex, colIndex)}
+        onMouseOver={() => onMouseOver(rowIndex, colIndex)}
+        ref={ref}
       >
-        {content}
-      </div>
-    </td>
-  );
-};
+        <div
+          className={`table-cell ${
+            isSelected
+              ? isTopLeftCell
+                ? `selected-first-cell ${borderClass}`
+                : `selected ${borderClass}`
+              : ""
+          }`}
+        >
+          {content}
+        </div>
+      </td>
+    );
+  }
+);
 
 export default TableCell;
