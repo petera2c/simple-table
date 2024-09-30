@@ -19,17 +19,10 @@ const useTableHeaderCell = ({
     draggedHeaderRef.current = header;
   };
 
-  const handleDragOver = (
-    hoveredHeader: HeaderObject,
-    event: React.DragEvent
-  ) => {
+  const updateHeaders = (hoveredHeader: HeaderObject) => {
     if (isUpdating) return;
     hoveredHeaderRef.current = hoveredHeader;
 
-    console.log("\n");
-    console.log(new Date().toISOString());
-    console.log("draggedHeader", draggedHeaderRef.current);
-    console.log("hoveredHeader", hoveredHeaderRef.current);
     if (
       hoveredHeader.accessor !== draggedHeaderRef.current?.accessor &&
       draggedHeaderRef.current !== null &&
@@ -48,41 +41,25 @@ const useTableHeaderCell = ({
 
       const [draggedHeader] = newHeaders.splice(draggedHeaderIndex, 1);
       newHeaders.splice(hoveredHeaderIndex, 0, draggedHeader);
-      console.log(headersRef.current);
 
       // Check if the newHeaders array is different from the original headers array
-      // if (JSON.stringify(newHeaders) !== JSON.stringify(headers))
-      // console.log("newHeaders", newHeaders);
-      setTimeout(() => {
-        console.log("newHeaders", newHeaders);
-        onDragEnd(newHeaders);
-
+      if (JSON.stringify(newHeaders) !== JSON.stringify(headersRef.current))
         setTimeout(() => {
-          isUpdating = false;
-        }, 500);
-      }, 50);
+          onDragEnd(newHeaders);
+
+          setTimeout(() => {
+            isUpdating = false;
+          }, 500);
+        }, 50);
     }
   };
 
+  const handleDragOver = (hoveredHeader: HeaderObject) => {
+    updateHeaders(hoveredHeader);
+  };
+
   const handleDrop = (header: HeaderObject) => {
-    if (draggedHeaderRef.current === null) return;
-
-    const newHeaders = [...(headersRef.current || [])];
-
-    const draggedHeaderIndex = headersRef.current?.findIndex(
-      (header) => header.accessor === draggedHeaderRef.current?.accessor
-    );
-    const hoveredHeaderIndex = headersRef.current?.findIndex(
-      (header) => header.accessor === header.accessor
-    );
-    if (draggedHeaderIndex === undefined || hoveredHeaderIndex === undefined)
-      return;
-    const [draggedHeader] = newHeaders.splice(draggedHeaderIndex, 1);
-    newHeaders.splice(hoveredHeaderIndex, 0, draggedHeader);
-
-    draggedHeaderRef.current = null;
-    hoveredHeaderRef.current = null;
-    onDragEnd(newHeaders);
+    updateHeaders(header);
   };
 
   const handleDragEnd = () => {

@@ -1,6 +1,6 @@
 import { forwardRef, LegacyRef, useState, useRef } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
-import { throttle } from "../../utils/performanceUtils"; // Import the throttle function
+import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderCellProps {
@@ -46,9 +46,9 @@ const TableHeaderCell = forwardRef(
 
     // Throttle the handleDragOver function
     const throttledHandleDragOver = useRef(
-      throttle((header: HeaderObject, event: React.DragEvent) => {
-        handleDragOver(header, event);
-      }, 500) // Adjust the delay as needed
+      throttle((header: HeaderObject) => {
+        handleDragOver(header);
+      }, 50) // Adjust the delay as needed
     ).current;
     if (!header) return null;
 
@@ -60,7 +60,10 @@ const TableHeaderCell = forwardRef(
         key={header?.accessor}
         draggable
         onDragStart={() => handleDragStartWrapper(header)}
-        onDragOver={(event) => throttledHandleDragOver(header, event)}
+        onDragOver={(event) => {
+          event.preventDefault();
+          throttledHandleDragOver(header, event);
+        }}
         onDrop={() => handleDrop(header)}
         onDragEnd={handleDragEndWrapper}
         onClick={() => onSort(index)}
