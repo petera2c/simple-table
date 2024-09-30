@@ -31,6 +31,7 @@
 table {
   border-collapse: collapse;
   width: 100%;
+  table-layout: fixed; /* Ensures even width for all th elements */
 }
 
 thead tr,
@@ -41,6 +42,14 @@ tr:not(:last-child) {
 tr {
   transition: transform 0.4s, top 0.4s, opacity 0.2s;
   transform: translateY(0);
+}
+
+.dragging {
+  background-color: var(--blue-100);
+}
+
+th {
+  width: 100px; /* Set a specific width for all th elements */
 }
 
 th,
@@ -63,7 +72,6 @@ th,
   background-color: var(--selected-first-cell);
 }
 
-/* Add classes based on color */
 .border-top-blue {
   border-top: var(--border-width) solid var(--blue-500);
 }

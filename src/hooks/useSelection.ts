@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import HeaderObject from "../types/HeaderObject";
 
 interface Cell {
   row: number;
   col: number;
 }
 
-const useSelection = (rows: { [key: string]: any }[], headers: string[]) => {
+const useSelection = (
+  rows: { [key: string]: any }[],
+  headers: HeaderObject[]
+) => {
   const [selectedCells, setSelectedCells] = useState<Cell[]>([]);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
@@ -13,7 +17,7 @@ const useSelection = (rows: { [key: string]: any }[], headers: string[]) => {
   const copyToClipboard = useCallback(() => {
     const rowsText = selectedCells.reduce((acc, { row, col }) => {
       if (!acc[row]) acc[row] = [];
-      acc[row][col] = rows[row][headers[col]];
+      acc[row][col] = rows[row][headers[col].accessor];
       return acc;
     }, {} as { [key: number]: { [key: number]: any } });
 

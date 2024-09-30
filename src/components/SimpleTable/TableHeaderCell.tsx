@@ -1,56 +1,72 @@
-import { forwardRef, LegacyRef } from "react";
+import { forwardRef, LegacyRef, useState, useRef } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
+import { throttle } from "../../utils/performanceUtils"; // Import the throttle function
+import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderCellProps {
-  draggedIndex: number | null;
-  headers: string[];
-  hoveredIndex: number | null;
+  draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
+  headersRef: React.RefObject<HeaderObject[]>;
+  hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
   index: number;
-  onDragEnd: (newHeaders: string[]) => void;
+  onDragEnd: (newHeaders: HeaderObject[]) => void;
   onSort: (columnIndex: number) => void;
-  setDraggedIndex: (index: number | null) => void;
-  setHoveredIndex: (index: number | null) => void;
 }
 
 const TableHeaderCell = forwardRef(
   (
     {
-      draggedIndex,
-      headers,
-      hoveredIndex,
+      draggedHeaderRef,
+      headersRef,
+      hoveredHeaderRef,
       index,
       onDragEnd,
       onSort,
-      setDraggedIndex,
-      setHoveredIndex,
     }: TableHeaderCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
-    const header = headers[index];
+    const [isDragging, setIsDragging] = useState(false);
+    const header = headersRef.current?.[index];
     const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
       useTableHeaderCell({
-        draggedIndex,
-        headers,
+        draggedHeaderRef,
+        headersRef,
+        hoveredHeaderRef,
         onDragEnd,
-        setDraggedIndex,
-        setHoveredIndex,
       });
+
+    const handleDragStartWrapper = (header: HeaderObject) => {
+      setIsDragging(true);
+      handleDragStart(header);
+    };
+
+    const handleDragEndWrapper = () => {
+      setIsDragging(false);
+      handleDragEnd();
+    };
+
+    // Throttle the handleDragOver function
+    const throttledHandleDragOver = useRef(
+      throttle((header: HeaderObject, event: React.DragEvent) => {
+        handleDragOver(header, event);
+      }, 500) // Adjust the delay as needed
+    ).current;
+    if (!header) return null;
 
     return (
       <th
         className={`table-header-cell ${
-          index === hoveredIndex ? "hovered" : ""
-        }`}
-        key={header}
+          header === hoveredHeaderRef.current ? "hovered" : ""
+        } ${isDragging ? "dragging" : ""}`}
+        key={header?.accessor}
         draggable
-        onDragStart={() => handleDragStart(index)}
-        onDragOver={(event) => handleDragOver(index, event)}
-        onDrop={() => handleDrop(index)}
-        onDragEnd={handleDragEnd}
+        onDragStart={() => handleDragStartWrapper(header)}
+        onDragOver={(event) => throttledHandleDragOver(header, event)}
+        onDrop={() => handleDrop(header)}
+        onDragEnd={handleDragEndWrapper}
         onClick={() => onSort(index)}
         ref={ref}
       >
-        {header}
+        {header?.label}
       </th>
     );
   }

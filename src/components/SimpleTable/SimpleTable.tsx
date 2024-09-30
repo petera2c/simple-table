@@ -1,20 +1,22 @@
-import { useState, createRef } from "react";
+import { useState, createRef, useRef, useReducer } from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
 import Animate from "../Animate";
 import TableRow from "./TableRow";
+import HeaderObject from "../../types/HeaderObject";
 
 interface SpreadsheetProps {
-  headers: string[];
+  headers: HeaderObject[];
   rows: { [key: string]: any }[];
 }
 
 const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
-  const [headersState, setHeaders] = useState(headers);
+  const headersRef = useRef(headers);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const [sortedRows, setSortedRows] = useState(rows);
   const [sortConfig, setSortConfig] = useState<{
-    key: string;
+    key: HeaderObject;
     direction: string;
   } | null>(null);
 
@@ -37,8 +39,9 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
     setSortedRows(sortedData);
     setSortConfig(newSortConfig);
   };
-  const onDragEnd = (newHeaders: string[]) => {
-    setHeaders(newHeaders);
+  const onDragEnd = (newHeaders: HeaderObject[]) => {
+    headersRef.current = newHeaders;
+    forceUpdate();
   };
 
   return (
@@ -49,7 +52,7 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
         onMouseLeave={handleMouseUp}
       >
         <TableHeader
-          headers={headersState}
+          headersRef={headersRef}
           onSort={handleSort}
           onDragEnd={onDragEnd}
         />
@@ -60,7 +63,7 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
                 getBorderClass={getBorderClass}
                 handleMouseDown={handleMouseDown}
                 handleMouseOver={handleMouseOver}
-                headers={headersState}
+                headers={headersRef.current}
                 isSelected={isSelected}
                 isTopLeftCell={isTopLeftCell}
                 key={row.id}

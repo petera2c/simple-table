@@ -1,33 +1,32 @@
-import { createRef, useState } from "react";
+import { createRef, useRef } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
+import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderProps {
-  headers: string[];
+  headersRef: React.RefObject<HeaderObject[]>;
   onSort: (columnIndex: number) => void;
-  onDragEnd: (newHeaders: string[]) => void;
+  onDragEnd: (newHeaders: HeaderObject[]) => void;
 }
 
-const TableHeader = ({ headers, onSort, onDragEnd }: TableHeaderProps) => {
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+const TableHeader = ({ headersRef, onSort, onDragEnd }: TableHeaderProps) => {
+  const draggedHeaderRef = useRef<HeaderObject | null>(null);
+  const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   return (
     <thead className="table-header">
       <tr>
         <Animate>
-          {headers.map((header, index) => (
+          {headersRef.current?.map((header, index) => (
             <TableHeaderCell
-              draggedIndex={draggedIndex}
-              headers={headers}
-              hoveredIndex={hoveredIndex}
+              draggedHeaderRef={draggedHeaderRef}
+              headersRef={headersRef}
+              hoveredHeaderRef={hoveredHeaderRef}
               index={index}
-              key={header}
+              key={header.accessor}
               onDragEnd={onDragEnd}
               onSort={onSort}
               ref={createRef()}
-              setDraggedIndex={setDraggedIndex}
-              setHoveredIndex={setHoveredIndex}
             />
           ))}
         </Animate>

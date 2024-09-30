@@ -1,11 +1,12 @@
 import { createRef, forwardRef, LegacyRef } from "react";
 import TableCell from "./TableCell";
 import Animate from "../Animate";
+import HeaderObject from "../../types/HeaderObject";
 
 interface TableRowProps {
   rowIndex: number;
   row: { [key: string]: any };
-  headers: string[];
+  headers: HeaderObject[];
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
@@ -32,10 +33,10 @@ const TableRow = forwardRef(
         <Animate>
           {headers.map((header, columnIndex) => (
             <TableCell
-              key={header}
+              key={header.accessor}
               rowIndex={rowIndex}
               colIndex={columnIndex}
-              content={row[header]}
+              content={row[header.accessor]}
               isSelected={isSelected(rowIndex, columnIndex)}
               isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
               borderClass={getBorderClass(rowIndex, columnIndex)}
