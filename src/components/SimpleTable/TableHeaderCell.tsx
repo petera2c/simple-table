@@ -26,7 +26,7 @@ const TableHeaderCell = forwardRef(
   ) => {
     const [isDragging, setIsDragging] = useState(false);
     const header = headersRef.current?.[index];
-    const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
+    const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
         draggedHeaderRef,
         headersRef,
@@ -64,7 +64,6 @@ const TableHeaderCell = forwardRef(
           event.preventDefault();
           throttledHandleDragOver(header, event);
         }}
-        onDrop={() => handleDrop(header)}
         onDragEnd={handleDragEndWrapper}
         onClick={() => onSort(index)}
         ref={ref}

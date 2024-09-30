@@ -58,10 +58,6 @@ const useTableHeaderCell = ({
     updateHeaders(hoveredHeader);
   };
 
-  const handleDrop = (header: HeaderObject) => {
-    updateHeaders(header);
-  };
-
   const handleDragEnd = () => {
     draggedHeaderRef.current = null;
     hoveredHeaderRef.current = null;
@@ -70,7 +66,6 @@ const useTableHeaderCell = ({
   return {
     handleDragStart,
     handleDragOver,
-    handleDrop,
     handleDragEnd,
   };
 };
