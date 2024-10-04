@@ -1,5 +1,5 @@
 {
-  "name": "simple-table",
+  "name": "simple-table-core",
   "version": "0.1.0",
   "dependencies": {
     "@types/node": "^16.18.111",
