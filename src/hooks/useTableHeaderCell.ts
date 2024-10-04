@@ -1,4 +1,3 @@
-import { useRef, useState } from "react";
 import HeaderObject from "../types/HeaderObject";
 
 interface UseTableHeaderCellProps {

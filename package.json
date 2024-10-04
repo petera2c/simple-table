@@ -1,7 +1,6 @@
 {
   "name": "simple-table",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@types/node": "^16.18.111",
     "@types/react": "^18.3.9",
