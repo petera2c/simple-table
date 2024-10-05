@@ -39,40 +39,39 @@
   --slate-900: #0f172a;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* Add a new class for the table wrapper */
+/* Wrapper for the table */
 .st-table-wrapper {
   border: 1px solid var(--slate-300);
   border-radius: var(--border-radius);
-  overflow: hidden; /* Ensures the table stays within the rounded corners */
+  overflow: hidden;
 }
 
+/* Main table styling */
 .st-table {
   border-collapse: collapse;
   width: 100%;
-  table-layout: fixed; /* Ensures even width for all th elements */
+  table-layout: auto;
 }
 
+/* Styles for table rows */
 .st-thead .st-tr,
 .st-tr:not(:last-child) {
   border-bottom: 1px solid var(--slate-300);
 }
 
+/* Transition effects for table rows */
 .st-tr {
   transition: transform 0.4s, top 0.4s, opacity 0.2s;
   transform: translateY(0);
 }
 
+/* Styles for table header cells */
 .st-th {
-  width: 100px; /* Set a specific width for all th elements */
+  width: 100px;
   position: relative;
 }
 
+/* Common styles for table header and cells */
 .st-th,
 .st-table-cell {
   user-select: none;
@@ -81,42 +80,52 @@
   text-align: left;
 }
 
+/* Style for a cell when it is being dragged */
 .st-dragging {
   background-color: var(--blue-100);
 }
 
+/* Basic styling for table cells */
 .st-table-cell {
   border: var(--border-width) solid transparent;
 }
 
+/* Style for selected table cells */
 .st-table-cell-selected {
   background-color: var(--blue-200);
 }
 
+/* Style for the first selected table cell */
 .st-table-cell-selected-first {
   background-color: var(--selected-first-cell);
 }
 
+/* Blue top border for cells */
 .border-top-blue {
   border-top: var(--border-width) solid var(--blue-500);
 }
 
+/* Blue bottom border for cells */
 .border-bottom-blue {
   border-bottom: var(--border-width) solid var(--blue-500);
 }
 
+/* Blue left border for cells */
 .border-left-blue {
   border-left: var(--border-width) solid var(--blue-500);
 }
 
+/* Blue right border for cells */
 .border-right-blue {
   border-right: var(--border-width) solid var(--blue-500);
 }
 
+/* White top border for cells */
 .border-top-white {
   border-top: var(--border-width) solid white;
 }
 
+/* Resize handle for table headers */
 .st-table-header-resize-handle {
   position: absolute;
   right: 0;

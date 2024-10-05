@@ -24,9 +24,12 @@ const TableHeaderCell = forwardRef(
     }: TableHeaderCellProps,
     ref: any
   ) => {
-    const [isDragging, setIsDragging] = useState(false);
-    const [width, setWidth] = useState<number | undefined>(undefined);
     const header = headersRef.current?.[index];
+
+    const [isDragging, setIsDragging] = useState(false);
+    const [width, setWidth] = useState<string | number | undefined>(
+      header?.width
+    );
     const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
         draggedHeaderRef,
@@ -61,6 +64,7 @@ const TableHeaderCell = forwardRef(
     const handleResizing = (event: MouseEvent) => {
       const newWidth =
         event.clientX - ref?.current?.getBoundingClientRect().left;
+      console.log(newWidth);
       setWidth(newWidth);
     };
 
@@ -68,12 +72,6 @@ const TableHeaderCell = forwardRef(
       document.removeEventListener("mousemove", handleResizing);
       document.removeEventListener("mouseup", handleResizeEnd);
     };
-
-    useEffect(() => {
-      if (width !== undefined && ref.current) {
-        ref.current.style.width = `${width}px`;
-      }
-    }, [width]);
 
     if (!header) return null;
 
