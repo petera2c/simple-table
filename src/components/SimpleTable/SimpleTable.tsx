@@ -48,7 +48,7 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
   };
 
   return (
-    <div className="table-wrapper">
+    <div className="st-table-wrapper">
       <table
         className="st-table"
         onMouseUp={handleMouseUp}

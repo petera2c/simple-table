@@ -20,7 +20,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   return (
-    <thead className="table-header">
+    <thead className="st-thead">
       <tr className="st-tr">
         <Animate>
           {headersRef.current?.map((header, index) => (

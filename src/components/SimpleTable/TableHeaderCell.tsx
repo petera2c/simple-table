@@ -79,15 +79,16 @@ const TableHeaderCell = forwardRef(
 
     return (
       <th
-        className={`table-header-cell ${
-          header === hoveredHeaderRef.current ? "hovered" : ""
-        } ${isDragging ? "dragging" : ""}`}
+        className={`st-th ${
+          header === hoveredHeaderRef.current ? "st-hovered" : ""
+        } ${isDragging ? "st-dragging" : ""}`}
         key={header?.accessor}
         onClick={() => onSort(index)}
         ref={ref}
         style={{ width: width ? `${width}px` : "auto" }}
       >
         <div
+          className="st-table-header-label"
           draggable
           onDragStart={() => handleDragStartWrapper(header)}
           onDragOver={(event) => {
@@ -99,7 +100,7 @@ const TableHeaderCell = forwardRef(
           {header?.label}
         </div>
         <div
-          className="resize-handle"
+          className="st-table-header-resize-handle"
           onMouseDown={handleResizeStart}
           style={{
             position: "absolute",

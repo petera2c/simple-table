@@ -32,11 +32,11 @@ const TableCell = forwardRef(
         ref={ref}
       >
         <div
-          className={`table-cell ${
+          className={`st-table-cell ${
             isSelected
               ? isTopLeftCell
-                ? `selected-first-cell ${borderClass}`
-                : `selected ${borderClass}`
+                ? `st-table-cell-selected-first-cell ${borderClass}`
+                : `st-table-cell-selected ${borderClass}`
               : ""
           }`}
         >

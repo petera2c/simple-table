@@ -46,7 +46,7 @@
 }
 
 /* Add a new class for the table wrapper */
-.table-wrapper {
+.st-table-wrapper {
   border: 1px solid var(--slate-300);
   border-radius: var(--border-radius);
   overflow: hidden; /* Ensures the table stays within the rounded corners */
@@ -68,35 +68,32 @@
   transform: translateY(0);
 }
 
-.dragging {
-  background-color: var(--blue-100);
-}
-
 .st-th {
   width: 100px; /* Set a specific width for all th elements */
   position: relative;
 }
 
-.table-header-cell {
-}
-
 .st-th,
-.table-cell {
+.st-table-cell {
   user-select: none;
   cursor: pointer;
   padding: 8px;
   text-align: left;
 }
 
-.table-cell {
+.st-dragging {
+  background-color: var(--blue-100);
+}
+
+.st-table-cell {
   border: var(--border-width) solid transparent;
 }
 
-.selected {
+.st-table-cell-selected {
   background-color: var(--blue-200);
 }
 
-.selected-first-cell {
+.st-table-cell-selected-first {
   background-color: var(--selected-first-cell);
 }
 
@@ -120,7 +117,7 @@
   border-top: var(--border-width) solid white;
 }
 
-.resize-handle {
+.st-table-header-resize-handle {
   position: absolute;
   right: 0;
   top: 0;
