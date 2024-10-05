@@ -9,10 +9,34 @@
   --blue-700: #2c5282;
   --blue-800: #2a4365;
   --blue-900: #1a365d;
+
   --selected-first-cell: white;
-  --light-grey: #d3d3d3;
   --border-radius: 4px;
   --border-width: 1px;
+
+  /* Gray colors */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* Slate colors */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
 }
 
 * {
@@ -23,23 +47,23 @@
 
 /* Add a new class for the table wrapper */
 .table-wrapper {
-  border: 1px solid var(--light-grey);
+  border: 1px solid var(--slate-300);
   border-radius: var(--border-radius);
   overflow: hidden; /* Ensures the table stays within the rounded corners */
 }
 
-table {
+.st-table {
   border-collapse: collapse;
   width: 100%;
   table-layout: fixed; /* Ensures even width for all th elements */
 }
 
-thead tr,
-tr:not(:last-child) {
-  border-bottom: 1px solid var(--light-grey);
+.st-thead .st-tr,
+.st-tr:not(:last-child) {
+  border-bottom: 1px solid var(--slate-300);
 }
 
-tr {
+.st-tr {
   transition: transform 0.4s, top 0.4s, opacity 0.2s;
   transform: translateY(0);
 }
@@ -48,11 +72,15 @@ tr {
   background-color: var(--blue-100);
 }
 
-th {
+.st-th {
   width: 100px; /* Set a specific width for all th elements */
+  position: relative;
 }
 
-th,
+.table-header-cell {
+}
+
+.st-th,
 .table-cell {
   user-select: none;
   cursor: pointer;
@@ -90,4 +118,17 @@ th,
 
 .border-top-white {
   border-top: var(--border-width) solid white;
+}
+
+.resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  cursor: col-resize;
+  background-color: var(--slate-300);
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0.25rem;
 }

@@ -12,6 +12,9 @@ interface SpreadsheetProps {
 }
 
 const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
+  // Define the widths for each column
+  const columnWidths = headers.map((header) => header.width || "auto");
+
   const headersRef = useRef(headers);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const [sortedRows, setSortedRows] = useState(rows);
@@ -47,7 +50,7 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
   return (
     <div className="table-wrapper">
       <table
-        className="simple-table"
+        className="st-table"
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
@@ -55,6 +58,7 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
           headersRef={headersRef}
           onSort={handleSort}
           onDragEnd={onDragEnd}
+          columnWidths={columnWidths} // Pass column widths to TableHeader
         />
         <tbody>
           <Animate animateRow={true}>

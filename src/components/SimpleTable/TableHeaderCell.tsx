@@ -1,4 +1,4 @@
-import { forwardRef, LegacyRef, useState, useRef } from "react";
+import { forwardRef, LegacyRef, useState, useRef, useEffect } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
@@ -22,9 +22,10 @@ const TableHeaderCell = forwardRef(
       onDragEnd,
       onSort,
     }: TableHeaderCellProps,
-    ref: LegacyRef<HTMLTableCellElement>
+    ref: any
   ) => {
     const [isDragging, setIsDragging] = useState(false);
+    const [width, setWidth] = useState<number | undefined>(undefined);
     const header = headersRef.current?.[index];
     const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
@@ -50,6 +51,30 @@ const TableHeaderCell = forwardRef(
         handleDragOver(header);
       }, 50) // Adjust the delay as needed
     ).current;
+
+    const handleResizeStart = (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      document.addEventListener("mousemove", handleResizing);
+      document.addEventListener("mouseup", handleResizeEnd);
+    };
+
+    const handleResizing = (event: MouseEvent) => {
+      const newWidth =
+        event.clientX - ref?.current?.getBoundingClientRect().left;
+      setWidth(newWidth);
+    };
+
+    const handleResizeEnd = () => {
+      document.removeEventListener("mousemove", handleResizing);
+      document.removeEventListener("mouseup", handleResizeEnd);
+    };
+
+    useEffect(() => {
+      if (width !== undefined && ref.current) {
+        ref.current.style.width = `${width}px`;
+      }
+    }, [width]);
+
     if (!header) return null;
 
     return (
@@ -58,17 +83,33 @@ const TableHeaderCell = forwardRef(
           header === hoveredHeaderRef.current ? "hovered" : ""
         } ${isDragging ? "dragging" : ""}`}
         key={header?.accessor}
-        draggable
-        onDragStart={() => handleDragStartWrapper(header)}
-        onDragOver={(event) => {
-          event.preventDefault();
-          throttledHandleDragOver(header, event);
-        }}
-        onDragEnd={handleDragEndWrapper}
         onClick={() => onSort(index)}
         ref={ref}
+        style={{ width: width ? `${width}px` : "auto" }}
       >
-        {header?.label}
+        <div
+          draggable
+          onDragStart={() => handleDragStartWrapper(header)}
+          onDragOver={(event) => {
+            event.preventDefault();
+            throttledHandleDragOver(header, event);
+          }}
+          onDragEnd={handleDragEndWrapper}
+        >
+          {header?.label}
+        </div>
+        <div
+          className="resize-handle"
+          onMouseDown={handleResizeStart}
+          style={{
+            position: "absolute",
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: "5px",
+            cursor: "col-resize",
+          }}
+        />
       </th>
     );
   }

@@ -1,12 +1,13 @@
 import SimpleTable from "./components/SimpleTable/SimpleTable";
 import { sampleData } from "./consts/SampleData";
+import HeaderObject from "./types/HeaderObject";
 
-const HEADERS = [
-  { label: "id", accessor: "id" },
-  { label: "name", accessor: "name" },
-  { label: "age", accessor: "age" },
-  { label: "email", accessor: "email" },
-  { label: "address", accessor: "address" },
+const HEADERS: HeaderObject[] = [
+  { label: "id", accessor: "id", width: "100px" },
+  { label: "name", accessor: "name", width: "150px" },
+  { label: "age", accessor: "age", width: "80px" },
+  { label: "email", accessor: "email", width: "200px" },
+  { label: "address", accessor: "address", width: "250px" },
 ];
 
 const App = () => {

@@ -7,15 +7,21 @@ interface TableHeaderProps {
   headersRef: React.RefObject<HeaderObject[]>;
   onSort: (columnIndex: number) => void;
   onDragEnd: (newHeaders: HeaderObject[]) => void;
+  columnWidths: string[];
 }
 
-const TableHeader = ({ headersRef, onSort, onDragEnd }: TableHeaderProps) => {
+const TableHeader: React.FC<TableHeaderProps> = ({
+  headersRef,
+  onSort,
+  onDragEnd,
+  columnWidths,
+}) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   return (
     <thead className="table-header">
-      <tr>
+      <tr className="st-tr">
         <Animate>
           {headersRef.current?.map((header, index) => (
             <TableHeaderCell
