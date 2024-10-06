@@ -43,14 +43,21 @@
 .st-table-wrapper {
   border: 1px solid var(--slate-300);
   border-radius: var(--border-radius);
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* Main table styling */
 .st-table {
+  display: block;
   border-collapse: collapse;
-  width: 100%;
   table-layout: auto;
+  white-space: nowrap;
+
+  width: 100%;
+}
+
+.st-thead {
+  width: 100%;
 }
 
 /* Styles for table rows */
@@ -78,6 +85,9 @@
   cursor: pointer;
   padding: 8px;
   text-align: left;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* Style for a cell when it is being dragged */

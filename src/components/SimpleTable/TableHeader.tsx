@@ -7,14 +7,12 @@ interface TableHeaderProps {
   headersRef: React.RefObject<HeaderObject[]>;
   onSort: (columnIndex: number) => void;
   onDragEnd: (newHeaders: HeaderObject[]) => void;
-  columnWidths: string[];
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
   headersRef,
   onSort,
   onDragEnd,
-  columnWidths,
 }) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);

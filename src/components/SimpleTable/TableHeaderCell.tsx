@@ -27,9 +27,7 @@ const TableHeaderCell = forwardRef(
     const header = headersRef.current?.[index];
 
     const [isDragging, setIsDragging] = useState(false);
-    const [width, setWidth] = useState<string | number | undefined>(
-      header?.width
-    );
+    const [width, setWidth] = useState<number | undefined>(header?.width);
     const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
         draggedHeaderRef,
@@ -73,6 +71,8 @@ const TableHeaderCell = forwardRef(
       document.removeEventListener("mouseup", handleResizeEnd);
     };
 
+    console.log(width);
+
     if (!header) return null;
 
     return (
@@ -81,13 +81,13 @@ const TableHeaderCell = forwardRef(
           header === hoveredHeaderRef.current ? "st-hovered" : ""
         } ${isDragging ? "st-dragging" : ""}`}
         key={header?.accessor}
-        onClick={() => onSort(index)}
         ref={ref}
-        style={{ width: width ? `${width}px` : "auto" }}
+        style={width ? { minWidth: width, maxWidth: width } : {}}
       >
         <div
           className="st-table-header-label"
           draggable
+          onClick={() => onSort(index)}
           onDragStart={() => handleDragStartWrapper(header)}
           onDragOver={(event) => {
             event.preventDefault();

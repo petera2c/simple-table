@@ -1,7 +1,7 @@
 type HeaderObject = {
   label: string;
   accessor: string;
-  width: string;
+  width: number;
 };
 
 export default HeaderObject;
