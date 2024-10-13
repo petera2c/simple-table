@@ -62,7 +62,6 @@ const TableHeaderCell = forwardRef(
     const handleResizing = (event: MouseEvent) => {
       const newWidth =
         event.clientX - ref?.current?.getBoundingClientRect().left;
-      console.log(newWidth);
       setWidth(newWidth);
     };
 
@@ -70,8 +69,6 @@ const TableHeaderCell = forwardRef(
       document.removeEventListener("mousemove", handleResizing);
       document.removeEventListener("mouseup", handleResizeEnd);
     };
-
-    console.log(width);
 
     if (!header) return null;
 

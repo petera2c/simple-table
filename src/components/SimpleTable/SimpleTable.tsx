@@ -44,8 +44,6 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
     forceUpdate();
   };
 
-  console.log(headersRef.current.map((header) => header.width).join(" "));
-
   return (
     <div className="st-table-wrapper">
       <div
@@ -63,22 +61,20 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
           onSort={handleSort}
           onDragEnd={onDragEnd}
         />
-        <Animate animateRow={true}>
-          {sortedRows.map((row, rowIndex) => (
-            <TableRow
-              getBorderClass={getBorderClass}
-              handleMouseDown={handleMouseDown}
-              handleMouseOver={handleMouseOver}
-              headers={headersRef.current}
-              isSelected={isSelected}
-              isTopLeftCell={isTopLeftCell}
-              key={row.id}
-              ref={createRef()}
-              row={row}
-              rowIndex={rowIndex}
-            />
-          ))}
-        </Animate>
+        {sortedRows.map((row, rowIndex) => (
+          <TableRow
+            getBorderClass={getBorderClass}
+            handleMouseDown={handleMouseDown}
+            handleMouseOver={handleMouseOver}
+            headers={headersRef.current}
+            isSelected={isSelected}
+            isTopLeftCell={isTopLeftCell}
+            key={row.id}
+            ref={createRef()}
+            row={row}
+            rowIndex={rowIndex}
+          />
+        ))}
       </div>
     </div>
   );

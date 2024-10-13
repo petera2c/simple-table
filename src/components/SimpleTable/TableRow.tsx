@@ -29,7 +29,7 @@ const TableRow = forwardRef(
     ref: LegacyRef<HTMLTableRowElement>
   ) => {
     return (
-      <Animate>
+      <Animate animateRow={true}>
         {headers.map((header, columnIndex) => (
           <TableCell
             key={header.accessor}
