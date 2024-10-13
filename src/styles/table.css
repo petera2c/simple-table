@@ -48,28 +48,12 @@
 
 /* Main table styling */
 .st-table {
-  display: block;
+  display: grid;
   border-collapse: collapse;
   table-layout: auto;
   white-space: nowrap;
 
   width: 100%;
-}
-
-.st-thead {
-  width: 100%;
-}
-
-/* Styles for table rows */
-.st-thead .st-tr,
-.st-tr:not(:last-child) {
-  border-bottom: 1px solid var(--slate-300);
-}
-
-/* Transition effects for table rows */
-.st-tr {
-  transition: transform 0.4s, top 0.4s, opacity 0.2s;
-  transform: translateY(0);
 }
 
 /* Styles for table header cells */

@@ -29,24 +29,22 @@ const TableRow = forwardRef(
     ref: LegacyRef<HTMLTableRowElement>
   ) => {
     return (
-      <tr className="st-tr" key={row.id} ref={ref}>
-        <Animate>
-          {headers.map((header, columnIndex) => (
-            <TableCell
-              key={header.accessor}
-              rowIndex={rowIndex}
-              colIndex={columnIndex}
-              content={row[header.accessor]}
-              isSelected={isSelected(rowIndex, columnIndex)}
-              isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
-              borderClass={getBorderClass(rowIndex, columnIndex)}
-              onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
-              onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
-              ref={createRef()}
-            />
-          ))}
-        </Animate>
-      </tr>
+      <Animate>
+        {headers.map((header, columnIndex) => (
+          <TableCell
+            key={header.accessor}
+            rowIndex={rowIndex}
+            colIndex={columnIndex}
+            content={row[header.accessor]}
+            isSelected={isSelected(rowIndex, columnIndex)}
+            isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
+            borderClass={getBorderClass(rowIndex, columnIndex)}
+            onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
+            onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
+            ref={createRef()}
+          />
+        ))}
+      </Animate>
     );
   }
 );

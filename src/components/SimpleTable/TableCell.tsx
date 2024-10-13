@@ -26,7 +26,7 @@ const TableCell = forwardRef(
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
     return (
-      <td
+      <div
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
         ref={ref}
@@ -42,7 +42,7 @@ const TableCell = forwardRef(
         >
           {content}
         </div>
-      </td>
+      </div>
     );
   }
 );

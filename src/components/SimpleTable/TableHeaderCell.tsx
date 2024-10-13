@@ -76,7 +76,7 @@ const TableHeaderCell = forwardRef(
     if (!header) return null;
 
     return (
-      <th
+      <div
         className={`st-th ${
           header === hoveredHeaderRef.current ? "st-hovered" : ""
         } ${isDragging ? "st-dragging" : ""}`}
@@ -109,7 +109,7 @@ const TableHeaderCell = forwardRef(
             cursor: "col-resize",
           }}
         />
-      </th>
+      </div>
     );
   }
 );

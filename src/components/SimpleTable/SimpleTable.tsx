@@ -44,37 +44,42 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
     forceUpdate();
   };
 
+  console.log(headersRef.current.map((header) => header.width).join(" "));
+
   return (
     <div className="st-table-wrapper">
-      <table
+      <div
         className="st-table"
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        style={{
+          gridTemplateColumns: headersRef.current
+            ?.map((header) => `${header.width}px`)
+            .join(" "),
+        }}
       >
         <TableHeader
           headersRef={headersRef}
           onSort={handleSort}
           onDragEnd={onDragEnd}
         />
-        <tbody className="st-tbody">
-          <Animate animateRow={true}>
-            {sortedRows.map((row, rowIndex) => (
-              <TableRow
-                getBorderClass={getBorderClass}
-                handleMouseDown={handleMouseDown}
-                handleMouseOver={handleMouseOver}
-                headers={headersRef.current}
-                isSelected={isSelected}
-                isTopLeftCell={isTopLeftCell}
-                key={row.id}
-                ref={createRef()}
-                row={row}
-                rowIndex={rowIndex}
-              />
-            ))}
-          </Animate>
-        </tbody>
-      </table>
+        <Animate animateRow={true}>
+          {sortedRows.map((row, rowIndex) => (
+            <TableRow
+              getBorderClass={getBorderClass}
+              handleMouseDown={handleMouseDown}
+              handleMouseOver={handleMouseOver}
+              headers={headersRef.current}
+              isSelected={isSelected}
+              isTopLeftCell={isTopLeftCell}
+              key={row.id}
+              ref={createRef()}
+              row={row}
+              rowIndex={rowIndex}
+            />
+          ))}
+        </Animate>
+      </div>
     </div>
   );
 };

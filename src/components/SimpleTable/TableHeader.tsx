@@ -18,24 +18,20 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   return (
-    <thead className="st-thead">
-      <tr className="st-tr">
-        <Animate>
-          {headersRef.current?.map((header, index) => (
-            <TableHeaderCell
-              draggedHeaderRef={draggedHeaderRef}
-              headersRef={headersRef}
-              hoveredHeaderRef={hoveredHeaderRef}
-              index={index}
-              key={header.accessor}
-              onDragEnd={onDragEnd}
-              onSort={onSort}
-              ref={createRef()}
-            />
-          ))}
-        </Animate>
-      </tr>
-    </thead>
+    <Animate>
+      {headersRef.current?.map((header, index) => (
+        <TableHeaderCell
+          draggedHeaderRef={draggedHeaderRef}
+          headersRef={headersRef}
+          hoveredHeaderRef={hoveredHeaderRef}
+          index={index}
+          key={header.accessor}
+          onDragEnd={onDragEnd}
+          onSort={onSort}
+          ref={createRef()}
+        />
+      ))}
+    </Animate>
   );
 };
 
