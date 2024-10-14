@@ -9,6 +9,7 @@ interface TableCellProps {
   borderClass: string;
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;
+  isLastRow: boolean;
 }
 
 const TableCell = forwardRef(
@@ -22,6 +23,7 @@ const TableCell = forwardRef(
       borderClass,
       onMouseDown,
       onMouseOver,
+      isLastRow,
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
@@ -30,18 +32,15 @@ const TableCell = forwardRef(
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
         ref={ref}
+        className={`st-table-cell ${
+          isSelected
+            ? isTopLeftCell
+              ? `st-table-cell-selected-first-cell ${borderClass}`
+              : `st-table-cell-selected ${borderClass}`
+            : ""
+        } ${isLastRow ? "st-table-cell-last-row" : ""}`}
       >
-        <div
-          className={`st-table-cell ${
-            isSelected
-              ? isTopLeftCell
-                ? `st-table-cell-selected-first-cell ${borderClass}`
-                : `st-table-cell-selected ${borderClass}`
-              : ""
-          }`}
-        >
-          {content}
-        </div>
+        {content}
       </div>
     );
   }

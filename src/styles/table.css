@@ -72,16 +72,17 @@
   padding: 8px;
   text-align: left;
 
+  border: var(--border-width) solid transparent;
+
   white-space: nowrap;
   text-overflow: ellipsis;
 
-  border-bottom: var(--border-width) solid var(--border-color);
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* Basic styling for table cells */
-.st-table-cell {
+.st-table-header-cell,
+.st-table-cell:not(.st-table-cell-last-row) {
+  border-bottom: var(--border-width) solid var(--border-color);
 }
 
 /* Style for a cell when it is being dragged */
