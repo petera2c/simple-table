@@ -11,6 +11,7 @@ interface TableRowProps {
   handleMouseDown: (rowIndex: number, columnIndex: number) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
   sortedRows: { [key: string]: any }[];
+  isWidthDragging: boolean;
 }
 
 const TableRow = ({
@@ -21,11 +22,12 @@ const TableRow = ({
   handleMouseDown,
   handleMouseOver,
   sortedRows,
+  isWidthDragging,
 }: TableRowProps) => {
   return (
     <>
       {sortedRows.map((row, rowIndex) => (
-        <Animate key={row.id}>
+        <Animate key={row.id} pause={isWidthDragging}>
           {headers.map((header, columnIndex) => (
             <TableCell
               borderClass={getBorderClass(rowIndex, columnIndex)}

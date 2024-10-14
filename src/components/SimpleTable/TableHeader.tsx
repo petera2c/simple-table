@@ -5,22 +5,26 @@ import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderProps {
   headers: HeaderObject[];
+  isWidthDragging: boolean;
   onSort: (columnIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
+  setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
   headers,
+  isWidthDragging,
   onSort,
   onTableHeaderDragEnd,
   setHeaders,
+  setIsWidthDragging,
 }) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   return (
-    <Animate>
+    <Animate pause={isWidthDragging}>
       {headers?.map((header, index) => (
         <TableHeaderCell
           draggedHeaderRef={draggedHeaderRef}
@@ -32,6 +36,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
           onTableHeaderDragEnd={onTableHeaderDragEnd}
           ref={createRef()}
           setHeaders={setHeaders}
+          setIsWidthDragging={setIsWidthDragging}
         />
       ))}
     </Animate>

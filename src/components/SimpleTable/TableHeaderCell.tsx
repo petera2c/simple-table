@@ -19,9 +19,10 @@ interface TableHeaderCellProps {
   onSort: (columnIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
+  setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
 }
 
-const TableHeaderCell = forwardRef(
+const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
   (
     {
       draggedHeaderRef,
@@ -31,12 +32,12 @@ const TableHeaderCell = forwardRef(
       onSort,
       onTableHeaderDragEnd,
       setHeaders,
-    }: TableHeaderCellProps,
-    ref: any
+      setIsWidthDragging,
+    },
+    ref
   ) => {
     const header = headers[index];
 
-    const [isDragging, setIsDragging] = useState(false);
     const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
         draggedHeaderRef,
@@ -46,12 +47,10 @@ const TableHeaderCell = forwardRef(
       });
 
     const handleDragStartWrapper = (header: HeaderObject) => {
-      setIsDragging(true);
       handleDragStart(header);
     };
 
     const handleDragEndWrapper = () => {
-      setIsDragging(false);
       handleDragEnd();
     };
 
@@ -62,27 +61,29 @@ const TableHeaderCell = forwardRef(
       }, 50) // Adjust the delay as needed
     ).current;
 
-    const handleResizeStart = (event: React.MouseEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      document.addEventListener("mousemove", handleResizing);
-      document.addEventListener("mouseup", handleResizeEnd);
-    };
+    const handleResizeStart = (e: React.MouseEvent) => {
+      setIsWidthDragging(true);
+      e.preventDefault();
+      const startX = e.clientX;
+      const startWidth = header.width;
 
-    const handleResizing = (event: MouseEvent) => {
-      const newWidth =
-        event.clientX - ref?.current?.getBoundingClientRect().left;
-      if (!isNaN(newWidth)) {
-        setHeaders((headers) => {
-          const newHeaders = [...headers];
-          newHeaders[index].width = newWidth;
-          return newHeaders;
+      const throttledMouseMove = throttle((e: MouseEvent) => {
+        const newWidth = Math.max(startWidth + (e.clientX - startX), 10); // Ensure a minimum width
+        setHeaders((prevHeaders) => {
+          const updatedHeaders = [...prevHeaders];
+          updatedHeaders[index] = { ...updatedHeaders[index], width: newWidth };
+          return updatedHeaders;
         });
-      }
-    };
+      }, 10); // Adjust the throttle delay as needed
 
-    const handleResizeEnd = () => {
-      document.removeEventListener("mousemove", handleResizing);
-      document.removeEventListener("mouseup", handleResizeEnd);
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", throttledMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+        setIsWidthDragging(false);
+      };
+
+      document.addEventListener("mousemove", throttledMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
     };
 
     if (!header) return null;
@@ -91,9 +92,9 @@ const TableHeaderCell = forwardRef(
       <div
         className={`st-th ${
           header === hoveredHeaderRef.current ? "st-hovered" : ""
-        } ${isDragging ? "st-dragging" : ""}`}
-        key={header?.accessor}
+        }`}
         ref={ref}
+        style={{ width: header.width }}
       >
         <div
           className="st-table-header-label"
@@ -111,14 +112,6 @@ const TableHeaderCell = forwardRef(
         <div
           className="st-table-header-resize-handle"
           onMouseDown={handleResizeStart}
-          style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: "5px",
-            cursor: "col-resize",
-          }}
         />
       </div>
     );

@@ -4,9 +4,10 @@ import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 
 interface AnimateProps {
   children: any;
+  pause?: boolean;
 }
 
-const Animate = ({ children }: AnimateProps) => {
+const Animate = ({ children, pause }: AnimateProps) => {
   const [boundingBox, setBoundingBox] = useState<any>({});
   const [prevBoundingBox, setPrevBoundingBox] = useState<any>({});
   const prevChildren = usePrevious(children);
@@ -22,6 +23,7 @@ const Animate = ({ children }: AnimateProps) => {
   }, [prevChildren]);
 
   useEffect(() => {
+    if (pause) return;
     const hasPrevBoundingBox = Object.keys(prevBoundingBox).length;
 
     if (hasPrevBoundingBox) {
@@ -49,7 +51,7 @@ const Animate = ({ children }: AnimateProps) => {
         }
       });
     }
-  }, [boundingBox, prevBoundingBox, children]);
+  }, [boundingBox, prevBoundingBox, children, pause]);
 
   return children;
 };

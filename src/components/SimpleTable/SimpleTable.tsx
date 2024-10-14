@@ -13,6 +13,7 @@ interface SpreadsheetProps {
 }
 
 const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
+  const [isWidthDragging, setIsWidthDragging] = useState(false);
   const [headers, setHeaders] = useState(defaultHeaders);
   const [sortedRows, setSortedRows] = useState(rows);
   const [sortConfig, setSortConfig] = useState<{
@@ -60,6 +61,8 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
           onSort={handleSort}
           onTableHeaderDragEnd={onTableHeaderDragEnd}
           setHeaders={setHeaders}
+          setIsWidthDragging={setIsWidthDragging}
+          isWidthDragging={isWidthDragging}
         />
         <TableBody
           getBorderClass={getBorderClass}
@@ -69,6 +72,7 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
           isSelected={isSelected}
           isTopLeftCell={isTopLeftCell}
           sortedRows={sortedRows}
+          isWidthDragging={isWidthDragging}
         />
       </div>
     </div>
