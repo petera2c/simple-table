@@ -8,13 +8,12 @@ import HeaderObject from "../../types/HeaderObject";
 import TableBody from "./TableBody";
 
 interface SpreadsheetProps {
-  headers: HeaderObject[];
+  defaultHeaders: HeaderObject[];
   rows: { [key: string]: any }[];
 }
 
-const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
-  const headersRef = useRef(headers);
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
+  const [headers, setHeaders] = useState(defaultHeaders);
   const [sortedRows, setSortedRows] = useState(rows);
   const [sortConfig, setSortConfig] = useState<{
     key: HeaderObject;
@@ -40,9 +39,8 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
     setSortedRows(sortedData);
     setSortConfig(newSortConfig);
   };
-  const onDragEnd = (newHeaders: HeaderObject[]) => {
-    headersRef.current = newHeaders;
-    forceUpdate();
+  const onTableHeaderDragEnd = (newHeaders: HeaderObject[]) => {
+    setHeaders(newHeaders);
   };
 
   return (
@@ -52,21 +50,22 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         style={{
-          gridTemplateColumns: headersRef.current
+          gridTemplateColumns: headers
             ?.map((header) => `${header.width}px`)
             .join(" "),
         }}
       >
         <TableHeader
-          headersRef={headersRef}
+          headers={headers}
           onSort={handleSort}
-          onDragEnd={onDragEnd}
+          onTableHeaderDragEnd={onTableHeaderDragEnd}
+          setHeaders={setHeaders}
         />
         <TableBody
           getBorderClass={getBorderClass}
           handleMouseDown={handleMouseDown}
           handleMouseOver={handleMouseOver}
-          headers={headersRef.current}
+          headers={headers}
           isSelected={isSelected}
           isTopLeftCell={isTopLeftCell}
           sortedRows={sortedRows}

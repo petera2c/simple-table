@@ -13,7 +13,7 @@ const HEADERS: HeaderObject[] = [
 const App = () => {
   return (
     <div className="app" style={{ padding: "2rem" }}>
-      <SimpleTable headers={HEADERS} rows={sampleData} />
+      <SimpleTable defaultHeaders={HEADERS} rows={sampleData} />
     </div>
   );
 };

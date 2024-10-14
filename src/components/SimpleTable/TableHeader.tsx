@@ -1,34 +1,37 @@
-import { createRef, useRef } from "react";
+import { createRef, Dispatch, SetStateAction, useRef } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderProps {
-  headersRef: React.RefObject<HeaderObject[]>;
+  headers: HeaderObject[];
   onSort: (columnIndex: number) => void;
-  onDragEnd: (newHeaders: HeaderObject[]) => void;
+  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
-  headersRef,
+  headers,
   onSort,
-  onDragEnd,
+  onTableHeaderDragEnd,
+  setHeaders,
 }) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   return (
     <Animate>
-      {headersRef.current?.map((header, index) => (
+      {headers?.map((header, index) => (
         <TableHeaderCell
           draggedHeaderRef={draggedHeaderRef}
-          headersRef={headersRef}
+          headers={headers}
           hoveredHeaderRef={hoveredHeaderRef}
           index={index}
           key={header.accessor}
-          onDragEnd={onDragEnd}
           onSort={onSort}
+          onTableHeaderDragEnd={onTableHeaderDragEnd}
           ref={createRef()}
+          setHeaders={setHeaders}
         />
       ))}
     </Animate>

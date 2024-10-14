@@ -2,17 +2,17 @@ import HeaderObject from "../types/HeaderObject";
 
 interface UseTableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  headersRef: React.RefObject<HeaderObject[]>;
+  headers: HeaderObject[];
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  onDragEnd: (newHeaders: HeaderObject[]) => void;
+  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
 }
 var isUpdating = false;
 
 const useTableHeaderCell = ({
   draggedHeaderRef,
-  headersRef,
+  headers,
   hoveredHeaderRef,
-  onDragEnd,
+  onTableHeaderDragEnd,
 }: UseTableHeaderCellProps) => {
   const handleDragStart = (header: HeaderObject) => {
     draggedHeaderRef.current = header;
@@ -28,11 +28,11 @@ const useTableHeaderCell = ({
       !isUpdating
     ) {
       isUpdating = true;
-      const newHeaders = [...(headersRef.current || [])];
-      const draggedHeaderIndex = headersRef.current?.findIndex(
+      const newHeaders = [...headers];
+      const draggedHeaderIndex = headers.findIndex(
         (header) => header.accessor === draggedHeaderRef.current?.accessor
       );
-      const hoveredHeaderIndex = headersRef.current?.findIndex(
+      const hoveredHeaderIndex = headers.findIndex(
         (header) => header.accessor === hoveredHeader.accessor
       );
       if (draggedHeaderIndex === undefined || hoveredHeaderIndex === undefined)
@@ -42,9 +42,9 @@ const useTableHeaderCell = ({
       newHeaders.splice(hoveredHeaderIndex, 0, draggedHeader);
 
       // Check if the newHeaders array is different from the original headers array
-      if (JSON.stringify(newHeaders) !== JSON.stringify(headersRef.current))
+      if (JSON.stringify(newHeaders) !== JSON.stringify(headers))
         setTimeout(() => {
-          onDragEnd(newHeaders);
+          onTableHeaderDragEnd(newHeaders);
 
           setTimeout(() => {
             isUpdating = false;

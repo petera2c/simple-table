@@ -1,39 +1,48 @@
-import { forwardRef, LegacyRef, useState, useRef, useEffect } from "react";
+import {
+  forwardRef,
+  LegacyRef,
+  useState,
+  useRef,
+  useEffect,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  headersRef: React.RefObject<HeaderObject[]>;
+  headers: HeaderObject[];
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
   index: number;
-  onDragEnd: (newHeaders: HeaderObject[]) => void;
   onSort: (columnIndex: number) => void;
+  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
 }
 
 const TableHeaderCell = forwardRef(
   (
     {
       draggedHeaderRef,
-      headersRef,
+      headers,
       hoveredHeaderRef,
       index,
-      onDragEnd,
       onSort,
+      onTableHeaderDragEnd,
+      setHeaders,
     }: TableHeaderCellProps,
     ref: any
   ) => {
-    const header = headersRef.current?.[index];
+    const header = headers[index];
 
     const [isDragging, setIsDragging] = useState(false);
-    const [width, setWidth] = useState<number | undefined>(header?.width);
     const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
         draggedHeaderRef,
-        headersRef,
+        headers,
         hoveredHeaderRef,
-        onDragEnd,
+        onTableHeaderDragEnd,
       });
 
     const handleDragStartWrapper = (header: HeaderObject) => {
@@ -62,7 +71,13 @@ const TableHeaderCell = forwardRef(
     const handleResizing = (event: MouseEvent) => {
       const newWidth =
         event.clientX - ref?.current?.getBoundingClientRect().left;
-      setWidth(newWidth);
+      if (!isNaN(newWidth)) {
+        setHeaders((headers) => {
+          const newHeaders = [...headers];
+          newHeaders[index].width = newWidth;
+          return newHeaders;
+        });
+      }
     };
 
     const handleResizeEnd = () => {
@@ -79,7 +94,6 @@ const TableHeaderCell = forwardRef(
         } ${isDragging ? "st-dragging" : ""}`}
         key={header?.accessor}
         ref={ref}
-        style={width ? { minWidth: width, maxWidth: width } : {}}
       >
         <div
           className="st-table-header-label"
