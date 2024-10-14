@@ -3,8 +3,9 @@ import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
 import Animate from "../Animate";
-import TableRow from "./TableRow";
+import TableRow from "./TableBody";
 import HeaderObject from "../../types/HeaderObject";
+import TableBody from "./TableBody";
 
 interface SpreadsheetProps {
   headers: HeaderObject[];
@@ -61,20 +62,15 @@ const SimpleTable = ({ headers, rows }: SpreadsheetProps) => {
           onSort={handleSort}
           onDragEnd={onDragEnd}
         />
-        {sortedRows.map((row, rowIndex) => (
-          <TableRow
-            getBorderClass={getBorderClass}
-            handleMouseDown={handleMouseDown}
-            handleMouseOver={handleMouseOver}
-            headers={headersRef.current}
-            isSelected={isSelected}
-            isTopLeftCell={isTopLeftCell}
-            key={row.id}
-            ref={createRef()}
-            row={row}
-            rowIndex={rowIndex}
-          />
-        ))}
+        <TableBody
+          getBorderClass={getBorderClass}
+          handleMouseDown={handleMouseDown}
+          handleMouseOver={handleMouseOver}
+          headers={headersRef.current}
+          isSelected={isSelected}
+          isTopLeftCell={isTopLeftCell}
+          sortedRows={sortedRows}
+        />
       </div>
     </div>
   );

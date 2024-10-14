@@ -13,7 +13,7 @@ interface TableRowProps {
   sortedRows: { [key: string]: any }[];
 }
 
-const TableBody = ({
+const TableRow = ({
   headers,
   isSelected,
   isTopLeftCell,
@@ -25,7 +25,7 @@ const TableBody = ({
   return (
     <>
       {sortedRows.map((row, rowIndex) => (
-        <Animate key={rowIndex}>
+        <Animate animateRow={true} key={row.id}>
           {headers.map((header, columnIndex) => (
             <TableCell
               key={header.accessor}
@@ -46,4 +46,4 @@ const TableBody = ({
   );
 };
 
-export default TableBody;
+export default TableRow;
