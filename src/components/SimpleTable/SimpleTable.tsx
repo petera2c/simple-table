@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useReducer } from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
@@ -13,12 +13,13 @@ interface SpreadsheetProps {
 
 const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
   const [isWidthDragging, setIsWidthDragging] = useState(false);
-  const [headers, setHeaders] = useState(defaultHeaders);
+  const headersRef = useRef(defaultHeaders);
   const [sortedRows, setSortedRows] = useState(rows);
   const [sortConfig, setSortConfig] = useState<{
     key: HeaderObject;
     direction: string;
   } | null>(null);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const {
     handleMouseDown,
@@ -28,11 +29,11 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
     getBorderClass,
     isTopLeftCell,
     setSelectedCells,
-  } = useSelection(sortedRows, headers);
+  } = useSelection(sortedRows, headersRef.current);
 
   const handleSort = (columnIndex: number) => {
     const { sortedData, newSortConfig } = onSort(
-      headers,
+      headersRef.current,
       sortedRows,
       sortConfig,
       columnIndex
@@ -42,7 +43,8 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
   };
 
   const onTableHeaderDragEnd = (newHeaders: HeaderObject[]) => {
-    setHeaders(newHeaders);
+    headersRef.current = newHeaders;
+    forceUpdate();
   };
 
   useEffect(() => {
@@ -66,24 +68,24 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         style={{
-          gridTemplateColumns: headers
+          gridTemplateColumns: headersRef.current
             ?.map((header) => `${header.width}px`)
             .join(" "),
         }}
       >
         <TableHeader
-          headers={headers}
+          forceUpdate={forceUpdate}
+          headersRef={headersRef}
+          isWidthDragging={isWidthDragging}
           onSort={handleSort}
           onTableHeaderDragEnd={onTableHeaderDragEnd}
-          setHeaders={setHeaders}
           setIsWidthDragging={setIsWidthDragging}
-          isWidthDragging={isWidthDragging}
         />
         <TableBody
           getBorderClass={getBorderClass}
           handleMouseDown={handleMouseDown}
           handleMouseOver={handleMouseOver}
-          headers={headers}
+          headers={headersRef.current}
           isSelected={isSelected}
           isTopLeftCell={isTopLeftCell}
           sortedRows={sortedRows}

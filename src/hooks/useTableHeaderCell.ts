@@ -2,7 +2,7 @@ import HeaderObject from "../types/HeaderObject";
 
 interface UseTableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  headers: HeaderObject[];
+  headersRef: React.RefObject<HeaderObject[]>;
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
 }
@@ -10,16 +10,16 @@ var isUpdating = false;
 
 const useTableHeaderCell = ({
   draggedHeaderRef,
-  headers,
+  headersRef,
   hoveredHeaderRef,
   onTableHeaderDragEnd,
 }: UseTableHeaderCellProps) => {
   const handleDragStart = (header: HeaderObject) => {
-    console.log(header);
     draggedHeaderRef.current = header;
   };
 
   const updateHeaders = (hoveredHeader: HeaderObject) => {
+    console.log("updating");
     if (isUpdating) return;
     hoveredHeaderRef.current = hoveredHeader;
 
@@ -29,13 +29,16 @@ const useTableHeaderCell = ({
       !isUpdating
     ) {
       isUpdating = true;
-      const newHeaders = [...headers];
-      const draggedHeaderIndex = headers.findIndex(
+      if (!headersRef.current) return;
+
+      const newHeaders = [...headersRef.current];
+      const draggedHeaderIndex = newHeaders.findIndex(
         (header) => header.accessor === draggedHeaderRef.current?.accessor
       );
-      const hoveredHeaderIndex = headers.findIndex(
+      const hoveredHeaderIndex = newHeaders.findIndex(
         (header) => header.accessor === hoveredHeader.accessor
       );
+
       if (draggedHeaderIndex === undefined || hoveredHeaderIndex === undefined)
         return;
 
@@ -43,7 +46,7 @@ const useTableHeaderCell = ({
       newHeaders.splice(hoveredHeaderIndex, 0, draggedHeader);
 
       // Check if the newHeaders array is different from the original headers array
-      if (JSON.stringify(newHeaders) !== JSON.stringify(headers))
+      if (JSON.stringify(newHeaders) !== JSON.stringify(headersRef.current)) {
         setTimeout(() => {
           onTableHeaderDragEnd(newHeaders);
 
@@ -51,6 +54,7 @@ const useTableHeaderCell = ({
             isUpdating = false;
           }, 500);
         }, 50);
+      }
     }
   };
 

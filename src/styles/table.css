@@ -60,7 +60,6 @@
 
 /* Styles for table header cells */
 .st-table-header-cell {
-  width: 100px;
   position: relative;
 }
 
@@ -68,7 +67,7 @@
 .st-table-header-cell,
 .st-table-cell {
   user-select: none;
-  cursor: pointer;
+  cursor: pointer !important;
   padding: 8px;
   text-align: left;
 

@@ -4,20 +4,20 @@ import TableHeaderCell from "./TableHeaderCell";
 import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderProps {
-  headers: HeaderObject[];
+  forceUpdate: () => void;
+  headersRef: React.RefObject<HeaderObject[]>;
   isWidthDragging: boolean;
   onSort: (columnIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
-  headers,
+  forceUpdate,
+  headersRef,
   isWidthDragging,
   onSort,
   onTableHeaderDragEnd,
-  setHeaders,
   setIsWidthDragging,
 }) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
@@ -25,17 +25,17 @@ const TableHeader: React.FC<TableHeaderProps> = ({
 
   return (
     <Animate pause={isWidthDragging}>
-      {headers?.map((header, index) => (
+      {headersRef.current?.map((header, index) => (
         <TableHeaderCell
           draggedHeaderRef={draggedHeaderRef}
-          headers={headers}
+          forceUpdate={forceUpdate}
+          headersRef={headersRef}
           hoveredHeaderRef={hoveredHeaderRef}
           index={index}
           key={header.accessor}
           onSort={onSort}
           onTableHeaderDragEnd={onTableHeaderDragEnd}
           ref={createRef()}
-          setHeaders={setHeaders}
           setIsWidthDragging={setIsWidthDragging}
         />
       ))}

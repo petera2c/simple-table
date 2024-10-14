@@ -13,12 +13,12 @@ import HeaderObject from "../../types/HeaderObject";
 
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  headers: HeaderObject[];
+  forceUpdate: () => void;
+  headersRef: React.RefObject<HeaderObject[]>;
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
   index: number;
   onSort: (columnIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -26,22 +26,22 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
   (
     {
       draggedHeaderRef,
-      headers,
+      forceUpdate,
+      headersRef,
       hoveredHeaderRef,
       index,
       onSort,
       onTableHeaderDragEnd,
-      setHeaders,
       setIsWidthDragging,
     },
     ref
   ) => {
-    const header = headers[index];
+    const header = headersRef.current?.[index];
 
     const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
         draggedHeaderRef,
-        headers,
+        headersRef,
         hoveredHeaderRef,
         onTableHeaderDragEnd,
       });
@@ -58,22 +58,21 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
     const throttledHandleDragOver = useRef(
       throttle((header: HeaderObject) => {
         handleDragOver(header);
-      }, 50) // Adjust the delay as needed
+      }, 100)
     ).current;
 
     const handleResizeStart = (e: React.MouseEvent) => {
       setIsWidthDragging(true);
       e.preventDefault();
       const startX = e.clientX;
+      if (!header) return;
       const startWidth = header.width;
 
       const throttledMouseMove = throttle((e: MouseEvent) => {
         const newWidth = Math.max(startWidth + (e.clientX - startX), 10); // Ensure a minimum width
-        setHeaders((prevHeaders) => {
-          const updatedHeaders = [...prevHeaders];
-          updatedHeaders[index] = { ...updatedHeaders[index], width: newWidth };
-          return updatedHeaders;
-        });
+        if (!header) return;
+        headersRef.current[index].width = newWidth;
+        forceUpdate();
       }, 10); // Adjust the throttle delay as needed
 
       const handleMouseUp = () => {
