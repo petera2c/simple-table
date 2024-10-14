@@ -25,19 +25,19 @@ const TableRow = ({
   return (
     <>
       {sortedRows.map((row, rowIndex) => (
-        <Animate animateRow={true} key={row.id}>
+        <Animate key={row.id}>
           {headers.map((header, columnIndex) => (
             <TableCell
-              key={header.accessor}
-              rowIndex={rowIndex}
+              borderClass={getBorderClass(rowIndex, columnIndex)}
               colIndex={columnIndex}
               content={row[header.accessor]}
               isSelected={isSelected(rowIndex, columnIndex)}
               isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
-              borderClass={getBorderClass(rowIndex, columnIndex)}
+              key={header.accessor}
               onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
               onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
               ref={createRef()}
+              rowIndex={rowIndex}
             />
           ))}
         </Animate>
