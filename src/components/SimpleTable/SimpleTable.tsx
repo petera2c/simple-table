@@ -68,9 +68,9 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         style={{
-          gridTemplateColumns: headersRef.current
+          gridTemplateColumns: `${headersRef.current
             ?.map((header) => `${header.width}px`)
-            .join(" "),
+            .join(" ")} 1fr`,
         }}
       >
         <TableHeader

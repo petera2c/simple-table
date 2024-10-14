@@ -2,6 +2,7 @@ import { createRef, Dispatch, SetStateAction, useRef } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import HeaderObject from "../../types/HeaderObject";
+import TableLastColumnCell from "./TableLastColumnCell";
 
 interface TableHeaderProps {
   forceUpdate: () => void;
@@ -39,6 +40,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
           setIsWidthDragging={setIsWidthDragging}
         />
       ))}
+      <TableLastColumnCell ref={createRef()} />
     </Animate>
   );
 };

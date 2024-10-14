@@ -2,6 +2,7 @@ import { createRef, forwardRef, LegacyRef } from "react";
 import TableCell from "./TableCell";
 import Animate from "../Animate";
 import HeaderObject from "../../types/HeaderObject";
+import TableLastColumnCell from "./TableLastColumnCell";
 
 interface TableBodyProps {
   headers: HeaderObject[];
@@ -43,6 +44,10 @@ const TableBody = ({
               isLastRow={rowIndex === sortedRows.length - 1}
             />
           ))}
+          <TableLastColumnCell
+            isLastRow={rowIndex === sortedRows.length - 1}
+            ref={createRef()}
+          />
         </Animate>
       ))}
     </>
