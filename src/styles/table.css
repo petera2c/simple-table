@@ -37,11 +37,13 @@
   --slate-700: #334155;
   --slate-800: #1e293b;
   --slate-900: #0f172a;
+
+  --border-color: var(--slate-300);
 }
 
 /* Wrapper for the table */
 .st-table-wrapper {
-  border: 1px solid var(--slate-300);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   overflow: auto;
 }
@@ -57,13 +59,13 @@
 }
 
 /* Styles for table header cells */
-.st-th {
+.st-table-header-cell {
   width: 100px;
   position: relative;
 }
 
 /* Common styles for table header and cells */
-.st-th,
+.st-table-header-cell,
 .st-table-cell {
   user-select: none;
   cursor: pointer;
@@ -72,16 +74,19 @@
 
   white-space: nowrap;
   text-overflow: ellipsis;
+
+  border-bottom: var(--border-width) solid var(--border-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Basic styling for table cells */
+.st-table-cell {
 }
 
 /* Style for a cell when it is being dragged */
 .st-dragging {
   background-color: var(--blue-100);
-}
-
-/* Basic styling for table cells */
-.st-table-cell {
-  border: var(--border-width) solid transparent;
 }
 
 /* Style for selected table cells */

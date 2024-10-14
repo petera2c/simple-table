@@ -1,3 +1,0 @@
-- make cta buttons in header and footer and hero
-- make typeform shorter, only collect email, request access
-- Request access goes to email buttons

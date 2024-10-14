@@ -1,11 +1,10 @@
-import { useState, createRef, useRef, useReducer } from "react";
+import { useState, useRef, useEffect } from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
 import Animate from "../Animate";
-import TableRow from "./TableBody";
-import HeaderObject from "../../types/HeaderObject";
 import TableBody from "./TableBody";
+import HeaderObject from "../../types/HeaderObject";
 
 interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
@@ -28,6 +27,7 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
     isSelected,
     getBorderClass,
     isTopLeftCell,
+    setSelectedCells,
   } = useSelection(sortedRows, headers);
 
   const handleSort = (columnIndex: number) => {
@@ -40,9 +40,24 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
     setSortedRows(sortedData);
     setSortConfig(newSortConfig);
   };
+
   const onTableHeaderDragEnd = (newHeaders: HeaderObject[]) => {
     setHeaders(newHeaders);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".st-table-cell")) {
+        setSelectedCells([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setSelectedCells]);
 
   return (
     <div className="st-table-wrapper">

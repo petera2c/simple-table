@@ -90,7 +90,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
 
     return (
       <div
-        className={`st-th ${
+        className={`st-table-header-cell ${
           header === hoveredHeaderRef.current ? "st-hovered" : ""
         }`}
         ref={ref}

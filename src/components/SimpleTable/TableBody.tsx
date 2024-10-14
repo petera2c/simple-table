@@ -3,7 +3,7 @@ import TableCell from "./TableCell";
 import Animate from "../Animate";
 import HeaderObject from "../../types/HeaderObject";
 
-interface TableRowProps {
+interface TableBodyProps {
   headers: HeaderObject[];
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
@@ -14,7 +14,7 @@ interface TableRowProps {
   isWidthDragging: boolean;
 }
 
-const TableRow = ({
+const TableBody = ({
   headers,
   isSelected,
   isTopLeftCell,
@@ -23,7 +23,7 @@ const TableRow = ({
   handleMouseOver,
   sortedRows,
   isWidthDragging,
-}: TableRowProps) => {
+}: TableBodyProps) => {
   return (
     <>
       {sortedRows.map((row, rowIndex) => (
@@ -48,4 +48,4 @@ const TableRow = ({
   );
 };
 
-export default TableRow;
+export default TableBody;

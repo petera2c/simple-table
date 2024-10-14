@@ -99,6 +99,7 @@ const useSelection = (
     isSelected,
     getBorderClass,
     isTopLeftCell,
+    setSelectedCells,
   };
 };
 
