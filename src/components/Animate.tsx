@@ -35,7 +35,10 @@ const Animate = ({ children, pause }: AnimateProps) => {
         const changeInX = firstBox.left - lastBox.left;
         const changeInY = firstBox.top - lastBox.top;
 
-        if (changeInX || changeInY) {
+        const absoluteChangeInX = Math.abs(changeInX);
+        const absoluteChangeInY = Math.abs(changeInY);
+
+        if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
           requestAnimationFrame(() => {
             // Before the DOM paints, invert child to old position
             domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
