@@ -15,6 +15,7 @@ const useTableHeaderCell = ({
   onTableHeaderDragEnd,
 }: UseTableHeaderCellProps) => {
   const handleDragStart = (header: HeaderObject) => {
+    console.log(header);
     draggedHeaderRef.current = header;
   };
 

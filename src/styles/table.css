@@ -107,7 +107,7 @@
 
 /* Blue bottom border for cells */
 .border-bottom-blue {
-  border-bottom: var(--border-width) solid var(--blue-500);
+  border-bottom: var(--border-width) solid var(--blue-500) !important;
 }
 
 /* Blue left border for cells */
