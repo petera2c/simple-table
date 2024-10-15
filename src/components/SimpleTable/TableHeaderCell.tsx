@@ -1,4 +1,4 @@
-import { forwardRef, useRef, SetStateAction, Dispatch } from "react";
+import { forwardRef, useRef, SetStateAction, Dispatch, useState } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
@@ -28,6 +28,8 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
     },
     ref
   ) => {
+    const [isDragging, setIsDragging] = useState(false);
+
     const header = headersRef.current?.[index];
 
     const { handleDragStart, handleDragOver, handleDragEnd } =
@@ -39,10 +41,12 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       });
 
     const handleDragStartWrapper = (header: HeaderObject) => {
+      setIsDragging(true);
       handleDragStart(header);
     };
 
     const handleDragEndWrapper = () => {
+      setIsDragging(false);
       handleDragEnd();
     };
 
@@ -83,7 +87,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       <div
         className={`st-table-header-cell ${
           header === hoveredHeaderRef.current ? "st-hovered" : ""
-        }`}
+        } ${isDragging ? "st-dragging" : ""}`}
         ref={ref}
         style={{ width: header.width }}
       >

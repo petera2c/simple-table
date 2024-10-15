@@ -1,4 +1,4 @@
-import { createRef } from "react";
+import { createRef, Fragment } from "react";
 import TableCell from "./TableCell";
 import Animate from "../Animate";
 import HeaderObject from "../../types/HeaderObject";
@@ -29,7 +29,7 @@ const TableBody = ({
   return (
     <>
       {sortedRows.map((row, rowIndex) => (
-        <>
+        <Fragment key={row.id}>
           <Animate key={row.id} pause={isWidthDragging}>
             {headers.map((header, columnIndex) => (
               <TableCell
@@ -52,7 +52,7 @@ const TableBody = ({
             />
           </Animate>
           {rowIndex !== sortedRows.length - 1 && <TableRowSeparator />}
-        </>
+        </Fragment>
       ))}
     </>
   );
