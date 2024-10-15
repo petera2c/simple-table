@@ -19,7 +19,6 @@ const useTableHeaderCell = ({
   };
 
   const updateHeaders = (hoveredHeader: HeaderObject) => {
-    console.log("updating");
     if (isUpdating) return;
     hoveredHeaderRef.current = hoveredHeader;
 

@@ -2,6 +2,7 @@ import { forwardRef, useRef, SetStateAction, Dispatch, useState } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
+import usePrevious from "../../hooks/usePrevious";
 
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
@@ -28,6 +29,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
     },
     ref
   ) => {
+    const prevDraggingPosition = useRef({ pageX: 0, pageY: 0 });
     const [isDragging, setIsDragging] = useState(false);
 
     const header = headersRef.current?.[index];
@@ -97,6 +99,14 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
           onClick={() => onSort(index)}
           onDragStart={() => handleDragStartWrapper(header)}
           onDragOver={(event) => {
+            const { pageX, pageY } = event;
+            if (
+              pageX === prevDraggingPosition.current.pageX &&
+              pageY === prevDraggingPosition.current.pageY
+            ) {
+              return;
+            }
+            prevDraggingPosition.current = { pageX, pageY };
             event.preventDefault();
             throttledHandleDragOver(header, event);
           }}

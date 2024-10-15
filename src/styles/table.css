@@ -66,23 +66,23 @@
 /* Common styles for table header and cells */
 .st-table-header-cell,
 .st-table-cell {
-  user-select: none;
   cursor: pointer !important;
-  padding: 8px;
-  text-align: left;
 
   border: var(--border-width) solid transparent;
+}
+
+.st-table-header-label,
+.st-table-cell {
+  user-select: none;
+  padding: 8px;
+  text-align: left;
 
   white-space: nowrap;
   text-overflow: ellipsis;
 
   overflow: hidden;
-  text-overflow: ellipsis;
 }
-
-.st-table-header-cell,
-.st-table-cell:not(.st-table-cell-last-row) {
-  /* border-bottom: var(--border-width) solid var(--border-color); */
+.st-table-cell {
 }
 
 /* Resize handle for table headers */
