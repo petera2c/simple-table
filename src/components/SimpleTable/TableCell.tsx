@@ -27,6 +27,7 @@ const TableCell = forwardRef(
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
+    const isOddRow = rowIndex % 2 === 0;
     return (
       <div
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
@@ -38,7 +39,8 @@ const TableCell = forwardRef(
               ? `st-table-cell-selected-first-cell ${borderClass}`
               : `st-table-cell-selected ${borderClass}`
             : ""
-        } ${isLastRow ? "st-table-cell-last-row" : ""}`}
+        } ${isLastRow ? "st-table-cell-last-row" : ""}
+        ${isOddRow ? "st-table-cell-odd-row" : ""}`}
       >
         {content}
       </div>

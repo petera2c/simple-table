@@ -1,32 +1,5 @@
 :root {
-  --blue-50: #ebf8ff;
-  --blue-100: #bee3f8;
-  --blue-200: #90cdf4;
-  --blue-300: #63b3ed;
-  --blue-400: #4299e1;
-  --blue-500: #3182ce;
-  --blue-600: #2b6cb0;
-  --blue-700: #2c5282;
-  --blue-800: #2a4365;
-  --blue-900: #1a365d;
-
-  --selected-first-cell: white;
-  --border-radius: 4px;
-  --border-width: 1px;
-
-  /* Gray colors */
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-300: #d1d5db;
-  --gray-400: #9ca3af;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-800: #1f2937;
-  --gray-900: #111827;
-
-  /* Slate colors */
+  /* Slate Colors */
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
   --slate-200: #e2e8f0;
@@ -38,13 +11,63 @@
   --slate-800: #1e293b;
   --slate-900: #0f172a;
 
-  --border-color: var(--slate-300);
+  /* Blue Colors */
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-300: #93c5fd;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-800: #1e40af;
+  --blue-900: #1e3a8a;
+
+  /* Orange Colors */
+  --orange-50: #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-200: #fed7aa;
+  --orange-300: #fdba74;
+  --orange-400: #fb923c;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+  --orange-700: #c2410c;
+  --orange-800: #9a3412;
+  --orange-900: #7c2d12;
+
+  /* Amber Colors */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+
+  /* Customizable Variables */
+  --table-border-color: var(--slate-300);
+  --table-border-radius: 4px;
+  --table-border-width: 1px;
+  --resize-handle-color: var(--slate-300);
+  --separator-border-color: var(--slate-300);
+  --odd-row-background-color: var(--slate-100);
+  --dragging-background-color: var(--orange-200);
+  --selected-cell-background-color: var(--blue-200);
+  --selected-first-cell-background-color: var(--amber-100);
+  --border-top-color: var(--blue-500);
+  --border-bottom-color: var(--blue-500);
+  --border-left-color: var(--blue-500);
+  --border-right-color: var(--blue-500);
+  --border-top-white-color: white;
 }
 
 /* Wrapper for the table */
 .st-table-wrapper {
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border: var(--table-border-width) solid var(--table-border-color);
+  border-radius: var(--table-border-radius);
   overflow: auto;
 }
 
@@ -54,7 +77,6 @@
   border-collapse: collapse;
   table-layout: auto;
   white-space: nowrap;
-
   width: 100%;
 }
 
@@ -66,9 +88,10 @@
 /* Common styles for table header and cells */
 .st-table-header-cell,
 .st-table-cell {
-  cursor: pointer !important;
-
-  border: var(--border-width) solid transparent;
+  cursor: pointer;
+  border: var(--table-border-width) solid transparent;
+  color: var(--slate-800);
+  overflow: hidden;
 }
 
 .st-table-header-label,
@@ -76,12 +99,11 @@
   user-select: none;
   padding: 8px;
   text-align: left;
-
   white-space: nowrap;
   text-overflow: ellipsis;
-
   overflow: hidden;
 }
+
 .st-table-cell {
 }
 
@@ -93,7 +115,7 @@
   bottom: 0;
   width: 5px;
   cursor: col-resize;
-  background-color: var(--slate-300);
+  background-color: var(--resize-handle-color);
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   border-radius: 0.25rem;
@@ -101,46 +123,50 @@
 
 .st-table-row-separator {
   height: 1px;
-  background-color: var(--border-color);
+  background-color: var(--separator-border-color);
   grid-column: 1 / -1;
+}
+
+.st-table-cell-odd-row {
+  background-color: var(--odd-row-background-color);
 }
 
 /* Style for a cell when it is being dragged */
 .st-dragging {
-  background-color: var(--blue-100);
+  background-color: var(--dragging-background-color);
 }
 
 /* Style for selected table cells */
 .st-table-cell-selected {
-  background-color: var(--blue-200);
+  background-color: var(--selected-cell-background-color);
 }
 
 /* Style for the first selected table cell */
 .st-table-cell-selected-first {
-  background-color: var(--selected-first-cell);
+  background-color: var(--selected-first-cell-background-color);
 }
 
 /* Blue top border for cells */
 .border-top-blue {
-  border-top: var(--border-width) solid var(--blue-500);
+  border-top: var(--table-border-width) solid var(--border-top-color);
 }
 
 /* Blue bottom border for cells */
 .border-bottom-blue {
-  border-bottom: var(--border-width) solid var(--blue-500) !important;
+  border-bottom: var(--table-border-width) solid var(--border-bottom-color);
 }
 
 /* Blue left border for cells */
 .border-left-blue {
-  border-left: var(--border-width) solid var(--blue-500);
+  border-left: var(--table-border-width) solid var(--border-left-color);
 }
 
 /* Blue right border for cells */
 .border-right-blue {
-  border-right: var(--border-width) solid var(--blue-500);
+  border-right: var(--table-border-width) solid var(--border-right-color);
 }
 
 /* White top border for cells */
 .border-top-white {
-  border-top: var(--border-width) solid white;
+  border-top: var(--table-border-width) solid var(--border-top-white-color);
 }
