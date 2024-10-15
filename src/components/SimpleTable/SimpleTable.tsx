@@ -4,13 +4,21 @@ import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
 import TableBody from "./TableBody";
 import HeaderObject from "../../types/HeaderObject";
+import TableFooter from "./TableFooter";
 
 interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
+  hideFooter?: boolean;
   rows: { [key: string]: any }[];
+  rowsPerPage?: number;
 }
 
-const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
+const SimpleTable = ({
+  defaultHeaders,
+  rows,
+  rowsPerPage = 10,
+  hideFooter = false,
+}: SpreadsheetProps) => {
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const headersRef = useRef(defaultHeaders);
   const [sortedRows, setSortedRows] = useState(rows);
@@ -19,6 +27,8 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
     direction: string;
   } | null>(null);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     handleMouseDown,
@@ -60,6 +70,11 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
     };
   }, [setSelectedCells]);
 
+  const currentRows = sortedRows.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
   return (
     <div className="st-table-wrapper">
       <div
@@ -87,8 +102,15 @@ const SimpleTable = ({ defaultHeaders, rows }: SpreadsheetProps) => {
           headers={headersRef.current}
           isSelected={isSelected}
           isTopLeftCell={isTopLeftCell}
-          sortedRows={sortedRows}
           isWidthDragging={isWidthDragging}
+          sortedRows={currentRows}
+        />
+        <TableFooter
+          currentPage={currentPage}
+          hideFooter={hideFooter}
+          onPageChange={setCurrentPage}
+          rowsPerPage={rowsPerPage}
+          totalRows={sortedRows.length}
         />
       </div>
     </div>

@@ -6,25 +6,25 @@ import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
 
 interface TableBodyProps {
-  headers: HeaderObject[];
-  isSelected: (rowIndex: number, columnIndex: number) => boolean;
-  isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (rowIndex: number, columnIndex: number) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
-  sortedRows: { [key: string]: any }[];
+  headers: HeaderObject[];
+  isSelected: (rowIndex: number, columnIndex: number) => boolean;
+  isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   isWidthDragging: boolean;
+  sortedRows: { [key: string]: any }[];
 }
 
 const TableBody = ({
-  headers,
-  isSelected,
-  isTopLeftCell,
   getBorderClass,
   handleMouseDown,
   handleMouseOver,
-  sortedRows,
+  headers,
+  isSelected,
+  isTopLeftCell,
   isWidthDragging,
+  sortedRows,
 }: TableBodyProps) => {
   return (
     <>

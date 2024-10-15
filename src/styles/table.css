@@ -54,7 +54,7 @@
   --resize-handle-color: var(--slate-300);
   --separator-border-color: var(--slate-300);
   --odd-row-background-color: var(--slate-100);
-  --dragging-background-color: var(--orange-200);
+  --dragging-background-color: var(--blue-100);
   --selected-cell-background-color: var(--blue-200);
   --selected-first-cell-background-color: var(--amber-100);
   --border-top-color: var(--blue-500);
@@ -169,4 +169,50 @@
 /* White top border for cells */
 .border-top-white {
   border-top: var(--table-border-width) solid var(--border-top-white-color);
+}
+
+.table-footer {
+  display: flex;
+  align-items: center;
+
+  grid-column: 1 / -1;
+  padding: 8px;
+
+  border-top: var(--table-border-width) solid var(--table-border-color);
+}
+
+.st-next-prev-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--slate-600);
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.st-next-prev-btn:hover {
+  background-color: var(--slate-100);
+}
+
+.st-page-btn {
+  padding: 4px;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--slate-600);
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.st-page-btn:hover {
+  background-color: var(--slate-100);
+}
+
+.st-page-btn.active {
+  background-color: var(--blue-500);
+  color: white;
 }
