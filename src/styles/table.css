@@ -48,27 +48,29 @@
   --amber-900: #78350f;
 
   /* Customizable Variables */
-  --table-border-color: var(--slate-300);
-  --table-border-radius: 4px;
-  --table-border-width: 1px;
-  --resize-handle-color: var(--slate-300);
-  --separator-border-color: var(--slate-300);
-  --odd-row-background-color: var(--slate-100);
-  --dragging-background-color: var(--blue-100);
-  --selected-cell-background-color: var(--blue-200);
-  --selected-first-cell-background-color: var(--amber-100);
-  --border-top-color: var(--blue-500);
-  --border-bottom-color: var(--blue-500);
-  --border-left-color: var(--blue-500);
-  --border-right-color: var(--blue-500);
-  --border-top-white-color: white;
+  --st-border-radius: 4px;
+  --st-table-border-color: var(--slate-300);
+  --st-border-width: 1px;
+  --st-resize-handle-color: var(--slate-300);
+  --st-separator-border-color: var(--slate-300);
+  --st-odd-row-background-color: var(--slate-100);
+  --st-dragging-background-color: var(--blue-100);
+  --st-selected-cell-background-color: var(--blue-200);
+  --st-selected-first-cell-background-color: var(--amber-100);
+  --st-border-top-color: var(--blue-500);
+  --st-border-bottom-color: var(--blue-500);
+  --st-border-left-color: var(--blue-500);
+  --st-border-right-color: var(--blue-500);
+  --st-border-top-white-color: white;
 }
 
 /* Wrapper for the table */
 .st-table-wrapper {
-  border: var(--table-border-width) solid var(--table-border-color);
-  border-radius: var(--table-border-radius);
+  border: var(--st-border-width) solid var(--st-table-border-color);
+  border-radius: var(--st-border-radius);
   overflow: auto;
+  max-height: 100dvh;
+  height: 100%;
 }
 
 /* Main table styling */
@@ -89,7 +91,7 @@
 .st-table-header-cell,
 .st-table-cell {
   cursor: pointer;
-  border: var(--table-border-width) solid transparent;
+  border: var(--st-border-width) solid transparent;
   color: var(--slate-800);
   overflow: hidden;
 }
@@ -115,7 +117,7 @@
   bottom: 0;
   width: 5px;
   cursor: col-resize;
-  background-color: var(--resize-handle-color);
+  background-color: var(--st-resize-handle-color);
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   border-radius: 0.25rem;
@@ -123,52 +125,52 @@
 
 .st-table-row-separator {
   height: 1px;
-  background-color: var(--separator-border-color);
+  background-color: var(--st-separator-border-color);
   grid-column: 1 / -1;
 }
 
 .st-table-cell-odd-row {
-  background-color: var(--odd-row-background-color);
+  background-color: var(--st-odd-row-background-color);
 }
 
 /* Style for a cell when it is being dragged */
 .st-dragging {
-  background-color: var(--dragging-background-color);
+  background-color: var(--st-dragging-background-color);
 }
 
 /* Style for selected table cells */
 .st-table-cell-selected {
-  background-color: var(--selected-cell-background-color);
+  background-color: var(--st-selected-cell-background-color);
 }
 
 /* Style for the first selected table cell */
 .st-table-cell-selected-first {
-  background-color: var(--selected-first-cell-background-color);
+  background-color: var(--st-selected-first-cell-background-color);
 }
 
 /* Blue top border for cells */
 .border-top-blue {
-  border-top: var(--table-border-width) solid var(--border-top-color);
+  border-top: var(--st-border-width) solid var(--st-border-top-color);
 }
 
 /* Blue bottom border for cells */
 .border-bottom-blue {
-  border-bottom: var(--table-border-width) solid var(--border-bottom-color);
+  border-bottom: var(--st-border-width) solid var(--st-border-bottom-color);
 }
 
 /* Blue left border for cells */
 .border-left-blue {
-  border-left: var(--table-border-width) solid var(--border-left-color);
+  border-left: var(--st-border-width) solid var(--st-border-left-color);
 }
 
 /* Blue right border for cells */
 .border-right-blue {
-  border-right: var(--table-border-width) solid var(--border-right-color);
+  border-right: var(--st-border-width) solid var(--st-border-right-color);
 }
 
 /* White top border for cells */
 .border-top-white {
-  border-top: var(--table-border-width) solid var(--border-top-white-color);
+  border-top: var(--st-border-width) solid var(--st-border-top-white-color);
 }
 
 .table-footer {
@@ -178,7 +180,7 @@
   grid-column: 1 / -1;
   padding: 8px;
 
-  border-top: var(--table-border-width) solid var(--table-border-color);
+  border-top: var(--st-border-width) solid var(--st-table-border-color);
 }
 
 .st-next-prev-btn {
@@ -199,12 +201,13 @@
 }
 
 .st-page-btn {
+  margin-left: 4px;
   padding: 4px;
   cursor: pointer;
   background-color: transparent;
   color: var(--slate-600);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--st-border-radius);
   transition: background-color 0.3s ease;
 }
 

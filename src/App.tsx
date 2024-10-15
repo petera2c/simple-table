@@ -22,8 +22,15 @@ const HEADERS: HeaderObject[] = [
 
 const App = () => {
   return (
-    <div className="app" style={{ padding: "2rem" }}>
-      <SimpleTable defaultHeaders={HEADERS} rows={inventoryData} />
+    <div
+      className="app"
+      style={{ padding: "2rem", height: "calc(100dvh - 4rem)" }}
+    >
+      <SimpleTable
+        defaultHeaders={HEADERS}
+        rows={inventoryData}
+        shouldPaginate={false}
+      />
     </div>
   );
 };
