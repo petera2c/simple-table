@@ -1,23 +1,31 @@
-import { useState, useRef, useEffect, useReducer } from "react";
+import { useState, useRef, useEffect, useReducer, ReactNode } from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
 import TableBody from "./TableBody";
 import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
+import AngleLeftIcon from "../../icons/AngleLeftIcon";
+import AngleRightIcon from "../../icons/AngleRightIcon";
 
 interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
   hideFooter?: boolean;
+  nextIcon?: ReactNode;
+  prevIcon?: ReactNode;
   rows: { [key: string]: any }[];
   rowsPerPage?: number;
+  enableColumnResizing?: boolean;
 }
 
 const SimpleTable = ({
   defaultHeaders,
+  enableColumnResizing = true,
+  hideFooter = false,
+  nextIcon = <AngleRightIcon />,
+  prevIcon = <AngleLeftIcon />,
   rows,
   rowsPerPage = 10,
-  hideFooter = false,
 }: SpreadsheetProps) => {
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const headersRef = useRef(defaultHeaders);
@@ -88,6 +96,7 @@ const SimpleTable = ({
         }}
       >
         <TableHeader
+          enableColumnResizing={enableColumnResizing}
           forceUpdate={forceUpdate}
           headersRef={headersRef}
           isWidthDragging={isWidthDragging}
@@ -111,6 +120,8 @@ const SimpleTable = ({
           onPageChange={setCurrentPage}
           rowsPerPage={rowsPerPage}
           totalRows={sortedRows.length}
+          nextIcon={nextIcon}
+          prevIcon={prevIcon}
         />
       </div>
     </div>

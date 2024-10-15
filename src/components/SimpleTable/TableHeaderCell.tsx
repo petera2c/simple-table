@@ -6,6 +6,7 @@ import usePrevious from "../../hooks/usePrevious";
 
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
+  enableColumnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
@@ -19,6 +20,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
   (
     {
       draggedHeaderRef,
+      enableColumnResizing,
       forceUpdate,
       headersRef,
       hoveredHeaderRef,
@@ -114,10 +116,12 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
         >
           {header?.label}
         </div>
-        <div
-          className="st-table-header-resize-handle"
-          onMouseDown={handleResizeStart}
-        />
+        {enableColumnResizing && (
+          <div
+            className="st-table-header-resize-handle"
+            onMouseDown={handleResizeStart}
+          />
+        )}
       </div>
     );
   }

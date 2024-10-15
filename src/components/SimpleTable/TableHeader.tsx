@@ -6,6 +6,7 @@ import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
 
 interface TableHeaderProps {
+  enableColumnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   isWidthDragging: boolean;
@@ -14,14 +15,15 @@ interface TableHeaderProps {
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
 }
 
-const TableHeader: React.FC<TableHeaderProps> = ({
+const TableHeader = ({
+  enableColumnResizing,
   forceUpdate,
   headersRef,
   isWidthDragging,
   onSort,
   onTableHeaderDragEnd,
   setIsWidthDragging,
-}) => {
+}: TableHeaderProps) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
@@ -31,6 +33,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
         {headersRef.current?.map((header, index) => (
           <TableHeaderCell
             draggedHeaderRef={draggedHeaderRef}
+            enableColumnResizing={enableColumnResizing}
             forceUpdate={forceUpdate}
             headersRef={headersRef}
             hoveredHeaderRef={hoveredHeaderRef}

@@ -1,22 +1,26 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
 
 interface TableFooterProps {
   currentPage: number;
   hideFooter?: boolean;
+  nextIcon?: ReactNode;
   onPageChange: (page: number) => void;
+  prevIcon?: ReactNode;
   rowsPerPage: number;
   totalRows: number;
 }
 
-const TableFooter: React.FC<TableFooterProps> = ({
+const TableFooter = ({
   currentPage,
   hideFooter,
+  nextIcon,
   onPageChange,
+  prevIcon,
   rowsPerPage,
   totalRows,
-}) => {
+}: TableFooterProps) => {
   const totalPages = Math.ceil(totalRows / rowsPerPage);
 
   const handlePageChange = (page: number) => {
@@ -34,14 +38,14 @@ const TableFooter: React.FC<TableFooterProps> = ({
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
-        <AngleLeftIcon />
+        {prevIcon}
       </button>
       <button
         className="st-next-prev-btn"
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
-        <AngleRightIcon />
+        {nextIcon}
       </button>
       {Array.from({ length: totalPages }, (_, index) => (
         <button
