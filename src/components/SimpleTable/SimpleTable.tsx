@@ -13,7 +13,7 @@ interface SpreadsheetProps {
   hideFooter?: boolean;
   nextIcon?: ReactNode;
   prevIcon?: ReactNode;
-  rows: { [key: string]: any }[];
+  rows: { [key: string]: string | number | boolean | undefined | null }[];
   rowsPerPage?: number;
   enableColumnResizing?: boolean;
 }

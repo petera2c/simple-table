@@ -1,12 +1,6 @@
-export interface SpreadsheetRow {
-  id: number;
-  name: string;
-  age: number;
-  email: string;
-  address: string;
-}
-
-export const sampleData: SpreadsheetRow[] = [
+export const sampleData: {
+  [key: string]: string | number | boolean | undefined | null;
+}[] = [
   {
     id: 1,
     name: "John Doe",

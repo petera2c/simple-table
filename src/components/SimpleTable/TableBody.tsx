@@ -28,32 +28,42 @@ const TableBody = ({
 }: TableBodyProps) => {
   return (
     <>
-      {sortedRows.map((row, rowIndex) => (
-        <Fragment key={row.id}>
-          <Animate key={row.id} pause={isWidthDragging}>
-            {headers.map((header, columnIndex) => (
-              <TableCell
-                borderClass={getBorderClass(rowIndex, columnIndex)}
-                colIndex={columnIndex}
-                content={row[header.accessor]}
-                isSelected={isSelected(rowIndex, columnIndex)}
-                isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
-                key={header.accessor}
-                onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
-                onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
-                ref={createRef()}
-                rowIndex={rowIndex}
+      {sortedRows.map((row, rowIndex) => {
+        return (
+          <Fragment key={row.id}>
+            <Animate pause={isWidthDragging}>
+              {headers.map((header, columnIndex) => {
+                let content = row[header.accessor];
+
+                if (header.cellRenderer) {
+                  content = header.cellRenderer(row);
+                }
+
+                return (
+                  <TableCell
+                    borderClass={getBorderClass(rowIndex, columnIndex)}
+                    colIndex={columnIndex}
+                    content={content}
+                    isSelected={isSelected(rowIndex, columnIndex)}
+                    isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
+                    key={header.accessor}
+                    onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
+                    onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
+                    ref={createRef()}
+                    rowIndex={rowIndex}
+                    isLastRow={rowIndex === sortedRows.length - 1}
+                  />
+                );
+              })}
+              <TableLastColumnCell
                 isLastRow={rowIndex === sortedRows.length - 1}
+                ref={createRef()}
               />
-            ))}
-            <TableLastColumnCell
-              isLastRow={rowIndex === sortedRows.length - 1}
-              ref={createRef()}
-            />
-          </Animate>
-          {rowIndex !== sortedRows.length - 1 && <TableRowSeparator />}
-        </Fragment>
-      ))}
+            </Animate>
+            {rowIndex !== sortedRows.length - 1 && <TableRowSeparator />}
+          </Fragment>
+        );
+      })}
     </>
   );
 };
