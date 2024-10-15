@@ -1,7 +1,8 @@
 import { forwardRef } from "react";
 
 const TableLastColumnCell = forwardRef(
-  (props: { isLastRow?: boolean }, ref: any) => {
+  (props: { isLastRow?: boolean; visible: boolean }, ref: any) => {
+    if (!props.visible) return <div ref={ref} />;
     return (
       <div
         className={`st-table-cell ${

@@ -1,23 +1,29 @@
 import SimpleTable from "./components/SimpleTable/SimpleTable";
-import { sampleData } from "./consts/SampleData";
+import { inventoryData } from "./consts/SampleData";
 import HeaderObject from "./types/HeaderObject";
 
 const HEADERS: HeaderObject[] = [
-  {
-    label: "id",
-    accessor: "id",
-    width: 100,
-  },
-  { label: "name", accessor: "name", width: 100 },
-  { label: "age", accessor: "age", width: 100 },
-  { label: "email", accessor: "email", width: 100 },
-  { label: "address", accessor: "address", width: 100 },
+  { label: "Product ID", accessor: "id", width: 150 },
+  { label: "Product Name", accessor: "productName", width: 200 },
+  { label: "Category", accessor: "category", width: 150 },
+  { label: "Quantity", accessor: "quantity", width: 100 },
+  { label: "Price", accessor: "price", width: 100 },
+  { label: "Supplier", accessor: "supplier", width: 150 },
+  { label: "Location", accessor: "location", width: 150 },
+  { label: "Reorder Level", accessor: "reorderLevel", width: 150 },
+  { label: "SKU", accessor: "sku", width: 150 },
+  { label: "Description", accessor: "description", width: 250 },
+  { label: "Weight", accessor: "weight", width: 100 },
+  { label: "Dimensions", accessor: "dimensions", width: 150 },
+  { label: "Barcode", accessor: "barcode", width: 150 },
+  { label: "Expiration Date", accessor: "expirationDate", width: 150 },
+  { label: "Manufacturer", accessor: "manufacturer", width: 150 },
 ];
 
 const App = () => {
   return (
     <div className="app" style={{ padding: "2rem" }}>
-      <SimpleTable defaultHeaders={HEADERS} rows={sampleData} />
+      <SimpleTable defaultHeaders={HEADERS} rows={inventoryData} />
     </div>
   );
 };

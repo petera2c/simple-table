@@ -14,6 +14,7 @@ interface TableBodyProps {
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   isWidthDragging: boolean;
   sortedRows: { [key: string]: any }[];
+  shouldDisplayLastColumnCell: boolean;
 }
 
 const TableBody = ({
@@ -25,7 +26,8 @@ const TableBody = ({
   isTopLeftCell,
   isWidthDragging,
   sortedRows,
-}: TableBodyProps) => {
+  shouldDisplayLastColumnCell,
+}: TableBodyProps & { shouldDisplayLastColumnCell: boolean }) => {
   return (
     <>
       {sortedRows.map((row, rowIndex) => {
@@ -58,6 +60,7 @@ const TableBody = ({
               <TableLastColumnCell
                 isLastRow={rowIndex === sortedRows.length - 1}
                 ref={createRef()}
+                visible={shouldDisplayLastColumnCell}
               />
             </Animate>
             {rowIndex !== sortedRows.length - 1 && <TableRowSeparator />}

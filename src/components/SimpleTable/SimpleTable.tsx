@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, useReducer, ReactNode } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useReducer,
+  ReactNode,
+  useMemo,
+} from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
@@ -37,6 +44,18 @@ const SimpleTable = ({
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const [currentPage, setCurrentPage] = useState(1);
+
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  const shouldDisplayLastColumnCell = useMemo(() => {
+    if (2 == 2) return false;
+    if (!tableRef.current) return false;
+    const totalColumnWidth = headersRef.current.reduce(
+      (acc, header) => acc + header.width,
+      0
+    );
+    return totalColumnWidth < tableRef.current.clientWidth;
+  }, [headersRef.current]);
 
   const {
     handleMouseDown,
@@ -84,7 +103,7 @@ const SimpleTable = ({
   );
 
   return (
-    <div className="st-table-wrapper">
+    <div ref={tableRef} className="st-table-wrapper">
       <div
         className="st-table"
         onMouseUp={handleMouseUp}
@@ -103,6 +122,7 @@ const SimpleTable = ({
           onSort={handleSort}
           onTableHeaderDragEnd={onTableHeaderDragEnd}
           setIsWidthDragging={setIsWidthDragging}
+          shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
         />
         <TableBody
           getBorderClass={getBorderClass}
@@ -113,6 +133,7 @@ const SimpleTable = ({
           isTopLeftCell={isTopLeftCell}
           isWidthDragging={isWidthDragging}
           sortedRows={currentRows}
+          shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
         />
         <TableFooter
           currentPage={currentPage}

@@ -13,6 +13,7 @@ interface TableHeaderProps {
   onSort: (columnIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
+  shouldDisplayLastColumnCell: boolean;
 }
 
 const TableHeader = ({
@@ -23,6 +24,7 @@ const TableHeader = ({
   onSort,
   onTableHeaderDragEnd,
   setIsWidthDragging,
+  shouldDisplayLastColumnCell,
 }: TableHeaderProps) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
@@ -45,7 +47,10 @@ const TableHeader = ({
             setIsWidthDragging={setIsWidthDragging}
           />
         ))}
-        <TableLastColumnCell ref={createRef()} />
+        <TableLastColumnCell
+          ref={createRef()}
+          visible={shouldDisplayLastColumnCell}
+        />
       </Animate>
       <TableRowSeparator />
     </>
