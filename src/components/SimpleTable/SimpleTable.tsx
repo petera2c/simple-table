@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useReducer } from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
 import { onSort } from "../../utils/sortUtils";
-import Animate from "../Animate";
 import TableBody from "./TableBody";
 import HeaderObject from "../../types/HeaderObject";
 

@@ -1,12 +1,4 @@
-import {
-  forwardRef,
-  LegacyRef,
-  useState,
-  useRef,
-  useEffect,
-  SetStateAction,
-  Dispatch,
-} from "react";
+import { forwardRef, useRef, SetStateAction, Dispatch } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";

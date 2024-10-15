@@ -79,9 +79,30 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .st-table-header-cell,
 .st-table-cell:not(.st-table-cell-last-row) {
-  border-bottom: var(--border-width) solid var(--border-color);
+  /* border-bottom: var(--border-width) solid var(--border-color); */
+}
+
+/* Resize handle for table headers */
+.st-table-header-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  cursor: col-resize;
+  background-color: var(--slate-300);
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.st-table-row-separator {
+  height: 1px;
+  background-color: var(--border-color);
+  grid-column: 1 / -1;
 }
 
 /* Style for a cell when it is being dragged */
@@ -122,18 +143,4 @@
 /* White top border for cells */
 .border-top-white {
   border-top: var(--border-width) solid white;
-}
-
-/* Resize handle for table headers */
-.st-table-header-resize-handle {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  cursor: col-resize;
-  background-color: var(--slate-300);
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
-  border-radius: 0.25rem;
 }
