@@ -22,14 +22,13 @@ const HEADERS: HeaderObject[] = [
 
 const App = () => {
   return (
-    <div
-      className="app"
-      style={{ padding: "2rem", height: "calc(100dvh - 4rem)" }}
-    >
+    <div className="app" style={{ padding: "2rem" }}>
       <SimpleTable
         defaultHeaders={HEADERS}
+        // height="auto"
+        height="calc(100dvh - 4rem)"
         rows={inventoryData}
-        shouldPaginate={false}
+        shouldPaginate={true}
       />
     </div>
   );

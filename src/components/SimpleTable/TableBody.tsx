@@ -13,8 +13,9 @@ interface TableBodyProps {
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   isWidthDragging: boolean;
-  sortedRows: { [key: string]: any }[];
   shouldDisplayLastColumnCell: boolean;
+  shouldPaginate: boolean;
+  sortedRows: { [key: string]: any }[];
 }
 
 const TableBody = ({
@@ -25,15 +26,19 @@ const TableBody = ({
   isSelected,
   isTopLeftCell,
   isWidthDragging,
-  sortedRows,
   shouldDisplayLastColumnCell,
+  shouldPaginate,
+  sortedRows,
 }: TableBodyProps & { shouldDisplayLastColumnCell: boolean }) => {
   return (
     <>
       {sortedRows.map((row, rowIndex) => {
         return (
           <Fragment key={row.id}>
-            <Animate pause={isWidthDragging}>
+            <Animate
+              allowHorizontalAnimate={shouldPaginate}
+              pause={isWidthDragging}
+            >
               {headers.map((header, columnIndex) => {
                 let content = row[header.accessor];
 

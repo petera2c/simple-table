@@ -32,7 +32,7 @@ const TableFooter = ({
   if (hideFooter) return null;
 
   return (
-    <div className="table-footer">
+    <div className="st-footer">
       <button
         className="st-next-prev-btn"
         onClick={() => handlePageChange(currentPage - 1)}

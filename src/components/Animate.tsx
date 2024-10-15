@@ -3,11 +3,16 @@ import usePrevious from "../hooks/usePrevious";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 
 interface AnimateProps {
+  allowHorizontalAnimate?: boolean;
   children: any;
   pause?: boolean;
 }
 
-const Animate = ({ children, pause }: AnimateProps) => {
+const Animate = ({
+  allowHorizontalAnimate = true,
+  children,
+  pause,
+}: AnimateProps) => {
   const [boundingBox, setBoundingBox] = useState<any>({});
   const [prevBoundingBox, setPrevBoundingBox] = useState<any>({});
   const prevChildren = usePrevious(children);
@@ -33,7 +38,9 @@ const Animate = ({ children, pause }: AnimateProps) => {
         const lastBox = boundingBox[child.key];
 
         const changeInX = firstBox.left - lastBox.left;
-        const changeInY = firstBox.top - lastBox.top;
+        const changeInY = allowHorizontalAnimate
+          ? firstBox.top - lastBox.top
+          : 0;
 
         const absoluteChangeInX = Math.abs(changeInX);
         const absoluteChangeInY = Math.abs(changeInY);
@@ -54,7 +61,7 @@ const Animate = ({ children, pause }: AnimateProps) => {
         }
       });
     }
-  }, [boundingBox, prevBoundingBox, children, pause]);
+  }, [boundingBox, prevBoundingBox, children, pause, allowHorizontalAnimate]);
 
   return children;
 };

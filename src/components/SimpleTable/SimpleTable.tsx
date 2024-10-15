@@ -18,6 +18,7 @@ import AngleRightIcon from "../../icons/AngleRightIcon";
 interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
   enableColumnResizing?: boolean;
+  height?: string;
   hideFooter?: boolean;
   nextIcon?: ReactNode;
   prevIcon?: ReactNode;
@@ -29,6 +30,7 @@ interface SpreadsheetProps {
 const SimpleTable = ({
   defaultHeaders,
   enableColumnResizing = true,
+  height,
   hideFooter = false,
   nextIcon = <AngleRightIcon />,
   prevIcon = <AngleLeftIcon />,
@@ -107,7 +109,11 @@ const SimpleTable = ({
     : sortedRows;
 
   return (
-    <div ref={tableRef} className="st-table-wrapper">
+    <div
+      ref={tableRef}
+      className="st-table-wrapper"
+      style={height ? { height } : {}}
+    >
       <div
         className="st-table"
         onMouseUp={handleMouseUp}
@@ -136,21 +142,22 @@ const SimpleTable = ({
           isSelected={isSelected}
           isTopLeftCell={isTopLeftCell}
           isWidthDragging={isWidthDragging}
-          sortedRows={currentRows}
           shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
+          shouldPaginate={shouldPaginate}
+          sortedRows={currentRows}
         />
-        {shouldPaginate && (
-          <TableFooter
-            currentPage={currentPage}
-            hideFooter={hideFooter}
-            onPageChange={setCurrentPage}
-            rowsPerPage={rowsPerPage}
-            totalRows={sortedRows.length}
-            nextIcon={nextIcon}
-            prevIcon={prevIcon}
-          />
-        )}
       </div>
+      {shouldPaginate && (
+        <TableFooter
+          currentPage={currentPage}
+          hideFooter={hideFooter}
+          onPageChange={setCurrentPage}
+          rowsPerPage={rowsPerPage}
+          totalRows={sortedRows.length}
+          nextIcon={nextIcon}
+          prevIcon={prevIcon}
+        />
+      )}
     </div>
   );
 };
