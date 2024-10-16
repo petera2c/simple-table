@@ -1,6 +1,4 @@
-import React, { ReactNode } from "react";
-import AngleLeftIcon from "../../icons/AngleLeftIcon";
-import AngleRightIcon from "../../icons/AngleRightIcon";
+import { ReactNode } from "react";
 
 interface TableFooterProps {
   currentPage: number;

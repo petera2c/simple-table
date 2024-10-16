@@ -14,6 +14,7 @@ import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
+import "../../styles/simple-table.css";
 
 interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
@@ -52,14 +53,13 @@ const SimpleTable = ({
   const tableRef = useRef<HTMLDivElement>(null);
 
   const shouldDisplayLastColumnCell = useMemo(() => {
-    if (2 == 2) return false;
     if (!tableRef.current) return false;
     const totalColumnWidth = headersRef.current.reduce(
       (acc, header) => acc + header.width,
       0
     );
     return totalColumnWidth < tableRef.current.clientWidth;
-  }, [headersRef.current]);
+  }, []);
 
   const {
     handleMouseDown,

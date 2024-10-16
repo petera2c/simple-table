@@ -2,7 +2,6 @@ import { forwardRef, useRef, SetStateAction, Dispatch, useState } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
-import usePrevious from "../../hooks/usePrevious";
 
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
