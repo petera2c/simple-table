@@ -14,7 +14,7 @@ export default {
     postcss({
       plugins: [],
       minimize: true,
-      extract: "simple-table.css",
+      extract: "style.css",
     }),
     babel({
       exclude: ["node_modules/**", "src/stories/**"],

@@ -4,6 +4,39 @@ Simple Table is a React grid package designed to provide a flexible and easy-to-
 
 ![Simple Table Example](assets/table-example.png)
 
+## Example Usage
+
+```tsx
+import { SimpleTable } from "simple-table-core";
+import "simple-table-core/dist/style.css";
+
+export const SAMPLE_HEADERS: any[] = [
+  { label: "Product ID", accessor: "id", width: 150 },
+  { label: "Product Name", accessor: "productName", width: 200 },
+  { label: "Category", accessor: "category", width: 150 },
+  { label: "Quantity", accessor: "quantity", width: 100 },
+];
+
+function App() {
+  return (
+    <SimpleTable
+      defaultHeaders={SAMPLE_HEADERS}
+      height="auto"
+      rows={[
+        {
+          id: 1,
+          productName: "Product 1",
+          category: "Category 1",
+          quantity: 10,
+        },
+      ]}
+    />
+  );
+}
+```
+
+Import the CSS file to apply the styles to your table.
+
 ## Props
 
 The Simple Table component accepts the following props:
