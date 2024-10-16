@@ -16,7 +16,7 @@ import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
 import "../../styles/simple-table.css";
 
-interface SpreadsheetProps {
+export interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
   enableColumnResizing?: boolean;
   height?: string;

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import "../../styles/simple-table.css";
-interface SpreadsheetProps {
+export interface SpreadsheetProps {
     defaultHeaders: HeaderObject[];
     enableColumnResizing?: boolean;
     height?: string;

@@ -1,7 +1,7 @@
 import babel from "@rollup/plugin-babel";
 import resolve from "@rollup/plugin-node-resolve";
 import postcss from "rollup-plugin-postcss";
-import typescript from "@rollup/plugin-typescript";
+import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 
 export default {
@@ -20,7 +20,10 @@ export default {
       presets: ["@babel/preset-react"],
     }),
     resolve(),
-    typescript(),
+    typescript({
+      rollupCommonJSResolveHack: false,
+      clean: true,
+    }),
     terser(),
   ],
   external: ["react", "react/jsx-runtime"],
