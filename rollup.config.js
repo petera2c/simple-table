@@ -14,13 +14,15 @@ export default {
     postcss({
       plugins: [],
       minimize: true,
+      extract: "simple-table.css",
     }),
     babel({
-      exclude: "node_modules/**",
+      exclude: ["node_modules/**", "src/stories/**"],
       presets: ["@babel/preset-react"],
     }),
     resolve(),
     typescript({
+      exclude: ["node_modules/**", "src/stories/**"],
       rollupCommonJSResolveHack: false,
       clean: true,
     }),
