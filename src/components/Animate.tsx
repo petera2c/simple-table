@@ -38,7 +38,7 @@ const Animate = ({
         const lastBox = boundingBox[child.key];
 
         const changeInX = firstBox.left - lastBox.left;
-        const changeInY = allowHorizontalAnimate
+        const changeInY = !allowHorizontalAnimate
           ? firstBox.top - lastBox.top
           : 0;
 

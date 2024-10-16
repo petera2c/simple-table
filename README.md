@@ -1,12 +1,80 @@
-# Simple React Table Project
+# Simple Table
 
-This project is a simple React table application created for fun
+Simple Table is a React grid package designed to provide a flexible and easy-to-use table component for your React applications. Visit our website at [www.simple-table.com](http://www.simple-table.com) for more information and documentation.
 
-## Available Scripts
+![Simple Table Example](assets/table-example.png)
 
-In the project directory, you can run:
+## Props
 
-### `npm start`
+The Simple Table component accepts the following props:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **defaultHeaders**: An array of `HeaderObject` defining the table headers. Each `HeaderObject` includes:
+
+  - **label**: A string representing the display name of the column header.
+  - **accessor**: A string used to access the corresponding data in each row.
+  - **width**: A number specifying the width of the column.
+  - **cellRenderer**: An optional function that takes a row object and returns a `ReactNode` for custom cell rendering.
+
+- **enableColumnResizing**: A boolean to enable or disable column resizing. Default is `true`.
+- **height**: The height of the table.
+- **hideFooter**: A boolean to hide or show the footer. Default is `false`.
+- **nextIcon**: A React element to display as the next page icon. Default is `<AngleRightIcon />`.
+- **prevIcon**: A React element to display as the previous page icon. Default is `<AngleLeftIcon />`.
+- **rows**: An array of data rows to be displayed in the table.
+- **rowsPerPage**: The number of rows to display per page. Default is `10`.
+- **shouldPaginate**: A boolean to enable or disable pagination. Default is `true`.
+
+## Customizable Styles
+
+All styles for the Simple Table are customizable and can be found in the `table.css` file. You can modify these styles to fit the design needs of your application.
+
+### CSS Variables
+
+You can override the following CSS variables to customize the appearance of the table:
+
+- `--st-border-radius`
+- `--st-table-border-color`
+- `--st-border-width`
+- `--st-resize-handle-color`
+- `--st-separator-border-color`
+- `--st-odd-row-background-color`
+- `--st-dragging-background-color`
+- `--st-selected-cell-background-color`
+- `--st-selected-first-cell-background-color`
+- `--st-border-top-color`
+- `--st-border-bottom-color`
+- `--st-border-left-color`
+- `--st-border-right-color`
+- `--st-border-top-white-color`
+- `--st-footer-background-color`
+
+### CSS Class Names
+
+The following CSS class names are used in the table and can be customized:
+
+- `.st-table-wrapper`
+- `.st-table`
+- `.st-table-header-cell`
+- `.st-table-cell`
+- `.st-table-header-label`
+- `.st-table-header-resize-handle`
+- `.st-table-row-separator`
+- `.st-table-cell-odd-row`
+- `.st-dragging`
+- `.st-table-cell-selected`
+- `.st-table-cell-selected-first`
+- `.border-top-blue`
+- `.border-bottom-blue`
+- `.border-left-blue`
+- `.border-right-blue`
+- `.border-top-white`
+- `.st-footer`
+- `.st-next-prev-btn`
+- `.st-page-btn`
+- `.st-page-btn.active`
+
+For more detailed usage and examples, please refer to our [documentation](http://www.simple-table.com/docs).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -25,10 +25,10 @@ const App = () => {
     <div className="app" style={{ padding: "2rem" }}>
       <SimpleTable
         defaultHeaders={HEADERS}
-        // height="auto"
-        height="calc(100dvh - 4rem)"
+        height="auto"
+        // height="calc(100dvh - 4rem)"
         rows={inventoryData}
-        shouldPaginate={true}
+        // shouldPaginate={false}
       />
     </div>
   );
