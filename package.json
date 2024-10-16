@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -38,7 +38,7 @@
     "webpack": "^5.95.0"
   },
   "scripts": {
-    "publish": "npm run build && npm publish && git push",
+    "publish": "npm run build && git add . && git commit -m \"$npm_config_message\" && npm publish && git push",
     "build": "rollup -c",
     "start": "storybook dev -p 6006",
     "build-storybook": "storybook build"
