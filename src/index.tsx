@@ -1,1 +1,3 @@
-export * from "./components/SimpleTable/SimpleTable";
+import SimpleTable from "./components/SimpleTable/SimpleTable";
+
+export { SimpleTable };
