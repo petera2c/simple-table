@@ -88,14 +88,14 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
 
     return (
       <div
-        className={`st-table-header-cell ${
+        className={`st-header-cell ${
           header === hoveredHeaderRef.current ? "st-hovered" : ""
         } ${isDragging ? "st-dragging" : ""}`}
         ref={ref}
         style={{ width: header.width }}
       >
         <div
-          className="st-table-header-label"
+          className="st-header-label"
           draggable
           onClick={() => onSort(index)}
           onDragStart={() => handleDragStartWrapper(header)}
@@ -117,7 +117,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
         </div>
         {enableColumnResizing && (
           <div
-            className="st-table-header-resize-handle"
+            className="st-header-resize-handle"
             onMouseDown={handleResizeStart}
           />
         )}

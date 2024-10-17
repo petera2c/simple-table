@@ -108,11 +108,7 @@ const SimpleTable = ({
     : sortedRows;
 
   return (
-    <div
-      ref={tableRef}
-      className="st-table-wrapper"
-      style={height ? { height } : {}}
-    >
+    <div ref={tableRef} className="st-wrapper" style={height ? { height } : {}}>
       <div
         className="st-table"
         onMouseUp={handleMouseUp}

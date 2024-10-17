@@ -87,22 +87,21 @@ You can override the following CSS variables to customize the appearance of the 
 
 The following CSS class names are used in the table and can be customized:
 
-- `.st-table-wrapper`
+- `.st-wrapper`
 - `.st-table`
-- `.st-table-header-cell`
-- `.st-table-cell`
-- `.st-table-header-label`
-- `.st-table-header-resize-handle`
-- `.st-table-row-separator`
-- `.st-table-cell-odd-row`
+- `.st-header-cell`
+- `.st-cell`
+- `.st-header-label`
+- `.st-header-resize-handle`
+- `.st-row-separator`
+- `.st-cell-odd-row`
 - `.st-dragging`
-- `.st-table-cell-selected`
-- `.st-table-cell-selected-first`
-- `.border-top-blue`
-- `.border-bottom-blue`
-- `.border-left-blue`
-- `.border-right-blue`
-- `.border-top-white`
+- `.st-cell-selected`
+- `.st-cell-selected-first`
+- `.st-selected-top-border`
+- `.st-selected-bottom-border`
+- `.st-selected-left-border`
+- `.st-selected-right-border`
 - `.st-footer`
 - `.st-next-prev-btn`
 - `.st-page-btn`

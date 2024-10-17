@@ -45,7 +45,6 @@ const TableBody = ({
                 if (header.cellRenderer) {
                   content = header.cellRenderer(row);
                 }
-
                 return (
                   <TableCell
                     borderClass={getBorderClass(rowIndex, columnIndex)}
@@ -63,7 +62,6 @@ const TableBody = ({
                 );
               })}
               <TableLastColumnCell
-                isLastRow={rowIndex === sortedRows.length - 1}
                 ref={createRef()}
                 visible={shouldDisplayLastColumnCell}
               />

@@ -81,7 +81,7 @@ body {
 }
 
 /* Wrapper for the table */
-.st-table-wrapper {
+.st-wrapper {
   border: var(--st-border-width) solid var(--st-table-border-color);
   border-radius: var(--st-border-radius);
   overflow: auto;
@@ -99,23 +99,24 @@ body {
 }
 
 /* Styles for table header cells */
-.st-table-header-cell {
+.st-header-cell {
   position: sticky;
   top: 0;
   background-color: white;
+  z-index: 1;
 }
 
 /* Common styles for table header and cells */
-.st-table-header-cell,
-.st-table-cell {
+.st-header-cell,
+.st-cell {
   cursor: pointer;
   border: var(--st-border-width) solid transparent;
   color: var(--slate-800);
   overflow: hidden;
 }
 
-.st-table-header-label,
-.st-table-cell {
+.st-header-label,
+.st-cell {
   user-select: none;
   padding: 8px;
   text-align: left;
@@ -124,11 +125,11 @@ body {
   overflow: hidden;
 }
 
-.st-table-cell {
+.st-cell {
 }
 
 /* Resize handle for table headers */
-.st-table-header-resize-handle {
+.st-header-resize-handle {
   position: absolute;
   right: 0;
   top: 0;
@@ -141,13 +142,13 @@ body {
   border-radius: 0.25rem;
 }
 
-.st-table-row-separator {
+.st-row-separator {
   height: 1px;
   background-color: var(--st-separator-border-color);
   grid-column: 1 / -1;
 }
 
-.st-table-cell-odd-row {
+.st-cell-odd-row {
   background-color: var(--st-odd-row-background-color);
 }
 
@@ -157,37 +158,37 @@ body {
 }
 
 /* Style for selected table cells */
-.st-table-cell-selected {
+.st-cell-selected {
   background-color: var(--st-selected-cell-background-color);
 }
 
 /* Style for the first selected table cell */
-.st-table-cell-selected-first {
+.st-cell-selected-first {
   background-color: var(--st-selected-first-cell-background-color);
 }
 
 /* Blue top border for cells */
-.border-top-blue {
+.st-selected-top-border {
   border-top: var(--st-border-width) solid var(--st-border-top-color);
 }
 
 /* Blue bottom border for cells */
-.border-bottom-blue {
+.st-selected-bottom-border {
   border-bottom: var(--st-border-width) solid var(--st-border-bottom-color);
 }
 
 /* Blue left border for cells */
-.border-left-blue {
+.st-selected-left-border {
   border-left: var(--st-border-width) solid var(--st-border-left-color);
 }
 
 /* Blue right border for cells */
-.border-right-blue {
+.st-selected-right-border {
   border-right: var(--st-border-width) solid var(--st-border-right-color);
 }
 
 /* White top border for cells */
-.border-top-white {
+.st-selected-top-border-white {
   border-top: var(--st-border-width) solid var(--st-border-top-white-color);
 }
 

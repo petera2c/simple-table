@@ -7,10 +7,10 @@ export const SampleTable = () => {
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         defaultHeaders={SAMPLE_HEADERS}
-        height="auto"
-        // height="calc(100dvh - 4rem)"
+        // height="auto"
+        height="calc(100dvh - 4rem)"
         rows={inventoryData}
-        // shouldPaginate={false}
+        shouldPaginate={false}
       />
     </div>
   );

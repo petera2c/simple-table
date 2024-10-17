@@ -33,14 +33,13 @@ const TableCell = forwardRef(
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
         ref={ref}
-        className={`st-table-cell ${
+        className={`st-cell ${
           isSelected
             ? isTopLeftCell
-              ? `st-table-cell-selected-first-cell ${borderClass}`
-              : `st-table-cell-selected ${borderClass}`
+              ? `st-cell-selected-first-cell ${borderClass}`
+              : `st-cell-selected ${borderClass}`
             : ""
-        } ${isLastRow ? "st-table-cell-last-row" : ""}
-        ${isOddRow ? "st-table-cell-odd-row" : ""}`}
+        } ${isOddRow ? "st-cell-odd-row" : ""}`}
       >
         {content}
       </div>
