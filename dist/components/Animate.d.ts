@@ -1,7 +1,7 @@
 interface AnimateProps {
     allowHorizontalAnimate?: boolean;
     children: any;
-    pause?: boolean;
+    pauseAnimation?: boolean;
 }
-declare const Animate: ({ allowHorizontalAnimate, children, pause, }: AnimateProps) => any;
+declare const Animate: ({ allowHorizontalAnimate, children, pauseAnimation, }: AnimateProps) => any;
 export default Animate;

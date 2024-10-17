@@ -90,7 +90,6 @@ const SimpleTable = ({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest(".st-cell")) {
-        console.log(target);
         setSelectedCells([]);
       }
     };
