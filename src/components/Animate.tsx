@@ -5,13 +5,13 @@ import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 interface AnimateProps {
   allowHorizontalAnimate?: boolean;
   children: any;
-  pause?: boolean;
+  pauseAnimation?: boolean;
 }
 
 const Animate = ({
   allowHorizontalAnimate = true,
   children,
-  pause,
+  pauseAnimation,
 }: AnimateProps) => {
   const [boundingBox, setBoundingBox] = useState<any>({});
   const [prevBoundingBox, setPrevBoundingBox] = useState<any>({});
@@ -28,7 +28,7 @@ const Animate = ({
   }, [prevChildren]);
 
   useEffect(() => {
-    if (pause) return;
+    if (pauseAnimation) return;
     const hasPrevBoundingBox = Object.keys(prevBoundingBox).length;
 
     if (hasPrevBoundingBox) {
@@ -61,7 +61,13 @@ const Animate = ({
         }
       });
     }
-  }, [boundingBox, prevBoundingBox, children, pause, allowHorizontalAnimate]);
+  }, [
+    allowHorizontalAnimate,
+    boundingBox,
+    children,
+    pauseAnimation,
+    prevBoundingBox,
+  ]);
 
   return children;
 };

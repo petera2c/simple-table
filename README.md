@@ -68,7 +68,7 @@ All styles for the Simple Table are customizable and can be found in the `table.
 You can override the following CSS variables to customize the appearance of the table:
 
 - `--st-border-radius`
-- `--st-table-border-color`
+- `--st-border-color`
 - `--st-border-width`
 - `--st-resize-handle-color`
 - `--st-separator-border-color`

@@ -68,7 +68,6 @@ const SimpleTable = ({
     getBorderClass,
     isTopLeftCell,
     setSelectedCells,
-    selectedCells,
   } = useSelection(sortedRows, headersRef.current);
 
   const handleSort = (columnIndex: number) => {

@@ -14,11 +14,10 @@ const calculateBoundingBoxes = (
 ): { [key: string]: BoundingBox } => {
   const boundingBoxes: { [key: string]: BoundingBox } = {};
 
-  Children.forEach(children, (child: any) => {
+  Children.forEach(children, (child: any, index) => {
     if (child.ref && child.ref.current) {
       const domNode = child.ref.current;
       const nodeBoundingBox = domNode.getBoundingClientRect();
-
       boundingBoxes[child.key] = nodeBoundingBox;
     }
   });

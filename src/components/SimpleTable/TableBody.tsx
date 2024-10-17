@@ -37,7 +37,7 @@ const TableBody = ({
           <Fragment key={row.id}>
             <Animate
               allowHorizontalAnimate={shouldPaginate}
-              pause={isWidthDragging}
+              pauseAnimation={isWidthDragging}
             >
               {headers.map((header, columnIndex) => {
                 let content = row[header.accessor];

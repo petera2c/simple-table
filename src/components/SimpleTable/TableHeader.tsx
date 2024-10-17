@@ -31,7 +31,7 @@ const TableHeader = ({
 
   return (
     <>
-      <Animate pause={isWidthDragging}>
+      <Animate pauseAnimation={isWidthDragging}>
         {headersRef.current?.map((header, index) => (
           <TableHeaderCell
             draggedHeaderRef={draggedHeaderRef}
