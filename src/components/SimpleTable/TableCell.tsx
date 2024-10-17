@@ -1,15 +1,14 @@
 import { forwardRef, LegacyRef } from "react";
 
 interface TableCellProps {
-  rowIndex: number;
+  borderClass: string;
   colIndex: number;
   content: any;
   isSelected: boolean;
   isTopLeftCell: boolean;
-  borderClass: string;
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;
-  isLastRow: boolean;
+  rowIndex: number;
 }
 
 const TableCell = forwardRef(
@@ -23,7 +22,6 @@ const TableCell = forwardRef(
       borderClass,
       onMouseDown,
       onMouseOver,
-      isLastRow,
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {

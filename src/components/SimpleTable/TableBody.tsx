@@ -57,7 +57,6 @@ const TableBody = ({
                     onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
                     ref={createRef()}
                     rowIndex={rowIndex}
-                    isLastRow={rowIndex === sortedRows.length - 1}
                   />
                 );
               })}

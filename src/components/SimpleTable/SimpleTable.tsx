@@ -68,6 +68,7 @@ const SimpleTable = ({
     getBorderClass,
     isTopLeftCell,
     setSelectedCells,
+    selectedCells,
   } = useSelection(sortedRows, headersRef.current);
 
   const handleSort = (columnIndex: number) => {
@@ -89,7 +90,8 @@ const SimpleTable = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".st-table-cell")) {
+      if (!target.closest(".st-cell")) {
+        console.log(target);
         setSelectedCells([]);
       }
     };

@@ -52,7 +52,7 @@
 
   /* Customizable Variables */
   --st-border-radius: 4px;
-  --st-table-border-color: var(--slate-300);
+  --st-border-color: var(--slate-300);
   --st-border-width: 1px;
   --st-resize-handle-color: var(--slate-300);
   --st-separator-border-color: var(--slate-300);
@@ -82,7 +82,7 @@ body {
 
 /* Wrapper for the table */
 .st-wrapper {
-  border: var(--st-border-width) solid var(--st-table-border-color);
+  border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   overflow: auto;
   max-height: 100dvh;
@@ -202,7 +202,7 @@ body {
 
   padding: 8px;
 
-  border-top: var(--st-border-width) solid var(--st-table-border-color);
+  border-top: var(--st-border-width) solid var(--st-border-color);
 }
 
 .st-next-prev-btn {
