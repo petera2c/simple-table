@@ -2,19 +2,22 @@ import { ChangeEvent } from "react";
 import BooleanEdit from "./BooleanEdit";
 import TextEdit from "./TextEdit";
 import CellChangeProps from "../../../types/CellChangeProps";
+import CellValue from "../../../types/CellValue";
 
 interface EditableCellProps {
   accessor: string;
   onCellChange?: (props: CellChangeProps) => void;
-  row: { [key: string]: any };
+  originalRowIndex: number;
+  row: { [key: string]: CellValue };
   rowIndex: number;
   setIsEditing: (isEditing: boolean) => void;
-  value: string | boolean;
+  value: CellValue;
 }
 
 const EditableCell = ({
   accessor,
   onCellChange,
+  originalRowIndex,
   row,
   rowIndex,
   setIsEditing,
@@ -25,11 +28,11 @@ const EditableCell = ({
   ) => {
     const newValue = e.target.value;
     onCellChange?.({
+      accessor,
       newRowIndex: rowIndex,
       newValue,
-      originalRowIndex: rowIndex,
+      originalRowIndex,
       row,
-      accessor,
     });
   };
   const handleBlur = () => {
@@ -38,19 +41,19 @@ const EditableCell = ({
 
   return (
     <>
-      {typeof value === "boolean" ? (
-        <BooleanEdit
-          value={value}
-          onBlur={handleBlur}
-          onChange={handleChange}
-        />
-      ) : (
+      {typeof value === "string" ? (
         <TextEdit
           defaultValue={value}
           onBlur={handleBlur}
           onChange={handleChange}
         />
-      )}
+      ) : typeof value === "boolean" ? (
+        <BooleanEdit
+          value={value}
+          onBlur={handleBlur}
+          onChange={handleChange}
+        />
+      ) : null}
     </>
   );
 };

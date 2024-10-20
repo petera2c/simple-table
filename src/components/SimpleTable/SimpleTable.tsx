@@ -23,16 +23,16 @@ export interface SpreadsheetProps {
   height?: string;
   hideFooter?: boolean;
   nextIcon?: ReactNode;
+  onCellChange?: ({
+    accessor,
+    newValue,
+    originalRowIndex,
+    row,
+  }: CellChangeProps) => void;
   prevIcon?: ReactNode;
   rows: { [key: string]: CellValue }[];
   rowsPerPage?: number;
   shouldPaginate?: boolean;
-  onCellChange?: ({
-    colIndex,
-    newValue,
-    object,
-    rowIndex,
-  }: CellChangeProps) => void;
 }
 
 const SimpleTable = ({

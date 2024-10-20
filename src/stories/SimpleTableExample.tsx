@@ -6,8 +6,8 @@ import "../styles/simple-table.css";
 import CellChangeProps from "../types/CellChangeProps";
 
 export const SampleTable = () => {
-  const [headers, setHeaders] = useState(SAMPLE_HEADERS);
-  const [rows, setRows] = useState(inventoryData);
+  // const [headers, setHeaders] = useState(SAMPLE_HEADERS);
+  const [, setRows] = useState(inventoryData);
 
   const updateCell = ({
     accessor,
@@ -16,9 +16,10 @@ export const SampleTable = () => {
     originalRowIndex,
     row,
   }: CellChangeProps) => {
+    console.log(accessor, newRowIndex, newValue, originalRowIndex, row);
     setRows((prevRows) => {
       let newRows = [...prevRows];
-      newRows[newRowIndex][accessor] = newValue;
+      newRows[originalRowIndex][accessor] = newValue;
       return newRows;
     });
   };

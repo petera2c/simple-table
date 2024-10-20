@@ -23,7 +23,7 @@ export const SAMPLE_HEADERS: HeaderObject[] = [
   { label: "Manufacturer", accessor: "manufacturer", width: 150 },
 ];
 
-export const inventoryData: any[] = Array.from({ length: 50 }, (_, index) => ({
+export const inventoryData: any[] = Array.from({ length: 5 }, (_, index) => ({
   id: `P-${index + 1001}`,
   productName: [
     "Wireless Mouse",

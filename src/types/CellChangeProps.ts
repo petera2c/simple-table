@@ -5,7 +5,7 @@ type CellChangeProps = {
   newRowIndex: number;
   newValue: CellValue;
   originalRowIndex: number;
-  row: any;
+  row: { [key: string]: CellValue };
 };
 
 export default CellChangeProps;
