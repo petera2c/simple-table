@@ -4,31 +4,32 @@ import TextEdit from "./TextEdit";
 import CellChangeProps from "../../../types/CellChangeProps";
 
 interface EditableCellProps {
-  colIndex: number;
+  accessor: string;
   onCellChange?: (props: CellChangeProps) => void;
+  row: { [key: string]: any };
   rowIndex: number;
   setIsEditing: (isEditing: boolean) => void;
   value: string | boolean;
-  row: any;
 }
 
 const EditableCell = ({
-  colIndex,
+  accessor,
   onCellChange,
+  row,
   rowIndex,
   setIsEditing,
   value,
-  row,
 }: EditableCellProps) => {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const newValue = e.target.value;
     onCellChange?.({
-      colIndex,
+      newRowIndex: rowIndex,
       newValue,
+      originalRowIndex: rowIndex,
       row,
-      rowIndex,
+      accessor,
     });
   };
   const handleBlur = () => {

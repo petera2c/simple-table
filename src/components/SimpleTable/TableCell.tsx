@@ -52,7 +52,7 @@ const TableCell = forwardRef(
       return (
         <div className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : ""}`}>
           <EditableCell
-            colIndex={colIndex}
+            accessor={header.accessor}
             onCellChange={onCellChange}
             rowIndex={rowIndex}
             setIsEditing={setIsEditing}

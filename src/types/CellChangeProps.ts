@@ -1,10 +1,11 @@
 import CellValue from "./CellValue";
 
 type CellChangeProps = {
-  colIndex: number;
+  accessor: any;
+  newRowIndex: number;
   newValue: CellValue;
+  originalRowIndex: number;
   row: any;
-  rowIndex: number;
 };
 
 export default CellChangeProps;

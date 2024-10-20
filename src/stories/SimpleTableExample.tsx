@@ -10,11 +10,18 @@ export const SampleTable = () => {
   const [rows, setRows] = useState(inventoryData);
 
   const updateCell = ({
-    colIndex,
+    accessor,
+    newRowIndex,
     newValue,
+    originalRowIndex,
     row,
-    rowIndex,
-  }: CellChangeProps) => {};
+  }: CellChangeProps) => {
+    setRows((prevRows) => {
+      let newRows = [...prevRows];
+      newRows[newRowIndex][accessor] = newValue;
+      return newRows;
+    });
+  };
 
   return (
     <div style={{ padding: "2rem" }}>
