@@ -66,6 +66,7 @@
   --st-border-right-color: var(--blue-500);
   --st-border-top-white-color: white;
   --st-footer-background-color: white;
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 /* Global styles */
@@ -114,6 +115,9 @@ body {
   color: var(--slate-800);
   overflow: hidden;
   height: 40px;
+  position: relative;
+  height: 100%;
+  width: 100%;
 }
 
 .st-header-label,
@@ -241,4 +245,20 @@ body {
 .st-page-btn.active {
   background-color: var(--blue-500);
   color: white;
+}
+
+.editable-cell-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: var(--st-border-radius);
+  border: var(--st-border-width) solid var(--st-border-color);
+  box-shadow: var(--st-shadow);
+  z-index: 1;
+  outline: none;
+  height: 100%;
+  width: 100%;
+}
+.editable-cell-input:focus {
+  border: var(--st-border-width) solid var(--blue-500);
 }

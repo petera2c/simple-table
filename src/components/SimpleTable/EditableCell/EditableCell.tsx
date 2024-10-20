@@ -8,11 +8,7 @@ interface EditableCellProps {
   value: string | boolean;
 }
 
-const EditableCell: React.FC<EditableCellProps> = ({
-  onChange,
-  setIsEditing,
-  value,
-}) => {
+const EditableCell = ({ onChange, setIsEditing, value }: EditableCellProps) => {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -20,11 +16,11 @@ const EditableCell: React.FC<EditableCellProps> = ({
     onChange(typeof value === "boolean" ? newValue === "true" : newValue);
   };
   const handleBlur = () => {
-    setIsEditing(false);
+    // setIsEditing(false);
   };
 
   return (
-    <div>
+    <>
       {typeof value === "boolean" ? (
         <BooleanEdit
           value={value}
@@ -38,7 +34,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
           onChange={handleChange}
         />
       )}
-    </div>
+    </>
   );
 };
 

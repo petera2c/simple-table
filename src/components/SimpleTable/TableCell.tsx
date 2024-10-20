@@ -26,34 +26,40 @@ const TableCell = forwardRef(
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(
+      rowIndex === 0 && colIndex === 0
+    );
 
     const isOddRow = rowIndex % 2 === 0;
+
+    const cellClassName = `st-cell ${
+      isSelected
+        ? isTopLeftCell
+          ? `st-cell-selected-first-cell ${borderClass}`
+          : `st-cell-selected ${borderClass}`
+        : ""
+    } ${isOddRow ? "st-cell-odd-row" : ""}`;
 
     if (isEditing) {
       console.log("isEditing", isEditing);
       return (
-        <EditableCell
-          onChange={() => {}}
-          setIsEditing={setIsEditing}
-          value={content}
-        />
+        <div className={`${cellClassName} st-cell-editing`}>
+          <EditableCell
+            onChange={() => {}}
+            setIsEditing={setIsEditing}
+            value={content}
+          />
+        </div>
       );
     }
 
     return (
       <div
+        className={cellClassName}
+        onDoubleClick={() => setIsEditing(true)}
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
-        onDoubleClick={() => setIsEditing(true)}
         ref={ref}
-        className={`st-cell ${
-          isSelected
-            ? isTopLeftCell
-              ? `st-cell-selected-first-cell ${borderClass}`
-              : `st-cell-selected ${borderClass}`
-            : ""
-        } ${isOddRow ? "st-cell-odd-row" : ""}`}
       >
         {content}
       </div>
