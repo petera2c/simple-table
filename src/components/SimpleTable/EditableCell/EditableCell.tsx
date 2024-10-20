@@ -16,7 +16,7 @@ const EditableCell = ({ onChange, setIsEditing, value }: EditableCellProps) => {
     onChange(typeof value === "boolean" ? newValue === "true" : newValue);
   };
   const handleBlur = () => {
-    // setIsEditing(false);
+    setIsEditing(false);
   };
 
   return (

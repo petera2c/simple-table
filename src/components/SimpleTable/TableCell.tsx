@@ -43,7 +43,7 @@ const TableCell = forwardRef(
     if (isEditing) {
       console.log("isEditing", isEditing);
       return (
-        <div className={`${cellClassName} st-cell-editing`}>
+        <div className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : ""}`}>
           <EditableCell
             onChange={() => {}}
             setIsEditing={setIsEditing}
