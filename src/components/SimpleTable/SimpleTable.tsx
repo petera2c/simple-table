@@ -47,6 +47,10 @@ const SimpleTable = ({
   rowsPerPage = 10,
   shouldPaginate = true,
 }: SpreadsheetProps) => {
+  // Refs
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const headersRef = useRef(defaultHeaders);
   const [sortedRows, setSortedRows] = useState(rows);
@@ -54,21 +58,10 @@ const SimpleTable = ({
     key: HeaderObject;
     direction: string;
   } | null>(null);
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
-
   const [currentPage, setCurrentPage] = useState(1);
 
-  const tableRef = useRef<HTMLDivElement>(null);
-
-  const shouldDisplayLastColumnCell = useMemo(() => {
-    if (!tableRef.current) return false;
-    const totalColumnWidth = headersRef.current.reduce(
-      (acc, header) => acc + header.width,
-      0
-    );
-    return totalColumnWidth < tableRef.current.clientWidth;
-  }, []);
-
+  // Hooks
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const {
     handleMouseDown,
     handleMouseOver,
@@ -79,6 +72,23 @@ const SimpleTable = ({
     setSelectedCells,
   } = useSelection(sortedRows, headersRef.current);
 
+  // Derived state
+  const shouldDisplayLastColumnCell = useMemo(() => {
+    if (!tableRef.current) return false;
+    const totalColumnWidth = headersRef.current.reduce(
+      (acc, header) => acc + header.width,
+      0
+    );
+    return totalColumnWidth < tableRef.current.clientWidth;
+  }, []);
+  const currentRows = shouldPaginate
+    ? sortedRows.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+      )
+    : sortedRows;
+
+  // Handlers
   const handleSort = (columnIndex: number) => {
     const { sortedData, newSortConfig } = onSort(
       headersRef.current,
@@ -89,12 +99,12 @@ const SimpleTable = ({
     setSortedRows(sortedData);
     setSortConfig(newSortConfig);
   };
-
   const onTableHeaderDragEnd = (newHeaders: HeaderObject[]) => {
     headersRef.current = newHeaders;
     forceUpdate();
   };
 
+  // Handle outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -108,13 +118,6 @@ const SimpleTable = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setSelectedCells]);
-
-  const currentRows = shouldPaginate
-    ? sortedRows.slice(
-        (currentPage - 1) * rowsPerPage,
-        currentPage * rowsPerPage
-      )
-    : sortedRows;
 
   return (
     <div ref={tableRef} className="st-wrapper" style={height ? { height } : {}}>
