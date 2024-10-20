@@ -15,6 +15,8 @@ import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
 import "../../styles/simple-table.css";
+import CellValue from "../../types/CellValue";
+import CellChangeProps from "../../types/CellChangeProps";
 export interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
   enableColumnResizing?: boolean;
@@ -22,9 +24,15 @@ export interface SpreadsheetProps {
   hideFooter?: boolean;
   nextIcon?: ReactNode;
   prevIcon?: ReactNode;
-  rows: { [key: string]: string | number | boolean | undefined | null }[];
+  rows: { [key: string]: CellValue }[];
   rowsPerPage?: number;
   shouldPaginate?: boolean;
+  onCellChange?: ({
+    colIndex,
+    newValue,
+    object,
+    rowIndex,
+  }: CellChangeProps) => void;
 }
 
 const SimpleTable = ({
@@ -33,6 +41,7 @@ const SimpleTable = ({
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon />,
+  onCellChange,
   prevIcon = <AngleLeftIcon />,
   rows,
   rowsPerPage = 10,
@@ -137,6 +146,7 @@ const SimpleTable = ({
           isSelected={isSelected}
           isTopLeftCell={isTopLeftCell}
           isWidthDragging={isWidthDragging}
+          onCellChange={onCellChange}
           shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
           shouldPaginate={shouldPaginate}
           sortedRows={currentRows}

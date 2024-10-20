@@ -1,6 +1,7 @@
 import { forwardRef, LegacyRef, useState } from "react";
 import EditableCell from "./EditableCell/EditableCell";
 import HeaderObject from "../../types/HeaderObject";
+import CellChangeProps from "../../types/CellChangeProps";
 
 interface TableCellProps {
   borderClass: string;
@@ -9,8 +10,10 @@ interface TableCellProps {
   header: HeaderObject;
   isSelected: boolean;
   isTopLeftCell: boolean;
+  onCellChange?: (props: CellChangeProps) => void;
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;
+  row: any;
   rowIndex: number;
 }
 
@@ -23,8 +26,10 @@ const TableCell = forwardRef(
       header,
       isSelected,
       isTopLeftCell,
+      onCellChange,
       onMouseDown,
       onMouseOver,
+      row,
       rowIndex,
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
@@ -47,9 +52,12 @@ const TableCell = forwardRef(
       return (
         <div className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : ""}`}>
           <EditableCell
-            onChange={() => {}}
+            colIndex={colIndex}
+            onCellChange={onCellChange}
+            rowIndex={rowIndex}
             setIsEditing={setIsEditing}
             value={content}
+            row={content}
           />
         </div>
       );

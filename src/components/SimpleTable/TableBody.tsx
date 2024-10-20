@@ -4,6 +4,7 @@ import Animate from "../Animate";
 import HeaderObject from "../../types/HeaderObject";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
+import CellChangeProps from "../../types/CellChangeProps";
 
 interface TableBodyProps {
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
@@ -16,6 +17,7 @@ interface TableBodyProps {
   shouldDisplayLastColumnCell: boolean;
   shouldPaginate: boolean;
   sortedRows: { [key: string]: any }[];
+  onCellChange?: (props: CellChangeProps) => void;
 }
 
 const TableBody = ({
@@ -26,6 +28,7 @@ const TableBody = ({
   isSelected,
   isTopLeftCell,
   isWidthDragging,
+  onCellChange,
   shouldDisplayLastColumnCell,
   shouldPaginate,
   sortedRows,
@@ -54,9 +57,11 @@ const TableBody = ({
                     isSelected={isSelected(rowIndex, columnIndex)}
                     isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
                     key={header.accessor}
+                    onCellChange={onCellChange}
                     onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
                     onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
                     ref={createRef()}
+                    row={row}
                     rowIndex={rowIndex}
                   />
                 );
