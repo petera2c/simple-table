@@ -8,6 +8,18 @@
   "files": [
     "dist"
   ],
+  "keywords": [
+    "table",
+    "grid",
+    "react",
+    "simple",
+    "simple-table",
+    "simple-table-core",
+    "react-table",
+    "react-table-core",
+    "spreadsheet",
+    "spreadsheet-react"
+  ],
   "dependencies": {
     "react": "^18.3.1"
   },
