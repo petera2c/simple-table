@@ -50,6 +50,7 @@ const TableBody = ({
                     borderClass={getBorderClass(rowIndex, columnIndex)}
                     colIndex={columnIndex}
                     content={content}
+                    header={header}
                     isSelected={isSelected(rowIndex, columnIndex)}
                     isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
                     key={header.accessor}

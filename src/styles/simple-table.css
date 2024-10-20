@@ -106,6 +106,7 @@ body {
   top: 0;
   background-color: white;
   z-index: 1;
+  font-weight: 600;
 }
 
 /* Common styles for table header and cells */
@@ -146,8 +147,8 @@ body {
   width: 5px;
   cursor: col-resize;
   background-color: var(--st-resize-handle-color);
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   border-radius: 0.25rem;
 }
 

@@ -2,7 +2,12 @@ import HeaderObject from "../types/HeaderObject";
 
 export const SAMPLE_HEADERS: HeaderObject[] = [
   { label: "Product ID", accessor: "id", width: 150 },
-  { label: "Product Name", accessor: "productName", width: 200 },
+  {
+    accessor: "productName",
+    isEditable: true,
+    label: "Product Name",
+    width: 200,
+  },
   { label: "Category", accessor: "category", width: 150 },
   { label: "Quantity", accessor: "quantity", width: 100 },
   { label: "Price", accessor: "price", width: 100 },
