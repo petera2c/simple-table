@@ -59,7 +59,6 @@ const TableCell = forwardRef(
 
     // Update local content when the table rows change
     useEffect(() => {
-      console.log("tableRows", tableRows);
       if (
         row.originalRowIndex === undefined ||
         typeof row.originalRowIndex !== "number"

@@ -51,7 +51,6 @@ const SimpleTable = ({
 }: SpreadsheetProps) => {
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
-    console.log("initializing originalRowIndex");
     const rowsWithOriginalRowIndex = rows.map((row, index) => ({
       ...row,
       originalRowIndex: index,
@@ -71,7 +70,7 @@ const SimpleTable = ({
 
   const sortedRows = useMemo(() => {
     if (!sort) return tableRows;
-    const { sortedData } = handleSort(headersRef.current, sortedRows, sort);
+    const { sortedData } = handleSort(headersRef.current, tableRows, sort);
 
     return sortedData;
   }, [tableRows, sort]);
