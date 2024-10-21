@@ -20,6 +20,7 @@ export const SampleTable = () => {
     setRows((prevRows) => {
       let newRows = [...prevRows];
       newRows[originalRowIndex][accessor] = newValue;
+      console.log(newRows);
       return newRows;
     });
   };

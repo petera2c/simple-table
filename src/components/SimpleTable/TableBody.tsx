@@ -37,7 +37,7 @@ const TableBody = ({
     <>
       {sortedRows.map((row, rowIndex) => {
         return (
-          <Fragment key={row.id}>
+          <Fragment key={row.originalRowIndex}>
             <Animate
               allowHorizontalAnimate={shouldPaginate}
               pauseAnimation={isWidthDragging}

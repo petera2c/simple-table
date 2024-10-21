@@ -1,7 +1,7 @@
 import HeaderObject from "../types/HeaderObject";
 
 export const SAMPLE_HEADERS: HeaderObject[] = [
-  { label: "Product ID", accessor: "id", width: 150 },
+  { label: "Product ID", accessor: "productId", width: 150 },
   {
     accessor: "productName",
     isEditable: true,
@@ -24,7 +24,7 @@ export const SAMPLE_HEADERS: HeaderObject[] = [
 ];
 
 export const inventoryData: any[] = Array.from({ length: 5 }, (_, index) => ({
-  id: `P-${index + 1001}`,
+  productId: `P-${index + 1001}`,
   productName: [
     "Wireless Mouse",
     "Bluetooth Speaker",

@@ -47,13 +47,27 @@ const SimpleTable = ({
   rowsPerPage = 10,
   shouldPaginate = true,
 }: SpreadsheetProps) => {
+  // Initialize originalRowIndex on each row
+  const tableRows = useMemo(() => {
+    console.log("initializing originalRowIndex");
+    const rowsWithOriginalRowIndex = rows.map((row, index) => ({
+      ...row,
+      originalRowIndex: index,
+    }));
+    return rowsWithOriginalRowIndex;
+  }, [rows]);
+
   // Refs
   const tableRef = useRef<HTMLDivElement>(null);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const headersRef = useRef(defaultHeaders);
-  const [sortedRows, setSortedRows] = useState(rows);
+  const [sortedRows, setSortedRows] = useState<
+    {
+      [key: string]: CellValue;
+    }[]
+  >(tableRows);
   const [sortConfig, setSortConfig] = useState<{
     key: HeaderObject;
     direction: string;
