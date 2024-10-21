@@ -1,12 +1,13 @@
 import HeaderObject from "../types/HeaderObject";
+import SortConfig from "../types/SortConfig";
 
-export const onSort = (
+export const handleSort = (
   headers: HeaderObject[],
   rows: { [key: string]: any }[],
-  sortConfig: { key: HeaderObject; direction: string } | null,
-  columnIndex: number
+  sortConfig: SortConfig
 ) => {
-  const key = headers[columnIndex];
+  const key = sortConfig ? sortConfig.key : headers[0];
+
   let direction = "ascending";
   if (
     sortConfig &&

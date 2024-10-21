@@ -8,7 +8,7 @@ import {
 } from "react";
 import useSelection from "../../hooks/useSelection";
 import TableHeader from "./TableHeader";
-import { onSort } from "../../utils/sortUtils";
+import { handleSort } from "../../utils/sortUtils";
 import TableBody from "./TableBody";
 import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
@@ -17,6 +17,8 @@ import AngleRightIcon from "../../icons/AngleRightIcon";
 import "../../styles/simple-table.css";
 import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
+import SortConfig from "../../types/SortConfig";
+import TableContext from "../../context/TableContext";
 export interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
   enableColumnResizing?: boolean;
@@ -63,16 +65,16 @@ const SimpleTable = ({
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const headersRef = useRef(defaultHeaders);
-  const [sortedRows, setSortedRows] = useState<
-    {
-      [key: string]: CellValue;
-    }[]
-  >(tableRows);
-  const [sortConfig, setSortConfig] = useState<{
-    key: HeaderObject;
-    direction: string;
-  } | null>(null);
+  const [sort, setSort] = useState<SortConfig | null>(null);
+
   const [currentPage, setCurrentPage] = useState(1);
+
+  const sortedRows = useMemo(() => {
+    if (!sort) return tableRows;
+    const { sortedData } = handleSort(headersRef.current, sortedRows, sort);
+
+    return sortedData;
+  }, [tableRows, sort]);
 
   // Hooks
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -103,15 +105,12 @@ const SimpleTable = ({
     : sortedRows;
 
   // Handlers
-  const handleSort = (columnIndex: number) => {
-    const { sortedData, newSortConfig } = onSort(
-      headersRef.current,
-      sortedRows,
-      sortConfig,
-      columnIndex
-    );
-    setSortedRows(sortedData);
-    setSortConfig(newSortConfig);
+  const onSort = (columnIndex: number) => {
+    setSort((prevSort) => ({
+      key: headersRef.current[columnIndex],
+      direction:
+        prevSort?.direction === "ascending" ? "descending" : "ascending",
+    }));
   };
   const onTableHeaderDragEnd = (newHeaders: HeaderObject[]) => {
     headersRef.current = newHeaders;
@@ -134,53 +133,59 @@ const SimpleTable = ({
   }, [setSelectedCells]);
 
   return (
-    <div ref={tableRef} className="st-wrapper" style={height ? { height } : {}}>
+    <TableContext.Provider value={rows}>
       <div
-        className="st-table"
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        style={{
-          gridTemplateColumns: `${headersRef.current
-            ?.map((header) => `${header.width}px`)
-            .join(" ")} 1fr`,
-        }}
+        ref={tableRef}
+        className="st-wrapper"
+        style={height ? { height } : {}}
       >
-        <TableHeader
-          enableColumnResizing={enableColumnResizing}
-          forceUpdate={forceUpdate}
-          headersRef={headersRef}
-          isWidthDragging={isWidthDragging}
-          onSort={handleSort}
-          onTableHeaderDragEnd={onTableHeaderDragEnd}
-          setIsWidthDragging={setIsWidthDragging}
-          shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
-        />
-        <TableBody
-          getBorderClass={getBorderClass}
-          handleMouseDown={handleMouseDown}
-          handleMouseOver={handleMouseOver}
-          headers={headersRef.current}
-          isSelected={isSelected}
-          isTopLeftCell={isTopLeftCell}
-          isWidthDragging={isWidthDragging}
-          onCellChange={onCellChange}
-          shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
-          shouldPaginate={shouldPaginate}
-          sortedRows={currentRows}
-        />
+        <div
+          className="st-table"
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          style={{
+            gridTemplateColumns: `${headersRef.current
+              ?.map((header) => `${header.width}px`)
+              .join(" ")} 1fr`,
+          }}
+        >
+          <TableHeader
+            enableColumnResizing={enableColumnResizing}
+            forceUpdate={forceUpdate}
+            headersRef={headersRef}
+            isWidthDragging={isWidthDragging}
+            onSort={onSort}
+            onTableHeaderDragEnd={onTableHeaderDragEnd}
+            setIsWidthDragging={setIsWidthDragging}
+            shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
+          />
+          <TableBody
+            getBorderClass={getBorderClass}
+            handleMouseDown={handleMouseDown}
+            handleMouseOver={handleMouseOver}
+            headers={headersRef.current}
+            isSelected={isSelected}
+            isTopLeftCell={isTopLeftCell}
+            isWidthDragging={isWidthDragging}
+            onCellChange={onCellChange}
+            shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
+            shouldPaginate={shouldPaginate}
+            sortedRows={currentRows}
+          />
+        </div>
+        {shouldPaginate && (
+          <TableFooter
+            currentPage={currentPage}
+            hideFooter={hideFooter}
+            onPageChange={setCurrentPage}
+            rowsPerPage={rowsPerPage}
+            totalRows={sortedRows.length}
+            nextIcon={nextIcon}
+            prevIcon={prevIcon}
+          />
+        )}
       </div>
-      {shouldPaginate && (
-        <TableFooter
-          currentPage={currentPage}
-          hideFooter={hideFooter}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          totalRows={sortedRows.length}
-          nextIcon={nextIcon}
-          prevIcon={prevIcon}
-        />
-      )}
-    </div>
+    </TableContext.Provider>
   );
 };
 

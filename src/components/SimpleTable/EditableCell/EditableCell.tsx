@@ -5,35 +5,17 @@ import CellChangeProps from "../../../types/CellChangeProps";
 import CellValue from "../../../types/CellValue";
 
 interface EditableCellProps {
-  accessor: string;
-  onCellChange?: (props: CellChangeProps) => void;
-  originalRowIndex: number;
-  row: { [key: string]: CellValue };
-  rowIndex: number;
+  onChange: (newValue: CellValue) => void;
   setIsEditing: (isEditing: boolean) => void;
   value: CellValue;
 }
 
-const EditableCell = ({
-  accessor,
-  onCellChange,
-  originalRowIndex,
-  row,
-  rowIndex,
-  setIsEditing,
-  value,
-}: EditableCellProps) => {
+const EditableCell = ({ onChange, setIsEditing, value }: EditableCellProps) => {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const newValue = e.target.value;
-    onCellChange?.({
-      accessor,
-      newRowIndex: rowIndex,
-      newValue,
-      originalRowIndex,
-      row,
-    });
+    onChange?.(newValue);
   };
   const handleBlur = () => {
     setIsEditing(false);

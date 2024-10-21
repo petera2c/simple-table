@@ -1,8 +1,9 @@
-import { forwardRef, LegacyRef, useState } from "react";
+import { forwardRef, LegacyRef, useContext, useEffect, useState } from "react";
 import EditableCell from "./EditableCell/EditableCell";
 import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
+import TableContext from "../../context/TableContext";
 
 interface TableCellProps {
   borderClass: string;
@@ -35,6 +36,8 @@ const TableCell = forwardRef(
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
+    const tableRows = useContext(TableContext);
+    const [localContent, setLocalContent] = useState(content);
     const [isEditing, setIsEditing] = useState(
       rowIndex === 0 && colIndex === 0
     );
@@ -49,17 +52,45 @@ const TableCell = forwardRef(
         : ""
     } ${isOddRow ? "st-cell-odd-row" : ""}`;
 
+    // Update local content when the content changes
+    useEffect(() => {
+      setLocalContent(content);
+    }, [content]);
+
+    // Update local content when the table rows change
+    useEffect(() => {
+      console.log("tableRows", tableRows);
+      if (
+        row.originalRowIndex === undefined ||
+        typeof row.originalRowIndex !== "number"
+      )
+        return;
+
+      const tableRowContent = tableRows[row.originalRowIndex];
+
+      if (tableRowContent[header.accessor] !== localContent) {
+        setLocalContent(tableRowContent[header.accessor]);
+      }
+    }, [header.accessor, localContent, tableRows]);
+
+    const updateLocalContent = (newValue: CellValue) => {
+      setLocalContent(newValue);
+      onCellChange?.({
+        accessor: header.accessor,
+        newValue,
+        newRowIndex: rowIndex,
+        originalRowIndex: row.originalRowIndex as number,
+        row,
+      });
+    };
+
     if (isEditing) {
       return (
         <div className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : ""}`}>
           <EditableCell
-            accessor={header.accessor}
-            onCellChange={onCellChange}
-            originalRowIndex={row.originalRowIndex as number}
-            rowIndex={rowIndex}
+            onChange={updateLocalContent}
             setIsEditing={setIsEditing}
-            value={content}
-            row={row}
+            value={localContent}
           />
         </div>
       );
@@ -73,7 +104,7 @@ const TableCell = forwardRef(
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
         ref={ref}
       >
-        {content}
+        {localContent}
       </div>
     );
   }

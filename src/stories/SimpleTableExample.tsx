@@ -7,7 +7,7 @@ import CellChangeProps from "../types/CellChangeProps";
 
 export const SampleTable = () => {
   // const [headers, setHeaders] = useState(SAMPLE_HEADERS);
-  const [, setRows] = useState(inventoryData);
+  const [rows, setRows] = useState(inventoryData);
 
   const updateCell = ({
     accessor,
@@ -16,12 +16,9 @@ export const SampleTable = () => {
     originalRowIndex,
     row,
   }: CellChangeProps) => {
-    console.log(accessor, newRowIndex, newValue, originalRowIndex, row);
     setRows((prevRows) => {
-      let newRows = [...prevRows];
-      newRows[originalRowIndex][accessor] = newValue;
-      console.log(newRows);
-      return newRows;
+      prevRows[originalRowIndex][accessor] = newValue;
+      return prevRows;
     });
   };
 
@@ -31,7 +28,7 @@ export const SampleTable = () => {
         defaultHeaders={SAMPLE_HEADERS}
         // height="auto"
         height="calc(100dvh - 4rem)"
-        rows={inventoryData}
+        rows={rows}
         shouldPaginate={false}
         onCellChange={updateCell}
       />
