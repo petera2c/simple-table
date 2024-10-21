@@ -36,7 +36,7 @@ const TableCell = forwardRef(
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
-    const tableRows = useContext(TableContext);
+    const { rows, tableRows } = useContext(TableContext);
     const [localContent, setLocalContent] = useState(content);
     const [isEditing, setIsEditing] = useState(
       rowIndex === 0 && colIndex === 0
@@ -65,12 +65,14 @@ const TableCell = forwardRef(
       )
         return;
 
-      const tableRowContent = tableRows[row.originalRowIndex];
+      const tableRowContent = rows[row.originalRowIndex];
 
       if (tableRowContent[header.accessor] !== localContent) {
         setLocalContent(tableRowContent[header.accessor]);
+      } else {
+        tableRows[row.originalRowIndex][header.accessor] = localContent;
       }
-    }, [header.accessor, localContent, tableRows]);
+    }, [header.accessor, localContent, rows, row.originalRowIndex, tableRows]);
 
     const updateLocalContent = (newValue: CellValue) => {
       setLocalContent(newValue);

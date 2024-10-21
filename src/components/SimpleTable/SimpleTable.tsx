@@ -132,7 +132,7 @@ const SimpleTable = ({
   }, [setSelectedCells]);
 
   return (
-    <TableContext.Provider value={rows}>
+    <TableContext.Provider value={{ rows, tableRows }}>
       <div
         ref={tableRef}
         className="st-wrapper"

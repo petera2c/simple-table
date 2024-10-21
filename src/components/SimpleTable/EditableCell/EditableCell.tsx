@@ -1,7 +1,6 @@
 import { ChangeEvent } from "react";
 import BooleanEdit from "./BooleanEdit";
 import TextEdit from "./TextEdit";
-import CellChangeProps from "../../../types/CellChangeProps";
 import CellValue from "../../../types/CellValue";
 
 interface EditableCellProps {
