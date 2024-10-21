@@ -38,9 +38,7 @@ const TableCell = forwardRef(
   ) => {
     const { rows, tableRows } = useContext(TableContext);
     const [localContent, setLocalContent] = useState(content);
-    const [isEditing, setIsEditing] = useState(
-      rowIndex === 0 && colIndex === 0
-    );
+    const [isEditing, setIsEditing] = useState(false);
 
     const isOddRow = rowIndex % 2 === 0;
 
