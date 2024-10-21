@@ -3,6 +3,7 @@ type HeaderObject = {
     label: string;
     accessor: string;
     width: number;
+    isEditable?: boolean;
     cellRenderer?: (row: {
         [key: string]: any;
     }) => ReactNode;

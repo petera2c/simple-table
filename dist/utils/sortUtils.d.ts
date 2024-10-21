@@ -1,10 +1,8 @@
 import HeaderObject from "../types/HeaderObject";
-export declare const onSort: (headers: HeaderObject[], rows: {
+import SortConfig from "../types/SortConfig";
+export declare const handleSort: (headers: HeaderObject[], rows: {
     [key: string]: any;
-}[], sortConfig: {
-    key: HeaderObject;
-    direction: string;
-} | null, columnIndex: number) => {
+}[], sortConfig: SortConfig) => {
     sortedData: {
         [key: string]: any;
     }[];

@@ -48,6 +48,7 @@ The Simple Table component accepts the following props:
   - **label**: A string representing the display name of the column header.
   - **accessor**: A string used to access the corresponding data in each row.
   - **width**: A number specifying the width of the column.
+  - **isEditable**: An optional boolean indicating if the column is editable.
   - **cellRenderer**: An optional function that takes a row object and returns a `ReactNode` for custom cell rendering.
 
 - **enableColumnResizing**: A boolean to enable or disable column resizing. Default is `true`.
@@ -58,6 +59,7 @@ The Simple Table component accepts the following props:
 - **rows**: An array of data rows to be displayed in the table.
 - **rowsPerPage**: The number of rows to display per page. Default is `10`.
 - **shouldPaginate**: A boolean to enable or disable pagination. Default is `true`.
+- **onCellChange**: A function that is called when a cell value changes.
 
 ## Customizable Styles
 

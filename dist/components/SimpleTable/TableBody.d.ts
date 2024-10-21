@@ -1,4 +1,5 @@
 import HeaderObject from "../../types/HeaderObject";
+import CellChangeProps from "../../types/CellChangeProps";
 interface TableBodyProps {
     getBorderClass: (rowIndex: number, columnIndex: number) => string;
     handleMouseDown: (rowIndex: number, columnIndex: number) => void;
@@ -12,8 +13,9 @@ interface TableBodyProps {
     sortedRows: {
         [key: string]: any;
     }[];
+    onCellChange?: (props: CellChangeProps) => void;
 }
-declare const TableBody: ({ getBorderClass, handleMouseDown, handleMouseOver, headers, isSelected, isTopLeftCell, isWidthDragging, shouldDisplayLastColumnCell, shouldPaginate, sortedRows, }: TableBodyProps & {
+declare const TableBody: ({ getBorderClass, handleMouseDown, handleMouseOver, headers, isSelected, isTopLeftCell, isWidthDragging, onCellChange, shouldDisplayLastColumnCell, shouldPaginate, sortedRows, }: TableBodyProps & {
     shouldDisplayLastColumnCell: boolean;
 }) => import("react/jsx-runtime").JSX.Element;
 export default TableBody;
