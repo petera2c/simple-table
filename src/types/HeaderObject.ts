@@ -6,6 +6,7 @@ type HeaderObject = {
   isEditable?: boolean;
   isSortable?: boolean;
   label: string;
+  type?: "string" | "number" | "boolean" | "date" | "enum";
   width: number;
 };
 
