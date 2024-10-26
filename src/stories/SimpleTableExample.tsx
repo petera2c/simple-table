@@ -29,7 +29,6 @@ export const SampleTable = () => {
         // height="auto"
         height="calc(100dvh - 4rem)"
         rows={rows}
-        shouldPaginate={false}
         onCellChange={updateCell}
       />
     </div>

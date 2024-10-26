@@ -107,6 +107,9 @@ body {
   background-color: white;
   z-index: 1;
   font-weight: 600;
+
+  display: flex;
+  align-items: center;
 }
 
 /* Common styles for table header and cells */
@@ -130,12 +133,24 @@ body {
 
 .st-header-label,
 .st-cell {
+  display: flex;
+  align-items: center;
   user-select: none;
   padding: var(--st-cell-padding);
   text-align: left;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.st-sort-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.st-sort-icon {
+  fill: var(--slate-500);
 }
 
 /* Resize handle for table headers */

@@ -1,11 +1,12 @@
 import { ReactNode } from "react";
 
 type HeaderObject = {
-  label: string;
   accessor: string;
-  width: number;
-  isEditable?: boolean;
   cellRenderer?: (row: { [key: string]: any }) => ReactNode;
+  isEditable?: boolean;
+  isSortable?: boolean;
+  label: string;
+  width: number;
 };
 
 export default HeaderObject;

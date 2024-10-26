@@ -1,25 +1,35 @@
 import HeaderObject from "../types/HeaderObject";
 
 export const SAMPLE_HEADERS: HeaderObject[] = [
-  { label: "Product ID", accessor: "productId", width: 150 },
+  { label: "Product ID", accessor: "productId", width: 150, isSortable: true },
   {
     accessor: "productName",
     isEditable: true,
     label: "Product Name",
     width: 200,
   },
-  { label: "Category", accessor: "category", width: 150 },
+  { label: "Category", accessor: "category", width: 150, isSortable: true },
   { label: "Quantity", accessor: "quantity", width: 100 },
   { label: "Price", accessor: "price", width: 100 },
   { label: "Supplier", accessor: "supplier", width: 150 },
-  { label: "Location", accessor: "location", width: 150 },
+  { label: "Location", accessor: "location", width: 150, isSortable: true },
   { label: "Reorder Level", accessor: "reorderLevel", width: 150 },
   { label: "SKU", accessor: "sku", width: 150 },
-  { label: "Description", accessor: "description", width: 250 },
+  {
+    label: "Description",
+    accessor: "description",
+    width: 250,
+    isSortable: true,
+  },
   { label: "Weight", accessor: "weight", width: 100 },
-  { label: "Dimensions", accessor: "dimensions", width: 150 },
+  { label: "Dimensions", accessor: "dimensions", width: 150, isSortable: true },
   { label: "Barcode", accessor: "barcode", width: 150 },
-  { label: "Expiration Date", accessor: "expirationDate", width: 150 },
+  {
+    label: "Expiration Date",
+    accessor: "expirationDate",
+    width: 150,
+    isSortable: true,
+  },
   { label: "Manufacturer", accessor: "manufacturer", width: 150 },
 ];
 

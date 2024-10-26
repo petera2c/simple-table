@@ -2,6 +2,9 @@ import { forwardRef, useRef, SetStateAction, Dispatch, useState } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
+import AngleUpIcon from "../../icons/AngleUpIcon";
+import AngleDownIcon from "../../icons/AngleDownIcon";
+import SortConfig from "../../types/SortConfig";
 
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
@@ -13,6 +16,7 @@ interface TableHeaderCellProps {
   onSort: (columnIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
+  sort: SortConfig | null;
 }
 
 const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
@@ -27,6 +31,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       onSort,
       onTableHeaderDragEnd,
       setIsWidthDragging,
+      sort,
     },
     ref
   ) => {
@@ -86,6 +91,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
 
     if (!header) return null;
 
+    console.log(sort);
     return (
       <div
         className={`st-header-cell ${
@@ -97,7 +103,10 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
         <div
           className="st-header-label"
           draggable
-          onClick={() => onSort(index)}
+          onClick={() => {
+            if (!header.isSortable) return;
+            onSort(index);
+          }}
           onDragStart={() => handleDragStartWrapper(header)}
           onDragOver={(event) => {
             const { pageX, pageY } = event;
@@ -114,7 +123,18 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
           onDragEnd={handleDragEndWrapper}
         >
           {header?.label}
+          {sort && sort.key.accessor === header.accessor && (
+            <div className="st-sort-icon-container">
+              {sort.direction === "ascending" && (
+                <AngleUpIcon className="st-sort-icon" />
+              )}
+              {sort.direction === "descending" && (
+                <AngleDownIcon className="st-sort-icon" />
+              )}
+            </div>
+          )}
         </div>
+
         {enableColumnResizing && (
           <div
             className="st-header-resize-handle"

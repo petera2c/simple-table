@@ -4,6 +4,7 @@ import TableHeaderCell from "./TableHeaderCell";
 import HeaderObject from "../../types/HeaderObject";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
+import SortConfig from "../../types/SortConfig";
 
 interface TableHeaderProps {
   enableColumnResizing: boolean;
@@ -14,6 +15,7 @@ interface TableHeaderProps {
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   shouldDisplayLastColumnCell: boolean;
+  sort: SortConfig | null;
 }
 
 const TableHeader = ({
@@ -25,6 +27,7 @@ const TableHeader = ({
   onTableHeaderDragEnd,
   setIsWidthDragging,
   shouldDisplayLastColumnCell,
+  sort,
 }: TableHeaderProps) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
@@ -45,6 +48,7 @@ const TableHeader = ({
             onTableHeaderDragEnd={onTableHeaderDragEnd}
             ref={createRef()}
             setIsWidthDragging={setIsWidthDragging}
+            sort={sort}
           />
         ))}
         <TableLastColumnCell

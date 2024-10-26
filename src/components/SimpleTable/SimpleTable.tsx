@@ -157,6 +157,7 @@ const SimpleTable = ({
             onTableHeaderDragEnd={onTableHeaderDragEnd}
             setIsWidthDragging={setIsWidthDragging}
             shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
+            sort={sort}
           />
           <TableBody
             getBorderClass={getBorderClass}
