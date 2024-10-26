@@ -19,10 +19,10 @@ export const handleSort = (
 
   const sortedData = [...rows].sort((a, b) => {
     if (a[key.accessor] < b[key.accessor]) {
-      return direction === "ascending" ? -1 : 1;
+      return direction === "ascending" ? 1 : -1;
     }
     if (a[key.accessor] > b[key.accessor]) {
-      return direction === "ascending" ? 1 : -1;
+      return direction === "ascending" ? -1 : 1;
     }
     return 0;
   });

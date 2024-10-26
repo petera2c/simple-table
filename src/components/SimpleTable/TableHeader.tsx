@@ -1,21 +1,24 @@
-import { createRef, Dispatch, SetStateAction, useRef } from "react";
+import { createRef, Dispatch, ReactNode, SetStateAction, useRef } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import HeaderObject from "../../types/HeaderObject";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
 import SortConfig from "../../types/SortConfig";
+import OnSortProps from "../../types/OnSortProps";
 
 interface TableHeaderProps {
   enableColumnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   isWidthDragging: boolean;
-  onSort: (columnIndex: number) => void;
+  onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   shouldDisplayLastColumnCell: boolean;
   sort: SortConfig | null;
+  sortDownIcon?: ReactNode;
+  sortUpIcon?: ReactNode;
 }
 
 const TableHeader = ({
@@ -28,6 +31,8 @@ const TableHeader = ({
   setIsWidthDragging,
   shouldDisplayLastColumnCell,
   sort,
+  sortDownIcon,
+  sortUpIcon,
 }: TableHeaderProps) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
@@ -49,6 +54,8 @@ const TableHeader = ({
             ref={createRef()}
             setIsWidthDragging={setIsWidthDragging}
             sort={sort}
+            sortDownIcon={sortDownIcon}
+            sortUpIcon={sortUpIcon}
           />
         ))}
         <TableLastColumnCell

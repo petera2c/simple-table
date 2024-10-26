@@ -19,6 +19,8 @@ import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
 import SortConfig from "../../types/SortConfig";
 import TableContext from "../../context/TableContext";
+import AngleUpIcon from "../../icons/AngleUpIcon";
+import AngleDownIcon from "../../icons/AngleDownIcon";
 export interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
   enableColumnResizing?: boolean;
@@ -35,6 +37,8 @@ export interface SpreadsheetProps {
   rows: { [key: string]: CellValue }[];
   rowsPerPage?: number;
   shouldPaginate?: boolean;
+  sortDownIcon?: ReactNode;
+  sortUpIcon?: ReactNode;
 }
 
 const SimpleTable = ({
@@ -48,6 +52,8 @@ const SimpleTable = ({
   rows,
   rowsPerPage = 10,
   shouldPaginate = true,
+  sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
+  sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
 }: SpreadsheetProps) => {
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
@@ -104,12 +110,22 @@ const SimpleTable = ({
     : sortedRows;
 
   // Handlers
-  const onSort = (columnIndex: number) => {
-    setSort((prevSort) => ({
-      key: headersRef.current[columnIndex],
-      direction:
-        prevSort?.direction === "ascending" ? "descending" : "ascending",
-    }));
+  const onSort = (columnIndex: number, accessor: string) => {
+    setSort((prevSort) => {
+      if (prevSort?.key.accessor !== accessor) {
+        return {
+          key: headersRef.current[columnIndex],
+          direction: "ascending",
+        };
+      } else if (prevSort?.direction === "ascending") {
+        return {
+          key: headersRef.current[columnIndex],
+          direction: "descending",
+        };
+      } else {
+        return null;
+      }
+    });
   };
   const onTableHeaderDragEnd = (newHeaders: HeaderObject[]) => {
     headersRef.current = newHeaders;
@@ -158,6 +174,8 @@ const SimpleTable = ({
             setIsWidthDragging={setIsWidthDragging}
             shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
             sort={sort}
+            sortDownIcon={sortDownIcon}
+            sortUpIcon={sortUpIcon}
           />
           <TableBody
             getBorderClass={getBorderClass}

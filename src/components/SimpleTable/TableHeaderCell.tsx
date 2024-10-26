@@ -1,10 +1,16 @@
-import { forwardRef, useRef, SetStateAction, Dispatch, useState } from "react";
+import {
+  forwardRef,
+  useRef,
+  SetStateAction,
+  Dispatch,
+  useState,
+  ReactNode,
+} from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
-import AngleUpIcon from "../../icons/AngleUpIcon";
-import AngleDownIcon from "../../icons/AngleDownIcon";
 import SortConfig from "../../types/SortConfig";
+import OnSortProps from "../../types/OnSortProps";
 
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
@@ -13,10 +19,12 @@ interface TableHeaderCellProps {
   headersRef: React.RefObject<HeaderObject[]>;
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
   index: number;
-  onSort: (columnIndex: number) => void;
+  onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   sort: SortConfig | null;
+  sortDownIcon?: ReactNode;
+  sortUpIcon?: ReactNode;
 }
 
 const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
@@ -32,6 +40,8 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       onTableHeaderDragEnd,
       setIsWidthDragging,
       sort,
+      sortDownIcon,
+      sortUpIcon,
     },
     ref
   ) => {
@@ -91,7 +101,6 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
 
     if (!header) return null;
 
-    console.log(sort);
     return (
       <div
         className={`st-header-cell ${
@@ -105,7 +114,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
           draggable
           onClick={() => {
             if (!header.isSortable) return;
-            onSort(index);
+            onSort(index, header.accessor);
           }}
           onDragStart={() => handleDragStartWrapper(header)}
           onDragOver={(event) => {
@@ -125,12 +134,8 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
           {header?.label}
           {sort && sort.key.accessor === header.accessor && (
             <div className="st-sort-icon-container">
-              {sort.direction === "ascending" && (
-                <AngleUpIcon className="st-sort-icon" />
-              )}
-              {sort.direction === "descending" && (
-                <AngleDownIcon className="st-sort-icon" />
-              )}
+              {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
+              {sort.direction === "descending" && sortDownIcon && sortDownIcon}
             </div>
           )}
         </div>
