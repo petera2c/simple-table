@@ -7,11 +7,11 @@ interface Cell {
 }
 
 const useSelection = ({
-  cellsSelectable,
+  selectableCells,
   headers,
   rows,
 }: {
-  cellsSelectable: boolean;
+  selectableCells: boolean;
   headers: HeaderObject[];
   rows: { [key: string]: any }[];
 }) => {
@@ -47,14 +47,14 @@ const useSelection = ({
   }, [copyToClipboard, selectedCells]);
 
   const handleMouseDown = (rowIndex: number, colIndex: number) => {
-    if (!cellsSelectable) return;
+    if (!selectableCells) return;
     isSelecting.current = true;
     startCell.current = { row: rowIndex, col: colIndex };
     setSelectedCells([{ row: rowIndex, col: colIndex }]);
   };
 
   const handleMouseOver = (rowIndex: number, colIndex: number) => {
-    if (!cellsSelectable) return;
+    if (!selectableCells) return;
     if (isSelecting.current && startCell.current) {
       const newSelectedCells = [];
       const startRow = Math.min(startCell.current.row, rowIndex);

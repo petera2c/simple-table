@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import HeaderObject from "../../types/HeaderObject";
 interface TableHeaderProps {
-  enableColumnResizing: boolean;
+  columnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   isWidthDragging: boolean;
@@ -11,7 +11,7 @@ interface TableHeaderProps {
   shouldDisplayLastColumnCell: boolean;
 }
 declare const TableHeader: ({
-  enableColumnResizing,
+  columnResizing,
   forceUpdate,
   headersRef,
   isWidthDragging,

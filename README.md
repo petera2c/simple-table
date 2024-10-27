@@ -51,7 +51,7 @@ The Simple Table component accepts the following props:
   - **isEditable**: An optional boolean indicating if the column is editable.
   - **cellRenderer**: An optional function that takes a row object and returns a `ReactNode` for custom cell rendering.
 
-- **enableColumnResizing**: A boolean to enable or disable column resizing. Default is `true`.
+- **columnResizing**: A boolean to enable or disable column resizing. Default is `true`.
 - **height**: The height of the table.
 - **hideFooter**: A boolean to hide or show the footer. Default is `false`.
 - **nextIcon**: A React element to display as the next page icon. Default is `<AngleRightIcon />`.

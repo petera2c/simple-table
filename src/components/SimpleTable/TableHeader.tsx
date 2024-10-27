@@ -9,7 +9,7 @@ import OnSortProps from "../../types/OnSortProps";
 
 interface TableHeaderProps {
   draggable: boolean;
-  enableColumnResizing: boolean;
+  columnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   isWidthDragging: boolean;
@@ -24,7 +24,7 @@ interface TableHeaderProps {
 
 const TableHeader = ({
   draggable,
-  enableColumnResizing,
+  columnResizing,
   forceUpdate,
   headersRef,
   isWidthDragging,
@@ -46,7 +46,7 @@ const TableHeader = ({
           <TableHeaderCell
             draggable={draggable}
             draggedHeaderRef={draggedHeaderRef}
-            enableColumnResizing={enableColumnResizing}
+            columnResizing={columnResizing}
             forceUpdate={forceUpdate}
             headersRef={headersRef}
             hoveredHeaderRef={hoveredHeaderRef}

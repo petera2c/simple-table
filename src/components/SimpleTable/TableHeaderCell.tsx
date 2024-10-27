@@ -6,6 +6,7 @@ import {
   useState,
   ReactNode,
   DragEvent,
+  useEffect,
 } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
@@ -16,7 +17,7 @@ import OnSortProps from "../../types/OnSortProps";
 interface TableHeaderCellProps {
   draggable: boolean;
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  enableColumnResizing: boolean;
+  columnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
@@ -34,7 +35,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
     {
       draggable,
       draggedHeaderRef,
-      enableColumnResizing,
+      columnResizing,
       forceUpdate,
       headersRef,
       hoveredHeaderRef,
@@ -78,6 +79,7 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
     };
 
     const handleDragEndWrapper = (event: DragEvent) => {
+      event.preventDefault();
       event.dataTransfer.dropEffect = "move";
       setIsDragging(false);
       handleDragEnd();
@@ -89,7 +91,23 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
         handleDragOver(header);
       }, 100)
     ).current;
+    const onDragOver = (event: DragEvent, header: HeaderObject) => {
+      // Prevent click event from firing
+      event.preventDefault();
+      // This helps prevent the drag ghost from being shown
+      event.dataTransfer.dropEffect = "move";
 
+      const { pageX, pageY } = event;
+      if (
+        pageX === prevDraggingPosition.current.pageX &&
+        pageY === prevDraggingPosition.current.pageY
+      ) {
+        return;
+      }
+      prevDraggingPosition.current = { pageX, pageY };
+      throttledHandleDragOver(header, event);
+    };
+    // Resize handler
     const handleResizeStart = (e: React.MouseEvent) => {
       setIsWidthDragging(true);
       e.preventDefault();
@@ -113,62 +131,59 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       document.addEventListener("mousemove", throttledMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     };
+    // Sort handler
+    const handleSortClick = (header: HeaderObject) => {
+      if (!header.isSortable) return;
+      onSort(index, header.accessor);
+    };
+    // Drag handler
+    const onDragStart = (event: DragEvent) => {
+      if (!draggable || !header) return;
+      // This helps prevent the drag ghost from being shown
+      event.dataTransfer.dropEffect = "move";
 
-    // useEffect(() => {
-    //   console.log("currentRef", currentRef);
-    //   if (currentRef) {
-    //     currentRef.style.transition = "none";
-    //   }
-    // }, [currentRef]);
+      handleDragStartWrapper(header);
+    };
+
+    // This helps prevent the drag ghost from being shown
+    useEffect(() => {
+      const setDragImage = (event: any) => {
+        var img = new Image();
+        img.src =
+          "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=";
+        event.dataTransfer.setDragImage(img, 0, 0);
+      };
+      document.addEventListener("dragend", setDragImage, false);
+      return () => {
+        document.removeEventListener("dragend", setDragImage);
+      };
+    }, []);
 
     if (!header) return null;
 
     return (
-      <div
-        className={className}
-        ref={ref}
-        style={{ width: header.width, transition: "none" }}
-      >
+      <div className={className} ref={ref} style={{ width: header.width }}>
         <div
           className="st-header-label"
           draggable={draggable}
-          onClick={() => {
-            if (!header.isSortable) return;
-            onSort(index, header.accessor);
-          }}
-          onDragStart={(event) => {
-            if (!draggable) return;
-            event.dataTransfer.dropEffect = "move";
-
-            handleDragStartWrapper(header);
-          }}
-          onDragOver={(event) => {
-            event.preventDefault();
-            event.dataTransfer.dropEffect = "move";
-
-            const { pageX, pageY } = event;
-            if (
-              pageX === prevDraggingPosition.current.pageX &&
-              pageY === prevDraggingPosition.current.pageY
-            ) {
-              return;
-            }
-            prevDraggingPosition.current = { pageX, pageY };
-            event.preventDefault();
-            throttledHandleDragOver(header, event);
-          }}
+          onClick={() => handleSortClick(header)}
+          onDragStart={onDragStart}
+          onDragOver={(event) => onDragOver(event, header)}
           onDragEnd={handleDragEndWrapper}
         >
           {header?.label}
-          {sort && sort.key.accessor === header.accessor && (
-            <div className="st-sort-icon-container">
-              {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
-              {sort.direction === "descending" && sortDownIcon && sortDownIcon}
-            </div>
-          )}
         </div>
+        {sort && sort.key.accessor === header.accessor && (
+          <div
+            className="st-sort-icon-container"
+            onClick={() => handleSortClick(header)}
+          >
+            {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
+            {sort.direction === "descending" && sortDownIcon && sortDownIcon}
+          </div>
+        )}
 
-        {enableColumnResizing && (
+        {columnResizing && (
           <div
             className="st-header-resize-handle"
             onMouseDown={handleResizeStart}

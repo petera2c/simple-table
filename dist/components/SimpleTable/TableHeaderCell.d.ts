@@ -2,7 +2,7 @@ import { SetStateAction, Dispatch } from "react";
 import HeaderObject from "../../types/HeaderObject";
 interface TableHeaderCellProps {
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  enableColumnResizing: boolean;
+  columnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;

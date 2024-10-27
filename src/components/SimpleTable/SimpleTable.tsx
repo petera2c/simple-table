@@ -23,11 +23,10 @@ import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor";
 export interface SpreadsheetProps {
-  cellsSelectable?: boolean;
+  columnResizing?: boolean;
   defaultHeaders: HeaderObject[];
   draggable?: boolean;
   editColumns?: boolean;
-  enableColumnResizing?: boolean;
   height?: string;
   hideFooter?: boolean;
   nextIcon?: ReactNode;
@@ -40,17 +39,17 @@ export interface SpreadsheetProps {
   prevIcon?: ReactNode;
   rows: { [key: string]: CellValue }[];
   rowsPerPage?: number;
+  selectableCells?: boolean;
   shouldPaginate?: boolean;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
 }
 
 const SimpleTable = ({
-  cellsSelectable = false,
+  columnResizing = false,
   defaultHeaders,
   draggable = false,
   editColumns = false,
-  enableColumnResizing = true,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon />,
@@ -58,7 +57,8 @@ const SimpleTable = ({
   prevIcon = <AngleLeftIcon />,
   rows,
   rowsPerPage = 10,
-  shouldPaginate = true,
+  selectableCells = false,
+  shouldPaginate = false,
   sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
 }: SpreadsheetProps) => {
@@ -99,7 +99,7 @@ const SimpleTable = ({
     isTopLeftCell,
     setSelectedCells,
   } = useSelection({
-    cellsSelectable,
+    selectableCells,
     headers: headersRef.current,
     rows: sortedRows,
   });
@@ -179,7 +179,7 @@ const SimpleTable = ({
         >
           <TableHeader
             draggable={draggable}
-            enableColumnResizing={enableColumnResizing}
+            columnResizing={columnResizing}
             forceUpdate={forceUpdate}
             headersRef={headersRef}
             isWidthDragging={isWidthDragging}
@@ -192,7 +192,7 @@ const SimpleTable = ({
             sortUpIcon={sortUpIcon}
           />
           <TableBody
-            cellsSelectable={cellsSelectable}
+            selectableCells={selectableCells}
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
             handleMouseOver={handleMouseOver}
