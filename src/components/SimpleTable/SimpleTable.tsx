@@ -21,8 +21,10 @@ import SortConfig from "../../types/SortConfig";
 import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
+import TableColumnEditor from "./TableColumnEditor";
 export interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
+  editColumns?: boolean;
   enableColumnResizing?: boolean;
   height?: string;
   hideFooter?: boolean;
@@ -43,6 +45,7 @@ export interface SpreadsheetProps {
 
 const SimpleTable = ({
   defaultHeaders,
+  editColumns = false,
   enableColumnResizing = true,
   height,
   hideFooter = false,
@@ -94,6 +97,7 @@ const SimpleTable = ({
   } = useSelection(sortedRows, headersRef.current);
 
   // Derived state
+  const currentHeaders = headersRef.current.filter((header) => !header.hide);
   const shouldDisplayLastColumnCell = useMemo(() => {
     if (!tableRef.current) return false;
     const totalColumnWidth = headersRef.current.reduce(
@@ -191,17 +195,21 @@ const SimpleTable = ({
             sortedRows={currentRows}
           />
         </div>
-        {shouldPaginate && (
-          <TableFooter
-            currentPage={currentPage}
-            hideFooter={hideFooter}
-            onPageChange={setCurrentPage}
-            rowsPerPage={rowsPerPage}
-            totalRows={sortedRows.length}
-            nextIcon={nextIcon}
-            prevIcon={prevIcon}
-          />
-        )}
+        {/* <TableColumnEditor
+          editColumns={editColumns}
+          headersRef={headersRef}
+          onTableHeaderDragEnd={onTableHeaderDragEnd}
+        /> */}
+        <TableFooter
+          currentPage={currentPage}
+          hideFooter={hideFooter}
+          nextIcon={nextIcon}
+          onPageChange={setCurrentPage}
+          prevIcon={prevIcon}
+          rowsPerPage={rowsPerPage}
+          shouldPaginate={shouldPaginate}
+          totalRows={sortedRows.length}
+        />
       </div>
     </TableContext.Provider>
   );

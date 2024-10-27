@@ -7,6 +7,7 @@ interface TableFooterProps {
   onPageChange: (page: number) => void;
   prevIcon?: ReactNode;
   rowsPerPage: number;
+  shouldPaginate?: boolean;
   totalRows: number;
 }
 
@@ -17,6 +18,7 @@ const TableFooter = ({
   onPageChange,
   prevIcon,
   rowsPerPage,
+  shouldPaginate,
   totalRows,
 }: TableFooterProps) => {
   const totalPages = Math.ceil(totalRows / rowsPerPage);
@@ -27,7 +29,7 @@ const TableFooter = ({
     }
   };
 
-  if (hideFooter) return null;
+  if (hideFooter || !shouldPaginate) return null;
 
   return (
     <div className="st-footer">

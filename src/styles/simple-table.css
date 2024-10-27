@@ -84,6 +84,7 @@ body {
 
 /* Wrapper for the table */
 .st-wrapper {
+  position: relative;
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   overflow: auto;
@@ -93,6 +94,7 @@ body {
 
 /* Main table styling */
 .st-table {
+  position: relative;
   display: grid;
   border-collapse: collapse;
   table-layout: auto;
@@ -111,14 +113,21 @@ body {
   display: flex;
   align-items: center;
 }
+.st-header-cell.clickable {
+  cursor: pointer;
+}
 
 /* Common styles for table header and cells */
 .st-header-cell,
 .st-cell {
-  cursor: pointer;
   border: var(--st-border-width) solid transparent;
   color: var(--slate-800);
   overflow: hidden;
+  cursor: pointer;
+}
+
+.st-cell.clickable {
+  cursor: pointer;
 }
 
 .st-header-cell,
@@ -162,8 +171,8 @@ body {
   width: 5px;
   cursor: col-resize;
   background-color: var(--st-resize-handle-color);
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
   border-radius: 0.25rem;
 }
 
@@ -284,4 +293,22 @@ body {
 }
 .editable-cell-input:focus {
   border: var(--st-border-width) solid var(--blue-500);
+}
+
+.st-column-editor {
+  position: sticky;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  writing-mode: vertical-rl;
+  background-color: var(--st-footer-background-color);
+  padding: 8px;
+
+  border-top: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-column-editor.open {
+  background-color: var(--slate-100);
 }

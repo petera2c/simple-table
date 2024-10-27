@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 type HeaderObject = {
   accessor: string;
   cellRenderer?: (row: { [key: string]: any }) => ReactNode;
+  hide?: boolean;
   isEditable?: boolean;
   isSortable?: boolean;
   label: string;
