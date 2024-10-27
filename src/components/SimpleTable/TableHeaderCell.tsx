@@ -5,6 +5,7 @@ import {
   Dispatch,
   useState,
   ReactNode,
+  DragEvent,
 } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
@@ -76,7 +77,8 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       handleDragStart(header);
     };
 
-    const handleDragEndWrapper = () => {
+    const handleDragEndWrapper = (event: DragEvent) => {
+      event.dataTransfer.dropEffect = "move";
       setIsDragging(false);
       handleDragEnd();
     };
@@ -112,10 +114,21 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       document.addEventListener("mouseup", handleMouseUp);
     };
 
+    // useEffect(() => {
+    //   console.log("currentRef", currentRef);
+    //   if (currentRef) {
+    //     currentRef.style.transition = "none";
+    //   }
+    // }, [currentRef]);
+
     if (!header) return null;
 
     return (
-      <div className={className} ref={ref} style={{ width: header.width }}>
+      <div
+        className={className}
+        ref={ref}
+        style={{ width: header.width, transition: "none" }}
+      >
         <div
           className="st-header-label"
           draggable={draggable}
@@ -123,8 +136,16 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
             if (!header.isSortable) return;
             onSort(index, header.accessor);
           }}
-          onDragStart={() => draggable && handleDragStartWrapper(header)}
+          onDragStart={(event) => {
+            if (!draggable) return;
+            event.dataTransfer.dropEffect = "move";
+
+            handleDragStartWrapper(header);
+          }}
           onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+
             const { pageX, pageY } = event;
             if (
               pageX === prevDraggingPosition.current.pageX &&

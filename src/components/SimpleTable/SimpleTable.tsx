@@ -108,12 +108,13 @@ const SimpleTable = ({
   const currentHeaders = headersRef.current.filter((header) => !header.hide);
   const shouldDisplayLastColumnCell = useMemo(() => {
     if (!tableRef.current) return false;
-    const totalColumnWidth = headersRef.current.reduce(
+    const totalColumnWidth = currentHeaders.reduce(
       (acc, header) => acc + header.width,
       0
     );
     return totalColumnWidth < tableRef.current.clientWidth;
-  }, []);
+  }, [currentHeaders]);
+
   const currentRows = shouldPaginate
     ? sortedRows.slice(
         (currentPage - 1) * rowsPerPage,
@@ -171,7 +172,7 @@ const SimpleTable = ({
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           style={{
-            gridTemplateColumns: `${headersRef.current
+            gridTemplateColumns: `${currentHeaders
               ?.map((header) => `${header.width}px`)
               .join(" ")} 1fr`,
           }}
@@ -205,11 +206,11 @@ const SimpleTable = ({
             sortedRows={currentRows}
           />
         </div>
-        {/* <TableColumnEditor
+        <TableColumnEditor
           editColumns={editColumns}
           headersRef={headersRef}
           onTableHeaderDragEnd={onTableHeaderDragEnd}
-        /> */}
+        />
         <TableFooter
           currentPage={currentPage}
           hideFooter={hideFooter}

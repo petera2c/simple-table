@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 import HeaderObject from "../../types/HeaderObject";
 
 type TableColumnEditorProps = {
@@ -12,15 +12,16 @@ const TableColumnEditor = ({
   headersRef,
   onTableHeaderDragEnd,
 }: TableColumnEditorProps) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div
-      className={`st-column-editor ${open ? "open" : ""}`}
-      onClick={() => setOpen(!open)}
-    >
-      Columns
-    </div>
-  );
+  // const [open, setOpen] = useState(false);
+  return null;
+  // return (
+  //   <div
+  //     className={`st-column-editor ${open ? "open" : ""}`}
+  //     onClick={() => setOpen(!open)}
+  //   >
+  //     Columns
+  //   </div>
+  // );
 };
 
 export default TableColumnEditor;
