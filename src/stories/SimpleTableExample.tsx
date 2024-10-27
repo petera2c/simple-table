@@ -25,6 +25,7 @@ export const SampleTable = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
+        draggable
         defaultHeaders={SAMPLE_HEADERS}
         // height="auto"
         height="calc(100dvh - 4rem)"

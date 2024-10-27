@@ -13,6 +13,7 @@ import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 
 interface TableHeaderCellProps {
+  draggable: boolean;
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
   enableColumnResizing: boolean;
   forceUpdate: () => void;
@@ -30,6 +31,7 @@ interface TableHeaderCellProps {
 const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
   (
     {
+      draggable,
       draggedHeaderRef,
       enableColumnResizing,
       forceUpdate,
@@ -45,11 +47,22 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
     },
     ref
   ) => {
+    // Ref
     const prevDraggingPosition = useRef({ pageX: 0, pageY: 0 });
+
+    // Local state
     const [isDragging, setIsDragging] = useState(false);
 
+    // Derived state
     const header = headersRef.current?.[index];
+    const clickable = Boolean(header?.isSortable);
+    const className = `st-header-cell ${
+      header === hoveredHeaderRef.current ? "st-hovered" : ""
+    } ${isDragging ? "st-dragging" : ""} ${clickable ? "clickable" : ""} ${
+      draggable && !clickable ? "draggable" : ""
+    }`;
 
+    // Handlers
     const { handleDragStart, handleDragOver, handleDragEnd } =
       useTableHeaderCell({
         draggedHeaderRef,
@@ -102,21 +115,15 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
     if (!header) return null;
 
     return (
-      <div
-        className={`st-header-cell ${
-          header === hoveredHeaderRef.current ? "st-hovered" : ""
-        } ${isDragging ? "st-dragging" : ""}`}
-        ref={ref}
-        style={{ width: header.width }}
-      >
+      <div className={className} ref={ref} style={{ width: header.width }}>
         <div
           className="st-header-label"
-          draggable
+          draggable={draggable}
           onClick={() => {
             if (!header.isSortable) return;
             onSort(index, header.accessor);
           }}
-          onDragStart={() => handleDragStartWrapper(header)}
+          onDragStart={() => draggable && handleDragStartWrapper(header)}
           onDragOver={(event) => {
             const { pageX, pageY } = event;
             if (

@@ -24,6 +24,7 @@ import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor";
 export interface SpreadsheetProps {
   defaultHeaders: HeaderObject[];
+  draggable?: boolean;
   editColumns?: boolean;
   enableColumnResizing?: boolean;
   height?: string;
@@ -45,6 +46,7 @@ export interface SpreadsheetProps {
 
 const SimpleTable = ({
   defaultHeaders,
+  draggable = false,
   editColumns = false,
   enableColumnResizing = true,
   height,
@@ -169,6 +171,7 @@ const SimpleTable = ({
           }}
         >
           <TableHeader
+            draggable={draggable}
             enableColumnResizing={enableColumnResizing}
             forceUpdate={forceUpdate}
             headersRef={headersRef}

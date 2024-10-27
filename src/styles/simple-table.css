@@ -116,6 +116,9 @@ body {
 .st-header-cell.clickable {
   cursor: pointer;
 }
+.st-header-cell.draggable {
+  cursor: grab;
+}
 
 /* Common styles for table header and cells */
 .st-header-cell,
@@ -123,7 +126,6 @@ body {
   border: var(--st-border-width) solid transparent;
   color: var(--slate-800);
   overflow: hidden;
-  cursor: pointer;
 }
 
 .st-cell.clickable {

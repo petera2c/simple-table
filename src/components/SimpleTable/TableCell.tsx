@@ -40,6 +40,8 @@ const TableCell = forwardRef(
     const [localContent, setLocalContent] = useState(content);
     const [isEditing, setIsEditing] = useState(false);
 
+    const clickable = Boolean(header?.isEditable);
+
     const isOddRow = rowIndex % 2 === 0;
 
     const cellClassName = `st-cell ${
@@ -48,7 +50,7 @@ const TableCell = forwardRef(
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${isOddRow ? "st-cell-odd-row" : ""}`;
+    } ${isOddRow ? "st-cell-odd-row" : ""} ${clickable ? "clickable" : ""}`;
 
     // Update local content when the content changes
     useEffect(() => {
