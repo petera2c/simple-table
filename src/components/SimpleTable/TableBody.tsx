@@ -7,6 +7,7 @@ import TableRowSeparator from "./TableRowSeparator";
 import CellChangeProps from "../../types/CellChangeProps";
 
 interface TableBodyProps {
+  cellsSelectable: boolean;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (rowIndex: number, columnIndex: number) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
@@ -21,6 +22,7 @@ interface TableBodyProps {
 }
 
 const TableBody = ({
+  cellsSelectable,
   getBorderClass,
   handleMouseDown,
   handleMouseOver,

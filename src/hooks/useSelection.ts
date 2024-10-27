@@ -6,10 +6,15 @@ interface Cell {
   col: number;
 }
 
-const useSelection = (
-  rows: { [key: string]: any }[],
-  headers: HeaderObject[]
-) => {
+const useSelection = ({
+  cellsSelectable,
+  headers,
+  rows,
+}: {
+  cellsSelectable: boolean;
+  headers: HeaderObject[];
+  rows: { [key: string]: any }[];
+}) => {
   const [selectedCells, setSelectedCells] = useState<Cell[]>([]);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
@@ -42,12 +47,14 @@ const useSelection = (
   }, [copyToClipboard, selectedCells]);
 
   const handleMouseDown = (rowIndex: number, colIndex: number) => {
+    if (!cellsSelectable) return;
     isSelecting.current = true;
     startCell.current = { row: rowIndex, col: colIndex };
     setSelectedCells([{ row: rowIndex, col: colIndex }]);
   };
 
   const handleMouseOver = (rowIndex: number, colIndex: number) => {
+    if (!cellsSelectable) return;
     if (isSelecting.current && startCell.current) {
       const newSelectedCells = [];
       const startRow = Math.min(startCell.current.row, rowIndex);

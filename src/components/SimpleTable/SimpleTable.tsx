@@ -23,6 +23,7 @@ import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor";
 export interface SpreadsheetProps {
+  cellsSelectable?: boolean;
   defaultHeaders: HeaderObject[];
   draggable?: boolean;
   editColumns?: boolean;
@@ -45,6 +46,7 @@ export interface SpreadsheetProps {
 }
 
 const SimpleTable = ({
+  cellsSelectable = false,
   defaultHeaders,
   draggable = false,
   editColumns = false,
@@ -96,7 +98,11 @@ const SimpleTable = ({
     getBorderClass,
     isTopLeftCell,
     setSelectedCells,
-  } = useSelection(sortedRows, headersRef.current);
+  } = useSelection({
+    cellsSelectable,
+    headers: headersRef.current,
+    rows: sortedRows,
+  });
 
   // Derived state
   const currentHeaders = headersRef.current.filter((header) => !header.hide);
@@ -185,6 +191,7 @@ const SimpleTable = ({
             sortUpIcon={sortUpIcon}
           />
           <TableBody
+            cellsSelectable={cellsSelectable}
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
             handleMouseOver={handleMouseOver}
