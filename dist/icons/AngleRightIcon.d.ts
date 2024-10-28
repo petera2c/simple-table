@@ -1,3 +1,4 @@
-import React from "react";
-declare const AngleRightIcon: React.FC;
+declare const AngleRightIcon: ({ className }: {
+    className: string;
+}) => import("react/jsx-runtime").JSX.Element;
 export default AngleRightIcon;

@@ -1,9 +1,6 @@
-/// <reference types="react" />
-import HeaderObject from "../../types/HeaderObject";
 type TableColumnEditorProps = {
+    columnEditorText: string;
     editColumns: boolean;
-    headersRef: React.MutableRefObject<HeaderObject[]>;
-    onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
 };
-declare const TableColumnEditor: ({ editColumns, headersRef, onTableHeaderDragEnd, }: TableColumnEditorProps) => null;
+declare const TableColumnEditor: ({ columnEditorText, editColumns, }: TableColumnEditorProps) => import("react/jsx-runtime").JSX.Element | null;
 export default TableColumnEditor;
