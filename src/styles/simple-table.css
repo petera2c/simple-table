@@ -92,6 +92,12 @@ body {
   height: auto;
 }
 
+.st-table-wrapper {
+  position: relative;
+  display: flex;
+  width: max-content;
+}
+
 /* Main table styling */
 .st-table {
   position: relative;
@@ -301,19 +307,19 @@ body {
 .editable-cell-input:focus {
   border: var(--st-border-width) solid var(--blue-500);
 }
-
 .st-column-editor {
   position: sticky;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  writing-mode: vertical-rl;
-  background-color: var(--st-footer-background-color);
+  right: 0;
+  z-index: 1;
+
+  background: var(--st-footer-background-color);
+  border-left: var(--st-border-width) solid var(--st-border-color);
   padding: 8px;
 
-  border-top: var(--st-border-width) solid var(--st-border-color);
+  writing-mode: vertical-rl;
+  cursor: pointer;
+  user-select: none;
+  color: var(--slate-500);
 }
 
 .st-column-editor.open {

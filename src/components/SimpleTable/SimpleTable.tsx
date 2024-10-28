@@ -23,6 +23,8 @@ import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor";
 export interface SpreadsheetProps {
+  // Text for the column editor
+  columnEditorText?: string;
   // Flag for column resizing
   columnResizing?: boolean;
   // Default headers
@@ -61,6 +63,7 @@ export interface SpreadsheetProps {
 }
 
 const SimpleTable = ({
+  columnEditorText = "Columns",
   columnResizing = false,
   defaultHeaders,
   draggable = false,
@@ -182,51 +185,52 @@ const SimpleTable = ({
         className="st-wrapper"
         style={height ? { height } : {}}
       >
-        <div
-          className="st-table"
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          style={{
-            gridTemplateColumns: `${currentHeaders
-              ?.map((header) => `${header.width}px`)
-              .join(" ")} 1fr`,
-          }}
-        >
-          <TableHeader
-            draggable={draggable}
-            columnResizing={columnResizing}
-            forceUpdate={forceUpdate}
-            headersRef={headersRef}
-            isWidthDragging={isWidthDragging}
-            onSort={onSort}
-            onTableHeaderDragEnd={onTableHeaderDragEnd}
-            setIsWidthDragging={setIsWidthDragging}
-            shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
-            sort={sort}
-            sortDownIcon={sortDownIcon}
-            sortUpIcon={sortUpIcon}
-            tableRef={tableRef}
-          />
-          <TableBody
-            getBorderClass={getBorderClass}
-            handleMouseDown={handleMouseDown}
-            handleMouseOver={handleMouseOver}
-            headers={headersRef.current}
-            isSelected={isSelected}
-            isTopLeftCell={isTopLeftCell}
-            isWidthDragging={isWidthDragging}
-            onCellChange={onCellChange}
-            shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
-            shouldPaginate={shouldPaginate}
-            sortedRows={currentRows}
-            tableRef={tableRef}
+        <div className="st-table-wrapper">
+          <div
+            className="st-table"
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            style={{
+              gridTemplateColumns: `${currentHeaders
+                ?.map((header) => `${header.width}px`)
+                .join(" ")} 1fr`,
+            }}
+          >
+            <TableHeader
+              draggable={draggable}
+              columnResizing={columnResizing}
+              forceUpdate={forceUpdate}
+              headersRef={headersRef}
+              isWidthDragging={isWidthDragging}
+              onSort={onSort}
+              onTableHeaderDragEnd={onTableHeaderDragEnd}
+              setIsWidthDragging={setIsWidthDragging}
+              shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
+              sort={sort}
+              sortDownIcon={sortDownIcon}
+              sortUpIcon={sortUpIcon}
+              tableRef={tableRef}
+            />
+            <TableBody
+              getBorderClass={getBorderClass}
+              handleMouseDown={handleMouseDown}
+              handleMouseOver={handleMouseOver}
+              headers={headersRef.current}
+              isSelected={isSelected}
+              isTopLeftCell={isTopLeftCell}
+              isWidthDragging={isWidthDragging}
+              onCellChange={onCellChange}
+              shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
+              shouldPaginate={shouldPaginate}
+              sortedRows={currentRows}
+              tableRef={tableRef}
+            />
+          </div>
+          <TableColumnEditor
+            columnEditorText={columnEditorText}
+            editColumns={editColumns}
           />
         </div>
-        <TableColumnEditor
-          editColumns={editColumns}
-          headersRef={headersRef}
-          onTableHeaderDragEnd={onTableHeaderDragEnd}
-        />
         <TableFooter
           currentPage={currentPage}
           hideFooter={hideFooter}
