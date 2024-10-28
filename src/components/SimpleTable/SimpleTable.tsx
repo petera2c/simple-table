@@ -216,7 +216,6 @@ const SimpleTable = ({
             isTopLeftCell={isTopLeftCell}
             isWidthDragging={isWidthDragging}
             onCellChange={onCellChange}
-            selectableCells={selectableCells}
             shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
             shouldPaginate={shouldPaginate}
             sortedRows={currentRows}

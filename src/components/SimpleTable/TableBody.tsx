@@ -7,7 +7,6 @@ import TableRowSeparator from "./TableRowSeparator";
 import CellChangeProps from "../../types/CellChangeProps";
 
 interface TableBodyProps {
-  selectableCells: boolean;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (rowIndex: number, columnIndex: number) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
@@ -31,7 +30,6 @@ const TableBody = ({
   isTopLeftCell,
   isWidthDragging,
   onCellChange,
-  selectableCells,
   shouldDisplayLastColumnCell,
   shouldPaginate,
   sortedRows,
