@@ -1,8 +1,6 @@
-import React from "react";
-
-const AngleRightIcon: React.FC = () => (
+const AngleRightIcon = ({ className }: { className: string }) => (
   <svg
-    className="angle-icon"
+    className={className}
     viewBox="0 0 24 24"
     width="24"
     height="24"

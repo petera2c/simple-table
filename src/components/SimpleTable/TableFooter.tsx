@@ -22,6 +22,8 @@ const TableFooter = ({
   totalRows,
 }: TableFooterProps) => {
   const totalPages = Math.ceil(totalRows / rowsPerPage);
+  const hasPrevPage = currentPage > 1;
+  const hasNextPage = currentPage < totalPages;
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -34,16 +36,16 @@ const TableFooter = ({
   return (
     <div className="st-footer">
       <button
-        className="st-next-prev-btn"
+        className={`st-next-prev-btn ${!hasPrevPage ? "disabled" : ""}`}
         onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+        disabled={!hasPrevPage}
       >
         {prevIcon}
       </button>
       <button
-        className="st-next-prev-btn"
+        className={`st-next-prev-btn ${!hasNextPage ? "disabled" : ""}`}
         onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        disabled={!hasNextPage}
       >
         {nextIcon}
       </button>

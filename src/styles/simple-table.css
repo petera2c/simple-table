@@ -247,13 +247,19 @@ body {
   padding: 4px;
   cursor: pointer;
   background-color: transparent;
-  color: var(--slate-600);
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s ease;
 }
+.st-next-prev-btn {
+  fill: var(--slate-600);
+}
+.disabled > .st-next-prev-icon {
+  cursor: not-allowed;
+  fill: var(--slate-400);
+}
 
-.st-next-prev-btn:hover {
+.st-next-prev-btn:not(.disabled):hover {
   background-color: var(--slate-100);
 }
 
