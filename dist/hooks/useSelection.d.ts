@@ -4,9 +4,13 @@ interface Cell {
     row: number;
     col: number;
 }
-declare const useSelection: (rows: {
-    [key: string]: any;
-}[], headers: HeaderObject[]) => {
+declare const useSelection: ({ selectableCells, headers, rows, }: {
+    selectableCells: boolean;
+    headers: HeaderObject[];
+    rows: {
+        [key: string]: any;
+    }[];
+}) => {
     selectedCells: Cell[];
     handleMouseDown: (rowIndex: number, colIndex: number) => void;
     handleMouseOver: (rowIndex: number, colIndex: number) => void;

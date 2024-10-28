@@ -1,3 +1,4 @@
+import { RefObject } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
 interface TableBodyProps {
@@ -14,8 +15,9 @@ interface TableBodyProps {
         [key: string]: any;
     }[];
     onCellChange?: (props: CellChangeProps) => void;
+    tableRef: RefObject<HTMLDivElement>;
 }
-declare const TableBody: ({ getBorderClass, handleMouseDown, handleMouseOver, headers, isSelected, isTopLeftCell, isWidthDragging, onCellChange, shouldDisplayLastColumnCell, shouldPaginate, sortedRows, }: TableBodyProps & {
+declare const TableBody: ({ getBorderClass, handleMouseDown, handleMouseOver, headers, isSelected, isTopLeftCell, isWidthDragging, onCellChange, shouldDisplayLastColumnCell, shouldPaginate, sortedRows, tableRef, }: TableBodyProps & {
     shouldDisplayLastColumnCell: boolean;
 }) => import("react/jsx-runtime").JSX.Element;
 export default TableBody;
