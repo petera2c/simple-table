@@ -52,13 +52,18 @@ The Simple Table component accepts the following props:
   - **cellRenderer**: An optional function that takes a row object and returns a `ReactNode` for custom cell rendering.
 
 - **columnResizing**: A boolean to enable or disable column resizing. Default is `true`.
+- **draggable**: A boolean to enable or disable column dragging.
+- **editColumns**: A boolean to enable or disable column editing.
 - **height**: The height of the table.
 - **hideFooter**: A boolean to hide or show the footer. Default is `false`.
 - **nextIcon**: A React element to display as the next page icon. Default is `<AngleRightIcon />`.
 - **prevIcon**: A React element to display as the previous page icon. Default is `<AngleLeftIcon />`.
 - **rows**: An array of data rows to be displayed in the table.
 - **rowsPerPage**: The number of rows to display per page. Default is `10`.
+- **selectableCells**: A boolean to enable or disable cell selection.
 - **shouldPaginate**: A boolean to enable or disable pagination. Default is `true`.
+- **sortDownIcon**: A React element to display as the sort down icon.
+- **sortUpIcon**: A React element to display as the sort up icon.
 - **onCellChange**: A function that is called when a cell value changes.
 
 ## Customizable Styles
@@ -108,6 +113,9 @@ The following CSS class names are used in the table and can be customized:
 - `.st-next-prev-btn`
 - `.st-page-btn`
 - `.st-page-btn.active`
+- `.editable-cell-input`
+- `.st-column-editor`
+- `.st-column-editor.open`
 
 For more detailed usage and examples, please refer to our [documentation](http://www.simple-table.com/docs).
 
