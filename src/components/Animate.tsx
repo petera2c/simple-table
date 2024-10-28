@@ -39,7 +39,8 @@ const Animate = ({
   useLayoutEffect(() => {
     const prevBoundingBox = calculateBoundingBoxes(prevChildren);
     setPrevBoundingBox(prevBoundingBox);
-    // Need to add a onScroll event listener to the document to reset the bounding box
+
+    const currentTableRef = tableRef.current; // Store the current ref value
 
     const handleScroll = () => {
       isScrolling.current = true;
@@ -52,11 +53,11 @@ const Animate = ({
       isScrolling.current = false;
     };
 
-    tableRef.current?.addEventListener("scroll", handleScroll);
-    tableRef.current?.addEventListener("scrollend", handleScrollEnd);
+    currentTableRef?.addEventListener("scroll", handleScroll);
+    currentTableRef?.addEventListener("scrollend", handleScrollEnd);
     return () => {
-      tableRef.current?.removeEventListener("scroll", handleScroll);
-      tableRef.current?.removeEventListener("scrollend", handleScrollEnd);
+      currentTableRef?.removeEventListener("scroll", handleScroll);
+      currentTableRef?.removeEventListener("scrollend", handleScrollEnd);
     };
   }, [prevChildren, tableRef]);
 
