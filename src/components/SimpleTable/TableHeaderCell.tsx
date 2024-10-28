@@ -118,7 +118,7 @@ const TableHeaderCell = forwardRef(
       const startWidth = header.width;
 
       const throttledMouseMove = throttle((e: MouseEvent) => {
-        const newWidth = Math.max(startWidth + (e.clientX - startX), 10); // Ensure a minimum width
+        const newWidth = Math.max(startWidth + (e.clientX - startX), 40); // Ensure a minimum width
         if (!header) return;
         headersRef.current[index].width = newWidth;
         forceUpdate();

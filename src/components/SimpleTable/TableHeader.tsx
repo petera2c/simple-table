@@ -75,7 +75,6 @@ const TableHeader = ({
           visible={shouldDisplayLastColumnCell}
         />
       </Animate>
-      <TableRowSeparator />
     </>
   );
 };

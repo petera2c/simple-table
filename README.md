@@ -4,8 +4,6 @@ Any questions, support or features requests join me on Dicord [https://discord.g
 
 Simple Table is a React grid package designed to provide a flexible and easy-to-use table component for your React applications.
 
-![Simple Table Example](assets/table-example.png)
-
 ## Example Usage
 
 ```tsx
@@ -123,8 +121,6 @@ The following CSS class names are used in the table and can be customized:
 - `.editable-cell-input`
 - `.st-column-editor`
 - `.st-column-editor.open`
-
-For more detailed usage and examples, please refer to our [documentation](http://www.simple-table.com/docs).
 
 ## License
 

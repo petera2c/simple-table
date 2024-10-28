@@ -35,6 +35,7 @@ export const SampleTable = () => {
         onCellChange={updateCell}
         selectableCells
         // shouldPaginate
+        rowsPerPage={5}
       />
     </div>
   );

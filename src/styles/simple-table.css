@@ -89,13 +89,13 @@ body {
   border-radius: var(--st-border-radius);
   overflow: auto;
   max-height: 100dvh;
-  height: auto;
 }
 
 .st-table-wrapper {
   position: relative;
   display: flex;
   width: max-content;
+  overflow: visible;
 }
 
 /* Main table styling */
@@ -119,6 +119,8 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
+  border-top: var(--st-border-width) solid transparent;
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-cell.clickable {
   cursor: pointer;
@@ -130,7 +132,6 @@ body {
 /* Common styles for table header and cells */
 .st-header-cell,
 .st-cell {
-  border: var(--st-border-width) solid transparent;
   color: var(--slate-800);
   overflow: hidden;
 }
@@ -142,11 +143,13 @@ body {
 .st-header-cell,
 .st-cell,
 .st-cell-editing {
-  position: relative;
-  height: 100%;
   width: 100%;
   height: 40px;
   font-family: "Nunito";
+}
+
+.st-cell-editing {
+  position: relative;
 }
 
 .st-header-label {
@@ -163,6 +166,10 @@ body {
   overflow: hidden;
   width: 100%;
 }
+.st-cell {
+  position: relative;
+  border: var(--st-border-width) solid transparent;
+}
 .st-sort-icon-container {
   display: flex;
   flex-direction: column;
@@ -174,8 +181,9 @@ body {
   fill: var(--slate-500);
 }
 
-/* Resize handle for table headers */
 .st-header-resize-handle {
+  top: 0;
+  right: 0;
   width: 5px;
   height: 20px;
   cursor: col-resize;
@@ -309,12 +317,14 @@ body {
 }
 .st-column-editor {
   position: sticky;
+  top: 0;
   right: 0;
   z-index: 1;
+  height: calc(100% - 66px);
+  padding: 8px 4px;
 
   background: var(--st-footer-background-color);
   border-left: var(--st-border-width) solid var(--st-border-color);
-  padding: 8px;
 
   writing-mode: vertical-rl;
   cursor: pointer;
