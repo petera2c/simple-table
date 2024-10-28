@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   forwardRef,
   useRef,
@@ -7,6 +8,7 @@ import {
   ReactNode,
   DragEvent,
   useEffect,
+  ForwardedRef,
 } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
@@ -30,7 +32,7 @@ interface TableHeaderCellProps {
   sortUpIcon?: ReactNode;
 }
 
-const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
+const TableHeaderCell = forwardRef(
   (
     {
       draggable,
@@ -46,8 +48,8 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
       sort,
       sortDownIcon,
       sortUpIcon,
-    },
-    ref
+    }: TableHeaderCellProps,
+    ref: ForwardedRef<HTMLDivElement>
   ) => {
     // Ref
     const prevDraggingPosition = useRef({ pageX: 0, pageY: 0 });
@@ -170,6 +172,8 @@ const TableHeaderCell = forwardRef<HTMLDivElement, TableHeaderCellProps>(
           onDragStart={onDragStart}
           onDragOver={(event) => onDragOver(event, header)}
           onDragEnd={handleDragEndWrapper}
+          onMouseEnter={() => (document.body.style.overflow = "hidden")}
+          onMouseLeave={() => (document.body.style.overflow = "auto")}
         >
           {header?.label}
         </div>

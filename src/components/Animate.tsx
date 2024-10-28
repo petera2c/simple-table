@@ -1,4 +1,10 @@
-import React, { useState, useLayoutEffect, useEffect } from "react";
+import React, {
+  useState,
+  useLayoutEffect,
+  useEffect,
+  RefObject,
+  useRef,
+} from "react";
 import usePrevious from "../hooks/usePrevious";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 
@@ -6,15 +12,23 @@ interface AnimateProps {
   allowHorizontalAnimate?: boolean;
   children: any;
   pauseAnimation?: boolean;
+  tableRef: RefObject<HTMLDivElement>;
 }
 
 const Animate = ({
   allowHorizontalAnimate = true,
   children,
   pauseAnimation,
+  tableRef,
 }: AnimateProps) => {
+  // Refs
+  const isScrolling = useRef(false);
+
+  // Local state
   const [boundingBox, setBoundingBox] = useState<any>({});
   const [prevBoundingBox, setPrevBoundingBox] = useState<any>({});
+
+  // Hooks
   const prevChildren = usePrevious(children);
 
   useLayoutEffect(() => {
@@ -25,14 +39,33 @@ const Animate = ({
   useLayoutEffect(() => {
     const prevBoundingBox = calculateBoundingBoxes(prevChildren);
     setPrevBoundingBox(prevBoundingBox);
-  }, [prevChildren]);
+    // Need to add a onScroll event listener to the document to reset the bounding box
+
+    const handleScroll = () => {
+      isScrolling.current = true;
+      const prevBoundingBox = calculateBoundingBoxes(prevChildren);
+      setBoundingBox(prevBoundingBox);
+      setPrevBoundingBox(prevBoundingBox);
+    };
+
+    const handleScrollEnd = () => {
+      isScrolling.current = false;
+    };
+
+    tableRef.current?.addEventListener("scroll", handleScroll);
+    tableRef.current?.addEventListener("scrollend", handleScrollEnd);
+    return () => {
+      tableRef.current?.removeEventListener("scroll", handleScroll);
+      tableRef.current?.removeEventListener("scrollend", handleScrollEnd);
+    };
+  }, [prevChildren, tableRef]);
 
   useEffect(() => {
-    if (pauseAnimation) return;
+    if (pauseAnimation || isScrolling.current) return;
     const hasPrevBoundingBox = Object.keys(prevBoundingBox).length;
 
     if (hasPrevBoundingBox) {
-      React.Children.forEach(children, (child) => {
+      React.Children.forEach(children, (child, index) => {
         const domNode = child.ref.current;
         const firstBox = prevBoundingBox[child.key];
         const lastBox = boundingBox[child.key];

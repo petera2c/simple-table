@@ -23,25 +23,40 @@ import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor";
 export interface SpreadsheetProps {
+  // Flag for column resizing
   columnResizing?: boolean;
+  // Default headers
   defaultHeaders: HeaderObject[];
+  // Flag for draggable
   draggable?: boolean;
+  // Flag for column editing
   editColumns?: boolean;
+  // Height of the table
   height?: string;
+  // Flag for hiding the footer
   hideFooter?: boolean;
+  // Next icon
   nextIcon?: ReactNode;
+  // Cell change handler
   onCellChange?: ({
     accessor,
     newValue,
     originalRowIndex,
     row,
   }: CellChangeProps) => void;
+  // Previous icon
   prevIcon?: ReactNode;
+  // Rows data
   rows: { [key: string]: CellValue }[];
+  // Rows per page
   rowsPerPage?: number;
+  // Flag if can select cells
   selectableCells?: boolean;
+  // Flag for pagination
   shouldPaginate?: boolean;
+  // Sort down icon
   sortDownIcon?: ReactNode;
+  // Sort up icon
   sortUpIcon?: ReactNode;
 }
 
@@ -190,9 +205,9 @@ const SimpleTable = ({
             sort={sort}
             sortDownIcon={sortDownIcon}
             sortUpIcon={sortUpIcon}
+            tableRef={tableRef}
           />
           <TableBody
-            selectableCells={selectableCells}
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
             handleMouseOver={handleMouseOver}
@@ -201,9 +216,11 @@ const SimpleTable = ({
             isTopLeftCell={isTopLeftCell}
             isWidthDragging={isWidthDragging}
             onCellChange={onCellChange}
+            selectableCells={selectableCells}
             shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
             shouldPaginate={shouldPaginate}
             sortedRows={currentRows}
+            tableRef={tableRef}
           />
         </div>
         <TableColumnEditor

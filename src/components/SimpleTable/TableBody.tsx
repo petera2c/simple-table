@@ -1,4 +1,4 @@
-import { createRef, Fragment } from "react";
+import { createRef, Fragment, RefObject } from "react";
 import TableCell from "./TableCell";
 import Animate from "../Animate";
 import HeaderObject from "../../types/HeaderObject";
@@ -19,10 +19,10 @@ interface TableBodyProps {
   shouldPaginate: boolean;
   sortedRows: { [key: string]: any }[];
   onCellChange?: (props: CellChangeProps) => void;
+  tableRef: RefObject<HTMLDivElement>;
 }
 
 const TableBody = ({
-  selectableCells,
   getBorderClass,
   handleMouseDown,
   handleMouseOver,
@@ -31,9 +31,11 @@ const TableBody = ({
   isTopLeftCell,
   isWidthDragging,
   onCellChange,
+  selectableCells,
   shouldDisplayLastColumnCell,
   shouldPaginate,
   sortedRows,
+  tableRef,
 }: TableBodyProps & { shouldDisplayLastColumnCell: boolean }) => {
   return (
     <>
@@ -43,6 +45,7 @@ const TableBody = ({
             <Animate
               allowHorizontalAnimate={shouldPaginate}
               pauseAnimation={isWidthDragging}
+              tableRef={tableRef}
             >
               {headers.map((header, columnIndex) => {
                 let content = row[header.accessor];

@@ -1,4 +1,11 @@
-import { createRef, Dispatch, ReactNode, SetStateAction, useRef } from "react";
+import {
+  createRef,
+  Dispatch,
+  ReactNode,
+  RefObject,
+  SetStateAction,
+  useRef,
+} from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import HeaderObject from "../../types/HeaderObject";
@@ -20,6 +27,7 @@ interface TableHeaderProps {
   sort: SortConfig | null;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
+  tableRef: RefObject<HTMLDivElement>;
 }
 
 const TableHeader = ({
@@ -35,13 +43,14 @@ const TableHeader = ({
   sort,
   sortDownIcon,
   sortUpIcon,
+  tableRef,
 }: TableHeaderProps) => {
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   return (
     <>
-      <Animate pauseAnimation={isWidthDragging}>
+      <Animate pauseAnimation={isWidthDragging} tableRef={tableRef}>
         {headersRef.current?.map((header, index) => (
           <TableHeaderCell
             draggable={draggable}
