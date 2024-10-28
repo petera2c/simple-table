@@ -49,6 +49,8 @@ The Simple Table component accepts the following props:
   - **accessor**: A string used to access the corresponding data in each row.
   - **width**: A number specifying the width of the column.
   - **isEditable**: An optional boolean indicating if the column is editable.
+  - **isSortable**: An optional boolean indicating if the column is sortable.
+  - **type**: An optional string specifying the data type of the column. Can be "string", "number", "boolean", "date", or "enum".
   - **cellRenderer**: An optional function that takes a row object and returns a `ReactNode` for custom cell rendering.
 
 - **columnResizing**: A boolean to enable or disable column resizing. Default is `true`.
@@ -64,7 +66,12 @@ The Simple Table component accepts the following props:
 - **shouldPaginate**: A boolean to enable or disable pagination. Default is `true`.
 - **sortDownIcon**: A React element to display as the sort down icon.
 - **sortUpIcon**: A React element to display as the sort up icon.
-- **onCellChange**: A function that is called when a cell value changes.
+- **onCellChange**: A function that is called when a cell value changes. It receives an object with the following properties:
+  - **accessor**: The accessor of the column whose cell value changed.
+  - **newValue**: The new value of the cell.
+  - **newRowIndex**: The index of the row in the current page.
+  - **originalRowIndex**: The original index of the row in the entire dataset.
+  - **row**: The entire row object.
 
 ## Customizable Styles
 
