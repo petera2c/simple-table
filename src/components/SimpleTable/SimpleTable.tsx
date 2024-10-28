@@ -180,16 +180,13 @@ const SimpleTable = ({
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
-      <div
-        ref={tableRef}
-        className="st-wrapper"
-        style={height ? { height } : {}}
-      >
+      <div className="st-wrapper" style={height ? { height } : {}}>
         <div className="st-table-wrapper">
           <div
             className="st-table"
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
+            ref={tableRef}
             style={{
               gridTemplateColumns: `${currentHeaders
                 ?.map((header) => `${header.width}px`)
