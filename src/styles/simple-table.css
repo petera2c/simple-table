@@ -87,8 +87,8 @@ body {
   position: relative;
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  overflow: auto;
   max-height: 100dvh;
+  overflow: hidden;
 }
 
 .st-table-wrapper {
@@ -96,6 +96,8 @@ body {
   display: flex;
   width: max-content;
   overflow: visible;
+  height: 100%;
+  width: 100%;
 }
 
 /* Main table styling */
@@ -106,6 +108,8 @@ body {
   table-layout: auto;
   white-space: nowrap;
   width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 /* Styles for table header cells */
@@ -320,7 +324,6 @@ body {
   top: 0;
   right: 0;
   z-index: 1;
-  height: calc(100% - 66px);
   padding: 8px 4px;
 
   background: var(--st-footer-background-color);

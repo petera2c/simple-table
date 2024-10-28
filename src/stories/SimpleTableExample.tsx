@@ -29,12 +29,12 @@ export const SampleTable = () => {
         draggable
         editColumns
         defaultHeaders={SAMPLE_HEADERS}
-        // height="auto"
-        height="calc(100dvh - 4rem)"
+        height="auto"
+        // height="calc(100dvh - 4rem)"
         rows={rows}
         onCellChange={updateCell}
         selectableCells
-        // shouldPaginate
+        shouldPaginate
         rowsPerPage={5}
       />
     </div>
