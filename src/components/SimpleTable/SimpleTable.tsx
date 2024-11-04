@@ -21,7 +21,7 @@ import SortConfig from "../../types/SortConfig";
 import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
-import TableColumnEditor from "./TableColumnEditor";
+import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 export interface SpreadsheetProps {
   columnEditorText?: string; // Text for the column editor
   columnResizing?: boolean; // Flag for column resizing

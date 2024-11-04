@@ -85,13 +85,15 @@ const Animate = ({
           requestAnimationFrame(() => {
             // Before the DOM paints, invert child to old position
             domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
-            domNode.style.transition = "transform 0s";
+            domNode.style.transition = "transform 0s, opacity 0s";
+            // domNode.style.opacity = "0.5"; // Optional: Add a fade effect
 
             requestAnimationFrame(() => {
-              // After the previous frame, remove
-              // the transition to play the animation
+              // After the previous frame, remove the transition to play the animation
               domNode.style.transform = "";
-              domNode.style.transition = "transform 500ms";
+              domNode.style.transition =
+                "transform 300ms ease-out, opacity 300ms ease-out";
+              // domNode.style.opacity = "1"; // Optional: Restore opacity
             });
           });
         }
