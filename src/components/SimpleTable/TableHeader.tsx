@@ -10,7 +10,6 @@ import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import HeaderObject from "../../types/HeaderObject";
 import TableLastColumnCell from "./TableLastColumnCell";
-import TableRowSeparator from "./TableRowSeparator";
 import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 

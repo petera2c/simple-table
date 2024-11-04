@@ -25,27 +25,18 @@ export const SampleTable = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
-        // Enable column resizing
-        columnResizing
-        // Enable draggable columns
-        draggable
-        // Enable editing columns
-        editColumns
-        // Set the headers
-        defaultHeaders={SAMPLE_HEADERS}
-        // Set rows data
-        rows={rows}
-        // Handle cell changes
-        onCellChange={updateCell}
-        // Enable selectable cells
-        selectableCells
+        columnResizing // Enable column resizing
+        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        draggable // Enable draggable columns
+        editColumns // Enable editing columns
+        rows={rows} // Set rows data
+        onCellChange={updateCell} // Handle cell changes
+        selectableCells // Enable selectable cells
         // If using pagination use an auto height
         // height="auto"
         // shouldPaginate
         // rowsPerPage={5}
-
-        // If not using pagination use a fixed height
-        height="calc(100dvh - 4rem)"
+        height="calc(100dvh - 4rem)" // If not using pagination use a fixed height
       />
     </div>
   );

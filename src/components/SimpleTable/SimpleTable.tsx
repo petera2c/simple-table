@@ -23,43 +23,27 @@ import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor";
 export interface SpreadsheetProps {
-  // Text for the column editor
-  columnEditorText?: string;
-  // Flag for column resizing
-  columnResizing?: boolean;
-  // Default headers
-  defaultHeaders: HeaderObject[];
-  // Flag for draggable
-  draggable?: boolean;
-  // Flag for column editing
-  editColumns?: boolean;
-  // Height of the table
-  height?: string;
-  // Flag for hiding the footer
-  hideFooter?: boolean;
-  // Next icon
-  nextIcon?: ReactNode;
-  // Cell change handler
+  columnEditorText?: string; // Text for the column editor
+  columnResizing?: boolean; // Flag for column resizing
+  defaultHeaders: HeaderObject[]; // Default headers
+  draggable?: boolean; // Flag for draggable
+  editColumns?: boolean; // Flag for column editing
+  height?: string; // Height of the table
+  hideFooter?: boolean; // Flag for hiding the footer
+  nextIcon?: ReactNode; // Next icon
   onCellChange?: ({
     accessor,
     newValue,
     originalRowIndex,
     row,
   }: CellChangeProps) => void;
-  // Previous icon
-  prevIcon?: ReactNode;
-  // Rows data
-  rows: { [key: string]: CellValue }[];
-  // Rows per page
-  rowsPerPage?: number;
-  // Flag if can select cells
-  selectableCells?: boolean;
-  // Flag for pagination
-  shouldPaginate?: boolean;
-  // Sort down icon
-  sortDownIcon?: ReactNode;
-  // Sort up icon
-  sortUpIcon?: ReactNode;
+  prevIcon?: ReactNode; // Previous icon
+  rows: { [key: string]: CellValue }[]; // Rows data
+  rowsPerPage?: number; // Rows per page
+  selectableCells?: boolean; // Flag if can select cells
+  shouldPaginate?: boolean; // Flag for pagination
+  sortDownIcon?: ReactNode; // Sort down icon
+  sortUpIcon?: ReactNode; // Sort up icon
 }
 
 const SimpleTable = ({

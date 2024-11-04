@@ -330,5 +330,5 @@ body {
 }
 
 .st-column-editor.open {
-  background-color: var(--slate-100);
+  background-color: red;
 }
