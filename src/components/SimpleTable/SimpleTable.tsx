@@ -23,6 +23,7 @@ import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 export interface SpreadsheetProps {
+  columnEditorPosition?: "left" | "right";
   columnEditorText?: string; // Text for the column editor
   columnResizing?: boolean; // Flag for column resizing
   defaultHeaders: HeaderObject[]; // Default headers
@@ -47,6 +48,7 @@ export interface SpreadsheetProps {
 }
 
 const SimpleTable = ({
+  columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnResizing = false,
   defaultHeaders,
@@ -210,6 +212,7 @@ const SimpleTable = ({
           <TableColumnEditor
             columnEditorText={columnEditorText}
             editColumns={editColumns}
+            position={columnEditorPosition}
           />
         </div>
         <TableFooter
