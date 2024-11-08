@@ -11,6 +11,7 @@ interface TableBodyProps {
   handleMouseDown: (rowIndex: number, columnIndex: number) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
   headers: HeaderObject[];
+  hiddenColumns: Record<string, boolean>;
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   isWidthDragging: boolean;
@@ -26,6 +27,7 @@ const TableBody = ({
   handleMouseDown,
   handleMouseOver,
   headers,
+  hiddenColumns,
   isSelected,
   isTopLeftCell,
   isWidthDragging,
@@ -46,6 +48,8 @@ const TableBody = ({
               tableRef={tableRef}
             >
               {headers.map((header, columnIndex) => {
+                if (hiddenColumns[header.accessor]) return null;
+
                 let content = row[header.accessor];
 
                 if (header.cellRenderer) {

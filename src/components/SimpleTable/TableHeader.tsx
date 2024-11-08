@@ -18,6 +18,7 @@ interface TableHeaderProps {
   columnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
+  hiddenColumns: Record<string, boolean>;
   isWidthDragging: boolean;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
@@ -34,6 +35,7 @@ const TableHeader = ({
   columnResizing,
   forceUpdate,
   headersRef,
+  hiddenColumns,
   isWidthDragging,
   onSort,
   onTableHeaderDragEnd,
@@ -50,25 +52,29 @@ const TableHeader = ({
   return (
     <>
       <Animate pauseAnimation={isWidthDragging} tableRef={tableRef}>
-        {headersRef.current?.map((header, index) => (
-          <TableHeaderCell
-            draggable={draggable}
-            draggedHeaderRef={draggedHeaderRef}
-            columnResizing={columnResizing}
-            forceUpdate={forceUpdate}
-            headersRef={headersRef}
-            hoveredHeaderRef={hoveredHeaderRef}
-            index={index}
-            key={header.accessor}
-            onSort={onSort}
-            onTableHeaderDragEnd={onTableHeaderDragEnd}
-            ref={createRef()}
-            setIsWidthDragging={setIsWidthDragging}
-            sort={sort}
-            sortDownIcon={sortDownIcon}
-            sortUpIcon={sortUpIcon}
-          />
-        ))}
+        {headersRef.current?.map((header, index) => {
+          if (hiddenColumns[header.accessor]) return null;
+
+          return (
+            <TableHeaderCell
+              draggable={draggable}
+              draggedHeaderRef={draggedHeaderRef}
+              columnResizing={columnResizing}
+              forceUpdate={forceUpdate}
+              headersRef={headersRef}
+              hoveredHeaderRef={hoveredHeaderRef}
+              index={index}
+              key={header.accessor}
+              onSort={onSort}
+              onTableHeaderDragEnd={onTableHeaderDragEnd}
+              ref={createRef()}
+              setIsWidthDragging={setIsWidthDragging}
+              sort={sort}
+              sortDownIcon={sortDownIcon}
+              sortUpIcon={sortUpIcon}
+            />
+          );
+        })}
         <TableLastColumnCell
           ref={createRef()}
           visible={shouldDisplayLastColumnCell}

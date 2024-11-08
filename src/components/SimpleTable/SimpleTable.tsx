@@ -82,6 +82,9 @@ const SimpleTable = ({
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const headersRef = useRef(defaultHeaders);
   const [sort, setSort] = useState<SortConfig | null>(null);
+  const [hiddenColumns, setHiddenColumns] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -164,6 +167,13 @@ const SimpleTable = ({
     };
   }, [setSelectedCells]);
 
+  const gridTemplateColumns = useMemo(() => {
+    return `${currentHeaders
+      .filter((header) => hiddenColumns[header.accessor] !== true)
+      .map((header) => `${header.width}px`)
+      .join(" ")} 1fr`;
+  }, [currentHeaders, hiddenColumns]);
+
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
       <div className="st-wrapper" style={height ? { height } : {}}>
@@ -174,16 +184,15 @@ const SimpleTable = ({
             onMouseLeave={handleMouseUp}
             ref={tableRef}
             style={{
-              gridTemplateColumns: `${currentHeaders
-                ?.map((header) => `${header.width}px`)
-                .join(" ")} 1fr`,
+              gridTemplateColumns,
             }}
           >
             <TableHeader
-              draggable={draggable}
               columnResizing={columnResizing}
+              draggable={draggable}
               forceUpdate={forceUpdate}
               headersRef={headersRef}
+              hiddenColumns={hiddenColumns}
               isWidthDragging={isWidthDragging}
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
@@ -199,6 +208,7 @@ const SimpleTable = ({
               handleMouseDown={handleMouseDown}
               handleMouseOver={handleMouseOver}
               headers={headersRef.current}
+              hiddenColumns={hiddenColumns}
               isSelected={isSelected}
               isTopLeftCell={isTopLeftCell}
               isWidthDragging={isWidthDragging}
@@ -210,9 +220,12 @@ const SimpleTable = ({
             />
           </div>
           <TableColumnEditor
+            headers={headersRef.current}
             columnEditorText={columnEditorText}
             editColumns={editColumns}
             position={columnEditorPosition}
+            setHiddenColumns={setHiddenColumns}
+            hiddenColumns={hiddenColumns}
           />
         </div>
         <TableFooter

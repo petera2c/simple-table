@@ -66,7 +66,8 @@ const Animate = ({
     const hasPrevBoundingBox = Object.keys(prevBoundingBox).length;
 
     if (hasPrevBoundingBox) {
-      React.Children.forEach(children, (child, index) => {
+      React.Children.forEach(children, (child) => {
+        if (!child) return;
         const domNode = child.ref.current;
         const firstBox = prevBoundingBox[child.key];
         const lastBox = boundingBox[child.key];

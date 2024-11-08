@@ -1,16 +1,23 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import TableColumnEditorPopout from "./TableColumnEditorPopout";
+import HeaderObject from "../../../types/HeaderObject";
 
 type TableColumnEditorProps = {
+  headers: HeaderObject[];
   columnEditorText: string;
   editColumns: boolean;
   position: "left" | "right";
+  setHiddenColumns: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
+  hiddenColumns: { [key: string]: boolean };
 };
 
 const TableColumnEditor = ({
   columnEditorText,
   editColumns,
+  headers,
   position = "right",
+  setHiddenColumns,
+  hiddenColumns,
 }: TableColumnEditorProps) => {
   const [open, setOpen] = useState(false);
 
@@ -27,9 +34,12 @@ const TableColumnEditor = ({
     >
       <div className="st-column-editor-text">{columnEditorText}</div>
       <TableColumnEditorPopout
+        headers={headers}
         open={open}
         position={position}
         setOpen={setOpen}
+        setHiddenColumns={setHiddenColumns}
+        hiddenColumns={hiddenColumns}
       />
     </div>
   );
