@@ -6,6 +6,7 @@ interface TableBodyProps {
     handleMouseDown: (rowIndex: number, columnIndex: number) => void;
     handleMouseOver: (rowIndex: number, columnIndex: number) => void;
     headers: HeaderObject[];
+    hiddenColumns: Record<string, boolean>;
     isSelected: (rowIndex: number, columnIndex: number) => boolean;
     isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
     isWidthDragging: boolean;
@@ -17,7 +18,7 @@ interface TableBodyProps {
     onCellChange?: (props: CellChangeProps) => void;
     tableRef: RefObject<HTMLDivElement>;
 }
-declare const TableBody: ({ getBorderClass, handleMouseDown, handleMouseOver, headers, isSelected, isTopLeftCell, isWidthDragging, onCellChange, shouldDisplayLastColumnCell, shouldPaginate, sortedRows, tableRef, }: TableBodyProps & {
+declare const TableBody: ({ getBorderClass, handleMouseDown, handleMouseOver, headers, hiddenColumns, isSelected, isTopLeftCell, isWidthDragging, onCellChange, shouldDisplayLastColumnCell, shouldPaginate, sortedRows, tableRef, }: TableBodyProps & {
     shouldDisplayLastColumnCell: boolean;
 }) => import("react/jsx-runtime").JSX.Element;
 export default TableBody;

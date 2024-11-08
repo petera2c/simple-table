@@ -7,6 +7,7 @@ interface TableHeaderProps {
     columnResizing: boolean;
     forceUpdate: () => void;
     headersRef: React.RefObject<HeaderObject[]>;
+    hiddenColumns: Record<string, boolean>;
     isWidthDragging: boolean;
     onSort: OnSortProps;
     onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
@@ -17,5 +18,5 @@ interface TableHeaderProps {
     sortUpIcon?: ReactNode;
     tableRef: RefObject<HTMLDivElement>;
 }
-declare const TableHeader: ({ draggable, columnResizing, forceUpdate, headersRef, isWidthDragging, onSort, onTableHeaderDragEnd, setIsWidthDragging, shouldDisplayLastColumnCell, sort, sortDownIcon, sortUpIcon, tableRef, }: TableHeaderProps) => import("react/jsx-runtime").JSX.Element;
+declare const TableHeader: ({ draggable, columnResizing, forceUpdate, headersRef, hiddenColumns, isWidthDragging, onSort, onTableHeaderDragEnd, setIsWidthDragging, shouldDisplayLastColumnCell, sort, sortDownIcon, sortUpIcon, tableRef, }: TableHeaderProps) => import("react/jsx-runtime").JSX.Element;
 export default TableHeader;
