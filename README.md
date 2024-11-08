@@ -4,7 +4,7 @@ Any questions, support or features requests join me on Dicord [https://discord.g
 
 Simple Table is a React grid package designed to provide a flexible and easy-to-use table component for your React applications.
 
-![Simple Table Demo](https://postimg.cc/9wqFGQd5)
+![Simple Table Demo](https://i.postimg.cc/hv2zRJhj/Screenshot-2024-11-07-at-11-12-59-PM.png)
 
 ## Example Usage
 
