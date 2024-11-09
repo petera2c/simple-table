@@ -6,14 +6,19 @@ Simple Table is a React grid package designed to provide a flexible and easy-to-
 
 ![Simple Table Demo](https://iili.io/2IfrFhx.md.png)
 
+## Live Demo
+
+Check out the live demo on CodeSandbox: [Simple Table Pagination Example](https://codesandbox.io/p/sandbox/simple-table-pagination-example-rdjm5d?file=%2Fsrc%2FApp.tsx%3A33%2C24)
+
 ## Example Usage
 
 ```tsx
 import { useState } from "react";
 import { SimpleTable } from "simple-table-core";
 import CellChangeProps from "simple-table-core/dist/types/CellChangeProps";
+import "simple-table-core/dist/style.css";
 
-export const SAMPLE_HEADERS: any[] = [
+const SAMPLE_HEADERS: any[] = [
   { label: "Product ID", accessor: "id", width: 150 },
   { label: "Product Name", accessor: "productName", width: 200 },
   { label: "Category", accessor: "category", width: 150 },
@@ -29,7 +34,7 @@ export const SAMPLE_HEADERS: any[] = [
   { label: "Barcode", accessor: "barcode", width: 100 },
 ];
 
-export const inventoryData: any[] = Array.from({ length: 50 }, (_, index) => ({
+const inventoryData: any[] = Array.from({ length: 50 }, (_, index) => ({
   id: `P-${index + 1001}`,
   productName: [
     "Wireless Mouse",
@@ -142,8 +147,6 @@ const SimpleTableExample = () => {
 
 export default SimpleTableExample;
 ```
-
-Import the CSS file to apply the styles to your table.
 
 ## Props
 

@@ -3,6 +3,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
+import copy from "rollup-plugin-copy";
 
 export default {
   input: "src/index.tsx",
@@ -27,6 +28,11 @@ export default {
       clean: true,
     }),
     terser(),
+    copy({
+      targets: [
+        { src: "src/assets/**/*.{png,jpg,jpeg,gif}", dest: "dist/assets" },
+      ],
+    }),
   ],
   external: ["react", "react/jsx-runtime"],
 };
