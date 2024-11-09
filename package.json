@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -21,8 +21,7 @@
     "spreadsheet-react"
   ],
   "dependencies": {
-    "react": "^18.3.1",
-    "rollup-plugin-copy": "^3.5.0"
+    "react": "^18.3.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.25.7",
@@ -49,7 +48,8 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "storybook": "^8.4.1",
     "typescript": "^4.9.5",
-    "webpack": "^5.95.0"
+    "webpack": "^5.95.0",
+    "rollup-plugin-copy": "^3.5.0"
   },
   "scripts": {
     "publish-fast": "npm run build && git add . && git commit -m \"$npm_config_message\" && npm publish && git push",
