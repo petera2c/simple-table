@@ -4,6 +4,7 @@ import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import del from "rollup-plugin-delete";
+import importCss from "rollup-plugin-import-css";
 
 export default {
   input: "src/index.tsx",
@@ -16,6 +17,9 @@ export default {
     postcss({
       plugins: [],
       minimize: true,
+      extract: "styles/simple-table.css",
+    }),
+    importCss({
       extract: "styles/simple-table.css",
     }),
     babel({

@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -24,6 +24,7 @@
     "react": "^18.3.1"
   },
   "devDependencies": {
+    "rollup-plugin-import-css": "^3.5.6",
     "@babel/preset-react": "^7.25.7",
     "@chromatic-com/storybook": "^1.9.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
@@ -42,14 +43,14 @@
     "prop-types": "^15.8.1",
     "rollup": "^2.79.2",
     "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-delete": "^2.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "storybook": "^8.4.1",
     "typescript": "^4.9.5",
-    "webpack": "^5.95.0",
-    "rollup-plugin-delete": "^2.1.0"
+    "webpack": "^5.95.0"
   },
   "scripts": {
     "publish-fast": "npm run build && git add . && git commit -m \"$npm_config_message\" && npm publish && git push",
