@@ -178,7 +178,11 @@ const SimpleTable = ({
 
   // Import styles
   useEffect(() => {
-    if (importStyles) {
+    // Define isLocal based on environment
+    const isLocal = process.env.NODE_ENV === "development";
+    if (importStyles && isLocal) {
+      require("../../styles/simple-table.css");
+    } else {
       require("../../styles/simple-table.css");
     }
   }, [importStyles]);

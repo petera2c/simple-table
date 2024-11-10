@@ -17,7 +17,7 @@ export default {
     postcss({
       plugins: [],
       minimize: true,
-      extract: "style.css",
+      extract: "simple-table.css",
     }),
     babel({
       exclude: ["node_modules/**", "src/stories/**"],
@@ -31,9 +31,7 @@ export default {
     }),
     terser(),
     copy({
-      targets: [
-        { src: "src/assets/**/*.{png,jpg,jpeg,gif}", dest: "dist/assets" },
-      ],
+      targets: [{ src: "src/styles/simple-table.css", dest: "dist/styles" }],
     }),
   ],
   external: ["react", "react/jsx-runtime"],
