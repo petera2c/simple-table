@@ -183,7 +183,7 @@ const SimpleTable = ({
     if (importStyles && isLocal) {
       require("../../styles/simple-table.css");
     } else {
-      require("../../styles/simple-table.css");
+      require("./styles/simple-table.css");
     }
   }, [importStyles]);
 
