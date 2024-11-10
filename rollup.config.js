@@ -3,7 +3,6 @@ import resolve from "@rollup/plugin-node-resolve";
 import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
-import copy from "rollup-plugin-copy";
 import del from "rollup-plugin-delete";
 
 export default {
@@ -30,9 +29,6 @@ export default {
       clean: true,
     }),
     terser(),
-    copy({
-      targets: [{ src: "src/styles/simple-table.css", dest: "dist/styles" }],
-    }),
   ],
   external: ["react", "react/jsx-runtime"],
 };
