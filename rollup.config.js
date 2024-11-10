@@ -4,7 +4,8 @@ import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import del from "rollup-plugin-delete";
-import importCss from "rollup-plugin-import-css";
+import css from "rollup-plugin-import-css";
+import autoprefixer from "autoprefixer";
 
 export default {
   input: "src/index.tsx",
@@ -14,14 +15,14 @@ export default {
   },
   plugins: [
     del({ targets: "dist/*" }),
+
     postcss({
-      plugins: [],
+      plugins: [autoprefixer()],
+      sourceMap: true,
+      extract: true,
       minimize: true,
-      extract: "styles/simple-table.css",
     }),
-    importCss({
-      extract: "styles/simple-table.css",
-    }),
+
     babel({
       exclude: ["node_modules/**", "src/stories/**"],
       presets: ["@babel/preset-react"],
