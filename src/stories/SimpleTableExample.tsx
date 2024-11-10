@@ -1,7 +1,6 @@
 import { useState } from "react";
 import SimpleTable from "../components/SimpleTable/SimpleTable";
 import { SAMPLE_HEADERS, inventoryData } from "../consts/SampleData";
-import "../styles/simple-table.css";
 import CellChangeProps from "../types/CellChangeProps";
 
 export const SampleTable = () => {

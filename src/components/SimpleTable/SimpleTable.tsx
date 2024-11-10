@@ -14,7 +14,6 @@ import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
-import "../../styles/simple-table.css";
 import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
 import SortConfig from "../../types/SortConfig";
@@ -22,7 +21,8 @@ import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
-export interface SpreadsheetProps {
+
+interface SpreadsheetProps {
   columnEditorPosition?: "left" | "right";
   columnEditorText?: string; // Text for the column editor
   columnResizing?: boolean; // Flag for column resizing
@@ -31,6 +31,7 @@ export interface SpreadsheetProps {
   editColumns?: boolean; // Flag for column editing
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
+  importStyles?: boolean; // Flag for importing styles
   nextIcon?: ReactNode; // Next icon
   onCellChange?: ({
     accessor,
@@ -56,6 +57,7 @@ const SimpleTable = ({
   editColumns = false,
   height,
   hideFooter = false,
+  importStyles = true,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
@@ -173,6 +175,13 @@ const SimpleTable = ({
       .map((header) => `${header.width}px`)
       .join(" ")} 1fr`;
   }, [currentHeaders, hiddenColumns]);
+
+  // Import styles
+  useEffect(() => {
+    if (importStyles) {
+      require("../../styles/simple-table.css");
+    }
+  }, [importStyles]);
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>

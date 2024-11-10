@@ -1,9 +1,8 @@
 import { ReactNode } from "react";
 import HeaderObject from "../../types/HeaderObject";
-import "../../styles/simple-table.css";
 import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
-export interface SpreadsheetProps {
+interface SpreadsheetProps {
     columnEditorPosition?: "left" | "right";
     columnEditorText?: string;
     columnResizing?: boolean;
@@ -12,6 +11,7 @@ export interface SpreadsheetProps {
     editColumns?: boolean;
     height?: string;
     hideFooter?: boolean;
+    importStyles?: boolean;
     nextIcon?: ReactNode;
     onCellChange?: ({ accessor, newValue, originalRowIndex, row, }: CellChangeProps) => void;
     prevIcon?: ReactNode;
@@ -24,5 +24,5 @@ export interface SpreadsheetProps {
     sortDownIcon?: ReactNode;
     sortUpIcon?: ReactNode;
 }
-declare const SimpleTable: ({ columnEditorPosition, columnEditorText, columnResizing, defaultHeaders, draggable, editColumns, height, hideFooter, nextIcon, onCellChange, prevIcon, rows, rowsPerPage, selectableCells, shouldPaginate, sortDownIcon, sortUpIcon, }: SpreadsheetProps) => import("react/jsx-runtime").JSX.Element;
+declare const SimpleTable: ({ columnEditorPosition, columnEditorText, columnResizing, defaultHeaders, draggable, editColumns, height, hideFooter, importStyles, nextIcon, onCellChange, prevIcon, rows, rowsPerPage, selectableCells, shouldPaginate, sortDownIcon, sortUpIcon, }: SpreadsheetProps) => import("react/jsx-runtime").JSX.Element;
 export default SimpleTable;
