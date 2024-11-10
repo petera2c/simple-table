@@ -4,8 +4,6 @@ import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import del from "rollup-plugin-delete";
-import css from "rollup-plugin-import-css";
-import autoprefixer from "autoprefixer";
 
 export default {
   input: "src/index.tsx",
@@ -16,12 +14,7 @@ export default {
   plugins: [
     del({ targets: "dist/*" }),
 
-    postcss({
-      plugins: [autoprefixer()],
-      sourceMap: true,
-      extract: true,
-      minimize: true,
-    }),
+    postcss(),
 
     babel({
       exclude: ["node_modules/**", "src/stories/**"],
