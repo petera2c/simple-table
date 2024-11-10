@@ -21,6 +21,7 @@ import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
+import "../../styles/simple-table.css";
 
 interface SpreadsheetProps {
   columnEditorPosition?: "left" | "right";
@@ -175,17 +176,6 @@ const SimpleTable = ({
       .map((header) => `${header.width}px`)
       .join(" ")} 1fr`;
   }, [currentHeaders, hiddenColumns]);
-
-  // Import styles
-  useEffect(() => {
-    // Define isLocal based on environment
-    const isLocal = process.env.NODE_ENV === "development";
-    if (importStyles && isLocal) {
-      require("../../styles/simple-table.css");
-    } else {
-      require("./styles/simple-table.css");
-    }
-  }, [importStyles]);
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>

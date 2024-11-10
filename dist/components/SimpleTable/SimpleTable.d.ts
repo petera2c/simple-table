@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
+import "../../styles/simple-table.css";
 interface SpreadsheetProps {
     columnEditorPosition?: "left" | "right";
     columnEditorText?: string;
