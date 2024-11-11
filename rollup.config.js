@@ -13,9 +13,7 @@ export default {
   },
   plugins: [
     del({ targets: "dist/*" }),
-
     postcss(),
-
     babel({
       exclude: ["node_modules/**", "src/stories/**"],
       presets: ["@babel/preset-react"],

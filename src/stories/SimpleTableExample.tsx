@@ -34,7 +34,7 @@ export const SampleTable = () => {
         height="auto"
         shouldPaginate
         rowsPerPage={10}
-        // height="calc(100dvh - 4rem)" // If not using pagination use a fixed height
+        // height="calc(100dvh - 112px)" // If not using pagination use a fixed height
       />
     </div>
   );

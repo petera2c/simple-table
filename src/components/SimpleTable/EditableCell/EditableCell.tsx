@@ -1,7 +1,8 @@
 import { ChangeEvent } from "react";
 import BooleanEdit from "./BooleanEdit";
-import TextEdit from "./TextEdit";
+import StringEdit from "./StringEdit";
 import CellValue from "../../../types/CellValue";
+import NumberEdit from "./NumberEdit";
 
 interface EditableCellProps {
   onChange: (newValue: CellValue) => void;
@@ -10,11 +11,8 @@ interface EditableCellProps {
 }
 
 const EditableCell = ({ onChange, setIsEditing, value }: EditableCellProps) => {
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const newValue = e.target.value;
-    onChange?.(newValue);
+  const handleChange = (value: string | boolean | number) => {
+    onChange?.(value);
   };
   const handleBlur = () => {
     setIsEditing(false);
@@ -22,15 +20,21 @@ const EditableCell = ({ onChange, setIsEditing, value }: EditableCellProps) => {
 
   return (
     <>
-      {typeof value === "string" ? (
-        <TextEdit
+      {typeof value === "string" || value === null || value === undefined ? (
+        <StringEdit
           defaultValue={value}
           onBlur={handleBlur}
           onChange={handleChange}
         />
       ) : typeof value === "boolean" ? (
         <BooleanEdit
+          onBlur={handleBlur}
+          onChange={handleChange}
           value={value}
+        />
+      ) : typeof value === "number" ? (
+        <NumberEdit
+          defaultValue={value}
           onBlur={handleBlur}
           onChange={handleChange}
         />
