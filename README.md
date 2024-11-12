@@ -4,6 +4,10 @@ Any questions, support or features requests join me on Dicord <a href="https://d
 
 Simple Table is a React grid package designed to provide a flexible and easy-to-use table component for your React applications.
 
+## Website
+
+For more information, visit our website: [Simple Table](https://www.simple-table.com/)
+
 ## Live Demo
 
 Check out the live demo on CodeSandbox: <a href="https://codesandbox.io/p/sandbox/simple-table-pagination-example-rdjm5d?file=%2Fsrc%2FApp.tsx%3A33%2C24" target="_blank" rel="noopener noreferrer">Simple Table Pagination Example</a>
