@@ -22,6 +22,7 @@ import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 import "../../styles/simple-table.css";
+import Theme from "../../types/Theme";
 
 interface SpreadsheetProps {
   columnEditorPosition?: "left" | "right";
@@ -47,7 +48,7 @@ interface SpreadsheetProps {
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
-  theme?: "light" | "dark"; // Theme
+  theme?: Theme; // Theme
 }
 
 const SimpleTable = ({
