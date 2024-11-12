@@ -15,18 +15,23 @@ import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
+import Cell from "../../types/Cell";
+import Row from "../../types/Row";
 
 interface TableHeaderCellProps {
+  columnResizing: boolean;
+  currentRows: Row[];
   draggable: boolean;
   draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  columnResizing: boolean;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
   index: number;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  selectableColumns: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
+  setSelectedCells: Dispatch<React.SetStateAction<Set<string>>>;
   sort: SortConfig | null;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
@@ -35,16 +40,19 @@ interface TableHeaderCellProps {
 const TableHeaderCell = forwardRef(
   (
     {
+      columnResizing,
+      currentRows,
       draggable,
       draggedHeaderRef,
-      columnResizing,
       forceUpdate,
       headersRef,
       hoveredHeaderRef,
       index,
       onSort,
       onTableHeaderDragEnd,
+      selectableColumns,
       setIsWidthDragging,
+      setSelectedCells,
       sort,
       sortDownIcon,
       sortUpIcon,
@@ -134,7 +142,16 @@ const TableHeaderCell = forwardRef(
       document.addEventListener("mouseup", handleMouseUp);
     };
     // Sort handler
-    const handleSortClick = (header: HeaderObject) => {
+    const handleColumnHeaderClick = (header: HeaderObject) => {
+      if (selectableColumns) {
+        const rowCount = currentRows.length;
+        const columnCells = Array.from(
+          { length: rowCount },
+          (_, rowIndex) => `${rowIndex}-${index}`
+        );
+        setSelectedCells(new Set(columnCells));
+        return;
+      }
       if (!header.isSortable) return;
       onSort(index, header.accessor);
     };
@@ -168,7 +185,7 @@ const TableHeaderCell = forwardRef(
         <div
           className="st-header-label"
           draggable={draggable}
-          onClick={() => handleSortClick(header)}
+          onClick={() => handleColumnHeaderClick(header)}
           onDragStart={onDragStart}
           onDragOver={(event) => onDragOver(event, header)}
           onDragEnd={handleDragEndWrapper}
@@ -180,7 +197,7 @@ const TableHeaderCell = forwardRef(
         {sort && sort.key.accessor === header.accessor && (
           <div
             className="st-sort-icon-container"
-            onClick={() => handleSortClick(header)}
+            onClick={() => handleColumnHeaderClick(header)}
           >
             {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
             {sort.direction === "descending" && sortDownIcon && sortDownIcon}

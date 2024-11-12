@@ -1,4 +1,3 @@
-import { ChangeEvent } from "react";
 import BooleanEdit from "./BooleanEdit";
 import StringEdit from "./StringEdit";
 import CellValue from "../../../types/CellValue";

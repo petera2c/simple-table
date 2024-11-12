@@ -32,7 +32,6 @@ interface SpreadsheetProps {
   editColumns?: boolean; // Flag for column editing
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
-  importStyles?: boolean; // Flag for importing styles
   nextIcon?: ReactNode; // Next icon
   onCellChange?: ({
     accessor,
@@ -44,6 +43,7 @@ interface SpreadsheetProps {
   rows: { [key: string]: CellValue }[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
+  selectableColumns?: boolean; // Flag for selectable column headers
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
@@ -58,13 +58,13 @@ const SimpleTable = ({
   editColumns = false,
   height,
   hideFooter = false,
-  importStyles = true,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
+  selectableColumns = false,
   shouldPaginate = false,
   sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
@@ -160,7 +160,7 @@ const SimpleTable = ({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest(".st-cell")) {
-        setSelectedCells([]);
+        setSelectedCells(new Set());
       }
     };
 
@@ -192,6 +192,7 @@ const SimpleTable = ({
           >
             <TableHeader
               columnResizing={columnResizing}
+              currentRows={currentRows}
               draggable={draggable}
               forceUpdate={forceUpdate}
               headersRef={headersRef}
@@ -199,7 +200,9 @@ const SimpleTable = ({
               isWidthDragging={isWidthDragging}
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
+              selectableColumns={selectableColumns}
               setIsWidthDragging={setIsWidthDragging}
+              setSelectedCells={setSelectedCells}
               shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
               sort={sort}
               sortDownIcon={sortDownIcon}
@@ -207,6 +210,7 @@ const SimpleTable = ({
               tableRef={tableRef}
             />
             <TableBody
+              currentRows={currentRows}
               getBorderClass={getBorderClass}
               handleMouseDown={handleMouseDown}
               handleMouseOver={handleMouseOver}
@@ -218,7 +222,6 @@ const SimpleTable = ({
               onCellChange={onCellChange}
               shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
               shouldPaginate={shouldPaginate}
-              sortedRows={currentRows}
               tableRef={tableRef}
             />
           </div>

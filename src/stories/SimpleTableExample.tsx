@@ -27,9 +27,10 @@ export const SampleTable = () => {
         defaultHeaders={SAMPLE_HEADERS} // Set the headers
         draggable // Enable draggable columns
         editColumns // Enable editing columns
-        rows={rows} // Set rows data
         onCellChange={updateCell} // Handle cell changes
+        rows={rows} // Set rows data
         selectableCells // Enable selectable cells
+        selectableColumns // Select column by clicking on the header. This will override sort on header click
         // If using pagination use an auto height
         height="auto"
         shouldPaginate

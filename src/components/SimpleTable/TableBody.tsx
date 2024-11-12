@@ -7,6 +7,7 @@ import TableRowSeparator from "./TableRowSeparator";
 import CellChangeProps from "../../types/CellChangeProps";
 
 interface TableBodyProps {
+  currentRows: { [key: string]: any }[];
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (rowIndex: number, columnIndex: number) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
@@ -15,14 +16,14 @@ interface TableBodyProps {
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   isWidthDragging: boolean;
+  onCellChange?: (props: CellChangeProps) => void;
   shouldDisplayLastColumnCell: boolean;
   shouldPaginate: boolean;
-  sortedRows: { [key: string]: any }[];
-  onCellChange?: (props: CellChangeProps) => void;
   tableRef: RefObject<HTMLDivElement>;
 }
 
 const TableBody = ({
+  currentRows,
   getBorderClass,
   handleMouseDown,
   handleMouseOver,
@@ -34,12 +35,11 @@ const TableBody = ({
   onCellChange,
   shouldDisplayLastColumnCell,
   shouldPaginate,
-  sortedRows,
   tableRef,
 }: TableBodyProps & { shouldDisplayLastColumnCell: boolean }) => {
   return (
     <>
-      {sortedRows.map((row, rowIndex) => {
+      {currentRows.map((row, rowIndex) => {
         return (
           <Fragment key={row.originalRowIndex}>
             <Animate
@@ -78,7 +78,7 @@ const TableBody = ({
                 visible={shouldDisplayLastColumnCell}
               />
             </Animate>
-            {rowIndex !== sortedRows.length - 1 && <TableRowSeparator />}
+            {rowIndex !== currentRows.length - 1 && <TableRowSeparator />}
           </Fragment>
         );
       })}
