@@ -52,22 +52,188 @@
 
   /* Customizable Variables */
   --st-border-radius: 4px;
-  --st-border-color: var(--slate-300);
   --st-border-width: 1px;
   --st-resize-handle-color: var(--slate-300);
   --st-separator-border-color: var(--slate-300);
-  --st-odd-row-background-color: var(--slate-100);
-  --st-dragging-background-color: var(--blue-100);
-  --st-selected-cell-background-color: var(--blue-200);
-  --st-selected-first-cell-background-color: var(--amber-100);
   --st-border-top-color: var(--blue-500);
   --st-border-bottom-color: var(--blue-500);
   --st-border-left-color: var(--blue-500);
   --st-border-right-color: var(--blue-500);
   --st-border-top-white-color: white;
-  --st-footer-background-color: white;
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --st-cell-padding: 8px;
+
+  /* New Variables for Theming */
+  --st-font-family: "Nunito", sans-serif;
+  --st-font-size: 1rem;
+  --st-font-weight-normal: 400;
+  --st-font-weight-bold: 700;
+  --st-transition-duration: 0.3s;
+  --st-transition-ease: ease;
+  --st-opacity-disabled: 0.5;
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+  --st-spacing-large: 16px;
+}
+
+.theme-light {
+  --st-border-color: var(--slate-300);
+  --st-odd-row-background-color: var(--slate-50);
+  --st-even-row-background-color: var(--slate-100);
+  --st-header-background-color: white;
+  --st-dragging-background-color: var(--blue-50);
+  --st-selected-cell-background-color: var(--blue-100);
+  --st-selected-first-cell-background-color: var(--amber-50);
+  --st-footer-background-color: white;
+  --st-cell-color: var(--slate-800);
+  --st-cell-odd-row-color: var(--slate-500);
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -1px rgb(0 0 0 / 0.06);
+}
+
+.theme-dark {
+  --st-border-color: var(--slate-700);
+  --st-odd-row-background-color: var(--slate-800);
+  --st-even-row-background-color: var(--slate-900);
+  --st-header-background-color: var(--slate-700);
+  --st-dragging-background-color: var(--blue-800);
+  --st-selected-cell-background-color: var(--blue-700);
+  --st-selected-first-cell-background-color: var(--amber-700);
+  --st-footer-background-color: var(--slate-900);
+  --st-cell-color: var(--slate-100);
+  --st-cell-odd-row-color: var(--slate-300);
+  --st-shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1),
+    0 1px 2px -1px rgb(255 255 255 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(255 255 255 / 0.1),
+    0 2px 4px -1px rgb(255 255 255 / 0.06);
+}
+
+.theme-high-contrast {
+  --st-border-color: black;
+  --st-odd-row-background-color: white;
+  --st-even-row-background-color: black;
+  --st-header-background-color: black;
+  --st-dragging-background-color: yellow;
+  --st-selected-cell-background-color: black;
+  --st-selected-first-cell-background-color: red;
+  --st-footer-background-color: black;
+  --st-cell-color: white;
+  --st-cell-odd-row-color: black;
+  --st-shadow: none;
+  --st-shadow-hover: none;
+}
+
+.theme-pastel {
+  --st-border-color: #d3c4e3;
+  --st-odd-row-background-color: #f3e8ff;
+  --st-even-row-background-color: #e8f3ff;
+  --st-header-background-color: #e8f3ff;
+  --st-dragging-background-color: #e0f7fa;
+  --st-selected-cell-background-color: #ffccbc;
+  --st-selected-first-cell-background-color: #ffe0b2;
+  --st-footer-background-color: #f3e5f5;
+  --st-cell-color: #6b7280;
+  --st-cell-odd-row-color: #4b5563;
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -1px rgb(0 0 0 / 0.06);
+}
+
+.theme-vibrant {
+  --st-border-color: var(--orange-500);
+  --st-odd-row-background-color: var(--orange-100);
+  --st-even-row-background-color: var(--orange-200);
+  --st-header-background-color: var(--orange-300);
+  --st-dragging-background-color: var(--blue-300);
+  --st-selected-cell-background-color: var(--blue-400);
+  --st-selected-first-cell-background-color: var(--amber-300);
+  --st-footer-background-color: var(--orange-50);
+  --st-cell-color: var(--orange-900);
+  --st-cell-odd-row-color: var(--orange-800);
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.2),
+    0 2px 4px -1px rgb(0 0 0 / 0.1);
+}
+
+.theme-solarized-light {
+  --st-border-color: #eee8d5;
+  --st-odd-row-background-color: #fdf6e3;
+  --st-even-row-background-color: #eee8d5;
+  --st-header-background-color: #eee8d5;
+  --st-dragging-background-color: #eee8d5;
+  --st-selected-cell-background-color: #93a1a1;
+  --st-selected-first-cell-background-color: #b58900;
+  --st-footer-background-color: #fdf6e3;
+  --st-cell-color: #586e75;
+  --st-cell-odd-row-color: #657b83;
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -1px rgb(0 0 0 / 0.06);
+}
+
+.theme-solarized-dark {
+  --st-border-color: #073642;
+  --st-odd-row-background-color: #002b36;
+  --st-even-row-background-color: #073642;
+  --st-header-background-color: #073642;
+  --st-dragging-background-color: #073642;
+  --st-selected-cell-background-color: #586e75;
+  --st-selected-first-cell-background-color: #b58900;
+  --st-footer-background-color: #002b36;
+  --st-cell-color: #839496;
+  --st-cell-odd-row-color: #93a1a1;
+  --st-shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1),
+    0 1px 2px -1px rgb(255 255 255 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(255 255 255 / 0.1),
+    0 2px 4px -1px rgb(255 255 255 / 0.06);
+}
+
+.theme-ocean {
+  --st-border-color: #2b7a78;
+  --st-odd-row-background-color: #def2f1;
+  --st-even-row-background-color: #cfe8e7;
+  --st-header-background-color: #cfe8e7;
+  --st-dragging-background-color: #3aafa9;
+  --st-selected-cell-background-color: #2b7a78;
+  --st-selected-first-cell-background-color: #17252a;
+  --st-footer-background-color: #feffff;
+  --st-cell-color: #17252a;
+  --st-cell-odd-row-color: #2b7a78;
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -1px rgb(0 0 0 / 0.06);
+}
+
+.theme-forest {
+  --st-border-color: #2f4f4f;
+  --st-odd-row-background-color: #e0f2f1;
+  --st-even-row-background-color: #c8e6c9;
+  --st-header-background-color: #c8e6c9;
+  --st-dragging-background-color: #4caf50;
+  --st-selected-cell-background-color: #388e3c;
+  --st-selected-first-cell-background-color: #1b5e20;
+  --st-footer-background-color: #a5d6a7;
+  --st-cell-color: #1b5e20;
+  --st-cell-odd-row-color: #388e3c;
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -1px rgb(0 0 0 / 0.06);
+}
+
+.theme-desert {
+  --st-border-color: #d2b48c;
+  --st-odd-row-background-color: #f5deb3;
+  --st-even-row-background-color: #eeddc1;
+  --st-header-background-color: #eeddc1;
+  --st-dragging-background-color: #deb887;
+  --st-selected-cell-background-color: #cd853f;
+  --st-selected-first-cell-background-color: #8b4513;
+  --st-footer-background-color: #f5f5dc;
+  --st-cell-color: #8b4513;
+  --st-cell-odd-row-color: #cd853f;
+  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -1px rgb(0 0 0 / 0.06);
 }
 
 /* Global styles */
@@ -79,7 +245,9 @@
 
 /* Apply Nunito as the default font */
 body {
-  font-family: "Nunito";
+  font-family: var(--st-font-family);
+  font-size: var(--st-font-size);
+  font-weight: var(--st-font-weight-normal);
 }
 
 /* Wrapper for the table */
@@ -116,13 +284,13 @@ body {
 .st-header-cell {
   position: sticky;
   top: 0;
-  background-color: white;
+  background-color: var(--st-header-background-color);
   z-index: 1;
-  font-weight: 600;
+  font-weight: var(--st-font-weight-bold);
 
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--st-spacing-small);
   border-top: var(--st-border-width) solid transparent;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
@@ -149,7 +317,7 @@ body {
 .st-cell-editing {
   width: 100%;
   height: 40px;
-  font-family: "Nunito";
+  font-family: var(--st-font-family);
 }
 
 .st-cell-editing {
@@ -158,6 +326,7 @@ body {
 
 .st-header-label {
   flex: 1;
+  color: var(--st-cell-color);
 }
 
 .st-header-label,
@@ -203,6 +372,11 @@ body {
 
 .st-cell-odd-row {
   background-color: var(--st-odd-row-background-color);
+  color: var(--st-cell-odd-row-color);
+}
+.st-cell:not(.st-cell-odd-row) {
+  background-color: var(--st-even-row-background-color);
+  color: var(--st-cell-color);
 }
 
 /* Style for a cell when it is being dragged */
@@ -249,9 +423,7 @@ body {
   display: flex;
   align-items: center;
   background-color: var(--st-footer-background-color);
-
-  padding: 8px;
-
+  padding: var(--st-spacing-medium);
   border-top: var(--st-border-width) solid var(--st-border-color);
 }
 
@@ -259,12 +431,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: var(--st-spacing-small);
   cursor: pointer;
   background-color: transparent;
   border: none;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+  border-radius: var(--st-border-radius);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 .st-next-prev-btn {
   fill: var(--slate-600);
@@ -279,14 +452,15 @@ body {
 }
 
 .st-page-btn {
-  margin-left: 4px;
-  padding: 4px;
+  margin-left: var(--st-spacing-small);
+  padding: var(--st-spacing-small);
   cursor: pointer;
   background-color: transparent;
   color: var(--slate-600);
   border: none;
   border-radius: var(--st-border-radius);
-  transition: background-color 0.3s ease;
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-page-btn:hover {
@@ -310,8 +484,8 @@ body {
   height: 100%;
   width: 100%;
   padding: var(--st-cell-padding);
-  font-size: 1rem;
-  font-family: "Nunito";
+  font-size: var(--st-font-size);
+  font-family: var(--st-font-family);
 }
 .editable-cell-input:focus {
   border: var(--st-border-width) solid var(--blue-500);
@@ -319,18 +493,15 @@ body {
 .st-column-editor {
   position: relative;
   user-select: none;
-
   background: var(--st-footer-background-color);
   border-left: var(--st-border-width) solid var(--st-border-color);
   cursor: pointer;
+  color: var(--slate-500);
 }
 
 .st-column-editor-text {
-  padding: 8px 4px;
-
+  padding: var(--st-spacing-medium) var(--st-spacing-small);
   writing-mode: vertical-rl;
-  color: var(--slate-500);
-  background-color: white;
   z-index: 2;
 }
 
@@ -344,11 +515,9 @@ body {
   top: 0;
   right: calc(100% + 1px);
   z-index: 1;
-
   height: 100%;
   background-color: var(--slate-100);
-
-  transition: width 0.2s ease;
+  transition: width var(--st-transition-duration) var(--st-transition-ease);
   overflow: hidden;
   width: 0;
 }
@@ -356,8 +525,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow: auto;
-  gap: 4px;
-  padding: 8px 4px;
+  gap: var(--st-spacing-small);
+  padding: var(--st-spacing-medium) var(--st-spacing-small);
   border-left: var(--st-border-width) solid var(--st-border-color);
   height: 100%;
 }
@@ -379,7 +548,7 @@ body {
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: 8px;
+  gap: var(--st-spacing-medium);
 }
 
 .st-checkbox-input {
@@ -390,15 +559,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 24px;
   height: 24px;
-
   border: var(--st-border-width) solid var(--slate-300);
   border-radius: var(--st-border-radius);
-
   background-color: white;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: background-color var(--st-transition-duration)
+      var(--st-transition-ease),
+    border-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-checkbox-custom.st-checked {

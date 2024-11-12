@@ -47,6 +47,7 @@ interface SpreadsheetProps {
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
+  theme?: "light" | "dark"; // Theme
 }
 
 const SimpleTable = ({
@@ -68,6 +69,7 @@ const SimpleTable = ({
   shouldPaginate = false,
   sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
+  theme = "light",
 }: SpreadsheetProps) => {
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
@@ -185,7 +187,10 @@ const SimpleTable = ({
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
-      <div className="st-wrapper" style={height ? { height } : {}}>
+      <div
+        className={`st-wrapper theme-${theme}`}
+        style={height ? { height } : {}}
+      >
         <div className="st-table-wrapper">
           <div
             className="st-table"
