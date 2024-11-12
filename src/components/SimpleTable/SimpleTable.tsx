@@ -159,7 +159,13 @@ const SimpleTable = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".st-cell")) {
+      if (
+        !target.closest(".st-cell") &&
+        (selectableColumns
+          ? !target.classList.contains("st-header-cell") &&
+            !target.classList.contains("st-header-label")
+          : true)
+      ) {
         setSelectedCells(new Set());
       }
     };
@@ -168,7 +174,7 @@ const SimpleTable = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setSelectedCells]);
+  }, [selectableColumns, setSelectedCells]);
 
   const gridTemplateColumns = useMemo(() => {
     return `${currentHeaders

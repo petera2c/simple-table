@@ -2,6 +2,11 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import HeaderObject from "../types/HeaderObject";
 import Cell from "../types/Cell";
 
+export type MouseDownProps = {
+  rowIndex: number;
+  colIndex: number;
+};
+
 const useSelection = ({
   selectableCells,
   headers,
@@ -43,7 +48,7 @@ const useSelection = ({
     };
   }, [copyToClipboard]);
 
-  const handleMouseDown = (rowIndex: number, colIndex: number) => {
+  const handleMouseDown = ({ colIndex, rowIndex }: MouseDownProps) => {
     if (!selectableCells) return;
     isSelecting.current = true;
     startCell.current = { row: rowIndex, col: colIndex };

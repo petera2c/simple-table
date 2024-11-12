@@ -9,6 +9,7 @@ import {
   DragEvent,
   useEffect,
   ForwardedRef,
+  MouseEvent,
 } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { throttle } from "../../utils/performanceUtils";
@@ -118,7 +119,7 @@ const TableHeaderCell = forwardRef(
       throttledHandleDragOver(header, event);
     };
     // Resize handler
-    const handleResizeStart = (e: React.MouseEvent) => {
+    const handleResizeStart = (e: MouseEvent) => {
       setIsWidthDragging(true);
       e.preventDefault();
       const startX = e.clientX;
@@ -142,14 +143,63 @@ const TableHeaderCell = forwardRef(
       document.addEventListener("mouseup", handleMouseUp);
     };
     // Sort handler
-    const handleColumnHeaderClick = (header: HeaderObject) => {
+    const handleColumnHeaderClick = ({
+      event,
+      header,
+    }: {
+      event: MouseEvent;
+      header: HeaderObject;
+    }) => {
       if (selectableColumns) {
         const rowCount = currentRows.length;
-        const columnCells = Array.from(
+        const newColumnCells = Array.from(
           { length: rowCount },
           (_, rowIndex) => `${rowIndex}-${index}`
         );
-        setSelectedCells(new Set(columnCells));
+
+        const selectCellsInRange = (
+          startColumnIndex: number,
+          endColumnIndex: number
+        ): Set<string> => {
+          const selectedCells = new Set<string>();
+          const minColumnIndex = Math.min(startColumnIndex, endColumnIndex);
+          const maxColumnIndex = Math.max(startColumnIndex, endColumnIndex);
+
+          Array.from({ length: rowCount }).forEach((_, rowIndex) => {
+            Array.from({ length: maxColumnIndex - minColumnIndex + 1 }).forEach(
+              (_, offset) => {
+                selectedCells.add(`${rowIndex}-${minColumnIndex + offset}`);
+              }
+            );
+          });
+
+          return selectedCells;
+        };
+
+        if (event.shiftKey) {
+          setSelectedCells((prevSelectedCells) => {
+            const firstPrevColumnIndex = Number(
+              Array.from(prevSelectedCells)[0]?.split("-")[1]
+            );
+            const newFirstColumnIndex = Number(newColumnCells[0].split("-")[1]);
+
+            if (firstPrevColumnIndex === newFirstColumnIndex) {
+              return new Set(newColumnCells);
+            } else if (firstPrevColumnIndex > newFirstColumnIndex) {
+              return selectCellsInRange(
+                newFirstColumnIndex,
+                firstPrevColumnIndex
+              );
+            } else {
+              return selectCellsInRange(
+                firstPrevColumnIndex,
+                newFirstColumnIndex
+              );
+            }
+          });
+        } else {
+          setSelectedCells(new Set(newColumnCells));
+        }
         return;
       }
       if (!header.isSortable) return;
@@ -185,7 +235,7 @@ const TableHeaderCell = forwardRef(
         <div
           className="st-header-label"
           draggable={draggable}
-          onClick={() => handleColumnHeaderClick(header)}
+          onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragStart={onDragStart}
           onDragOver={(event) => onDragOver(event, header)}
           onDragEnd={handleDragEndWrapper}
@@ -197,7 +247,7 @@ const TableHeaderCell = forwardRef(
         {sort && sort.key.accessor === header.accessor && (
           <div
             className="st-sort-icon-container"
-            onClick={() => handleColumnHeaderClick(header)}
+            onClick={(event) => handleColumnHeaderClick({ event, header })}
           >
             {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
             {sort.direction === "descending" && sortDownIcon && sortDownIcon}

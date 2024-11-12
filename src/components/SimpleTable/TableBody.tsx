@@ -5,11 +5,12 @@ import HeaderObject from "../../types/HeaderObject";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
 import CellChangeProps from "../../types/CellChangeProps";
+import { MouseDownProps } from "../../hooks/useSelection";
 
 interface TableBodyProps {
   currentRows: { [key: string]: any }[];
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
-  handleMouseDown: (rowIndex: number, columnIndex: number) => void;
+  handleMouseDown: (props: MouseDownProps) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
@@ -47,7 +48,7 @@ const TableBody = ({
               pauseAnimation={isWidthDragging}
               tableRef={tableRef}
             >
-              {headers.map((header, columnIndex) => {
+              {headers.map((header, colIndex) => {
                 if (hiddenColumns[header.accessor]) return null;
 
                 let content = row[header.accessor];
@@ -57,16 +58,16 @@ const TableBody = ({
                 }
                 return (
                   <TableCell
-                    borderClass={getBorderClass(rowIndex, columnIndex)}
-                    colIndex={columnIndex}
+                    borderClass={getBorderClass(rowIndex, colIndex)}
+                    colIndex={colIndex}
                     content={content}
                     header={header}
-                    isSelected={isSelected(rowIndex, columnIndex)}
-                    isTopLeftCell={isTopLeftCell(rowIndex, columnIndex)}
+                    isSelected={isSelected(rowIndex, colIndex)}
+                    isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
                     key={header.accessor}
                     onCellChange={onCellChange}
-                    onMouseDown={() => handleMouseDown(rowIndex, columnIndex)}
-                    onMouseOver={() => handleMouseOver(rowIndex, columnIndex)}
+                    onMouseDown={() => handleMouseDown({ rowIndex, colIndex })}
+                    onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
                     ref={createRef()}
                     row={row}
                     rowIndex={rowIndex}
