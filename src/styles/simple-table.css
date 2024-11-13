@@ -502,6 +502,13 @@ body {
   background-color: var(--st-separator-border-color);
   grid-column: 1 / -1;
 }
+.st-cell-even-row {
+  background-color: var(--st-even-row-background-color);
+}
+.st-cell-even-row:not(.st-cell-selected) {
+  background-color: var(--st-odd-row-background-color);
+  color: var(--st-cell-even-row-color);
+}
 
 .st-cell-odd-row:not(.st-cell-selected) {
   background-color: var(--st-odd-row-background-color);

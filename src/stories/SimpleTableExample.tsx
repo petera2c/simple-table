@@ -123,10 +123,11 @@ export const SampleTable = () => {
                 color,
                 border: "none",
                 borderRadius: "4px",
-                padding: "0.5rem 1rem",
+                padding: "0.25rem 0.5rem",
                 margin: "0.5rem",
                 cursor: "pointer",
                 transition: "background-color 0.3s ease",
+                whiteSpace: "nowrap",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = getHoverColor(theme))

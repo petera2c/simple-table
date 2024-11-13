@@ -50,7 +50,9 @@ const TableCell = forwardRef(
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${isOddRow ? "st-cell-odd-row" : ""} ${clickable ? "clickable" : ""}`;
+    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${
+      clickable ? "clickable" : ""
+    }`;
 
     // Update local content when the content changes
     useEffect(() => {
@@ -87,7 +89,11 @@ const TableCell = forwardRef(
 
     if (isEditing) {
       return (
-        <div className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : ""}`}>
+        <div
+          className={`st-cell-editing ${
+            isOddRow ? "st-cell-odd-row" : "st-cell-even-row"
+          }`}
+        >
           <EditableCell
             onChange={updateLocalContent}
             setIsEditing={setIsEditing}
