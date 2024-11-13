@@ -15,6 +15,8 @@ const THEME_OPTIONS: Theme[] = [
   "solarized-dark",
   "solarized-light",
   "vibrant",
+  "bubblegum",
+  "90s",
 ];
 
 // Function to get theme color
@@ -42,6 +44,10 @@ const getThemeColor = (
       return { backgroundColor: "#fdf6e3", color: "black" };
     case "vibrant":
       return { backgroundColor: "#FF4500", color: "white" };
+    case "bubblegum":
+      return { backgroundColor: "#FFC0CB", color: "black" };
+    case "90s":
+      return { backgroundColor: "#87CEEB", color: "black" };
     default:
       return { backgroundColor: "#ccc", color: "black" };
   }
@@ -70,6 +76,10 @@ const getHoverColor = (theme: Theme) => {
       return "#eee8d5";
     case "vibrant":
       return "#FF6347";
+    case "bubblegum":
+      return "#FFB6C1";
+    case "90s":
+      return "#ADD8E6";
     default:
       return "#bbb";
   }

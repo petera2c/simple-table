@@ -51,6 +51,21 @@ interface SpreadsheetProps {
   theme?: Theme; // Theme
 }
 
+// Utility function to load fonts
+const loadFont = (fontName: string) => {
+  const existingLink = document.querySelector(`link[data-font="${fontName}"]`);
+  if (existingLink) return; // Font already loaded
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(
+    / /g,
+    "+"
+  )}:wght@400;700&display=swap`;
+  link.setAttribute("data-font", fontName);
+  document.head.appendChild(link);
+};
+
 const SimpleTable = ({
   columnEditorPosition = "right",
   columnEditorText = "Columns",
@@ -72,6 +87,45 @@ const SimpleTable = ({
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   theme = "light",
 }: SpreadsheetProps) => {
+  useEffect(() => {
+    switch (theme) {
+      case "light":
+        loadFont("Nunito");
+        break;
+      case "dark":
+        loadFont("Open Sans");
+        break;
+      case "pastel":
+        loadFont("Comic Sans MS");
+        break;
+      case "vibrant":
+        loadFont("Lobster");
+        break;
+      case "solarized-light":
+      case "solarized-dark":
+        loadFont("Georgia");
+        break;
+      case "desert":
+        loadFont("Times New Roman");
+        break;
+      case "forest":
+        loadFont("Tahoma");
+        break;
+      case "ocean":
+        loadFont("Verdana");
+        break;
+      case "bubblegum":
+        loadFont("Pacifico");
+        break;
+      case "90s":
+        loadFont("Courier New");
+        break;
+      default:
+        loadFont("Nunito"); // Default font
+        break;
+    }
+  }, [theme]);
+
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
     const rowsWithOriginalRowIndex = rows.map((row, index) => ({

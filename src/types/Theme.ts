@@ -8,6 +8,8 @@ type Theme =
   | "pastel"
   | "solarized-dark"
   | "solarized-light"
-  | "vibrant";
+  | "vibrant"
+  | "bubblegum"
+  | "90s";
 
 export default Theme;
