@@ -5,6 +5,8 @@ import CellChangeProps from "../types/CellChangeProps";
 import Theme from "../types/Theme";
 
 const THEME_OPTIONS: Theme[] = [
+  "90s",
+  "bubblegum",
   "dark",
   "desert",
   "forest",
@@ -15,8 +17,6 @@ const THEME_OPTIONS: Theme[] = [
   "solarized-dark",
   "solarized-light",
   "vibrant",
-  "bubblegum",
-  "90s",
 ];
 
 // Function to get theme color
@@ -121,7 +121,7 @@ export const SampleTable = () => {
         rowsPerPage={10}
         // height="calc(100dvh - 112px)" // If not using pagination use a fixed height
       />
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ display: "flex", overflow: "auto" }}>
         {THEME_OPTIONS.map((theme) => {
           const { backgroundColor, color } = getThemeColor(theme);
           return (
@@ -138,6 +138,7 @@ export const SampleTable = () => {
                 cursor: "pointer",
                 transition: "background-color 0.3s ease",
                 whiteSpace: "nowrap",
+                fontFamily: "Nunito",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = getHoverColor(theme))

@@ -363,7 +363,7 @@
   --st-shadow-hover: none;
   --st-selected-cell-color: var(--white);
   --st-selected-first-cell-color: var(--white);
-  --st-resize-handle-color: var(--slate-900);
+  --st-resize-handle-color: var(--white);
   --st-separator-border-color: var(--slate-900);
   --st-selected-border-top-color: var(--orange-600);
   --st-selected-border-bottom-color: var(--orange-600);
