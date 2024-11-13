@@ -2,54 +2,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");
 
 :root {
-  /* Slate Colors */
-  --slate-50: #f8fafc;
-  --slate-100: #f1f5f9;
-  --slate-200: #e2e8f0;
-  --slate-300: #cbd5e1;
-  --slate-400: #94a3b8;
-  --slate-500: #64748b;
-  --slate-600: #475569;
-  --slate-700: #334155;
-  --slate-800: #1e293b;
-  --slate-900: #0f172a;
-
-  /* Blue Colors */
-  --blue-50: #eff6ff;
-  --blue-100: #dbeafe;
-  --blue-200: #bfdbfe;
-  --blue-300: #93c5fd;
-  --blue-400: #60a5fa;
-  --blue-500: #3b82f6;
-  --blue-600: #2563eb;
-  --blue-700: #1d4ed8;
-  --blue-800: #1e40af;
-  --blue-900: #1e3a8a;
-
-  /* Orange Colors */
-  --orange-50: #fff7ed;
-  --orange-100: #ffedd5;
-  --orange-200: #fed7aa;
-  --orange-300: #fdba74;
-  --orange-400: #fb923c;
-  --orange-500: #f97316;
-  --orange-600: #ea580c;
-  --orange-700: #c2410c;
-  --orange-800: #9a3412;
-  --orange-900: #7c2d12;
-
-  /* Amber Colors */
-  --amber-50: #fffbeb;
-  --amber-100: #fef3c7;
-  --amber-200: #fde68a;
-  --amber-300: #fcd34d;
-  --amber-400: #fbbf24;
-  --amber-500: #f59e0b;
-  --amber-600: #d97706;
-  --amber-700: #b45309;
-  --amber-800: #92400e;
-  --amber-900: #78350f;
-
   /* Customizable Variables */
   --st-border-radius: 4px;
   --st-border-width: 1px;
@@ -66,40 +18,308 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
+
+  /* Tailwind Colors */
+  --white: #fff;
+  --black: #000;
+
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-950: #030712;
+
+  --zinc-50: #fafafa;
+  --zinc-100: #f4f4f5;
+  --zinc-200: #e4e4e7;
+  --zinc-300: #d4d4d8;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+  --zinc-600: #52525b;
+  --zinc-700: #3f3f46;
+  --zinc-800: #27272a;
+  --zinc-900: #18181b;
+  --zinc-950: #09090b;
+
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-950: #0a0a0a;
+
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-400: #a8a29e;
+  --stone-500: #78716c;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #292524;
+  --stone-900: #1c1917;
+  --stone-950: #0c0a09;
+
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-200: #fecaca;
+  --red-300: #fca5a5;
+  --red-400: #f87171;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --red-800: #991b1b;
+  --red-900: #7f1d1d;
+  --red-950: #450a0a;
+
+  --orange-50: #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-200: #fed7aa;
+  --orange-300: #fdba74;
+  --orange-400: #fb923c;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+  --orange-700: #c2410c;
+  --orange-800: #9a3412;
+  --orange-900: #7c2d12;
+  --orange-950: #431407;
+
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+  --amber-950: #451a03;
+
+  --yellow-50: #fefce8;
+  --yellow-100: #fef9c3;
+  --yellow-200: #fef08a;
+  --yellow-300: #fde047;
+  --yellow-400: #facc15;
+  --yellow-500: #eab308;
+  --yellow-600: #ca8a04;
+  --yellow-700: #a16207;
+  --yellow-800: #854d0e;
+  --yellow-900: #713f12;
+  --yellow-950: #422006;
+
+  --lime-50: #f7fee7;
+  --lime-100: #ecfccb;
+  --lime-200: #d9f99d;
+  --lime-300: #bef264;
+  --lime-400: #a3e635;
+  --lime-500: #84cc16;
+  --lime-600: #65a30d;
+  --lime-700: #4d7c0f;
+  --lime-800: #3f6212;
+  --lime-900: #365314;
+  --lime-950: #1a2e05;
+
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-300: #86efac;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --green-800: #166534;
+  --green-900: #14532d;
+  --green-950: #052e16;
+
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+  --emerald-900: #064e3b;
+  --emerald-950: #022c22;
+
+  --teal-50: #f0fdfa;
+  --teal-100: #ccfbf1;
+  --teal-200: #99f6e4;
+  --teal-300: #5eead4;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --teal-600: #0d9488;
+  --teal-700: #0f766e;
+  --teal-800: #115e59;
+  --teal-900: #134e4a;
+  --teal-950: #042f2e;
+
+  --cyan-50: #ecfeff;
+  --cyan-100: #cffafe;
+  --cyan-200: #a5f3fc;
+  --cyan-300: #67e8f9;
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+  --cyan-700: #0e7490;
+  --cyan-800: #155e75;
+  --cyan-900: #164e63;
+  --cyan-950: #083344;
+
+  --sky-50: #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --sky-700: #0369a1;
+  --sky-800: #075985;
+  --sky-900: #0c4a6e;
+  --sky-950: #082f49;
+
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-300: #93c5fd;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-800: #1e40af;
+  --blue-900: #1e3a8a;
+  --blue-950: #172554;
+
+  --indigo-50: #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-300: #a5b4fc;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+  --indigo-950: #1e1b4b;
+
+  --violet-50: #f5f3ff;
+  --violet-100: #ede9fe;
+  --violet-200: #ddd6fe;
+  --violet-300: #c4b5fd;
+  --violet-400: #a78bfa;
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+  --violet-700: #6d28d9;
+  --violet-800: #5b21b6;
+  --violet-900: #4c1d95;
+  --violet-950: #2e1065;
+
+  --purple-50: #faf5ff;
+  --purple-100: #f3e8ff;
+  --purple-200: #e9d5ff;
+  --purple-300: #d8b4fe;
+  --purple-400: #c084fc;
+  --purple-500: #a855f7;
+  --purple-600: #9333ea;
+  --purple-700: #7e22ce;
+  --purple-800: #6b21a8;
+  --purple-900: #581c87;
+  --purple-950: #3b0764;
+
+  --fuchsia-50: #fdf4ff;
+  --fuchsia-100: #fae8ff;
+  --fuchsia-200: #f5d0fe;
+  --fuchsia-300: #f0abfc;
+  --fuchsia-400: #e879f9;
+  --fuchsia-500: #d946ef;
+  --fuchsia-600: #c026d3;
+  --fuchsia-700: #a21caf;
+  --fuchsia-800: #86198f;
+  --fuchsia-900: #701a75;
+  --fuchsia-950: #4a044e;
+
+  --pink-50: #fdf2f8;
+  --pink-100: #fce7f3;
+  --pink-200: #fbcfe8;
+  --pink-300: #f9a8d4;
+  --pink-400: #f472b6;
+  --pink-500: #ec4899;
+  --pink-600: #db2777;
+  --pink-700: #be185d;
+  --pink-800: #9d174d;
+  --pink-900: #831843;
+  --pink-950: #500724;
+
+  --rose-50: #fff1f2;
+  --rose-100: #ffe4e6;
+  --rose-200: #fecdd3;
+  --rose-300: #fda4af;
+  --rose-400: #fb7185;
+  --rose-500: #f43f5e;
+  --rose-600: #e11d48;
+  --rose-700: #be123c;
+  --rose-800: #9f1239;
+  --rose-900: #881337;
+  --rose-950: #4c0519;
 }
 
 .theme-light {
-  --st-border-color: var(--slate-300);
-  --st-odd-row-background-color: var(--slate-50);
-  --st-even-row-background-color: var(--slate-100);
-  --st-header-background-color: white;
-  --st-dragging-background-color: var(--blue-50);
-  --st-selected-cell-background-color: var(--blue-100);
-  --st-selected-first-cell-background-color: var(--amber-50);
-  --st-footer-background-color: white;
+  --st-border-color: var(--blue-400);
+  --st-odd-row-background-color: var(--blue-50);
+  --st-even-row-background-color: var(--blue-100);
+  --st-header-background-color: var(--blue-200);
+  --st-dragging-background-color: var(--blue-300);
+  --st-selected-cell-background-color: var(--blue-300);
+  --st-selected-first-cell-background-color: var(--amber-200);
+  --st-footer-background-color: var(--blue-50);
   --st-cell-color: var(--slate-800);
-  --st-cell-odd-row-color: var(--slate-500);
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -1px rgb(0 0 0 / 0.06);
-  --st-selected-cell-color: var(--slate-800);
-  --st-selected-first-cell-color: var(--slate-800);
-  --st-resize-handle-color: var(--slate-400);
-  --st-separator-border-color: var(--slate-300);
-  --st-border-top-color: var(--slate-300);
-  --st-border-bottom-color: var(--slate-300);
-  --st-border-left-color: var(--slate-300);
-  --st-border-right-color: var(--slate-300);
+  --st-cell-odd-row-color: var(--slate-700);
+  --st-shadow: 0 1px 3px 0 var(--black / 0.1), 0 1px 2px -1px var(--black / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--black / 0.1),
+    0 2px 4px -1px var(--black / 0.06);
+  --st-selected-cell-color: var(--slate-900);
+  --st-selected-first-cell-color: var(--slate-900);
+  --st-resize-handle-color: var(--blue-500);
+  --st-separator-border-color: var(--blue-400);
+  --st-selected-border-top-color: var(--blue-600);
+  --st-selected-border-bottom-color: var(--blue-600);
+  --st-selected-border-left-color: var(--blue-600);
+  --st-selected-border-right-color: var(--blue-600);
   --st-checkbox-checked-background-color: var(--blue-500);
   --st-checkbox-checked-border-color: var(--blue-500);
-  --st-column-editor-background-color: var(--slate-100);
-  --st-column-editor-popout-background-color: var(--slate-100);
-  --st-button-hover-background-color: var(--slate-200);
-  --st-button-active-background-color: var(--slate-300);
+  --st-column-editor-background-color: var(--blue-50);
+  --st-column-editor-popout-background-color: var(--blue-50);
+  --st-button-hover-background-color: var(--blue-200);
+  --st-button-active-background-color: var(--blue-300);
 }
 
 .theme-dark {
-  --st-border-color: var(--slate-700);
+  --st-border-color: var(--slate-800);
   --st-odd-row-background-color: var(--slate-800);
   --st-even-row-background-color: var(--slate-900);
   --st-header-background-color: var(--slate-700);
@@ -107,20 +327,19 @@
   --st-selected-cell-background-color: var(--blue-700);
   --st-selected-first-cell-background-color: var(--amber-700);
   --st-footer-background-color: var(--slate-900);
-  --st-cell-color: var(--slate-100);
+  --st-cell-color: var(--white);
   --st-cell-odd-row-color: var(--slate-300);
-  --st-shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1),
-    0 1px 2px -1px rgb(255 255 255 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(255 255 255 / 0.1),
-    0 2px 4px -1px rgb(255 255 255 / 0.06);
-  --st-selected-cell-color: var(--slate-100);
-  --st-selected-first-cell-color: var(--slate-100);
+  --st-shadow: 0 1px 3px 0 var(--white / 0.1), 0 1px 2px -1px var(--white / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--white / 0.1),
+    0 2px 4px -1px var(--white / 0.06);
+  --st-selected-cell-color: var(--white);
+  --st-selected-first-cell-color: var(--white);
   --st-resize-handle-color: var(--slate-600);
   --st-separator-border-color: var(--slate-700);
-  --st-border-top-color: var(--slate-700);
-  --st-border-bottom-color: var(--slate-700);
-  --st-border-left-color: var(--slate-700);
-  --st-border-right-color: var(--slate-700);
+  --st-selected-border-top-color: var(--blue-700);
+  --st-selected-border-bottom-color: var(--blue-700);
+  --st-selected-border-left-color: var(--blue-700);
+  --st-selected-border-right-color: var(--blue-700);
   --st-checkbox-checked-background-color: var(--blue-700);
   --st-checkbox-checked-border-color: var(--blue-700);
   --st-column-editor-background-color: var(--slate-800);
@@ -130,62 +349,62 @@
 }
 
 .theme-high-contrast {
-  --st-border-color: black;
-  --st-odd-row-background-color: white;
-  --st-even-row-background-color: black;
-  --st-header-background-color: black;
-  --st-dragging-background-color: yellow;
-  --st-selected-cell-background-color: black;
-  --st-selected-first-cell-background-color: red;
-  --st-footer-background-color: black;
-  --st-cell-color: white;
-  --st-cell-odd-row-color: black;
+  --st-border-color: var(--slate-900);
+  --st-odd-row-background-color: var(--slate-50);
+  --st-even-row-background-color: var(--slate-900);
+  --st-header-background-color: var(--slate-900);
+  --st-dragging-background-color: var(--yellow-500);
+  --st-selected-cell-background-color: var(--slate-900);
+  --st-selected-first-cell-background-color: var(--red-500);
+  --st-footer-background-color: var(--slate-900);
+  --st-cell-color: var(--white);
+  --st-cell-odd-row-color: var(--slate-900);
   --st-shadow: none;
   --st-shadow-hover: none;
-  --st-selected-cell-color: white;
-  --st-selected-first-cell-color: white;
-  --st-resize-handle-color: black;
-  --st-separator-border-color: black;
-  --st-border-top-color: black;
-  --st-border-bottom-color: black;
-  --st-border-left-color: black;
-  --st-border-right-color: black;
-  --st-checkbox-checked-background-color: white;
-  --st-checkbox-checked-border-color: white;
-  --st-column-editor-background-color: black;
-  --st-column-editor-popout-background-color: black;
-  --st-button-hover-background-color: white;
-  --st-button-active-background-color: black;
+  --st-selected-cell-color: var(--white);
+  --st-selected-first-cell-color: var(--white);
+  --st-resize-handle-color: var(--slate-900);
+  --st-separator-border-color: var(--slate-900);
+  --st-selected-border-top-color: var(--orange-600);
+  --st-selected-border-bottom-color: var(--orange-600);
+  --st-selected-border-left-color: var(--orange-600);
+  --st-selected-border-right-color: var(--orange-600);
+  --st-checkbox-checked-background-color: var(--slate-50);
+  --st-checkbox-checked-border-color: var(--slate-50);
+  --st-column-editor-background-color: var(--slate-900);
+  --st-column-editor-popout-background-color: var(--slate-900);
+  --st-button-hover-background-color: var(--slate-50);
+  --st-button-active-background-color: var(--slate-900);
 }
 
 .theme-pastel {
-  --st-border-color: #d3c4e3;
-  --st-odd-row-background-color: #f3e8ff;
-  --st-even-row-background-color: #e8f3ff;
-  --st-header-background-color: #e8f3ff;
-  --st-dragging-background-color: #e0f7fa;
-  --st-selected-cell-background-color: #ffccbc;
-  --st-selected-first-cell-background-color: #ffe0b2;
-  --st-footer-background-color: #f3e5f5;
-  --st-cell-color: #6b7280;
-  --st-cell-odd-row-color: #4b5563;
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -1px rgb(0 0 0 / 0.06);
-  --st-selected-cell-color: #6b7280;
-  --st-selected-first-cell-color: #6b7280;
-  --st-resize-handle-color: #d3c4e3;
-  --st-separator-border-color: #d3c4e3;
-  --st-border-top-color: #d3c4e3;
-  --st-border-bottom-color: #d3c4e3;
-  --st-border-left-color: #d3c4e3;
-  --st-border-right-color: #d3c4e3;
-  --st-checkbox-checked-background-color: #d3c4e3;
-  --st-checkbox-checked-border-color: #d3c4e3;
-  --st-column-editor-background-color: #f3e5f5;
-  --st-column-editor-popout-background-color: #f3e5f5;
-  --st-button-hover-background-color: #e0c3fc;
-  --st-button-active-background-color: #d3c4e3;
+  --st-border-color: var(--purple-200);
+  --st-odd-row-background-color: var(--purple-50);
+  --st-even-row-background-color: var(--blue-50);
+  --st-header-background-color: var(--blue-50);
+  --st-dragging-background-color: var(--cyan-50);
+  --st-selected-cell-background-color: var(--orange-50);
+  --st-selected-first-cell-background-color: var(--amber-50);
+  --st-footer-background-color: var(--purple-50);
+  --st-cell-color: var(--slate-600);
+  --st-cell-odd-row-color: var(--slate-700);
+  --st-shadow: 0 1px 3px 0 var(--black / 0.1), 0 1px 2px -1px var(--black / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--black / 0.1),
+    0 2px 4px -1px var(--black / 0.06);
+  --st-selected-cell-color: var(--slate-600);
+  --st-selected-first-cell-color: var(--slate-600);
+  --st-resize-handle-color: var(--purple-200);
+  --st-separator-border-color: var(--purple-200);
+  --st-selected-border-top-color: var(--amber-500);
+  --st-selected-border-bottom-color: var(--amber-500);
+  --st-selected-border-left-color: var(--amber-500);
+  --st-selected-border-right-color: var(--amber-500);
+  --st-checkbox-checked-background-color: var(--purple-200);
+  --st-checkbox-checked-border-color: var(--purple-200);
+  --st-column-editor-background-color: var(--purple-50);
+  --st-column-editor-popout-background-color: var(--purple-50);
+  --st-button-hover-background-color: var(--purple-100);
+  --st-button-active-background-color: var(--purple-200);
 }
 
 .theme-vibrant {
@@ -199,17 +418,17 @@
   --st-footer-background-color: var(--orange-50);
   --st-cell-color: var(--orange-900);
   --st-cell-odd-row-color: var(--orange-800);
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
-  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.2),
-    0 2px 4px -1px rgb(0 0 0 / 0.1);
+  --st-shadow: 0 1px 3px 0 var(--black / 0.2), 0 1px 2px -1px var(--black / 0.2);
+  --st-shadow-hover: 0 4px 6px -1px var(--black / 0.2),
+    0 2px 4px -1px var(--black / 0.1);
   --st-selected-cell-color: var(--orange-900);
   --st-selected-first-cell-color: var(--orange-900);
   --st-resize-handle-color: var(--orange-400);
   --st-separator-border-color: var(--orange-500);
-  --st-border-top-color: var(--orange-500);
-  --st-border-bottom-color: var(--orange-500);
-  --st-border-left-color: var(--orange-500);
-  --st-border-right-color: var(--orange-500);
+  --st-selected-border-top-color: var(--orange-700);
+  --st-selected-border-bottom-color: var(--orange-700);
+  --st-selected-border-left-color: var(--orange-700);
+  --st-selected-border-right-color: var(--orange-700);
   --st-checkbox-checked-background-color: var(--orange-500);
   --st-checkbox-checked-border-color: var(--orange-500);
   --st-column-editor-background-color: var(--orange-100);
@@ -219,154 +438,153 @@
 }
 
 .theme-solarized-light {
-  --st-border-color: #eee8d5;
-  --st-odd-row-background-color: #fdf6e3;
-  --st-even-row-background-color: #eee8d5;
-  --st-header-background-color: #eee8d5;
-  --st-dragging-background-color: #eee8d5;
-  --st-selected-cell-background-color: #93a1a1;
-  --st-selected-first-cell-background-color: #b58900;
-  --st-footer-background-color: #fdf6e3;
-  --st-cell-color: #586e75;
-  --st-cell-odd-row-color: #657b83;
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -1px rgb(0 0 0 / 0.06);
-  --st-selected-cell-color: #586e75;
-  --st-selected-first-cell-color: #586e75;
-  --st-resize-handle-color: #93a1a1;
-  --st-separator-border-color: #eee8d5;
-  --st-border-top-color: #eee8d5;
-  --st-border-bottom-color: #eee8d5;
-  --st-border-left-color: #eee8d5;
-  --st-border-right-color: #eee8d5;
-  --st-checkbox-checked-background-color: #93a1a1;
-  --st-checkbox-checked-border-color: #93a1a1;
-  --st-column-editor-background-color: #eee8d5;
-  --st-column-editor-popout-background-color: #eee8d5;
-  --st-button-hover-background-color: #eee8d5;
-  --st-button-active-background-color: #93a1a1;
+  --st-border-color: var(--yellow-300);
+  --st-odd-row-background-color: var(--yellow-50);
+  --st-even-row-background-color: var(--yellow-200);
+  --st-header-background-color: var(--yellow-200);
+  --st-dragging-background-color: var(--yellow-300);
+  --st-selected-cell-background-color: var(--slate-400);
+  --st-selected-first-cell-background-color: var(--amber-600);
+  --st-footer-background-color: var(--yellow-50);
+  --st-cell-color: var(--slate-600);
+  --st-cell-odd-row-color: var(--slate-700);
+  --st-shadow: 0 1px 3px 0 var(--black / 0.1), 0 1px 2px -1px var(--black / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--black / 0.1),
+    0 2px 4px -1px var(--black / 0.06);
+  --st-selected-cell-color: var(--slate-600);
+  --st-selected-first-cell-color: var(--slate-600);
+  --st-resize-handle-color: var(--slate-400);
+  --st-separator-border-color: var(--yellow-300);
+  --st-selected-border-top-color: var(--yellow-600);
+  --st-selected-border-bottom-color: var(--yellow-600);
+  --st-selected-border-left-color: var(--yellow-600);
+  --st-selected-border-right-color: var(--yellow-600);
+  --st-checkbox-checked-background-color: var(--slate-400);
+  --st-checkbox-checked-border-color: var(--slate-400);
+  --st-column-editor-background-color: var(--yellow-200);
+  --st-column-editor-popout-background-color: var(--yellow-200);
+  --st-button-hover-background-color: var(--yellow-200);
+  --st-button-active-background-color: var(--slate-400);
 }
 
 .theme-solarized-dark {
-  --st-border-color: #073642;
-  --st-odd-row-background-color: #002b36;
-  --st-even-row-background-color: #073642;
-  --st-header-background-color: #073642;
-  --st-dragging-background-color: #073642;
-  --st-selected-cell-background-color: #586e75;
-  --st-selected-first-cell-background-color: #b58900;
-  --st-footer-background-color: #002b36;
-  --st-cell-color: #839496;
-  --st-cell-odd-row-color: #93a1a1;
-  --st-shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1),
-    0 1px 2px -1px rgb(255 255 255 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(255 255 255 / 0.1),
-    0 2px 4px -1px rgb(255 255 255 / 0.06);
-  --st-selected-cell-color: #839496;
-  --st-selected-first-cell-color: #839496;
-  --st-resize-handle-color: #586e75;
-  --st-separator-border-color: #073642;
-  --st-border-top-color: #073642;
-  --st-border-bottom-color: #073642;
-  --st-border-left-color: #073642;
-  --st-border-right-color: #073642;
-  --st-checkbox-checked-background-color: #586e75;
-  --st-checkbox-checked-border-color: #586e75;
-  --st-column-editor-background-color: #073642;
-  --st-column-editor-popout-background-color: #073642;
-  --st-button-hover-background-color: #586e75;
-  --st-button-active-background-color: #073642;
+  --st-border-color: var(--slate-800);
+  --st-odd-row-background-color: var(--slate-900);
+  --st-even-row-background-color: var(--slate-800);
+  --st-header-background-color: var(--slate-800);
+  --st-dragging-background-color: var(--slate-800);
+  --st-selected-cell-background-color: var(--slate-600);
+  --st-selected-first-cell-background-color: var(--amber-600);
+  --st-footer-background-color: var(--slate-900);
+  --st-cell-color: var(--slate-300);
+  --st-cell-odd-row-color: var(--slate-400);
+  --st-shadow: 0 1px 3px 0 var(--white / 0.1), 0 1px 2px -1px var(--white / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--white / 0.1),
+    0 2px 4px -1px var(--white / 0.06);
+  --st-selected-cell-color: var(--slate-300);
+  --st-selected-first-cell-color: var(--slate-300);
+  --st-resize-handle-color: var(--slate-600);
+  --st-separator-border-color: var(--slate-800);
+  --st-selected-border-top-color: var(--blue-800);
+  --st-selected-border-bottom-color: var(--blue-800);
+  --st-selected-border-left-color: var(--blue-800);
+  --st-selected-border-right-color: var(--blue-800);
+  --st-checkbox-checked-background-color: var(--slate-600);
+  --st-checkbox-checked-border-color: var(--slate-600);
+  --st-column-editor-background-color: var(--slate-800);
+  --st-column-editor-popout-background-color: var(--slate-800);
+  --st-button-hover-background-color: var(--slate-600);
+  --st-button-active-background-color: var(--slate-800);
 }
 
 .theme-ocean {
-  --st-border-color: #2b7a78;
-  --st-odd-row-background-color: #def2f1;
-  --st-even-row-background-color: #cfe8e7;
-  --st-header-background-color: #cfe8e7;
-  --st-dragging-background-color: #3aafa9;
-  --st-selected-cell-background-color: #2b7a78;
-  --st-selected-first-cell-background-color: #17252a;
-  --st-footer-background-color: #feffff;
-  --st-cell-color: #17252a;
-  --st-cell-odd-row-color: #2b7a78;
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -1px rgb(0 0 0 / 0.06);
-  --st-selected-cell-color: #17252a;
-  --st-selected-first-cell-color: #17252a;
-  --st-resize-handle-color: #3aafa9;
-  --st-separator-border-color: #2b7a78;
-  --st-border-top-color: #2b7a78;
-  --st-border-bottom-color: #2b7a78;
-  --st-border-left-color: #2b7a78;
-  --st-border-right-color: #2b7a78;
-  --st-checkbox-checked-background-color: #2b7a78;
-  --st-checkbox-checked-border-color: #2b7a78;
-  --st-column-editor-background-color: #cfe8e7;
-  --st-column-editor-popout-background-color: #cfe8e7;
-  --st-button-hover-background-color: #3aafa9;
-  --st-button-active-background-color: #2b7a78;
+  --st-border-color: var(--cyan-700);
+  --st-odd-row-background-color: var(--cyan-50);
+  --st-even-row-background-color: var(--cyan-100);
+  --st-header-background-color: var(--cyan-100);
+  --st-dragging-background-color: var(--cyan-300);
+  --st-selected-cell-background-color: var(--cyan-700);
+  --st-selected-first-cell-background-color: var(--slate-900);
+  --st-footer-background-color: var(--cyan-50);
+  --st-cell-color: var(--slate-900);
+  --st-cell-odd-row-color: var(--cyan-700);
+  --st-shadow: 0 1px 3px 0 var(--black / 0.1), 0 1px 2px -1px var(--black / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--black / 0.1),
+    0 2px 4px -1px var(--black / 0.06);
+  --st-selected-cell-color: var(--slate-900);
+  --st-selected-first-cell-color: var(--slate-900);
+  --st-resize-handle-color: var(--cyan-300);
+  --st-separator-border-color: var(--cyan-700);
+  --st-selected-border-top-color: var(--blue-700);
+  --st-selected-border-bottom-color: var(--blue-700);
+  --st-selected-border-left-color: var(--blue-700);
+  --st-selected-border-right-color: var(--blue-700);
+  --st-checkbox-checked-background-color: var(--cyan-700);
+  --st-checkbox-checked-border-color: var(--cyan-700);
+  --st-column-editor-background-color: var(--cyan-100);
+  --st-column-editor-popout-background-color: var(--cyan-100);
+  --st-button-hover-background-color: var(--cyan-300);
+  --st-button-active-background-color: var(--cyan-700);
 }
 
 .theme-forest {
-  --st-border-color: #2f4f4f;
-  --st-odd-row-background-color: #e0f2f1;
-  --st-even-row-background-color: #c8e6c9;
-  --st-header-background-color: #c8e6c9;
-  --st-dragging-background-color: #4caf50;
-  --st-selected-cell-background-color: #388e3c;
-  --st-selected-first-cell-background-color: #1b5e20;
-  --st-footer-background-color: #a5d6a7;
-  --st-cell-color: #1b5e20;
-  --st-cell-odd-row-color: #388e3c;
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -1px rgb(0 0 0 / 0.06);
-  --st-selected-cell-color: #1b5e20;
-  --st-selected-first-cell-color: #1b5e20;
-  --st-resize-handle-color: #388e3c;
-  --st-separator-border-color: #2f4f4f;
-  --st-border-top-color: #2f4f4f;
-  --st-border-bottom-color: #2f4f4f;
-  --st-border-left-color: #2f4f4f;
-  --st-border-right-color: #2f4f4f;
-  --st-checkbox-checked-background-color: #388e3c;
-  --st-checkbox-checked-border-color: #388e3c;
-  --st-column-editor-background-color: #c8e6c9;
-  --st-column-editor-popout-background-color: #c8e6c9;
-  --st-button-hover-background-color: #a5d6a7;
-  --st-button-active-background-color: #388e3c;
+  --st-border-color: var(--green-800);
+  --st-odd-row-background-color: var(--green-50);
+  --st-even-row-background-color: var(--green-100);
+  --st-header-background-color: var(--green-100);
+  --st-dragging-background-color: var(--green-400);
+  --st-selected-cell-background-color: var(--green-700);
+  --st-selected-first-cell-background-color: var(--green-900);
+  --st-footer-background-color: var(--green-50);
+  --st-cell-color: var(--green-900);
+  --st-cell-odd-row-color: var(--green-700);
+  --st-shadow: 0 1px 3px 0 var(--black / 0.1), 0 1px 2px -1px var(--black / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--black / 0.1),
+    0 2px 4px -1px var(--black / 0.06);
+  --st-selected-cell-color: var(--green-900);
+  --st-selected-first-cell-color: var(--green-900);
+  --st-resize-handle-color: var(--green-400);
+  --st-separator-border-color: var(--green-800);
+  --st-selected-border-top-color: var(--green-600);
+  --st-selected-border-bottom-color: var(--green-600);
+  --st-selected-border-left-color: var(--green-600);
+  --st-selected-border-right-color: var(--green-600);
+  --st-checkbox-checked-background-color: var(--green-700);
+  --st-checkbox-checked-border-color: var(--green-700);
+  --st-column-editor-background-color: var(--green-100);
+  --st-column-editor-popout-background-color: var(--green-100);
+  --st-button-hover-background-color: var(--green-400);
+  --st-button-active-background-color: var(--green-700);
 }
 
 .theme-desert {
-  --st-border-color: #d2b48c;
-  --st-odd-row-background-color: #f5deb3;
-  --st-even-row-background-color: #eeddc1;
-  --st-header-background-color: #eeddc1;
-  --st-dragging-background-color: #deb887;
-  --st-selected-cell-background-color: #cd853f;
-  --st-selected-first-cell-background-color: #8b4513;
-  --st-footer-background-color: #f5f5dc;
-  --st-cell-color: #8b4513;
-  --st-cell-odd-row-color: #cd853f;
-  --st-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --st-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -1px rgb(0 0 0 / 0.06);
-  --st-selected-cell-color: #8b4513;
-  --st-selected-first-cell-color: #8b4513;
-  --st-resize-handle-color: #cd853f;
-  --st-separator-border-color: #d2b48c;
-  --st-border-top-color: #d2b48c;
-  --st-border-bottom-color: #d2b48c;
-  --st-border-left-color: #d2b48c;
-  --st-border-right-color: #d2b48c;
-  --st-checkbox-checked-background-color: #cd853f;
-  --st-checkbox-checked-border-color: #cd853f;
-  --st-column-editor-background-color: #eeddc1;
-  --st-column-editor-popout-background-color: #eeddc1;
-  --st-button-hover-background-color: #deb887;
-  --st-button-active-background-color: #cd853f;
+  --st-border-color: var(--amber-600);
+  --st-odd-row-background-color: var(--amber-50);
+  --st-even-row-background-color: var(--amber-100);
+  --st-header-background-color: var(--amber-100);
+  --st-dragging-background-color: var(--amber-300);
+  --st-selected-cell-background-color: var(--amber-600);
+  --st-selected-first-cell-background-color: var(--amber-800);
+  --st-footer-background-color: var(--amber-50);
+  --st-cell-color: var(--amber-800);
+  --st-cell-odd-row-color: var(--amber-600);
+  --st-shadow: 0 1px 3px 0 var(--black / 0.1), 0 1px 2px -1px var(--black / 0.1);
+  --st-shadow-hover: 0 4px 6px -1px var(--black / 0.1),
+    0 2px 4px -1px var(--black / 0.06);
+  --st-selected-cell-color: var(--amber-800);
+  --st-selected-first-cell-color: var(--amber-800);
+  --st-resize-handle-color: var(--amber-300);
+  --st-separator-border-color: var(--amber-600);
+  --st-selected-border-top-color: var(--amber-700);
+  --st-selected-border-bottom-color: var(--amber-700);
+  --st-selected-border-left-color: var(--amber-700);
+  --st-selected-border-right-color: var(--amber-700);
+  --st-checkbox-checked-background-color: var(--amber-600);
+  --st-checkbox-checked-border-color: var(--amber-600);
+  --st-column-editor-background-color: var(--amber-100);
+  --st-column-editor-popout-background-color: var(--amber-100);
+  --st-button-hover-background-color: var(--amber-300);
+  --st-button-active-background-color: var(--amber-600);
 }
 
 /* Global styles */
@@ -538,19 +756,21 @@ body {
 
 /* Border for selected cells */
 .st-selected-top-border {
-  border-top: var(--st-border-width) solid var(--st-border-top-color);
+  border-top: var(--st-border-width) solid var(--st-selected-border-top-color);
 }
 
 .st-selected-bottom-border {
-  border-bottom: var(--st-border-width) solid var(--st-border-bottom-color);
+  border-bottom: var(--st-border-width) solid
+    var(--st-selected-border-bottom-color);
 }
 
 .st-selected-left-border {
-  border-left: var(--st-border-width) solid var(--st-border-left-color);
+  border-left: var(--st-border-width) solid var(--st-selected-border-left-color);
 }
 
 .st-selected-right-border {
-  border-right: var(--st-border-width) solid var(--st-border-right-color);
+  border-right: var(--st-border-width) solid
+    var(--st-selected-border-right-color);
 }
 
 .st-footer {
