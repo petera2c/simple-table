@@ -13,7 +13,7 @@ import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { throttle } from "../../utils/performanceUtils";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
-import { useDragOver } from "../../utils/dragDropUtils";
+import { useOnDragOver } from "../../hooks/useOnDragOver";
 
 interface TableCellProps {
   borderClass: string;
@@ -68,7 +68,7 @@ const TableCell = forwardRef(
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const { onDragOver } = useDragOver();
+    const { onDragOver } = useOnDragOver();
 
     // Derived state
     const clickable = Boolean(header?.isEditable);

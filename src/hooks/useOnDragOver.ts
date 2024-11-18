@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import OnDragOverProps from "../types/OnDragOverProps";
 
-export const useDragOver = () => {
+export const useOnDragOver = () => {
   // Refs
   const prevDraggingPosition = useRef({ pageX: 0, pageY: 0 });
 

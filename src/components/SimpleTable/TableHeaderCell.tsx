@@ -18,7 +18,7 @@ import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
 import OnDragOverProps from "../../types/OnDragOverProps";
-import { useDragOver } from "../../utils/dragDropUtils";
+import { useOnDragOver } from "../../hooks/useOnDragOver";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -81,7 +81,7 @@ const TableHeaderCell = forwardRef(
         hoveredHeaderRef,
         onTableHeaderDragEnd,
       });
-    const { onDragOver } = useDragOver();
+    const { onDragOver } = useOnDragOver();
 
     const handleDragStartWrapper = (header: HeaderObject) => {
       setIsDragging(true);
