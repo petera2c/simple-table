@@ -1,19 +1,11 @@
-import {
-  forwardRef,
-  LegacyRef,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { forwardRef, LegacyRef, useContext, useEffect, useState } from "react";
 import EditableCell from "./EditableCell/EditableCell";
 import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
-import { throttle } from "../../utils/performanceUtils";
-import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { useOnDragOver } from "../../hooks/useOnDragOver";
+import useThrottledHandleDragover from "../../hooks/useThrottledHandleDragover";
 
 interface TableCellProps {
   borderClass: string;
@@ -62,7 +54,7 @@ const TableCell = forwardRef(
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
-    const { handleDragOver } = useTableHeaderCell({
+    const { throttledHandleDragOver } = useThrottledHandleDragover({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
@@ -82,12 +74,6 @@ const TableCell = forwardRef(
     } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${
       clickable ? "clickable" : ""
     }`;
-
-    const throttledHandleDragOver = useRef(
-      throttle((header: HeaderObject) => {
-        handleDragOver(header);
-      }, 10)
-    ).current;
 
     // Update local content when the content changes
     useEffect(() => {

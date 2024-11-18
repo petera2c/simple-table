@@ -19,6 +19,7 @@ import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
 import OnDragOverProps from "../../types/OnDragOverProps";
 import { useOnDragOver } from "../../hooks/useOnDragOver";
+import useThrottledHandleDragover from "../../hooks/useThrottledHandleDragover";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -74,13 +75,18 @@ const TableHeaderCell = forwardRef(
     }`;
 
     // Handlers
-    const { handleDragStart, handleDragOver, handleDragEnd } =
-      useTableHeaderCell({
-        draggedHeaderRef,
-        headersRef,
-        hoveredHeaderRef,
-        onTableHeaderDragEnd,
-      });
+    const { handleDragStart, handleDragEnd } = useTableHeaderCell({
+      draggedHeaderRef,
+      headersRef,
+      hoveredHeaderRef,
+      onTableHeaderDragEnd,
+    });
+    const { throttledHandleDragOver } = useThrottledHandleDragover({
+      draggedHeaderRef,
+      headersRef,
+      hoveredHeaderRef,
+      onTableHeaderDragEnd,
+    });
     const { onDragOver } = useOnDragOver();
 
     const handleDragStartWrapper = (header: HeaderObject) => {
@@ -94,13 +100,6 @@ const TableHeaderCell = forwardRef(
       setIsDragging(false);
       handleDragEnd();
     };
-
-    // Throttle the handleDragOver function
-    const throttledHandleDragOver = useRef(
-      throttle((header: HeaderObject) => {
-        handleDragOver(header);
-      }, 10)
-    ).current;
 
     // Resize handler
     const handleResizeStart = (e: MouseEvent) => {

@@ -1,11 +1,6 @@
 import HeaderObject from "../types/HeaderObject";
+import UseTableHeaderCellProps from "../types/UseTableHeaderCellProps";
 
-interface UseTableHeaderCellProps {
-  draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  headersRef: React.RefObject<HeaderObject[]>;
-  hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-}
 var isUpdating = false;
 
 const useTableHeaderCell = ({
@@ -58,6 +53,7 @@ const useTableHeaderCell = ({
   };
 
   const handleDragOver = (hoveredHeader: HeaderObject) => {
+    console.log("hoveredHeader", hoveredHeader);
     updateHeaders(hoveredHeader);
   };
 
