@@ -23,6 +23,7 @@ import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
+import { useDragOver } from "../../utils/dragDropUtils";
 
 interface SpreadsheetProps {
   columnEditorPosition?: "left" | "right";
@@ -137,6 +138,8 @@ const SimpleTable = ({
 
   // Refs
   const tableRef = useRef<HTMLDivElement>(null);
+  const draggedHeaderRef = useRef<HeaderObject | null>(null);
+  const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
@@ -260,9 +263,11 @@ const SimpleTable = ({
               columnResizing={columnResizing}
               currentRows={currentRows}
               draggable={draggable}
+              draggedHeaderRef={draggedHeaderRef}
               forceUpdate={forceUpdate}
               headersRef={headersRef}
               hiddenColumns={hiddenColumns}
+              hoveredHeaderRef={hoveredHeaderRef}
               isWidthDragging={isWidthDragging}
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
@@ -289,6 +294,10 @@ const SimpleTable = ({
               shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
               shouldPaginate={shouldPaginate}
               tableRef={tableRef}
+              draggedHeaderRef={draggedHeaderRef}
+              headersRef={headersRef}
+              hoveredHeaderRef={hoveredHeaderRef}
+              onTableHeaderDragEnd={onTableHeaderDragEnd}
             />
           </div>
           <TableColumnEditor

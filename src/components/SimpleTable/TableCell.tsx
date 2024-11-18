@@ -1,20 +1,36 @@
-import { forwardRef, LegacyRef, useContext, useEffect, useState } from "react";
+import {
+  DragEvent,
+  forwardRef,
+  LegacyRef,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import EditableCell from "./EditableCell/EditableCell";
 import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
+import OnDragOverProps from "../../types/OnDragOverProps";
+import { throttle } from "../../utils/performanceUtils";
+import useTableHeaderCell from "../../hooks/useTableHeaderCell";
+import { useDragOver } from "../../utils/dragDropUtils";
 
 interface TableCellProps {
   borderClass: string;
   colIndex: number;
   content: CellValue;
+  draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
   header: HeaderObject;
+  headersRef: React.RefObject<HeaderObject[]>;
+  hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
   isSelected: boolean;
   isTopLeftCell: boolean;
   onCellChange?: (props: CellChangeProps) => void;
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;
+  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   row: { [key: string]: CellValue };
   rowIndex: number;
 }
@@ -25,25 +41,40 @@ const TableCell = forwardRef(
       borderClass,
       colIndex,
       content,
+      draggedHeaderRef,
       header,
+      headersRef,
+      hoveredHeaderRef,
       isSelected,
       isTopLeftCell,
       onCellChange,
       onMouseDown,
       onMouseOver,
+      onTableHeaderDragEnd,
       row,
       rowIndex,
     }: TableCellProps,
     ref: LegacyRef<HTMLTableCellElement>
   ) => {
+    // Context
     const { rows, tableRows } = useContext(TableContext);
+
+    // Local state
     const [localContent, setLocalContent] = useState(content);
     const [isEditing, setIsEditing] = useState(false);
 
+    // Hooks
+    const { handleDragOver } = useTableHeaderCell({
+      draggedHeaderRef,
+      headersRef,
+      hoveredHeaderRef,
+      onTableHeaderDragEnd,
+    });
+    const { onDragOver } = useDragOver();
+
+    // Derived state
     const clickable = Boolean(header?.isEditable);
-
     const isOddRow = rowIndex % 2 === 0;
-
     const cellClassName = `st-cell ${
       isSelected
         ? isTopLeftCell
@@ -53,6 +84,12 @@ const TableCell = forwardRef(
     } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${
       clickable ? "clickable" : ""
     }`;
+
+    const throttledHandleDragOver = useRef(
+      throttle((header: HeaderObject) => {
+        handleDragOver(header);
+      }, 10)
+    ).current;
 
     // Update local content when the content changes
     useEffect(() => {
@@ -109,6 +146,9 @@ const TableCell = forwardRef(
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
+        onDragOver={(event) =>
+          onDragOver({ event, header, throttledHandleDragOver })
+        }
         ref={ref}
       >
         {localContent}

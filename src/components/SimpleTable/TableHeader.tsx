@@ -1,6 +1,7 @@
 import {
   createRef,
   Dispatch,
+  MutableRefObject,
   ReactNode,
   RefObject,
   SetStateAction,
@@ -18,9 +19,11 @@ interface TableHeaderProps {
   columnResizing: boolean;
   currentRows: Row[];
   draggable: boolean;
+  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   forceUpdate: () => void;
   headersRef: React.RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
+  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   isWidthDragging: boolean;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
@@ -38,9 +41,11 @@ const TableHeader = ({
   columnResizing,
   currentRows,
   draggable,
+  draggedHeaderRef,
   forceUpdate,
   headersRef,
   hiddenColumns,
+  hoveredHeaderRef,
   isWidthDragging,
   onSort,
   onTableHeaderDragEnd,
@@ -53,9 +58,6 @@ const TableHeader = ({
   sortUpIcon,
   tableRef,
 }: TableHeaderProps) => {
-  const draggedHeaderRef = useRef<HeaderObject | null>(null);
-  const hoveredHeaderRef = useRef<HeaderObject | null>(null);
-
   return (
     <>
       <Animate pauseAnimation={isWidthDragging} tableRef={tableRef}>

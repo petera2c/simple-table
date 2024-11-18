@@ -16,8 +16,9 @@ import { throttle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
-import Cell from "../../types/Cell";
 import Row from "../../types/Row";
+import OnDragOverProps from "../../types/OnDragOverProps";
+import { useDragOver } from "../../utils/dragDropUtils";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -60,9 +61,6 @@ const TableHeaderCell = forwardRef(
     }: TableHeaderCellProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
-    // Ref
-    const prevDraggingPosition = useRef({ pageX: 0, pageY: 0 });
-
     // Local state
     const [isDragging, setIsDragging] = useState(false);
 
@@ -83,6 +81,7 @@ const TableHeaderCell = forwardRef(
         hoveredHeaderRef,
         onTableHeaderDragEnd,
       });
+    const { onDragOver } = useDragOver();
 
     const handleDragStartWrapper = (header: HeaderObject) => {
       setIsDragging(true);
@@ -100,24 +99,9 @@ const TableHeaderCell = forwardRef(
     const throttledHandleDragOver = useRef(
       throttle((header: HeaderObject) => {
         handleDragOver(header);
-      }, 100)
+      }, 10)
     ).current;
-    const onDragOver = (event: DragEvent, header: HeaderObject) => {
-      // Prevent click event from firing
-      event.preventDefault();
-      // This helps prevent the drag ghost from being shown
-      event.dataTransfer.dropEffect = "move";
 
-      const { pageX, pageY } = event;
-      if (
-        pageX === prevDraggingPosition.current.pageX &&
-        pageY === prevDraggingPosition.current.pageY
-      ) {
-        return;
-      }
-      prevDraggingPosition.current = { pageX, pageY };
-      throttledHandleDragOver(header, event);
-    };
     // Resize handler
     const handleResizeStart = (e: MouseEvent) => {
       setIsWidthDragging(true);
@@ -231,14 +215,20 @@ const TableHeaderCell = forwardRef(
     if (!header) return null;
 
     return (
-      <div className={className} ref={ref} style={{ width: header.width }}>
+      <div
+        className={className}
+        onDragOver={(event) =>
+          onDragOver({ event, header, throttledHandleDragOver })
+        }
+        ref={ref}
+        style={{ width: header.width }}
+      >
         <div
           className="st-header-label"
           draggable={draggable}
           onClick={(event) => handleColumnHeaderClick({ event, header })}
-          onDragStart={onDragStart}
-          onDragOver={(event) => onDragOver(event, header)}
           onDragEnd={handleDragEndWrapper}
+          onDragStart={onDragStart}
           onMouseEnter={() => (document.body.style.overflow = "hidden")}
           onMouseLeave={() => (document.body.style.overflow = "auto")}
         >
