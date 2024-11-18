@@ -5,7 +5,6 @@ import {
   ReactNode,
   RefObject,
   SetStateAction,
-  useRef,
 } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";

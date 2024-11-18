@@ -23,7 +23,6 @@ import AngleDownIcon from "../../icons/AngleDownIcon";
 import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
-import { useDragOver } from "../../utils/dragDropUtils";
 
 interface SpreadsheetProps {
   columnEditorPosition?: "left" | "right";

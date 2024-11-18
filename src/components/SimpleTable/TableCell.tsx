@@ -1,5 +1,4 @@
 import {
-  DragEvent,
   forwardRef,
   LegacyRef,
   useContext,
@@ -12,7 +11,6 @@ import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
-import OnDragOverProps from "../../types/OnDragOverProps";
 import { throttle } from "../../utils/performanceUtils";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 import { useDragOver } from "../../utils/dragDropUtils";

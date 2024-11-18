@@ -1,5 +1,4 @@
-import { DragEvent, useRef } from "react";
-import HeaderObject from "../types/HeaderObject";
+import { useRef } from "react";
 import OnDragOverProps from "../types/OnDragOverProps";
 
 export const useDragOver = () => {

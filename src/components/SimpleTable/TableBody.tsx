@@ -1,10 +1,4 @@
-import {
-  createRef,
-  DragEvent,
-  Fragment,
-  MutableRefObject,
-  RefObject,
-} from "react";
+import { createRef, Fragment, MutableRefObject, RefObject } from "react";
 import TableCell from "./TableCell";
 import Animate from "../Animate";
 import HeaderObject from "../../types/HeaderObject";
@@ -12,7 +6,6 @@ import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
 import CellChangeProps from "../../types/CellChangeProps";
 import { MouseDownProps } from "../../hooks/useSelection";
-import OnDragOverProps from "../../types/OnDragOverProps";
 
 interface TableBodyProps {
   currentRows: { [key: string]: any }[];
