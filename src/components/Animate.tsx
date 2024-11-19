@@ -10,6 +10,7 @@ import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 
 interface AnimateProps {
   allowHorizontalAnimate?: boolean;
+  animationTime?: number;
   children: any;
   pauseAnimation?: boolean;
   tableRef: RefObject<HTMLDivElement>;
@@ -17,6 +18,7 @@ interface AnimateProps {
 
 const Animate = ({
   allowHorizontalAnimate = true,
+  animationTime = 8000,
   children,
   pauseAnimation,
   tableRef,
@@ -31,6 +33,9 @@ const Animate = ({
   // Hooks
   const prevChildren = usePrevious(children);
 
+  // Add a ref to store the animation frame ID
+  const animationFrameId = useRef<number | null>(null);
+
   useLayoutEffect(() => {
     const newBoundingBox = calculateBoundingBoxes(children);
     setBoundingBox(newBoundingBox);
@@ -39,6 +44,11 @@ const Animate = ({
   useLayoutEffect(() => {
     const prevBoundingBox = calculateBoundingBoxes(prevChildren);
     setPrevBoundingBox(prevBoundingBox);
+
+    // console.log("\n");
+    // console.log("prevChildren", prevChildren);
+    // console.log("productId", prevBoundingBox.productId);
+    // console.log("productName", prevBoundingBox.productName);
 
     const currentTableRef = tableRef.current; // Store the current ref value
 
@@ -83,18 +93,20 @@ const Animate = ({
         const absoluteChangeInY = Math.abs(changeInY);
 
         if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
-          requestAnimationFrame(() => {
+          // Cancel the previous animation frame if it exists
+          if (animationFrameId.current !== null) {
+            // cancelAnimationFrame(animationFrameId.current);
+          }
+
+          animationFrameId.current = requestAnimationFrame(() => {
             // Before the DOM paints, invert child to old position
             domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
-            domNode.style.transition = "transform 0s, opacity 0s";
-            // domNode.style.opacity = "0.5"; // Optional: Add a fade effect
+            domNode.style.transition = "transform 0s";
 
-            requestAnimationFrame(() => {
+            animationFrameId.current = requestAnimationFrame(() => {
               // After the previous frame, remove the transition to play the animation
               domNode.style.transform = "";
-              domNode.style.transition =
-                "transform 300ms ease-out, opacity 300ms ease-out";
-              // domNode.style.opacity = "1"; // Optional: Restore opacity
+              domNode.style.transition = `transform ${animationTime}ms linear`;
             });
           });
         }
@@ -102,6 +114,7 @@ const Animate = ({
     }
   }, [
     allowHorizontalAnimate,
+    animationTime,
     boundingBox,
     children,
     pauseAnimation,

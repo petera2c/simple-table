@@ -17,9 +17,7 @@ import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
-import OnDragOverProps from "../../types/OnDragOverProps";
 import { useOnDragOver } from "../../hooks/useOnDragOver";
-import useThrottledHandleDragover from "../../hooks/useThrottledHandleDragover";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -81,13 +79,12 @@ const TableHeaderCell = forwardRef(
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const { throttledHandleDragOver } = useThrottledHandleDragover({
+    const { onDragOver } = useOnDragOver({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const { onDragOver } = useOnDragOver();
 
     const handleDragStartWrapper = (header: HeaderObject) => {
       setIsDragging(true);
@@ -216,9 +213,7 @@ const TableHeaderCell = forwardRef(
     return (
       <div
         className={className}
-        onDragOver={(event) =>
-          onDragOver({ event, header, throttledHandleDragOver })
-        }
+        onDragOver={(event) => onDragOver({ event, header })}
         ref={ref}
         style={{ width: header.width }}
       >

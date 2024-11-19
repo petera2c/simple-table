@@ -14,13 +14,15 @@ const useTableHeaderCell = ({
   };
 
   const updateHeaders = (hoveredHeader: HeaderObject) => {
-    if (isUpdating) return;
+    if (isUpdating) {
+      return;
+    }
+
     hoveredHeaderRef.current = hoveredHeader;
 
     if (
       hoveredHeader.accessor !== draggedHeaderRef.current?.accessor &&
-      draggedHeaderRef.current !== null &&
-      !isUpdating
+      draggedHeaderRef.current !== null
     ) {
       isUpdating = true;
       if (!headersRef.current) return;
@@ -39,21 +41,17 @@ const useTableHeaderCell = ({
       const [draggedHeader] = newHeaders.splice(draggedHeaderIndex, 1);
       newHeaders.splice(hoveredHeaderIndex, 0, draggedHeader);
 
-      // Check if the newHeaders array is different from the original headers array
       if (JSON.stringify(newHeaders) !== JSON.stringify(headersRef.current)) {
-        setTimeout(() => {
-          onTableHeaderDragEnd(newHeaders);
+        onTableHeaderDragEnd(newHeaders);
 
-          setTimeout(() => {
-            isUpdating = false;
-          }, 500);
+        setTimeout(() => {
+          isUpdating = false;
         }, 50);
       }
     }
   };
 
   const handleDragOver = (hoveredHeader: HeaderObject) => {
-    console.log("hoveredHeader", hoveredHeader);
     updateHeaders(hoveredHeader);
   };
 

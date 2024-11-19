@@ -5,7 +5,6 @@ import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { useOnDragOver } from "../../hooks/useOnDragOver";
-import useThrottledHandleDragover from "../../hooks/useThrottledHandleDragover";
 
 interface TableCellProps {
   borderClass: string;
@@ -54,13 +53,12 @@ const TableCell = forwardRef(
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
-    const { throttledHandleDragOver } = useThrottledHandleDragover({
+    const { onDragOver } = useOnDragOver({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const { onDragOver } = useOnDragOver();
 
     // Derived state
     const clickable = Boolean(header?.isEditable);
@@ -130,9 +128,7 @@ const TableCell = forwardRef(
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
-        onDragOver={(event) =>
-          onDragOver({ event, header, throttledHandleDragOver })
-        }
+        onDragOver={(event) => onDragOver({ event, header })}
         ref={ref}
       >
         {localContent}

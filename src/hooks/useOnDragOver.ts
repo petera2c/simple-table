@@ -1,25 +1,51 @@
-import { useRef } from "react";
-import OnDragOverProps from "../types/OnDragOverProps";
+import { DragEvent, useRef } from "react";
+import useThrottledHandleDragover from "./useThrottledHandleDragover";
+import UseTableHeaderCellProps from "../types/UseTableHeaderCellProps";
+import HeaderObject from "../types/HeaderObject";
 
-export const useOnDragOver = () => {
+type OnDragOverProps = {
+  event: DragEvent<HTMLDivElement>;
+  header: HeaderObject;
+};
+
+export const useOnDragOver = ({
+  draggedHeaderRef,
+  headersRef,
+  hoveredHeaderRef,
+  onTableHeaderDragEnd,
+}: UseTableHeaderCellProps) => {
+  const { throttledHandleDragOver } = useThrottledHandleDragover({
+    draggedHeaderRef,
+    headersRef,
+    hoveredHeaderRef,
+    onTableHeaderDragEnd,
+  });
+
   // Refs
   const prevDraggingPosition = useRef({ pageX: 0, pageY: 0 });
 
-  const onDragOver = ({
-    event,
-    header,
-    throttledHandleDragOver,
-  }: OnDragOverProps) => {
+  const onDragOver = ({ event, header }: OnDragOverProps) => {
+    const animations = event.currentTarget.getAnimations();
+    const isAnimating = animations.some(
+      (animation) => animation.playState === "running"
+    );
+
+    if (isAnimating) {
+      return;
+    }
+
     // Prevent click event from firing
     event.preventDefault();
     // This helps prevent the drag ghost from being shown
     event.dataTransfer.dropEffect = "move";
 
     const { pageX, pageY } = event;
-    if (
-      pageX === prevDraggingPosition.current.pageX &&
-      pageY === prevDraggingPosition.current.pageY
-    ) {
+    const distance = Math.sqrt(
+      Math.pow(pageX - prevDraggingPosition.current.pageX, 2) +
+        Math.pow(pageY - prevDraggingPosition.current.pageY, 2)
+    );
+
+    if (distance < 5) {
       return;
     }
     prevDraggingPosition.current = { pageX, pageY };
