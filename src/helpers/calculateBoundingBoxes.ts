@@ -1,18 +1,8 @@
 import { Children } from "react";
+import BoundingBox from "../types/BoundingBox";
 
-interface BoundingBox {
-  bottom: number;
-  height: number;
-  left: number;
-  right: number;
-  top: number;
-  width: number;
-}
-
-const calculateBoundingBoxes = (
-  children: any
-): { [key: string]: BoundingBox } => {
-  const boundingBoxes: { [key: string]: BoundingBox } = {};
+const calculateBoundingBoxes = (children: any) => {
+  const boundingBoxes: { [key: string]: BoundingBox | false } = {};
 
   Children.forEach(children, (child: any) => {
     if (!child) return;
@@ -21,23 +11,13 @@ const calculateBoundingBoxes = (
       const isAnimating = animations.some(
         (animation: Animation) => animation.playState === "running"
       );
+
+      const domNode = child.ref.current;
+      const nodeBoundingBox = domNode.getBoundingClientRect();
+
       if (isAnimating) {
-        const domNode = child.ref.current;
-        const computedStyle = window.getComputedStyle(domNode);
-        const finalBoundingBox = {
-          top: parseFloat(computedStyle.top),
-          left: parseFloat(computedStyle.left),
-          width: parseFloat(computedStyle.width),
-          height: parseFloat(computedStyle.height),
-          right:
-            parseFloat(computedStyle.left) + parseFloat(computedStyle.width),
-          bottom:
-            parseFloat(computedStyle.top) + parseFloat(computedStyle.height),
-        };
-        boundingBoxes[child.key] = finalBoundingBox;
+        boundingBoxes[child.key] = false;
       } else {
-        const domNode = child.ref.current;
-        const nodeBoundingBox = domNode.getBoundingClientRect();
         boundingBoxes[child.key] = nodeBoundingBox;
       }
     }

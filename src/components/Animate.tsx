@@ -7,19 +7,22 @@ import React, {
 } from "react";
 import usePrevious from "../hooks/usePrevious";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
+import BoundingBox from "../types/BoundingBox";
 
 interface AnimateProps {
   allowHorizontalAnimate?: boolean;
   animationTime?: number;
   children: any;
+  isBody?: boolean;
   pauseAnimation?: boolean;
   tableRef: RefObject<HTMLDivElement>;
 }
 
 const Animate = ({
   allowHorizontalAnimate = true,
-  animationTime = 8000,
+  animationTime = 100,
   children,
+  isBody,
   pauseAnimation,
   tableRef,
 }: AnimateProps) => {
@@ -27,8 +30,12 @@ const Animate = ({
   const isScrolling = useRef(false);
 
   // Local state
-  const [boundingBox, setBoundingBox] = useState<any>({});
-  const [prevBoundingBox, setPrevBoundingBox] = useState<any>({});
+  const [boundingBox, setBoundingBox] = useState<{
+    [key: string]: false | BoundingBox;
+  }>({});
+  const [prevBoundingBox, setPrevBoundingBox] = useState<{
+    [key: string]: false | BoundingBox;
+  }>({});
 
   // Hooks
   const prevChildren = usePrevious(children);
@@ -38,17 +45,13 @@ const Animate = ({
 
   useLayoutEffect(() => {
     const newBoundingBox = calculateBoundingBoxes(children);
+
     setBoundingBox(newBoundingBox);
-  }, [children]);
+  }, [children, isBody]);
 
   useLayoutEffect(() => {
     const prevBoundingBox = calculateBoundingBoxes(prevChildren);
     setPrevBoundingBox(prevBoundingBox);
-
-    // console.log("\n");
-    // console.log("prevChildren", prevChildren);
-    // console.log("productId", prevBoundingBox.productId);
-    // console.log("productName", prevBoundingBox.productName);
 
     const currentTableRef = tableRef.current; // Store the current ref value
 
@@ -79,25 +82,20 @@ const Animate = ({
       React.Children.forEach(children, (child) => {
         if (!child) return;
         const domNode = child.ref.current;
-        const firstBox = prevBoundingBox[child.key];
-        const lastBox = boundingBox[child.key];
+        const prevBox = prevBoundingBox[child.key];
+        const currentBox = boundingBox[child.key];
 
-        if (!firstBox || !lastBox) return;
+        if (!prevBox || !currentBox) return;
 
-        const changeInX = firstBox.left - lastBox.left;
+        const changeInX = prevBox.left - currentBox.left;
         const changeInY = !allowHorizontalAnimate
-          ? firstBox.top - lastBox.top
+          ? prevBox.top - currentBox.top
           : 0;
 
         const absoluteChangeInX = Math.abs(changeInX);
         const absoluteChangeInY = Math.abs(changeInY);
 
         if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
-          // Cancel the previous animation frame if it exists
-          if (animationFrameId.current !== null) {
-            // cancelAnimationFrame(animationFrameId.current);
-          }
-
           animationFrameId.current = requestAnimationFrame(() => {
             // Before the DOM paints, invert child to old position
             domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
@@ -119,6 +117,7 @@ const Animate = ({
     children,
     pauseAnimation,
     prevBoundingBox,
+    isBody,
   ]);
 
   return children;

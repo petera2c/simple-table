@@ -55,6 +55,7 @@ const TableBody = ({
               allowHorizontalAnimate={shouldPaginate}
               pauseAnimation={isWidthDragging}
               tableRef={tableRef}
+              isBody
             >
               {headers.map((header, colIndex) => {
                 if (hiddenColumns[header.accessor]) return null;

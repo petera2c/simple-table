@@ -45,7 +45,7 @@ export const useOnDragOver = ({
         Math.pow(pageY - prevDraggingPosition.current.pageY, 2)
     );
 
-    if (distance < 5) {
+    if (distance < 10) {
       return;
     }
     prevDraggingPosition.current = { pageX, pageY };
