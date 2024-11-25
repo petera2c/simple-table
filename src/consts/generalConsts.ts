@@ -1,1 +1,1 @@
-export const DRAG_THROTTLE_LIMIT = 20;
+export const DRAG_THROTTLE_LIMIT = 50;
