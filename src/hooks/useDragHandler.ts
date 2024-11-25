@@ -29,8 +29,6 @@ const useDragHandler = ({
   }) => {
     // Prevent click event from firing
     event.preventDefault();
-    // This helps prevent the drag ghost from being shown
-    event.dataTransfer.dropEffect = "move";
 
     // If the headers are not set, don't allow the drag
     if (!headersRef.current) return;
@@ -88,14 +86,14 @@ const useDragHandler = ({
     const shouldRevertToPreviousHeaders =
       now - prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
 
-    if (distance > 600) {
-      console.log("\n");
-      console.log(prevDraggingPosition);
-      console.log(distance);
-      console.log(prevHeaders?.map((header) => header.accessor));
-      console.log(newHeaders.map((header) => header.accessor));
-      console.log(hoveredHeader.accessor);
-    }
+    // if (distance > 600) {
+    //   console.log("\n");
+    //   console.log(prevDraggingPosition);
+    //   console.log(distance);
+    //   console.log(prevHeaders?.map((header) => header.accessor));
+    //   console.log(newHeaders.map((header) => header.accessor));
+    //   console.log(hoveredHeader.accessor);
+    // }
     if (
       arePreviousHeadersAndNewHeadersTheSame &&
       shouldRevertToPreviousHeaders &&

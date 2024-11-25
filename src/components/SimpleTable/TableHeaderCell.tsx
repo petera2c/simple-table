@@ -94,7 +94,6 @@ const TableHeaderCell = forwardRef(
     };
     const handleDragEndWrapper = (event: DragEvent) => {
       event.preventDefault();
-      event.dataTransfer.dropEffect = "move";
       setIsDragging(false);
       handleDragEnd();
     };
@@ -165,23 +164,21 @@ const TableHeaderCell = forwardRef(
     // Drag handler
     const onDragStart = (event: DragEvent) => {
       if (!draggable || !header) return;
-      // This helps prevent the drag ghost from being shown
-      event.dataTransfer.dropEffect = "move";
 
       handleDragStartWrapper(header);
     };
 
     // This helps prevent the drag ghost from being shown
     useEffect(() => {
-      const setDragImage = (event: any) => {
-        var img = new Image();
-        img.src =
-          "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=";
-        event.dataTransfer.setDragImage(img, 0, 0);
+      const dragOverImageRemoval = (event: any) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
       };
-      document.addEventListener("dragend", setDragImage, false);
+
+      document.addEventListener("dragover", dragOverImageRemoval);
+
       return () => {
-        document.removeEventListener("dragend", setDragImage);
+        document.removeEventListener("dragover", dragOverImageRemoval);
       };
     }, []);
 
@@ -190,13 +187,13 @@ const TableHeaderCell = forwardRef(
     return (
       <div
         className={className}
-        onDragOver={(event) =>
+        onDragOver={(event) => {
           throttle({
             callback: handleDragOver,
             callbackProps: { event, hoveredHeader: header },
             limit: DRAG_THROTTLE_LIMIT,
-          })
-        }
+          });
+        }}
         ref={ref}
         style={{ width: header.width }}
       >

@@ -13,6 +13,7 @@ import HeaderObject from "../types/HeaderObject";
 
 const ANIMATION_TIME = 150;
 // const MAX_CHANGE = 120;
+const TEST_KEY = "productId";
 
 interface AnimateProps {
   allowHorizontalAnimate?: boolean;
@@ -54,8 +55,17 @@ const Animate = ({
       draggedHeaderRef,
     });
 
-    setBoundingBox(newBoundingBox);
-  }, [children, draggedHeaderRef, isBody]);
+    if (
+      JSON.stringify(
+        React.Children.toArray(children).map((child: any) => child.key)
+      ) !==
+      JSON.stringify(
+        React.Children.toArray(prevChildren).map((child: any) => child.key)
+      )
+    ) {
+      setBoundingBox(newBoundingBox);
+    }
+  }, [boundingBox, children, draggedHeaderRef, isBody, prevChildren]);
 
   useLayoutEffect(() => {
     const prevBoundingBox = calculateBoundingBoxes({
@@ -88,59 +98,66 @@ const Animate = ({
     };
   }, [draggedHeaderRef, prevChildren, tableRef]);
 
-  useEffect(() => {
-    if (pauseAnimation || isScrolling.current) return;
-    const hasPrevBoundingBox = Object.keys(prevBoundingBox).length;
+  useEffect(
+    () => {
+      if (pauseAnimation || isScrolling.current) return;
+      const hasPrevBoundingBox = Object.keys(prevBoundingBox).length;
 
-    if (hasPrevBoundingBox) {
-      React.Children.forEach(children, (child) => {
-        if (!child) return;
-        const domNode = child.ref.current;
-        const prevBox = prevBoundingBox[child.key];
-        const currentBox = boundingBox[child.key];
+      if (hasPrevBoundingBox) {
+        React.Children.forEach(children, (child) => {
+          if (!child) return;
+          const domNode = child.ref.current;
+          const prevBox = prevBoundingBox[child.key];
+          const currentBox = boundingBox[child.key];
 
-        if (!prevBox || !currentBox) return;
+          if (!prevBox || !currentBox) return;
 
-        let changeInX = prevBox.left - currentBox.left;
-        let changeInY = !allowHorizontalAnimate
-          ? prevBox.top - currentBox.top
-          : 0;
+          let changeInX = prevBox.left - currentBox.left;
+          let changeInY = !allowHorizontalAnimate
+            ? prevBox.top - currentBox.top
+            : 0;
 
-        // changeInX =
-        //   Math.sign(changeInX) * Math.min(Math.abs(changeInX), MAX_CHANGE);
-        // changeInY =
-        //   Math.sign(changeInY) * Math.min(Math.abs(changeInY), MAX_CHANGE);
+          // changeInX =
+          //   Math.sign(changeInX) * Math.min(Math.abs(changeInX), MAX_CHANGE);
+          // changeInY =
+          //   Math.sign(changeInY) * Math.min(Math.abs(changeInY), MAX_CHANGE);
 
-        const absoluteChangeInX = Math.abs(changeInX);
-        const absoluteChangeInY = Math.abs(changeInY);
+          const absoluteChangeInX = Math.abs(changeInX);
+          const absoluteChangeInY = Math.abs(changeInY);
 
-        if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
-          animationFrameId.current = requestAnimationFrame(() => {
-            domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
-            domNode.style.transition = "transform 0s";
-
-            domNode.style.mixBlendMode = "multiply";
+          if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
+            if (
+              child.key === TEST_KEY &&
+              !child.props.borderClass &&
+              changeInX < 0
+            ) {
+              console.log("animating");
+              console.log(changeInX);
+            }
 
             animationFrameId.current = requestAnimationFrame(() => {
-              domNode.style.transform = "";
-              domNode.style.transition = `transform ${ANIMATION_TIME}ms ease-in-out`;
+              domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
+              domNode.style.transition = "transform 0s";
 
-              setTimeout(() => {
-                domNode.style.mixBlendMode = "";
-              }, ANIMATION_TIME);
+              animationFrameId.current = requestAnimationFrame(() => {
+                domNode.style.transform = "";
+                domNode.style.transition = `transform ${ANIMATION_TIME}ms ease-in-out`;
+              });
             });
-          });
-        }
-      });
-    }
-  }, [
-    allowHorizontalAnimate,
-    boundingBox,
-    children,
-    pauseAnimation,
-    prevBoundingBox,
-    isBody,
-  ]);
+          }
+        });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      allowHorizontalAnimate,
+      boundingBox,
+      children,
+      pauseAnimation,
+      prevBoundingBox,
+      isBody,
+    ]
+  );
 
   return children;
 };
