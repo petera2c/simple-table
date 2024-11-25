@@ -1,11 +1,4 @@
-import {
-  forwardRef,
-  LegacyRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { forwardRef, LegacyRef, useContext, useEffect, useState } from "react";
 import EditableCell from "./EditableCell/EditableCell";
 import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
@@ -67,10 +60,7 @@ const TableCell = forwardRef(
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const throttledHandleDragOver = useThrottle({
-      callback: handleDragOver,
-      limit: 10,
-    });
+    const throttle = useThrottle();
 
     // Derived state
     const clickable = Boolean(header?.isEditable);
@@ -141,7 +131,11 @@ const TableCell = forwardRef(
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
         onDragOver={(event) =>
-          throttledHandleDragOver({ event, hoveredHeader: header })
+          throttle({
+            callback: handleDragOver,
+            callbackProps: { event, hoveredHeader: header },
+            limit: 10,
+          })
         }
         ref={ref}
       >

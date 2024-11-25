@@ -15,6 +15,7 @@ import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
+import { handleResizeStart } from "../../utils/sortUtils";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -83,10 +84,7 @@ const TableHeaderCell = forwardRef(
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const throttle = useThrottle({
-      callback: handleDragOver,
-      limit: 10,
-    });
+    const throttle = useThrottle();
 
     // Handlers
     const handleDragStartWrapper = (header: HeaderObject) => {
@@ -99,27 +97,7 @@ const TableHeaderCell = forwardRef(
       setIsDragging(false);
       handleDragEnd();
     };
-    // Resize handler
-    const handleResizeStart = (e: MouseEvent) => {
-      // setIsWidthDragging(true);
-      // e.preventDefault();
-      // const startX = e.clientX;
-      // if (!header) return;
-      // const startWidth = header.width;
-      // const throttledMouseMove = throttle((e: MouseEvent) => {
-      //   const newWidth = Math.max(startWidth + (e.clientX - startX), 40); // Ensure a minimum width
-      //   if (!header) return;
-      //   headersRef.current[index].width = newWidth;
-      //   forceUpdate();
-      // }, 10); // Adjust the throttle delay as needed
-      // const handleMouseUp = () => {
-      //   document.removeEventListener("mousemove", throttledMouseMove);
-      //   document.removeEventListener("mouseup", handleMouseUp);
-      //   setIsWidthDragging(false);
-      // };
-      // document.addEventListener("mousemove", throttledMouseMove);
-      // document.addEventListener("mouseup", handleMouseUp);
-    };
+
     // Sort handler
     const handleColumnHeaderClick = ({
       event,
@@ -211,7 +189,13 @@ const TableHeaderCell = forwardRef(
     return (
       <div
         className={className}
-        onDragOver={(event) => throttle({ event, hoveredHeader: header })}
+        onDragOver={(event) =>
+          throttle({
+            callback: handleDragOver,
+            callbackProps: { event, hoveredHeader: header },
+            limit: 10,
+          })
+        }
         ref={ref}
         style={{ width: header.width }}
       >
@@ -239,7 +223,20 @@ const TableHeaderCell = forwardRef(
         {columnResizing && (
           <div
             className="st-header-resize-handle"
-            onMouseDown={handleResizeStart}
+            onMouseDown={(event) => {
+              throttle({
+                callback: handleResizeStart,
+                callbackProps: {
+                  event,
+                  forceUpdate,
+                  header,
+                  headersRef,
+                  index,
+                  setIsWidthDragging,
+                },
+                limit: 10,
+              });
+            }}
           />
         )}
       </div>

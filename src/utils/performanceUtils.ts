@@ -1,34 +1,24 @@
-import { DragEvent, useCallback } from "react";
+import { useCallback } from "react";
 import { useRef } from "react";
 import HeaderObject from "../types/HeaderObject";
 
-export const useThrottle = ({
-  callback,
-  limit,
-}: {
-  callback: ({
-    event,
-    hoveredHeader,
-  }: {
-    event: DragEvent<HTMLDivElement>;
-    hoveredHeader: HeaderObject;
-  }) => void;
-  limit: number;
-}) => {
+export const useThrottle = () => {
   const lastCallTime = useRef(0);
   const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   return useCallback(
     ({
-      event,
-      hoveredHeader,
+      callback,
+      callbackProps,
+      limit,
     }: {
-      event: DragEvent<HTMLDivElement>;
-      hoveredHeader: HeaderObject;
+      callback: (callbackProps: any) => void;
+      callbackProps: any;
+      limit: number;
     }) => {
       const now = Date.now();
       if (lastCallTime.current === 0 || now - lastCallTime.current >= limit) {
-        callback({ event, hoveredHeader });
+        callback(callbackProps);
         lastCallTime.current = now;
       } else if (timeoutId.current === null) {
         timeoutId.current = setTimeout(() => {
@@ -37,7 +27,7 @@ export const useThrottle = ({
         }, limit - (now - lastCallTime.current));
       }
     },
-    [callback, limit]
+    []
   );
 };
 
