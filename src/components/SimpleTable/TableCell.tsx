@@ -5,7 +5,7 @@ import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";
-import useTableHeaderCell from "../../hooks/useTableHeaderCell";
+import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
 
 interface TableCellProps {
@@ -55,7 +55,7 @@ const TableCell = forwardRef(
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
-    const { handleDragOver } = useTableHeaderCell({
+    const { handleDragOver } = useDragHandler({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,

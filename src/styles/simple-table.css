@@ -808,7 +808,6 @@ body {
   color: var(--st-cell-odd-row-color);
 }
 .st-cell:not(.st-cell-odd-row):not(.st-cell-selected) {
-  background-color: var(--st-even-row-background-color);
   color: var(--st-cell-color);
 }
 

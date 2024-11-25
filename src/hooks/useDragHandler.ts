@@ -1,22 +1,23 @@
-import { DragEvent, useRef } from "react";
+import { DragEvent } from "react";
 import HeaderObject from "../types/HeaderObject";
-import UseTableHeaderCellProps from "../types/UseTableHeaderCellProps";
+import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
 
-const REVERT_TO_PREVIOUS_HEADERS_DELAY = 600;
-let prevUpdateTime = 0;
+const REVERT_TO_PREVIOUS_HEADERS_DELAY = 800;
+let prevUpdateTime = Date.now();
+let prevDraggingPosition = { screenX: 0, screenY: 0 };
 
-const useTableHeaderCell = ({
+const useDragHandler = ({
   draggedHeaderRef,
   headersRef,
   hoveredHeaderRef,
   onTableHeaderDragEnd,
-}: UseTableHeaderCellProps) => {
-  const prevDraggingPosition = useRef({ screenX: 0, screenY: 0 });
-  const prevHeaders = usePrevious(headersRef.current);
+}: DragHandlerProps) => {
+  const prevHeaders = usePrevious<HeaderObject[] | null>(headersRef.current);
 
   const handleDragStart = (header: HeaderObject) => {
     draggedHeaderRef.current = header;
+    prevUpdateTime = Date.now();
   };
 
   const handleDragOver = ({
@@ -43,8 +44,8 @@ const useTableHeaderCell = ({
     // Get the distance between the previous dragging position and the current position
     const { screenX, screenY } = event;
     const distance = Math.sqrt(
-      Math.pow(screenX - prevDraggingPosition.current.screenX, 2) +
-        Math.pow(screenY - prevDraggingPosition.current.screenY, 2)
+      Math.pow(screenX - prevDraggingPosition.screenX, 2) +
+        Math.pow(screenY - prevDraggingPosition.screenY, 2)
     );
 
     hoveredHeaderRef.current = hoveredHeader;
@@ -86,9 +87,20 @@ const useTableHeaderCell = ({
       JSON.stringify(newHeaders) === JSON.stringify(prevHeaders);
     const shouldRevertToPreviousHeaders =
       now - prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
+
+    if (distance > 600) {
+      console.log("\n");
+      console.log(prevDraggingPosition);
+      console.log(distance);
+      console.log(prevHeaders?.map((header) => header.accessor));
+      console.log(newHeaders.map((header) => header.accessor));
+      console.log(hoveredHeader.accessor);
+    }
     if (
       arePreviousHeadersAndNewHeadersTheSame &&
-      shouldRevertToPreviousHeaders
+      shouldRevertToPreviousHeaders &&
+      // If the user is moving the header quickly they will have a larger distance and we should allow the drag
+      distance < 50
     ) {
       return;
     }
@@ -97,7 +109,7 @@ const useTableHeaderCell = ({
     prevUpdateTime = now;
 
     // Update the previous dragging position
-    prevDraggingPosition.current = { screenX, screenY };
+    prevDraggingPosition = { screenX, screenY };
 
     // Call the onTableHeaderDragEnd callback with the new headers
     onTableHeaderDragEnd(newHeaders);
@@ -115,4 +127,4 @@ const useTableHeaderCell = ({
   };
 };
 
-export default useTableHeaderCell;
+export default useDragHandler;

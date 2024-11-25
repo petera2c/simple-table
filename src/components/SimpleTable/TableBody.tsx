@@ -53,6 +53,7 @@ const TableBody = ({
           <Fragment key={row.originalRowIndex}>
             <Animate
               allowHorizontalAnimate={shouldPaginate}
+              draggedHeaderRef={draggedHeaderRef}
               pauseAnimation={isWidthDragging}
               tableRef={tableRef}
               isBody

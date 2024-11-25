@@ -59,7 +59,11 @@ const TableHeader = ({
 }: TableHeaderProps) => {
   return (
     <>
-      <Animate pauseAnimation={isWidthDragging} tableRef={tableRef}>
+      <Animate
+        draggedHeaderRef={draggedHeaderRef}
+        pauseAnimation={isWidthDragging}
+        tableRef={tableRef}
+      >
         {headersRef.current?.map((header, index) => {
           if (hiddenColumns[header.accessor]) return null;
 

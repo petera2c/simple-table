@@ -9,7 +9,7 @@ import {
   ForwardedRef,
   MouseEvent,
 } from "react";
-import useTableHeaderCell from "../../hooks/useTableHeaderCell";
+import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
@@ -73,13 +73,13 @@ const TableHeaderCell = forwardRef(
 
     // Hooks
 
-    const { handleDragStart, handleDragEnd } = useTableHeaderCell({
+    const { handleDragStart, handleDragEnd } = useDragHandler({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const { handleDragOver } = useTableHeaderCell({
+    const { handleDragOver } = useDragHandler({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,

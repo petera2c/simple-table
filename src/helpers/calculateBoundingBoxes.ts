@@ -1,7 +1,14 @@
-import { Children } from "react";
+import { Children, MutableRefObject } from "react";
 import BoundingBox from "../types/BoundingBox";
+import HeaderObject from "../types/HeaderObject";
 
-const calculateBoundingBoxes = (children: any) => {
+const calculateBoundingBoxes = ({
+  children,
+  draggedHeaderRef,
+}: {
+  children: any;
+  draggedHeaderRef?: MutableRefObject<HeaderObject | null>;
+}) => {
   const boundingBoxes: { [key: string]: BoundingBox | false } = {};
 
   Children.forEach(children, (child: any) => {
@@ -15,7 +22,7 @@ const calculateBoundingBoxes = (children: any) => {
       const domNode = child.ref.current;
       const nodeBoundingBox = domNode.getBoundingClientRect();
 
-      if (isAnimating) {
+      if (isAnimating && draggedHeaderRef?.current?.accessor !== child.key) {
         boundingBoxes[child.key] = false;
       } else {
         boundingBoxes[child.key] = nodeBoundingBox;

@@ -4,15 +4,20 @@ import React, {
   useEffect,
   RefObject,
   useRef,
+  MutableRefObject,
 } from "react";
 import usePrevious from "../hooks/usePrevious";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 import BoundingBox from "../types/BoundingBox";
+import HeaderObject from "../types/HeaderObject";
+
+const ANIMATION_TIME = 150;
+// const MAX_CHANGE = 120;
 
 interface AnimateProps {
   allowHorizontalAnimate?: boolean;
-  animationTime?: number;
   children: any;
+  draggedHeaderRef?: MutableRefObject<HeaderObject | null>;
   isBody?: boolean;
   pauseAnimation?: boolean;
   tableRef: RefObject<HTMLDivElement>;
@@ -20,8 +25,8 @@ interface AnimateProps {
 
 const Animate = ({
   allowHorizontalAnimate = true,
-  animationTime = 100,
   children,
+  draggedHeaderRef,
   isBody,
   pauseAnimation,
   tableRef,
@@ -44,20 +49,29 @@ const Animate = ({
   const animationFrameId = useRef<number | null>(null);
 
   useLayoutEffect(() => {
-    const newBoundingBox = calculateBoundingBoxes(children);
+    const newBoundingBox = calculateBoundingBoxes({
+      children,
+      draggedHeaderRef,
+    });
 
     setBoundingBox(newBoundingBox);
-  }, [children, isBody]);
+  }, [children, draggedHeaderRef, isBody]);
 
   useLayoutEffect(() => {
-    const prevBoundingBox = calculateBoundingBoxes(prevChildren);
+    const prevBoundingBox = calculateBoundingBoxes({
+      children: prevChildren,
+      draggedHeaderRef,
+    });
     setPrevBoundingBox(prevBoundingBox);
 
     const currentTableRef = tableRef.current; // Store the current ref value
 
     const handleScroll = () => {
       isScrolling.current = true;
-      const prevBoundingBox = calculateBoundingBoxes(prevChildren);
+      const prevBoundingBox = calculateBoundingBoxes({
+        children: prevChildren,
+        draggedHeaderRef,
+      });
       setBoundingBox(prevBoundingBox);
       setPrevBoundingBox(prevBoundingBox);
     };
@@ -72,7 +86,7 @@ const Animate = ({
       currentTableRef?.removeEventListener("scroll", handleScroll);
       currentTableRef?.removeEventListener("scrollend", handleScrollEnd);
     };
-  }, [prevChildren, tableRef]);
+  }, [draggedHeaderRef, prevChildren, tableRef]);
 
   useEffect(() => {
     if (pauseAnimation || isScrolling.current) return;
@@ -87,24 +101,33 @@ const Animate = ({
 
         if (!prevBox || !currentBox) return;
 
-        const changeInX = prevBox.left - currentBox.left;
-        const changeInY = !allowHorizontalAnimate
+        let changeInX = prevBox.left - currentBox.left;
+        let changeInY = !allowHorizontalAnimate
           ? prevBox.top - currentBox.top
           : 0;
+
+        // changeInX =
+        //   Math.sign(changeInX) * Math.min(Math.abs(changeInX), MAX_CHANGE);
+        // changeInY =
+        //   Math.sign(changeInY) * Math.min(Math.abs(changeInY), MAX_CHANGE);
 
         const absoluteChangeInX = Math.abs(changeInX);
         const absoluteChangeInY = Math.abs(changeInY);
 
         if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
           animationFrameId.current = requestAnimationFrame(() => {
-            // Before the DOM paints, invert child to old position
             domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
             domNode.style.transition = "transform 0s";
 
+            domNode.style.mixBlendMode = "multiply";
+
             animationFrameId.current = requestAnimationFrame(() => {
-              // After the previous frame, remove the transition to play the animation
               domNode.style.transform = "";
-              domNode.style.transition = `transform ${animationTime}ms linear`;
+              domNode.style.transition = `transform ${ANIMATION_TIME}ms ease-in-out`;
+
+              setTimeout(() => {
+                domNode.style.mixBlendMode = "";
+              }, ANIMATION_TIME);
             });
           });
         }
@@ -112,7 +135,6 @@ const Animate = ({
     }
   }, [
     allowHorizontalAnimate,
-    animationTime,
     boundingBox,
     children,
     pauseAnimation,
