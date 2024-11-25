@@ -1,7 +1,5 @@
-/* eslint-disable */
 import {
   forwardRef,
-  useRef,
   SetStateAction,
   Dispatch,
   useState,
@@ -12,12 +10,11 @@ import {
   MouseEvent,
 } from "react";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
-import { throttle } from "../../utils/performanceUtils";
+import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
-import { useOnDragOver } from "../../hooks/useOnDragOver";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -72,55 +69,56 @@ const TableHeaderCell = forwardRef(
       draggable && !clickable ? "draggable" : ""
     }`;
 
-    // Handlers
+    // Hooks
+
     const { handleDragStart, handleDragEnd } = useTableHeaderCell({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
-    const { onDragOver } = useOnDragOver({
+    const { handleDragOver } = useTableHeaderCell({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });
+    const throttle = useThrottle({
+      callback: handleDragOver,
+      limit: 10,
+    });
 
+    // Handlers
     const handleDragStartWrapper = (header: HeaderObject) => {
       setIsDragging(true);
       handleDragStart(header);
     };
-
     const handleDragEndWrapper = (event: DragEvent) => {
       event.preventDefault();
       event.dataTransfer.dropEffect = "move";
       setIsDragging(false);
       handleDragEnd();
     };
-
     // Resize handler
     const handleResizeStart = (e: MouseEvent) => {
-      setIsWidthDragging(true);
-      e.preventDefault();
-      const startX = e.clientX;
-      if (!header) return;
-      const startWidth = header.width;
-
-      const throttledMouseMove = throttle((e: MouseEvent) => {
-        const newWidth = Math.max(startWidth + (e.clientX - startX), 40); // Ensure a minimum width
-        if (!header) return;
-        headersRef.current[index].width = newWidth;
-        forceUpdate();
-      }, 10); // Adjust the throttle delay as needed
-
-      const handleMouseUp = () => {
-        document.removeEventListener("mousemove", throttledMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-        setIsWidthDragging(false);
-      };
-
-      document.addEventListener("mousemove", throttledMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
+      // setIsWidthDragging(true);
+      // e.preventDefault();
+      // const startX = e.clientX;
+      // if (!header) return;
+      // const startWidth = header.width;
+      // const throttledMouseMove = throttle((e: MouseEvent) => {
+      //   const newWidth = Math.max(startWidth + (e.clientX - startX), 40); // Ensure a minimum width
+      //   if (!header) return;
+      //   headersRef.current[index].width = newWidth;
+      //   forceUpdate();
+      // }, 10); // Adjust the throttle delay as needed
+      // const handleMouseUp = () => {
+      //   document.removeEventListener("mousemove", throttledMouseMove);
+      //   document.removeEventListener("mouseup", handleMouseUp);
+      //   setIsWidthDragging(false);
+      // };
+      // document.addEventListener("mousemove", throttledMouseMove);
+      // document.addEventListener("mouseup", handleMouseUp);
     };
     // Sort handler
     const handleColumnHeaderClick = ({
@@ -213,7 +211,7 @@ const TableHeaderCell = forwardRef(
     return (
       <div
         className={className}
-        onDragOver={(event) => onDragOver({ event, header })}
+        onDragOver={(event) => throttle({ event, hoveredHeader: header })}
         ref={ref}
         style={{ width: header.width }}
       >

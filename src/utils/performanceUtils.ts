@@ -1,26 +1,45 @@
+import { DragEvent, useCallback } from "react";
+import { useRef } from "react";
 import HeaderObject from "../types/HeaderObject";
 
-export function throttle(func: (...args: any[]) => void, limit: number) {
-  let lastCallTime: number | null = null; // Keeps track of the last time the function was called
-  let timeoutId: ReturnType<typeof setTimeout> | null = null; // Stores the timeout ID
+export const useThrottle = ({
+  callback,
+  limit,
+}: {
+  callback: ({
+    event,
+    hoveredHeader,
+  }: {
+    event: DragEvent<HTMLDivElement>;
+    hoveredHeader: HeaderObject;
+  }) => void;
+  limit: number;
+}) => {
+  const lastCallTime = useRef(0);
+  const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  return function (this: any, ...args: any[]) {
-    const now = Date.now();
-
-    if (lastCallTime === null || now - lastCallTime >= limit) {
-      // If it's the first call or enough time has passed since the last call
-      func.apply(this, args); // Call the function
-      lastCallTime = now; // Update the last call time
-    } else if (timeoutId === null) {
-      // If the function is called again before the limit, set a timeout
-      timeoutId = setTimeout(() => {
-        func.apply(this, args); // Call the function after the remaining time
-        lastCallTime = Date.now(); // Update the last call time
-        timeoutId = null; // Reset the timeout ID
-      }, limit - (now - lastCallTime));
-    }
-  };
-}
+  return useCallback(
+    ({
+      event,
+      hoveredHeader,
+    }: {
+      event: DragEvent<HTMLDivElement>;
+      hoveredHeader: HeaderObject;
+    }) => {
+      const now = Date.now();
+      if (lastCallTime.current === 0 || now - lastCallTime.current >= limit) {
+        callback({ event, hoveredHeader });
+        lastCallTime.current = now;
+      } else if (timeoutId.current === null) {
+        timeoutId.current = setTimeout(() => {
+          lastCallTime.current = Date.now();
+          timeoutId.current = null;
+        }, limit - (now - lastCallTime.current));
+      }
+    },
+    [callback, limit]
+  );
+};
 
 export const logArrayDifferences = (
   original: HeaderObject[],

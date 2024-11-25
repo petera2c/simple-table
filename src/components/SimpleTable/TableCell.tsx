@@ -1,10 +1,18 @@
-import { forwardRef, LegacyRef, useContext, useEffect, useState } from "react";
+import {
+  forwardRef,
+  LegacyRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import EditableCell from "./EditableCell/EditableCell";
 import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
-import { useOnDragOver } from "../../hooks/useOnDragOver";
+import { useThrottle } from "../../utils/performanceUtils";
+import useTableHeaderCell from "../../hooks/useTableHeaderCell";
 
 interface TableCellProps {
   borderClass: string;
@@ -53,11 +61,15 @@ const TableCell = forwardRef(
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
-    const { onDragOver } = useOnDragOver({
+    const { handleDragOver } = useTableHeaderCell({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
       onTableHeaderDragEnd,
+    });
+    const throttledHandleDragOver = useThrottle({
+      callback: handleDragOver,
+      limit: 10,
     });
 
     // Derived state
@@ -128,7 +140,9 @@ const TableCell = forwardRef(
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
-        onDragOver={(event) => onDragOver({ event, header })}
+        onDragOver={(event) =>
+          throttledHandleDragOver({ event, hoveredHeader: header })
+        }
         ref={ref}
       >
         {localContent}
