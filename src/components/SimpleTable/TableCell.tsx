@@ -6,6 +6,7 @@ import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";
 import useTableHeaderCell from "../../hooks/useTableHeaderCell";
+import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
 
 interface TableCellProps {
   borderClass: string;
@@ -134,7 +135,7 @@ const TableCell = forwardRef(
           throttle({
             callback: handleDragOver,
             callbackProps: { event, hoveredHeader: header },
-            limit: 10,
+            limit: DRAG_THROTTLE_LIMIT,
           })
         }
         ref={ref}

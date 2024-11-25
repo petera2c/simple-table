@@ -1,34 +1,24 @@
-import { useCallback } from "react";
-import { useRef } from "react";
 import HeaderObject from "../types/HeaderObject";
 
-export const useThrottle = () => {
-  const lastCallTime = useRef(0);
-  const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
+let lastCallTime = 0;
 
-  return useCallback(
-    ({
-      callback,
-      callbackProps,
-      limit,
-    }: {
-      callback: (callbackProps: any) => void;
-      callbackProps: any;
-      limit: number;
-    }) => {
-      const now = Date.now();
-      if (lastCallTime.current === 0 || now - lastCallTime.current >= limit) {
-        callback(callbackProps);
-        lastCallTime.current = now;
-      } else if (timeoutId.current === null) {
-        timeoutId.current = setTimeout(() => {
-          lastCallTime.current = Date.now();
-          timeoutId.current = null;
-        }, limit - (now - lastCallTime.current));
-      }
-    },
-    []
-  );
+export const useThrottle = () => {
+  return ({
+    callback,
+    callbackProps,
+    limit,
+  }: {
+    callback: (callbackProps: any) => void;
+    callbackProps: any;
+    limit: number;
+  }) => {
+    const now = Date.now();
+
+    if (lastCallTime === 0 || now - lastCallTime >= limit) {
+      lastCallTime = now;
+      callback(callbackProps);
+    }
+  };
 };
 
 export const logArrayDifferences = (

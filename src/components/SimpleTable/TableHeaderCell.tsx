@@ -16,6 +16,7 @@ import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
 import { handleResizeStart } from "../../utils/sortUtils";
+import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -193,7 +194,7 @@ const TableHeaderCell = forwardRef(
           throttle({
             callback: handleDragOver,
             callbackProps: { event, hoveredHeader: header },
-            limit: 10,
+            limit: DRAG_THROTTLE_LIMIT,
           })
         }
         ref={ref}
