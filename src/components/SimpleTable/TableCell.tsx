@@ -7,6 +7,7 @@ import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";
 import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
+import { getCellId } from "../../utils/cellUtils";
 
 interface TableCellProps {
   borderClass: string;
@@ -115,6 +116,7 @@ const TableCell = forwardRef(
           className={`st-cell-editing ${
             isOddRow ? "st-cell-odd-row" : "st-cell-even-row"
           }`}
+          id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
         >
           <EditableCell
             onChange={updateLocalContent}
@@ -128,6 +130,7 @@ const TableCell = forwardRef(
     return (
       <div
         className={cellClassName}
+        id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}

@@ -6,22 +6,28 @@ import React, {
   useRef,
   MutableRefObject,
 } from "react";
-import usePrevious from "../hooks/usePrevious";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 import BoundingBox from "../types/BoundingBox";
 import HeaderObject from "../types/HeaderObject";
+import { getCellId } from "../utils/cellUtils";
 
-const ANIMATION_TIME = 150;
 // const MAX_CHANGE = 120;
-const TEST_KEY = "productId";
+// changeInX =
+//   Math.sign(changeInX) * Math.min(Math.abs(changeInX), MAX_CHANGE);
+// changeInY =
+//   Math.sign(changeInY) * Math.min(Math.abs(changeInY), MAX_CHANGE);
+const ANIMATION_TIME = 400;
+export const TEST_KEY = "productId";
 
 interface AnimateProps {
   allowHorizontalAnimate?: boolean;
-  children: any;
+  children: React.ReactNode | React.ReactNode[];
   draggedHeaderRef?: MutableRefObject<HeaderObject | null>;
   isBody?: boolean;
   pauseAnimation?: boolean;
+  rowIndex: number;
   tableRef: RefObject<HTMLDivElement>;
+  headersRef: RefObject<HeaderObject[]>;
 }
 
 const Animate = ({
@@ -30,7 +36,9 @@ const Animate = ({
   draggedHeaderRef,
   isBody,
   pauseAnimation,
+  rowIndex,
   tableRef,
+  headersRef,
 }: AnimateProps) => {
   // Refs
   const isScrolling = useRef(false);
@@ -39,51 +47,40 @@ const Animate = ({
   const [boundingBox, setBoundingBox] = useState<{
     [key: string]: false | BoundingBox;
   }>({});
-  const [prevBoundingBox, setPrevBoundingBox] = useState<{
+  const prevBoundingBox = useRef<{
     [key: string]: false | BoundingBox;
   }>({});
 
-  // Hooks
-  const prevChildren = usePrevious(children);
-
-  // Add a ref to store the animation frame ID
-  const animationFrameId = useRef<number | null>(null);
+  // Derived state
+  const currentHeaders = headersRef.current;
 
   useLayoutEffect(() => {
+    if (!currentHeaders) return;
     const newBoundingBox = calculateBoundingBoxes({
-      children,
+      currentHeaders,
       draggedHeaderRef,
+      rowIndex,
     });
 
-    if (
-      JSON.stringify(
-        React.Children.toArray(children).map((child: any) => child.key)
-      ) !==
-      JSON.stringify(
-        React.Children.toArray(prevChildren).map((child: any) => child.key)
-      )
-    ) {
+    if (JSON.stringify(newBoundingBox) !== JSON.stringify(boundingBox)) {
+      prevBoundingBox.current = boundingBox;
+
+      // if (rowIndex === 0) {
+      //   if (!newBoundingBox.productId) {
+      //     console.log("newBoundingBox.productId", newBoundingBox.productId);
+      //   } else {
+      //     console.log("newBoundingBox.productId.x", newBoundingBox.productId.x);
+      //   }
+      // }
       setBoundingBox(newBoundingBox);
     }
-  }, [boundingBox, children, draggedHeaderRef, isBody, prevChildren]);
+  }, [boundingBox, currentHeaders, draggedHeaderRef, isBody, rowIndex]);
 
   useLayoutEffect(() => {
-    const prevBoundingBox = calculateBoundingBoxes({
-      children: prevChildren,
-      draggedHeaderRef,
-    });
-    setPrevBoundingBox(prevBoundingBox);
-
-    const currentTableRef = tableRef.current; // Store the current ref value
+    const currentTableRef = tableRef.current;
 
     const handleScroll = () => {
       isScrolling.current = true;
-      const prevBoundingBox = calculateBoundingBoxes({
-        children: prevChildren,
-        draggedHeaderRef,
-      });
-      setBoundingBox(prevBoundingBox);
-      setPrevBoundingBox(prevBoundingBox);
     };
 
     const handleScrollEnd = () => {
@@ -96,68 +93,53 @@ const Animate = ({
       currentTableRef?.removeEventListener("scroll", handleScroll);
       currentTableRef?.removeEventListener("scrollend", handleScrollEnd);
     };
-  }, [draggedHeaderRef, prevChildren, tableRef]);
+  }, [draggedHeaderRef, tableRef]);
 
-  useEffect(
-    () => {
-      if (pauseAnimation || isScrolling.current) return;
-      const hasPrevBoundingBox = Object.keys(prevBoundingBox).length;
+  useEffect(() => {
+    if (pauseAnimation || isScrolling.current) return;
+    const hasPrevBoundingBox = Object.keys(prevBoundingBox.current).length;
 
-      if (hasPrevBoundingBox) {
-        React.Children.forEach(children, (child) => {
-          if (!child) return;
-          const domNode = child.ref.current;
-          const prevBox = prevBoundingBox[child.key];
-          const currentBox = boundingBox[child.key];
+    if (hasPrevBoundingBox && currentHeaders) {
+      currentHeaders.forEach((header) => {
+        const domNode = document.getElementById(
+          getCellId({ accessor: header.accessor, rowIndex })
+        );
+        if (!domNode) return;
+        const prevBox = prevBoundingBox.current[header.accessor];
+        const currentBox = boundingBox[header.accessor];
 
-          if (!prevBox || !currentBox) return;
+        if (!prevBox || !currentBox) return;
 
-          let changeInX = prevBox.left - currentBox.left;
-          let changeInY = !allowHorizontalAnimate
-            ? prevBox.top - currentBox.top
-            : 0;
+        let changeInX = prevBox.left - currentBox.left;
+        let changeInY = !allowHorizontalAnimate
+          ? prevBox.top - currentBox.top
+          : 0;
 
-          // changeInX =
-          //   Math.sign(changeInX) * Math.min(Math.abs(changeInX), MAX_CHANGE);
-          // changeInY =
-          //   Math.sign(changeInY) * Math.min(Math.abs(changeInY), MAX_CHANGE);
+        const absoluteChangeInX = Math.abs(changeInX);
+        const absoluteChangeInY = Math.abs(changeInY);
 
-          const absoluteChangeInX = Math.abs(changeInX);
-          const absoluteChangeInY = Math.abs(changeInY);
+        if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
+          requestAnimationFrame(() => {
+            domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
+            domNode.style.transition = "transform 0s";
 
-          if (absoluteChangeInX > 10 || absoluteChangeInY > 10) {
-            if (
-              child.key === TEST_KEY &&
-              !child.props.borderClass &&
-              changeInX < 0
-            ) {
-              console.log("animating");
-              console.log(changeInX);
-            }
-
-            animationFrameId.current = requestAnimationFrame(() => {
-              domNode.style.transform = `translate(${changeInX}px, ${changeInY}px)`;
-              domNode.style.transition = "transform 0s";
-
-              animationFrameId.current = requestAnimationFrame(() => {
-                domNode.style.transform = "";
-                domNode.style.transition = `transform ${ANIMATION_TIME}ms ease-in-out`;
-              });
+            requestAnimationFrame(() => {
+              domNode.style.transform = "";
+              domNode.style.transition = `transform ${ANIMATION_TIME}ms ease-out`;
             });
-          }
-        });
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      allowHorizontalAnimate,
-      boundingBox,
-      children,
-      pauseAnimation,
-      prevBoundingBox,
-      isBody,
-    ]
-  );
+          });
+        }
+      });
+    }
+  }, [
+    allowHorizontalAnimate,
+    boundingBox,
+    currentHeaders,
+    isBody,
+    pauseAnimation,
+    prevBoundingBox,
+    rowIndex,
+  ]);
 
   return children;
 };

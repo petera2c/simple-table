@@ -17,6 +17,7 @@ import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
 import { handleResizeStart } from "../../utils/sortUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
+import { getCellId } from "../../utils/cellUtils";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -187,6 +188,7 @@ const TableHeaderCell = forwardRef(
     return (
       <div
         className={className}
+        id={getCellId({ accessor: header.accessor, rowIndex: 0 })}
         onDragOver={(event) => {
           throttle({
             callback: handleDragOver,

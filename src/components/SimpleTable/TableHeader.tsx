@@ -61,7 +61,9 @@ const TableHeader = ({
     <>
       <Animate
         draggedHeaderRef={draggedHeaderRef}
+        headersRef={headersRef}
         pauseAnimation={isWidthDragging}
+        rowIndex={0}
         tableRef={tableRef}
       >
         {headersRef.current?.map((header, index) => {
