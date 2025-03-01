@@ -15,6 +15,7 @@ import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
 
 interface TableHeaderProps {
+  allowAnimations: boolean;
   columnResizing: boolean;
   currentRows: Row[];
   draggable: boolean;
@@ -33,10 +34,11 @@ interface TableHeaderProps {
   sort: SortConfig | null;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
-  tableRef: RefObject<HTMLDivElement>;
+  tableRef: RefObject<HTMLDivElement | null>;
 }
 
 const TableHeader = ({
+  allowAnimations,
   columnResizing,
   currentRows,
   draggable,
@@ -60,6 +62,7 @@ const TableHeader = ({
   return (
     <>
       <Animate
+        allowAnimations={allowAnimations}
         draggedHeaderRef={draggedHeaderRef}
         headersRef={headersRef}
         pauseAnimation={isWidthDragging}

@@ -8,6 +8,7 @@ import CellChangeProps from "../../types/CellChangeProps";
 import { MouseDownProps } from "../../hooks/useSelection";
 
 interface TableBodyProps {
+  allowAnimations: boolean;
   currentRows: { [key: string]: any }[];
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
@@ -24,10 +25,11 @@ interface TableBodyProps {
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   shouldDisplayLastColumnCell: boolean;
   shouldPaginate: boolean;
-  tableRef: RefObject<HTMLDivElement>;
+  tableRef: RefObject<HTMLDivElement | null>;
 }
 
 const TableBody = ({
+  allowAnimations,
   currentRows,
   draggedHeaderRef,
   getBorderClass,
@@ -52,6 +54,7 @@ const TableBody = ({
         return (
           <Fragment key={row.originalRowIndex}>
             <Animate
+              allowAnimations={allowAnimations}
               allowHorizontalAnimate={shouldPaginate}
               draggedHeaderRef={draggedHeaderRef}
               headersRef={headersRef}

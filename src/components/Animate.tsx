@@ -26,9 +26,22 @@ interface AnimateProps {
   isBody?: boolean;
   pauseAnimation?: boolean;
   rowIndex: number;
-  tableRef: RefObject<HTMLDivElement>;
+  tableRef: RefObject<HTMLDivElement | null>;
   headersRef: RefObject<HeaderObject[]>;
 }
+
+const AnimateWrapper = ({
+  allowAnimations,
+  children,
+  ...props
+}: AnimateProps & {
+  allowAnimations: boolean;
+}) => {
+  if (!allowAnimations) {
+    return children;
+  }
+  return <Animate {...props}>{children}</Animate>;
+};
 
 const Animate = ({
   allowHorizontalAnimate = true,
@@ -144,4 +157,4 @@ const Animate = ({
   return children;
 };
 
-export default Animate;
+export default AnimateWrapper;

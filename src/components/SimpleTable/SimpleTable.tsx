@@ -25,6 +25,7 @@ import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
 
 interface SpreadsheetProps {
+  allowAnimations?: boolean; // Flag for allowing animations
   columnEditorPosition?: "left" | "right";
   columnEditorText?: string; // Text for the column editor
   columnResizing?: boolean; // Flag for column resizing
@@ -67,6 +68,7 @@ const loadFont = (fontName: string) => {
 };
 
 const SimpleTable = ({
+  allowAnimations = false,
   columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnResizing = false,
@@ -259,6 +261,7 @@ const SimpleTable = ({
             }}
           >
             <TableHeader
+              allowAnimations={allowAnimations}
               columnResizing={columnResizing}
               currentRows={currentRows}
               draggable={draggable}
@@ -280,23 +283,24 @@ const SimpleTable = ({
               tableRef={tableRef}
             />
             <TableBody
+              allowAnimations={allowAnimations}
               currentRows={currentRows}
+              draggedHeaderRef={draggedHeaderRef}
               getBorderClass={getBorderClass}
               handleMouseDown={handleMouseDown}
               handleMouseOver={handleMouseOver}
               headers={headersRef.current}
+              headersRef={headersRef}
               hiddenColumns={hiddenColumns}
+              hoveredHeaderRef={hoveredHeaderRef}
               isSelected={isSelected}
               isTopLeftCell={isTopLeftCell}
               isWidthDragging={isWidthDragging}
               onCellChange={onCellChange}
+              onTableHeaderDragEnd={onTableHeaderDragEnd}
               shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
               shouldPaginate={shouldPaginate}
               tableRef={tableRef}
-              draggedHeaderRef={draggedHeaderRef}
-              headersRef={headersRef}
-              hoveredHeaderRef={hoveredHeaderRef}
-              onTableHeaderDragEnd={onTableHeaderDragEnd}
             />
           </div>
           <TableColumnEditor
