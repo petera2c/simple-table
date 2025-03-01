@@ -1,8 +1,8 @@
 import { useState } from "react";
-import SimpleTable from "../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../consts/SampleData";
-import CellChangeProps from "../types/CellChangeProps";
-import Theme from "../types/Theme";
+import SimpleTable from "../../components/SimpleTable/SimpleTable";
+import { SAMPLE_HEADERS, inventoryData } from "../../consts/SampleData";
+import CellChangeProps from "../../types/CellChangeProps";
+import Theme from "../../types/Theme";
 
 const THEME_OPTIONS: Theme[] = [
   "90s",
@@ -85,7 +85,7 @@ const getHoverColor = (theme: Theme) => {
   }
 };
 
-export const SampleTable = () => {
+const ThemingExample = () => {
   // const [headers, setHeaders] = useState(SAMPLE_HEADERS);
   const [rows, setRows] = useState(inventoryData);
   const [theme, setTheme] = useState<Theme>("light");
@@ -155,3 +155,5 @@ export const SampleTable = () => {
     </div>
   );
 };
+
+export default ThemingExample;

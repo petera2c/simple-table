@@ -21,6 +21,9 @@
     "spreadsheet-react"
   ],
   "dependencies": {
+    "@storybook/addon-a11y": "^8.6.2",
+    "@storybook/addon-controls": "^8.6.2",
+    "@storybook/addon-docs": "^8.6.2",
     "react": "^19.0.0"
   },
   "devDependencies": {

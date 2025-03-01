@@ -32,6 +32,7 @@ interface SpreadsheetProps {
   defaultHeaders: HeaderObject[]; // Default headers
   draggable?: boolean; // Flag for draggable
   editColumns?: boolean; // Flag for column editing
+  editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -75,6 +76,7 @@ const SimpleTable = ({
   defaultHeaders,
   draggable = false,
   editColumns = false,
+  editColumnsInitOpen = false,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
@@ -304,12 +306,13 @@ const SimpleTable = ({
             />
           </div>
           <TableColumnEditor
-            headers={headersRef.current}
             columnEditorText={columnEditorText}
             editColumns={editColumns}
+            editColumnsInitOpen={editColumnsInitOpen}
+            headers={headersRef.current}
+            hiddenColumns={hiddenColumns}
             position={columnEditorPosition}
             setHiddenColumns={setHiddenColumns}
-            hiddenColumns={hiddenColumns}
           />
         </div>
         <TableFooter

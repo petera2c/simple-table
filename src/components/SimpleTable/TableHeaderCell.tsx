@@ -73,7 +73,6 @@ const TableHeaderCell = forwardRef(
     }`;
 
     // Hooks
-
     const { handleDragStart, handleDragEnd } = useDragHandler({
       draggedHeaderRef,
       headersRef,

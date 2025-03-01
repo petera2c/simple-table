@@ -737,7 +737,7 @@ body {
 .st-cell {
   color: var(--slate-800);
   overflow: hidden;
-  mix-blend-mode: multiply;
+  /* mix-blend-mode: multiply; */
 }
 
 .st-cell.clickable {

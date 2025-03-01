@@ -6,6 +6,7 @@ type TableColumnEditorProps = {
   headers: HeaderObject[];
   columnEditorText: string;
   editColumns: boolean;
+  editColumnsInitOpen: boolean;
   position: "left" | "right";
   setHiddenColumns: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
   hiddenColumns: { [key: string]: boolean };
@@ -14,12 +15,13 @@ type TableColumnEditorProps = {
 const TableColumnEditor = ({
   columnEditorText,
   editColumns,
+  editColumnsInitOpen,
   headers,
   position = "right",
   setHiddenColumns,
   hiddenColumns,
 }: TableColumnEditorProps) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(editColumnsInitOpen);
 
   const handleClick = (open: boolean) => {
     setOpen(open);
