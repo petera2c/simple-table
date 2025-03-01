@@ -38,7 +38,7 @@ const AnimateWrapper = ({
   allowAnimations: boolean;
 }) => {
   if (!allowAnimations) {
-    return children;
+    return <>{children}</>;
   }
   return <Animate {...props}>{children}</Animate>;
 };
@@ -154,7 +154,7 @@ const Animate = ({
     rowIndex,
   ]);
 
-  return children;
+  return <>{children}</>;
 };
 
 export default AnimateWrapper;

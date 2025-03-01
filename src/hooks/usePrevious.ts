@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const usePrevious = <T>(value: T) => {
-  const prevChildrenRef = useRef<T>();
+  const prevChildrenRef = useRef<T>(value);
 
   useEffect(() => {
     prevChildrenRef.current = value;
