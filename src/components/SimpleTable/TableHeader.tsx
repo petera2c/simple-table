@@ -1,41 +1,8 @@
-import {
-  createRef,
-  Dispatch,
-  MutableRefObject,
-  ReactNode,
-  RefObject,
-  SetStateAction,
-} from "react";
+import { createRef } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
-import HeaderObject from "../../types/HeaderObject";
 import TableLastColumnCell from "./TableLastColumnCell";
-import SortConfig from "../../types/SortConfig";
-import OnSortProps from "../../types/OnSortProps";
-import Row from "../../types/Row";
-
-interface TableHeaderProps {
-  allowAnimations: boolean;
-  columnResizing: boolean;
-  currentRows: Row[];
-  draggable: boolean;
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
-  forceUpdate: () => void;
-  headersRef: React.RefObject<HeaderObject[]>;
-  hiddenColumns: Record<string, boolean>;
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
-  isWidthDragging: boolean;
-  onSort: OnSortProps;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  selectableColumns: boolean;
-  setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
-  setSelectedCells: Dispatch<React.SetStateAction<Set<string>>>;
-  shouldDisplayLastColumnCell: boolean;
-  sort: SortConfig | null;
-  sortDownIcon?: ReactNode;
-  sortUpIcon?: ReactNode;
-  tableRef: RefObject<HTMLDivElement | null>;
-}
+import TableHeaderProps from "../../types/TableHeaderProps";
 
 const TableHeader = ({
   allowAnimations,
@@ -71,6 +38,7 @@ const TableHeader = ({
       >
         {headersRef.current?.map((header, index) => {
           if (hiddenColumns[header.accessor]) return null;
+          if (header.pinned) return null;
 
           return (
             <TableHeaderCell

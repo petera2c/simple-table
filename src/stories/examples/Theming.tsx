@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
 import { SAMPLE_HEADERS, inventoryData } from "../../consts/SampleData";
 import CellChangeProps from "../../types/CellChangeProps";
@@ -18,6 +18,21 @@ const THEME_OPTIONS: Theme[] = [
   "solarized-light",
   "vibrant",
 ];
+
+// Utility function to load fonts
+const loadFont = (fontName: string) => {
+  const existingLink = document.querySelector(`link[data-font="${fontName}"]`);
+  if (existingLink) return; // Font already loaded
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(
+    / /g,
+    "+"
+  )}:wght@400;700&display=swap`;
+  link.setAttribute("data-font", fontName);
+  document.head.appendChild(link);
+};
 
 // Function to get theme color
 const getThemeColor = (
@@ -89,6 +104,45 @@ const ThemingExample = () => {
   // const [headers, setHeaders] = useState(SAMPLE_HEADERS);
   const [rows, setRows] = useState(inventoryData);
   const [theme, setTheme] = useState<Theme>("light");
+
+  useEffect(() => {
+    switch (theme) {
+      case "light":
+        loadFont("Nunito");
+        break;
+      case "dark":
+        loadFont("Open Sans");
+        break;
+      case "pastel":
+        loadFont("Comic Sans MS");
+        break;
+      case "vibrant":
+        loadFont("Lobster");
+        break;
+      case "solarized-light":
+      case "solarized-dark":
+        loadFont("Georgia");
+        break;
+      case "desert":
+        loadFont("Times New Roman");
+        break;
+      case "forest":
+        loadFont("Tahoma");
+        break;
+      case "ocean":
+        loadFont("Verdana");
+        break;
+      case "bubblegum":
+        loadFont("Pacifico");
+        break;
+      case "90s":
+        loadFont("Courier New");
+        break;
+      default:
+        loadFont("Nunito"); // Default font
+        break;
+    }
+  }, [theme]);
 
   const updateCell = ({
     accessor,

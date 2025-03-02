@@ -3,7 +3,7 @@ import SimpleTable from "../../components/SimpleTable/SimpleTable";
 import { SAMPLE_HEADERS, inventoryData } from "../../consts/SampleData";
 
 const SelectableCellsExample = () => {
-  const [rows, setRows] = useState(inventoryData);
+  const [rows] = useState(inventoryData);
 
   return (
     <div style={{ padding: "2rem" }}>

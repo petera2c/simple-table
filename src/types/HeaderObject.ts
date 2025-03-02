@@ -7,6 +7,7 @@ type HeaderObject = {
   isEditable?: boolean;
   isSortable?: boolean;
   label: string;
+  pinned?: "left" | "right";
   type?: "string" | "number" | "boolean" | "date" | "enum";
   width: number;
 };

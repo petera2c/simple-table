@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import ThemingExample from "./examples/Theming";
-import PinnedColumnsExample from "./examples/PinnedColumns";
+import PinnedColumnsExample from "./examples/PinnedColumns/PinnedColumns";
 import PaginationExample from "./examples/Pagination";
 import InfiniteScrollExample from "./examples/InfiniteScroll";
 import EditableCellsExample from "./examples/EditableCells";

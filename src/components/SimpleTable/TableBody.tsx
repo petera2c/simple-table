@@ -1,32 +1,9 @@
-import { createRef, Fragment, MutableRefObject, RefObject } from "react";
+import { createRef, Fragment } from "react";
 import TableCell from "./TableCell";
 import Animate from "../Animate";
-import HeaderObject from "../../types/HeaderObject";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
-import CellChangeProps from "../../types/CellChangeProps";
-import { MouseDownProps } from "../../hooks/useSelection";
-
-interface TableBodyProps {
-  allowAnimations: boolean;
-  currentRows: { [key: string]: any }[];
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
-  getBorderClass: (rowIndex: number, columnIndex: number) => string;
-  handleMouseDown: (props: MouseDownProps) => void;
-  handleMouseOver: (rowIndex: number, columnIndex: number) => void;
-  headers: HeaderObject[];
-  headersRef: RefObject<HeaderObject[]>;
-  hiddenColumns: Record<string, boolean>;
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
-  isSelected: (rowIndex: number, columnIndex: number) => boolean;
-  isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
-  isWidthDragging: boolean;
-  onCellChange?: (props: CellChangeProps) => void;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  shouldDisplayLastColumnCell: boolean;
-  shouldPaginate: boolean;
-  tableRef: RefObject<HTMLDivElement | null>;
-}
+import TableBodyProps from "../../types/TableBodyProps";
 
 const TableBody = ({
   allowAnimations,
@@ -47,7 +24,7 @@ const TableBody = ({
   shouldDisplayLastColumnCell,
   shouldPaginate,
   tableRef,
-}: TableBodyProps & { shouldDisplayLastColumnCell: boolean }) => {
+}: TableBodyProps) => {
   return (
     <>
       {currentRows.map((row, rowIndex) => {
@@ -65,6 +42,7 @@ const TableBody = ({
             >
               {headers.map((header, colIndex) => {
                 if (hiddenColumns[header.accessor]) return null;
+                if (header.pinned) return null;
 
                 let content = row[header.accessor];
 
