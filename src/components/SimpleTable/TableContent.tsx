@@ -1,9 +1,6 @@
 import { useMemo } from "react";
-import SharedTableProps from "../../types/SharedTableProps";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
-import PinnedLeftColumns from "./PinnedLeftColumns";
-import PinnedRightColumns from "./PinnedRightColumns";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
@@ -49,13 +46,13 @@ const TableContent = ({
       0
     );
     return totalColumnWidth < tableRef.current.clientWidth;
-  }, [currentHeaders]);
+  }, [currentHeaders, tableRef]);
 
   const pinnedLeftColumns = headersRef.current.filter(
-    (header) => header.pinned && header.hide !== true
+    (header) => header.pinned === "left" && header.hide !== true
   );
   const pinnedRightColumns = headersRef.current.filter(
-    (header) => header.pinned && header.hide !== true
+    (header) => header.pinned === "right" && header.hide !== true
   );
 
   const pinnedLeftTemplateColumns = useMemo(() => {
@@ -71,23 +68,135 @@ const TableContent = ({
 
   const mainTemplateColumns = useMemo(() => {
     return `${currentHeaders
-      .filter(
-        (header) => hiddenColumns[header.accessor] !== true && !header.pinned
-      )
+      .filter((header) => hiddenColumns[header.accessor] !== true)
       .map((header) => `${header.width}px`)
       .join(" ")} 1fr`;
   }, [currentHeaders, hiddenColumns]);
 
+  const tableHeaderProps: TableHeaderProps = {
+    allowAnimations,
+    columnResizing,
+    currentRows,
+    draggable,
+    draggedHeaderRef,
+    forceUpdate,
+    headersRef,
+    hiddenColumns,
+    hoveredHeaderRef,
+    isWidthDragging,
+    onSort,
+    onTableHeaderDragEnd,
+    selectableColumns,
+    setIsWidthDragging,
+    setSelectedCells,
+    shouldDisplayLastColumnCell,
+    sort,
+    sortDownIcon,
+    sortUpIcon,
+    tableRef,
+  };
+
+  const tableBodyProps: TableBodyProps = {
+    allowAnimations,
+    currentRows,
+    draggedHeaderRef,
+    getBorderClass,
+    handleMouseDown,
+    handleMouseOver,
+    headers: headersRef.current,
+    headersRef,
+    hiddenColumns,
+    hoveredHeaderRef,
+    isSelected,
+    isTopLeftCell,
+    isWidthDragging,
+    onCellChange,
+    onTableHeaderDragEnd,
+    shouldDisplayLastColumnCell,
+    shouldPaginate,
+    tableRef,
+  };
+
+  const tableHeaderPropsLeft: TableHeaderProps = {
+    ...tableHeaderProps,
+    pinned: "left",
+  };
+  const tableBodyPropsLeft: TableBodyProps = {
+    ...tableBodyProps,
+    headers: pinnedLeftColumns,
+    pinned: "left",
+  };
+
+  const tableHeaderPropsRight: TableHeaderProps = {
+    ...tableHeaderProps,
+    pinned: "right",
+  };
+  const tableBodyPropsRight: TableBodyProps = {
+    ...tableBodyProps,
+    headers: pinnedRightColumns,
+    pinned: "right",
+  };
+
+  //   return (
+  //     <>
+  //       <div style={{ background: "red" }}>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //       </div>
+  //       <div style={{ background: "blue", flex: 1, height: "max-content" }}>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div> <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div> <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div> <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div> <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //         <div>hello world</div>
+  //       </div>
+  //     </>
+  //   );
+
   return (
     <>
-      {/* <div
-        className="st-table"
-        style={{
-          gridTemplateColumns: pinnedLeftTemplateColumns,
-        }}
-      >
-        <PinnedLeftColumns />
-      </div> */}
+      {pinnedLeftColumns.length > 0 && (
+        <div
+          className="st-table pinned-left"
+          style={{
+            gridTemplateColumns: pinnedLeftTemplateColumns,
+          }}
+        >
+          <TableHeader {...tableHeaderPropsLeft} />
+          <TableBody {...tableBodyPropsLeft} />
+        </div>
+      )}
       <div
         className="st-table"
         ref={tableRef}
@@ -95,58 +204,20 @@ const TableContent = ({
           gridTemplateColumns: mainTemplateColumns,
         }}
       >
-        <TableHeader
-          allowAnimations={allowAnimations}
-          columnResizing={columnResizing}
-          currentRows={currentRows}
-          draggable={draggable}
-          draggedHeaderRef={draggedHeaderRef}
-          forceUpdate={forceUpdate}
-          headersRef={headersRef}
-          hiddenColumns={hiddenColumns}
-          hoveredHeaderRef={hoveredHeaderRef}
-          isWidthDragging={isWidthDragging}
-          onSort={onSort}
-          onTableHeaderDragEnd={onTableHeaderDragEnd}
-          selectableColumns={selectableColumns}
-          setIsWidthDragging={setIsWidthDragging}
-          setSelectedCells={setSelectedCells}
-          shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
-          sort={sort}
-          sortDownIcon={sortDownIcon}
-          sortUpIcon={sortUpIcon}
-          tableRef={tableRef}
-        />
-
-        <TableBody
-          allowAnimations={allowAnimations}
-          currentRows={currentRows}
-          draggedHeaderRef={draggedHeaderRef}
-          getBorderClass={getBorderClass}
-          handleMouseDown={handleMouseDown}
-          handleMouseOver={handleMouseOver}
-          headers={headersRef.current}
-          headersRef={headersRef}
-          hiddenColumns={hiddenColumns}
-          hoveredHeaderRef={hoveredHeaderRef}
-          isSelected={isSelected}
-          isTopLeftCell={isTopLeftCell}
-          isWidthDragging={isWidthDragging}
-          onCellChange={onCellChange}
-          onTableHeaderDragEnd={onTableHeaderDragEnd}
-          shouldDisplayLastColumnCell={shouldDisplayLastColumnCell}
-          shouldPaginate={shouldPaginate}
-          tableRef={tableRef}
-        />
+        <TableHeader {...tableHeaderProps} />
+        <TableBody {...tableBodyProps} />
       </div>
-      {/* <div
-        className="st-table"
-        style={{
-          gridTemplateColumns: pinnedRightTemplateColumns,
-        }}
-      >
-        <PinnedRightColumns />
-      </div> */}
+      {pinnedRightColumns.length > 0 && (
+        <div
+          className="st-table pinned-right"
+          style={{
+            gridTemplateColumns: pinnedRightTemplateColumns,
+          }}
+        >
+          <TableHeader {...tableHeaderPropsRight} />
+          <TableBody {...tableBodyPropsRight} />
+        </div>
+      )}
     </>
   );
 };

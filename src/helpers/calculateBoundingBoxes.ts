@@ -1,7 +1,6 @@
-import { MutableRefObject, RefObject } from "react";
+import { MutableRefObject } from "react";
 import BoundingBox from "../types/BoundingBox";
 import HeaderObject from "../types/HeaderObject";
-import { TEST_KEY } from "../components/Animate";
 import { getCellId } from "../utils/cellUtils";
 
 const calculateBoundingBoxes = ({

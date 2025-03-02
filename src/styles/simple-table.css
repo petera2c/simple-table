@@ -694,7 +694,7 @@ body {
   position: relative;
   display: flex;
   width: max-content;
-  overflow: visible;
+  overflow: auto;
   height: 100%;
   width: 100%;
 }
@@ -706,9 +706,17 @@ body {
   border-collapse: collapse;
   table-layout: auto;
   white-space: nowrap;
-  width: 100%;
-  height: 100%;
+  height: max-content;
   overflow: auto;
+}
+.st-table:not(.pinned-left):not(.pinned-right) {
+  width: 100%;
+}
+.st-table.pinned-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+.st-table.pinned-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
 }
 
 /* Styles for table header cells */

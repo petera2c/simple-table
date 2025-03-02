@@ -3,6 +3,7 @@ import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableHeaderProps from "../../types/TableHeaderProps";
+import { displayCell } from "../../stories/examples/PinnedColumns/PinnedColumnsUtil";
 
 const TableHeader = ({
   allowAnimations,
@@ -17,6 +18,7 @@ const TableHeader = ({
   isWidthDragging,
   onSort,
   onTableHeaderDragEnd,
+  pinned,
   selectableColumns,
   setIsWidthDragging,
   setSelectedCells,
@@ -37,8 +39,7 @@ const TableHeader = ({
         tableRef={tableRef}
       >
         {headersRef.current?.map((header, index) => {
-          if (hiddenColumns[header.accessor]) return null;
-          if (header.pinned) return null;
+          if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
           return (
             <TableHeaderCell

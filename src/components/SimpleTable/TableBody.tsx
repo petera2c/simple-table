@@ -4,6 +4,7 @@ import Animate from "../Animate";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableRowSeparator from "./TableRowSeparator";
 import TableBodyProps from "../../types/TableBodyProps";
+import { displayCell } from "../../stories/examples/PinnedColumns/PinnedColumnsUtil";
 
 const TableBody = ({
   allowAnimations,
@@ -21,10 +22,16 @@ const TableBody = ({
   isWidthDragging,
   onCellChange,
   onTableHeaderDragEnd,
+  pinned,
   shouldDisplayLastColumnCell,
   shouldPaginate,
   tableRef,
 }: TableBodyProps) => {
+  console.log(
+    headers?.filter((header) => displayCell({ hiddenColumns, header, pinned }))
+      .length
+  );
+  console.log(pinned);
   return (
     <>
       {currentRows.map((row, rowIndex) => {
@@ -41,8 +48,8 @@ const TableBody = ({
               tableRef={tableRef}
             >
               {headers.map((header, colIndex) => {
-                if (hiddenColumns[header.accessor]) return null;
-                if (header.pinned) return null;
+                if (!displayCell({ hiddenColumns, header, pinned }))
+                  return null;
 
                 let content = row[header.accessor];
 

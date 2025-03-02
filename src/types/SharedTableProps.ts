@@ -9,6 +9,7 @@ interface SharedTableProps {
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   isWidthDragging: boolean;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  pinned?: "left" | "right";
   shouldDisplayLastColumnCell: boolean;
   tableRef: RefObject<HTMLDivElement | null>;
 }
