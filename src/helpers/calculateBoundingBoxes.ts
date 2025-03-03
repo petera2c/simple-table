@@ -33,10 +33,6 @@ const calculateBoundingBoxes = ({
       ) {
         boundingBoxes[header.accessor] = false;
       } else {
-        // if (rowIndex === 0 && header.accessor === TEST_KEY) {
-        //   console.log(domNode);
-        //   console.log(nodeBoundingBox.x);
-        // }
         boundingBoxes[header.accessor] = nodeBoundingBox;
       }
     }

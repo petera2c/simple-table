@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { RefObject, useMemo } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
@@ -6,7 +6,10 @@ import TableHeader from "./TableHeader";
 
 interface TableContentProps
   extends Omit<TableHeaderProps, "shouldDisplayLastColumnCell">,
-    Omit<TableBodyProps, "shouldDisplayLastColumnCell"> {}
+    Omit<TableBodyProps, "shouldDisplayLastColumnCell"> {
+  pinnedLeftRef: RefObject<HTMLDivElement | null>;
+  pinnedRightRef: RefObject<HTMLDivElement | null>;
+}
 
 const TableContent = ({
   allowAnimations,
@@ -27,6 +30,8 @@ const TableContent = ({
   onCellChange,
   onSort,
   onTableHeaderDragEnd,
+  pinnedLeftRef,
+  pinnedRightRef,
   selectableColumns,
   shouldPaginate,
   setIsWidthDragging,
@@ -137,58 +142,12 @@ const TableContent = ({
     pinned: "right",
   };
 
-  //   return (
-  //     <>
-  //       <div style={{ background: "red" }}>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //       </div>
-  //       <div style={{ background: "blue", flex: 1, height: "max-content" }}>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div> <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div> <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div> <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div> <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //         <div>hello world</div>
-  //       </div>
-  //     </>
-  //   );
-
   return (
     <>
       {pinnedLeftColumns.length > 0 && (
         <div
           className="st-table pinned-left"
+          ref={pinnedLeftRef}
           style={{
             gridTemplateColumns: pinnedLeftTemplateColumns,
           }}
@@ -210,6 +169,7 @@ const TableContent = ({
       {pinnedRightColumns.length > 0 && (
         <div
           className="st-table pinned-right"
+          ref={pinnedRightRef}
           style={{
             gridTemplateColumns: pinnedRightTemplateColumns,
           }}

@@ -22,6 +22,8 @@ import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
+import TableVerticalScrollbar from "./TableVerticalScrollbar";
+import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 
 interface SpreadsheetProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -88,6 +90,8 @@ const SimpleTable = ({
   const tableRef = useRef<HTMLDivElement>(null);
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const pinnedLeftRef = useRef<HTMLDivElement>(null);
+  const pinnedRightRef = useRef<HTMLDivElement>(null);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
@@ -181,48 +185,58 @@ const SimpleTable = ({
         className={`st-wrapper theme-${theme}`}
         style={height ? { height } : {}}
       >
-        <div
-          className="st-table-wrapper"
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          <TableContent
-            allowAnimations={allowAnimations}
-            columnResizing={columnResizing}
-            currentRows={currentRows}
-            draggable={draggable}
-            draggedHeaderRef={draggedHeaderRef}
-            forceUpdate={forceUpdate}
-            getBorderClass={getBorderClass}
-            handleMouseDown={handleMouseDown}
-            handleMouseOver={handleMouseOver}
-            headers={headersRef.current}
+        <div className="st-table-wrapper-container">
+          <div
+            className="st-table-wrapper"
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            <TableContent
+              allowAnimations={allowAnimations}
+              columnResizing={columnResizing}
+              currentRows={currentRows}
+              draggable={draggable}
+              draggedHeaderRef={draggedHeaderRef}
+              forceUpdate={forceUpdate}
+              getBorderClass={getBorderClass}
+              handleMouseDown={handleMouseDown}
+              handleMouseOver={handleMouseOver}
+              headers={headersRef.current}
+              headersRef={headersRef}
+              hiddenColumns={hiddenColumns}
+              hoveredHeaderRef={hoveredHeaderRef}
+              isSelected={isSelected}
+              isTopLeftCell={isTopLeftCell}
+              isWidthDragging={isWidthDragging}
+              onCellChange={onCellChange}
+              onSort={onSort}
+              onTableHeaderDragEnd={onTableHeaderDragEnd}
+              pinnedLeftRef={pinnedLeftRef}
+              pinnedRightRef={pinnedRightRef}
+              selectableColumns={selectableColumns}
+              setIsWidthDragging={setIsWidthDragging}
+              setSelectedCells={setSelectedCells}
+              shouldPaginate={shouldPaginate}
+              sort={sort}
+              sortDownIcon={sortDownIcon}
+              sortUpIcon={sortUpIcon}
+              tableRef={tableRef}
+            />
+            <TableColumnEditor
+              columnEditorText={columnEditorText}
+              editColumns={editColumns}
+              editColumnsInitOpen={editColumnsInitOpen}
+              headers={headersRef.current}
+              hiddenColumns={hiddenColumns}
+              position={columnEditorPosition}
+              setHiddenColumns={setHiddenColumns}
+            />
+          </div>
+          <TableHorizontalScrollbar
             headersRef={headersRef}
-            hiddenColumns={hiddenColumns}
-            hoveredHeaderRef={hoveredHeaderRef}
-            isSelected={isSelected}
-            isTopLeftCell={isTopLeftCell}
-            isWidthDragging={isWidthDragging}
-            onCellChange={onCellChange}
-            onSort={onSort}
-            onTableHeaderDragEnd={onTableHeaderDragEnd}
-            selectableColumns={selectableColumns}
-            setIsWidthDragging={setIsWidthDragging}
-            setSelectedCells={setSelectedCells}
-            shouldPaginate={shouldPaginate}
-            sort={sort}
-            sortDownIcon={sortDownIcon}
-            sortUpIcon={sortUpIcon}
+            pinnedLeftRef={pinnedLeftRef}
+            pinnedRightRef={pinnedRightRef}
             tableRef={tableRef}
-          />
-          <TableColumnEditor
-            columnEditorText={columnEditorText}
-            editColumns={editColumns}
-            editColumnsInitOpen={editColumnsInitOpen}
-            headers={headersRef.current}
-            hiddenColumns={hiddenColumns}
-            position={columnEditorPosition}
-            setHiddenColumns={setHiddenColumns}
           />
         </div>
         <TableFooter

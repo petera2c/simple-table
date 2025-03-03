@@ -86,14 +86,6 @@ const useDragHandler = ({
     const shouldRevertToPreviousHeaders =
       now - prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
 
-    // if (distance > 600) {
-    //   console.log("\n");
-    //   console.log(prevDraggingPosition);
-    //   console.log(distance);
-    //   console.log(prevHeaders?.map((header) => header.accessor));
-    //   console.log(newHeaders.map((header) => header.accessor));
-    //   console.log(hoveredHeader.accessor);
-    // }
     if (
       arePreviousHeadersAndNewHeadersTheSame &&
       shouldRevertToPreviousHeaders &&

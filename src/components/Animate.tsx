@@ -80,9 +80,7 @@ const Animate = ({
 
       // if (rowIndex === 0) {
       //   if (!newBoundingBox.productId) {
-      //     console.log("newBoundingBox.productId", newBoundingBox.productId);
       //   } else {
-      //     console.log("newBoundingBox.productId.x", newBoundingBox.productId.x);
       //   }
       // }
       setBoundingBox(newBoundingBox);

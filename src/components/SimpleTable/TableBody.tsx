@@ -27,11 +27,6 @@ const TableBody = ({
   shouldPaginate,
   tableRef,
 }: TableBodyProps) => {
-  console.log(
-    headers?.filter((header) => displayCell({ hiddenColumns, header, pinned }))
-      .length
-  );
-  console.log(pinned);
   return (
     <>
       {currentRows.map((row, rowIndex) => {
