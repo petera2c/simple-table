@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import HeaderObject from "../../types/HeaderObject";
 
 const TableHorizontalScrollbar = ({
@@ -15,11 +15,12 @@ const TableHorizontalScrollbar = ({
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
   const [tableWidth, setTableWidth] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Keep up to date the width of the left pinned columns container
   useEffect(() => {
     if (!pinnedLeftRef.current) return;
+
     const updatePinnedLeftWidth = () => {
       setPinnedLeftWidth(pinnedLeftRef.current?.scrollWidth || 0);
     };
@@ -34,6 +35,7 @@ const TableHorizontalScrollbar = ({
     return () => resizeObserver.disconnect();
   }, [pinnedLeftRef]);
 
+  // Keep up to date the middle scrollable width table container
   useEffect(() => {
     if (!tableRef.current) return;
     const updateTableWidth = () => {
@@ -50,6 +52,7 @@ const TableHorizontalScrollbar = ({
     return () => resizeObserver.disconnect();
   }, [tableRef]);
 
+  // Keep up to date the width of the right pinned columns container
   useEffect(() => {
     if (!pinnedRightRef.current) return;
     const updatePinnedRightWidth = () => {
@@ -65,21 +68,24 @@ const TableHorizontalScrollbar = ({
     return () => resizeObserver.disconnect();
   }, [pinnedRightRef]);
 
+  // Keep up to date the scroll position of the visible scroll
   useEffect(() => {
     if (!tableRef.current) return;
 
+    const tableRefDiv = tableRef.current;
+
     const handleScroll = () => {
-      const scrollLeft = tableRef.current?.scrollLeft;
+      const scrollLeft = tableRefDiv?.scrollLeft;
       // Set the scrollLeft to the tableRef.current?.scrollLeft
-      if (scrollLeft) {
+      if (scrollLeft !== undefined) {
         scrollRef.current?.scrollTo(scrollLeft, 0);
       }
     };
 
-    tableRef.current.addEventListener("scroll", handleScroll);
+    tableRefDiv.addEventListener("scroll", handleScroll);
 
     return () => {
-      tableRef.current?.removeEventListener("scroll", handleScroll);
+      tableRefDiv?.removeEventListener("scroll", handleScroll);
     };
   }, [tableRef]);
 
@@ -91,18 +97,28 @@ const TableHorizontalScrollbar = ({
           style={{
             flexShrink: 0,
             width: pinnedLeftWidth,
-            backgroundColor: "blue",
           }}
         />
       )}
       {tableWidth > 0 && (
-        <div className="st-horizontal-scrollbar-middle" ref={scrollRef}>
+        <div
+          className="st-horizontal-scrollbar-middle"
+          onScroll={() => {
+            const scrollLeft = scrollRef.current?.scrollLeft;
+            if (scrollLeft !== undefined) {
+              tableRef.current?.scrollTo(scrollLeft, 0);
+            }
+          }}
+          ref={scrollRef}
+          style={{
+            width: tableWidth,
+          }}
+        >
           <div
             style={{
               width: tableWidth,
-              transform: `translateX(-${scrollLeft}px)`,
             }}
-          ></div>
+          />
         </div>
       )}
       {pinnedRightWidth > 0 && (

@@ -22,7 +22,6 @@ import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
-import TableVerticalScrollbar from "./TableVerticalScrollbar";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 
 interface SpreadsheetProps {

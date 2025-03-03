@@ -14,6 +14,8 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
+  --st-scrollbar-bg-color: transparent;
+  --st-scrollbar-thumb-color: var(--slate-200);
 
   /* Tailwind Colors */
   --white: #fff;
@@ -673,6 +675,8 @@
   margin: 0;
   padding: 0;
   font-family: var(--st-font-family);
+  scrollbar-color: var(--st-scrollbar-thumb-color) var(--st-scrollbar-bg-color);
+  scrollbar-width: thin;
 }
 
 /* Apply Nunito as the default font */
@@ -867,16 +871,16 @@ body {
     var(--st-selected-border-right-color);
 }
 
-.st-horizontal-scrollbar-left {
+.st-horizontal-scrollbar-left,
+.st-horizontal-scrollbar-right {
+  background-color: var(--st-scrollbar-bg-color);
 }
 .st-horizontal-scrollbar-middle {
-  overflow: scroll;
+  overflow-x: scroll;
 }
 .st-horizontal-scrollbar-middle > div {
-  padding-top: 2px;
-}
-
-.st-horizontal-scrollbar-right {
+  padding-bottom: 0.01px;
+  transform: translateY(1px);
 }
 
 .st-horizontal-scrollbar-container {
