@@ -708,30 +708,9 @@ body {
   height: 100%;
   width: 100%;
 }
-
-/* Main table styling */
-.st-table {
-  position: relative;
-  display: grid;
-  border-collapse: collapse;
-  table-layout: auto;
-  white-space: nowrap;
-  height: max-content;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-.st-table::-webkit-scrollbar {
-  display: none !important; /* Safari and Chrome */
-}
-.st-table:not(.pinned-left):not(.pinned-right) {
-  width: 100%;
-  overflow: auto;
-}
-.st-table.pinned-left {
-  border-right: var(--st-border-width) solid var(--st-border-color);
-}
-.st-table.pinned-right {
-  border-left: var(--st-border-width) solid var(--st-border-color);
+.st-table-content {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Styles for table header cells */
@@ -965,6 +944,7 @@ body {
   border-left: var(--st-border-width) solid var(--st-border-color);
   cursor: pointer;
   color: var(--slate-500);
+  flex-shrink: 0;
 }
 
 .st-column-editor-text {

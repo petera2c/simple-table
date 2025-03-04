@@ -4,25 +4,19 @@ import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
+// Common properties to omit from both TableHeaderProps and TableBodyProps
+type OmittedTableProps =
+  | "shouldDisplayLastColumnCell"
+  | "pinnedLeftColumns"
+  | "pinnedRightColumns"
+  | "mainTemplateColumns"
+  | "pinnedLeftTemplateColumns"
+  | "pinnedRightTemplateColumns";
+
 interface TableContentProps
-  extends Omit<
-      TableHeaderProps,
-      | "shouldDisplayLastColumnCell"
-      | "pinnedLeftColumns"
-      | "pinnedRightColumns"
-      | "mainTemplateColumns"
-      | "pinnedLeftTemplateColumns"
-      | "pinnedRightTemplateColumns"
-    >,
-    Omit<
-      TableBodyProps,
-      | "shouldDisplayLastColumnCell"
-      | "pinnedLeftColumns"
-      | "pinnedRightColumns"
-      | "mainTemplateColumns"
-      | "pinnedLeftTemplateColumns"
-      | "pinnedRightTemplateColumns"
-    > {
+  extends Omit<TableHeaderProps, OmittedTableProps>,
+    Omit<TableBodyProps, OmittedTableProps> {
+  editColumns: boolean;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
 }
@@ -33,6 +27,7 @@ const TableContent = ({
   currentRows,
   draggable,
   draggedHeaderRef,
+  editColumns,
   forceUpdate,
   getBorderClass,
   handleMouseDown,
@@ -150,7 +145,10 @@ const TableContent = ({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+    <div
+      className="st-table-content"
+      style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
+    >
       <TableHeader {...tableHeaderProps} />
       <TableBody {...tableBodyProps} />
     </div>

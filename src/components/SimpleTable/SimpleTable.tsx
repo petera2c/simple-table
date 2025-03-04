@@ -213,6 +213,7 @@ const SimpleTable = ({
               currentRows={currentRows}
               draggable={draggable}
               draggedHeaderRef={draggedHeaderRef}
+              editColumns={editColumns}
               forceUpdate={forceUpdate}
               getBorderClass={getBorderClass}
               handleMouseDown={handleMouseDown}
