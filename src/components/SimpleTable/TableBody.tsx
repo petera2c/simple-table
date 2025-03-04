@@ -20,69 +20,206 @@ const TableBody = ({
   isSelected,
   isTopLeftCell,
   isWidthDragging,
+  mainTemplateColumns,
   onCellChange,
   onTableHeaderDragEnd,
-  pinned,
+  pinnedLeftTemplateColumns,
+  pinnedRightTemplateColumns,
   shouldDisplayLastColumnCell,
   shouldPaginate,
   tableRef,
 }: TableBodyProps) => {
   return (
-    <>
-      {currentRows.map((row, rowIndex) => {
-        return (
-          <Fragment key={row.originalRowIndex}>
-            <Animate
-              allowAnimations={allowAnimations}
-              allowHorizontalAnimate={shouldPaginate}
-              draggedHeaderRef={draggedHeaderRef}
-              headersRef={headersRef}
-              isBody
-              pauseAnimation={isWidthDragging}
-              rowIndex={rowIndex + 1}
-              tableRef={tableRef}
-            >
-              {headers.map((header, colIndex) => {
-                if (!displayCell({ hiddenColumns, header, pinned }))
-                  return null;
+    <div style={{ display: "flex", width: "100%" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: pinnedLeftTemplateColumns,
+          borderRight: "1px solid #ccc",
+        }}
+      >
+        {currentRows.map((row, rowIndex) => {
+          return (
+            <Fragment key={row.originalRowIndex}>
+              <Animate
+                allowAnimations={allowAnimations}
+                allowHorizontalAnimate={shouldPaginate}
+                draggedHeaderRef={draggedHeaderRef}
+                headersRef={headersRef}
+                isBody
+                pauseAnimation={isWidthDragging}
+                rowIndex={rowIndex + 1}
+                tableRef={tableRef}
+              >
+                {headers.map((header, colIndex) => {
+                  if (!displayCell({ hiddenColumns, header, pinned: "left" }))
+                    return null;
 
-                let content = row[header.accessor];
+                  let content = row[header.accessor];
 
-                if (header.cellRenderer) {
-                  content = header.cellRenderer(row);
-                }
-                return (
-                  <TableCell
-                    borderClass={getBorderClass(rowIndex, colIndex)}
-                    colIndex={colIndex}
-                    content={content}
-                    draggedHeaderRef={draggedHeaderRef}
-                    header={header}
-                    headersRef={headersRef}
-                    hoveredHeaderRef={hoveredHeaderRef}
-                    isSelected={isSelected(rowIndex, colIndex)}
-                    isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
-                    key={header.accessor}
-                    onCellChange={onCellChange}
-                    onMouseDown={() => handleMouseDown({ rowIndex, colIndex })}
-                    onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
-                    onTableHeaderDragEnd={onTableHeaderDragEnd}
-                    ref={createRef()}
-                    row={row}
-                    rowIndex={rowIndex}
-                  />
-                );
-              })}
-              <TableLastColumnCell
-                ref={createRef()}
-                visible={shouldDisplayLastColumnCell}
-              />
-            </Animate>
-            {rowIndex !== currentRows.length - 1 && <TableRowSeparator />}
-          </Fragment>
-        );
-      })}
-    </>
+                  if (header.cellRenderer) {
+                    content = header.cellRenderer(row);
+                  }
+                  return (
+                    <TableCell
+                      borderClass={getBorderClass(rowIndex, colIndex)}
+                      colIndex={colIndex}
+                      content={content}
+                      draggedHeaderRef={draggedHeaderRef}
+                      header={header}
+                      headersRef={headersRef}
+                      hoveredHeaderRef={hoveredHeaderRef}
+                      isSelected={isSelected(rowIndex, colIndex)}
+                      isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
+                      key={header.accessor}
+                      onCellChange={onCellChange}
+                      onMouseDown={() =>
+                        handleMouseDown({ rowIndex, colIndex })
+                      }
+                      onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                      onTableHeaderDragEnd={onTableHeaderDragEnd}
+                      ref={createRef()}
+                      row={row}
+                      rowIndex={rowIndex}
+                    />
+                  );
+                })}
+                <TableLastColumnCell
+                  ref={createRef()}
+                  visible={shouldDisplayLastColumnCell}
+                />
+              </Animate>
+              {rowIndex !== currentRows.length - 1 && <TableRowSeparator />}
+            </Fragment>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: mainTemplateColumns,
+          // overflow: "auto",
+          // scrollbarWidth: "none",
+        }}
+      >
+        {currentRows.map((row, rowIndex) => {
+          return (
+            <Fragment key={row.originalRowIndex}>
+              <Animate
+                allowAnimations={allowAnimations}
+                allowHorizontalAnimate={shouldPaginate}
+                draggedHeaderRef={draggedHeaderRef}
+                headersRef={headersRef}
+                isBody
+                pauseAnimation={isWidthDragging}
+                rowIndex={rowIndex + 1}
+                tableRef={tableRef}
+              >
+                {headers.map((header, colIndex) => {
+                  if (!displayCell({ hiddenColumns, header })) return null;
+
+                  let content = row[header.accessor];
+
+                  if (header.cellRenderer) {
+                    content = header.cellRenderer(row);
+                  }
+                  return (
+                    <TableCell
+                      borderClass={getBorderClass(rowIndex, colIndex)}
+                      colIndex={colIndex}
+                      content={content}
+                      draggedHeaderRef={draggedHeaderRef}
+                      header={header}
+                      headersRef={headersRef}
+                      hoveredHeaderRef={hoveredHeaderRef}
+                      isSelected={isSelected(rowIndex, colIndex)}
+                      isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
+                      key={header.accessor}
+                      onCellChange={onCellChange}
+                      onMouseDown={() =>
+                        handleMouseDown({ rowIndex, colIndex })
+                      }
+                      onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                      onTableHeaderDragEnd={onTableHeaderDragEnd}
+                      ref={createRef()}
+                      row={row}
+                      rowIndex={rowIndex}
+                    />
+                  );
+                })}
+                <TableLastColumnCell
+                  ref={createRef()}
+                  visible={shouldDisplayLastColumnCell}
+                />
+              </Animate>
+              {rowIndex !== currentRows.length - 1 && <TableRowSeparator />}
+            </Fragment>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: pinnedRightTemplateColumns,
+        }}
+      >
+        {currentRows.map((row, rowIndex) => {
+          return (
+            <Fragment key={row.originalRowIndex}>
+              <Animate
+                allowAnimations={allowAnimations}
+                allowHorizontalAnimate={shouldPaginate}
+                draggedHeaderRef={draggedHeaderRef}
+                headersRef={headersRef}
+                isBody
+                pauseAnimation={isWidthDragging}
+                rowIndex={rowIndex + 1}
+                tableRef={tableRef}
+              >
+                {headers.map((header, colIndex) => {
+                  if (!displayCell({ hiddenColumns, header, pinned: "right" }))
+                    return null;
+
+                  let content = row[header.accessor];
+
+                  if (header.cellRenderer) {
+                    content = header.cellRenderer(row);
+                  }
+                  return (
+                    <TableCell
+                      borderClass={getBorderClass(rowIndex, colIndex)}
+                      colIndex={colIndex}
+                      content={content}
+                      draggedHeaderRef={draggedHeaderRef}
+                      header={header}
+                      headersRef={headersRef}
+                      hoveredHeaderRef={hoveredHeaderRef}
+                      isSelected={isSelected(rowIndex, colIndex)}
+                      isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
+                      key={header.accessor}
+                      onCellChange={onCellChange}
+                      onMouseDown={() =>
+                        handleMouseDown({ rowIndex, colIndex })
+                      }
+                      onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                      onTableHeaderDragEnd={onTableHeaderDragEnd}
+                      ref={createRef()}
+                      row={row}
+                      rowIndex={rowIndex}
+                    />
+                  );
+                })}
+                <TableLastColumnCell
+                  ref={createRef()}
+                  visible={shouldDisplayLastColumnCell}
+                />
+              </Animate>
+              {rowIndex !== currentRows.length - 1 && <TableRowSeparator />}
+            </Fragment>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 

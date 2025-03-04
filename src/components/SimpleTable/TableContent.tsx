@@ -5,8 +5,14 @@ import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
 interface TableContentProps
-  extends Omit<TableHeaderProps, "shouldDisplayLastColumnCell">,
-    Omit<TableBodyProps, "shouldDisplayLastColumnCell"> {
+  extends Omit<
+      TableHeaderProps,
+      "shouldDisplayLastColumnCell" | "pinnedLeftColumns" | "pinnedRightColumns"
+    >,
+    Omit<
+      TableBodyProps,
+      "shouldDisplayLastColumnCell" | "pinnedLeftColumns" | "pinnedRightColumns"
+    > {
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
 }
@@ -65,18 +71,17 @@ const TableContent = ({
       .map((header) => `${header.width}px`)
       .join(" ")} 1fr`;
   }, [pinnedLeftColumns]);
-  const pinnedRightTemplateColumns = useMemo(() => {
-    return `${pinnedRightColumns
-      .map((header) => `${header.width}px`)
-      .join(" ")} 1fr`;
-  }, [pinnedRightColumns]);
-
   const mainTemplateColumns = useMemo(() => {
     return `${currentHeaders
       .filter((header) => hiddenColumns[header.accessor] !== true)
       .map((header) => `${header.width}px`)
       .join(" ")} 1fr`;
   }, [currentHeaders, hiddenColumns]);
+  const pinnedRightTemplateColumns = useMemo(() => {
+    return `${pinnedRightColumns
+      .map((header) => `${header.width}px`)
+      .join(" ")} 1fr`;
+  }, [pinnedRightColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
     allowAnimations,
@@ -89,8 +94,13 @@ const TableContent = ({
     hiddenColumns,
     hoveredHeaderRef,
     isWidthDragging,
+    mainTemplateColumns,
     onSort,
     onTableHeaderDragEnd,
+    pinnedLeftColumns,
+    pinnedLeftTemplateColumns,
+    pinnedRightColumns,
+    pinnedRightTemplateColumns,
     selectableColumns,
     setIsWidthDragging,
     setSelectedCells,
@@ -115,47 +125,21 @@ const TableContent = ({
     isSelected,
     isTopLeftCell,
     isWidthDragging,
+    mainTemplateColumns,
     onCellChange,
     onTableHeaderDragEnd,
+    pinnedLeftColumns,
+    pinnedLeftTemplateColumns,
+    pinnedRightColumns,
+    pinnedRightTemplateColumns,
     shouldDisplayLastColumnCell,
     shouldPaginate,
     tableRef,
   };
 
-  const tableHeaderPropsLeft: TableHeaderProps = {
-    ...tableHeaderProps,
-    pinned: "left",
-  };
-  const tableBodyPropsLeft: TableBodyProps = {
-    ...tableBodyProps,
-    headers: pinnedLeftColumns,
-    pinned: "left",
-  };
-
-  const tableHeaderPropsRight: TableHeaderProps = {
-    ...tableHeaderProps,
-    pinned: "right",
-  };
-  const tableBodyPropsRight: TableBodyProps = {
-    ...tableBodyProps,
-    headers: pinnedRightColumns,
-    pinned: "right",
-  };
-
   return (
-    <>
-      {pinnedLeftColumns.length > 0 && (
-        <div
-          className="st-table pinned-left"
-          ref={pinnedLeftRef}
-          style={{
-            gridTemplateColumns: pinnedLeftTemplateColumns,
-          }}
-        >
-          <TableHeader {...tableHeaderPropsLeft} />
-          <TableBody {...tableBodyPropsLeft} />
-        </div>
-      )}
+    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+      <TableHeader {...tableHeaderProps} />
       <div
         className="st-table"
         ref={tableRef}
@@ -163,22 +147,9 @@ const TableContent = ({
           gridTemplateColumns: mainTemplateColumns,
         }}
       >
-        <TableHeader {...tableHeaderProps} />
         <TableBody {...tableBodyProps} />
       </div>
-      {pinnedRightColumns.length > 0 && (
-        <div
-          className="st-table pinned-right"
-          ref={pinnedRightRef}
-          style={{
-            gridTemplateColumns: pinnedRightTemplateColumns,
-          }}
-        >
-          <TableHeader {...tableHeaderPropsRight} />
-          <TableBody {...tableBodyPropsRight} />
-        </div>
-      )}
-    </>
+    </div>
   );
 };
 
