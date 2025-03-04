@@ -30,7 +30,9 @@ const TableHeader = ({
   sortUpIcon,
   tableRef,
 }: TableHeaderProps) => {
+  // Refs
   const scrollRef = useRef<HTMLDivElement>(null);
+
   // Keep up to date the scroll position of the visible scroll
   useEffect(() => {
     if (!tableRef.current) return;
@@ -59,12 +61,11 @@ const TableHeader = ({
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="st-table-header-container">
       <div
+        className="st-header-pinned-left"
         style={{
-          display: "grid",
           gridTemplateColumns: pinnedLeftTemplateColumns,
-          borderRight: "1px solid #ccc",
         }}
       >
         <Animate
@@ -102,20 +103,14 @@ const TableHeader = ({
               />
             );
           })}
-          <TableLastColumnCell
-            ref={createRef()}
-            visible={shouldDisplayLastColumnCell}
-          />
         </Animate>
       </div>
       <div
+        className="st-header-main"
         onScroll={handleScroll}
         ref={scrollRef}
         style={{
-          display: "grid",
           gridTemplateColumns: mainTemplateColumns,
-          overflow: "auto",
-          scrollbarWidth: "none",
         }}
       >
         <Animate
@@ -159,8 +154,8 @@ const TableHeader = ({
         </Animate>
       </div>
       <div
+        className="st-header-pinned-right"
         style={{
-          display: "grid",
           gridTemplateColumns: pinnedRightTemplateColumns,
         }}
       >

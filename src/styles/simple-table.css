@@ -713,6 +713,32 @@ body {
   flex-direction: column;
 }
 
+/* Header */
+
+.st-table-header-container {
+  display: flex;
+}
+
+.st-header-pinned-left,
+.st-header-main,
+.st-header-pinned-right {
+  display: grid;
+}
+.st-header-pinned-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+.st-header-pinned-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
+}
+.st-header-main {
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.st-header-main::-webkit-scrollbar {
+  display: none;
+}
+
 /* Styles for table header cells */
 .st-header-cell {
   position: sticky;
