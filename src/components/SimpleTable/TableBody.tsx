@@ -23,6 +23,7 @@ const TableBody = ({
   mainTemplateColumns,
   onCellChange,
   onTableHeaderDragEnd,
+  pinnedLeftRef,
   pinnedLeftTemplateColumns,
   pinnedRightTemplateColumns,
   shouldDisplayLastColumnCell,
@@ -30,12 +31,21 @@ const TableBody = ({
   tableRef,
 }: TableBodyProps) => {
   return (
-    <div style={{ display: "flex", width: "100%" }}>
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        overflow: "auto",
+        height: "max-content",
+      }}
+    >
       <div
+        ref={pinnedLeftRef}
         style={{
           display: "grid",
           gridTemplateColumns: pinnedLeftTemplateColumns,
           borderRight: "1px solid #ccc",
+          height: "max-content",
         }}
       >
         {currentRows.map((row, rowIndex) => {
@@ -95,11 +105,13 @@ const TableBody = ({
         })}
       </div>
       <div
+        ref={tableRef}
         style={{
           display: "grid",
           gridTemplateColumns: mainTemplateColumns,
-          // overflow: "auto",
-          // scrollbarWidth: "none",
+          overflow: "auto",
+          scrollbarWidth: "none",
+          height: "max-content",
         }}
       >
         {currentRows.map((row, rowIndex) => {

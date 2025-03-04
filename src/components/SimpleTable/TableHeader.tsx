@@ -1,4 +1,4 @@
-import { createRef } from "react";
+import { createRef, UIEvent, useEffect, useRef } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import TableLastColumnCell from "./TableLastColumnCell";
@@ -30,6 +30,34 @@ const TableHeader = ({
   sortUpIcon,
   tableRef,
 }: TableHeaderProps) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // Keep up to date the scroll position of the visible scroll
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    const tableRefDiv = tableRef.current;
+
+    const handleScroll = () => {
+      const scrollLeft = tableRefDiv?.scrollLeft;
+      // Set the scrollLeft to the tableRef.current?.scrollLeft
+      if (scrollLeft !== undefined) {
+        scrollRef.current?.scrollTo(scrollLeft, 0);
+      }
+    };
+
+    tableRefDiv.addEventListener("scroll", handleScroll);
+
+    return () => {
+      tableRefDiv?.removeEventListener("scroll", handleScroll);
+    };
+  }, [tableRef]);
+  const handleScroll = (event: UIEvent<HTMLDivElement>) => {
+    const scrollLeft = scrollRef.current?.scrollLeft;
+    if (scrollLeft !== undefined) {
+      tableRef.current?.scrollTo(scrollLeft, 0);
+    }
+  };
+
   return (
     <div style={{ display: "flex" }}>
       <div
@@ -81,11 +109,13 @@ const TableHeader = ({
         </Animate>
       </div>
       <div
+        onScroll={handleScroll}
+        ref={scrollRef}
         style={{
           display: "grid",
           gridTemplateColumns: mainTemplateColumns,
-          // overflow: "auto",
-          // scrollbarWidth: "none",
+          overflow: "auto",
+          scrollbarWidth: "none",
         }}
       >
         <Animate

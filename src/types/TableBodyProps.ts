@@ -1,3 +1,4 @@
+import { RefObject } from "react";
 import { MouseDownProps } from "../hooks/useSelection";
 import CellChangeProps from "./CellChangeProps";
 import HeaderObject from "./HeaderObject";
@@ -12,6 +13,8 @@ interface TableBodyProps extends SharedTableProps {
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   onCellChange?: (props: CellChangeProps) => void;
+  pinnedLeftRef: RefObject<HTMLDivElement | null>;
+  pinnedRightRef: RefObject<HTMLDivElement | null>;
   shouldPaginate: boolean;
 }
 export default TableBodyProps;

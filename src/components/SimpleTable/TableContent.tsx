@@ -1,4 +1,4 @@
-import { RefObject, useMemo } from "react";
+import { RefObject, useMemo, useRef } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
@@ -7,11 +7,21 @@ import TableHeader from "./TableHeader";
 interface TableContentProps
   extends Omit<
       TableHeaderProps,
-      "shouldDisplayLastColumnCell" | "pinnedLeftColumns" | "pinnedRightColumns"
+      | "shouldDisplayLastColumnCell"
+      | "pinnedLeftColumns"
+      | "pinnedRightColumns"
+      | "mainTemplateColumns"
+      | "pinnedLeftTemplateColumns"
+      | "pinnedRightTemplateColumns"
     >,
     Omit<
       TableBodyProps,
-      "shouldDisplayLastColumnCell" | "pinnedLeftColumns" | "pinnedRightColumns"
+      | "shouldDisplayLastColumnCell"
+      | "pinnedLeftColumns"
+      | "pinnedRightColumns"
+      | "mainTemplateColumns"
+      | "pinnedLeftTemplateColumns"
+      | "pinnedRightTemplateColumns"
     > {
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
@@ -129,8 +139,10 @@ const TableContent = ({
     onCellChange,
     onTableHeaderDragEnd,
     pinnedLeftColumns,
+    pinnedLeftRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
+    pinnedRightRef,
     pinnedRightTemplateColumns,
     shouldDisplayLastColumnCell,
     shouldPaginate,
@@ -140,15 +152,7 @@ const TableContent = ({
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
       <TableHeader {...tableHeaderProps} />
-      <div
-        className="st-table"
-        ref={tableRef}
-        style={{
-          gridTemplateColumns: mainTemplateColumns,
-        }}
-      >
-        <TableBody {...tableBodyProps} />
-      </div>
+      <TableBody {...tableBodyProps} />
     </div>
   );
 };
