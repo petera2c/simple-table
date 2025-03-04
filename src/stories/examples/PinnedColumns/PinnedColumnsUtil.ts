@@ -25,7 +25,7 @@ export const SAMPLE_HEADERS: HeaderObject[] = [
   {
     accessor: "productName",
     label: "Product Name",
-    pinned: "left",
+    pinned: "right",
     width: 140,
   },
   {

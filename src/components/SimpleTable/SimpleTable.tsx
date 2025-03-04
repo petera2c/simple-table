@@ -5,6 +5,8 @@ import {
   useReducer,
   ReactNode,
   useMemo,
+  useCallback,
+  memo,
 } from "react";
 import useSelection from "../../hooks/useSelection";
 import { handleSort } from "../../utils/sortUtils";
@@ -24,9 +26,15 @@ import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 
-interface SpreadsheetProps {
+// Create enum for consistent values
+enum ColumnEditorPosition {
+  Left = "left",
+  Right = "right",
+}
+
+interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
-  columnEditorPosition?: "left" | "right";
+  columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
   columnResizing?: boolean; // Flag for column resizing
   defaultHeaders: HeaderObject[]; // Default headers
@@ -53,9 +61,25 @@ interface SpreadsheetProps {
   theme?: Theme; // Theme
 }
 
+// Extract sort logic to custom hook
+const useSortableData = (tableRows: any[], headers: HeaderObject[]) => {
+  const [sort, setSort] = useState<SortConfig | null>(null);
+  const [hiddenColumns, setHiddenColumns] = useState<Record<string, boolean>>(
+    {}
+  );
+
+  const sortedRows = useMemo(() => {
+    if (!sort) return tableRows;
+    const { sortedData } = handleSort(headers, tableRows, sort);
+    return sortedData;
+  }, [tableRows, sort, headers]);
+
+  return { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns };
+};
+
 const SimpleTable = ({
   allowAnimations = false,
-  columnEditorPosition = "right",
+  columnEditorPosition = ColumnEditorPosition.Right,
   columnEditorText = "Columns",
   columnResizing = false,
   defaultHeaders,
@@ -75,7 +99,7 @@ const SimpleTable = ({
   sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   theme = "light",
-}: SpreadsheetProps) => {
+}: SimpleTableProps) => {
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
     const rowsWithOriginalRowIndex = rows.map((row, index) => ({
@@ -95,19 +119,12 @@ const SimpleTable = ({
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const headersRef = useRef(defaultHeaders);
-  const [sort, setSort] = useState<SortConfig | null>(null);
-  const [hiddenColumns, setHiddenColumns] = useState<{
-    [key: string]: boolean;
-  }>({});
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const sortedRows = useMemo(() => {
-    if (!sort) return tableRows;
-    const { sortedData } = handleSort(headersRef.current, tableRows, sort);
-
-    return sortedData;
-  }, [tableRows, sort]);
+  // Use custom hook for sorting
+  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns } =
+    useSortableData(tableRows, headersRef.current);
 
   // Hooks
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -125,17 +142,17 @@ const SimpleTable = ({
     rows: sortedRows,
   });
 
-  // Derived state
+  // Memoize currentRows calculation
+  const currentRows = useMemo(() => {
+    if (!shouldPaginate) return sortedRows;
+    return sortedRows.slice(
+      (currentPage - 1) * rowsPerPage,
+      currentPage * rowsPerPage
+    );
+  }, [shouldPaginate, sortedRows, currentPage, rowsPerPage]);
 
-  const currentRows = shouldPaginate
-    ? sortedRows.slice(
-        (currentPage - 1) * rowsPerPage,
-        currentPage * rowsPerPage
-      )
-    : sortedRows;
-
-  // Handlers
-  const onSort = (columnIndex: number, accessor: string) => {
+  // Memoize handlers
+  const onSort = useCallback((columnIndex: number, accessor: string) => {
     setSort((prevSort) => {
       if (prevSort?.key.accessor !== accessor) {
         return {
@@ -147,15 +164,15 @@ const SimpleTable = ({
           key: headersRef.current[columnIndex],
           direction: "descending",
         };
-      } else {
-        return null;
       }
+      return null;
     });
-  };
-  const onTableHeaderDragEnd = (newHeaders: HeaderObject[]) => {
+  }, []);
+
+  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
     headersRef.current = newHeaders;
     forceUpdate();
-  };
+  }, []);
 
   // Handle outside click
   useEffect(() => {
@@ -253,4 +270,29 @@ const SimpleTable = ({
   );
 };
 
-export default SimpleTable;
+// Add prop validation
+SimpleTable.defaultProps = {
+  allowAnimations: false,
+  columnEditorPosition: ColumnEditorPosition.Right,
+  columnEditorText: "Columns",
+  columnResizing: false,
+  defaultHeaders: [],
+  draggable: false,
+  editColumns: false,
+  editColumnsInitOpen: false,
+  height: "",
+  hideFooter: false,
+  nextIcon: <AngleRightIcon className="st-next-prev-icon" />,
+  onCellChange: () => {},
+  prevIcon: <AngleLeftIcon className="st-next-prev-icon" />,
+  rows: [],
+  rowsPerPage: 10,
+  selectableCells: false,
+  selectableColumns: false,
+  shouldPaginate: false,
+  sortDownIcon: <AngleDownIcon className="st-sort-icon" />,
+  sortUpIcon: <AngleUpIcon className="st-sort-icon" />,
+  theme: "light",
+};
+
+export default memo(SimpleTable);
