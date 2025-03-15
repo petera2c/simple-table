@@ -1,4 +1,4 @@
-import { RefObject, useMemo, useRef } from "react";
+import { RefObject, useMemo } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";

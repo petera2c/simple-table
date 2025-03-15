@@ -184,6 +184,7 @@ const TableHeader = ({
                 key={header.accessor}
                 onSort={onSort}
                 onTableHeaderDragEnd={onTableHeaderDragEnd}
+                reverse
                 ref={createRef()}
                 selectableColumns={selectableColumns}
                 setIsWidthDragging={setIsWidthDragging}

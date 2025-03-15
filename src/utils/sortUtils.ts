@@ -38,6 +38,7 @@ export const handleResizeStart = ({
   header,
   headersRef,
   index,
+  reverse,
   setIsWidthDragging,
 }: {
   event: MouseEvent;
@@ -45,6 +46,7 @@ export const handleResizeStart = ({
   header: HeaderObject;
   headersRef: React.RefObject<HeaderObject[]>;
   index: number;
+  reverse?: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
 }) => {
   setIsWidthDragging(true);
@@ -56,6 +58,7 @@ export const handleResizeStart = ({
 
   const handleMouseMove = (event: any) => {
     const newWidth = Math.max(startWidth + (event.clientX - startX), 40);
+
     if (!header || !headersRef.current) return;
     headersRef.current[index].width = newWidth;
     forceUpdate();

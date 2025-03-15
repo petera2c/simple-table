@@ -31,21 +31,12 @@ const TableBody = ({
   tableRef,
 }: TableBodyProps) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        overflow: "auto",
-        height: "max-content",
-      }}
-    >
+    <div className="st-table-body-container">
       <div
+        className="st-table-body-pinned-left"
         ref={pinnedLeftRef}
         style={{
-          display: "grid",
           gridTemplateColumns: pinnedLeftTemplateColumns,
-          borderRight: "1px solid #ccc",
-          height: "max-content",
         }}
       >
         {currentRows.map((row, rowIndex) => {
@@ -105,13 +96,10 @@ const TableBody = ({
         })}
       </div>
       <div
+        className="st-table-body-main"
         ref={tableRef}
         style={{
-          display: "grid",
           gridTemplateColumns: mainTemplateColumns,
-          overflow: "auto",
-          scrollbarWidth: "none",
-          height: "max-content",
         }}
       >
         {currentRows.map((row, rowIndex) => {
@@ -170,8 +158,8 @@ const TableBody = ({
         })}
       </div>
       <div
+        className="st-table-body-pinned-right"
         style={{
-          display: "grid",
           gridTemplateColumns: pinnedRightTemplateColumns,
         }}
       >

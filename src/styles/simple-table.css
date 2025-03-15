@@ -714,7 +714,6 @@ body {
 }
 
 /* Header */
-
 .st-table-header-container {
   display: flex;
 }
@@ -737,6 +736,31 @@ body {
 }
 .st-header-main::-webkit-scrollbar {
   display: none;
+}
+
+/* Body */
+.st-table-body-container {
+  display: flex;
+  width: 100%;
+  overflow: auto;
+  height: max-content;
+}
+.st-table-body-main,
+.st-table-body-pinned-left,
+.st-table-body-pinned-right {
+  display: grid;
+  height: max-content;
+}
+.st-table-body-pinned-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+.st-table-body-main {
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.st-table-body-pinned-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
 }
 
 /* Styles for table header cells */

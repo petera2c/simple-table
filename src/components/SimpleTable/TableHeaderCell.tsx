@@ -30,6 +30,7 @@ interface TableHeaderCellProps {
   index: number;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  reverse?: boolean;
   selectableColumns: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<React.SetStateAction<Set<string>>>;
@@ -51,6 +52,7 @@ const TableHeaderCell = forwardRef(
       index,
       onSort,
       onTableHeaderDragEnd,
+      reverse,
       selectableColumns,
       setIsWidthDragging,
       setSelectedCells,
@@ -184,6 +186,26 @@ const TableHeaderCell = forwardRef(
 
     if (!header) return null;
 
+    const ResizeHandle = columnResizing && (
+      <div
+        className="st-header-resize-handle"
+        onMouseDown={(event) => {
+          throttle({
+            callback: handleResizeStart,
+            callbackProps: {
+              event,
+              forceUpdate,
+              header,
+              headersRef,
+              index,
+              setIsWidthDragging,
+            },
+            limit: 10,
+          });
+        }}
+      />
+    );
+
     return (
       <div
         className={className}
@@ -198,6 +220,7 @@ const TableHeaderCell = forwardRef(
         ref={ref}
         style={{ width: header.width }}
       >
+        {reverse && ResizeHandle}
         <div
           className="st-header-label"
           draggable={draggable}
@@ -219,25 +242,7 @@ const TableHeaderCell = forwardRef(
           </div>
         )}
 
-        {columnResizing && (
-          <div
-            className="st-header-resize-handle"
-            onMouseDown={(event) => {
-              throttle({
-                callback: handleResizeStart,
-                callbackProps: {
-                  event,
-                  forceUpdate,
-                  header,
-                  headersRef,
-                  index,
-                  setIsWidthDragging,
-                },
-                limit: 10,
-              });
-            }}
-          />
-        )}
+        {!reverse && ResizeHandle}
       </div>
     );
   }
