@@ -74,7 +74,7 @@ const TableContent = ({
   const pinnedLeftTemplateColumns = useMemo(() => {
     return `${pinnedLeftColumns
       .map((header) => `${header.width}px`)
-      .join(" ")} 1fr`;
+      .join(" ")}`;
   }, [pinnedLeftColumns]);
   const mainTemplateColumns = useMemo(() => {
     return `${currentHeaders
@@ -85,8 +85,9 @@ const TableContent = ({
   const pinnedRightTemplateColumns = useMemo(() => {
     return `${pinnedRightColumns
       .map((header) => `${header.width}px`)
-      .join(" ")} 1fr`;
+      .join(" ")}`;
   }, [pinnedRightColumns]);
+  console.log("pinnedRightColumns", pinnedLeftTemplateColumns);
 
   const tableHeaderProps: TableHeaderProps = {
     allowAnimations,

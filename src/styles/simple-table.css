@@ -718,6 +718,15 @@ body {
   display: flex;
 }
 
+.st-table-header-container::after {
+  content: "";
+  display: block;
+  width: 11px;
+  flex-shrink: 0;
+  background-color: var(--st-header-background-color);
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
