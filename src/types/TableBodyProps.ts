@@ -17,6 +17,5 @@ interface TableBodyProps extends SharedTableProps {
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   shouldPaginate: boolean;
-  onToggleGroup?: (groupId: string) => void;
 }
 export default TableBodyProps;

@@ -1,6 +1,5 @@
 import { createRef } from "react";
 
-import TableCellProps from "../../types/TableCellProps";
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
 import CellValue from "../../types/CellValue";

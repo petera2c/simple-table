@@ -1,4 +1,4 @@
-import { RefObject, useMemo, useState } from "react";
+import { RefObject, useMemo } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
@@ -52,8 +52,6 @@ const TableContent = ({
   sortUpIcon,
   tableRef,
 }: TableContentProps) => {
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-
   const currentHeaders = headersRef.current.filter(
     (header) => !header.hide && !header.pinned
   );
@@ -89,18 +87,6 @@ const TableContent = ({
       .map((header) => `${header.width}px`)
       .join(" ")}`;
   }, [pinnedRightColumns]);
-
-  const handleToggleGroup = (groupId: string) => {
-    setExpandedGroups((prev) => {
-      const next = new Set(prev);
-      if (next.has(groupId)) {
-        next.delete(groupId);
-      } else {
-        next.add(groupId);
-      }
-      return next;
-    });
-  };
 
   const tableHeaderProps: TableHeaderProps = {
     allowAnimations,
@@ -147,7 +133,6 @@ const TableContent = ({
     mainTemplateColumns,
     onCellChange,
     onTableHeaderDragEnd,
-    onToggleGroup: handleToggleGroup,
     pinnedLeftColumns,
     pinnedLeftRef,
     pinnedLeftTemplateColumns,
