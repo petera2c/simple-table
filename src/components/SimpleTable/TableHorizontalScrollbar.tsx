@@ -56,6 +56,10 @@ const TableHorizontalScrollbar = ({
   useEffect(() => {
     if (!pinnedRightRef.current) return;
     const updatePinnedRightWidth = () => {
+      console.log(
+        "pinnedRightRef.current?.scrollWidth",
+        pinnedRightRef.current?.scrollWidth
+      );
       setPinnedRightWidth(pinnedRightRef.current?.scrollWidth || 0);
     };
 

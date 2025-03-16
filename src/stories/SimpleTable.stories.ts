@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import ThemingExample from "./examples/Theming";
-import PinnedColumnsExample from "./examples/PinnedColumns/PinnedColumns";
+import PinnedColumnsExample from "./examples/pinned-columns/PinnedColumns";
 import PaginationExample from "./examples/Pagination";
 import InfiniteScrollExample from "./examples/InfiniteScroll";
 import EditableCellsExample from "./examples/EditableCells";
 import FilterColumnsExample from "./examples/FilterColumns";
 import SelectableCellsExample from "./examples/SelectableCells";
+import RowGroupingExample from "./examples/row-grouping/RowGrouping";
 
 const meta = {
   title: "Simple Table",
@@ -27,12 +28,14 @@ export const FilterColumns: Story = {
 export const InfiniteScroll: Story = {
   render: InfiniteScrollExample,
 };
-
 export const Pagination: Story = {
   render: PaginationExample,
 };
 export const PinnedColumns: Story = {
   render: PinnedColumnsExample,
+};
+export const RowGrouping: Story = {
+  render: RowGroupingExample,
 };
 export const SelectableCells: Story = {
   render: SelectableCellsExample,

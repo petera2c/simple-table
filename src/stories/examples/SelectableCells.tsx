@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/SampleData";
+import { SAMPLE_HEADERS, inventoryData } from "../../consts/sample-data";
 
 const SelectableCellsExample = () => {
   const [rows] = useState(inventoryData);

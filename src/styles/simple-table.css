@@ -1106,3 +1106,57 @@ body {
     transform: translateX(0);
   }
 }
+
+/* Group Header Styles */
+.st-group-header {
+  background-color: var(--st-header-background-color);
+  cursor: pointer;
+  user-select: none;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+  color: var(--st-cell-color);
+  font-weight: var(--st-font-weight-bold);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
+}
+
+.st-group-header:hover {
+  background-color: var(--st-button-hover-background-color);
+}
+
+.st-group-header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--st-spacing-medium);
+}
+
+.st-group-toggle-icon {
+  font-size: 0.8em;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.st-group-name {
+  font-weight: var(--st-font-weight-bold);
+}
+
+.st-group-count {
+  color: var(--st-cell-odd-row-color);
+  font-size: 0.9em;
+}
+
+/* Animation for expand/collapse */
+.st-group-header.expanded .st-group-toggle-icon {
+  transform: rotate(0deg);
+  transition: transform var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-group-header.collapsed .st-group-toggle-icon {
+  transform: rotate(-90deg);
+  transition: transform var(--st-transition-duration) var(--st-transition-ease);
+}

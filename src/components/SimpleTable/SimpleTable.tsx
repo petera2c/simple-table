@@ -9,14 +9,11 @@ import {
   memo,
 } from "react";
 import useSelection from "../../hooks/useSelection";
-import { handleSort } from "../../utils/sortUtils";
 import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
-import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
-import SortConfig from "../../types/SortConfig";
 import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
@@ -25,6 +22,8 @@ import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
+import Row from "../../types/Row";
+import useSortableData from "../../hooks/useSortableData";
 
 // Create enum for consistent values
 enum ColumnEditorPosition {
@@ -51,7 +50,7 @@ interface SimpleTableProps {
     row,
   }: CellChangeProps) => void;
   prevIcon?: ReactNode; // Previous icon
-  rows: { [key: string]: CellValue }[]; // Rows data
+  rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
@@ -60,22 +59,6 @@ interface SimpleTableProps {
   sortUpIcon?: ReactNode; // Sort up icon
   theme?: Theme; // Theme
 }
-
-// Extract sort logic to custom hook
-const useSortableData = (tableRows: any[], headers: HeaderObject[]) => {
-  const [sort, setSort] = useState<SortConfig | null>(null);
-  const [hiddenColumns, setHiddenColumns] = useState<Record<string, boolean>>(
-    {}
-  );
-
-  const sortedRows = useMemo(() => {
-    if (!sort) return tableRows;
-    const { sortedData } = handleSort(headers, tableRows, sort);
-    return sortedData;
-  }, [tableRows, sort, headers]);
-
-  return { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns };
-};
 
 const SimpleTable = ({
   allowAnimations = false,
@@ -115,11 +98,10 @@ const SimpleTable = ({
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
+  const headersRef = useRef(defaultHeaders);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
-  const headersRef = useRef(defaultHeaders);
-
   const [currentPage, setCurrentPage] = useState(1);
 
   // Use custom hook for sorting
@@ -149,25 +131,28 @@ const SimpleTable = ({
       (currentPage - 1) * rowsPerPage,
       currentPage * rowsPerPage
     );
-  }, [shouldPaginate, sortedRows, currentPage, rowsPerPage]);
+  }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
   // Memoize handlers
-  const onSort = useCallback((columnIndex: number, accessor: string) => {
-    setSort((prevSort) => {
-      if (prevSort?.key.accessor !== accessor) {
-        return {
-          key: headersRef.current[columnIndex],
-          direction: "ascending",
-        };
-      } else if (prevSort?.direction === "ascending") {
-        return {
-          key: headersRef.current[columnIndex],
-          direction: "descending",
-        };
-      }
-      return null;
-    });
-  }, []);
+  const onSort = useCallback(
+    (columnIndex: number, accessor: string) => {
+      setSort((prevSort) => {
+        if (prevSort?.key.accessor !== accessor) {
+          return {
+            key: headersRef.current[columnIndex],
+            direction: "ascending",
+          };
+        } else if (prevSort?.direction === "ascending") {
+          return {
+            key: headersRef.current[columnIndex],
+            direction: "descending",
+          };
+        }
+        return null;
+      });
+    },
+    [setSort]
+  );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
     headersRef.current = newHeaders;

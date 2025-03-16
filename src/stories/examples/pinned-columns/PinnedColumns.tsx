@@ -1,5 +1,5 @@
 import SimpleTable from "../../../components/SimpleTable/SimpleTable";
-import { inventoryData } from "../../../consts/SampleData";
+import { inventoryData } from "../../../consts/sample-data";
 import { SAMPLE_HEADERS } from "./PinnedColumnsUtil";
 
 const PinnedColumnsExample = () => {

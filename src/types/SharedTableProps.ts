@@ -1,12 +1,12 @@
-import { MutableRefObject, RefObject } from "react";
+import { RefObject } from "react";
 import HeaderObject from "./HeaderObject";
 
 interface SharedTableProps {
   allowAnimations: boolean;
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef: RefObject<HeaderObject | null>;
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  hoveredHeaderRef: RefObject<HeaderObject | null>;
   isWidthDragging: boolean;
   mainTemplateColumns: string;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;

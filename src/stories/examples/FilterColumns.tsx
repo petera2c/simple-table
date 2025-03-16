@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/SampleData";
+import { SAMPLE_HEADERS, inventoryData } from "../../consts/sample-data";
 import CellChangeProps from "../../types/CellChangeProps";
 
 const FilterColumnsExample = () => {
@@ -14,7 +14,7 @@ const FilterColumnsExample = () => {
     row,
   }: CellChangeProps) => {
     setRows((prevRows) => {
-      prevRows[originalRowIndex][accessor] = newValue;
+      prevRows[originalRowIndex].rowData[accessor] = newValue;
       return prevRows;
     });
   };

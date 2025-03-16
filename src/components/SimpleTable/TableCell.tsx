@@ -1,4 +1,12 @@
-import { forwardRef, LegacyRef, useContext, useEffect, useState } from "react";
+import {
+  forwardRef,
+  ReactNode,
+  Ref,
+  RefObject,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import EditableCell from "./EditableCell/EditableCell";
 import HeaderObject from "../../types/HeaderObject";
 import CellChangeProps from "../../types/CellChangeProps";
@@ -6,24 +14,25 @@ import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";
 import useDragHandler from "../../hooks/useDragHandler";
-import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
+import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
+import Row from "../../types/Row";
 
 interface TableCellProps {
   borderClass: string;
   colIndex: number;
-  content: CellValue;
-  draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
+  content: CellValue | ReactNode;
+  draggedHeaderRef: RefObject<HeaderObject | null>;
   header: HeaderObject;
-  headersRef: React.RefObject<HeaderObject[]>;
-  hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
+  headersRef: RefObject<HeaderObject[]>;
+  hoveredHeaderRef: RefObject<HeaderObject | null>;
   isSelected: boolean;
   isTopLeftCell: boolean;
   onCellChange?: (props: CellChangeProps) => void;
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  row: { [key: string]: CellValue };
+  row: Row;
   rowIndex: number;
 }
 
@@ -46,13 +55,15 @@ const TableCell = forwardRef(
       row,
       rowIndex,
     }: TableCellProps,
-    ref: LegacyRef<HTMLTableCellElement>
+    ref: Ref<HTMLDivElement>
   ) => {
     // Context
     const { rows, tableRows } = useContext(TableContext);
 
     // Local state
-    const [localContent, setLocalContent] = useState(content);
+    const [localContent, setLocalContent] = useState<CellValue>(
+      content as CellValue
+    );
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
@@ -79,25 +90,29 @@ const TableCell = forwardRef(
 
     // Update local content when the content changes
     useEffect(() => {
-      setLocalContent(content);
+      // Check if the content is a ReactNode. If it is we don't need to update the local content
+      if (typeof content === "object") return;
+      setLocalContent(content as CellValue);
     }, [content]);
 
     // Update local content when the table rows change
     useEffect(() => {
       if (
-        row.originalRowIndex === undefined ||
-        typeof row.originalRowIndex !== "number"
+        row.rowMeta?.rowId === undefined ||
+        typeof row.rowMeta?.rowId !== "number"
       )
         return;
 
-      const tableRowContent = rows[row.originalRowIndex];
+      const tableRowContent = rows[row.rowMeta?.rowId];
+      // Check if the cell is a ReactNode. If it is we don't need to update the local content
+      if (typeof tableRowContent.rowData[header.accessor] === "object") return;
 
-      if (tableRowContent[header.accessor] !== localContent) {
-        setLocalContent(tableRowContent[header.accessor]);
+      if (tableRowContent.rowData[header.accessor] !== localContent) {
+        setLocalContent(tableRowContent.rowData[header.accessor] as CellValue);
       } else {
-        tableRows[row.originalRowIndex][header.accessor] = localContent;
+        tableRows[row.rowMeta?.rowId].rowData[header.accessor] = localContent;
       }
-    }, [header.accessor, localContent, rows, row.originalRowIndex, tableRows]);
+    }, [header.accessor, localContent, rows, row.rowMeta?.rowId, tableRows]);
 
     const updateLocalContent = (newValue: CellValue) => {
       setLocalContent(newValue);
@@ -105,7 +120,7 @@ const TableCell = forwardRef(
         accessor: header.accessor,
         newValue,
         newRowIndex: rowIndex,
-        originalRowIndex: row.originalRowIndex as number,
+        originalRowIndex: row.rowMeta?.rowId,
         row,
       });
     };

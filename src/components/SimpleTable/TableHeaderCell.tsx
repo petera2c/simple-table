@@ -16,7 +16,7 @@ import SortConfig from "../../types/SortConfig";
 import OnSortProps from "../../types/OnSortProps";
 import Row from "../../types/Row";
 import { handleResizeStart } from "../../utils/sortUtils";
-import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
+import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 
 interface TableHeaderCellProps {
