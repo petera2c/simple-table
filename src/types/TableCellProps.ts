@@ -12,8 +12,8 @@ export interface TableCellProps {
   header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
-  isSelected: (rowIndex: number, columnIndex: number) => boolean;
-  isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
+  isSelected: boolean;
+  isTopLeftCell: boolean;
   onCellChange?: (props: CellChangeProps) => void;
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;

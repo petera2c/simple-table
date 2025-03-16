@@ -8,25 +8,28 @@ import { displayCell } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
 import { ReactNode } from "react";
 import TableLastColumnCell from "./TableLastColumnCell";
+import TableBodyProps from "../../types/TableBodyProps";
 
 const RenderCells = ({
-  row,
-  rowIndex,
+  getBorderClass,
+  handleMouseDown,
+  handleMouseOver,
   headers,
   hiddenColumns,
+  isSelected,
+  isTopLeftCell,
   pinned,
+  row,
+  rowIndex,
   ...props
 }: {
-  row: Row;
-  rowIndex: number;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   pinned?: "left" | "right";
+  row: Row;
+  rowIndex: number;
   shouldDisplayLastColumnCell: boolean;
-} & Omit<
-  TableCellProps,
-  "row" | "rowIndex" | "header" | "content" | "colIndex"
->) => {
+} & Omit<TableBodyProps, "currentRows">) => {
   return (
     <>
       {headers.map((header, colIndex) => {
@@ -40,10 +43,15 @@ const RenderCells = ({
         return (
           <TableCell
             {...props}
+            borderClass={getBorderClass(rowIndex, colIndex)}
             colIndex={colIndex}
             content={content}
             header={header}
+            isSelected={isSelected(rowIndex, colIndex)}
+            isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
             key={colIndex}
+            onMouseDown={() => handleMouseDown({ rowIndex, colIndex })}
+            onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
             row={row}
             rowIndex={rowIndex}
           />

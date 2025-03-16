@@ -51,8 +51,8 @@ const TableCell = forwardRef(
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
     const cellClassName = `st-cell ${
-      isSelected(rowIndex, colIndex)
-        ? isTopLeftCell(rowIndex, colIndex)
+      isSelected
+        ? isTopLeftCell
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""

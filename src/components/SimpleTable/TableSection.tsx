@@ -44,21 +44,8 @@ const TableSection = ({
           >
             <RenderCells
               {...props}
-              borderClass={props.getBorderClass(
-                rowIndex,
-                props.headers.length - 1
-              )}
               headers={props.headers}
               hiddenColumns={props.hiddenColumns}
-              onMouseDown={() =>
-                props.handleMouseDown({
-                  rowIndex,
-                  colIndex: props.headers.length - 1,
-                })
-              }
-              onMouseOver={() =>
-                props.handleMouseOver(rowIndex, props.headers.length - 1)
-              }
               pinned={pinned}
               row={row}
               rowIndex={rowIndex}

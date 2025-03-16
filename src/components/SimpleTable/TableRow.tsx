@@ -1,14 +1,11 @@
-import { createRef, ReactNode, RefObject } from "react";
+import { createRef, ReactNode } from "react";
 import Animate from "../Animate";
 import TableRowSeparator from "./TableRowSeparator";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableCell from "./TableCell";
 import CellValue from "../../types/CellValue";
-import HeaderObject from "../../types/HeaderObject";
-import { MouseDownProps } from "../../hooks/useSelection";
-import CellChangeProps from "../../types/CellChangeProps";
-import Row from "../../types/Row";
 import { displayCell } from "../../utils/cellUtils";
+import TableRowProps from "../../types/TableRowProps";
 
 const TableRow = ({
   allowAnimations,
@@ -32,29 +29,7 @@ const TableRow = ({
   shouldDisplayLastColumnCell,
   shouldPaginate,
   tableRef,
-}: {
-  allowAnimations: boolean;
-  currentRows: { [key: string]: any }[];
-  draggedHeaderRef: RefObject<HeaderObject | null>;
-  getBorderClass: (rowIndex: number, columnIndex: number) => string;
-  handleMouseDown: (props: MouseDownProps) => void;
-  handleMouseOver: (rowIndex: number, columnIndex: number) => void;
-  headers: HeaderObject[];
-  headersRef: RefObject<HeaderObject[]>;
-  hiddenColumns: Record<string, boolean>;
-  hoveredHeaderRef: RefObject<HeaderObject | null>;
-  isSelected: (rowIndex: number, columnIndex: number) => boolean;
-  isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
-  isWidthDragging: boolean;
-  onCellChange?: (props: CellChangeProps) => void;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  onToggleGroup: (rowId: number) => void;
-  row: Row;
-  rowIndex: number;
-  shouldDisplayLastColumnCell: boolean;
-  shouldPaginate: boolean;
-  tableRef: RefObject<HTMLDivElement | null>;
-}) => {
+}: TableRowProps) => {
   const isGroup = (row.rowMeta?.children?.length || 0) > 0;
 
   return (
@@ -143,8 +118,8 @@ const TableRow = ({
                 header={header}
                 headersRef={headersRef}
                 hoveredHeaderRef={hoveredHeaderRef}
-                isSelected={isSelected}
-                isTopLeftCell={isTopLeftCell}
+                isSelected={isSelected(rowIndex, colIndex)}
+                isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
                 key={header.accessor}
                 onCellChange={onCellChange}
                 onMouseDown={() => handleMouseDown({ rowIndex, colIndex })}
