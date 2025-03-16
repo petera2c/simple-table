@@ -1,40 +1,12 @@
-import {
-  forwardRef,
-  ReactNode,
-  Ref,
-  RefObject,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { forwardRef, Ref, useContext, useEffect, useState } from "react";
 import EditableCell from "./EditableCell/EditableCell";
-import HeaderObject from "../../types/HeaderObject";
-import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";
 import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
-import Row from "../../types/Row";
-
-interface TableCellProps {
-  borderClass: string;
-  colIndex: number;
-  content: CellValue | ReactNode;
-  draggedHeaderRef: RefObject<HeaderObject | null>;
-  header: HeaderObject;
-  headersRef: RefObject<HeaderObject[]>;
-  hoveredHeaderRef: RefObject<HeaderObject | null>;
-  isSelected: boolean;
-  isTopLeftCell: boolean;
-  onCellChange?: (props: CellChangeProps) => void;
-  onMouseDown: (rowIndex: number, colIndex: number) => void;
-  onMouseOver: (rowIndex: number, colIndex: number) => void;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  row: Row;
-  rowIndex: number;
-}
+import TableCellProps from "../../types/TableCellProps";
 
 const TableCell = forwardRef(
   (
@@ -79,8 +51,8 @@ const TableCell = forwardRef(
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
     const cellClassName = `st-cell ${
-      isSelected
-        ? isTopLeftCell
+      isSelected(rowIndex, colIndex)
+        ? isTopLeftCell(rowIndex, colIndex)
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
