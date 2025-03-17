@@ -12,6 +12,8 @@ const TableBody = (props: TableBodyProps) => {
     pinnedRightTemplateColumns,
     mainTemplateColumns,
     tableRef,
+    isRowExpanded,
+    onExpandRowClick,
   } = props;
 
   return (
@@ -23,6 +25,8 @@ const TableBody = (props: TableBodyProps) => {
           templateColumns={pinnedLeftTemplateColumns}
           pinned="left"
           sectionRef={pinnedLeftRef}
+          isRowExpanded={isRowExpanded}
+          onExpandRowClick={onExpandRowClick}
         />
       )}
       <TableSection
@@ -30,6 +34,8 @@ const TableBody = (props: TableBodyProps) => {
         rows={currentRows}
         templateColumns={mainTemplateColumns}
         sectionRef={tableRef}
+        isRowExpanded={isRowExpanded}
+        onExpandRowClick={onExpandRowClick}
       />
       {pinnedRightColumns.length > 0 && (
         <TableSection
@@ -38,6 +44,8 @@ const TableBody = (props: TableBodyProps) => {
           templateColumns={pinnedRightTemplateColumns}
           pinned="right"
           sectionRef={pinnedRightRef}
+          isRowExpanded={isRowExpanded}
+          onExpandRowClick={onExpandRowClick}
         />
       )}
     </div>

@@ -21,11 +21,11 @@ const TableCell = forwardRef(
       header,
       headersRef,
       hoveredHeaderRef,
-      isExpanded,
+      isRowExpanded,
       isSelected,
       isTopLeftCell,
       onCellChange,
-      onExpandRow,
+      onExpandRowClick,
       onMouseDown,
       onMouseOver,
       onTableHeaderDragEnd,
@@ -138,17 +138,17 @@ const TableCell = forwardRef(
       >
         <span>{localContent}</span>
         {header.expandable && cellHasChildren ? (
-          isExpanded ? (
+          row.rowMeta?.rowId && isRowExpanded(row.rowMeta.rowId) ? (
             <div
               className="st-sort-icon-container"
-              onClick={() => onExpandRow(rowIndex)}
+              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
             >
               <AngleDownIcon className="st-sort-icon" />
             </div>
           ) : (
             <div
               className="st-sort-icon-container"
-              onClick={() => onExpandRow(rowIndex)}
+              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
             >
               <AngleRightIcon className="st-sort-icon" />
             </div>

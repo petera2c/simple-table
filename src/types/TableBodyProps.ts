@@ -11,11 +11,14 @@ interface TableBodyProps extends SharedTableProps {
   handleMouseDown: (props: MouseDownProps) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
   headers: HeaderObject[];
+  isRowExpanded: (rowId: string | number) => boolean;
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   onCellChange?: (props: CellChangeProps) => void;
+  onExpandRowClick: (rowIndex: number) => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   shouldPaginate: boolean;
 }
+
 export default TableBodyProps;

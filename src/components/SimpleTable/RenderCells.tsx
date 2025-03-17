@@ -1,4 +1,4 @@
-import { createRef, RefObject, useEffect, useState } from "react";
+import { createRef } from "react";
 
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
@@ -17,8 +17,10 @@ const RenderCells = ({
   handleMouseOver,
   headers,
   hiddenColumns,
+  isRowExpanded,
   isSelected,
   isTopLeftCell,
+  onExpandRowClick,
   pinned,
   row,
   rowIndex,
@@ -26,20 +28,15 @@ const RenderCells = ({
 }: {
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
+  isRowExpanded: (rowId: string | number) => boolean;
+  onExpandRowClick: (rowIndex: number) => void;
   pinned?: "left" | "right";
   row: Row;
-  rowIndex: RefObject<number>;
+  rowIndex: number;
   shouldDisplayLastColumnCell: boolean;
 } & Omit<TableBodyProps, "currentRows">) => {
-  // Local state
-  const [isExpanded, setIsExpanded] = useState(row.rowMeta?.isExpanded);
-
   // Derived state
   const children = row.rowMeta?.children;
-
-  useEffect(() => {
-    rowIndex.current = rowIndex.current + 1;
-  }, [rowIndex]);
 
   return (
     <Animate
@@ -49,10 +46,10 @@ const RenderCells = ({
       headersRef={props.headersRef}
       isBody
       pauseAnimation={props.isWidthDragging}
-      rowIndex={rowIndex.current + 1}
+      rowIndex={rowIndex + 1}
       tableRef={props.tableRef}
     >
-      {rowIndex.current !== 0 && <TableRowSeparator />}
+      {rowIndex !== 0 && <TableRowSeparator />}
       {headers.map((header, colIndex) => {
         if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
@@ -64,22 +61,20 @@ const RenderCells = ({
         return (
           <TableCell
             {...props}
-            borderClass={getBorderClass(rowIndex.current, colIndex)}
+            borderClass={getBorderClass(rowIndex, colIndex)}
             cellHasChildren={(children?.length || 0) > 0}
             colIndex={colIndex}
             content={content}
             header={header}
-            isExpanded={isExpanded}
-            isSelected={isSelected(rowIndex.current, colIndex)}
-            isTopLeftCell={isTopLeftCell(rowIndex.current, colIndex)}
+            isRowExpanded={isRowExpanded}
+            isSelected={isSelected(rowIndex, colIndex)}
+            isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
             key={colIndex}
-            onExpandRow={() => setIsExpanded(!isExpanded)}
-            onMouseDown={() =>
-              handleMouseDown({ rowIndex: rowIndex.current, colIndex })
-            }
-            onMouseOver={() => handleMouseOver(rowIndex.current, colIndex)}
+            onExpandRowClick={onExpandRowClick}
+            onMouseDown={() => handleMouseDown({ rowIndex, colIndex })}
+            onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
             row={row}
-            rowIndex={rowIndex.current}
+            rowIndex={rowIndex}
           />
         );
       })}
@@ -87,25 +82,25 @@ const RenderCells = ({
         ref={createRef()}
         visible={props.shouldDisplayLastColumnCell}
       />
-      {isExpanded &&
+      {isRowExpanded(row.rowMeta.rowId) &&
         children?.map((child, childIndex) => {
           return (
-            <>
-              <RenderCells
-                {...props}
-                getBorderClass={getBorderClass}
-                handleMouseDown={handleMouseDown}
-                handleMouseOver={handleMouseOver}
-                headers={headers}
-                hiddenColumns={hiddenColumns}
-                isSelected={isSelected}
-                isTopLeftCell={isTopLeftCell}
-                key={childIndex}
-                pinned={pinned}
-                row={child}
-                rowIndex={rowIndex}
-              />
-            </>
+            <RenderCells
+              {...props}
+              getBorderClass={getBorderClass}
+              handleMouseDown={handleMouseDown}
+              handleMouseOver={handleMouseOver}
+              headers={headers}
+              hiddenColumns={hiddenColumns}
+              isSelected={isSelected}
+              isTopLeftCell={isTopLeftCell}
+              key={childIndex}
+              pinned={pinned}
+              row={child}
+              rowIndex={rowIndex}
+              isRowExpanded={isRowExpanded}
+              onExpandRowClick={onExpandRowClick}
+            />
           );
         })}
     </Animate>
