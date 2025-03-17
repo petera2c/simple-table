@@ -3,17 +3,18 @@ import Row from "../types/Row";
 
 export const SAMPLE_HEADERS: HeaderObject[] = [
   {
-    label: "Product ID",
     accessor: "productId",
-    width: 140,
-    isSortable: true,
     isEditable: true,
+    isSortable: true,
+    label: "Product ID",
     type: "string",
+    width: 140,
   },
   {
     accessor: "productName",
-    isSortable: true,
+    expandable: true,
     isEditable: true,
+    isSortable: true,
     label: "Product Name",
     width: 140,
   },

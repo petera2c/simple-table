@@ -3,7 +3,7 @@ import TableRowSeparator from "./TableRowSeparator";
 import Animate from "../Animate";
 import RenderCells from "./RenderCells";
 import Row from "../../types/Row";
-import { RefObject } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 
 const TableSection = ({
@@ -21,6 +21,11 @@ const TableSection = ({
   const className = pinned
     ? `st-table-body-pinned-${pinned}`
     : "st-table-body-main";
+  const rowIndex = useRef(0);
+
+  useEffect(() => {
+    rowIndex.current = 0;
+  }, []);
 
   return (
     <div
@@ -30,29 +35,16 @@ const TableSection = ({
         gridTemplateColumns: templateColumns,
       }}
     >
-      {rows.map((row, rowIndex) => (
-        <Fragment key={rowIndex}>
-          <Animate
-            allowAnimations={props.allowAnimations}
-            allowHorizontalAnimate={props.shouldPaginate}
-            draggedHeaderRef={props.draggedHeaderRef}
-            headersRef={props.headersRef}
-            isBody
-            pauseAnimation={props.isWidthDragging}
-            rowIndex={rowIndex + 1}
-            tableRef={props.tableRef}
-          >
-            <RenderCells
-              {...props}
-              headers={props.headers}
-              hiddenColumns={props.hiddenColumns}
-              pinned={pinned}
-              row={row}
-              rowIndex={rowIndex}
-            />
-          </Animate>
-          {rowIndex !== rows.length - 1 && <TableRowSeparator />}
-        </Fragment>
+      {rows.map((row, index) => (
+        <RenderCells
+          {...props}
+          headers={props.headers}
+          hiddenColumns={props.hiddenColumns}
+          pinned={pinned}
+          row={row}
+          key={index}
+          rowIndex={rowIndex}
+        />
       ))}
     </div>
   );

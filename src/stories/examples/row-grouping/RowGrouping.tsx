@@ -6,6 +6,7 @@ const RowGroupingExample = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
+        columnResizing
         defaultHeaders={SAMPLE_HEADERS}
         rows={groupedInventoryData}
         height="calc(100dvh - 112px)"

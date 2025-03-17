@@ -7,20 +7,25 @@ import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 import TableCellProps from "../../types/TableCellProps";
+import AngleDownIcon from "../../icons/AngleDownIcon";
+import AngleRightIcon from "../../icons/AngleRightIcon";
 
 const TableCell = forwardRef(
   (
     {
       borderClass,
+      cellHasChildren,
       colIndex,
       content,
       draggedHeaderRef,
       header,
       headersRef,
       hoveredHeaderRef,
+      isExpanded,
       isSelected,
       isTopLeftCell,
       onCellChange,
+      onExpandRow,
       onMouseDown,
       onMouseOver,
       onTableHeaderDragEnd,
@@ -69,6 +74,7 @@ const TableCell = forwardRef(
 
     // Update local content when the table rows change
     useEffect(() => {
+      return;
       if (
         row.rowMeta?.rowId === undefined ||
         typeof row.rowMeta?.rowId !== "number"
@@ -130,7 +136,24 @@ const TableCell = forwardRef(
         }
         ref={ref}
       >
-        {localContent}
+        <span>{localContent}</span>
+        {header.expandable && cellHasChildren ? (
+          isExpanded ? (
+            <div
+              className="st-sort-icon-container"
+              onClick={() => onExpandRow(rowIndex)}
+            >
+              <AngleDownIcon className="st-sort-icon" />
+            </div>
+          ) : (
+            <div
+              className="st-sort-icon-container"
+              onClick={() => onExpandRow(rowIndex)}
+            >
+              <AngleRightIcon className="st-sort-icon" />
+            </div>
+          )
+        ) : null}
       </div>
     );
   }

@@ -753,12 +753,15 @@ body {
   width: 100%;
   overflow: auto;
   height: max-content;
+  /* min-height: calc(100% - 40px); */
 }
 .st-table-body-main,
 .st-table-body-pinned-left,
 .st-table-body-pinned-right {
   display: grid;
   height: max-content;
+  /* min-height 100% - table header height */
+  /* min-height: calc(100% - 40px); */
 }
 .st-table-body-pinned-left {
   border-right: var(--st-border-width) solid var(--st-border-color);
@@ -796,8 +799,12 @@ body {
 /* Common styles for table header and cells */
 .st-header-cell,
 .st-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   color: var(--slate-800);
   overflow: hidden;
+  gap: var(--st-spacing-small);
   /* mix-blend-mode: multiply; */
 }
 
@@ -849,11 +856,10 @@ body {
 .st-header-resize-handle {
   top: 0;
   right: 0;
-  width: 5px;
-  height: 20px;
+  width: 3px;
+  height: 12px;
   cursor: col-resize;
   background-color: var(--st-resize-handle-color);
-  border-radius: 0.25rem;
 }
 
 .st-row-separator {
