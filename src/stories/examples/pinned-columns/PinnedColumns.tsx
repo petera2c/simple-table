@@ -31,6 +31,8 @@ const PinnedColumnsExample = () => {
         draggable // Enable draggable columns
         rows={EXAMPLE_DATA} // Set rows data
         height="calc(100dvh - 112px)" // If not using pagination use a fixed height
+        selectableCells
+        selectableColumns
       />
     </div>
   );
