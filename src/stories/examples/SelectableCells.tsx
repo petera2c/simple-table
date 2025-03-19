@@ -1,14 +1,16 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/sample-data";
+import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 
+const EXAMPLE_DATA = generateSaaSData();
+const HEADERS = SAAS_HEADERS;
 const SelectableCellsExample = () => {
-  const [rows] = useState(inventoryData);
+  const [rows] = useState(EXAMPLE_DATA);
 
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
-        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        defaultHeaders={HEADERS} // Set the headers
         rows={rows} // Set rows data
         selectableCells // Enable selectable cells
         height="calc(100dvh - 112px)" // If not using pagination use a fixed height

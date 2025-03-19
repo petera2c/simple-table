@@ -1,14 +1,19 @@
 import SimpleTable from "../../../components/SimpleTable/SimpleTable";
-import { groupedInventoryData } from "./grouped-sample-data";
-import { SAMPLE_HEADERS } from "../../../consts/sample-data";
+import {
+  generateAthletesData,
+  ATHLETES_HEADERS,
+} from "../../data/athlete-data";
+
+const EXAMPLE_DATA = generateAthletesData();
+const HEADERS = ATHLETES_HEADERS;
 
 const RowGroupingExample = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         columnResizing
-        defaultHeaders={SAMPLE_HEADERS}
-        rows={groupedInventoryData}
+        defaultHeaders={HEADERS}
+        rows={EXAMPLE_DATA}
         height="calc(100dvh - 112px)"
       />
     </div>

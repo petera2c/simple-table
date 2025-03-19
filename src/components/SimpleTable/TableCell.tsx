@@ -17,6 +17,7 @@ const TableCell = forwardRef(
       cellHasChildren,
       colIndex,
       content,
+      depth,
       draggedHeaderRef,
       header,
       headersRef,
@@ -56,6 +57,8 @@ const TableCell = forwardRef(
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
     const cellClassName = `st-cell ${
+      depth > 0 ? `st-cell-depth-${depth}` : ""
+    } ${
       isSelected
         ? isTopLeftCell
           ? `st-cell-selected-first-cell ${borderClass}`

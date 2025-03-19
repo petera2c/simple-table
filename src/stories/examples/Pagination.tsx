@@ -1,10 +1,13 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/sample-data";
+import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
 
+const EXAMPLE_DATA = generateSaaSData();
+const HEADERS = SAAS_HEADERS;
+
 const PaginationExample = () => {
-  const [rows, setRows] = useState(inventoryData);
+  const [rows, setRows] = useState(EXAMPLE_DATA);
 
   const updateCell = ({
     accessor,
@@ -23,7 +26,7 @@ const PaginationExample = () => {
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         columnResizing // Enable column resizing
-        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        defaultHeaders={HEADERS} // Set the headers
         draggable // Enable draggable columns
         onCellChange={updateCell} // Handle cell changes
         rows={rows} // Set rows data

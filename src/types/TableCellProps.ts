@@ -9,6 +9,7 @@ export interface TableCellProps {
   cellHasChildren: boolean;
   colIndex: number;
   content: CellValue | ReactNode;
+  depth: number;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;

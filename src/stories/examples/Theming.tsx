@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/sample-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
+import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
+
+const EXAMPLE_DATA = generateSpaceData();
+const HEADERS = SPACE_HEADERS;
 
 const THEME_OPTIONS: Theme[] = [
   "90s",
@@ -102,7 +105,7 @@ const getHoverColor = (theme: Theme) => {
 
 const ThemingExample = () => {
   // const [headers, setHeaders] = useState(SAMPLE_HEADERS);
-  const [rows, setRows] = useState(inventoryData);
+  const [rows, setRows] = useState(EXAMPLE_DATA);
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
@@ -161,7 +164,7 @@ const ThemingExample = () => {
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         columnResizing // Enable column resizing
-        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        defaultHeaders={HEADERS} // Set the headers
         draggable // Enable draggable columns
         editColumns // Enable editing columns
         onCellChange={updateCell} // Handle cell changes

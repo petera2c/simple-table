@@ -1,10 +1,13 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/sample-data";
 import CellChangeProps from "../../types/CellChangeProps";
+import { generateAthletesData, ATHLETES_HEADERS } from "../data/athlete-data";
+
+const HEADERS = ATHLETES_HEADERS;
+const EXAMPLE_DATA = generateAthletesData();
 
 const EditableCellsExample = () => {
-  const [rows, setRows] = useState(inventoryData);
+  const [rows, setRows] = useState(EXAMPLE_DATA);
 
   const updateCell = ({
     accessor,
@@ -22,7 +25,7 @@ const EditableCellsExample = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
-        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        defaultHeaders={HEADERS} // Set the headers
         onCellChange={updateCell} // Handle cell changes
         rows={rows} // Set rows data
         height="calc(100dvh - 112px)" // If not using pagination use a fixed height

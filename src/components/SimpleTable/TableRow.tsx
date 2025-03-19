@@ -3,12 +3,14 @@ import TableBodyProps from "../../types/TableBodyProps";
 import RenderCells from "./RenderCells";
 
 const TableRow = ({
+  depth = 0,
   getNextRowIndex,
   index,
   pinned,
   props,
   row,
 }: {
+  depth?: number;
   getNextRowIndex: () => number;
   index: number;
   pinned?: "left" | "right";
@@ -24,6 +26,7 @@ const TableRow = ({
     <>
       <RenderCells
         {...props}
+        depth={depth}
         key={index}
         pinned={pinned}
         row={row}
@@ -33,6 +36,7 @@ const TableRow = ({
         props.isRowExpanded(row.rowMeta.rowId) &&
         row.rowMeta.children?.map((child, childIndex) => (
           <TableRow
+            depth={depth + 1}
             getNextRowIndex={getNextRowIndex}
             index={childIndex}
             key={childIndex}

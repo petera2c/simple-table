@@ -1,10 +1,13 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/sample-data";
+import { generateFinanceData, FINANCE_HEADERS } from "../data/finance-data";
 import CellChangeProps from "../../types/CellChangeProps";
 
+const EXAMPLE_DATA = generateFinanceData();
+const HEADERS = FINANCE_HEADERS;
+
 const FilterColumnsExample = () => {
-  const [rows, setRows] = useState(inventoryData);
+  const [rows, setRows] = useState(EXAMPLE_DATA);
 
   const updateCell = ({
     accessor,
@@ -23,7 +26,7 @@ const FilterColumnsExample = () => {
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         columnResizing // Enable column resizing
-        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        defaultHeaders={HEADERS} // Set the headers
         draggable // Enable draggable columns
         editColumns // Enable editing columns
         editColumnsInitOpen // Open the column editor when the table is loaded

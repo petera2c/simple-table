@@ -1,15 +1,20 @@
 import SimpleTable from "../../../components/SimpleTable/SimpleTable";
-import { inventoryData } from "../../../consts/sample-data";
-import { SAMPLE_HEADERS } from "./PinnedColumnsUtil";
+import {
+  generateRetailSalesData,
+  RETAIL_SALES_HEADERS,
+} from "../../data/retail-data";
+
+const EXAMPLE_DATA = generateRetailSalesData();
+const HEADERS = RETAIL_SALES_HEADERS;
 
 const PinnedColumnsExample = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         columnResizing // Enable column resizing
-        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        defaultHeaders={HEADERS} // Set the headers
         draggable // Enable draggable columns
-        rows={inventoryData} // Set rows data
+        rows={EXAMPLE_DATA} // Set rows data
         height="calc(100dvh - 112px)" // If not using pagination use a fixed height
       />
     </div>
