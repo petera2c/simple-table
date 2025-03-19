@@ -1,11 +1,7 @@
 /// <reference types="react" />
-import CellValue from "../types/CellValue";
+import Row from "../types/Row";
 declare const TableContext: import("react").Context<{
-    rows: {
-        [key: string]: CellValue;
-    }[];
-    tableRows: {
-        [key: string]: CellValue;
-    }[];
+    rows: Row[];
+    tableRows: Row[];
 }>;
 export default TableContext;

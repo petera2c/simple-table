@@ -1,4 +1,12 @@
+import CellValue from "./CellValue";
 type Row = {
-    [key: string]: any;
+    rowMeta: {
+        children?: Row[];
+        isExpanded?: boolean;
+        rowId: number;
+    };
+    rowData: {
+        [key: string]: CellValue;
+    };
 };
 export default Row;

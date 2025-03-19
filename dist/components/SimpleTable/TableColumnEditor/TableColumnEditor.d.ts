@@ -4,6 +4,7 @@ type TableColumnEditorProps = {
     headers: HeaderObject[];
     columnEditorText: string;
     editColumns: boolean;
+    editColumnsInitOpen: boolean;
     position: "left" | "right";
     setHiddenColumns: Dispatch<SetStateAction<{
         [key: string]: boolean;
@@ -12,5 +13,5 @@ type TableColumnEditorProps = {
         [key: string]: boolean;
     };
 };
-declare const TableColumnEditor: ({ columnEditorText, editColumns, headers, position, setHiddenColumns, hiddenColumns, }: TableColumnEditorProps) => import("react/jsx-runtime").JSX.Element | null;
+declare const TableColumnEditor: ({ columnEditorText, editColumns, editColumnsInitOpen, headers, position, setHiddenColumns, hiddenColumns, }: TableColumnEditorProps) => import("react/jsx-runtime").JSX.Element | null;
 export default TableColumnEditor;

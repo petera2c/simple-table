@@ -1,6 +1,6 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-import { formatDate, formatCurrency } from "../../utils/formatters";
+
 export const generateSpaceData = (): Row[] => {
   const agencies = ["NASA", "ESA", "SpaceX", "Roscosmos", "ISRO"];
   const destinations = ["Moon", "Mars", "Venus", "Jupiter", "Asteroid Belt", "Saturn"];

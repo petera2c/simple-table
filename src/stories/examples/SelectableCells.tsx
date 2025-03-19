@@ -1,4 +1,3 @@
-import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
 import { generateRetailSalesData, RETAIL_SALES_HEADERS } from "../data/retail-data";
 
@@ -22,11 +21,16 @@ const EXAMPLE_DATA = generateRetailSalesData();
 const HEADERS = RETAIL_SALES_HEADERS;
 
 const SelectableCellsExample = () => {
-  const [rows, setRows] = useState(EXAMPLE_DATA);
-
   return (
     <div style={{ padding: "2rem" }}>
-      <SimpleTable columnResizing defaultHeaders={HEADERS} draggable rows={rows} selectableCells height="80vh" />
+      <SimpleTable
+        columnResizing
+        defaultHeaders={HEADERS}
+        draggable
+        rows={EXAMPLE_DATA}
+        selectableCells
+        height="80vh"
+      />
     </div>
   );
 };

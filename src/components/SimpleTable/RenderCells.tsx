@@ -1,4 +1,4 @@
-import { createRef, RefObject } from "react";
+import { createRef } from "react";
 
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";

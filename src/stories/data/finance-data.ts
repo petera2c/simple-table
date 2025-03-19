@@ -1,6 +1,6 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-import { formatDate, formatCurrency } from "../../utils/formatters";
+
 export const generateFinanceData = (): Row[] => {
   const sectors = Array.from({ length: 20 }, (_, i) => `Sector ${i + 1}`);
   const companyPrefixes = ["Tech", "Fin", "Health", "Energy", "Goods"];

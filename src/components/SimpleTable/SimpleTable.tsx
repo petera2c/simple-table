@@ -1,13 +1,4 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  useReducer,
-  ReactNode,
-  useMemo,
-  useCallback,
-  memo,
-} from "react";
+import { useState, useRef, useEffect, useReducer, ReactNode, useMemo, useCallback, memo } from "react";
 import useSelection from "../../hooks/useSelection";
 import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
@@ -43,12 +34,7 @@ interface SimpleTableProps {
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
-  onCellChange?: ({
-    accessor,
-    newValue,
-    originalRowIndex,
-    row,
-  }: CellChangeProps) => void;
+  onCellChange?: ({ accessor, newValue, originalRowIndex, row }: CellChangeProps) => void;
   prevIcon?: ReactNode; // Previous icon
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
@@ -99,9 +85,7 @@ const SimpleTable = ({
   theme = "light",
 }: SimpleTableProps) => {
   // State for tracking expanded rows
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(() =>
-    getInitialExpandedRows(rows)
-  );
+  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(() => getInitialExpandedRows(rows));
 
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
@@ -125,18 +109,17 @@ const SimpleTable = ({
   const [currentPage, setCurrentPage] = useState(1);
 
   // Use custom hook for sorting
-  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns } =
-    useSortableData(tableRows, headersRef.current);
+  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns } = useSortableData(tableRows, headersRef.current);
 
   // Expand/collapse handler
   const onExpandRowClick = useCallback((rowId: string | number) => {
-    rowId = String(rowId);
+    const rowIdString: string = String(rowId);
     setExpandedRowIds((prev) => {
       const next = new Set(prev);
-      if (next.has(rowId)) {
-        next.delete(rowId);
+      if (next.has(rowIdString)) {
+        next.delete(rowIdString);
       } else {
-        next.add(rowId);
+        next.add(rowIdString);
       }
       return next;
     });
@@ -169,10 +152,7 @@ const SimpleTable = ({
   // Memoize currentRows calculation
   const currentRows = useMemo(() => {
     if (!shouldPaginate) return sortedRows;
-    return sortedRows.slice(
-      (currentPage - 1) * rowsPerPage,
-      currentPage * rowsPerPage
-    );
+    return sortedRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
   // Memoize handlers
@@ -208,8 +188,7 @@ const SimpleTable = ({
       if (
         !target.closest(".st-cell") &&
         (selectableColumns
-          ? !target.classList.contains("st-header-cell") &&
-            !target.classList.contains("st-header-label")
+          ? !target.classList.contains("st-header-cell") && !target.classList.contains("st-header-label")
           : true)
       ) {
         setSelectedCells(new Set());
@@ -224,16 +203,9 @@ const SimpleTable = ({
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
-      <div
-        className={`st-wrapper theme-${theme}`}
-        style={height ? { height } : {}}
-      >
+      <div className={`st-wrapper theme-${theme}`} style={height ? { height } : {}}>
         <div className="st-table-wrapper-container">
-          <div
-            className="st-table-wrapper"
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-          >
+          <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <TableContent
               allowAnimations={allowAnimations}
               columnResizing={columnResizing}

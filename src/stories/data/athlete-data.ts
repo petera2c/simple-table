@@ -1,6 +1,6 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-import { formatDate } from "../../utils/formatters";
+
 export const generateAthletesData = (): Row[] => {
   const countries = ["USA", "China", "Russia", "UK", "Brazil", "Australia", "Japan"];
   const firstNames = ["Alex", "Jordan", "Taylor", "Sam", "Chris", "Lee", "Pat"];
