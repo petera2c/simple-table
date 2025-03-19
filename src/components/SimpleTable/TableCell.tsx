@@ -57,7 +57,7 @@ const TableCell = forwardRef(
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
     const cellClassName = `st-cell ${
-      depth > 0 ? `st-cell-depth-${depth}` : ""
+      depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
     } ${
       isSelected
         ? isTopLeftCell

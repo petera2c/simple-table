@@ -27,6 +27,7 @@ const RenderCells = ({
   shouldDisplayLastColumnCell,
   ...props
 }: {
+  depth: number;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   isRowExpanded: (rowId: string | number) => boolean;

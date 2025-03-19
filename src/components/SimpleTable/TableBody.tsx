@@ -4,16 +4,16 @@ import TableSection from "./TableSection";
 const TableBody = (props: TableBodyProps) => {
   const {
     currentRows,
+    isRowExpanded,
+    mainTemplateColumns,
+    onExpandRowClick,
     pinnedLeftColumns,
     pinnedLeftRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
     pinnedRightRef,
     pinnedRightTemplateColumns,
-    mainTemplateColumns,
     tableRef,
-    isRowExpanded,
-    onExpandRowClick,
   } = props;
 
   return (

@@ -1,6 +1,5 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-
 export const generateSaaSData = (): Row[] => {
   const segments = [
     "Freelancers",
@@ -19,7 +18,7 @@ export const generateSaaSData = (): Row[] => {
     const tier = tiers[Math.floor(Math.random() * tiers.length)];
     const year = 2023 + Math.floor(Math.random() * 3);
     return {
-      rowMeta: { rowId: rowId++ },
+      rowMeta: { rowId: rowId++, isExpanded: true },
       rowData: {
         tier,
         segment,
@@ -48,21 +47,21 @@ export const SAAS_HEADERS: HeaderObject[] = [
   {
     accessor: "tier",
     label: "Tier",
-    width: 140,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "segment",
     label: "Customer Segment",
-    width: 160,
+    width: 200,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "monthlyRevenue",
     label: "Monthly Revenue ($)",
-    width: 160,
+    width: 150,
     isSortable: true,
     isEditable: true,
   },
@@ -76,7 +75,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
   {
     accessor: "churnRate",
     label: "Churn Rate",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
@@ -97,7 +96,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
   {
     accessor: "supportTickets",
     label: "Support Tickets",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
@@ -118,21 +117,21 @@ export const SAAS_HEADERS: HeaderObject[] = [
   {
     accessor: "featureUsage",
     label: "Top Feature",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "customerSatisfaction",
     label: "Satisfaction",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "paymentMethod",
     label: "Payment Method",
-    width: 160,
+    width: 150,
     isSortable: true,
     isEditable: true,
   },

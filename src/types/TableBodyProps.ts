@@ -7,7 +7,6 @@ import Row from "./Row";
 
 interface TableBodyProps extends SharedTableProps {
   currentRows: Row[];
-  depth: number;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (props: MouseDownProps) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;

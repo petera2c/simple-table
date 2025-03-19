@@ -1,11 +1,8 @@
 import SimpleTable from "../../../components/SimpleTable/SimpleTable";
-import {
-  generateAthletesData,
-  ATHLETES_HEADERS,
-} from "../../data/athlete-data";
+import { generateFinanceData, FINANCE_HEADERS } from "../../data/finance-data";
 
-const EXAMPLE_DATA = generateAthletesData();
-const HEADERS = ATHLETES_HEADERS;
+const EXAMPLE_DATA = generateFinanceData();
+const HEADERS = FINANCE_HEADERS;
 
 const RowGroupingExample = () => {
   return (

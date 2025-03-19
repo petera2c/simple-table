@@ -60,6 +60,21 @@ interface SimpleTableProps {
   theme?: Theme; // Theme
 }
 
+const getInitialExpandedRows = (rows: Row[]): Set<string> => {
+  const expandedIds = new Set<string>();
+
+  const checkRow = (row: Row) => {
+    if (row.rowMeta.isExpanded) {
+      expandedIds.add(row.rowMeta.rowId.toString());
+    }
+    // Recursively check children
+    row.rowMeta.children?.forEach(checkRow);
+  };
+
+  rows.forEach(checkRow);
+  return expandedIds;
+};
+
 const SimpleTable = ({
   allowAnimations = false,
   columnEditorPosition = ColumnEditorPosition.Right,
@@ -84,7 +99,9 @@ const SimpleTable = ({
   theme = "light",
 }: SimpleTableProps) => {
   // State for tracking expanded rows
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(new Set());
+  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(() =>
+    getInitialExpandedRows(rows)
+  );
 
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {

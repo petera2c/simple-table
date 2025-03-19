@@ -1,8 +1,7 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-
 export const generateFinanceData = (): Row[] => {
-  const sectors = Array.from({ length: 20 }, (_, i) => `Sector ${i + 1}`); // 20 top-level sectors
+  const sectors = Array.from({ length: 20 }, (_, i) => `Sector ${i + 1}`);
   const companyPrefixes = ["Tech", "Fin", "Health", "Energy", "Goods"];
   const companySuffixes = ["Corp", "Inc", "Ltd", "Group", "Solutions"];
   const locations = [
@@ -15,7 +14,7 @@ export const generateFinanceData = (): Row[] => {
   let rowId = 0;
 
   return sectors.map((sector) => {
-    const numCompanies = Math.floor(Math.random() * 11) + 5; // 5–15 companies per sector
+    const numCompanies = Math.floor(Math.random() * 11) + 5;
     const children = Array.from({ length: numCompanies }, () => {
       const prefix =
         companyPrefixes[Math.floor(Math.random() * companyPrefixes.length)];
@@ -23,8 +22,9 @@ export const generateFinanceData = (): Row[] => {
         companySuffixes[Math.floor(Math.random() * companySuffixes.length)];
       const year = 1950 + Math.floor(Math.random() * 75);
       return {
-        rowMeta: { rowId: rowId++ },
+        rowMeta: { rowId: rowId++, isExpanded: true },
         rowData: {
+          sectorName: sector,
           ticker: `${sector.slice(0, 2).toUpperCase()}${Math.floor(
             Math.random() * 1000
           )}`,
@@ -44,14 +44,35 @@ export const generateFinanceData = (): Row[] => {
       };
     });
 
+    const sectorTotalEmployees = children.reduce(
+      (sum, child) => sum + (child.rowData.employees as number),
+      0
+    );
+    const sectorTotalRevenue =
+      children
+        .reduce(
+          (sum, child) => sum + parseFloat(child.rowData.revenue as string),
+          0
+        )
+        .toFixed(1) + "B";
+
     return {
-      rowMeta: {
-        rowId: rowId++,
-        isExpanded: false,
-        children,
-      },
+      rowMeta: { rowId: rowId++, isExpanded: true, children },
       rowData: {
         sectorName: sector,
+        ticker: "-",
+        companyName: "-",
+        price: "-",
+        marketCap: "-",
+        peRatio: "-",
+        dividendYield: "-",
+        volume: "-",
+        lastUpdated: "-",
+        revenue: sectorTotalRevenue,
+        employees: sectorTotalEmployees,
+        founded: "-",
+        hqLocation: "-",
+        analystRating: "-",
       },
     };
   });
@@ -61,7 +82,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
   {
     accessor: "sectorName",
     label: "Sector",
-    width: 140,
+    width: 120,
     expandable: true,
     isSortable: true,
     isEditable: true,
@@ -76,84 +97,84 @@ export const FINANCE_HEADERS: HeaderObject[] = [
   {
     accessor: "companyName",
     label: "Company Name",
-    width: 180,
+    width: 250,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "price",
     label: "Price ($)",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "marketCap",
     label: "Market Cap",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "peRatio",
     label: "P/E Ratio",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "dividendYield",
     label: "Dividend Yield",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "volume",
     label: "Volume",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "lastUpdated",
     label: "Last Updated",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "revenue",
     label: "Revenue",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "employees",
     label: "Employees",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "founded",
     label: "Founded",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "hqLocation",
     label: "HQ Location",
-    width: 160,
+    width: 150,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "analystRating",
     label: "Analyst Rating",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },

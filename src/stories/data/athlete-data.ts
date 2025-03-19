@@ -1,6 +1,5 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-
 export const generateAthletesData = (): Row[] => {
   const countries = [
     "USA",
@@ -23,7 +22,7 @@ export const generateAthletesData = (): Row[] => {
     const last = lastNames[Math.floor(Math.random() * lastNames.length)];
     const sport = sports[Math.floor(Math.random() * sports.length)];
     return {
-      rowMeta: { rowId: rowId++ },
+      rowMeta: { rowId: rowId++, isExpanded: true },
       rowData: {
         country,
         athleteName: `${first} ${last}`,
@@ -48,14 +47,14 @@ export const ATHLETES_HEADERS: HeaderObject[] = [
   {
     accessor: "country",
     label: "Country",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "athleteName",
     label: "Athlete Name",
-    width: 180,
+    width: 200,
     isSortable: true,
     isEditable: true,
   },
@@ -76,14 +75,14 @@ export const ATHLETES_HEADERS: HeaderObject[] = [
   {
     accessor: "event",
     label: "Event",
-    width: 160,
+    width: 150,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "personalBest",
     label: "Personal Best",
-    width: 140,
+    width: 160,
     isSortable: true,
     isEditable: true,
   },
@@ -97,35 +96,35 @@ export const ATHLETES_HEADERS: HeaderObject[] = [
   {
     accessor: "age",
     label: "Age",
-    width: 100,
+    width: 80,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "height",
     label: "Height",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "weight",
     label: "Weight",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "team",
     label: "Team",
-    width: 160,
+    width: 200,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "sponsor",
     label: "Sponsor",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },

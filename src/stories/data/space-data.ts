@@ -1,6 +1,5 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-
 export const generateSpaceData = (): Row[] => {
   const agencies = ["NASA", "ESA", "SpaceX", "Roscosmos", "ISRO"];
   const destinations = [
@@ -28,7 +27,7 @@ export const generateSpaceData = (): Row[] => {
     const type = missionTypes[Math.floor(Math.random() * missionTypes.length)];
     const year = 2000 + Math.floor(Math.random() * 25);
     return {
-      rowMeta: { rowId: rowId++ },
+      rowMeta: { rowId: rowId++, isExpanded: true },
       rowData: {
         agency,
         missionName: `${agency} ${type} ${Math.floor(Math.random() * 1000)}`,
@@ -57,14 +56,14 @@ export const SPACE_HEADERS: HeaderObject[] = [
   {
     accessor: "agency",
     label: "Agency",
-    width: 140,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "missionName",
     label: "Mission Name",
-    width: 180,
+    width: 250,
     isSortable: true,
     isEditable: true,
   },
@@ -78,35 +77,35 @@ export const SPACE_HEADERS: HeaderObject[] = [
   {
     accessor: "destination",
     label: "Destination",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "status",
     label: "Status",
-    width: 120,
+    width: 100,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "crewSize",
     label: "Crew Size",
-    width: 120,
+    width: 80,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "budget",
     label: "Budget",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "duration",
     label: "Duration",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
@@ -120,21 +119,21 @@ export const SPACE_HEADERS: HeaderObject[] = [
   {
     accessor: "launchSite",
     label: "Launch Site",
-    width: 160,
+    width: 150,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "missionCostPerKg",
     label: "Cost per Kg",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
   {
     accessor: "successRate",
     label: "Success Rate",
-    width: 140,
+    width: 120,
     isSortable: true,
     isEditable: true,
   },
