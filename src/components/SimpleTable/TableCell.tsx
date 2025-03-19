@@ -136,9 +136,8 @@ const TableCell = forwardRef(
         }
         ref={ref}
       >
-        <span>{localContent}</span>
         {header.expandable && cellHasChildren ? (
-          row.rowMeta?.rowId && isRowExpanded(row.rowMeta.rowId) ? (
+          isRowExpanded(row.rowMeta.rowId) ? (
             <div
               className="st-sort-icon-container"
               onClick={() => onExpandRowClick(row.rowMeta.rowId)}
@@ -154,6 +153,7 @@ const TableCell = forwardRef(
             </div>
           )
         ) : null}
+        <span>{localContent}</span>
       </div>
     );
   }

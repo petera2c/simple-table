@@ -112,21 +112,18 @@ const SimpleTable = ({
     useSortableData(tableRows, headersRef.current);
 
   // Expand/collapse handler
-  const onExpandRowClick = useCallback(
-    (rowId: string | number) => {
-      rowId = String(rowId);
-      setExpandedRowIds((prev) => {
-        const next = new Set(prev);
-        if (next.has(rowId)) {
-          next.delete(rowId);
-        } else {
-          next.add(rowId);
-        }
-        return next;
-      });
-    },
-    [sortedRows]
-  );
+  const onExpandRowClick = useCallback((rowId: string | number) => {
+    rowId = String(rowId);
+    setExpandedRowIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(rowId)) {
+        next.delete(rowId);
+      } else {
+        next.add(rowId);
+      }
+      return next;
+    });
+  }, []);
 
   // Memoized function to check if a row is expanded
   const isRowExpanded = useCallback(

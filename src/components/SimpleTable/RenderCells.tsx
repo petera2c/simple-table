@@ -1,4 +1,4 @@
-import { createRef } from "react";
+import { createRef, RefObject } from "react";
 
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
@@ -24,6 +24,7 @@ const RenderCells = ({
   pinned,
   row,
   rowIndex,
+  shouldDisplayLastColumnCell,
   ...props
 }: {
   headers: HeaderObject[];
@@ -71,7 +72,9 @@ const RenderCells = ({
             isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
             key={colIndex}
             onExpandRowClick={onExpandRowClick}
-            onMouseDown={() => handleMouseDown({ rowIndex, colIndex })}
+            onMouseDown={() =>
+              handleMouseDown({ rowIndex: rowIndex, colIndex })
+            }
             onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
             row={row}
             rowIndex={rowIndex}
@@ -80,29 +83,8 @@ const RenderCells = ({
       })}
       <TableLastColumnCell
         ref={createRef()}
-        visible={props.shouldDisplayLastColumnCell}
+        visible={shouldDisplayLastColumnCell}
       />
-      {isRowExpanded(row.rowMeta.rowId) &&
-        children?.map((child, childIndex) => {
-          return (
-            <RenderCells
-              {...props}
-              getBorderClass={getBorderClass}
-              handleMouseDown={handleMouseDown}
-              handleMouseOver={handleMouseOver}
-              headers={headers}
-              hiddenColumns={hiddenColumns}
-              isSelected={isSelected}
-              isTopLeftCell={isTopLeftCell}
-              key={childIndex}
-              pinned={pinned}
-              row={child}
-              rowIndex={rowIndex}
-              isRowExpanded={isRowExpanded}
-              onExpandRowClick={onExpandRowClick}
-            />
-          );
-        })}
     </Animate>
   );
 };

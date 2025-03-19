@@ -1,54 +1,7 @@
-import RenderCells from "./RenderCells";
 import Row from "../../types/Row";
-import { RefObject } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
-
-const RenderRow = ({
-  row,
-  index,
-  rowIndex,
-  pinned,
-  props,
-}: {
-  row: Row;
-  index: number;
-  rowIndex: number;
-  props: Omit<TableBodyProps, "currentRows"> & {
-    isRowExpanded: (rowId: string | number) => boolean;
-    onExpandRowClick: (rowIndex: number) => void;
-  };
-  pinned?: "left" | "right";
-}) => {
-  const isGroup = (row.rowMeta?.children?.length || 0) > 0;
-
-  return (
-    <>
-      <RenderCells
-        {...props}
-        headers={props.headers}
-        hiddenColumns={props.hiddenColumns}
-        isRowExpanded={props.isRowExpanded}
-        onExpandRowClick={props.onExpandRowClick}
-        pinned={pinned}
-        row={row}
-        key={index}
-        rowIndex={rowIndex}
-      />
-      {isGroup &&
-        row.rowMeta?.isExpanded &&
-        row.rowMeta.children?.map((child, childIndex) => (
-          <RenderRow
-            key={childIndex}
-            row={child}
-            index={childIndex}
-            rowIndex={rowIndex + childIndex + 1}
-            props={props}
-            pinned={pinned}
-          />
-        ))}
-    </>
-  );
-};
+import TableRow from "./TableRow";
 
 const TableSection = ({
   rows,
@@ -70,6 +23,17 @@ const TableSection = ({
     ? `st-table-body-pinned-${pinned}`
     : "st-table-body-main";
 
+  const indexCounter = useRef(0); // Persistent counter across renders
+
+  // Reset the counter on each render
+  useEffect(() => {
+    indexCounter.current = 0; // Reset to 0 when Table re-renders
+  }); // No dependencies, runs on every render
+
+  const getNextRowIndex = (): number => {
+    return indexCounter.current++; // Increment and return the current index
+  };
+
   return (
     <div
       className={className}
@@ -79,17 +43,17 @@ const TableSection = ({
       }}
     >
       {rows.map((row, index) => (
-        <RenderRow
-          key={index}
-          row={row}
+        <TableRow
+          getNextRowIndex={getNextRowIndex}
           index={index}
-          rowIndex={index}
+          key={index}
+          pinned={pinned}
           props={{
             ...props,
             isRowExpanded,
             onExpandRowClick,
           }}
-          pinned={pinned}
+          row={row}
         />
       ))}
     </div>

@@ -801,7 +801,6 @@ body {
 .st-cell {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   color: var(--slate-800);
   overflow: hidden;
   gap: var(--st-spacing-small);
