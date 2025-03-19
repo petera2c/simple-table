@@ -1,20 +1,32 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
+import { generateRetailSalesData, RETAIL_SALES_HEADERS } from "../data/retail-data";
 
-const EXAMPLE_DATA = generateSaaSData();
-const HEADERS = SAAS_HEADERS;
+/**
+ * # Selectable Cells Example
+ *
+ * This example demonstrates the cell selection capabilities of Simple Table.
+ *
+ * ## Features Demonstrated
+ * - Selecting individual cells by clicking
+ * - Selecting ranges of cells by clicking and dragging
+ * - Visual highlighting of selected cells
+ * - Enabling selection with the selectableCells prop
+ *
+ * Cell selection is useful for operations like copying data, applying formatting,
+ * or performing bulk operations on specific cells. The selection UI provides clear
+ * visual feedback about which cells are currently selected.
+ */
+
+const EXAMPLE_DATA = generateRetailSalesData();
+const HEADERS = RETAIL_SALES_HEADERS;
+
 const SelectableCellsExample = () => {
-  const [rows] = useState(EXAMPLE_DATA);
+  const [rows, setRows] = useState(EXAMPLE_DATA);
 
   return (
     <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        defaultHeaders={HEADERS} // Set the headers
-        rows={rows} // Set rows data
-        selectableCells // Enable selectable cells
-        height="calc(100dvh - 112px)" // If not using pagination use a fixed height
-      />
+      <SimpleTable columnResizing defaultHeaders={HEADERS} draggable rows={rows} selectableCells height="80vh" />
     </div>
   );
 };

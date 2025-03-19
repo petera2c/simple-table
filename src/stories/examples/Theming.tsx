@@ -4,6 +4,34 @@ import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
 import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
 
+/**
+ * # Theming Example
+ *
+ * This example demonstrates the extensive theming capabilities of Simple Table.
+ *
+ * ## Features Demonstrated
+ * - Switching between multiple built-in themes
+ * - Theme-specific fonts and styling
+ * - Dynamic theme application with the theme prop
+ * - Combining theming with other features like pagination and column management
+ *
+ * Simple Table comes with 12 built-in themes that provide different visual styles:
+ * - light: Clean, minimalist design with light colors
+ * - dark: Dark mode interface for low-light environments
+ * - high-contrast: Enhanced visual distinction for accessibility
+ * - pastel: Soft, muted colors for a gentle interface
+ * - vibrant: Bold, colorful design for high visual impact
+ * - solarized-light/dark: Eye-friendly color schemes based on Solarized
+ * - ocean: Blue-themed design inspired by water
+ * - forest: Green-themed design inspired by nature
+ * - desert: Earthy tones for a warm interface
+ * - bubblegum: Playful pink theme
+ * - 90s: Retro-styled theme with nostalgic elements
+ *
+ * Each theme includes customized fonts, colors, spacing, and other styles
+ * to create a cohesive visual experience.
+ */
+
 const EXAMPLE_DATA = generateSpaceData();
 const HEADERS = SPACE_HEADERS;
 
@@ -29,18 +57,13 @@ const loadFont = (fontName: string) => {
 
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(
-    / /g,
-    "+"
-  )}:wght@400;700&display=swap`;
+  link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/ /g, "+")}:wght@400;700&display=swap`;
   link.setAttribute("data-font", fontName);
   document.head.appendChild(link);
 };
 
 // Function to get theme color
-const getThemeColor = (
-  theme: Theme
-): { backgroundColor: string; color: string } => {
+const getThemeColor = (theme: Theme): { backgroundColor: string; color: string } => {
   switch (theme) {
     case "dark":
       return { backgroundColor: "#333", color: "white" };
@@ -147,13 +170,7 @@ const ThemingExample = () => {
     }
   }, [theme]);
 
-  const updateCell = ({
-    accessor,
-    newRowIndex,
-    newValue,
-    originalRowIndex,
-    row,
-  }: CellChangeProps) => {
+  const updateCell = ({ accessor, newRowIndex, newValue, originalRowIndex, row }: CellChangeProps) => {
     setRows((prevRows) => {
       prevRows[originalRowIndex].rowData[accessor] = newValue;
       return prevRows;
@@ -173,7 +190,7 @@ const ThemingExample = () => {
         selectableColumns // Select column by clicking on the header. This will override sort on header click
         theme={theme} // Set the theme
         // If using pagination use an auto height
-        height="auto"
+        height="80vh"
         shouldPaginate
         rowsPerPage={10}
         // height="calc(100dvh - 112px)" // If not using pagination use a fixed height
@@ -197,12 +214,8 @@ const ThemingExample = () => {
                 whiteSpace: "nowrap",
                 fontFamily: "Nunito",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = getHoverColor(theme))
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = backgroundColor)
-              }
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = getHoverColor(theme))}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = backgroundColor)}
             >
               {theme}
             </button>
