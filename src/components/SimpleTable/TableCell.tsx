@@ -39,9 +39,7 @@ const TableCell = forwardRef(
     const { rows, tableRows } = useContext(TableContext);
 
     // Local state
-    const [localContent, setLocalContent] = useState<CellValue>(
-      content as CellValue
-    );
+    const [localContent, setLocalContent] = useState<CellValue>(content as CellValue);
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
@@ -56,16 +54,14 @@ const TableCell = forwardRef(
     // Derived state
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
-    const cellClassName = `st-cell ${
-      depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
-    } ${
+    const cellClassName = `st-cell ${depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""} ${
       isSelected
         ? isTopLeftCell
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${
-      clickable ? "clickable" : ""
+    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""} ${
+      header.align === "right" ? "right-aligned" : ""
     }`;
 
     // Update local content when the content changes
@@ -78,11 +74,7 @@ const TableCell = forwardRef(
     // Update local content when the table rows change
     useEffect(() => {
       return;
-      if (
-        row.rowMeta?.rowId === undefined ||
-        typeof row.rowMeta?.rowId !== "number"
-      )
-        return;
+      if (row.rowMeta?.rowId === undefined || typeof row.rowMeta?.rowId !== "number") return;
 
       const tableRowContent = rows[row.rowMeta?.rowId];
       // Check if the cell is a ReactNode. If it is we don't need to update the local content
@@ -109,16 +101,10 @@ const TableCell = forwardRef(
     if (isEditing) {
       return (
         <div
-          className={`st-cell-editing ${
-            isOddRow ? "st-cell-odd-row" : "st-cell-even-row"
-          }`}
+          className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"}`}
           id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
         >
-          <EditableCell
-            onChange={updateLocalContent}
-            setIsEditing={setIsEditing}
-            value={localContent}
-          />
+          <EditableCell onChange={updateLocalContent} setIsEditing={setIsEditing} value={localContent} />
         </div>
       );
     }
@@ -141,17 +127,11 @@ const TableCell = forwardRef(
       >
         {header.expandable && cellHasChildren ? (
           isRowExpanded(row.rowMeta.rowId) ? (
-            <div
-              className="st-sort-icon-container"
-              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
-            >
+            <div className="st-sort-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
               <AngleDownIcon className="st-sort-icon" />
             </div>
           ) : (
-            <div
-              className="st-sort-icon-container"
-              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
-            >
+            <div className="st-sort-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
               <AngleRightIcon className="st-sort-icon" />
             </div>
           )

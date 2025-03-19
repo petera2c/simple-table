@@ -19,9 +19,7 @@ const TableSection = ({
   isRowExpanded: (rowId: string | number) => boolean;
   onExpandRowClick: (rowIndex: number) => void;
 } & Omit<TableBodyProps, "currentRows">) => {
-  const className = pinned
-    ? `st-table-body-pinned-${pinned}`
-    : "st-table-body-main";
+  const className = pinned ? `st-table-body-pinned-${pinned}` : "st-table-body-main";
 
   const indexCounter = useRef(0); // Persistent counter across renders
 
@@ -47,6 +45,7 @@ const TableSection = ({
           getNextRowIndex={getNextRowIndex}
           index={index}
           key={index}
+          lastGroupRow={Boolean(row.rowMeta?.children?.length)}
           pinned={pinned}
           props={{
             ...props,

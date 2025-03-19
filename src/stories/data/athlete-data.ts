@@ -1,15 +1,8 @@
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
+import { formatDate } from "../../utils/formatters";
 export const generateAthletesData = (): Row[] => {
-  const countries = [
-    "USA",
-    "China",
-    "Russia",
-    "UK",
-    "Brazil",
-    "Australia",
-    "Japan",
-  ];
+  const countries = ["USA", "China", "Russia", "UK", "Brazil", "Australia", "Japan"];
   const firstNames = ["Alex", "Jordan", "Taylor", "Sam", "Chris", "Lee", "Pat"];
   const lastNames = ["Smith", "Johnson", "Brown", "Davis", "Wilson", "Clark"];
   const sponsors = ["Nike", "Adidas", "Puma", "Under Armour", "Asics"];
@@ -29,9 +22,7 @@ export const generateAthletesData = (): Row[] => {
         medals: Math.floor(Math.random() * 30) + 1,
         gold: Math.floor(Math.random() * 10),
         event: `${Math.floor(Math.random() * 100) + 100}m ${sport}`,
-        personalBest: `${Math.floor(Math.random() * 60)}.${Math.floor(
-          Math.random() * 99
-        )}`,
+        personalBest: `${Math.floor(Math.random() * 60)}.${Math.floor(Math.random() * 99)}`,
         lastCompeted: `${2016 + Math.floor(Math.random() * 10)}`,
         age: Math.floor(Math.random() * 20) + 18,
         height: `${(Math.random() * 0.5 + 1.5).toFixed(2)}m`,
@@ -44,88 +35,16 @@ export const generateAthletesData = (): Row[] => {
 };
 
 export const ATHLETES_HEADERS: HeaderObject[] = [
-  {
-    accessor: "country",
-    label: "Country",
-    width: 100,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "athleteName",
-    label: "Athlete Name",
-    width: 200,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "medals",
-    label: "Total Medals",
-    width: 120,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "gold",
-    label: "Gold Medals",
-    width: 120,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "event",
-    label: "Event",
-    width: 150,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "personalBest",
-    label: "Personal Best",
-    width: 160,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "lastCompeted",
-    label: "Last Competed",
-    width: 140,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "age",
-    label: "Age",
-    width: 80,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "height",
-    label: "Height",
-    width: 100,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "weight",
-    label: "Weight",
-    width: 100,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "team",
-    label: "Team",
-    width: 200,
-    isSortable: true,
-    isEditable: true,
-  },
-  {
-    accessor: "sponsor",
-    label: "Sponsor",
-    width: 120,
-    isSortable: true,
-    isEditable: true,
-  },
+  { accessor: "country", label: "Country", width: 120, isSortable: true, isEditable: true, align: "left" },
+  { accessor: "athleteName", label: "Athlete Name", width: 200, isSortable: true, isEditable: true, align: "left" },
+  { accessor: "medals", label: "Total Medals", width: 150, isSortable: true, isEditable: true, align: "right" },
+  { accessor: "gold", label: "Gold Medals", width: 150, isSortable: true, isEditable: true, align: "right" },
+  { accessor: "event", label: "Event", width: 180, isSortable: true, isEditable: true, align: "left" },
+  { accessor: "personalBest", label: "Personal Best", width: 150, isSortable: true, isEditable: true, align: "right" },
+  { accessor: "lastCompeted", label: "Last Competed", width: 150, isSortable: true, isEditable: true, align: "left" },
+  { accessor: "age", label: "Age", width: 80, isSortable: true, isEditable: true, align: "right" },
+  { accessor: "height", label: "Height", width: 120, isSortable: true, isEditable: true, align: "right" },
+  { accessor: "weight", label: "Weight", width: 120, isSortable: true, isEditable: true, align: "right" },
+  { accessor: "team", label: "Team", width: 250, isSortable: true, isEditable: true, align: "left" },
+  { accessor: "sponsor", label: "Sponsor", width: 150, isSortable: true, isEditable: true, align: "left" },
 ];

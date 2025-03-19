@@ -68,10 +68,10 @@ const TableHeaderCell = forwardRef(
     // Derived state
     const header = headersRef.current?.[index];
     const clickable = Boolean(header?.isSortable);
-    const className = `st-header-cell ${
-      header === hoveredHeaderRef.current ? "st-hovered" : ""
-    } ${isDragging ? "st-dragging" : ""} ${clickable ? "clickable" : ""} ${
-      draggable && !clickable ? "draggable" : ""
+    const className = `st-header-cell ${header === hoveredHeaderRef.current ? "st-hovered" : ""} ${
+      isDragging ? "st-dragging" : ""
+    } ${clickable ? "clickable" : ""} ${draggable && !clickable ? "draggable" : ""} ${
+      header?.align === "right" ? "right-aligned" : ""
     }`;
 
     // Hooks
@@ -101,34 +101,20 @@ const TableHeaderCell = forwardRef(
     };
 
     // Sort handler
-    const handleColumnHeaderClick = ({
-      event,
-      header,
-    }: {
-      event: MouseEvent;
-      header: HeaderObject;
-    }) => {
+    const handleColumnHeaderClick = ({ event, header }: { event: MouseEvent; header: HeaderObject }) => {
       if (selectableColumns) {
         const rowCount = currentRows.length;
-        const newColumnCells = Array.from(
-          { length: rowCount },
-          (_, rowIndex) => `${rowIndex}-${index}`
-        );
+        const newColumnCells = Array.from({ length: rowCount }, (_, rowIndex) => `${rowIndex}-${index}`);
 
-        const selectCellsInRange = (
-          startColumnIndex: number,
-          endColumnIndex: number
-        ): Set<string> => {
+        const selectCellsInRange = (startColumnIndex: number, endColumnIndex: number): Set<string> => {
           const selectedCells = new Set<string>();
           const minColumnIndex = Math.min(startColumnIndex, endColumnIndex);
           const maxColumnIndex = Math.max(startColumnIndex, endColumnIndex);
 
           Array.from({ length: rowCount }).forEach((_, rowIndex) => {
-            Array.from({ length: maxColumnIndex - minColumnIndex + 1 }).forEach(
-              (_, offset) => {
-                selectedCells.add(`${rowIndex}-${minColumnIndex + offset}`);
-              }
-            );
+            Array.from({ length: maxColumnIndex - minColumnIndex + 1 }).forEach((_, offset) => {
+              selectedCells.add(`${rowIndex}-${minColumnIndex + offset}`);
+            });
           });
 
           return selectedCells;
@@ -136,23 +122,15 @@ const TableHeaderCell = forwardRef(
 
         if (event.shiftKey) {
           setSelectedCells((prevSelectedCells) => {
-            const firstPrevColumnIndex = Number(
-              Array.from(prevSelectedCells)[0]?.split("-")[1]
-            );
+            const firstPrevColumnIndex = Number(Array.from(prevSelectedCells)[0]?.split("-")[1]);
             const newFirstColumnIndex = Number(newColumnCells[0].split("-")[1]);
 
             if (firstPrevColumnIndex === newFirstColumnIndex) {
               return new Set(newColumnCells);
             } else if (firstPrevColumnIndex > newFirstColumnIndex) {
-              return selectCellsInRange(
-                newFirstColumnIndex,
-                firstPrevColumnIndex
-              );
+              return selectCellsInRange(newFirstColumnIndex, firstPrevColumnIndex);
             } else {
-              return selectCellsInRange(
-                firstPrevColumnIndex,
-                newFirstColumnIndex
-              );
+              return selectCellsInRange(firstPrevColumnIndex, newFirstColumnIndex);
             }
           });
         } else {
@@ -233,10 +211,7 @@ const TableHeaderCell = forwardRef(
           {header?.label}
         </div>
         {sort && sort.key.accessor === header.accessor && (
-          <div
-            className="st-sort-icon-container"
-            onClick={(event) => handleColumnHeaderClick({ event, header })}
-          >
+          <div className="st-sort-icon-container" onClick={(event) => handleColumnHeaderClick({ event, header })}>
             {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
             {sort.direction === "descending" && sortDownIcon && sortDownIcon}
           </div>

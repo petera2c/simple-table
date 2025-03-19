@@ -20,6 +20,7 @@ const RenderCells = ({
   isRowExpanded,
   isSelected,
   isTopLeftCell,
+  lastGroupRow,
   onExpandRowClick,
   pinned,
   row,
@@ -31,6 +32,7 @@ const RenderCells = ({
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   isRowExpanded: (rowId: string | number) => boolean;
+  lastGroupRow?: boolean;
   onExpandRowClick: (rowIndex: number) => void;
   pinned?: "left" | "right";
   row: Row;
@@ -51,7 +53,7 @@ const RenderCells = ({
       rowIndex={rowIndex + 1}
       tableRef={props.tableRef}
     >
-      {rowIndex !== 0 && <TableRowSeparator />}
+      {rowIndex !== 0 && <TableRowSeparator lastGroupRow={lastGroupRow} />}
       {headers.map((header, colIndex) => {
         if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
@@ -73,19 +75,14 @@ const RenderCells = ({
             isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
             key={colIndex}
             onExpandRowClick={onExpandRowClick}
-            onMouseDown={() =>
-              handleMouseDown({ rowIndex: rowIndex, colIndex })
-            }
+            onMouseDown={() => handleMouseDown({ rowIndex: rowIndex, colIndex })}
             onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
             row={row}
             rowIndex={rowIndex}
           />
         );
       })}
-      <TableLastColumnCell
-        ref={createRef()}
-        visible={shouldDisplayLastColumnCell}
-      />
+      <TableLastColumnCell ref={createRef()} visible={shouldDisplayLastColumnCell} />
     </Animate>
   );
 };

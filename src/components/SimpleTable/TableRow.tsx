@@ -6,6 +6,7 @@ const TableRow = ({
   depth = 0,
   getNextRowIndex,
   index,
+  lastGroupRow,
   pinned,
   props,
   row,
@@ -13,6 +14,7 @@ const TableRow = ({
   depth?: number;
   getNextRowIndex: () => number;
   index: number;
+  lastGroupRow?: boolean;
   pinned?: "left" | "right";
   props: Omit<TableBodyProps, "currentRows"> & {
     onExpandRowClick: (rowIndex: number) => void;
@@ -22,11 +24,14 @@ const TableRow = ({
   const isGroup = (row.rowMeta?.children?.length || 0) > 0;
   const rowIndex = getNextRowIndex(); // Get the next available index
 
+  const children = row.rowMeta?.children || [];
+
   return (
     <>
       <RenderCells
         {...props}
         depth={depth}
+        lastGroupRow={lastGroupRow}
         key={index}
         pinned={pinned}
         row={row}
@@ -34,7 +39,7 @@ const TableRow = ({
       />
       {isGroup &&
         props.isRowExpanded(row.rowMeta.rowId) &&
-        row.rowMeta.children?.map((child, childIndex) => (
+        children.map((child, childIndex) => (
           <TableRow
             depth={depth + 1}
             getNextRowIndex={getNextRowIndex}
