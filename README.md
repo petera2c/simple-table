@@ -37,43 +37,13 @@ Check out the live demo on CodeSandbox: <a href="https://codesandbox.io/p/sandbo
 
 ```bash
 # npm
-npm install simple-table-react
+npm install simple-table-core
 
 # yarn
-yarn add simple-table-react
+yarn add simple-table-core
 
 # pnpm
-pnpm add simple-table-react
-```
-
-## Quick Start
-
-```jsx
-import React, { useState } from "react";
-import SimpleTable from "simple-table-react";
-import "simple-table-react/dist/styles.css";
-
-const App = () => {
-  const [rows, setRows] = useState([
-    { rowMeta: { rowId: 0 }, rowData: { name: "John", age: 25 } },
-    { rowMeta: { rowId: 1 }, rowData: { name: "Jane", age: 30 } },
-  ]);
-
-  const headers = [
-    { accessor: "name", label: "Name", width: 200 },
-    { accessor: "age", label: "Age", width: 100 },
-  ];
-
-  const handleCellChange = ({ accessor, newValue, originalRowIndex }) => {
-    const updatedRows = [...rows];
-    updatedRows[originalRowIndex].rowData[accessor] = newValue;
-    setRows(updatedRows);
-  };
-
-  return <SimpleTable defaultHeaders={headers} rows={rows} onCellChange={handleCellChange} selectableCells />;
-};
-
-export default App;
+pnpm add simple-table-core
 ```
 
 ## Props
@@ -125,8 +95,8 @@ All styles for the Simple Table are customizable through CSS variables. You can 
 You can override the following CSS variables to customize the appearance of the table:
 
 ```css
+/* light theme */
 :root {
-  /* Base variables */
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
@@ -134,26 +104,42 @@ You can override the following CSS variables to customize the appearance of the 
   --st-font-weight-normal: 400;
   --st-font-weight-bold: 600;
   --st-transition-duration: 0.2s;
-  --st-transition-ease: ease-in-out;
+  --st-transition-ease: ease;
   --st-opacity-disabled: 0.5;
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
+  --st-scrollbar-bg-color: transparent;
+  --st-scrollbar-thumb-color: var(--slate-200);
 
-  /* Colors */
-  --st-border-color: #e0e0e0;
-  --st-text-color: #333;
-  --st-background-color: #fff;
-  --st-header-background-color: #f5f5f5;
-  --st-resize-handle-color: #ccc;
-  --st-separator-border-color: #e0e0e0;
-  --st-odd-row-background-color: #f9f9f9;
-  --st-hover-background-color: #f0f0f0;
-  --st-dragging-background-color: #eaeaea;
-  --st-selected-cell-background-color: rgba(0, 120, 215, 0.1);
-  --st-selected-first-cell-background-color: rgba(0, 120, 215, 0.2);
-  --st-footer-background-color: #f5f5f5;
-  --st-last-group-row-separator-border-color: #4b5eaa;
+  --st-border-color: var(--gray-300);
+  --st-odd-row-background-color: var(--white);
+  --st-even-row-background-color: var(--white);
+  --st-header-background-color: var(--white);
+  --st-dragging-background-color: var(--gray-200);
+  --st-selected-cell-background-color: var(--blue-200);
+  --st-selected-first-cell-background-color: var(--blue-200);
+  --st-footer-background-color: var(--white);
+  --st-cell-color: var(--gray-800);
+  --st-cell-odd-row-color: var(--gray-700);
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 1px -1px rgba(0, 0, 0, 0.05);
+  --st-selected-cell-color: var(--gray-900);
+  --st-selected-first-cell-color: var(--gray-900);
+  --st-resize-handle-color: var(--blue-300);
+  --st-separator-border-color: var(--slate-100);
+  --st-last-group-row-separator-border-color: var(--slate-300);
+  --st-selected-border-top-color: var(--blue-600);
+  --st-selected-border-bottom-color: var(--blue-600);
+  --st-selected-border-left-color: var(--blue-600);
+  --st-selected-border-right-color: var(--blue-600);
+  --st-checkbox-checked-background-color: var(--blue-600);
+  --st-checkbox-checked-border-color: var(--blue-600);
+  --st-column-editor-background-color: var(--white);
+  --st-column-editor-popout-background-color: var(--white);
+  --st-button-hover-background-color: var(--gray-200);
+  --st-button-active-background-color: var(--blue-800);
+  --st-font-family: "Roboto", sans-serif;
+  --st-editable-cell-focus-border-color: var(--blue-600);
 }
 ```
 
