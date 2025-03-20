@@ -3,7 +3,7 @@ import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableHeaderProps from "../../types/TableHeaderProps";
-import { displayCell } from "../../stories/examples/PinnedColumns/PinnedColumnsUtil";
+import { displayCell } from "../../utils/cellUtils";
 
 const TableHeader = ({
   allowAnimations,

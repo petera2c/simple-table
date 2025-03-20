@@ -1,2 +1,2 @@
-declare const usePrevious: (value: any) => undefined;
+declare const usePrevious: <T>(value: T) => T;
 export default usePrevious;

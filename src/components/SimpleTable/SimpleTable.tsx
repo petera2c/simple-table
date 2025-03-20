@@ -1,22 +1,10 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  useReducer,
-  ReactNode,
-  useMemo,
-  useCallback,
-  memo,
-} from "react";
+import { useState, useRef, useEffect, useReducer, ReactNode, useMemo, useCallback, memo } from "react";
 import useSelection from "../../hooks/useSelection";
-import { handleSort } from "../../utils/sortUtils";
 import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
-import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
-import SortConfig from "../../types/SortConfig";
 import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
@@ -25,6 +13,8 @@ import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
+import Row from "../../types/Row";
+import useSortableData from "../../hooks/useSortableData";
 
 // Create enum for consistent values
 enum ColumnEditorPosition {
@@ -44,14 +34,9 @@ interface SimpleTableProps {
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
-  onCellChange?: ({
-    accessor,
-    newValue,
-    originalRowIndex,
-    row,
-  }: CellChangeProps) => void;
+  onCellChange?: ({ accessor, newValue, originalRowIndex, row }: CellChangeProps) => void;
   prevIcon?: ReactNode; // Previous icon
-  rows: { [key: string]: CellValue }[]; // Rows data
+  rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
@@ -61,20 +46,19 @@ interface SimpleTableProps {
   theme?: Theme; // Theme
 }
 
-// Extract sort logic to custom hook
-const useSortableData = (tableRows: any[], headers: HeaderObject[]) => {
-  const [sort, setSort] = useState<SortConfig | null>(null);
-  const [hiddenColumns, setHiddenColumns] = useState<Record<string, boolean>>(
-    {}
-  );
+const getInitialExpandedRows = (rows: Row[]): Set<string> => {
+  const expandedIds = new Set<string>();
 
-  const sortedRows = useMemo(() => {
-    if (!sort) return tableRows;
-    const { sortedData } = handleSort(headers, tableRows, sort);
-    return sortedData;
-  }, [tableRows, sort, headers]);
+  const checkRow = (row: Row) => {
+    if (row.rowMeta.isExpanded) {
+      expandedIds.add(row.rowMeta.rowId.toString());
+    }
+    // Recursively check children
+    row.rowMeta.children?.forEach(checkRow);
+  };
 
-  return { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns };
+  rows.forEach(checkRow);
+  return expandedIds;
 };
 
 const SimpleTable = ({
@@ -100,6 +84,9 @@ const SimpleTable = ({
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   theme = "light",
 }: SimpleTableProps) => {
+  // State for tracking expanded rows
+  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(() => getInitialExpandedRows(rows));
+
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
     const rowsWithOriginalRowIndex = rows.map((row, index) => ({
@@ -115,16 +102,36 @@ const SimpleTable = ({
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
+  const headersRef = useRef(defaultHeaders);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
-  const headersRef = useRef(defaultHeaders);
-
   const [currentPage, setCurrentPage] = useState(1);
 
   // Use custom hook for sorting
-  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns } =
-    useSortableData(tableRows, headersRef.current);
+  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns } = useSortableData(tableRows, headersRef.current);
+
+  // Expand/collapse handler
+  const onExpandRowClick = useCallback((rowId: string | number) => {
+    const rowIdString: string = String(rowId);
+    setExpandedRowIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(rowIdString)) {
+        next.delete(rowIdString);
+      } else {
+        next.add(rowIdString);
+      }
+      return next;
+    });
+  }, []);
+
+  // Memoized function to check if a row is expanded
+  const isRowExpanded = useCallback(
+    (rowId: string | number) => {
+      return expandedRowIds.has(String(rowId));
+    },
+    [expandedRowIds]
+  );
 
   // Hooks
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -145,29 +152,29 @@ const SimpleTable = ({
   // Memoize currentRows calculation
   const currentRows = useMemo(() => {
     if (!shouldPaginate) return sortedRows;
-    return sortedRows.slice(
-      (currentPage - 1) * rowsPerPage,
-      currentPage * rowsPerPage
-    );
-  }, [shouldPaginate, sortedRows, currentPage, rowsPerPage]);
+    return sortedRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
   // Memoize handlers
-  const onSort = useCallback((columnIndex: number, accessor: string) => {
-    setSort((prevSort) => {
-      if (prevSort?.key.accessor !== accessor) {
-        return {
-          key: headersRef.current[columnIndex],
-          direction: "ascending",
-        };
-      } else if (prevSort?.direction === "ascending") {
-        return {
-          key: headersRef.current[columnIndex],
-          direction: "descending",
-        };
-      }
-      return null;
-    });
-  }, []);
+  const onSort = useCallback(
+    (columnIndex: number, accessor: string) => {
+      setSort((prevSort) => {
+        if (prevSort?.key.accessor !== accessor) {
+          return {
+            key: headersRef.current[columnIndex],
+            direction: "ascending",
+          };
+        } else if (prevSort?.direction === "ascending") {
+          return {
+            key: headersRef.current[columnIndex],
+            direction: "descending",
+          };
+        }
+        return null;
+      });
+    },
+    [setSort]
+  );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
     headersRef.current = newHeaders;
@@ -181,8 +188,7 @@ const SimpleTable = ({
       if (
         !target.closest(".st-cell") &&
         (selectableColumns
-          ? !target.classList.contains("st-header-cell") &&
-            !target.classList.contains("st-header-label")
+          ? !target.classList.contains("st-header-cell") && !target.classList.contains("st-header-label")
           : true)
       ) {
         setSelectedCells(new Set());
@@ -197,16 +203,9 @@ const SimpleTable = ({
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
-      <div
-        className={`st-wrapper theme-${theme}`}
-        style={height ? { height } : {}}
-      >
+      <div className={`st-wrapper theme-${theme}`} style={height ? { height } : {}}>
         <div className="st-table-wrapper-container">
-          <div
-            className="st-table-wrapper"
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-          >
+          <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <TableContent
               allowAnimations={allowAnimations}
               columnResizing={columnResizing}
@@ -222,10 +221,12 @@ const SimpleTable = ({
               headersRef={headersRef}
               hiddenColumns={hiddenColumns}
               hoveredHeaderRef={hoveredHeaderRef}
+              isRowExpanded={isRowExpanded}
               isSelected={isSelected}
               isTopLeftCell={isTopLeftCell}
               isWidthDragging={isWidthDragging}
               onCellChange={onCellChange}
+              onExpandRowClick={onExpandRowClick}
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
               pinnedLeftRef={pinnedLeftRef}

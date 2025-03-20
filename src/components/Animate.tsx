@@ -4,7 +4,6 @@ import React, {
   useEffect,
   RefObject,
   useRef,
-  MutableRefObject,
 } from "react";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 import BoundingBox from "../types/BoundingBox";
@@ -22,12 +21,12 @@ export const TEST_KEY = "productId";
 interface AnimateProps {
   allowHorizontalAnimate?: boolean;
   children: React.ReactNode | React.ReactNode[];
-  draggedHeaderRef?: MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef?: RefObject<HeaderObject | null>;
+  headersRef: RefObject<HeaderObject[]>;
   isBody?: boolean;
   pauseAnimation?: boolean;
   rowIndex: number;
   tableRef: RefObject<HTMLDivElement | null>;
-  headersRef: RefObject<HeaderObject[]>;
 }
 
 const AnimateWrapper = ({

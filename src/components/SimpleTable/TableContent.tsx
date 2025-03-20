@@ -19,6 +19,8 @@ interface TableContentProps
   editColumns: boolean;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
+  isRowExpanded: (rowId: string | number) => boolean;
+  onExpandRowClick: (rowIndex: number) => void;
 }
 
 const TableContent = ({
@@ -35,18 +37,20 @@ const TableContent = ({
   headersRef,
   hiddenColumns,
   hoveredHeaderRef,
+  isRowExpanded,
   isSelected,
   isTopLeftCell,
   isWidthDragging,
   onCellChange,
+  onExpandRowClick,
   onSort,
   onTableHeaderDragEnd,
   pinnedLeftRef,
   pinnedRightRef,
   selectableColumns,
-  shouldPaginate,
   setIsWidthDragging,
   setSelectedCells,
+  shouldPaginate,
   sort,
   sortDownIcon,
   sortUpIcon,
@@ -87,7 +91,6 @@ const TableContent = ({
       .map((header) => `${header.width}px`)
       .join(" ")}`;
   }, [pinnedRightColumns]);
-  console.log("pinnedRightColumns", pinnedLeftTemplateColumns);
 
   const tableHeaderProps: TableHeaderProps = {
     allowAnimations,
@@ -128,11 +131,13 @@ const TableContent = ({
     headersRef,
     hiddenColumns,
     hoveredHeaderRef,
+    isRowExpanded,
     isSelected,
     isTopLeftCell,
     isWidthDragging,
     mainTemplateColumns,
     onCellChange,
+    onExpandRowClick,
     onTableHeaderDragEnd,
     pinnedLeftColumns,
     pinnedLeftRef,

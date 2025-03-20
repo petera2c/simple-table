@@ -1,20 +1,34 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { SAMPLE_HEADERS, inventoryData } from "../../consts/SampleData";
+import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
 import CellChangeProps from "../../types/CellChangeProps";
 
-const FilterColumnsExample = () => {
-  const [rows, setRows] = useState(inventoryData);
+/**
+ * # Filter Columns Example
+ *
+ * This example demonstrates the column filtering/management capabilities of Simple Table.
+ *
+ * ## Features Demonstrated
+ * - Enabling column management with the editColumns prop
+ * - Showing/hiding columns through the column management UI
+ * - Reordering columns by dragging
+ * - Maintaining state consistency when columns are modified
+ *
+ * The column management functionality allows users to customize their view
+ * by showing/hiding columns according to their needs. This is particularly
+ * useful for tables with many columns or when different users need different
+ * views of the same data.
+ */
 
-  const updateCell = ({
-    accessor,
-    newRowIndex,
-    newValue,
-    originalRowIndex,
-    row,
-  }: CellChangeProps) => {
+const EXAMPLE_DATA = generateSpaceData();
+const HEADERS = SPACE_HEADERS;
+
+const FilterColumnsExample = () => {
+  const [rows, setRows] = useState(EXAMPLE_DATA);
+
+  const updateCell = ({ accessor, newRowIndex, newValue, originalRowIndex, row }: CellChangeProps) => {
     setRows((prevRows) => {
-      prevRows[originalRowIndex][accessor] = newValue;
+      prevRows[originalRowIndex].rowData[accessor] = newValue;
       return prevRows;
     });
   };
@@ -23,13 +37,12 @@ const FilterColumnsExample = () => {
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         columnResizing // Enable column resizing
-        defaultHeaders={SAMPLE_HEADERS} // Set the headers
+        defaultHeaders={HEADERS} // Set the headers
         draggable // Enable draggable columns
-        editColumns // Enable editing columns
-        editColumnsInitOpen // Open the column editor when the table is loaded
+        editColumns // Enable column management
         onCellChange={updateCell} // Handle cell changes
         rows={rows} // Set rows data
-        height="calc(100dvh - 112px)" // If not using pagination use a fixed height
+        height="80vh"
       />
     </div>
   );

@@ -1,31 +1,10 @@
 import HeaderObject from "../../../types/HeaderObject";
 
-export const displayCell = ({
-  hiddenColumns,
-  header,
-  pinned,
-}: {
-  hiddenColumns: Record<string, boolean>;
-  header: HeaderObject;
-  pinned?: "left" | "right";
-}) => {
-  if (hiddenColumns[header.accessor]) return null;
-  else if ((pinned || header.pinned) && header.pinned !== pinned) return null;
-  return true;
-};
-
 export const SAMPLE_HEADERS: HeaderObject[] = [
-  {
-    accessor: "productId",
-    label: "Product ID",
-    pinned: "left",
-    type: "string",
-    width: 140,
-  },
   {
     accessor: "productName",
     label: "Product Name",
-    pinned: "right",
+    pinned: "left",
     width: 140,
   },
   {

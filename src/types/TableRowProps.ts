@@ -1,0 +1,31 @@
+import { RefObject } from "react";
+import CellChangeProps from "./CellChangeProps";
+import HeaderObject from "./HeaderObject";
+import { MouseDownProps } from "../hooks/useSelection";
+import Row from "./Row";
+
+type TableRowProps = {
+  allowAnimations: boolean;
+  currentRows: { [key: string]: any }[];
+  draggedHeaderRef: RefObject<HeaderObject | null>;
+  getBorderClass: (rowIndex: number, columnIndex: number) => string;
+  handleMouseDown: (props: MouseDownProps) => void;
+  handleMouseOver: (rowIndex: number, columnIndex: number) => void;
+  headers: HeaderObject[];
+  headersRef: RefObject<HeaderObject[]>;
+  hiddenColumns: Record<string, boolean>;
+  hoveredHeaderRef: RefObject<HeaderObject | null>;
+  isSelected: (rowIndex: number, columnIndex: number) => boolean;
+  isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
+  isWidthDragging: boolean;
+  onCellChange?: (props: CellChangeProps) => void;
+  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  onToggleGroup: (rowId: number) => void;
+  row: Row;
+  rowIndex: number;
+  shouldDisplayLastColumnCell: boolean;
+  shouldPaginate: boolean;
+  tableRef: RefObject<HTMLDivElement | null>;
+};
+
+export default TableRowProps;

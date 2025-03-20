@@ -14,6 +14,7 @@ interface TableHeaderCellProps {
     index: number;
     onSort: OnSortProps;
     onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+    reverse?: boolean;
     selectableColumns: boolean;
     setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
     setSelectedCells: Dispatch<React.SetStateAction<Set<string>>>;

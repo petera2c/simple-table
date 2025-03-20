@@ -1,1 +1,7 @@
-export declare const throttle: (func: (...args: any[]) => void, limit: number) => (this: any, ...args: any[]) => void;
+import HeaderObject from "../types/HeaderObject";
+export declare const useThrottle: () => ({ callback, callbackProps, limit, }: {
+    callback: (callbackProps: any) => void;
+    callbackProps: any;
+    limit: number;
+}) => void;
+export declare const logArrayDifferences: (original: HeaderObject[], updated: HeaderObject[]) => void;

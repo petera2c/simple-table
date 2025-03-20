@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
 import HeaderObject from "../types/HeaderObject";
 import SortConfig from "../types/SortConfig";
+import Row from "../types/Row";
 
 export const handleSort = (
   headers: HeaderObject[],
-  rows: { [key: string]: any }[],
+  rows: Row[],
   sortConfig: SortConfig
 ) => {
   const key = sortConfig ? sortConfig.key : headers[0];
@@ -19,10 +20,13 @@ export const handleSort = (
   }
 
   const sortedData = [...rows].sort((a, b) => {
-    if (a[key.accessor] < b[key.accessor]) {
+    const aValue = a?.rowData?.[key.accessor] ?? "";
+    const bValue = b?.rowData?.[key.accessor] ?? "";
+
+    if (aValue < bValue) {
       return direction === "ascending" ? 1 : -1;
     }
-    if (a[key.accessor] > b[key.accessor]) {
+    if (aValue > bValue) {
       return direction === "ascending" ? -1 : 1;
     }
     return 0;

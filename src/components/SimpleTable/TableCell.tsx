@@ -1,58 +1,45 @@
-import { forwardRef, LegacyRef, useContext, useEffect, useState } from "react";
+import { forwardRef, Ref, useContext, useEffect, useState } from "react";
 import EditableCell from "./EditableCell/EditableCell";
-import HeaderObject from "../../types/HeaderObject";
-import CellChangeProps from "../../types/CellChangeProps";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";
 import useDragHandler from "../../hooks/useDragHandler";
-import { DRAG_THROTTLE_LIMIT } from "../../consts/generalConsts";
+import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
-
-interface TableCellProps {
-  borderClass: string;
-  colIndex: number;
-  content: CellValue;
-  draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  header: HeaderObject;
-  headersRef: React.RefObject<HeaderObject[]>;
-  hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  isSelected: boolean;
-  isTopLeftCell: boolean;
-  onCellChange?: (props: CellChangeProps) => void;
-  onMouseDown: (rowIndex: number, colIndex: number) => void;
-  onMouseOver: (rowIndex: number, colIndex: number) => void;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  row: { [key: string]: CellValue };
-  rowIndex: number;
-}
+import TableCellProps from "../../types/TableCellProps";
+import AngleDownIcon from "../../icons/AngleDownIcon";
+import AngleRightIcon from "../../icons/AngleRightIcon";
 
 const TableCell = forwardRef(
   (
     {
       borderClass,
+      cellHasChildren,
       colIndex,
       content,
+      depth,
       draggedHeaderRef,
       header,
       headersRef,
       hoveredHeaderRef,
+      isRowExpanded,
       isSelected,
       isTopLeftCell,
       onCellChange,
+      onExpandRowClick,
       onMouseDown,
       onMouseOver,
       onTableHeaderDragEnd,
       row,
       rowIndex,
     }: TableCellProps,
-    ref: LegacyRef<HTMLTableCellElement>
+    ref: Ref<HTMLDivElement>
   ) => {
     // Context
     const { rows, tableRows } = useContext(TableContext);
 
     // Local state
-    const [localContent, setLocalContent] = useState(content);
+    const [localContent, setLocalContent] = useState<CellValue>(content as CellValue);
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
@@ -67,37 +54,38 @@ const TableCell = forwardRef(
     // Derived state
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
-    const cellClassName = `st-cell ${
+    const cellClassName = `st-cell ${depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""} ${
       isSelected
         ? isTopLeftCell
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${
-      clickable ? "clickable" : ""
+    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""} ${
+      header.align === "right" ? "right-aligned" : ""
     }`;
 
     // Update local content when the content changes
     useEffect(() => {
-      setLocalContent(content);
+      // Check if the content is a ReactNode. If it is we don't need to update the local content
+      if (typeof content === "object") return;
+      setLocalContent(content as CellValue);
     }, [content]);
 
     // Update local content when the table rows change
     useEffect(() => {
-      if (
-        row.originalRowIndex === undefined ||
-        typeof row.originalRowIndex !== "number"
-      )
-        return;
+      return;
+      if (row.rowMeta?.rowId === undefined || typeof row.rowMeta?.rowId !== "number") return;
 
-      const tableRowContent = rows[row.originalRowIndex];
+      const tableRowContent = rows[row.rowMeta?.rowId];
+      // Check if the cell is a ReactNode. If it is we don't need to update the local content
+      if (typeof tableRowContent.rowData[header.accessor] === "object") return;
 
-      if (tableRowContent[header.accessor] !== localContent) {
-        setLocalContent(tableRowContent[header.accessor]);
+      if (tableRowContent.rowData[header.accessor] !== localContent) {
+        setLocalContent(tableRowContent.rowData[header.accessor] as CellValue);
       } else {
-        tableRows[row.originalRowIndex][header.accessor] = localContent;
+        tableRows[row.rowMeta?.rowId].rowData[header.accessor] = localContent;
       }
-    }, [header.accessor, localContent, rows, row.originalRowIndex, tableRows]);
+    }, [header.accessor, localContent, rows, row.rowMeta?.rowId, tableRows]);
 
     const updateLocalContent = (newValue: CellValue) => {
       setLocalContent(newValue);
@@ -105,7 +93,7 @@ const TableCell = forwardRef(
         accessor: header.accessor,
         newValue,
         newRowIndex: rowIndex,
-        originalRowIndex: row.originalRowIndex as number,
+        originalRowIndex: row.rowMeta?.rowId,
         row,
       });
     };
@@ -113,16 +101,10 @@ const TableCell = forwardRef(
     if (isEditing) {
       return (
         <div
-          className={`st-cell-editing ${
-            isOddRow ? "st-cell-odd-row" : "st-cell-even-row"
-          }`}
+          className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"}`}
           id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
         >
-          <EditableCell
-            onChange={updateLocalContent}
-            setIsEditing={setIsEditing}
-            value={localContent}
-          />
+          <EditableCell onChange={updateLocalContent} setIsEditing={setIsEditing} value={localContent} />
         </div>
       );
     }
@@ -143,7 +125,18 @@ const TableCell = forwardRef(
         }
         ref={ref}
       >
-        {localContent}
+        {header.expandable && cellHasChildren ? (
+          isRowExpanded(row.rowMeta.rowId) ? (
+            <div className="st-sort-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
+              <AngleDownIcon className="st-sort-icon" />
+            </div>
+          ) : (
+            <div className="st-sort-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
+              <AngleRightIcon className="st-sort-icon" />
+            </div>
+          )
+        ) : null}
+        <span>{localContent}</span>
       </div>
     );
   }

@@ -1,24 +1,28 @@
 import { ReactNode } from "react";
 import HeaderObject from "../../types/HeaderObject";
-import CellValue from "../../types/CellValue";
 import CellChangeProps from "../../types/CellChangeProps";
 import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
-interface SpreadsheetProps {
-    columnEditorPosition?: "left" | "right";
+import Row from "../../types/Row";
+declare enum ColumnEditorPosition {
+    Left = "left",
+    Right = "right"
+}
+interface SimpleTableProps {
+    allowAnimations?: boolean;
+    columnEditorPosition?: ColumnEditorPosition;
     columnEditorText?: string;
     columnResizing?: boolean;
     defaultHeaders: HeaderObject[];
     draggable?: boolean;
     editColumns?: boolean;
+    editColumnsInitOpen?: boolean;
     height?: string;
     hideFooter?: boolean;
     nextIcon?: ReactNode;
-    onCellChange?: ({ accessor, newValue, originalRowIndex, row, }: CellChangeProps) => void;
+    onCellChange?: ({ accessor, newValue, originalRowIndex, row }: CellChangeProps) => void;
     prevIcon?: ReactNode;
-    rows: {
-        [key: string]: CellValue;
-    }[];
+    rows: Row[];
     rowsPerPage?: number;
     selectableCells?: boolean;
     selectableColumns?: boolean;
@@ -27,5 +31,30 @@ interface SpreadsheetProps {
     sortUpIcon?: ReactNode;
     theme?: Theme;
 }
-declare const SimpleTable: ({ columnEditorPosition, columnEditorText, columnResizing, defaultHeaders, draggable, editColumns, height, hideFooter, nextIcon, onCellChange, prevIcon, rows, rowsPerPage, selectableCells, selectableColumns, shouldPaginate, sortDownIcon, sortUpIcon, theme, }: SpreadsheetProps) => import("react/jsx-runtime").JSX.Element;
-export default SimpleTable;
+declare const _default: import("react").MemoExoticComponent<{
+    ({ allowAnimations, columnEditorPosition, columnEditorText, columnResizing, defaultHeaders, draggable, editColumns, editColumnsInitOpen, height, hideFooter, nextIcon, onCellChange, prevIcon, rows, rowsPerPage, selectableCells, selectableColumns, shouldPaginate, sortDownIcon, sortUpIcon, theme, }: SimpleTableProps): import("react/jsx-runtime").JSX.Element;
+    defaultProps: {
+        allowAnimations: boolean;
+        columnEditorPosition: ColumnEditorPosition;
+        columnEditorText: string;
+        columnResizing: boolean;
+        defaultHeaders: never[];
+        draggable: boolean;
+        editColumns: boolean;
+        editColumnsInitOpen: boolean;
+        height: string;
+        hideFooter: boolean;
+        nextIcon: import("react/jsx-runtime").JSX.Element;
+        onCellChange: () => void;
+        prevIcon: import("react/jsx-runtime").JSX.Element;
+        rows: never[];
+        rowsPerPage: number;
+        selectableCells: boolean;
+        selectableColumns: boolean;
+        shouldPaginate: boolean;
+        sortDownIcon: import("react/jsx-runtime").JSX.Element;
+        sortUpIcon: import("react/jsx-runtime").JSX.Element;
+        theme: string;
+    };
+}>;
+export default _default;
