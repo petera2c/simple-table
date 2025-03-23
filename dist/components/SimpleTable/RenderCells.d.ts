@@ -12,5 +12,5 @@ declare const RenderCells: ({ getBorderClass, handleMouseDown, handleMouseOver, 
     row: Row;
     rowIndex: number;
     shouldDisplayLastColumnCell: boolean;
-} & Omit<TableBodyProps, "currentRows">) => import("react/jsx-runtime").JSX.Element;
+} & Omit<TableBodyProps, "currentRows" | "headerContainerRef">) => import("react/jsx-runtime").JSX.Element;
 export default RenderCells;

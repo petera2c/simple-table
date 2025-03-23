@@ -31,6 +31,11 @@ const TableHorizontalScrollbar = ({
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(tableRef, scrollRef);
 
+  // If the table is not scrollable, don't render the scrollbar
+  if (!tableRef.current || tableRef.current.scrollWidth <= tableRef.current.clientWidth) {
+    return null;
+  }
+
   return (
     <div className="st-horizontal-scrollbar-container">
       {pinnedLeftWidth > 0 && (

@@ -6,7 +6,7 @@ declare const TableRow: ({ depth, getNextRowIndex, index, lastGroupRow, pinned, 
     index: number;
     lastGroupRow?: boolean | undefined;
     pinned?: "left" | "right" | undefined;
-    props: Omit<TableBodyProps, "currentRows"> & {
+    props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
         onExpandRowClick: (rowIndex: number) => void;
     };
     row: Row;

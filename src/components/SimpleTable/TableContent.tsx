@@ -6,6 +6,7 @@ import TableHeader from "./TableHeader";
 
 // Common properties to omit from both TableHeaderProps and TableBodyProps
 type OmittedTableProps =
+  | "headerContainerRef"
   | "shouldDisplayLastColumnCell"
   | "pinnedLeftColumns"
   | "pinnedRightColumns"

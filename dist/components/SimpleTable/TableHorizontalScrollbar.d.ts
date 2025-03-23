@@ -5,5 +5,5 @@ declare const TableHorizontalScrollbar: ({ headersRef, pinnedLeftRef, pinnedRigh
     pinnedLeftRef: RefObject<HTMLDivElement | null>;
     pinnedRightRef: RefObject<HTMLDivElement | null>;
     tableRef: RefObject<HTMLDivElement | null>;
-}) => import("react/jsx-runtime").JSX.Element;
+}) => import("react/jsx-runtime").JSX.Element | null;
 export default TableHorizontalScrollbar;

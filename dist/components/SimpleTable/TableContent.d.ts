@@ -1,7 +1,7 @@
 import { RefObject } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
-type OmittedTableProps = "shouldDisplayLastColumnCell" | "pinnedLeftColumns" | "pinnedRightColumns" | "mainTemplateColumns" | "pinnedLeftTemplateColumns" | "pinnedRightTemplateColumns";
+type OmittedTableProps = "headerContainerRef" | "shouldDisplayLastColumnCell" | "pinnedLeftColumns" | "pinnedRightColumns" | "mainTemplateColumns" | "pinnedLeftTemplateColumns" | "pinnedRightTemplateColumns";
 interface TableContentProps extends Omit<TableHeaderProps, OmittedTableProps>, Omit<TableBodyProps, OmittedTableProps> {
     editColumns: boolean;
     pinnedLeftRef: RefObject<HTMLDivElement | null>;
