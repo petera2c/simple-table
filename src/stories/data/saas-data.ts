@@ -13,29 +13,35 @@ export const generateSaaSData = (): Row[] => {
     const tier = tiers[Math.floor(Math.random() * tiers.length)];
     const year = 2023 + Math.floor(Math.random() * 3);
     const monthlyRevenue = Math.floor(Math.random() * 100000) + 1000;
-    const renewalDate = `2025-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`;
-    const signUpDate = `${year}-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`;
+    const churnRate = parseFloat((Math.random() * 5).toFixed(1));
+    const avgSessionTime = Math.floor(Math.random() * 60);
+    const renewalDate = `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, "0")}-${String(
+      Math.floor(Math.random() * 28) + 1
+    ).padStart(2, "0")}`;
+    const signUpDate = `${year}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, "0")}-${String(
+      Math.floor(Math.random() * 28) + 1
+    ).padStart(2, "0")}`;
     const lastLoginDay2 = Math.floor(Math.random() * 18) + 1;
     const lastLogin = `2025-03-${lastLoginDay2 < 10 ? `0${lastLoginDay2}` : lastLoginDay2}`;
-    const [renewalYear, renewalMonth, renewalDay] = renewalDate.split("-");
-    const [signUpYear, signUpMonth, signUpDay] = signUpDate.split("-");
-    const [lastLoginYear, lastLoginMonth, lastLoginDay] = lastLogin.split("-");
+    const supportTickets = Math.floor(Math.random() * 100);
+    const activeUsers = Math.floor(Math.random() * 5000) + 50;
+    const customerSatisfaction = parseFloat((Math.random() * 5).toFixed(1));
 
     return {
       rowMeta: { rowId: rowId++, isExpanded: true },
       rowData: {
         tier,
         segment,
-        monthlyRevenue: `$${monthlyRevenue.toLocaleString("en-US")}`,
-        activeUsers: Math.floor(Math.random() * 5000) + 50,
-        churnRate: `${(Math.random() * 5).toFixed(1)}%`,
-        avgSessionTime: `${Math.floor(Math.random() * 60)}m`,
-        renewalDate: `${parseInt(renewalMonth)}/${parseInt(renewalDay)}/${renewalYear}`,
-        supportTickets: Math.floor(Math.random() * 100),
-        signUpDate: `${parseInt(signUpMonth)}/${parseInt(signUpDay)}/${signUpYear}`,
-        lastLogin: `${parseInt(lastLoginMonth)}/${parseInt(lastLoginDay)}/${lastLoginYear}`,
+        monthlyRevenue,
+        activeUsers,
+        churnRate,
+        avgSessionTime,
+        renewalDate,
+        supportTickets,
+        signUpDate,
+        lastLogin,
         featureUsage: features[Math.floor(Math.random() * features.length)],
-        customerSatisfaction: `${(Math.random() * 5).toFixed(1)}/5`,
+        customerSatisfaction,
         paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
       },
     };
@@ -47,14 +53,23 @@ export const SAAS_HEADERS: HeaderObject[] = [
   { accessor: "segment", label: "Customer Segment", width: 250, isSortable: true, isEditable: true, align: "left" },
   {
     accessor: "monthlyRevenue",
-    label: "Monthly Revenue ($)",
+    label: "Monthly Revenue",
     width: 200,
     isSortable: true,
     isEditable: true,
     align: "right",
+    cellRenderer: (row) => `$${(row.rowData.monthlyRevenue as number).toLocaleString("en-US")}`,
   },
   { accessor: "activeUsers", label: "Active Users", width: 150, isSortable: true, isEditable: true, align: "right" },
-  { accessor: "churnRate", label: "Churn Rate", width: 150, isSortable: true, isEditable: true, align: "right" },
+  {
+    accessor: "churnRate",
+    label: "Churn Rate",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "right",
+    cellRenderer: (row) => `${(row.rowData.churnRate as number).toFixed(1)}%`,
+  },
   {
     accessor: "avgSessionTime",
     label: "Avg Session Time",
@@ -62,8 +77,24 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
+    cellRenderer: (row) => `${row.rowData.avgSessionTime}m`,
   },
-  { accessor: "renewalDate", label: "Renewal Date", width: 150, isSortable: true, isEditable: true, align: "left" },
+  {
+    accessor: "renewalDate",
+    label: "Renewal Date",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+    cellRenderer: (row) => {
+      const date = new Date(row.rowData.renewalDate as string);
+      return date.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
+      });
+    },
+  },
   {
     accessor: "supportTickets",
     label: "Support Tickets",
@@ -72,8 +103,38 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "right",
   },
-  { accessor: "signUpDate", label: "Sign-Up Date", width: 150, isSortable: true, isEditable: true, align: "left" },
-  { accessor: "lastLogin", label: "Last Login", width: 150, isSortable: true, isEditable: true, align: "left" },
+  {
+    accessor: "signUpDate",
+    label: "Sign-Up Date",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+    cellRenderer: (row) => {
+      const date = new Date(row.rowData.signUpDate as string);
+      return date.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
+      });
+    },
+  },
+  {
+    accessor: "lastLogin",
+    label: "Last Login",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+    cellRenderer: (row) => {
+      const date = new Date(row.rowData.lastLogin as string);
+      return date.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
+      });
+    },
+  },
   { accessor: "featureUsage", label: "Top Feature", width: 150, isSortable: true, isEditable: true, align: "left" },
   {
     accessor: "customerSatisfaction",
@@ -82,6 +143,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
+    cellRenderer: (row) => `${(row.rowData.customerSatisfaction as number).toFixed(1)}/5`,
   },
   { accessor: "paymentMethod", label: "Payment Method", width: 180, isSortable: true, isEditable: true, align: "left" },
 ];
