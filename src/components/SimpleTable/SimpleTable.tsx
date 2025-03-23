@@ -218,7 +218,7 @@ const SimpleTable = ({
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
-      <div className={`st-wrapper theme-${theme}`} style={height ? { height } : {}}>
+      <div className={`simple-table-root st-wrapper theme-${theme}`} style={height ? { height } : {}}>
         <div className="st-table-wrapper-container">
           <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <TableContent
