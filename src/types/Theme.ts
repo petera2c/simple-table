@@ -1,4 +1,5 @@
 type Theme =
+  | "custom"
   | "dark"
   | "desert"
   | "forest"
