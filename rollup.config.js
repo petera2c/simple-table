@@ -9,21 +9,17 @@ import peerDepsExternal from "rollup-plugin-peer-deps-external";
 export default {
   input: "src/index.tsx",
   output: [
-    {
-      file: "dist/index.js",
-      format: "cjs",
-      sourcemap: true,
-    },
-    {
-      file: "dist/index.es.js",
-      format: "esm",
-      sourcemap: true,
-    },
+    { file: "dist/index.js", format: "cjs", sourcemap: true },
+    { file: "dist/index.es.js", format: "esm", sourcemap: true },
   ],
   plugins: [
     del({ targets: "dist/*" }),
     peerDepsExternal(),
-    postcss(),
+    postcss({
+      extract: "styles.css", // Output CSS to a separate file
+      inject: false, // Prevent automatic injection into JS
+      minimize: true,
+    }),
     babel({
       exclude: ["node_modules/**", "src/stories/**"],
       presets: ["@babel/preset-react"],
