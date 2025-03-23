@@ -38,7 +38,7 @@ const RenderCells = ({
   row: Row;
   rowIndex: number;
   shouldDisplayLastColumnCell: boolean;
-} & Omit<TableBodyProps, "currentRows">) => {
+} & Omit<TableBodyProps, "currentRows" | "headerContainerRef">) => {
   // Derived state
   const children = row.rowMeta?.children;
 

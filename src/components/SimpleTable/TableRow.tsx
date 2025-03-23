@@ -16,7 +16,7 @@ const TableRow = ({
   index: number;
   lastGroupRow?: boolean;
   pinned?: "left" | "right";
-  props: Omit<TableBodyProps, "currentRows"> & {
+  props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
     onExpandRowClick: (rowIndex: number) => void;
   };
   row: Row;

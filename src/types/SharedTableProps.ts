@@ -4,6 +4,7 @@ import HeaderObject from "./HeaderObject";
 interface SharedTableProps {
   allowAnimations: boolean;
   draggedHeaderRef: RefObject<HeaderObject | null>;
+  headerContainerRef: RefObject<HTMLDivElement | null>;
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;

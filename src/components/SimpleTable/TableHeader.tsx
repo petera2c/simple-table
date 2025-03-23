@@ -1,9 +1,10 @@
-import { createRef, UIEvent, useEffect, useRef } from "react";
+import { createRef, UIEvent, useRef } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import { displayCell } from "../../utils/cellUtils";
+import useScrollSync from "../../hooks/useScrollSync";
 
 const TableHeader = ({
   allowAnimations,
@@ -12,6 +13,7 @@ const TableHeader = ({
   draggable,
   draggedHeaderRef,
   forceUpdate,
+  headerContainerRef,
   headersRef,
   hiddenColumns,
   hoveredHeaderRef,
@@ -36,25 +38,8 @@ const TableHeader = ({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Keep up to date the scroll position of the visible scroll
-  useEffect(() => {
-    if (!tableRef.current) return;
+  useScrollSync(tableRef, scrollRef);
 
-    const tableRefDiv = tableRef.current;
-
-    const handleScroll = () => {
-      const scrollLeft = tableRefDiv?.scrollLeft;
-      // Set the scrollLeft to the tableRef.current?.scrollLeft
-      if (scrollLeft !== undefined) {
-        scrollRef.current?.scrollTo(scrollLeft, 0);
-      }
-    };
-
-    tableRefDiv.addEventListener("scroll", handleScroll);
-
-    return () => {
-      tableRefDiv?.removeEventListener("scroll", handleScroll);
-    };
-  }, [tableRef]);
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const scrollLeft = scrollRef.current?.scrollLeft;
     if (scrollLeft !== undefined) {
@@ -63,7 +48,7 @@ const TableHeader = ({
   };
 
   return (
-    <div className="st-table-header-container">
+    <div className="st-header-container" ref={headerContainerRef}>
       {pinnedLeftColumns.length > 0 && (
         <div
           className="st-header-pinned-left"
@@ -80,8 +65,7 @@ const TableHeader = ({
             tableRef={tableRef}
           >
             {headersRef.current?.map((header, index) => {
-              if (!displayCell({ hiddenColumns, header, pinned: "left" }))
-                return null;
+              if (!displayCell({ hiddenColumns, header, pinned: "left" })) return null;
 
               return (
                 <TableHeaderCell
@@ -151,10 +135,7 @@ const TableHeader = ({
               />
             );
           })}
-          <TableLastColumnCell
-            ref={createRef()}
-            visible={shouldDisplayLastColumnCell}
-          />
+          <TableLastColumnCell ref={createRef()} visible={shouldDisplayLastColumnCell} />
         </Animate>
       </div>
       {pinnedRightColumns.length > 0 && (
@@ -173,8 +154,7 @@ const TableHeader = ({
             tableRef={tableRef}
           >
             {headersRef.current?.map((header, index) => {
-              if (!displayCell({ hiddenColumns, header, pinned: "right" }))
-                return null;
+              if (!displayCell({ hiddenColumns, header, pinned: "right" })) return null;
 
               return (
                 <TableHeaderCell
@@ -200,10 +180,7 @@ const TableHeader = ({
                 />
               );
             })}
-            <TableLastColumnCell
-              ref={createRef()}
-              visible={shouldDisplayLastColumnCell}
-            />
+            <TableLastColumnCell ref={createRef()} visible={shouldDisplayLastColumnCell} />
           </Animate>
         </div>
       )}

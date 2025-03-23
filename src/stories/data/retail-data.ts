@@ -95,25 +95,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     align: "left",
     pinned: "left",
   },
-  { accessor: "city", label: "City", width: 150, isSortable: true, isEditable: true, align: "left" },
-  { accessor: "employees", label: "Employees", width: 150, isSortable: true, isEditable: true, align: "right" },
-  {
-    accessor: "squareFootage",
-    label: "Square Footage",
-    width: 180,
-    isSortable: true,
-    isEditable: true,
-    align: "right",
-  },
-  { accessor: "openingDate", label: "Opening Date", width: 150, isSortable: true, isEditable: true, align: "left" },
-  {
-    accessor: "customerRating",
-    label: "Customer Rating",
-    width: 180,
-    isSortable: true,
-    isEditable: true,
-    align: "right",
-  },
+
   {
     accessor: "electronicsSales",
     label: "Electronics Sales ($)",

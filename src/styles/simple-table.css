@@ -895,14 +895,14 @@ body {
 }
 
 /* Header */
-.st-table-header-container {
+.st-header-container {
   display: flex;
 }
 
-.st-table-header-container::after {
+.st-header-container.st-header-scroll-padding::after {
   content: "";
   display: block;
-  width: 11px;
+  width: 11.01px;
   flex-shrink: 0;
   background-color: var(--st-header-background-color);
   border-bottom: var(--st-border-width) solid var(--st-border-color);
