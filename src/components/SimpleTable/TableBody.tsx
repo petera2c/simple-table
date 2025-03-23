@@ -17,10 +17,16 @@ const TableBody = (props: TableBodyProps) => {
     pinnedRightRef,
     pinnedRightTemplateColumns,
     scrollbarHorizontalRef,
+    scrollbarWidth,
     tableBodyContainerRef,
   } = props;
 
-  useScrollbarVisibility({ headerContainerRef, mainSectionRef: mainBodyRef, scrollbarHorizontalRef });
+  useScrollbarVisibility({
+    headerContainerRef,
+    mainSectionRef: tableBodyContainerRef,
+    scrollbarHorizontalRef,
+    scrollbarWidth,
+  });
 
   return (
     <div className="st-table-body-container" ref={tableBodyContainerRef}>

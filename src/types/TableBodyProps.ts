@@ -19,6 +19,7 @@ interface TableBodyProps extends SharedTableProps {
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   scrollbarHorizontalRef: RefObject<HTMLDivElement | null>;
+  scrollbarWidth: number;
   shouldPaginate: boolean;
 }
 

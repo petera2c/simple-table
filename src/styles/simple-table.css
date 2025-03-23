@@ -1,7 +1,6 @@
 :root {
-  /* New Variables for Theming */
+  --st-after-width: 11.01px;
   --st-resize-handle-width: 3px;
-
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
@@ -902,7 +901,7 @@ body {
 .st-header-container.st-header-scroll-padding::after {
   content: "";
   display: block;
-  width: 11.01px;
+  width: var(--st-after-width, default-width);
   flex-shrink: 0;
   background-color: var(--st-header-background-color);
   border-bottom: var(--st-border-width) solid var(--st-border-color);
@@ -1145,9 +1144,10 @@ body {
 }
 .st-horizontal-scrollbar-middle {
   overflow-x: scroll;
+  height: 12px;
 }
 .st-horizontal-scrollbar-middle > div {
-  padding-bottom: 0.01px;
+  height: 1px;
 }
 
 .st-horizontal-scrollbar-container {
@@ -1160,7 +1160,7 @@ body {
 .st-horizontal-scrollbar-container.st-header-scroll-padding::after {
   content: "";
   display: block;
-  width: 11.01px;
+  width: var(--st-after-width, default-width);
   flex-shrink: 0;
 }
 .st-footer {

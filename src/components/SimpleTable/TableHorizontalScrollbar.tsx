@@ -58,17 +58,14 @@ const TableHorizontalScrollbar = ({
       {tableWidth > 0 && (
         <div
           className="st-horizontal-scrollbar-middle"
-          onScroll={() => {
-            const scrollLeft = scrollRef.current?.scrollLeft;
-            console.log(scrollRef.current);
-            if (scrollLeft !== undefined) {
-              mainBodyRef.current?.scrollTo(scrollLeft, 0);
+          onScroll={(e) => {
+            const scrollLeft = (e.target as HTMLDivElement).scrollLeft;
+
+            if (scrollLeft !== undefined && mainBodyRef.current) {
+              mainBodyRef.current.scrollTo({ left: scrollLeft, behavior: "auto" });
             }
           }}
           ref={scrollRef}
-          style={{
-            width: tableWidth,
-          }}
         >
           <div
             style={{

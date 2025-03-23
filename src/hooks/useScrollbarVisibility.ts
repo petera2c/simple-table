@@ -4,10 +4,12 @@ const useScrollbarVisibility = ({
   headerContainerRef,
   mainSectionRef,
   scrollbarHorizontalRef,
+  scrollbarWidth,
 }: {
   headerContainerRef?: RefObject<HTMLElement | null>;
   mainSectionRef?: RefObject<HTMLElement | null>;
   scrollbarHorizontalRef?: RefObject<HTMLElement | null>;
+  scrollbarWidth: number;
 }) => {
   const [isMainSectionScrollable, setIsMainSectionScrollable] = useState(false);
 
@@ -21,11 +23,15 @@ const useScrollbarVisibility = ({
     headerContainer.classList.add("st-header-scroll-padding");
     scrollbarHorizontal?.classList.add("st-header-scroll-padding");
 
+    // Change width of the ::after div to the scrollbarWidth
+    headerContainer.style.setProperty("--st-after-width", `${scrollbarWidth}px`);
+    scrollbarHorizontal?.style.setProperty("--st-after-width", `${scrollbarWidth}px`);
+
     return () => {
       headerContainer.classList.remove("st-header-scroll-padding");
       scrollbarHorizontal?.classList.remove("st-header-scroll-padding");
     };
-  }, [headerContainerRef, isMainSectionScrollable, scrollbarHorizontalRef]);
+  }, [headerContainerRef, isMainSectionScrollable, scrollbarHorizontalRef, scrollbarWidth]);
 
   useEffect(() => {
     const headerContainer = headerContainerRef?.current;

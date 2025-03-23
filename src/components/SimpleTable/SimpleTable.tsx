@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useReducer, ReactNode, useMemo, useCallback, memo } from "react";
+import { useState, useRef, useEffect, useReducer, ReactNode, useMemo, useCallback, memo, useLayoutEffect } from "react";
 import useSelection from "../../hooks/useSelection";
 import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
@@ -109,6 +109,8 @@ const SimpleTable = ({
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [scrollbarWidth, setScrollbarWidth] = useState(0);
+  const [tableContentWidth, setTableContentWidth] = useState(0);
 
   // Use custom hook for sorting
   const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns } = useSortableData(tableRows, headersRef.current);
@@ -204,16 +206,15 @@ const SimpleTable = ({
   }, [selectableColumns, setSelectedCells]);
 
   // Calculate the width of the scrollbar
-  const { scrollbarWidth, tableContentWidth } = useMemo(() => {
-    let scrollbarWidth = 0;
-    let tableContentWidth = 0;
-    if (!tableBodyContainerRef.current) return { scrollbarWidth, tableContentWidth };
+  useLayoutEffect(() => {
+    if (!tableBodyContainerRef.current) return;
 
-    scrollbarWidth = tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.scrollWidth;
-    tableContentWidth = tableBodyContainerRef.current.scrollWidth;
+    const newScrollbarWidth = tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
+    const newTableContentWidth = tableBodyContainerRef.current.scrollWidth;
 
-    return { scrollbarWidth, tableContentWidth };
-  }, [tableBodyContainerRef]);
+    setScrollbarWidth(newScrollbarWidth);
+    setTableContentWidth(newTableContentWidth);
+  }, []);
 
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
@@ -247,6 +248,7 @@ const SimpleTable = ({
               pinnedLeftRef={pinnedLeftRef}
               pinnedRightRef={pinnedRightRef}
               scrollbarHorizontalRef={scrollbarHorizontalRef}
+              scrollbarWidth={scrollbarWidth}
               selectableColumns={selectableColumns}
               setIsWidthDragging={setIsWidthDragging}
               setSelectedCells={setSelectedCells}
