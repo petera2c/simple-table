@@ -37,6 +37,7 @@ const TableHorizontalScrollbar = ({
 
   // Keep up to date the middle scrollable width table container
   useEffect(() => {
+    console.log(tableRef);
     if (!tableRef.current) return;
     const updateTableWidth = () => {
       setTableWidth(tableRef.current?.scrollWidth || 0);

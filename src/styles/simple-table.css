@@ -883,11 +883,11 @@ body {
   width: 100%;
 }
 .st-table-wrapper {
+  flex: 1;
   position: relative;
   display: flex;
-  overflow: auto;
-  height: 100%;
   width: 100%;
+  min-height: 0;
 }
 .st-table-content {
   display: flex;
@@ -1145,6 +1145,7 @@ body {
 }
 
 .st-horizontal-scrollbar-container {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
 }
