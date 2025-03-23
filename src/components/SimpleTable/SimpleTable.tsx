@@ -97,12 +97,14 @@ const SimpleTable = ({
   }, [rows]);
 
   // Refs
-  const tableRef = useRef<HTMLDivElement>(null);
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
+  const headersRef = useRef(defaultHeaders);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
-  const headersRef = useRef(defaultHeaders);
+  const scrollbarHorizontalRef = useRef<HTMLDivElement>(null);
+  const tableBodyContainerRef = useRef<HTMLDivElement>(null);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
@@ -201,6 +203,18 @@ const SimpleTable = ({
     };
   }, [selectableColumns, setSelectedCells]);
 
+  // Calculate the width of the scrollbar
+  const { scrollbarWidth, tableContentWidth } = useMemo(() => {
+    let scrollbarWidth = 0;
+    let tableContentWidth = 0;
+    if (!tableBodyContainerRef.current) return { scrollbarWidth, tableContentWidth };
+
+    scrollbarWidth = tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.scrollWidth;
+    tableContentWidth = tableBodyContainerRef.current.scrollWidth;
+
+    return { scrollbarWidth, tableContentWidth };
+  }, [tableBodyContainerRef]);
+
   return (
     <TableContext.Provider value={{ rows, tableRows }}>
       <div className={`st-wrapper theme-${theme}`} style={height ? { height } : {}}>
@@ -225,12 +239,14 @@ const SimpleTable = ({
               isSelected={isSelected}
               isTopLeftCell={isTopLeftCell}
               isWidthDragging={isWidthDragging}
+              mainBodyRef={mainBodyRef}
               onCellChange={onCellChange}
               onExpandRowClick={onExpandRowClick}
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
               pinnedLeftRef={pinnedLeftRef}
               pinnedRightRef={pinnedRightRef}
+              scrollbarHorizontalRef={scrollbarHorizontalRef}
               selectableColumns={selectableColumns}
               setIsWidthDragging={setIsWidthDragging}
               setSelectedCells={setSelectedCells}
@@ -238,7 +254,7 @@ const SimpleTable = ({
               sort={sort}
               sortDownIcon={sortDownIcon}
               sortUpIcon={sortUpIcon}
-              tableRef={tableRef}
+              tableBodyContainerRef={tableBodyContainerRef}
             />
             <TableColumnEditor
               columnEditorText={columnEditorText}
@@ -252,9 +268,11 @@ const SimpleTable = ({
           </div>
           <TableHorizontalScrollbar
             headersRef={headersRef}
+            mainBodyRef={mainBodyRef}
             pinnedLeftRef={pinnedLeftRef}
             pinnedRightRef={pinnedRightRef}
-            tableRef={tableRef}
+            scrollbarHorizontalRef={scrollbarHorizontalRef}
+            tableContentWidth={tableContentWidth}
           />
         </div>
         <TableFooter

@@ -32,18 +32,18 @@ const TableHeader = ({
   sort,
   sortDownIcon,
   sortUpIcon,
-  tableRef,
+  mainBodyRef,
 }: TableHeaderProps) => {
   // Refs
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Keep up to date the scroll position of the visible scroll
-  useScrollSync(tableRef, scrollRef);
+  useScrollSync(mainBodyRef, scrollRef);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const scrollLeft = scrollRef.current?.scrollLeft;
     if (scrollLeft !== undefined) {
-      tableRef.current?.scrollTo(scrollLeft, 0);
+      mainBodyRef.current?.scrollTo(scrollLeft, 0);
     }
   };
 
@@ -60,9 +60,9 @@ const TableHeader = ({
             allowAnimations={allowAnimations}
             draggedHeaderRef={draggedHeaderRef}
             headersRef={headersRef}
+            mainBodyRef={mainBodyRef}
             pauseAnimation={isWidthDragging}
             rowIndex={0}
-            tableRef={tableRef}
           >
             {headersRef.current?.map((header, index) => {
               if (!displayCell({ hiddenColumns, header, pinned: "left" })) return null;
@@ -105,9 +105,9 @@ const TableHeader = ({
           allowAnimations={allowAnimations}
           draggedHeaderRef={draggedHeaderRef}
           headersRef={headersRef}
+          mainBodyRef={mainBodyRef}
           pauseAnimation={isWidthDragging}
           rowIndex={0}
-          tableRef={tableRef}
         >
           {headersRef.current?.map((header, index) => {
             if (!displayCell({ hiddenColumns, header })) return null;
@@ -149,9 +149,9 @@ const TableHeader = ({
             allowAnimations={allowAnimations}
             draggedHeaderRef={draggedHeaderRef}
             headersRef={headersRef}
+            mainBodyRef={mainBodyRef}
             pauseAnimation={isWidthDragging}
             rowIndex={0}
-            tableRef={tableRef}
           >
             {headersRef.current?.map((header, index) => {
               if (!displayCell({ hiddenColumns, header, pinned: "right" })) return null;

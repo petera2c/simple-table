@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useLayoutEffect,
-  useEffect,
-  RefObject,
-  useRef,
-} from "react";
+import React, { useState, useLayoutEffect, useEffect, RefObject, useRef } from "react";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 import BoundingBox from "../types/BoundingBox";
 import HeaderObject from "../types/HeaderObject";
@@ -24,9 +18,9 @@ interface AnimateProps {
   draggedHeaderRef?: RefObject<HeaderObject | null>;
   headersRef: RefObject<HeaderObject[]>;
   isBody?: boolean;
+  mainBodyRef: RefObject<HTMLDivElement | null>;
   pauseAnimation?: boolean;
   rowIndex: number;
-  tableRef: RefObject<HTMLDivElement | null>;
 }
 
 const AnimateWrapper = ({
@@ -46,11 +40,11 @@ const Animate = ({
   allowHorizontalAnimate = true,
   children,
   draggedHeaderRef,
+  headersRef,
   isBody,
+  mainBodyRef,
   pauseAnimation,
   rowIndex,
-  tableRef,
-  headersRef,
 }: AnimateProps) => {
   // Refs
   const isScrolling = useRef(false);
@@ -87,7 +81,7 @@ const Animate = ({
   }, [boundingBox, currentHeaders, draggedHeaderRef, isBody, rowIndex]);
 
   useLayoutEffect(() => {
-    const currentTableRef = tableRef.current;
+    const currentMainBodyRef = mainBodyRef.current;
 
     const handleScroll = () => {
       isScrolling.current = true;
@@ -97,13 +91,13 @@ const Animate = ({
       isScrolling.current = false;
     };
 
-    currentTableRef?.addEventListener("scroll", handleScroll);
-    currentTableRef?.addEventListener("scrollend", handleScrollEnd);
+    currentMainBodyRef?.addEventListener("scroll", handleScroll);
+    currentMainBodyRef?.addEventListener("scrollend", handleScrollEnd);
     return () => {
-      currentTableRef?.removeEventListener("scroll", handleScroll);
-      currentTableRef?.removeEventListener("scrollend", handleScrollEnd);
+      currentMainBodyRef?.removeEventListener("scroll", handleScroll);
+      currentMainBodyRef?.removeEventListener("scrollend", handleScrollEnd);
     };
-  }, [draggedHeaderRef, tableRef]);
+  }, [draggedHeaderRef, mainBodyRef]);
 
   useEffect(() => {
     if (pauseAnimation || isScrolling.current) return;
@@ -111,9 +105,7 @@ const Animate = ({
 
     if (hasPrevBoundingBox && currentHeaders) {
       currentHeaders.forEach((header) => {
-        const domNode = document.getElementById(
-          getCellId({ accessor: header.accessor, rowIndex })
-        );
+        const domNode = document.getElementById(getCellId({ accessor: header.accessor, rowIndex }));
         if (!domNode) return;
         const prevBox = prevBoundingBox.current[header.accessor];
         const currentBox = boundingBox[header.accessor];
@@ -121,9 +113,7 @@ const Animate = ({
         if (!prevBox || !currentBox) return;
 
         let changeInX = prevBox.left - currentBox.left;
-        let changeInY = !allowHorizontalAnimate
-          ? prevBox.top - currentBox.top
-          : 0;
+        let changeInY = !allowHorizontalAnimate ? prevBox.top - currentBox.top : 0;
 
         const absoluteChangeInX = Math.abs(changeInX);
         const absoluteChangeInY = Math.abs(changeInY);
@@ -141,15 +131,7 @@ const Animate = ({
         }
       });
     }
-  }, [
-    allowHorizontalAnimate,
-    boundingBox,
-    currentHeaders,
-    isBody,
-    pauseAnimation,
-    prevBoundingBox,
-    rowIndex,
-  ]);
+  }, [allowHorizontalAnimate, boundingBox, currentHeaders, isBody, pauseAnimation, prevBoundingBox, rowIndex]);
 
   return <>{children}</>;
 };

@@ -3,24 +3,29 @@ import { RefObject, useEffect, useState } from "react";
 const useScrollbarVisibility = ({
   headerContainerRef,
   mainSectionRef,
+  scrollbarHorizontalRef,
 }: {
   headerContainerRef?: RefObject<HTMLElement | null>;
   mainSectionRef?: RefObject<HTMLElement | null>;
+  scrollbarHorizontalRef?: RefObject<HTMLElement | null>;
 }) => {
   const [isMainSectionScrollable, setIsMainSectionScrollable] = useState(false);
 
   useEffect(() => {
     const headerContainer = headerContainerRef?.current;
+    const scrollbarHorizontal = scrollbarHorizontalRef?.current;
     if (!isMainSectionScrollable || !headerContainer) {
       return;
     }
 
     headerContainer.classList.add("st-header-scroll-padding");
+    scrollbarHorizontal?.classList.add("st-header-scroll-padding");
 
     return () => {
       headerContainer.classList.remove("st-header-scroll-padding");
+      scrollbarHorizontal?.classList.remove("st-header-scroll-padding");
     };
-  }, [headerContainerRef, isMainSectionScrollable]);
+  }, [headerContainerRef, isMainSectionScrollable, scrollbarHorizontalRef]);
 
   useEffect(() => {
     const headerContainer = headerContainerRef?.current;
@@ -32,7 +37,6 @@ const useScrollbarVisibility = ({
     const checkScrollability = () => {
       if (mainSection) {
         const hasVerticalScroll = mainSection.scrollHeight > mainSection.clientHeight;
-        console.log(mainSection);
         setIsMainSectionScrollable(hasVerticalScroll);
       }
     };

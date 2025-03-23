@@ -1,12 +1,20 @@
 import { RefObject, useEffect } from "react";
 
-const useWidthSync = (ref: RefObject<HTMLElement | null>, callback: (width: number) => void) => {
+const useWidthSync = ({
+  callback,
+  ref,
+  widthAttribute,
+}: {
+  callback: (width: number) => void;
+  ref: RefObject<HTMLElement | null>;
+  widthAttribute: "offsetWidth" | "scrollWidth";
+}) => {
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
     const updateWidth = () => {
-      callback(element?.scrollWidth || 0);
+      callback(element[widthAttribute] || 0);
     };
 
     updateWidth();
@@ -17,7 +25,7 @@ const useWidthSync = (ref: RefObject<HTMLElement | null>, callback: (width: numb
     resizeObserver.observe(element);
 
     return () => resizeObserver.disconnect();
-  }, [callback, ref]);
+  }, [callback, ref, widthAttribute]);
 };
 
 export default useWidthSync;

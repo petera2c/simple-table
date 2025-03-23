@@ -40,12 +40,14 @@ const TableContent = ({
   isSelected,
   isTopLeftCell,
   isWidthDragging,
+  mainBodyRef,
   onCellChange,
   onExpandRowClick,
   onSort,
   onTableHeaderDragEnd,
   pinnedLeftRef,
   pinnedRightRef,
+  scrollbarHorizontalRef,
   selectableColumns,
   setIsWidthDragging,
   setSelectedCells,
@@ -53,16 +55,16 @@ const TableContent = ({
   sort,
   sortDownIcon,
   sortUpIcon,
-  tableRef,
+  tableBodyContainerRef,
 }: TableContentProps) => {
   const headerContainerRef = useRef<HTMLDivElement>(null);
 
   const currentHeaders = headersRef.current.filter((header) => !header.hide && !header.pinned);
   const shouldDisplayLastColumnCell = useMemo(() => {
-    if (!tableRef.current) return false;
+    if (!mainBodyRef.current) return false;
     const totalColumnWidth = currentHeaders.reduce((acc, header) => acc + header.width, 0);
-    return totalColumnWidth < tableRef.current.clientWidth;
-  }, [currentHeaders, tableRef]);
+    return totalColumnWidth < mainBodyRef.current.clientWidth;
+  }, [currentHeaders, mainBodyRef]);
 
   const pinnedLeftColumns = headersRef.current.filter((header) => header.pinned === "left" && header.hide !== true);
   const pinnedRightColumns = headersRef.current.filter((header) => header.pinned === "right" && header.hide !== true);
@@ -92,6 +94,7 @@ const TableContent = ({
     hiddenColumns,
     hoveredHeaderRef,
     isWidthDragging,
+    mainBodyRef,
     mainTemplateColumns,
     onSort,
     onTableHeaderDragEnd,
@@ -106,7 +109,7 @@ const TableContent = ({
     sort,
     sortDownIcon,
     sortUpIcon,
-    tableRef,
+    tableBodyContainerRef,
   };
 
   const tableBodyProps: TableBodyProps = {
@@ -125,6 +128,7 @@ const TableContent = ({
     isSelected,
     isTopLeftCell,
     isWidthDragging,
+    mainBodyRef,
     mainTemplateColumns,
     onCellChange,
     onExpandRowClick,
@@ -135,9 +139,10 @@ const TableContent = ({
     pinnedRightColumns,
     pinnedRightRef,
     pinnedRightTemplateColumns,
+    scrollbarHorizontalRef,
     shouldDisplayLastColumnCell,
     shouldPaginate,
-    tableRef,
+    tableBodyContainerRef,
   };
 
   return (

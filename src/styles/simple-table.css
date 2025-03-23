@@ -300,37 +300,37 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--slate-50);
+  --st-scrollbar-thumb-color: var(--slate-300);
 
-  --st-border-color: var(--gray-300); /* Light gray for borders */
-  --st-odd-row-background-color: var(--white); /* White for odd rows */
-  --st-even-row-background-color: var(--white); /* White for even rows */
-  --st-header-background-color: var(--white); /* Deep blue for headers */
-  --st-dragging-background-color: var(--gray-200); /* Light gray for dragging */
-  --st-selected-cell-background-color: var(--blue-200); /* Gold for selected cells */
-  --st-selected-first-cell-background-color: var(--blue-200); /* Gold for first selected cell */
-  --st-footer-background-color: var(--white); /* White for footer */
-  --st-cell-color: var(--gray-800); /* Dark gray for cell text */
-  --st-cell-odd-row-color: var(--gray-700); /* Slightly lighter gray for odd row text */
-  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 1px -1px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-  --st-selected-cell-color: var(--gray-900); /* Darker gray for selected cell text */
-  --st-selected-first-cell-color: var(--gray-900); /* Darker gray for first selected cell text */
-  --st-resize-handle-color: var(--blue-300); /* Darker blue for resize handles */
-  --st-separator-border-color: var(--slate-100); /* Light gray for separators */
-  --st-last-group-row-separator-border-color: var(--slate-300); /* Light gray for separators */
-  --st-selected-border-top-color: var(--blue-600); /* Darker blue for selected borders */
+  --st-border-color: var(--gray-300);
+  --st-odd-row-background-color: var(--white);
+  --st-even-row-background-color: var(--white);
+  --st-header-background-color: var(--white);
+  --st-dragging-background-color: var(--gray-200);
+  --st-selected-cell-background-color: var(--blue-200);
+  --st-selected-first-cell-background-color: var(--blue-200);
+  --st-footer-background-color: var(--white);
+  --st-cell-color: var(--gray-800);
+  --st-cell-odd-row-color: var(--gray-700);
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 1px -1px rgba(0, 0, 0, 0.05);
+  --st-selected-cell-color: var(--gray-900);
+  --st-selected-first-cell-color: var(--gray-900);
+  --st-resize-handle-color: var(--blue-300);
+  --st-separator-border-color: var(--slate-100);
+  --st-last-group-row-separator-border-color: var(--slate-300);
+  --st-selected-border-top-color: var(--blue-600);
   --st-selected-border-bottom-color: var(--blue-600);
   --st-selected-border-left-color: var(--blue-600);
   --st-selected-border-right-color: var(--blue-600);
-  --st-checkbox-checked-background-color: var(--blue-600); /* Darker blue for checked checkboxes */
+  --st-checkbox-checked-background-color: var(--blue-600);
   --st-checkbox-checked-border-color: var(--blue-600);
-  --st-column-editor-background-color: var(--white); /* White for column editor */
-  --st-column-editor-popout-background-color: var(--white); /* White for popout editor */
-  --st-button-hover-background-color: var(--gray-200); /* Light gray for button hover */
-  --st-button-active-background-color: var(--blue-800); /* Deep blue for button active */
-  --st-font-family: "Roboto", sans-serif; /* Professional font */
-  --st-editable-cell-focus-border-color: var(--blue-600); /* Darker blue for editable cell focus */
+  --st-column-editor-background-color: var(--white);
+  --st-column-editor-popout-background-color: var(--white);
+  --st-button-hover-background-color: var(--gray-200);
+  --st-button-active-background-color: var(--blue-800);
+  --st-font-family: "Roboto", sans-serif;
+  --st-editable-cell-focus-border-color: var(--blue-600);
 }
 
 .theme-dark {
@@ -347,7 +347,7 @@
   --st-spacing-small: 6px;
   --st-spacing-medium: 10px;
   --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: transparent;
+  --st-scrollbar-bg-color: var(--slate-800);
   --st-scrollbar-thumb-color: var(--slate-600);
 
   --st-border-color: var(--slate-800);
@@ -394,8 +394,8 @@
   --st-spacing-small: 8px;
   --st-spacing-medium: 12px;
   --st-spacing-large: 24px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: #000000;
+  --st-scrollbar-bg-color: var(--slate-950);
+  --st-scrollbar-thumb-color: var(--slate-200);
 
   --st-border-color: var(--slate-900);
   --st-odd-row-background-color: var(--slate-50);
@@ -441,8 +441,8 @@
   --st-spacing-small: 6px;
   --st-spacing-medium: 10px;
   --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--purple-100);
+  --st-scrollbar-thumb-color: var(--purple-300);
 
   --st-border-color: var(--purple-200);
   --st-odd-row-background-color: var(--purple-50);
@@ -488,8 +488,8 @@
   --st-spacing-small: 8px;
   --st-spacing-medium: 12px;
   --st-spacing-large: 24px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--orange-200);
+  --st-scrollbar-thumb-color: var(--orange-300);
 
   --st-border-color: var(--orange-500);
   --st-odd-row-background-color: var(--orange-100);
@@ -535,8 +535,8 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--yellow-100);
+  --st-scrollbar-thumb-color: var(--yellow-300);
 
   --st-border-color: var(--yellow-300);
   --st-odd-row-background-color: var(--yellow-50);
@@ -582,7 +582,7 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: transparent;
+  --st-scrollbar-bg-color: var(--slate-800);
   --st-scrollbar-thumb-color: var(--slate-600);
 
   --st-border-color: var(--slate-800);
@@ -629,8 +629,8 @@
   --st-spacing-small: 6px;
   --st-spacing-medium: 10px;
   --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--cyan-100);
+  --st-scrollbar-thumb-color: var(--cyan-300);
 
   --st-border-color: var(--cyan-700);
   --st-odd-row-background-color: var(--cyan-50);
@@ -676,8 +676,8 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--green-100);
+  --st-scrollbar-thumb-color: var(--green-400);
 
   --st-border-color: var(--green-800);
   --st-odd-row-background-color: var(--green-50);
@@ -723,8 +723,8 @@
   --st-spacing-small: 6px;
   --st-spacing-medium: 10px;
   --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--amber-100);
+  --st-scrollbar-thumb-color: var(--amber-300);
 
   --st-border-color: var(--amber-600);
   --st-odd-row-background-color: var(--amber-50);
@@ -770,8 +770,8 @@
   --st-spacing-small: 8px;
   --st-spacing-medium: 12px;
   --st-spacing-large: 24px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--pink-50);
+  --st-scrollbar-thumb-color: var(--pink-300);
 
   --st-border-color: var(--pink-500);
   --st-odd-row-background-color: var(--pink-50);
@@ -817,8 +817,8 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
   --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--slate-200);
+  --st-scrollbar-bg-color: var(--gray-200);
+  --st-scrollbar-thumb-color: var(--gray-400);
 
   --st-border-color: var(--gray-500);
   --st-odd-row-background-color: var(--gray-100);
@@ -1132,22 +1132,36 @@ body {
   border-right: var(--st-border-width) solid var(--st-selected-border-right-color);
 }
 
+.st-horizontal-scrollbar-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+.st-horizontal-scrollbar-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
+}
 .st-horizontal-scrollbar-left,
 .st-horizontal-scrollbar-right {
   background-color: var(--st-scrollbar-bg-color);
+  height: 100%;
 }
 .st-horizontal-scrollbar-middle {
   overflow-x: scroll;
 }
 .st-horizontal-scrollbar-middle > div {
   padding-bottom: 0.01px;
-  transform: translateY(1px);
 }
 
 .st-horizontal-scrollbar-container {
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  border-top: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-horizontal-scrollbar-container.st-header-scroll-padding::after {
+  content: "";
+  display: block;
+  width: 11.01px;
+  flex-shrink: 0;
 }
 .st-footer {
   display: flex;
