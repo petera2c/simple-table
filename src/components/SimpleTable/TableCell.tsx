@@ -72,20 +72,20 @@ const TableCell = forwardRef(
     }, [content]);
 
     // Update local content when the table rows change
-    useEffect(() => {
-      return;
-      if (row.rowMeta?.rowId === undefined || typeof row.rowMeta?.rowId !== "number") return;
+    // useEffect(() => {
+    //   return;
+    //   if (row.rowMeta?.rowId === undefined || typeof row.rowMeta?.rowId !== "number") return;
 
-      const tableRowContent = rows[row.rowMeta?.rowId];
-      // Check if the cell is a ReactNode. If it is we don't need to update the local content
-      if (typeof tableRowContent.rowData[header.accessor] === "object") return;
+    //   const tableRowContent = rows[row.rowMeta?.rowId];
+    //   // Check if the cell is a ReactNode. If it is we don't need to update the local content
+    //   if (typeof tableRowContent.rowData[header.accessor] === "object") return;
 
-      if (tableRowContent.rowData[header.accessor] !== localContent) {
-        setLocalContent(tableRowContent.rowData[header.accessor] as CellValue);
-      } else {
-        tableRows[row.rowMeta?.rowId].rowData[header.accessor] = localContent;
-      }
-    }, [header.accessor, localContent, rows, row.rowMeta?.rowId, tableRows]);
+    //   if (tableRowContent.rowData[header.accessor] !== localContent) {
+    //     setLocalContent(tableRowContent.rowData[header.accessor] as CellValue);
+    //   } else {
+    //     tableRows[row.rowMeta?.rowId].rowData[header.accessor] = localContent;
+    //   }
+    // }, [header.accessor, localContent, rows, row.rowMeta?.rowId, tableRows]);
 
     const updateLocalContent = (newValue: CellValue) => {
       setLocalContent(newValue);
