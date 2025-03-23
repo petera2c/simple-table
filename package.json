@@ -1,9 +1,16 @@
 {
   "name": "simple-table-core",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "license": "MIT",
   "files": [
     "dist"
@@ -20,11 +27,14 @@
     "spreadsheet",
     "spreadsheet-react"
   ],
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
+  },
   "dependencies": {
     "@storybook/addon-a11y": "^8.6.2",
     "@storybook/addon-controls": "^8.6.2",
-    "@storybook/addon-docs": "^8.6.2",
-    "react": "^19.0.0"
+    "@storybook/addon-docs": "^8.6.2"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.25.7",
