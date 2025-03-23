@@ -17,6 +17,8 @@ interface TableBodyProps extends SharedTableProps {
     onExpandRowClick: (rowIndex: number) => void;
     pinnedLeftRef: RefObject<HTMLDivElement | null>;
     pinnedRightRef: RefObject<HTMLDivElement | null>;
+    scrollbarHorizontalRef: RefObject<HTMLDivElement | null>;
+    scrollbarWidth: number;
     shouldPaginate: boolean;
 }
 export default TableBodyProps;

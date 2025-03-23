@@ -1157,6 +1157,12 @@ body {
   border-top: var(--st-border-width) solid var(--st-border-color);
 }
 
+.st-horizontal-scrollbar-container > div {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
 .st-horizontal-scrollbar-container.st-header-scroll-padding::after {
   content: "";
   display: block;

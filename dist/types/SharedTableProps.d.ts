@@ -8,6 +8,7 @@ interface SharedTableProps {
     hiddenColumns: Record<string, boolean>;
     hoveredHeaderRef: RefObject<HeaderObject | null>;
     isWidthDragging: boolean;
+    mainBodyRef: RefObject<HTMLDivElement | null>;
     mainTemplateColumns: string;
     onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
     pinnedLeftColumns: HeaderObject[];
@@ -15,6 +16,6 @@ interface SharedTableProps {
     pinnedRightColumns: HeaderObject[];
     pinnedRightTemplateColumns: string;
     shouldDisplayLastColumnCell: boolean;
-    tableRef: RefObject<HTMLDivElement | null>;
+    tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }
 export default SharedTableProps;

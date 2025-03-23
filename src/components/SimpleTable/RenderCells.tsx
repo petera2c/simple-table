@@ -49,9 +49,9 @@ const RenderCells = ({
       draggedHeaderRef={props.draggedHeaderRef}
       headersRef={props.headersRef}
       isBody
+      mainBodyRef={props.mainBodyRef}
       pauseAnimation={props.isWidthDragging}
       rowIndex={rowIndex + 1}
-      tableRef={props.tableRef}
     >
       {rowIndex !== 0 && <TableRowSeparator lastGroupRow={lastGroupRow} />}
       {headers.map((header, colIndex) => {

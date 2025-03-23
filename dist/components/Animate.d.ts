@@ -7,9 +7,9 @@ interface AnimateProps {
     draggedHeaderRef?: RefObject<HeaderObject | null>;
     headersRef: RefObject<HeaderObject[]>;
     isBody?: boolean;
+    mainBodyRef: RefObject<HTMLDivElement | null>;
     pauseAnimation?: boolean;
     rowIndex: number;
-    tableRef: RefObject<HTMLDivElement | null>;
 }
 declare const AnimateWrapper: ({ allowAnimations, children, ...props }: AnimateProps & {
     allowAnimations: boolean;

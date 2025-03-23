@@ -210,7 +210,7 @@ const SimpleTable = ({
     if (!tableBodyContainerRef.current) return;
 
     const newScrollbarWidth = tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
-    const newTableContentWidth = tableBodyContainerRef.current.scrollWidth;
+    const newTableContentWidth = tableBodyContainerRef.current.clientWidth;
 
     setScrollbarWidth(newScrollbarWidth);
     setTableContentWidth(newTableContentWidth);

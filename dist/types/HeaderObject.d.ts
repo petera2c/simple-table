@@ -1,10 +1,9 @@
 import { ReactNode } from "react";
+import Row from "./Row";
 type HeaderObject = {
     accessor: string;
     align?: "left" | "center" | "right";
-    cellRenderer?: (row: {
-        [key: string]: any;
-    }) => ReactNode;
+    cellRenderer?: (row: Row) => ReactNode;
     expandable?: boolean;
     hide?: boolean;
     isEditable?: boolean;

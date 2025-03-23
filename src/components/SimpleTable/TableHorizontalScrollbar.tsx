@@ -41,48 +41,46 @@ const TableHorizontalScrollbar = ({
   }
 
   return (
-    <div
-      className="st-horizontal-scrollbar-container"
-      ref={scrollbarHorizontalRef}
-      // style={{ width: tableContentWidth }}
-    >
-      {pinnedLeftWidth > 0 && (
-        <div
-          className="st-horizontal-scrollbar-left"
-          style={{
-            flexShrink: 0,
-            width: pinnedLeftWidth,
-          }}
-        />
-      )}
-      {tableWidth > 0 && (
-        <div
-          className="st-horizontal-scrollbar-middle"
-          onScroll={(e) => {
-            const scrollLeft = (e.target as HTMLDivElement).scrollLeft;
-
-            if (scrollLeft !== undefined && mainBodyRef.current) {
-              mainBodyRef.current.scrollTo({ left: scrollLeft, behavior: "auto" });
-            }
-          }}
-          ref={scrollRef}
-        >
+    <div className="st-horizontal-scrollbar-container" ref={scrollbarHorizontalRef}>
+      <div style={{ width: tableContentWidth }}>
+        {pinnedLeftWidth > 0 && (
           <div
+            className="st-horizontal-scrollbar-left"
             style={{
-              width: tableWidth,
+              flexShrink: 0,
+              width: pinnedLeftWidth,
             }}
           />
-        </div>
-      )}
-      {pinnedRightWidth > 0 && (
-        <div
-          className="st-horizontal-scrollbar-right"
-          style={{
-            flexShrink: 0,
-            minWidth: pinnedRightWidth,
-          }}
-        />
-      )}
+        )}
+        {tableWidth > 0 && (
+          <div
+            className="st-horizontal-scrollbar-middle"
+            onScroll={(e) => {
+              const scrollLeft = (e.target as HTMLDivElement).scrollLeft;
+
+              if (scrollLeft !== undefined && mainBodyRef.current) {
+                mainBodyRef.current.scrollTo({ left: scrollLeft, behavior: "auto" });
+              }
+            }}
+            ref={scrollRef}
+          >
+            <div
+              style={{
+                width: tableWidth,
+              }}
+            />
+          </div>
+        )}
+        {pinnedRightWidth > 0 && (
+          <div
+            className="st-horizontal-scrollbar-right"
+            style={{
+              flexShrink: 0,
+              minWidth: pinnedRightWidth,
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };
