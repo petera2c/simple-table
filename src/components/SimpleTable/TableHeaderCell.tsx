@@ -205,8 +205,6 @@ const TableHeaderCell = forwardRef(
           onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragEnd={handleDragEndWrapper}
           onDragStart={onDragStart}
-          onMouseEnter={() => (document.body.style.overflow = "hidden")}
-          onMouseLeave={() => (document.body.style.overflow = "auto")}
         >
           {header?.label}
         </div>
