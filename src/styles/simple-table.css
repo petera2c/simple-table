@@ -850,23 +850,35 @@
   --st-editable-cell-focus-border-color: var(--st-gray-600);
 }
 
-/* Global styles */
-.simple-table-root * {
+.simple-table-root,
+.st-wrapper,
+.st-table-wrapper-container,
+.st-table-wrapper,
+.st-table-content,
+.st-header-container,
+.st-header-cell,
+.st-cell,
+.st-table-body-container,
+.st-table-body-main,
+.st-table-body-pinned-left,
+.st-table-body-pinned-right,
+.st-footer,
+.st-column-editor,
+.st-column-editor-popout,
+.st-horizontal-scrollbar-left,
+.st-horizontal-scrollbar-right,
+.st-horizontal-scrollbar-middle,
+.st-horizontal-scrollbar-container,
+.st-horizontal-scrollbar-container > div,
+.st-horizontal-scrollbar-container.st-header-scroll-padding::after,
+.st-footer {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 .simple-table-root {
   font-family: var(--st-font-family, sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Apply Nunito as the default font */
-body {
-  font-size: var(--st-font-size);
-  font-weight: var(--st-font-weight-normal);
 }
 
 /* Wrapper for the table */
@@ -1135,25 +1147,6 @@ body {
   border-right: var(--st-border-width) solid var(--st-selected-border-right-color);
 }
 
-.st-horizontal-scrollbar-left {
-  border-right: var(--st-border-width) solid var(--st-border-color);
-}
-.st-horizontal-scrollbar-right {
-  border-left: var(--st-border-width) solid var(--st-border-color);
-}
-.st-horizontal-scrollbar-left,
-.st-horizontal-scrollbar-right {
-  background-color: var(--st-scrollbar-bg-color);
-  height: 100%;
-}
-.st-horizontal-scrollbar-middle {
-  overflow-x: scroll;
-  height: 12px;
-}
-.st-horizontal-scrollbar-middle > div {
-  height: 1px;
-}
-
 .st-horizontal-scrollbar-container {
   flex-shrink: 0;
   display: flex;
@@ -1173,6 +1166,26 @@ body {
   width: var(--st-after-width, default-width);
   flex-shrink: 0;
 }
+
+.st-horizontal-scrollbar-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+.st-horizontal-scrollbar-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
+}
+.st-horizontal-scrollbar-left,
+.st-horizontal-scrollbar-right {
+  background-color: var(--st-scrollbar-bg-color);
+  height: 100%;
+}
+.st-horizontal-scrollbar-middle {
+  overflow: scroll;
+  height: 12px;
+}
+.st-horizontal-scrollbar-middle > div {
+  height: 1px;
+}
+
 .st-footer {
   display: flex;
   align-items: center;
