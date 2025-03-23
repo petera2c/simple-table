@@ -4,6 +4,16 @@ Any questions, support or features requests join me on Discord <a href="https://
 
 Simple Table is a powerful yet lightweight React grid component that provides a flexible, customizable, and high-performance solution for displaying and manipulating tabular data in your applications.
 
+## Live Demo
+
+Check out the live demo on CodeSandbox: <a href="https://codesandbox.io/p/sandbox/simple-table-pagination-example-rdjm5d?file=%2Fsrc%2FApp.tsx%3A33%2C24" target="_blank" rel="noopener noreferrer">Simple Table Pagination Example</a>
+
+<div align="center">
+    <a href="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" target="_blank" rel="noopener noreferrer">
+        <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" />
+    </a>
+</div>
+
 ## Key Features
 
 - **Highly Customizable**: Fully customizable appearance with CSS variables and themes
@@ -22,16 +32,6 @@ For detailed documentation, visit: [Simple Table Documentation](https://docs.sim
 ## Website
 
 For more information, visit our website: [Simple Table](https://www.simple-table.com/)
-
-## Live Demo
-
-Check out the live demo on CodeSandbox: <a href="https://codesandbox.io/p/sandbox/simple-table-pagination-example-rdjm5d?file=%2Fsrc%2FApp.tsx%3A33%2C24" target="_blank" rel="noopener noreferrer">Simple Table Pagination Example</a>
-
-<div align="center">
-    <a href="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" target="_blank" rel="noopener noreferrer">
-        <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" />
-    </a>
-</div>
 
 ## Installation
 

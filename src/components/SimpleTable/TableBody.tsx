@@ -1,9 +1,13 @@
+import { useRef } from "react";
+import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableSection from "./TableSection";
 
 const TableBody = (props: TableBodyProps) => {
+  const tableBodyRef = useRef<HTMLDivElement | null>(null);
   const {
     currentRows,
+    headerContainerRef,
     isRowExpanded,
     mainTemplateColumns,
     onExpandRowClick,
@@ -16,8 +20,10 @@ const TableBody = (props: TableBodyProps) => {
     tableRef,
   } = props;
 
+  useScrollbarVisibility({ headerContainerRef, mainSectionRef: tableBodyRef });
+
   return (
-    <div className="st-table-body-container">
+    <div className="st-table-body-container" ref={tableBodyRef}>
       {pinnedLeftColumns.length > 0 && (
         <TableSection
           {...props}

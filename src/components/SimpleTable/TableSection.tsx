@@ -2,7 +2,6 @@ import Row from "../../types/Row";
 import { RefObject, useEffect, useRef } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "./TableRow";
-import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 
 const TableSection = ({
   headerContainerRef,
@@ -26,7 +25,6 @@ const TableSection = ({
 
   const indexCounter = useRef(0); // Persistent counter across renders
 
-  useScrollbarVisibility({ headerContainerRef, mainSectionRef: sectionRef, pinned });
   // Reset the counter on each render
   useEffect(() => {
     indexCounter.current = 0; // Reset to 0 when Table re-renders

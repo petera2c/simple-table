@@ -3,11 +3,9 @@ import { RefObject, useEffect, useState } from "react";
 const useScrollbarVisibility = ({
   headerContainerRef,
   mainSectionRef,
-  pinned,
 }: {
   headerContainerRef?: RefObject<HTMLElement | null>;
   mainSectionRef?: RefObject<HTMLElement | null>;
-  pinned?: "left" | "right";
 }) => {
   const [isMainSectionScrollable, setIsMainSectionScrollable] = useState(false);
 
@@ -27,14 +25,15 @@ const useScrollbarVisibility = ({
   useEffect(() => {
     const headerContainer = headerContainerRef?.current;
     const mainSection = mainSectionRef?.current;
-    if (pinned || !mainSection || !headerContainer) {
+    if (!mainSection || !headerContainer) {
       return;
     }
 
     const checkScrollability = () => {
       if (mainSection) {
-        const hasHorizontalScroll = mainSection.scrollWidth > mainSection.clientWidth;
-        setIsMainSectionScrollable(hasHorizontalScroll);
+        const hasVerticalScroll = mainSection.scrollHeight > mainSection.clientHeight;
+        console.log(mainSection);
+        setIsMainSectionScrollable(hasVerticalScroll);
       }
     };
 
@@ -54,7 +53,7 @@ const useScrollbarVisibility = ({
         resizeObserver.unobserve(mainSection);
       }
     };
-  }, [headerContainerRef, mainSectionRef, pinned]);
+  }, [headerContainerRef, mainSectionRef]);
 };
 
 export default useScrollbarVisibility;
