@@ -5,6 +5,7 @@ import SortConfig from "../types/SortConfig";
 declare const useSortableData: (tableRows: Row[], headers: HeaderObject[]) => {
     sort: SortConfig | null;
     setSort: import("react").Dispatch<import("react").SetStateAction<SortConfig | null>>;
+    updateSort: (columnIndex: number, accessor: string) => void;
     sortedRows: Row[];
     hiddenColumns: Record<string, boolean>;
     setHiddenColumns: import("react").Dispatch<import("react").SetStateAction<Record<string, boolean>>>;

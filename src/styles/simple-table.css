@@ -1250,6 +1250,7 @@
   width: 100%;
   padding: var(--st-cell-padding);
   font-size: var(--st-font-size);
+  box-sizing: border-box;
 }
 .editable-cell-input:focus {
   border: var(--st-border-width) solid var(--st-editable-cell-focus-border-color);
