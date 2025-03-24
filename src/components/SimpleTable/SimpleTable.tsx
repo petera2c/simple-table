@@ -113,7 +113,10 @@ const SimpleTable = ({
   const [tableContentWidth, setTableContentWidth] = useState(0);
 
   // Use custom hook for sorting
-  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns } = useSortableData(tableRows, headersRef.current);
+  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData(
+    tableRows,
+    headersRef.current
+  );
 
   // Expand/collapse handler
   const onExpandRowClick = useCallback((rowId: string | number) => {
@@ -162,22 +165,9 @@ const SimpleTable = ({
   // Memoize handlers
   const onSort = useCallback(
     (columnIndex: number, accessor: string) => {
-      setSort((prevSort) => {
-        if (prevSort?.key.accessor !== accessor) {
-          return {
-            key: headersRef.current[columnIndex],
-            direction: "ascending",
-          };
-        } else if (prevSort?.direction === "ascending") {
-          return {
-            key: headersRef.current[columnIndex],
-            direction: "descending",
-          };
-        }
-        return null;
-      });
+      updateSort(columnIndex, accessor);
     },
-    [setSort]
+    [updateSort]
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {

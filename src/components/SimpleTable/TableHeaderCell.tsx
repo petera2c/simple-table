@@ -214,7 +214,6 @@ const TableHeaderCell = forwardRef(
             {sort.direction === "descending" && sortDownIcon && sortDownIcon}
           </div>
         )}
-
         {!reverse && ResizeHandle}
       </div>
     );
