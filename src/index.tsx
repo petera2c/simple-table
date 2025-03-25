@@ -4,7 +4,6 @@ import type Cell from "./types/Cell";
 import type CellChangeProps from "./types/CellChangeProps";
 import type CellValue from "./types/CellValue";
 import type DragHandlerProps from "./types/DragHandlerProps";
-import type GroupedRow from "./types/GroupedRow";
 import type HeaderObject from "./types/HeaderObject";
 import type OnSortProps from "./types/OnSortProps";
 import type Row from "./types/Row";
@@ -23,7 +22,6 @@ export type {
   CellChangeProps,
   CellValue,
   DragHandlerProps,
-  GroupedRow,
   HeaderObject,
   OnSortProps,
   Row,

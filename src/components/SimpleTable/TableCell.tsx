@@ -1,5 +1,5 @@
 import { forwardRef, Ref, useContext, useEffect, useState } from "react";
-import EditableCell from "./EditableCell/EditableCell";
+import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";

@@ -1,5 +1,4 @@
 import CellValue from "./CellValue";
-import GroupedRow from "./GroupedRow";
 
 type Row = {
   // Row metadata
