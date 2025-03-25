@@ -1,5 +1,6 @@
 import Row from "../../types/Row";
 import TableBodyProps from "../../types/TableBodyProps";
+import VisibleRow from "../../types/VisibleRow";
 import RenderCells from "./RenderCells";
 
 const TableRow = ({
@@ -9,7 +10,7 @@ const TableRow = ({
   lastGroupRow,
   pinned,
   props,
-  row,
+  visibleRow,
 }: {
   depth?: number;
   getNextRowIndex: () => number;
@@ -19,15 +20,32 @@ const TableRow = ({
   props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
     onExpandRowClick: (rowIndex: number) => void;
   };
-  row: Row;
+  visibleRow: VisibleRow;
 }) => {
-  const isGroup = (row.rowMeta?.children?.length || 0) > 0;
+  const { row, position } = visibleRow;
   const rowIndex = getNextRowIndex(); // Get the next available index
 
-  const children = row.rowMeta?.children || [];
+  const gridTemplateColumns = props.headers
+    .filter((header) => pinned === header.pinned)
+    .map((header) => `${header.width}px`)
+    .join(" ");
+  const rowHeight = 40;
+  console.log(gridTemplateColumns);
 
   return (
-    <>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns,
+        position: "absolute",
+        top: `${position * rowHeight}px`,
+        height: `${rowHeight}px`,
+        background: row.rowMeta.children ? "#eef2f7" : "#ffffff",
+        transform: "translateZ(0)",
+        borderBottom: "1px solid #e0e6ed",
+        transition: "background 0.2s ease",
+      }}
+    >
       <RenderCells
         {...props}
         depth={depth}
@@ -37,20 +55,7 @@ const TableRow = ({
         row={row}
         rowIndex={rowIndex}
       />
-      {isGroup &&
-        props.isRowExpanded(row.rowMeta.rowId) &&
-        children.map((child, childIndex) => (
-          <TableRow
-            depth={depth + 1}
-            getNextRowIndex={getNextRowIndex}
-            index={childIndex}
-            key={childIndex}
-            pinned={pinned}
-            props={props}
-            row={child}
-          />
-        ))}
-    </>
+    </div>
   );
 };
 
