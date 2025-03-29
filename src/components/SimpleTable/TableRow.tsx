@@ -40,9 +40,7 @@ const TableRow = ({
         position: "absolute",
         top: `${position * rowHeight}px`,
         height: `${rowHeight}px`,
-        background: row.rowMeta.children ? "#eef2f7" : "#ffffff",
         transform: "translateZ(0)",
-        borderBottom: "1px solid #e0e6ed",
         transition: "background 0.2s ease",
       }}
     >
