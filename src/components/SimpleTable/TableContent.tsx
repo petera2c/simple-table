@@ -58,8 +58,13 @@ const TableContent = ({
   sortUpIcon,
   tableBodyContainerRef,
 }: TableContentProps) => {
+  // Refs
   const headerContainerRef = useRef<HTMLDivElement>(null);
+  const pinnedLeftHeaderRef = useRef<HTMLDivElement>(null);
+  const centerHeaderRef = useRef<HTMLDivElement>(null);
+  const pinnedRightHeaderRef = useRef<HTMLDivElement>(null);
 
+  // Derived state
   const currentHeaders = headersRef.current.filter((header) => !header.hide && !header.pinned);
   const shouldDisplayLastColumnCell = useMemo(() => {
     if (!mainBodyRef.current) return false;
@@ -85,6 +90,7 @@ const TableContent = ({
 
   const tableHeaderProps: TableHeaderProps = {
     allowAnimations,
+    centerHeaderRef,
     columnResizing,
     currentRows,
     draggable,
@@ -100,8 +106,10 @@ const TableContent = ({
     onSort,
     onTableHeaderDragEnd,
     pinnedLeftColumns,
+    pinnedLeftHeaderRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
+    pinnedRightHeaderRef,
     pinnedRightTemplateColumns,
     selectableColumns,
     setIsWidthDragging,
@@ -115,6 +123,7 @@ const TableContent = ({
 
   const tableBodyProps: TableBodyProps = {
     allowAnimations,
+    centerHeaderRef,
     currentRows,
     draggedHeaderRef,
     getBorderClass,
@@ -135,9 +144,11 @@ const TableContent = ({
     onExpandRowClick,
     onTableHeaderDragEnd,
     pinnedLeftColumns,
+    pinnedLeftHeaderRef,
     pinnedLeftRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
+    pinnedRightHeaderRef,
     pinnedRightRef,
     pinnedRightTemplateColumns,
     scrollbarHorizontalRef,

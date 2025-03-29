@@ -59,6 +59,7 @@ const getVisibleRows = (rows: Row[], scrollTop: number, containerHeight: number,
 
 const TableBody = (props: TableBodyProps) => {
   const {
+    centerHeaderRef,
     currentRows,
     headerContainerRef,
     isRowExpanded,
@@ -66,9 +67,11 @@ const TableBody = (props: TableBodyProps) => {
     mainTemplateColumns,
     onExpandRowClick,
     pinnedLeftColumns,
+    pinnedLeftHeaderRef,
     pinnedLeftRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
+    pinnedRightHeaderRef,
     pinnedRightRef,
     pinnedRightTemplateColumns,
     scrollbarHorizontalRef,
@@ -160,6 +163,10 @@ const TableBody = (props: TableBodyProps) => {
     });
   };
 
+  const leftWidth = pinnedLeftHeaderRef.current?.clientWidth ? pinnedLeftHeaderRef.current?.clientWidth + 1 : 0;
+  const centerWidth = centerHeaderRef.current?.clientWidth;
+  const rightWidth = pinnedRightHeaderRef.current?.clientWidth ? pinnedRightHeaderRef.current?.clientWidth + 1 : 0;
+
   return (
     <div
       className="st-table-body-container"
@@ -177,6 +184,7 @@ const TableBody = (props: TableBodyProps) => {
           templateColumns={pinnedLeftTemplateColumns}
           totalHeight={totalHeight}
           visibleRows={visibleRows}
+          width={leftWidth}
         />
       )}
       <TableSection
@@ -187,6 +195,7 @@ const TableBody = (props: TableBodyProps) => {
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
         visibleRows={visibleRows}
+        width={centerWidth}
       />
       {pinnedRightColumns.length > 0 && (
         <TableSection
@@ -198,6 +207,7 @@ const TableBody = (props: TableBodyProps) => {
           templateColumns={pinnedRightTemplateColumns}
           totalHeight={totalHeight}
           visibleRows={visibleRows}
+          width={rightWidth}
         />
       )}
     </div>

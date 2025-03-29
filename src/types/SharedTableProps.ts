@@ -3,6 +3,7 @@ import HeaderObject from "./HeaderObject";
 
 interface SharedTableProps {
   allowAnimations: boolean;
+  centerHeaderRef: RefObject<HTMLDivElement | null>;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   headerContainerRef: RefObject<HTMLDivElement | null>;
   headersRef: RefObject<HeaderObject[]>;
@@ -13,8 +14,10 @@ interface SharedTableProps {
   mainTemplateColumns: string;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftColumns: HeaderObject[];
+  pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedLeftTemplateColumns: string;
   pinnedRightColumns: HeaderObject[];
+  pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedRightTemplateColumns: string;
   shouldDisplayLastColumnCell: boolean;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;

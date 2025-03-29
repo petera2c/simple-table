@@ -8,6 +8,7 @@ import useScrollSync from "../../hooks/useScrollSync";
 
 const TableHeader = ({
   allowAnimations,
+  centerHeaderRef,
   columnResizing,
   currentRows,
   draggable,
@@ -18,12 +19,15 @@ const TableHeader = ({
   hiddenColumns,
   hoveredHeaderRef,
   isWidthDragging,
+  mainBodyRef,
   mainTemplateColumns,
   onSort,
   onTableHeaderDragEnd,
   pinnedLeftColumns,
+  pinnedLeftHeaderRef,
   pinnedLeftTemplateColumns,
   pinnedRightColumns,
+  pinnedRightHeaderRef,
   pinnedRightTemplateColumns,
   selectableColumns,
   setIsWidthDragging,
@@ -32,16 +36,12 @@ const TableHeader = ({
   sort,
   sortDownIcon,
   sortUpIcon,
-  mainBodyRef,
 }: TableHeaderProps) => {
-  // Refs
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   // Keep up to date the scroll position of the visible scroll
-  useScrollSync(mainBodyRef, scrollRef);
+  useScrollSync(mainBodyRef, centerHeaderRef);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-    const scrollLeft = scrollRef.current?.scrollLeft;
+    const scrollLeft = centerHeaderRef.current?.scrollLeft;
     if (scrollLeft !== undefined) {
       mainBodyRef.current?.scrollTo(scrollLeft, 0);
     }
@@ -52,6 +52,7 @@ const TableHeader = ({
       {pinnedLeftColumns.length > 0 && (
         <div
           className="st-header-pinned-left"
+          ref={pinnedLeftHeaderRef}
           style={{
             gridTemplateColumns: pinnedLeftTemplateColumns,
           }}
@@ -96,7 +97,7 @@ const TableHeader = ({
       <div
         className="st-header-main"
         onScroll={handleScroll}
-        ref={scrollRef}
+        ref={centerHeaderRef}
         style={{
           gridTemplateColumns: mainTemplateColumns,
         }}
@@ -141,6 +142,7 @@ const TableHeader = ({
       {pinnedRightColumns.length > 0 && (
         <div
           className="st-header-pinned-right"
+          ref={pinnedRightHeaderRef}
           style={{
             gridTemplateColumns: pinnedRightTemplateColumns,
           }}

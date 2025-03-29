@@ -12,6 +12,7 @@ const TableSection = ({
   templateColumns,
   totalHeight,
   visibleRows,
+  width,
   ...props
 }: {
   headerContainerRef: RefObject<HTMLDivElement | null>;
@@ -22,6 +23,7 @@ const TableSection = ({
   templateColumns: string;
   totalHeight: number;
   visibleRows: VisibleRow[];
+  width?: number;
 } & Omit<TableBodyProps, "currentRows">) => {
   const className = pinned ? `st-table-body-pinned-${pinned}` : "st-table-body-main";
 
@@ -41,13 +43,9 @@ const TableSection = ({
       className={className}
       ref={sectionRef}
       style={{
-        ...(pinned === "left"
-          ? { width: "251px" }
-          : pinned === "right"
-          ? { width: "201px" }
-          : { width: "calc(100% - 453px)" }),
         position: "relative",
         height: `${totalHeight}px`,
+        width,
       }}
     >
       {visibleRows.map((visibleRow, index) => (
