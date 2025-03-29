@@ -73,7 +73,6 @@ const TableBody = (props: TableBodyProps) => {
     pinnedRightHeaderRef,
     pinnedRightRef,
     pinnedRightTemplateColumns,
-    scrollbarHorizontalRef,
     scrollbarWidth,
     tableBodyContainerRef,
   } = props;
@@ -81,7 +80,6 @@ const TableBody = (props: TableBodyProps) => {
   useScrollbarVisibility({
     headerContainerRef,
     mainSectionRef: tableBodyContainerRef,
-    scrollbarHorizontalRef,
     scrollbarWidth,
   });
 

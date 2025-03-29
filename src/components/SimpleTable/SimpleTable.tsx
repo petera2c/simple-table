@@ -100,7 +100,6 @@ const SimpleTable = ({
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
-  const scrollbarHorizontalRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
 
   // Local state
@@ -110,7 +109,7 @@ const SimpleTable = ({
   const [tableContentWidth, setTableContentWidth] = useState(0);
 
   // Use custom hook for sorting
-  const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData(
+  const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData(
     tableRows,
     headersRef.current
   );
@@ -210,7 +209,6 @@ const SimpleTable = ({
               onTableHeaderDragEnd={onTableHeaderDragEnd}
               pinnedLeftRef={pinnedLeftRef}
               pinnedRightRef={pinnedRightRef}
-              scrollbarHorizontalRef={scrollbarHorizontalRef}
               scrollbarWidth={scrollbarWidth}
               selectableColumns={selectableColumns}
               setIsWidthDragging={setIsWidthDragging}
@@ -232,11 +230,9 @@ const SimpleTable = ({
             />
           </div>
           <TableHorizontalScrollbar
-            headersRef={headersRef}
             mainBodyRef={mainBodyRef}
             pinnedLeftRef={pinnedLeftRef}
             pinnedRightRef={pinnedRightRef}
-            scrollbarHorizontalRef={scrollbarHorizontalRef}
             tableContentWidth={tableContentWidth}
           />
         </div>

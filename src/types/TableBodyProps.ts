@@ -16,7 +16,6 @@ interface TableBodyProps extends SharedTableProps {
   onCellChange?: (props: CellChangeProps) => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
-  scrollbarHorizontalRef: RefObject<HTMLDivElement | null>;
   scrollbarWidth: number;
   shouldPaginate: boolean;
 }
