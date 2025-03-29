@@ -57,10 +57,6 @@ const TableHorizontalScrollbar = ({
             }
           }}
           ref={scrollRef}
-          style={{
-            width: "100%",
-            background: "red",
-          }}
         >
           <div
             style={{

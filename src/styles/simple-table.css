@@ -1,6 +1,6 @@
 .simple-table-root {
   --st-after-width: 11.01px;
-  --st-resize-handle-width: 3px;
+  --st-resize-handle-width: 2px;
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
@@ -871,6 +871,9 @@
 .st-horizontal-scrollbar-container,
 .st-footer {
   box-sizing: border-box;
+  /* Scrollbar thumb color */
+  scrollbar-color: var(--st-scrollbar-thumb-color) var(--st-scrollbar-bg-color);
+  scrollbar-width: thin;
 }
 
 .simple-table-root {
@@ -934,6 +937,7 @@
 }
 .st-header-main {
   overflow: auto;
+  scrollbar-width: none;
 }
 .st-header-main::-webkit-scrollbar {
   display: none;
@@ -957,6 +961,7 @@
 }
 .st-table-body-main {
   overflow: auto;
+  scrollbar-width: none;
 }
 
 .st-table-body-pinned-right {
@@ -1158,8 +1163,7 @@
   height: 100%;
 }
 .st-horizontal-scrollbar-middle {
-  overflow: scroll;
-  height: 12px;
+  overflow: auto;
 }
 .st-horizontal-scrollbar-middle > div {
   height: 1px;
