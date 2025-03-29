@@ -1,7 +1,6 @@
-import { forwardRef, Ref, useContext, useEffect, useState } from "react";
+import { forwardRef, Ref, useEffect, useState } from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
-import TableContext from "../../context/TableContext";
 import { useThrottle } from "../../utils/performanceUtils";
 import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
@@ -22,7 +21,6 @@ const TableCell = forwardRef(
       header,
       headersRef,
       hoveredHeaderRef,
-      isRowExpanded,
       isSelected,
       isTopLeftCell,
       onCellChange,
@@ -35,9 +33,6 @@ const TableCell = forwardRef(
     }: TableCellProps,
     ref: Ref<HTMLDivElement>
   ) => {
-    // Context
-    const { rows, tableRows } = useContext(TableContext);
-
     // Local state
     const [localContent, setLocalContent] = useState<CellValue>(content as CellValue);
     const [isEditing, setIsEditing] = useState(false);
@@ -126,7 +121,7 @@ const TableCell = forwardRef(
         ref={ref}
       >
         {header.expandable && cellHasChildren ? (
-          isRowExpanded(row.rowMeta.rowId) ? (
+          row.rowMeta.isExpanded ? (
             <div className="st-sort-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
               <AngleDownIcon className="st-sort-icon" />
             </div>

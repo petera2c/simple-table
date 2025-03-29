@@ -14,7 +14,6 @@ export interface TableCellProps {
   header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
-  isRowExpanded: (rowId: string | number) => boolean;
   isSelected: boolean;
   isTopLeftCell: boolean;
   onCellChange?: (props: CellChangeProps) => void;

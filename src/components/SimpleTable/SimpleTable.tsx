@@ -84,9 +84,6 @@ const SimpleTable = ({
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   theme = "light",
 }: SimpleTableProps) => {
-  // State for tracking expanded rows
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(() => getInitialExpandedRows(rows));
-
   // Initialize originalRowIndex on each row
   const tableRows = useMemo(() => {
     const rowsWithOriginalRowIndex = rows.map((row, index) => ({
@@ -116,28 +113,6 @@ const SimpleTable = ({
   const { sort, setSort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData(
     tableRows,
     headersRef.current
-  );
-
-  // Expand/collapse handler
-  const onExpandRowClick = useCallback((rowId: string | number) => {
-    const rowIdString: string = String(rowId);
-    setExpandedRowIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(rowIdString)) {
-        next.delete(rowIdString);
-      } else {
-        next.add(rowIdString);
-      }
-      return next;
-    });
-  }, []);
-
-  // Memoized function to check if a row is expanded
-  const isRowExpanded = useCallback(
-    (rowId: string | number) => {
-      return expandedRowIds.has(String(rowId));
-    },
-    [expandedRowIds]
   );
 
   // Hooks
@@ -226,13 +201,11 @@ const SimpleTable = ({
               headersRef={headersRef}
               hiddenColumns={hiddenColumns}
               hoveredHeaderRef={hoveredHeaderRef}
-              isRowExpanded={isRowExpanded}
               isSelected={isSelected}
               isTopLeftCell={isTopLeftCell}
               isWidthDragging={isWidthDragging}
               mainBodyRef={mainBodyRef}
               onCellChange={onCellChange}
-              onExpandRowClick={onExpandRowClick}
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
               pinnedLeftRef={pinnedLeftRef}

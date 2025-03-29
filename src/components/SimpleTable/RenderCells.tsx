@@ -17,7 +17,6 @@ const RenderCells = ({
   handleMouseOver,
   headers,
   hiddenColumns,
-  isRowExpanded,
   isSelected,
   isTopLeftCell,
   lastGroupRow,
@@ -31,7 +30,6 @@ const RenderCells = ({
   depth: number;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
-  isRowExpanded: (rowId: string | number) => boolean;
   lastGroupRow?: boolean;
   onExpandRowClick: (rowIndex: number) => void;
   pinned?: "left" | "right";
@@ -70,7 +68,6 @@ const RenderCells = ({
             colIndex={colIndex}
             content={content}
             header={header}
-            isRowExpanded={isRowExpanded}
             isSelected={isSelected(rowIndex, colIndex)}
             isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
             key={colIndex}

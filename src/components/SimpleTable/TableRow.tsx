@@ -10,6 +10,7 @@ const TableRow = ({
   lastGroupRow,
   pinned,
   props,
+  rowHeight,
   visibleRow,
 }: {
   depth?: number;
@@ -20,6 +21,7 @@ const TableRow = ({
   props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
     onExpandRowClick: (rowIndex: number) => void;
   };
+  rowHeight: number;
   visibleRow: VisibleRow;
 }) => {
   const { row, position } = visibleRow;
@@ -29,8 +31,6 @@ const TableRow = ({
     .filter((header) => pinned === header.pinned)
     .map((header) => `${header.width}px`)
     .join(" ");
-  const rowHeight = 40;
-  console.log(gridTemplateColumns);
 
   return (
     <div

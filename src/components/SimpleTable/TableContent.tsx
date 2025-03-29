@@ -6,20 +6,21 @@ import TableHeader from "./TableHeader";
 
 // Common properties to omit from both TableHeaderProps and TableBodyProps
 type OmittedTableProps =
+  | "centerHeaderRef"
   | "headerContainerRef"
-  | "shouldDisplayLastColumnCell"
-  | "pinnedLeftColumns"
-  | "pinnedRightColumns"
   | "mainTemplateColumns"
+  | "pinnedLeftColumns"
+  | "pinnedLeftHeaderRef"
   | "pinnedLeftTemplateColumns"
-  | "pinnedRightTemplateColumns";
+  | "pinnedRightColumns"
+  | "pinnedRightHeaderRef"
+  | "pinnedRightTemplateColumns"
+  | "shouldDisplayLastColumnCell";
 
 interface TableContentProps extends Omit<TableHeaderProps, OmittedTableProps>, Omit<TableBodyProps, OmittedTableProps> {
   editColumns: boolean;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
-  isRowExpanded: (rowId: string | number) => boolean;
-  onExpandRowClick: (rowIndex: number) => void;
 }
 
 const TableContent = ({
@@ -36,13 +37,11 @@ const TableContent = ({
   headersRef,
   hiddenColumns,
   hoveredHeaderRef,
-  isRowExpanded,
   isSelected,
   isTopLeftCell,
   isWidthDragging,
   mainBodyRef,
   onCellChange,
-  onExpandRowClick,
   onSort,
   onTableHeaderDragEnd,
   pinnedLeftRef,
@@ -134,14 +133,12 @@ const TableContent = ({
     headersRef,
     hiddenColumns,
     hoveredHeaderRef,
-    isRowExpanded,
     isSelected,
     isTopLeftCell,
     isWidthDragging,
     mainBodyRef,
     mainTemplateColumns,
     onCellChange,
-    onExpandRowClick,
     onTableHeaderDragEnd,
     pinnedLeftColumns,
     pinnedLeftHeaderRef,

@@ -8,6 +8,7 @@ import VisibleRow from "../../types/VisibleRow";
 const containerHeight = 600;
 const rowHeight = 40;
 const pageSize = 15;
+const bufferRowCount = 15;
 
 // Calculate total row count recursively
 const getTotalRowCount = (rows: Row[]): number => {
@@ -28,8 +29,8 @@ const getTotalRowCount = (rows: Row[]): number => {
 const getVisibleRows = (rows: Row[], scrollTop: number, containerHeight: number, rowHeight: number): VisibleRow[] => {
   const visibleRows: VisibleRow[] = [];
   let currentPosition = 0;
-  const startOffset = Math.max(0, scrollTop - rowHeight * 5);
-  const endOffset = scrollTop + containerHeight + rowHeight * 5;
+  const startOffset = Math.max(0, scrollTop - rowHeight * bufferRowCount);
+  const endOffset = scrollTop + containerHeight + rowHeight * bufferRowCount;
 
   const traverseRows = (rowList: Row[], depth: number) => {
     for (const row of rowList) {
@@ -62,10 +63,8 @@ const TableBody = (props: TableBodyProps) => {
     centerHeaderRef,
     currentRows,
     headerContainerRef,
-    isRowExpanded,
     mainBodyRef,
     mainTemplateColumns,
-    onExpandRowClick,
     pinnedLeftColumns,
     pinnedLeftHeaderRef,
     pinnedLeftRef,
@@ -168,18 +167,13 @@ const TableBody = (props: TableBodyProps) => {
   const rightWidth = pinnedRightHeaderRef.current?.clientWidth ? pinnedRightHeaderRef.current?.clientWidth + 1 : 0;
 
   return (
-    <div
-      className="st-table-body-container"
-      ref={tableBodyContainerRef}
-      style={{ height: `${containerHeight}px` }}
-      onScroll={handleScroll}
-    >
+    <div className="st-table-body-container" ref={tableBodyContainerRef} onScroll={handleScroll}>
       {pinnedLeftColumns.length > 0 && (
         <TableSection
           {...props}
-          isRowExpanded={isRowExpanded}
           onExpandRowClick={toggleRow}
           pinned="left"
+          rowHeight={rowHeight}
           sectionRef={pinnedLeftRef}
           templateColumns={pinnedLeftTemplateColumns}
           totalHeight={totalHeight}
@@ -189,8 +183,8 @@ const TableBody = (props: TableBodyProps) => {
       )}
       <TableSection
         {...props}
-        isRowExpanded={isRowExpanded}
         onExpandRowClick={toggleRow}
+        rowHeight={rowHeight}
         sectionRef={mainBodyRef}
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
@@ -200,9 +194,9 @@ const TableBody = (props: TableBodyProps) => {
       {pinnedRightColumns.length > 0 && (
         <TableSection
           {...props}
-          isRowExpanded={isRowExpanded}
           onExpandRowClick={toggleRow}
           pinned="right"
+          rowHeight={rowHeight}
           sectionRef={pinnedRightRef}
           templateColumns={pinnedRightTemplateColumns}
           totalHeight={totalHeight}

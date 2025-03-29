@@ -5,9 +5,9 @@ import VisibleRow from "../../types/VisibleRow";
 
 const TableSection = ({
   headerContainerRef,
-  isRowExpanded,
   onExpandRowClick,
   pinned,
+  rowHeight,
   sectionRef,
   templateColumns,
   totalHeight,
@@ -16,9 +16,9 @@ const TableSection = ({
   ...props
 }: {
   headerContainerRef: RefObject<HTMLDivElement | null>;
-  isRowExpanded: (rowId: string | number) => boolean;
   onExpandRowClick: (rowIndex: number) => void;
   pinned?: "left" | "right";
+  rowHeight: number;
   sectionRef?: RefObject<HTMLDivElement | null>;
   templateColumns: string;
   totalHeight: number;
@@ -57,9 +57,9 @@ const TableSection = ({
           pinned={pinned}
           props={{
             ...props,
-            isRowExpanded,
             onExpandRowClick,
           }}
+          rowHeight={rowHeight}
           visibleRow={visibleRow}
         />
       ))}
