@@ -35,6 +35,7 @@ interface SimpleTableProps {
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
   onCellChange?: ({ accessor, newValue, originalRowIndex, row }: CellChangeProps) => void;
+  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   prevIcon?: ReactNode; // Previous icon
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
@@ -59,6 +60,7 @@ const SimpleTable = ({
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellChange,
+  onColumnOrderChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rows,
   rowsPerPage = 10,
@@ -132,6 +134,7 @@ const SimpleTable = ({
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
     headersRef.current = newHeaders;
     forceUpdate();
+    onColumnOrderChange?.(newHeaders);
   }, []);
 
   // Handle outside click

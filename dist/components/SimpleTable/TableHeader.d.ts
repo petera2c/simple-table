@@ -1,3 +1,0 @@
-import TableHeaderProps from "../../types/TableHeaderProps";
-declare const TableHeader: ({ allowAnimations, columnResizing, currentRows, draggable, draggedHeaderRef, forceUpdate, headerContainerRef, headersRef, hiddenColumns, hoveredHeaderRef, isWidthDragging, mainTemplateColumns, onSort, onTableHeaderDragEnd, pinnedLeftColumns, pinnedLeftTemplateColumns, pinnedRightColumns, pinnedRightTemplateColumns, selectableColumns, setIsWidthDragging, setSelectedCells, shouldDisplayLastColumnCell, sort, sortDownIcon, sortUpIcon, mainBodyRef, }: TableHeaderProps) => import("react/jsx-runtime").JSX.Element;
-export default TableHeader;
