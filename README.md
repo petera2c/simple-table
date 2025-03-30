@@ -74,7 +74,7 @@ The Simple Table component accepts the following props:
 - **shouldPaginate**: A boolean to enable or disable pagination. Default is `true`.
 - **rowsPerPage**: The number of rows to display per page. Default is `10`.
 - **columnResizing**: A boolean to enable or disable column resizing. Default is `true`.
-- **draggable**: A boolean to enable or disable column dragging.
+- **enableColumnReordering**: A boolean to enable or disable column dragging.
 - **pinned**: A boolean to enable or disable column pinning.
 - **editColumns**: A boolean to enable or disable column management.
 - **hideFooter**: A boolean to hide or show the footer. Default is `false`.

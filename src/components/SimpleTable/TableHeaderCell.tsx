@@ -8,6 +8,7 @@ import {
   useEffect,
   ForwardedRef,
   MouseEvent,
+  RefObject,
 } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -22,11 +23,11 @@ import { getCellId } from "../../utils/cellUtils";
 interface TableHeaderCellProps {
   columnResizing: boolean;
   currentRows: Row[];
-  draggable: boolean;
-  draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
+  enableColumnReordering: boolean;
+  draggedHeaderRef: RefObject<HeaderObject | null>;
   forceUpdate: () => void;
-  headersRef: React.RefObject<HeaderObject[]>;
-  hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
+  headersRef: RefObject<HeaderObject[]>;
+  hoveredHeaderRef: RefObject<HeaderObject | null>;
   index: number;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
@@ -44,7 +45,7 @@ const TableHeaderCell = forwardRef(
     {
       columnResizing,
       currentRows,
-      draggable,
+      enableColumnReordering,
       draggedHeaderRef,
       forceUpdate,
       headersRef,
@@ -70,7 +71,7 @@ const TableHeaderCell = forwardRef(
     const clickable = Boolean(header?.isSortable);
     const className = `st-header-cell ${header === hoveredHeaderRef.current ? "st-hovered" : ""} ${
       isDragging ? "st-dragging" : ""
-    } ${clickable ? "clickable" : ""} ${draggable && !clickable ? "draggable" : ""} ${
+    } ${clickable ? "clickable" : ""} ${enableColumnReordering && !clickable ? "enableColumnReordering" : ""} ${
       header?.align === "right" ? "right-aligned" : ""
     }`;
 
@@ -143,7 +144,7 @@ const TableHeaderCell = forwardRef(
     };
     // Drag handler
     const onDragStart = (event: DragEvent) => {
-      if (!draggable || !header) return;
+      if (!enableColumnReordering || !header) return;
 
       handleDragStartWrapper(header);
     };
@@ -201,7 +202,7 @@ const TableHeaderCell = forwardRef(
         {reverse && ResizeHandle}
         <div
           className="st-header-label"
-          draggable={draggable}
+          draggable={enableColumnReordering}
           onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragEnd={handleDragEndWrapper}
           onDragStart={onDragStart}

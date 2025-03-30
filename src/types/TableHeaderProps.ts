@@ -9,7 +9,7 @@ import OnSortProps from "./OnSortProps";
 interface TableHeaderProps extends SharedTableProps {
   columnResizing: boolean;
   currentRows: Row[];
-  draggable: boolean;
+  enableColumnReordering: boolean;
   forceUpdate: () => void;
   onSort: OnSortProps;
   selectableColumns: boolean;

@@ -28,9 +28,9 @@ interface SimpleTableProps {
   columnEditorText?: string; // Text for the column editor
   columnResizing?: boolean; // Flag for column resizing
   defaultHeaders: HeaderObject[]; // Default headers
-  draggable?: boolean; // Flag for draggable
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
+  enableColumnReordering?: boolean; // Flag for column reordering
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -52,7 +52,7 @@ const SimpleTable = ({
   columnEditorText = "Columns",
   columnResizing = false,
   defaultHeaders,
-  draggable = false,
+  enableColumnReordering = false,
   editColumns = false,
   editColumnsInitOpen = false,
   height,
@@ -174,9 +174,9 @@ const SimpleTable = ({
               allowAnimations={allowAnimations}
               columnResizing={columnResizing}
               currentRows={currentRows}
-              draggable={draggable}
               draggedHeaderRef={draggedHeaderRef}
               editColumns={editColumns}
+              enableColumnReordering={enableColumnReordering}
               forceUpdate={forceUpdate}
               getBorderClass={getBorderClass}
               handleMouseDown={handleMouseDown}
@@ -243,9 +243,9 @@ SimpleTable.defaultProps = {
   columnEditorText: "Columns",
   columnResizing: false,
   defaultHeaders: [],
-  draggable: false,
   editColumns: false,
   editColumnsInitOpen: false,
+  enableColumnReordering: false,
   height: "",
   hideFooter: false,
   nextIcon: <AngleRightIcon className="st-next-prev-icon" />,

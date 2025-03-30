@@ -21,7 +21,7 @@ const EditableCellsExample = () => {
       <SimpleTable
         columnResizing // Enable column resizing
         defaultHeaders={HEADERS} // Set the headers
-        draggable // Enable draggable columns
+        enableColumnReordering // Enable draggable columns
         onCellChange={updateCell} // Handle cell changes
         rows={rows} // Set rows data
         selectableCells // Enable selectable cells

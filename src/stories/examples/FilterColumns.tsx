@@ -38,7 +38,7 @@ const FilterColumnsExample = () => {
       <SimpleTable
         columnResizing // Enable column resizing
         defaultHeaders={HEADERS} // Set the headers
-        draggable // Enable draggable columns
+        enableColumnReordering // Enable draggable columns
         editColumns // Enable column management
         onCellChange={updateCell} // Handle cell changes
         rows={rows} // Set rows data

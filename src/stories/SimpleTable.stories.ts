@@ -71,7 +71,7 @@ export const FilterColumns: Story = {
   defaultHeaders={HEADERS}
   rows={rows}
   editColumns // Enable column management
-  draggable // Enable column reordering
+  enableColumnReordering // Enable column reordering
   columnResizing
 />`,
         language: "tsx",

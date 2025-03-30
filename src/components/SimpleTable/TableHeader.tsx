@@ -11,7 +11,7 @@ const TableHeader = ({
   centerHeaderRef,
   columnResizing,
   currentRows,
-  draggable,
+  enableColumnReordering,
   draggedHeaderRef,
   forceUpdate,
   headerContainerRef,
@@ -72,7 +72,7 @@ const TableHeader = ({
                 <TableHeaderCell
                   columnResizing={columnResizing}
                   currentRows={currentRows}
-                  draggable={draggable}
+                  enableColumnReordering={enableColumnReordering}
                   draggedHeaderRef={draggedHeaderRef}
                   forceUpdate={forceUpdate}
                   headersRef={headersRef}
@@ -117,7 +117,7 @@ const TableHeader = ({
               <TableHeaderCell
                 columnResizing={columnResizing}
                 currentRows={currentRows}
-                draggable={draggable}
+                enableColumnReordering={enableColumnReordering}
                 draggedHeaderRef={draggedHeaderRef}
                 forceUpdate={forceUpdate}
                 headersRef={headersRef}
@@ -162,7 +162,7 @@ const TableHeader = ({
                 <TableHeaderCell
                   columnResizing={columnResizing}
                   currentRows={currentRows}
-                  draggable={draggable}
+                  enableColumnReordering={enableColumnReordering}
                   draggedHeaderRef={draggedHeaderRef}
                   forceUpdate={forceUpdate}
                   headersRef={headersRef}

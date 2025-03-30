@@ -28,7 +28,7 @@ const PinnedColumnsExample = () => {
       <SimpleTable
         columnResizing // Enable column resizing
         defaultHeaders={HEADERS} // Set the headers
-        draggable // Enable draggable columns
+        enableColumnReordering // Enable draggable columns
         rows={EXAMPLE_DATA} // Set rows data
         height="calc(100dvh - 112px)" // If not using pagination use a fixed height
         selectableCells

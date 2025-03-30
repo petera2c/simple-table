@@ -182,7 +182,7 @@ const ThemingExample = () => {
       <SimpleTable
         columnResizing // Enable column resizing
         defaultHeaders={HEADERS} // Set the headers
-        draggable // Enable draggable columns
+        enableColumnReordering // Enable draggable columns
         editColumns // Enable editing columns
         onCellChange={updateCell} // Handle cell changes
         rows={rows} // Set rows data
