@@ -32,6 +32,7 @@ const TableFooter = ({
   };
 
   if (hideFooter || !shouldPaginate) return null;
+  console.log("totalPages", totalPages);
 
   return (
     <div className="st-footer">

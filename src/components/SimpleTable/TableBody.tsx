@@ -1,62 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableSection from "./TableSection";
-import VisibleRow from "../../types/VisibleRow";
+import getVisibleRows, { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 
-const containerHeight = 600;
-const rowHeight = 40;
-const pageSize = 15;
-const bufferRowCount = 15;
-
-// Calculate total row count recursively
-const getTotalRowCount = (rows: Row[]): number => {
-  let count = 0;
-  const countRows = (rowList: Row[]) => {
-    rowList.forEach((row) => {
-      count += 1;
-      if (row.rowMeta.isExpanded && row.rowMeta.children) {
-        countRows(row.rowMeta.children);
-      }
-    });
-  };
-  countRows(rows);
-  return count;
-};
-
-// Get visible rows with their absolute positions
-const getVisibleRows = (rows: Row[], scrollTop: number, containerHeight: number, rowHeight: number): VisibleRow[] => {
-  const visibleRows: VisibleRow[] = [];
-  let currentPosition = 0;
-  const startOffset = Math.max(0, scrollTop - rowHeight * bufferRowCount);
-  const endOffset = scrollTop + containerHeight + rowHeight * bufferRowCount;
-
-  const traverseRows = (rowList: Row[], depth: number) => {
-    for (const row of rowList) {
-      const rowTop = currentPosition * rowHeight;
-      if (rowTop >= endOffset) break;
-
-      if (rowTop + rowHeight > startOffset) {
-        visibleRows.push({
-          row,
-          depth,
-          position: currentPosition,
-          isLastGroupRow: Boolean(row.rowMeta.children?.length) && depth > 1,
-        });
-      }
-
-      currentPosition += 1;
-
-      if (row.rowMeta.isExpanded && row.rowMeta.children) {
-        traverseRows(row.rowMeta.children, depth + 1);
-      }
-    }
-  };
-
-  traverseRows(rows, 0);
-  return visibleRows;
-};
+const CONTAINER_HEIGHT = 600;
+const ROW_HEIGHT = 40;
+const PAGE_SIZE = 15;
+const BUFFER_ROW_COUNT = 15;
 
 const TableBody = (props: TableBodyProps) => {
   const {
@@ -96,7 +48,7 @@ const TableBody = (props: TableBodyProps) => {
 
   // Derived state
   const totalRowCount = getTotalRowCount(rows);
-  const totalHeight = totalRowCount * rowHeight;
+  const totalHeight = totalRowCount * ROW_HEIGHT;
 
   const toggleRow = (rowId: number) => {
     const updateRow = (row: Row): Row => {
@@ -112,26 +64,36 @@ const TableBody = (props: TableBodyProps) => {
   };
 
   const visibleRows = useMemo(
-    () => getVisibleRows(rows, scrollTop, containerHeight, rowHeight),
-    [rows, scrollTop, containerHeight, rowHeight]
+    () =>
+      getVisibleRows({
+        rows,
+        scrollTop,
+        containerHeight: CONTAINER_HEIGHT,
+        rowHeight: ROW_HEIGHT,
+        bufferRowCount: BUFFER_ROW_COUNT,
+      }),
+    [rows, scrollTop]
   );
 
-  const loadMoreRows = async () => {
+  const loadMoreRows = useCallback(async () => {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
-    const newRows = currentRows.slice(page * pageSize, (page + 1) * pageSize);
+    const newRows = currentRows.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
     setRows((prevRows) => [...prevRows, ...newRows]);
     setPage((prevPage) => prevPage + 1);
     setIsLoading(false);
-    if (newRows.length < pageSize / 3) setHasMore(false);
-  };
+    if (newRows.length < PAGE_SIZE / 3) setHasMore(false);
+  }, [currentRows, hasMore, isLoading, page]);
 
-  const handleObserver = (entries: IntersectionObserverEntry[]) => {
-    const target = entries[0];
-    if (target.isIntersecting && hasMore && !isLoading) {
-      loadMoreRows();
-    }
-  };
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasMore && !isLoading) {
+        loadMoreRows();
+      }
+    },
+    [hasMore, isLoading, loadMoreRows]
+  );
 
   useEffect(() => {
     const options: IntersectionObserverInit = {
@@ -148,7 +110,7 @@ const TableBody = (props: TableBodyProps) => {
     return () => {
       if (observerRef.current) observerRef.current.disconnect();
     };
-  }, [rows]);
+  }, [handleObserver, rows, tableBodyContainerRef]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const newScrollTop = e.currentTarget.scrollTop;
@@ -171,7 +133,7 @@ const TableBody = (props: TableBodyProps) => {
           {...props}
           onExpandRowClick={toggleRow}
           pinned="left"
-          rowHeight={rowHeight}
+          rowHeight={ROW_HEIGHT}
           sectionRef={pinnedLeftRef}
           templateColumns={pinnedLeftTemplateColumns}
           totalHeight={totalHeight}
@@ -182,7 +144,7 @@ const TableBody = (props: TableBodyProps) => {
       <TableSection
         {...props}
         onExpandRowClick={toggleRow}
-        rowHeight={rowHeight}
+        rowHeight={ROW_HEIGHT}
         sectionRef={mainBodyRef}
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
@@ -194,7 +156,7 @@ const TableBody = (props: TableBodyProps) => {
           {...props}
           onExpandRowClick={toggleRow}
           pinned="right"
-          rowHeight={rowHeight}
+          rowHeight={ROW_HEIGHT}
           sectionRef={pinnedRightRef}
           templateColumns={pinnedRightTemplateColumns}
           totalHeight={totalHeight}

@@ -46,21 +46,6 @@ interface SimpleTableProps {
   theme?: Theme; // Theme
 }
 
-const getInitialExpandedRows = (rows: Row[]): Set<string> => {
-  const expandedIds = new Set<string>();
-
-  const checkRow = (row: Row) => {
-    if (row.rowMeta.isExpanded) {
-      expandedIds.add(row.rowMeta.rowId.toString());
-    }
-    // Recursively check children
-    row.rowMeta.children?.forEach(checkRow);
-  };
-
-  rows.forEach(checkRow);
-  return expandedIds;
-};
-
 const SimpleTable = ({
   allowAnimations = false,
   columnEditorPosition = ColumnEditorPosition.Right,

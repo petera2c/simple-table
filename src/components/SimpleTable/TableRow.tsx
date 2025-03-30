@@ -1,4 +1,3 @@
-import Row from "../../types/Row";
 import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";
 import RenderCells from "./RenderCells";
