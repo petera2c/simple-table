@@ -25,7 +25,7 @@ export const EditableCells: Story = {
     docs: {
       description: {
         story:
-          "Demonstrates how to create editable cells in Simple Table, allowing users to directly modify data within the table. Shows how to handle the onCellChange callback to update application state when a cell value changes.",
+          "Demonstrates how to create editable cells in Simple Table, allowing users to directly modify data within the table. Shows how to handle the onCellEdit callback to update application state when a cell value changes.",
       },
       source: {
         code: `
@@ -46,7 +46,7 @@ const updateCell = ({
 <SimpleTable
   defaultHeaders={HEADERS}
   rows={rows}
-  onCellChange={updateCell}
+  onCellEdit={updateCell}
   columnResizing
   selectableCells
 />`,
@@ -71,7 +71,7 @@ export const FilterColumns: Story = {
   defaultHeaders={HEADERS}
   rows={rows}
   editColumns // Enable column management
-  enableColumnReordering // Enable column reordering
+  columnReordering // Enable column reordering
   columnResizing
 />`,
         language: "tsx",

@@ -13,7 +13,7 @@ interface TableBodyProps extends SharedTableProps {
   headers: HeaderObject[];
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
-  onCellChange?: (props: CellChangeProps) => void;
+  onCellEdit?: (props: CellChangeProps) => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   scrollbarWidth: number;

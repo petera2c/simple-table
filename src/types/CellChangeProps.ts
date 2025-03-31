@@ -2,10 +2,8 @@ import CellValue from "./CellValue";
 import Row from "./Row";
 
 type CellChangeProps = {
-  accessor: any;
-  newRowIndex: number;
+  accessor: string;
   newValue: CellValue;
-  originalRowIndex: number;
   row: Row;
 };
 

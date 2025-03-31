@@ -23,7 +23,7 @@ const TableCell = forwardRef(
       hoveredHeaderRef,
       isSelected,
       isTopLeftCell,
-      onCellChange,
+      onCellEdit,
       onExpandRowClick,
       onMouseDown,
       onMouseOver,
@@ -84,11 +84,9 @@ const TableCell = forwardRef(
 
     const updateLocalContent = (newValue: CellValue) => {
       setLocalContent(newValue);
-      onCellChange?.({
+      onCellEdit?.({
         accessor: header.accessor,
         newValue,
-        newRowIndex: rowIndex,
-        originalRowIndex: row.rowMeta?.rowId,
         row,
       });
     };

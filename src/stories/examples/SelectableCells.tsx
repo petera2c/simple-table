@@ -26,7 +26,7 @@ const SelectableCellsExample = () => {
       <SimpleTable
         columnResizing
         defaultHeaders={HEADERS}
-        enableColumnReordering
+        columnReordering
         rows={EXAMPLE_DATA}
         selectableCells
         height="80vh"

@@ -58,7 +58,7 @@ const RenderCells = ({
         let content: CellValue | ReactNode = row.rowData[header.accessor];
 
         if (header.cellRenderer) {
-          // content = header.cellRenderer(row);
+          content = header.cellRenderer({ accessor: header.accessor, colIndex, row });
         }
         return (
           <TableCell

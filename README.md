@@ -74,13 +74,13 @@ The Simple Table component accepts the following props:
 - **shouldPaginate**: A boolean to enable or disable pagination. Default is `true`.
 - **rowsPerPage**: The number of rows to display per page. Default is `10`.
 - **columnResizing**: A boolean to enable or disable column resizing. Default is `true`.
-- **enableColumnReordering**: A boolean to enable or disable column dragging.
+- **columnReordering**: A boolean to enable or disable column dragging.
 - **pinned**: A boolean to enable or disable column pinning.
 - **editColumns**: A boolean to enable or disable column management.
 - **hideFooter**: A boolean to hide or show the footer. Default is `false`.
 - **selectableCells**: A boolean to enable or disable cell selection.
 - **selectableColumns**: A boolean to enable selection of entire columns by clicking headers.
-- **onCellChange**: A function called when a cell value changes.
+- **onCellEdit**: A function called when a cell value changes.
 - **nextIcon**: A React element to display as the next page icon.
 - **prevIcon**: A React element to display as the previous page icon.
 - **sortDownIcon**: A React element to display as the sort down icon.

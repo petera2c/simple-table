@@ -182,9 +182,9 @@ const ThemingExample = () => {
       <SimpleTable
         columnResizing // Enable column resizing
         defaultHeaders={HEADERS} // Set the headers
-        enableColumnReordering // Enable draggable columns
+        columnReordering // Enable draggable columns
         editColumns // Enable editing columns
-        onCellChange={updateCell} // Handle cell changes
+        onCellEdit={updateCell} // Handle cell changes
         rows={rows} // Set rows data
         selectableCells // Enable selectable cells
         selectableColumns // Select column by clicking on the header. This will override sort on header click

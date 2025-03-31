@@ -4,7 +4,7 @@ import Row from "./Row";
 type HeaderObject = {
   accessor: string;
   align?: "left" | "center" | "right";
-  cellRenderer?: (row: Row) => ReactNode;
+  cellRenderer?: ({ accessor, colIndex, row }: { accessor: string; colIndex: number; row: Row }) => ReactNode | string;
   expandable?: boolean;
   hide?: boolean;
   isEditable?: boolean;

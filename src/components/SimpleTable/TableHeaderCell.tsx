@@ -23,7 +23,7 @@ import { getCellId } from "../../utils/cellUtils";
 interface TableHeaderCellProps {
   columnResizing: boolean;
   currentRows: Row[];
-  enableColumnReordering: boolean;
+  columnReordering: boolean;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   forceUpdate: () => void;
   headersRef: RefObject<HeaderObject[]>;
@@ -45,7 +45,7 @@ const TableHeaderCell = forwardRef(
     {
       columnResizing,
       currentRows,
-      enableColumnReordering,
+      columnReordering,
       draggedHeaderRef,
       forceUpdate,
       headersRef,
@@ -71,7 +71,7 @@ const TableHeaderCell = forwardRef(
     const clickable = Boolean(header?.isSortable);
     const className = `st-header-cell ${header === hoveredHeaderRef.current ? "st-hovered" : ""} ${
       isDragging ? "st-dragging" : ""
-    } ${clickable ? "clickable" : ""} ${enableColumnReordering && !clickable ? "enableColumnReordering" : ""} ${
+    } ${clickable ? "clickable" : ""} ${columnReordering && !clickable ? "columnReordering" : ""} ${
       header?.align === "right" ? "right-aligned" : ""
     }`;
 
@@ -144,7 +144,7 @@ const TableHeaderCell = forwardRef(
     };
     // Drag handler
     const onDragStart = (event: DragEvent) => {
-      if (!enableColumnReordering || !header) return;
+      if (!columnReordering || !header) return;
 
       handleDragStartWrapper(header);
     };
@@ -202,7 +202,7 @@ const TableHeaderCell = forwardRef(
         {reverse && ResizeHandle}
         <div
           className="st-header-label"
-          draggable={enableColumnReordering}
+          draggable={columnReordering}
           onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragEnd={handleDragEndWrapper}
           onDragStart={onDragStart}

@@ -18,7 +18,7 @@ type TableRowProps = {
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isTopLeftCell: (rowIndex: number, columnIndex: number) => boolean;
   isWidthDragging: boolean;
-  onCellChange?: (props: CellChangeProps) => void;
+  onCellEdit?: (props: CellChangeProps) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   onToggleGroup: (rowId: number) => void;
   row: Row;

@@ -26,15 +26,15 @@ interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
   columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
+  columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
-  enableColumnReordering?: boolean; // Flag for column reordering
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
-  onCellChange?: ({ accessor, newValue, originalRowIndex, row }: CellChangeProps) => void;
+  onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   prevIcon?: ReactNode; // Previous icon
   rows: Row[]; // Rows data
@@ -53,13 +53,13 @@ const SimpleTable = ({
   columnEditorText = "Columns",
   columnResizing = false,
   defaultHeaders,
-  enableColumnReordering = false,
   editColumns = false,
   editColumnsInitOpen = false,
+  columnReordering = false,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
-  onCellChange,
+  onCellEdit,
   onColumnOrderChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rows,
@@ -179,7 +179,7 @@ const SimpleTable = ({
               currentRows={currentRows}
               draggedHeaderRef={draggedHeaderRef}
               editColumns={editColumns}
-              enableColumnReordering={enableColumnReordering}
+              columnReordering={columnReordering}
               forceUpdate={forceUpdate}
               getBorderClass={getBorderClass}
               handleMouseDown={handleMouseDown}
@@ -192,7 +192,7 @@ const SimpleTable = ({
               isTopLeftCell={isTopLeftCell}
               isWidthDragging={isWidthDragging}
               mainBodyRef={mainBodyRef}
-              onCellChange={onCellChange}
+              onCellEdit={onCellEdit}
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
               pinnedLeftRef={pinnedLeftRef}
@@ -248,11 +248,11 @@ SimpleTable.defaultProps = {
   defaultHeaders: [],
   editColumns: false,
   editColumnsInitOpen: false,
-  enableColumnReordering: false,
+  columnReordering: false,
   height: "",
   hideFooter: false,
   nextIcon: <AngleRightIcon className="st-next-prev-icon" />,
-  onCellChange: () => {},
+  onCellEdit: () => {},
   prevIcon: <AngleLeftIcon className="st-next-prev-icon" />,
   rows: [],
   rowsPerPage: 10,

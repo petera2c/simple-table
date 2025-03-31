@@ -37,8 +37,8 @@ const InfiniteScrollExample = () => {
       <SimpleTable
         columnResizing // Enable column resizing
         defaultHeaders={HEADERS} // Set the headers
-        enableColumnReordering // Enable draggable columns
-        onCellChange={updateCell} // Handle cell changes
+        columnReordering // Enable draggable columns
+        onCellEdit={updateCell} // Handle cell changes
         rows={rows} // Set rows data
         selectableCells // Enable selectable cells
         height="calc(100dvh - 112px)" // Set a fixed height for scrolling
