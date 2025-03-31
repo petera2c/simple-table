@@ -32,7 +32,9 @@ const useSelection = ({
       .map((row) => Object.values(row).join("\t"))
       .join("\n");
 
-    navigator.clipboard.writeText(text);
+    if (selectedCells.size > 0) {
+      navigator.clipboard.writeText(text);
+    }
   }, [selectedCells, rows, headers]);
 
   useEffect(() => {
@@ -88,28 +90,19 @@ const useSelection = ({
   const getBorderClass = useCallback(
     (rowIndex: number, colIndex: number) => {
       const classes = [];
-      if (!isSelected(rowIndex - 1, colIndex))
-        classes.push("st-selected-top-border");
-      if (!isSelected(rowIndex + 1, colIndex))
-        classes.push("st-selected-bottom-border");
-      if (!isSelected(rowIndex, colIndex - 1))
-        classes.push("st-selected-left-border");
-      if (!isSelected(rowIndex, colIndex + 1))
-        classes.push("st-selected-right-border");
+      if (!isSelected(rowIndex - 1, colIndex)) classes.push("st-selected-top-border");
+      if (!isSelected(rowIndex + 1, colIndex)) classes.push("st-selected-bottom-border");
+      if (!isSelected(rowIndex, colIndex - 1)) classes.push("st-selected-left-border");
+      if (!isSelected(rowIndex, colIndex + 1)) classes.push("st-selected-right-border");
       return classes.join(" ");
     },
     [isSelected]
   );
 
   const isTopLeftCell = useMemo(() => {
-    const minRow = Math.min(
-      ...Array.from(selectedCells).map((cell) => parseInt(cell.split("-")[0]))
-    );
-    const minCol = Math.min(
-      ...Array.from(selectedCells).map((cell) => parseInt(cell.split("-")[1]))
-    );
-    return (rowIndex: number, colIndex: number) =>
-      rowIndex === minRow && colIndex === minCol;
+    const minRow = Math.min(...Array.from(selectedCells).map((cell) => parseInt(cell.split("-")[0])));
+    const minCol = Math.min(...Array.from(selectedCells).map((cell) => parseInt(cell.split("-")[1])));
+    return (rowIndex: number, colIndex: number) => rowIndex === minRow && colIndex === minCol;
   }, [selectedCells]);
 
   return {

@@ -58,7 +58,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => `$${(row.rowData.monthlyRevenue as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.rowData.monthlyRevenue as number).toLocaleString("en-US")}`,
   },
   { accessor: "activeUsers", label: "Active Users", width: 150, isSortable: true, isEditable: true, align: "right" },
   {
@@ -68,7 +68,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => `${(row.rowData.churnRate as number).toFixed(1)}%`,
+    cellRenderer: ({ row }) => `${(row.rowData.churnRate as number).toFixed(1)}%`,
   },
   {
     accessor: "avgSessionTime",
@@ -77,7 +77,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => `${row.rowData.avgSessionTime}m`,
+    cellRenderer: ({ row }) => `${row.rowData.avgSessionTime}m`,
   },
   {
     accessor: "renewalDate",
@@ -86,7 +86,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       const date = new Date(row.rowData.renewalDate as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
@@ -110,7 +110,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       const date = new Date(row.rowData.signUpDate as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
@@ -126,7 +126,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       const date = new Date(row.rowData.lastLogin as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
@@ -143,7 +143,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => `${(row.rowData.customerSatisfaction as number).toFixed(1)}/5`,
+    cellRenderer: ({ row }) => `${(row.rowData.customerSatisfaction as number).toFixed(1)}/5`,
   },
   { accessor: "paymentMethod", label: "Payment Method", width: 180, isSortable: true, isEditable: true, align: "left" },
 ];

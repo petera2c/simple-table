@@ -90,7 +90,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.price === "-") return "-";
       return `$${(row.rowData.price as number).toLocaleString("en-US", {
         minimumFractionDigits: 2,
@@ -105,7 +105,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.marketCap === "-") return "-";
       return `$${(row.rowData.marketCap as number).toLocaleString("en-US", {
         minimumFractionDigits: 1,
@@ -120,7 +120,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.peRatio === "-") return "-";
       return (row.rowData.peRatio as number).toFixed(1);
     },
@@ -132,7 +132,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.dividendYield === "-") return "-";
       return `${(row.rowData.dividendYield as number).toFixed(2)}%`;
     },
@@ -144,7 +144,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.volume === "-") return "-";
       return `${row.rowData.volume}M`;
     },
@@ -156,7 +156,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.lastUpdated === "-") return "-";
       const date = new Date(row.rowData.lastUpdated as string);
       return date.toLocaleDateString("en-US", {
@@ -173,7 +173,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.revenue === "-") return "-";
       return `$${(row.rowData.revenue as number).toLocaleString("en-US", {
         minimumFractionDigits: 1,
@@ -189,7 +189,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: (row) => (row.rowData.founded === "-" ? "-" : `${row.rowData.founded}`),
+    cellRenderer: ({ row }) => (row.rowData.founded === "-" ? "-" : `${row.rowData.founded}`),
   },
   { accessor: "hqLocation", label: "HQ Location", width: 180, isSortable: true, isEditable: true, align: "left" },
   {
@@ -199,7 +199,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: (row) => {
+    cellRenderer: ({ row }) => {
       if (row.rowData.analystRating === "-") return "-";
       return `${(row.rowData.analystRating as number).toFixed(1)}/5`;
     },

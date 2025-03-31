@@ -25,9 +25,10 @@ const HEADERS = SAAS_HEADERS;
 const PaginationExample = () => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
 
-  const updateCell = ({ accessor, newRowIndex, newValue, originalRowIndex, row }: CellChangeProps) => {
+  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
     setRows((prevRows) => {
-      prevRows[originalRowIndex].rowData[accessor] = newValue;
+      const rowIndex = rows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
+      prevRows[rowIndex].rowData[accessor] = newValue;
       return prevRows;
     });
   };

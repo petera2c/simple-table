@@ -9,9 +9,10 @@ const HEADERS = FINANCE_HEADERS;
 const EditableCellsExample = () => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
 
-  const updateCell = ({ accessor, newRowIndex, newValue, originalRowIndex, row }: CellChangeProps) => {
+  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
     setRows((prevRows) => {
-      prevRows[originalRowIndex].rowData[accessor] = newValue;
+      const rowIndex = rows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
+      prevRows[rowIndex].rowData[accessor] = newValue;
       return prevRows;
     });
   };
@@ -27,6 +28,7 @@ const EditableCellsExample = () => {
         selectableCells // Enable selectable cells
         height="80vh"
       />
+      <div>hello world</div>
     </div>
   );
 };
