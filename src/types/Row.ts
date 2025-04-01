@@ -1,11 +1,12 @@
 import CellValue from "./CellValue";
+import { RowId } from "./RowId";
 
 type Row = {
   // Row metadata
   rowMeta: {
     children?: Row[];
     isExpanded?: boolean;
-    rowId: number;
+    rowId: RowId;
   };
 
   // Actual cell values

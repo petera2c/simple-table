@@ -11,7 +11,7 @@ const EditableCellsExample = () => {
 
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
     setRows((prevRows) => {
-      const rowIndex = rows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
+      const rowIndex = prevRows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
       prevRows[rowIndex].rowData[accessor] = newValue;
       return prevRows;
     });
@@ -28,7 +28,6 @@ const EditableCellsExample = () => {
         selectableCells // Enable selectable cells
         height="80vh"
       />
-      <div>hello world</div>
     </div>
   );
 };

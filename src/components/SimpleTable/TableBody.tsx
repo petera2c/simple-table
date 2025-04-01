@@ -7,8 +7,8 @@ import getVisibleRows, { getTotalRowCount } from "../../utils/infiniteScrollUtil
 
 const CONTAINER_HEIGHT = 600;
 const ROW_HEIGHT = 40;
-const PAGE_SIZE = 15;
-const BUFFER_ROW_COUNT = 15;
+const PAGE_SIZE = 20;
+const BUFFER_ROW_COUNT = 5;
 
 const TableBody = (props: TableBodyProps) => {
   const {

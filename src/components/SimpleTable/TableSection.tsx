@@ -48,21 +48,23 @@ const TableSection = ({
         width,
       }}
     >
-      {visibleRows.map((visibleRow, index) => (
-        <TableRow
-          getNextRowIndex={getNextRowIndex}
-          index={index}
-          key={index}
-          lastGroupRow={Boolean(visibleRow.row.rowMeta?.children?.length)}
-          pinned={pinned}
-          props={{
-            ...props,
-            onExpandRowClick,
-          }}
-          rowHeight={rowHeight}
-          visibleRow={visibleRow}
-        />
-      ))}
+      {visibleRows.map((visibleRow, index) => {
+        return (
+          <TableRow
+            getNextRowIndex={getNextRowIndex}
+            index={index}
+            key={index}
+            lastGroupRow={Boolean(visibleRow.row.rowMeta?.children?.length)}
+            pinned={pinned}
+            props={{
+              ...props,
+              onExpandRowClick,
+            }}
+            rowHeight={rowHeight}
+            visibleRow={visibleRow}
+          />
+        );
+      })}
     </div>
   );
 };

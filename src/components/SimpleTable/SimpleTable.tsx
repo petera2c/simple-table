@@ -131,11 +131,14 @@ const SimpleTable = ({
     [updateSort]
   );
 
-  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
-    headersRef.current = newHeaders;
-    forceUpdate();
-    onColumnOrderChange?.(newHeaders);
-  }, []);
+  const onTableHeaderDragEnd = useCallback(
+    (newHeaders: HeaderObject[]) => {
+      headersRef.current = newHeaders;
+      forceUpdate();
+      onColumnOrderChange?.(newHeaders);
+    },
+    [onColumnOrderChange]
+  );
 
   // Handle outside click
   useEffect(() => {

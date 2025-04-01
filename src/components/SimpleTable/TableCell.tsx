@@ -15,7 +15,6 @@ const TableCell = forwardRef(
       borderClass,
       cellHasChildren,
       colIndex,
-      content,
       depth,
       draggedHeaderRef,
       header,
@@ -34,7 +33,7 @@ const TableCell = forwardRef(
     ref: Ref<HTMLDivElement>
   ) => {
     // Local state
-    const [localContent, setLocalContent] = useState<CellValue>(content as CellValue);
+    const [localContent, setLocalContent] = useState<CellValue>(row.rowData[header.accessor] as CellValue);
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
@@ -58,13 +57,6 @@ const TableCell = forwardRef(
     } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""} ${
       header.align === "right" ? "right-aligned" : ""
     }`;
-
-    // Update local content when the content changes
-    useEffect(() => {
-      // Check if the content is a ReactNode. If it is we don't need to update the local content
-      if (typeof content === "object") return;
-      setLocalContent(content as CellValue);
-    }, [content]);
 
     // Update local content when the table rows change
     // useEffect(() => {
@@ -90,6 +82,9 @@ const TableCell = forwardRef(
         row,
       });
     };
+    useEffect(() => {
+      setLocalContent(row.rowData[header.accessor] as CellValue);
+    }, [header.accessor, row]);
 
     if (isEditing) {
       return (
@@ -129,7 +124,9 @@ const TableCell = forwardRef(
             </div>
           )
         ) : null}
-        <span>{localContent}</span>
+        <span>
+          {header.cellRenderer ? header.cellRenderer({ accessor: header.accessor, colIndex, row }) : localContent}
+        </span>
       </div>
     );
   }

@@ -2,10 +2,8 @@ import { createRef } from "react";
 
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
-import CellValue from "../../types/CellValue";
-import { displayCell } from "../../utils/cellUtils";
+import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
-import { ReactNode } from "react";
 import TableLastColumnCell from "./TableLastColumnCell";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRowSeparator from "./TableRowSeparator";
@@ -55,22 +53,16 @@ const RenderCells = ({
       {headers.map((header, colIndex) => {
         if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
-        let content: CellValue | ReactNode = row.rowData[header.accessor];
-
-        if (header.cellRenderer) {
-          content = header.cellRenderer({ accessor: header.accessor, colIndex, row });
-        }
         return (
           <TableCell
             {...props}
             borderClass={getBorderClass(rowIndex, colIndex)}
             cellHasChildren={(children?.length || 0) > 0}
             colIndex={colIndex}
-            content={content}
             header={header}
             isSelected={isSelected(rowIndex, colIndex)}
             isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
-            key={colIndex}
+            key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
             onExpandRowClick={onExpandRowClick}
             onMouseDown={() => handleMouseDown({ rowIndex: rowIndex, colIndex })}
             onMouseOver={() => handleMouseOver(rowIndex, colIndex)}

@@ -1,14 +1,13 @@
-import { ReactNode, RefObject } from "react";
+import { RefObject } from "react";
 import HeaderObject from "./HeaderObject";
 import CellChangeProps from "./CellChangeProps";
-import CellValue from "./CellValue";
 import Row from "./Row";
+import { RowId } from "./RowId";
 
 export interface TableCellProps {
   borderClass: string;
   cellHasChildren: boolean;
   colIndex: number;
-  content: CellValue | ReactNode;
   depth: number;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   header: HeaderObject;
@@ -17,7 +16,7 @@ export interface TableCellProps {
   isSelected: boolean;
   isTopLeftCell: boolean;
   onCellEdit?: (props: CellChangeProps) => void;
-  onExpandRowClick: (rowIndex: number) => void;
+  onExpandRowClick: (rowId: RowId) => void;
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
