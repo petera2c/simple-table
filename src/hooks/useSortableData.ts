@@ -5,9 +5,21 @@ import SortConfig from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 
 // Extract sort logic to custom hook
-const useSortableData = (tableRows: Row[], headers: HeaderObject[]) => {
+const useSortableData = ({ headers, tableRows }: { headers: HeaderObject[]; tableRows: Row[] }) => {
   const [sort, setSort] = useState<SortConfig | null>(null);
-  const [hiddenColumns, setHiddenColumns] = useState<Record<string, boolean>>({});
+
+  // Initialize hiddenColumns with headers that have hide:true
+  const initialHiddenColumns = useMemo(() => {
+    const hidden: Record<string, boolean> = {};
+    headers.forEach((header) => {
+      if (header.hide === true) {
+        hidden[header.accessor] = true;
+      }
+    });
+    return hidden;
+  }, [headers]);
+
+  const [hiddenColumns, setHiddenColumns] = useState<Record<string, boolean>>(initialHiddenColumns);
 
   // Simple sort handler
   const updateSort = (columnIndex: number, accessor: string) => {

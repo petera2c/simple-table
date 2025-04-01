@@ -38,7 +38,6 @@ const TableSection = ({
     return indexCounter.current++; // Increment and return the current index
   };
 
-  console.log(templateColumns);
   return (
     <div
       className={className}

@@ -19,6 +19,7 @@ export const HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: false,
     align: "left",
+    hide: false,
   },
   {
     accessor: "companyName",

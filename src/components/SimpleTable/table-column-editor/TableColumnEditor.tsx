@@ -30,10 +30,7 @@ const TableColumnEditor = ({
   if (!editColumns) return null;
 
   return (
-    <div
-      className={`st-column-editor ${open ? "open" : ""} ${position}`}
-      onClick={() => handleClick(!open)}
-    >
+    <div className={`st-column-editor ${open ? "open" : ""} ${position}`} onClick={() => handleClick(!open)}>
       <div className="st-column-editor-text">{columnEditorText}</div>
       <TableColumnEditorPopout
         headers={headers}

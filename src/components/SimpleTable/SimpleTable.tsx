@@ -8,13 +8,13 @@ import CellChangeProps from "../../types/CellChangeProps";
 import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
-import TableColumnEditor from "./TableColumnEditor/TableColumnEditor";
 import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
+import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 
 // Create enum for consistent values
 enum ColumnEditorPosition {
@@ -96,10 +96,11 @@ const SimpleTable = ({
   const [tableContentWidth, setTableContentWidth] = useState(0);
 
   // Use custom hook for sorting
-  const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData(
+  const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
+    headers: headersRef.current,
     tableRows,
-    headersRef.current
-  );
+  });
+  console.log(hiddenColumns);
 
   // Hooks
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
