@@ -55,7 +55,7 @@ const TableCell = forwardRef(
           : `st-cell-selected ${borderClass}`
         : ""
     } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""} ${
-      header.align === "right" ? "right-aligned" : ""
+      header.align === "right" ? "right-aligned" : header.align === "center" ? "center-aligned" : "left-aligned"
     }`;
 
     // Update local content when the table rows change

@@ -72,7 +72,7 @@ const TableHeaderCell = forwardRef(
     const className = `st-header-cell ${header === hoveredHeaderRef.current ? "st-hovered" : ""} ${
       isDragging ? "st-dragging" : ""
     } ${clickable ? "clickable" : ""} ${columnReordering && !clickable ? "columnReordering" : ""} ${
-      header?.align === "right" ? "right-aligned" : ""
+      header?.align === "right" ? "right-aligned" : header?.align === "center" ? "center-aligned" : ""
     }`;
 
     // Hooks
