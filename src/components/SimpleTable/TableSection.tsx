@@ -38,6 +38,7 @@ const TableSection = ({
     return indexCounter.current++; // Increment and return the current index
   };
 
+  console.log(templateColumns);
   return (
     <div
       className={className}
@@ -52,6 +53,7 @@ const TableSection = ({
         return (
           <TableRow
             getNextRowIndex={getNextRowIndex}
+            gridTemplateColumns={templateColumns}
             index={index}
             key={index}
             lastGroupRow={Boolean(visibleRow.row.rowMeta?.children?.length)}

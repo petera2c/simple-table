@@ -3,6 +3,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
+import { getColumnWidth } from "../../utils/columnUtils";
 
 // Common properties to omit from both TableHeaderProps and TableBodyProps
 type OmittedTableProps =
@@ -14,8 +15,7 @@ type OmittedTableProps =
   | "pinnedLeftTemplateColumns"
   | "pinnedRightColumns"
   | "pinnedRightHeaderRef"
-  | "pinnedRightTemplateColumns"
-  | "shouldDisplayLastColumnCell";
+  | "pinnedRightTemplateColumns";
 
 interface TableContentProps extends Omit<TableHeaderProps, OmittedTableProps>, Omit<TableBodyProps, OmittedTableProps> {
   editColumns: boolean;
@@ -64,26 +64,21 @@ const TableContent = ({
 
   // Derived state
   const currentHeaders = headersRef.current.filter((header) => !header.hide && !header.pinned);
-  const shouldDisplayLastColumnCell = useMemo(() => {
-    if (!mainBodyRef.current) return false;
-    const totalColumnWidth = currentHeaders.reduce((acc, header) => acc + header.width, 0);
-    return totalColumnWidth < mainBodyRef.current.clientWidth;
-  }, [currentHeaders, mainBodyRef]);
 
   const pinnedLeftColumns = headersRef.current.filter((header) => header.pinned === "left" && header.hide !== true);
   const pinnedRightColumns = headersRef.current.filter((header) => header.pinned === "right" && header.hide !== true);
 
   const pinnedLeftTemplateColumns = useMemo(() => {
-    return `${pinnedLeftColumns.map((header) => `${header.width}px`).join(" ")}`;
+    return `${pinnedLeftColumns.map((header) => getColumnWidth(header)).join(" ")}`;
   }, [pinnedLeftColumns]);
   const mainTemplateColumns = useMemo(() => {
     return `${currentHeaders
       .filter((header) => hiddenColumns[header.accessor] !== true)
-      .map((header) => `${header.width}px`)
-      .join(" ")} 1fr`;
+      .map((header) => getColumnWidth(header))
+      .join(" ")}`;
   }, [currentHeaders, hiddenColumns]);
   const pinnedRightTemplateColumns = useMemo(() => {
-    return `${pinnedRightColumns.map((header) => `${header.width}px`).join(" ")}`;
+    return `${pinnedRightColumns.map((header) => getColumnWidth(header)).join(" ")}`;
   }, [pinnedRightColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
@@ -112,7 +107,6 @@ const TableContent = ({
     selectableColumns,
     setIsWidthDragging,
     setSelectedCells,
-    shouldDisplayLastColumnCell,
     sort,
     sortDownIcon,
     sortUpIcon,
@@ -148,7 +142,6 @@ const TableContent = ({
     pinnedRightRef,
     pinnedRightTemplateColumns,
     scrollbarWidth,
-    shouldDisplayLastColumnCell,
     shouldPaginate,
     tableBodyContainerRef,
   };

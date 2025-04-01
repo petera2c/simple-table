@@ -22,7 +22,6 @@ export interface TableCellProps {
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   row: Row;
   rowIndex: number;
-  shouldDisplayLastColumnCell?: boolean;
 }
 
 export default TableCellProps;

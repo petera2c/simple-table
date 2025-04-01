@@ -10,9 +10,10 @@ type HeaderObject = {
   isEditable?: boolean;
   isSortable?: boolean;
   label: string;
+  minWidth?: number | string;
   pinned?: "left" | "right";
   type?: "string" | "number" | "boolean" | "date" | "enum";
-  width: number;
+  width: number | string;
 };
 
 export default HeaderObject;

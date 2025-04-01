@@ -4,7 +4,7 @@ export const HEADERS: HeaderObject[] = [
   {
     accessor: "ticker",
     label: "Symbol",
-    width: 100,
+    width: "1fr",
     isSortable: true,
     isEditable: false,
     align: "left",
@@ -13,17 +13,18 @@ export const HEADERS: HeaderObject[] = [
   {
     accessor: "sectorName",
     label: "Sector/Company",
-    width: 180,
+    width: "1fr",
+    minWidth: 200,
     expandable: true,
     isSortable: true,
     isEditable: false,
     align: "left",
   },
-
   {
     accessor: "companyName",
     label: "Name",
-    width: 200,
+    width: "1fr",
+    minWidth: 10,
     isSortable: true,
     isEditable: false,
     align: "left",
@@ -31,7 +32,8 @@ export const HEADERS: HeaderObject[] = [
   {
     accessor: "price",
     label: "Price (USD)",
-    width: 130,
+    width: "1fr",
+    minWidth: 10,
     isSortable: true,
     isEditable: false,
     align: "right",

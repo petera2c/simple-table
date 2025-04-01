@@ -23,7 +23,6 @@ type TableRowProps = {
   onToggleGroup: (rowId: number) => void;
   row: Row;
   rowIndex: number;
-  shouldDisplayLastColumnCell: boolean;
   shouldPaginate: boolean;
   tableRef: RefObject<HTMLDivElement | null>;
 };

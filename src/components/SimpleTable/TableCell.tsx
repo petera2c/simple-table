@@ -124,7 +124,7 @@ const TableCell = forwardRef(
             </div>
           )
         ) : null}
-        <span>
+        <span className="st-cell-content">
           {header.cellRenderer ? header.cellRenderer({ accessor: header.accessor, colIndex, row }) : localContent}
         </span>
       </div>

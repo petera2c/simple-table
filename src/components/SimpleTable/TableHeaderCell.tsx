@@ -163,7 +163,9 @@ const TableHeaderCell = forwardRef(
       };
     }, []);
 
-    if (!header) return null;
+    if (!header) {
+      return null;
+    }
 
     const ResizeHandle = columnResizing && (
       <div

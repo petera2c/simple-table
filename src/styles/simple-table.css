@@ -938,6 +938,7 @@
 .st-header-main {
   overflow: auto;
   scrollbar-width: none;
+  width: 100%;
 }
 .st-header-main::-webkit-scrollbar {
   display: none;
@@ -966,6 +967,14 @@
 
 .st-table-body-pinned-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-table-row {
+  display: grid;
+  position: absolute;
+  transform: translateZ(0);
+  transition: background 0.2s ease;
+  width: 100%;
 }
 
 /* Styles for table header cells */
@@ -1032,7 +1041,7 @@
 }
 
 .st-header-label,
-.st-cell {
+.st-cell-content {
   user-select: none;
   padding: var(--st-cell-padding);
   text-align: left;

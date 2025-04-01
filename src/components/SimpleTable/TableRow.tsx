@@ -1,10 +1,12 @@
 import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";
+import { getColumnWidth } from "../../utils/columnUtils";
 import RenderCells from "./RenderCells";
 
 const TableRow = ({
   depth = 0,
   getNextRowIndex,
+  gridTemplateColumns,
   index,
   lastGroupRow,
   pinned,
@@ -14,6 +16,7 @@ const TableRow = ({
 }: {
   depth?: number;
   getNextRowIndex: () => number;
+  gridTemplateColumns: string;
   index: number;
   lastGroupRow?: boolean;
   pinned?: "left" | "right";
@@ -26,21 +29,13 @@ const TableRow = ({
   const { row, position } = visibleRow;
   const rowIndex = getNextRowIndex(); // Get the next available index
 
-  const gridTemplateColumns = props.headers
-    .filter((header) => pinned === header.pinned)
-    .map((header) => `${header.width}px`)
-    .join(" ");
-
   return (
     <div
+      className="st-table-row"
       style={{
-        display: "grid",
         gridTemplateColumns,
-        position: "absolute",
         top: `${position * rowHeight}px`,
         height: `${rowHeight}px`,
-        transform: "translateZ(0)",
-        transition: "background 0.2s ease",
       }}
     >
       <RenderCells

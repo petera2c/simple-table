@@ -1,7 +1,6 @@
 import { createRef, UIEvent } from "react";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
-import TableLastColumnCell from "./TableLastColumnCell";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import { displayCell } from "../../utils/cellUtils";
 import useScrollSync from "../../hooks/useScrollSync";
@@ -32,7 +31,6 @@ const TableHeader = ({
   selectableColumns,
   setIsWidthDragging,
   setSelectedCells,
-  shouldDisplayLastColumnCell,
   sort,
   sortDownIcon,
   sortUpIcon,
@@ -136,7 +134,6 @@ const TableHeader = ({
               />
             );
           })}
-          <TableLastColumnCell ref={createRef()} visible={shouldDisplayLastColumnCell} />
         </Animate>
       </div>
       {pinnedRightColumns.length > 0 && (
@@ -182,7 +179,6 @@ const TableHeader = ({
                 />
               );
             })}
-            <TableLastColumnCell ref={createRef()} visible={shouldDisplayLastColumnCell} />
           </Animate>
         </div>
       )}

@@ -19,7 +19,6 @@ interface SharedTableProps {
   pinnedRightColumns: HeaderObject[];
   pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedRightTemplateColumns: string;
-  shouldDisplayLastColumnCell: boolean;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }
 

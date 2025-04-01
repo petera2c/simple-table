@@ -1,13 +1,11 @@
-import { createRef } from "react";
-
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
-import TableLastColumnCell from "./TableLastColumnCell";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRowSeparator from "./TableRowSeparator";
 import Animate from "../Animate";
+import { RowId } from "../../types/RowId";
 
 const RenderCells = ({
   getBorderClass,
@@ -22,18 +20,16 @@ const RenderCells = ({
   pinned,
   row,
   rowIndex,
-  shouldDisplayLastColumnCell,
   ...props
 }: {
   depth: number;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   lastGroupRow?: boolean;
-  onExpandRowClick: (rowIndex: number) => void;
+  onExpandRowClick: (rowId: RowId) => void;
   pinned?: "left" | "right";
   row: Row;
   rowIndex: number;
-  shouldDisplayLastColumnCell: boolean;
 } & Omit<TableBodyProps, "currentRows" | "headerContainerRef">) => {
   // Derived state
   const children = row.rowMeta?.children;
@@ -71,7 +67,6 @@ const RenderCells = ({
           />
         );
       })}
-      <TableLastColumnCell ref={createRef()} visible={shouldDisplayLastColumnCell} />
     </Animate>
   );
 };
