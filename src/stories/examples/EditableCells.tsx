@@ -10,8 +10,12 @@ const EditableCellsExample = () => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
 
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
+    console.log("here");
     setRows((prevRows) => {
+      console.log(row.rowMeta.rowId);
+      console.log(prevRows);
       const rowIndex = prevRows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
+      console.log(rowIndex);
       prevRows[rowIndex].rowData[accessor] = newValue;
       return prevRows;
     });

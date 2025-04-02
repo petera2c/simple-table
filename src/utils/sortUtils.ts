@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import HeaderObject from "../types/HeaderObject";
 import SortConfig from "../types/SortConfig";
 import Row from "../types/Row";
+import { RowId } from "../types/RowId";
 
 // Type-specific comparators for different data types
 const comparators = {
@@ -85,7 +86,7 @@ const sortPreservingHierarchy = (rows: Row[], sortConfig: SortConfig, headers: H
 
   // Group rows by parent-child relationships to preserve hierarchy
   const topLevelRows: Row[] = [];
-  const childrenMap = new Map<number, Row[]>();
+  const childrenMap = new Map<RowId, Row[]>();
 
   // First pass - identify top-level rows and organize children
   rows.forEach((row) => {
@@ -185,6 +186,7 @@ export const handleResizeStart = ({
   index,
   reverse,
   setIsWidthDragging,
+  startWidth,
 }: {
   event: MouseEvent;
   forceUpdate: () => void;
@@ -193,13 +195,12 @@ export const handleResizeStart = ({
   index: number;
   reverse?: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
+  startWidth: number;
 }) => {
   setIsWidthDragging(true);
   event.preventDefault();
   const startX = event.clientX;
   if (!header) return;
-
-  const startWidth = header.width;
 
   const handleMouseMove = (event: any) => {
     const newWidth = Math.max(startWidth + (event.clientX - startX), 40);

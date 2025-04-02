@@ -180,6 +180,8 @@ const TableHeaderCell = forwardRef(
               headersRef,
               index,
               setIsWidthDragging,
+              startWidth:
+                typeof ref === "object" && ref !== null && "current" in ref ? ref.current?.offsetWidth : undefined,
             },
             limit: 10,
           });

@@ -100,7 +100,6 @@ const SimpleTable = ({
     headers: headersRef.current,
     tableRows,
   });
-  console.log(hiddenColumns);
 
   // Hooks
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -170,6 +169,25 @@ const SimpleTable = ({
 
     setScrollbarWidth(newScrollbarWidth);
     setTableContentWidth(newTableContentWidth);
+  }, []);
+
+  // On window risize completely re-render the table
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      // Force a re-render of the table
+      forceUpdate();
+      // Re-calculate the width of the scrollbar and table content
+      if (!tableBodyContainerRef.current) return;
+
+      const newScrollbarWidth = tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
+      const newTableContentWidth = tableBodyContainerRef.current.clientWidth;
+
+      setScrollbarWidth(newScrollbarWidth);
+      setTableContentWidth(newTableContentWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
