@@ -1,14 +1,12 @@
 import { RefObject } from "react";
 import HeaderObject from "./HeaderObject";
 import CellChangeProps from "./CellChangeProps";
-import Row from "./Row";
 import { RowId } from "./RowId";
+import VisibleRow from "./VisibleRow";
 
 export interface TableCellProps {
   borderClass: string;
-  cellHasChildren: boolean;
   colIndex: number;
-  depth: number;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;
@@ -20,8 +18,8 @@ export interface TableCellProps {
   onMouseDown: (rowIndex: number, colIndex: number) => void;
   onMouseOver: (rowIndex: number, colIndex: number) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  row: Row;
   rowIndex: number;
+  visibleRow: VisibleRow;
 }
 
 export default TableCellProps;

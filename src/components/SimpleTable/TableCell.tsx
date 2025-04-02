@@ -13,9 +13,7 @@ const TableCell = forwardRef(
   (
     {
       borderClass,
-      cellHasChildren,
       colIndex,
-      depth,
       draggedHeaderRef,
       header,
       headersRef,
@@ -27,11 +25,12 @@ const TableCell = forwardRef(
       onMouseDown,
       onMouseOver,
       onTableHeaderDragEnd,
-      row,
       rowIndex,
+      visibleRow,
     }: TableCellProps,
     ref: Ref<HTMLDivElement>
   ) => {
+    const { depth, row } = visibleRow;
     // Local state
     const [localContent, setLocalContent] = useState<CellValue>(row.rowData[header.accessor] as CellValue);
     const [isEditing, setIsEditing] = useState(false);
@@ -46,6 +45,7 @@ const TableCell = forwardRef(
     const throttle = useThrottle();
 
     // Derived state
+    const cellHasChildren = Boolean(row.rowMeta?.children?.length);
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
     const cellClassName = `st-cell ${depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""} ${

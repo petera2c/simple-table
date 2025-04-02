@@ -3,6 +3,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "./TableRow";
 import VisibleRow from "../../types/VisibleRow";
 import { RowId } from "../../types/RowId";
+import TableRowSeparator from "./TableRowSeparator";
 
 const TableSection = ({
   headerContainerRef,
@@ -50,21 +51,31 @@ const TableSection = ({
       }}
     >
       {visibleRows.map((visibleRow, index) => {
+        const lastGroupRow = Boolean(visibleRow.row.rowMeta?.children?.length);
         return (
-          <TableRow
-            getNextRowIndex={getNextRowIndex}
-            gridTemplateColumns={templateColumns}
-            index={index}
-            key={index}
-            lastGroupRow={Boolean(visibleRow.row.rowMeta?.children?.length)}
-            pinned={pinned}
-            props={{
-              ...props,
-              onExpandRowClick,
-            }}
-            rowHeight={rowHeight}
-            visibleRow={visibleRow}
-          />
+          <>
+            <TableRow
+              getNextRowIndex={getNextRowIndex}
+              gridTemplateColumns={templateColumns}
+              index={index}
+              key={index}
+              pinned={pinned}
+              props={{
+                ...props,
+                onExpandRowClick,
+              }}
+              rowHeight={rowHeight}
+              visibleRow={visibleRow}
+            />
+            {index !== 0 && (
+              <TableRowSeparator
+                lastGroupRow={lastGroupRow}
+                position={visibleRow.position}
+                rowHeight={rowHeight}
+                templateColumns={templateColumns}
+              />
+            )}
+          </>
         );
       })}
     </div>

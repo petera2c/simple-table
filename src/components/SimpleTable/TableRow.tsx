@@ -1,24 +1,22 @@
+import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { RowId } from "../../types/RowId";
 import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";
+import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
 
 const TableRow = ({
-  depth = 0,
   getNextRowIndex,
   gridTemplateColumns,
   index,
-  lastGroupRow,
   pinned,
   props,
   rowHeight,
   visibleRow,
 }: {
-  depth?: number;
   getNextRowIndex: () => number;
   gridTemplateColumns: string;
   index: number;
-  lastGroupRow?: boolean;
   pinned?: "left" | "right";
   props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
     onExpandRowClick: (rowId: RowId) => void;
@@ -26,7 +24,7 @@ const TableRow = ({
   rowHeight: number;
   visibleRow: VisibleRow;
 }) => {
-  const { row, position } = visibleRow;
+  const { position } = visibleRow;
   const rowIndex = getNextRowIndex(); // Get the next available index
 
   return (
@@ -34,19 +32,11 @@ const TableRow = ({
       className="st-table-row"
       style={{
         gridTemplateColumns,
-        top: `${position * rowHeight}px`,
+        top: calculateRowTopPosition({ position, rowHeight }),
         height: `${rowHeight}px`,
       }}
     >
-      <RenderCells
-        {...props}
-        depth={depth}
-        lastGroupRow={lastGroupRow}
-        key={index}
-        pinned={pinned}
-        row={row}
-        rowIndex={rowIndex}
-      />
+      <RenderCells key={index} pinned={pinned} rowIndex={rowIndex} visibleRow={visibleRow} {...props} />
     </div>
   );
 };

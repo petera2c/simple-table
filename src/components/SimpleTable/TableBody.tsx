@@ -3,8 +3,9 @@ import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableSection from "./TableSection";
-import getVisibleRows, { getTotalRowCount } from "../../utils/infiniteScrollUtils";
+import { getTotalRowCount, getVisibleRows } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
+import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 
 const CONTAINER_HEIGHT = 600;
 const ROW_HEIGHT = 40;
@@ -49,7 +50,7 @@ const TableBody = (props: TableBodyProps) => {
 
   // Derived state
   const totalRowCount = getTotalRowCount(rows);
-  const totalHeight = totalRowCount * ROW_HEIGHT;
+  const totalHeight = totalRowCount * (ROW_HEIGHT + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 
   const toggleRow = (rowId: RowId) => {
     const updateRow = (row: Row): Row => {
@@ -67,11 +68,11 @@ const TableBody = (props: TableBodyProps) => {
   const visibleRows = useMemo(
     () =>
       getVisibleRows({
-        rows,
-        scrollTop,
+        bufferRowCount: BUFFER_ROW_COUNT,
         containerHeight: CONTAINER_HEIGHT,
         rowHeight: ROW_HEIGHT,
-        bufferRowCount: BUFFER_ROW_COUNT,
+        rows,
+        scrollTop,
       }),
     [rows, scrollTop]
   );

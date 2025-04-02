@@ -9,6 +9,7 @@ import FilterColumnsExample from "./examples/FilterColumns";
 import SelectableCellsExample from "./examples/SelectableCells";
 import RowGroupingExample from "./examples/row-grouping/RowGrouping";
 import FinancialExample from "./examples/finance-example/FinancialExample";
+import BillingExampleComponent from "./examples/billing-example/BillingExample";
 
 const meta = {
   title: "Simple Table",
@@ -47,6 +48,9 @@ export const Theming: Story = {
 
 export const FinanceExample: Story = {
   render: FinancialExample,
+};
+export const BillingExample: Story = {
+  render: BillingExampleComponent,
 };
 // export const EditColumns: Story = {
 //   render: EditColumnsExample,

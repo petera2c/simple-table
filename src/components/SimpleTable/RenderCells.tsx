@@ -1,4 +1,3 @@
-import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
@@ -6,6 +5,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import TableRowSeparator from "./TableRowSeparator";
 import Animate from "../Animate";
 import { RowId } from "../../types/RowId";
+import VisibleRow from "../../types/VisibleRow";
 
 const RenderCells = ({
   getBorderClass,
@@ -15,25 +15,19 @@ const RenderCells = ({
   hiddenColumns,
   isSelected,
   isTopLeftCell,
-  lastGroupRow,
   onExpandRowClick,
   pinned,
-  row,
   rowIndex,
+  visibleRow,
   ...props
 }: {
-  depth: number;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
-  lastGroupRow?: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: "left" | "right";
-  row: Row;
   rowIndex: number;
+  visibleRow: VisibleRow;
 } & Omit<TableBodyProps, "currentRows" | "headerContainerRef">) => {
-  // Derived state
-  const children = row.rowMeta?.children;
-
   return (
     <Animate
       allowAnimations={props.allowAnimations}
@@ -45,7 +39,6 @@ const RenderCells = ({
       pauseAnimation={props.isWidthDragging}
       rowIndex={rowIndex + 1}
     >
-      {rowIndex !== 0 && <TableRowSeparator lastGroupRow={lastGroupRow} />}
       {headers.map((header, colIndex) => {
         if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
@@ -53,7 +46,6 @@ const RenderCells = ({
           <TableCell
             {...props}
             borderClass={getBorderClass(rowIndex, colIndex)}
-            cellHasChildren={(children?.length || 0) > 0}
             colIndex={colIndex}
             header={header}
             isSelected={isSelected(rowIndex, colIndex)}
@@ -62,8 +54,8 @@ const RenderCells = ({
             onExpandRowClick={onExpandRowClick}
             onMouseDown={() => handleMouseDown({ rowIndex: rowIndex, colIndex })}
             onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
-            row={row}
             rowIndex={rowIndex}
+            visibleRow={visibleRow}
           />
         );
       })}
