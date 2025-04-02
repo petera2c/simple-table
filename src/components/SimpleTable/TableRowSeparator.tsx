@@ -19,6 +19,7 @@ const TableRowSeparator = ({
         gridTemplateColumns: templateColumns,
         position: "absolute",
         top: calculateSeparatorTopPosition({ position, rowHeight }),
+        minWidth: "100%",
       }}
     >
       <div style={{ gridColumn: "1 / -1" }} />

@@ -10,6 +10,7 @@ import SelectableCellsExample from "./examples/SelectableCells";
 import RowGroupingExample from "./examples/row-grouping/RowGrouping";
 import FinancialExample from "./examples/finance-example/FinancialExample";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
+import BasicExampleComponent from "./examples/BasicExample";
 
 const meta = {
   title: "Simple Table",
@@ -51,6 +52,9 @@ export const FinanceExample: Story = {
 };
 export const BillingExample: Story = {
   render: BillingExampleComponent,
+};
+export const BasicExample: Story = {
+  render: BasicExampleComponent,
 };
 // export const EditColumns: Story = {
 //   render: EditColumnsExample,
