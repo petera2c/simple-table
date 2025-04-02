@@ -1,6 +1,6 @@
+import { RowId } from "../../types/RowId";
 import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";
-import { getColumnWidth } from "../../utils/columnUtils";
 import RenderCells from "./RenderCells";
 
 const TableRow = ({
@@ -21,7 +21,7 @@ const TableRow = ({
   lastGroupRow?: boolean;
   pinned?: "left" | "right";
   props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
-    onExpandRowClick: (rowIndex: number) => void;
+    onExpandRowClick: (rowId: RowId) => void;
   };
   rowHeight: number;
   visibleRow: VisibleRow;

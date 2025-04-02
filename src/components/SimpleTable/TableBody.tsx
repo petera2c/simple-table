@@ -4,6 +4,7 @@ import Row from "../../types/Row";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableSection from "./TableSection";
 import getVisibleRows, { getTotalRowCount } from "../../utils/infiniteScrollUtils";
+import { RowId } from "../../types/RowId";
 
 const CONTAINER_HEIGHT = 600;
 const ROW_HEIGHT = 40;
@@ -50,7 +51,7 @@ const TableBody = (props: TableBodyProps) => {
   const totalRowCount = getTotalRowCount(rows);
   const totalHeight = totalRowCount * ROW_HEIGHT;
 
-  const toggleRow = (rowId: number) => {
+  const toggleRow = (rowId: RowId) => {
     const updateRow = (row: Row): Row => {
       if (row.rowMeta.rowId === rowId && row.rowMeta.children) {
         return { ...row, rowMeta: { ...row.rowMeta, isExpanded: !row.rowMeta.isExpanded } };

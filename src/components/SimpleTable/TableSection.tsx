@@ -2,6 +2,7 @@ import { RefObject, useEffect, useRef } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "./TableRow";
 import VisibleRow from "../../types/VisibleRow";
+import { RowId } from "../../types/RowId";
 
 const TableSection = ({
   headerContainerRef,
@@ -16,7 +17,7 @@ const TableSection = ({
   ...props
 }: {
   headerContainerRef: RefObject<HTMLDivElement | null>;
-  onExpandRowClick: (rowIndex: number) => void;
+  onExpandRowClick: (rowId: RowId) => void;
   pinned?: "left" | "right";
   rowHeight: number;
   sectionRef?: RefObject<HTMLDivElement | null>;

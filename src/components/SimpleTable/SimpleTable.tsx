@@ -5,7 +5,6 @@ import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
 import CellChangeProps from "../../types/CellChangeProps";
-import TableContext from "../../context/TableContext";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import "../../styles/simple-table.css";
@@ -71,15 +70,6 @@ const SimpleTable = ({
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   theme = "light",
 }: SimpleTableProps) => {
-  // Initialize originalRowIndex on each row
-  const tableRows = useMemo(() => {
-    const rowsWithOriginalRowIndex = rows.map((row, index) => ({
-      ...row,
-      originalRowIndex: index,
-    }));
-    return rowsWithOriginalRowIndex;
-  }, [rows]);
-
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const headersRef = useRef(defaultHeaders);
@@ -98,7 +88,7 @@ const SimpleTable = ({
   // Use custom hook for sorting
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
     headers: headersRef.current,
-    tableRows,
+    tableRows: rows,
   });
 
   // Hooks
@@ -191,73 +181,71 @@ const SimpleTable = ({
   }, []);
 
   return (
-    <TableContext.Provider value={{ rows, tableRows }}>
-      <div className={`simple-table-root st-wrapper theme-${theme}`} style={height ? { height } : {}}>
-        <div className="st-table-wrapper-container">
-          <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-            <TableContent
-              allowAnimations={allowAnimations}
-              columnResizing={columnResizing}
-              currentRows={currentRows}
-              draggedHeaderRef={draggedHeaderRef}
-              editColumns={editColumns}
-              columnReordering={columnReordering}
-              forceUpdate={forceUpdate}
-              getBorderClass={getBorderClass}
-              handleMouseDown={handleMouseDown}
-              handleMouseOver={handleMouseOver}
-              headers={headersRef.current}
-              headersRef={headersRef}
-              hiddenColumns={hiddenColumns}
-              hoveredHeaderRef={hoveredHeaderRef}
-              isSelected={isSelected}
-              isTopLeftCell={isTopLeftCell}
-              isWidthDragging={isWidthDragging}
-              mainBodyRef={mainBodyRef}
-              onCellEdit={onCellEdit}
-              onSort={onSort}
-              onTableHeaderDragEnd={onTableHeaderDragEnd}
-              pinnedLeftRef={pinnedLeftRef}
-              pinnedRightRef={pinnedRightRef}
-              scrollbarWidth={scrollbarWidth}
-              selectableColumns={selectableColumns}
-              setIsWidthDragging={setIsWidthDragging}
-              setSelectedCells={setSelectedCells}
-              shouldPaginate={shouldPaginate}
-              sort={sort}
-              sortDownIcon={sortDownIcon}
-              sortUpIcon={sortUpIcon}
-              tableBodyContainerRef={tableBodyContainerRef}
-            />
-            <TableColumnEditor
-              columnEditorText={columnEditorText}
-              editColumns={editColumns}
-              editColumnsInitOpen={editColumnsInitOpen}
-              headers={headersRef.current}
-              hiddenColumns={hiddenColumns}
-              position={columnEditorPosition}
-              setHiddenColumns={setHiddenColumns}
-            />
-          </div>
-          <TableHorizontalScrollbar
+    <div className={`simple-table-root st-wrapper theme-${theme}`} style={height ? { height } : {}}>
+      <div className="st-table-wrapper-container">
+        <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+          <TableContent
+            allowAnimations={allowAnimations}
+            columnResizing={columnResizing}
+            currentRows={currentRows}
+            draggedHeaderRef={draggedHeaderRef}
+            editColumns={editColumns}
+            columnReordering={columnReordering}
+            forceUpdate={forceUpdate}
+            getBorderClass={getBorderClass}
+            handleMouseDown={handleMouseDown}
+            handleMouseOver={handleMouseOver}
+            headers={headersRef.current}
+            headersRef={headersRef}
+            hiddenColumns={hiddenColumns}
+            hoveredHeaderRef={hoveredHeaderRef}
+            isSelected={isSelected}
+            isTopLeftCell={isTopLeftCell}
+            isWidthDragging={isWidthDragging}
             mainBodyRef={mainBodyRef}
+            onCellEdit={onCellEdit}
+            onSort={onSort}
+            onTableHeaderDragEnd={onTableHeaderDragEnd}
             pinnedLeftRef={pinnedLeftRef}
             pinnedRightRef={pinnedRightRef}
-            tableContentWidth={tableContentWidth}
+            scrollbarWidth={scrollbarWidth}
+            selectableColumns={selectableColumns}
+            setIsWidthDragging={setIsWidthDragging}
+            setSelectedCells={setSelectedCells}
+            shouldPaginate={shouldPaginate}
+            sort={sort}
+            sortDownIcon={sortDownIcon}
+            sortUpIcon={sortUpIcon}
+            tableBodyContainerRef={tableBodyContainerRef}
+          />
+          <TableColumnEditor
+            columnEditorText={columnEditorText}
+            editColumns={editColumns}
+            editColumnsInitOpen={editColumnsInitOpen}
+            headers={headersRef.current}
+            hiddenColumns={hiddenColumns}
+            position={columnEditorPosition}
+            setHiddenColumns={setHiddenColumns}
           />
         </div>
-        <TableFooter
-          currentPage={currentPage}
-          hideFooter={hideFooter}
-          nextIcon={nextIcon}
-          onPageChange={setCurrentPage}
-          prevIcon={prevIcon}
-          rowsPerPage={rowsPerPage}
-          shouldPaginate={shouldPaginate}
-          totalRows={sortedRows.length}
+        <TableHorizontalScrollbar
+          mainBodyRef={mainBodyRef}
+          pinnedLeftRef={pinnedLeftRef}
+          pinnedRightRef={pinnedRightRef}
+          tableContentWidth={tableContentWidth}
         />
       </div>
-    </TableContext.Provider>
+      <TableFooter
+        currentPage={currentPage}
+        hideFooter={hideFooter}
+        nextIcon={nextIcon}
+        onPageChange={setCurrentPage}
+        prevIcon={prevIcon}
+        rowsPerPage={rowsPerPage}
+        shouldPaginate={shouldPaginate}
+        totalRows={sortedRows.length}
+      />
+    </div>
   );
 };
 

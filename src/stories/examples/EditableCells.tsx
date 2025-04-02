@@ -2,6 +2,9 @@ import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
 import { generateFinanceData, FINANCE_HEADERS } from "../data/finance-data";
 import CellChangeProps from "../../types/CellChangeProps";
+import Row from "../../types/Row";
+import { RowId } from "../../types/RowId";
+import CellValue from "../../types/CellValue";
 
 const EXAMPLE_DATA = generateFinanceData();
 const HEADERS = FINANCE_HEADERS;
@@ -9,16 +12,37 @@ const HEADERS = FINANCE_HEADERS;
 const EditableCellsExample = () => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
 
-  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
-    console.log("here");
-    setRows((prevRows) => {
-      console.log(row.rowMeta.rowId);
-      console.log(prevRows);
-      const rowIndex = prevRows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
-      console.log(rowIndex);
-      prevRows[rowIndex].rowData[accessor] = newValue;
-      return prevRows;
+  const updateRowData = (rows: Row[], rowId: RowId, accessor: string, newValue: CellValue): Row[] => {
+    return rows.map((row) => {
+      if (row.rowMeta.rowId === rowId) {
+        // Found the row, update its data
+        return {
+          ...row,
+          rowData: {
+            ...row.rowData,
+            [accessor]: newValue,
+          },
+        };
+      }
+
+      // If this row has children, recursively search them
+      if (row.rowMeta.children && row.rowMeta.children.length > 0) {
+        return {
+          ...row,
+          rowMeta: {
+            ...row.rowMeta,
+            children: updateRowData(row.rowMeta.children, rowId, accessor, newValue),
+          },
+        };
+      }
+
+      // Return the unchanged row
+      return row;
     });
+  };
+
+  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
+    setRows((prevRows) => updateRowData(prevRows, row.rowMeta.rowId, accessor, newValue));
   };
 
   return (
