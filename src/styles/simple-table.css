@@ -1049,7 +1049,14 @@
 .st-cell-editing {
   position: relative;
 }
-
+.st-header-label {
+  display: flex;
+  align-items: center;
+}
+.st-header-label.right-aligned {
+  justify-content: flex-end;
+  text-align: right;
+}
 .st-header-label,
 .st-cell-content {
   flex: 1;

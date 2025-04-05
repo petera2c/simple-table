@@ -32,6 +32,7 @@ interface TableHeaderCellProps {
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   reverse?: boolean;
+  rowHeight: number;
   selectableColumns: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<React.SetStateAction<Set<string>>>;
@@ -54,6 +55,7 @@ const TableHeaderCell = forwardRef(
       onSort,
       onTableHeaderDragEnd,
       reverse,
+      rowHeight,
       selectableColumns,
       setIsWidthDragging,
       setSelectedCells,
@@ -189,6 +191,13 @@ const TableHeaderCell = forwardRef(
       />
     );
 
+    const SortIcon = sort && sort.key.accessor === header.accessor && (
+      <div className="st-sort-icon-container" onClick={(event) => handleColumnHeaderClick({ event, header })}>
+        {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
+        {sort.direction === "descending" && sortDownIcon && sortDownIcon}
+      </div>
+    );
+
     return (
       <div
         className={className}
@@ -201,24 +210,21 @@ const TableHeaderCell = forwardRef(
           });
         }}
         ref={ref}
-        style={{ width: header.width }}
+        style={{ width: header.width, height: rowHeight }}
       >
         {reverse && ResizeHandle}
         <div
-          className="st-header-label"
+          className={`st-header-label ${header.align === "right" ? "right-aligned" : ""}`}
           draggable={columnReordering}
           onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragEnd={handleDragEndWrapper}
           onDragStart={onDragStart}
         >
+          {header.align === "right" && SortIcon}
           {header?.label}
+          {header.align !== "right" && SortIcon}
         </div>
-        {sort && sort.key.accessor === header.accessor && (
-          <div className="st-sort-icon-container" onClick={(event) => handleColumnHeaderClick({ event, header })}>
-            {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
-            {sort.direction === "descending" && sortDownIcon && sortDownIcon}
-          </div>
-        )}
+
         {!reverse && ResizeHandle}
       </div>
     );

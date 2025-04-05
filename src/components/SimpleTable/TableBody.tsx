@@ -6,11 +6,7 @@ import TableSection from "./TableSection";
 import { getTotalRowCount, getVisibleRows } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
-
-const CONTAINER_HEIGHT = 600;
-const ROW_HEIGHT = 40;
-const PAGE_SIZE = 20;
-const BUFFER_ROW_COUNT = 5;
+import { CONTAINER_HEIGHT, ROW_HEIGHT, PAGE_SIZE, BUFFER_ROW_COUNT } from "../../consts/general-consts";
 
 const TableBody = (props: TableBodyProps) => {
   const {

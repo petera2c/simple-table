@@ -97,6 +97,7 @@ export const FINANCE_HEADERS: HeaderObject[] = [
         maximumFractionDigits: 2,
       })}`;
     },
+    type: "number",
   },
   {
     accessor: "marketCap",

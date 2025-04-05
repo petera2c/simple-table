@@ -61,20 +61,70 @@ const compareValues = (
   type: string = "string",
   direction: "ascending" | "descending"
 ): number => {
-  switch (type) {
-    case "string":
-      return comparators.string(String(aValue || ""), String(bValue || ""), direction);
-    case "number":
-      return comparators.number(Number(aValue || 0), Number(bValue || 0), direction);
-    case "boolean":
-      return comparators.boolean(Boolean(aValue), Boolean(bValue), direction);
-    case "date":
-      return comparators.date(String(aValue || ""), String(bValue || ""), direction);
-    case "enum":
-      return comparators.enum(String(aValue || ""), String(bValue || ""), direction);
-    default:
-      return comparators.default(aValue, bValue, direction);
+  // Handle null, undefined, or empty values consistently
+  if (aValue === null || aValue === undefined || aValue === "") {
+    return direction === "ascending" ? -1 : 1;
   }
+  if (bValue === null || bValue === undefined || bValue === "") {
+    return direction === "ascending" ? 1 : -1;
+  }
+
+  // For numeric columns, try to parse values that might be formatted as strings
+  if (type === "number") {
+    // Handle currency values (e.g. "$123.45", "$1.7T")
+    const parseNumericValue = (value: any): number => {
+      if (typeof value === "number") return value;
+
+      const stringValue = String(value);
+
+      // Handle values with T (trillion), B (billion), M (million), K (thousand) suffixes
+      if (typeof stringValue === "string") {
+        // Remove currency symbols and commas
+        let cleanValue = stringValue.replace(/[$,]/g, "");
+
+        // Extract the numeric part and any suffix
+        const match = cleanValue.match(/^([-+]?\d*\.?\d+)([TBMKtbmk])?/);
+        if (match) {
+          let num = parseFloat(match[1]);
+          const suffix = match[2]?.toUpperCase();
+
+          // Apply multiplier based on suffix
+          if (suffix === "T") num *= 1e12;
+          else if (suffix === "B") num *= 1e9;
+          else if (suffix === "M") num *= 1e6;
+          else if (suffix === "K") num *= 1e3;
+
+          return num;
+        }
+      }
+
+      // Fallback to default parsing
+      return parseFloat(stringValue) || 0;
+    };
+
+    const aNum = parseNumericValue(aValue);
+    const bNum = parseNumericValue(bValue);
+
+    return comparators.number(aNum, bNum, direction);
+  }
+
+  // For date columns, handle date strings or date objects
+  if (type === "date") {
+    return comparators.date(String(aValue), String(bValue), direction);
+  }
+
+  // For boolean values
+  if (type === "boolean") {
+    return comparators.boolean(Boolean(aValue), Boolean(bValue), direction);
+  }
+
+  // For enum values
+  if (type === "enum") {
+    return comparators.enum(String(aValue), String(bValue), direction);
+  }
+
+  // Default to string comparison
+  return comparators.string(String(aValue), String(bValue), direction);
 };
 
 // Sort only top-level rows, preserving hierarchy
@@ -84,61 +134,106 @@ const sortPreservingHierarchy = (rows: Row[], sortConfig: SortConfig, headers: H
   const type = headerObject?.type || "string";
   const { direction } = sortConfig;
 
-  // Group rows by parent-child relationships to preserve hierarchy
-  const topLevelRows: Row[] = [];
-  const childrenMap = new Map<RowId, Row[]>();
+  // Group rows by sectors or other grouping criteria
+  const groupedRows: Map<string, Row[]> = new Map();
+  const groupHeaderRows: Map<string, Row> = new Map();
+  let currentGroup = "";
 
-  // First pass - identify top-level rows and organize children
+  // First pass - identify and group rows by sector
   rows.forEach((row) => {
-    // Check if this row is a child
-    const isChild = rows.some((parentRow) =>
-      parentRow.rowMeta.children?.some((childRow) => childRow.rowMeta.rowId === row.rowMeta.rowId)
-    );
+    // Check if this is a group header row (like "Sector 1", "Sector 2")
+    const isSectorHeader =
+      row.rowData &&
+      // Assuming sector headers have some indicator (e.g., no data in key columns)
+      !row.rowData[sortConfig.key.accessor] &&
+      row.rowMeta.isExpanded !== undefined;
 
-    if (!isChild) {
-      topLevelRows.push(row);
-    }
+    if (isSectorHeader) {
+      // Extract sector name from the row (assuming it's in a column like 'sector')
+      const sectorName = (row.rowData.sector || `group_${groupedRows.size}`).toString();
+      currentGroup = sectorName;
+      groupHeaderRows.set(currentGroup, row);
 
-    // Store all children for each row
-    if (row.rowMeta.children && row.rowMeta.children.length > 0) {
-      childrenMap.set(row.rowMeta.rowId, row.rowMeta.children);
+      // Initialize the group if it doesn't exist
+      if (!groupedRows.has(currentGroup)) {
+        groupedRows.set(currentGroup, []);
+      }
+    } else if (currentGroup) {
+      // Add data row to current group
+      const groupRows = groupedRows.get(currentGroup) || [];
+      groupRows.push(row);
+      groupedRows.set(currentGroup, groupRows);
+    } else {
+      // If no group is defined yet, create a default group
+      const defaultGroup = "default";
+      if (!groupedRows.has(defaultGroup)) {
+        groupedRows.set(defaultGroup, []);
+      }
+      groupedRows.get(defaultGroup)?.push(row);
     }
   });
 
   // Helper function to sort rows by the specified column
   const sortRowsByColumn = (rowsToSort: Row[]): Row[] => {
     return [...rowsToSort].sort((a, b) => {
-      const aValue = a?.rowData?.[sortConfig.key.accessor];
-      const bValue = b?.rowData?.[sortConfig.key.accessor];
+      // Skip sorting if either row doesn't have rowData
+      if (!a?.rowData || !b?.rowData) return 0;
+
+      const accessor = sortConfig.key.accessor;
+      const aValue = a.rowData[accessor];
+      const bValue = b.rowData[accessor];
+
+      // If debugging is needed:
+      // console.log(`Comparing ${accessor}: ${aValue} (${typeof aValue}) vs ${bValue} (${typeof bValue}), type: ${type}`);
 
       return compareValues(aValue, bValue, type, direction);
     });
   };
 
-  // Sort top-level rows
-  const sortedTopLevelRows = sortRowsByColumn(topLevelRows);
+  // Process all rows to recursively sort their children
+  const processRowsWithChildren = (rowsToProcess: Row[]): Row[] => {
+    return rowsToProcess.map((row) => {
+      // Create a new row to avoid mutating the original
+      const newRow = { ...row };
 
-  // Reconstruct the hierarchy with the sorted top-level rows
-  // and sort children within each parent group
-  return sortedTopLevelRows.map((row) => {
-    // Clone the row to avoid mutating the original
-    const newRow = { ...row };
+      // Process children if they exist
+      if (newRow.rowMeta.children && newRow.rowMeta.children.length > 0) {
+        // Sort the children
+        const sortedChildren = sortChildrenRecursively(newRow.rowMeta.children, sortConfig, headers);
 
-    // Retrieve and sort the children if they exist
-    if (childrenMap.has(row.rowMeta.rowId)) {
-      const children = childrenMap.get(row.rowMeta.rowId) || [];
+        // Update the row with sorted children
+        newRow.rowMeta = {
+          ...newRow.rowMeta,
+          children: sortedChildren,
+        };
+      }
 
-      // Sort the children recursively
-      const sortedChildren = sortChildrenRecursively(children, sortConfig, headers);
+      return newRow;
+    });
+  };
 
-      newRow.rowMeta = {
-        ...newRow.rowMeta,
-        children: sortedChildren,
-      };
+  // Now sort each group's rows independently and process their children
+  const result: Row[] = [];
+
+  groupedRows.forEach((groupRows, groupName) => {
+    // Add the header row first if it exists
+    if (groupHeaderRows.has(groupName)) {
+      const headerRow = groupHeaderRows.get(groupName)!;
+
+      // Process header row's children if they exist
+      if (headerRow.rowMeta.children && headerRow.rowMeta.children.length > 0) {
+        headerRow.rowMeta.children = sortChildrenRecursively(headerRow.rowMeta.children, sortConfig, headers);
+      }
+
+      result.push(headerRow);
     }
 
-    return newRow;
+    // Sort the data rows and process their children
+    const sortedRows = sortRowsByColumn(groupRows);
+    result.push(...processRowsWithChildren(sortedRows));
   });
+
+  return result;
 };
 
 // Recursively sort children and their children
@@ -149,8 +244,12 @@ const sortChildrenRecursively = (children: Row[], sortConfig: SortConfig, header
 
   // Sort the current level of children
   const sortedChildren = [...children].sort((a, b) => {
-    const aValue = a?.rowData?.[sortConfig.key.accessor];
-    const bValue = b?.rowData?.[sortConfig.key.accessor];
+    // Skip sorting if either row doesn't have rowData
+    if (!a?.rowData || !b?.rowData) return 0;
+
+    const accessor = sortConfig.key.accessor;
+    const aValue = a.rowData[accessor];
+    const bValue = b.rowData[accessor];
 
     return compareValues(aValue, bValue, type, direction);
   });
