@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "0.7.16",
+  "version": "0.7.17",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./dist/styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css"
   },
   "license": "MIT",
   "files": [
