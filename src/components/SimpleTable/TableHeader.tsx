@@ -21,6 +21,7 @@ const TableHeader = ({
   isWidthDragging,
   mainBodyRef,
   mainTemplateColumns,
+  onColumnOrderChange,
   onSort,
   onTableHeaderDragEnd,
   pinnedLeftColumns,
@@ -78,6 +79,7 @@ const TableHeader = ({
                   hoveredHeaderRef={hoveredHeaderRef}
                   index={index}
                   key={header.accessor}
+                  onColumnOrderChange={onColumnOrderChange}
                   onSort={onSort}
                   onTableHeaderDragEnd={onTableHeaderDragEnd}
                   ref={createRef()}
@@ -124,6 +126,7 @@ const TableHeader = ({
                 hoveredHeaderRef={hoveredHeaderRef}
                 index={index}
                 key={header.accessor}
+                onColumnOrderChange={onColumnOrderChange}
                 onSort={onSort}
                 onTableHeaderDragEnd={onTableHeaderDragEnd}
                 ref={createRef()}
@@ -169,6 +172,7 @@ const TableHeader = ({
                   hoveredHeaderRef={hoveredHeaderRef}
                   index={index}
                   key={header.accessor}
+                  onColumnOrderChange={onColumnOrderChange}
                   onSort={onSort}
                   onTableHeaderDragEnd={onTableHeaderDragEnd}
                   reverse

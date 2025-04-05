@@ -5,12 +5,14 @@ import SortConfig from "./SortConfig";
 import Row from "./Row";
 import SharedTableProps from "./SharedTableProps";
 import OnSortProps from "./OnSortProps";
+import HeaderObject from "./HeaderObject";
 
 interface TableHeaderProps extends SharedTableProps {
   columnResizing: boolean;
   currentRows: Row[];
   columnReordering: boolean;
   forceUpdate: () => void;
+  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onSort: OnSortProps;
   selectableColumns: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;

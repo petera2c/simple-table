@@ -1,9 +1,11 @@
+import { RefObject } from "react";
 import HeaderObject from "./HeaderObject";
 
 type useDragHandlerProps = {
-  draggedHeaderRef: React.MutableRefObject<HeaderObject | null>;
-  headersRef: React.RefObject<HeaderObject[]>;
-  hoveredHeaderRef: React.MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef: RefObject<HeaderObject | null>;
+  headersRef: RefObject<HeaderObject[]>;
+  hoveredHeaderRef: RefObject<HeaderObject | null>;
+  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
 };
 

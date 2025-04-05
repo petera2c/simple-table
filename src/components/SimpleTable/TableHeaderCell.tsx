@@ -29,6 +29,7 @@ interface TableHeaderCellProps {
   headersRef: RefObject<HeaderObject[]>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   index: number;
+  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   reverse?: boolean;
@@ -52,6 +53,7 @@ const TableHeaderCell = forwardRef(
       headersRef,
       hoveredHeaderRef,
       index,
+      onColumnOrderChange,
       onSort,
       onTableHeaderDragEnd,
       reverse,
@@ -78,18 +80,14 @@ const TableHeaderCell = forwardRef(
     }`;
 
     // Hooks
-    const { handleDragStart, handleDragEnd } = useDragHandler({
+    const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
       draggedHeaderRef,
       headersRef,
       hoveredHeaderRef,
+      onColumnOrderChange,
       onTableHeaderDragEnd,
     });
-    const { handleDragOver } = useDragHandler({
-      draggedHeaderRef,
-      headersRef,
-      hoveredHeaderRef,
-      onTableHeaderDragEnd,
-    });
+
     const throttle = useThrottle();
 
     // Handlers

@@ -121,14 +121,10 @@ const SimpleTable = ({
     [updateSort]
   );
 
-  const onTableHeaderDragEnd = useCallback(
-    (newHeaders: HeaderObject[]) => {
-      headersRef.current = newHeaders;
-      forceUpdate();
-      onColumnOrderChange?.(newHeaders);
-    },
-    [onColumnOrderChange]
-  );
+  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
+    headersRef.current = newHeaders;
+    forceUpdate();
+  }, []);
 
   // Handle outside click
   useEffect(() => {
@@ -204,6 +200,7 @@ const SimpleTable = ({
             isWidthDragging={isWidthDragging}
             mainBodyRef={mainBodyRef}
             onCellEdit={onCellEdit}
+            onColumnOrderChange={onColumnOrderChange}
             onSort={onSort}
             onTableHeaderDragEnd={onTableHeaderDragEnd}
             pinnedLeftRef={pinnedLeftRef}

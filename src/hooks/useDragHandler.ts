@@ -11,6 +11,7 @@ const useDragHandler = ({
   draggedHeaderRef,
   headersRef,
   hoveredHeaderRef,
+  onColumnOrderChange,
   onTableHeaderDragEnd,
 }: DragHandlerProps) => {
   const prevHeaders = usePrevious<HeaderObject[] | null>(headersRef.current);
@@ -35,15 +36,12 @@ const useDragHandler = ({
 
     // Get the animations on the header
     const animations = event.currentTarget.getAnimations();
-    const isAnimating = animations.some(
-      (animation) => animation.playState === "running"
-    );
+    const isAnimating = animations.some((animation) => animation.playState === "running");
 
     // Get the distance between the previous dragging position and the current position
     const { screenX, screenY } = event;
     const distance = Math.sqrt(
-      Math.pow(screenX - prevDraggingPosition.screenX, 2) +
-        Math.pow(screenY - prevDraggingPosition.screenY, 2)
+      Math.pow(screenX - prevDraggingPosition.screenX, 2) + Math.pow(screenY - prevDraggingPosition.screenY, 2)
     );
 
     hoveredHeaderRef.current = hoveredHeader;
@@ -51,12 +49,8 @@ const useDragHandler = ({
     // Create a copy of the headers
     const newHeaders = [...headersRef.current];
     // Get the indexes of the dragged and hovered headers
-    const draggedHeaderIndex = newHeaders.findIndex(
-      (header) => header.accessor === draggedHeaderRef.current?.accessor
-    );
-    const hoveredHeaderIndex = newHeaders.findIndex(
-      (header) => header.accessor === hoveredHeader.accessor
-    );
+    const draggedHeaderIndex = newHeaders.findIndex((header) => header.accessor === draggedHeaderRef.current?.accessor);
+    const hoveredHeaderIndex = newHeaders.findIndex((header) => header.accessor === hoveredHeader.accessor);
 
     // Remove the dragged header from its current position and insert it at the hovered header's position
     const [draggedHeader] = newHeaders.splice(draggedHeaderIndex, 1);
@@ -81,10 +75,8 @@ const useDragHandler = ({
 
     // Delay reverting headers to prevent quick reversion when dragging over wide columns.
     const now = Date.now();
-    const arePreviousHeadersAndNewHeadersTheSame =
-      JSON.stringify(newHeaders) === JSON.stringify(prevHeaders);
-    const shouldRevertToPreviousHeaders =
-      now - prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
+    const arePreviousHeadersAndNewHeadersTheSame = JSON.stringify(newHeaders) === JSON.stringify(prevHeaders);
+    const shouldRevertToPreviousHeaders = now - prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
 
     if (
       arePreviousHeadersAndNewHeadersTheSame &&
@@ -108,6 +100,7 @@ const useDragHandler = ({
   const handleDragEnd = () => {
     draggedHeaderRef.current = null;
     hoveredHeaderRef.current = null;
+    onColumnOrderChange?.(headersRef.current);
   };
 
   return {

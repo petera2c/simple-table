@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction } from "react";
 import HeaderObject from "../types/HeaderObject";
 import SortConfig from "../types/SortConfig";
 import Row from "../types/Row";
-import { RowId } from "../types/RowId";
 
 // Type-specific comparators for different data types
 const comparators = {
@@ -182,9 +181,6 @@ const sortPreservingHierarchy = (rows: Row[], sortConfig: SortConfig, headers: H
       const accessor = sortConfig.key.accessor;
       const aValue = a.rowData[accessor];
       const bValue = b.rowData[accessor];
-
-      // If debugging is needed:
-      // console.log(`Comparing ${accessor}: ${aValue} (${typeof aValue}) vs ${bValue} (${typeof bValue}), type: ${type}`);
 
       return compareValues(aValue, bValue, type, direction);
     });
