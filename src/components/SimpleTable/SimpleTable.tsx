@@ -15,8 +15,6 @@ import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
-import { CONTAINER_HEIGHT } from "../../consts/general-consts";
-import { ROW_HEIGHT } from "../../consts/general-consts";
 import { getVisibleRows } from "../../utils/infiniteScrollUtils";
 
 // Create enum for consistent values
@@ -42,6 +40,7 @@ interface SimpleTableProps {
   onNextPage?: (page: number) => void; // Custom handler for next page
   onPreviousPage?: (page: number) => void; // Custom handler for previous page
   prevIcon?: ReactNode; // Previous icon
+  rowHeight?: number; // Height of each row
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
@@ -70,6 +69,7 @@ const SimpleTable = ({
   onNextPage,
   onPreviousPage,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
+  rowHeight = 40,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
@@ -102,16 +102,48 @@ const SimpleTable = ({
     tableRows: rows,
   });
 
+  // Calculate content height (total height minus header height)
+  const contentHeight = useMemo(() => {
+    // Default height if none provided
+    if (!height) return window.innerHeight - rowHeight;
+
+    // Get the container element for measurement
+    const container = document.querySelector(".simple-table-root");
+
+    // Convert height string to pixels
+    let totalHeightPx = 0;
+
+    if (height.endsWith("px")) {
+      // Direct pixel value
+      totalHeightPx = parseInt(height, 10);
+    } else if (height.endsWith("vh")) {
+      // Viewport height percentage
+      const vh = parseInt(height, 10);
+      totalHeightPx = (window.innerHeight * vh) / 100;
+    } else if (height.endsWith("%")) {
+      // Percentage of parent
+      const percentage = parseInt(height, 10);
+      const parentHeight = container?.parentElement?.clientHeight || window.innerHeight;
+      totalHeightPx = (parentHeight * percentage) / 100;
+    } else {
+      // Fall back to inner height if format is unknown
+      totalHeightPx = window.innerHeight;
+    }
+
+    // Subtract header height
+    return Math.max(0, totalHeightPx - rowHeight);
+  }, [height, rowHeight]);
+
   const visibleRows = useMemo(
     () =>
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
-        containerHeight: CONTAINER_HEIGHT,
-        rowHeight: ROW_HEIGHT,
+        contentHeight,
+        rowHeight,
         rows,
         scrollTop,
       }),
-    [rows, scrollTop]
+    [contentHeight, rowHeight, rows, scrollTop]
   );
 
   // Hooks
@@ -229,6 +261,7 @@ const SimpleTable = ({
             onTableHeaderDragEnd={onTableHeaderDragEnd}
             pinnedLeftRef={pinnedLeftRef}
             pinnedRightRef={pinnedRightRef}
+            rowHeight={rowHeight}
             scrollbarWidth={scrollbarWidth}
             selectableColumns={selectableColumns}
             setIsWidthDragging={setIsWidthDragging}

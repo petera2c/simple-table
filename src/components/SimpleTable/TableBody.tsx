@@ -6,7 +6,7 @@ import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
-import { ROW_HEIGHT, PAGE_SIZE } from "../../consts/general-consts";
+import { PAGE_SIZE } from "../../consts/general-consts";
 
 const TableBody = (props: TableBodyProps) => {
   const {
@@ -23,6 +23,7 @@ const TableBody = (props: TableBodyProps) => {
     pinnedRightHeaderRef,
     pinnedRightRef,
     pinnedRightTemplateColumns,
+    rowHeight,
     scrollbarWidth,
     setScrollTop,
     tableBodyContainerRef,
@@ -51,7 +52,7 @@ const TableBody = (props: TableBodyProps) => {
 
   // Derived state
   const totalRowCount = getTotalRowCount(rows);
-  const totalHeight = totalRowCount * (ROW_HEIGHT + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+  const totalHeight = totalRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 
   const toggleRow = (rowId: RowId) => {
     const updateRow = (row: Row): Row => {
@@ -124,7 +125,7 @@ const TableBody = (props: TableBodyProps) => {
           {...props}
           onExpandRowClick={toggleRow}
           pinned="left"
-          rowHeight={ROW_HEIGHT}
+          rowHeight={rowHeight}
           sectionRef={pinnedLeftRef}
           templateColumns={pinnedLeftTemplateColumns}
           totalHeight={totalHeight}
@@ -135,7 +136,7 @@ const TableBody = (props: TableBodyProps) => {
       <TableSection
         {...props}
         onExpandRowClick={toggleRow}
-        rowHeight={ROW_HEIGHT}
+        rowHeight={rowHeight}
         sectionRef={mainBodyRef}
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
@@ -147,7 +148,7 @@ const TableBody = (props: TableBodyProps) => {
           {...props}
           onExpandRowClick={toggleRow}
           pinned="right"
-          rowHeight={ROW_HEIGHT}
+          rowHeight={rowHeight}
           sectionRef={pinnedRightRef}
           templateColumns={pinnedRightTemplateColumns}
           totalHeight={totalHeight}

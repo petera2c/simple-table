@@ -16,6 +16,7 @@ interface TableBodyProps extends SharedTableProps {
   onCellEdit?: (props: CellChangeProps) => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
+  rowHeight: number;
   scrollbarWidth: number;
   setScrollTop: Dispatch<SetStateAction<number>>;
   shouldPaginate: boolean;

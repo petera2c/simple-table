@@ -4,7 +4,6 @@ import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import { displayCell } from "../../utils/cellUtils";
 import useScrollSync from "../../hooks/useScrollSync";
-import { ROW_HEIGHT } from "../../consts/general-consts";
 
 const TableHeader = ({
   allowAnimations,
@@ -30,6 +29,7 @@ const TableHeader = ({
   pinnedRightColumns,
   pinnedRightHeaderRef,
   pinnedRightTemplateColumns,
+  rowHeight,
   selectableColumns,
   setIsWidthDragging,
   setSelectedCells,
@@ -83,7 +83,7 @@ const TableHeader = ({
                   onSort={onSort}
                   onTableHeaderDragEnd={onTableHeaderDragEnd}
                   ref={createRef()}
-                  rowHeight={ROW_HEIGHT}
+                  rowHeight={rowHeight}
                   selectableColumns={selectableColumns}
                   setIsWidthDragging={setIsWidthDragging}
                   setSelectedCells={setSelectedCells}
@@ -130,7 +130,7 @@ const TableHeader = ({
                 onSort={onSort}
                 onTableHeaderDragEnd={onTableHeaderDragEnd}
                 ref={createRef()}
-                rowHeight={ROW_HEIGHT}
+                rowHeight={rowHeight}
                 selectableColumns={selectableColumns}
                 setIsWidthDragging={setIsWidthDragging}
                 setSelectedCells={setSelectedCells}
@@ -177,7 +177,7 @@ const TableHeader = ({
                   onTableHeaderDragEnd={onTableHeaderDragEnd}
                   reverse
                   ref={createRef()}
-                  rowHeight={ROW_HEIGHT}
+                  rowHeight={rowHeight}
                   selectableColumns={selectableColumns}
                   setIsWidthDragging={setIsWidthDragging}
                   setSelectedCells={setSelectedCells}

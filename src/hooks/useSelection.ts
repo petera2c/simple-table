@@ -83,12 +83,22 @@ const useSelection = ({
 
       // We will navigate based on the initial focused cell
       if (!initialFocusedCell) return;
-      const { rowIndex, colIndex, rowId } = initialFocusedCell;
+      let { rowIndex, colIndex, rowId } = initialFocusedCell;
 
       // Copy functionality
       if ((event.ctrlKey || event.metaKey) && event.key === "c") {
         copyToClipboard();
         return;
+      }
+
+      // Check if the visible rows have changed
+      // If the rowId has changed, and we can't find the rowId in the visible rows, do nothing
+      // If the rowId has changed, and we can find the rowId in the visible rows, update the rowIndex
+      if (visibleRows[rowIndex].row.rowMeta.rowId !== rowId) {
+        const currentRowIndex = visibleRows.findIndex((row) => row.row.rowMeta.rowId === rowId);
+        if (currentRowIndex !== -1) {
+          rowIndex = currentRowIndex;
+        } else return;
       }
 
       // Handle keyboard navigation - only show one cell at a time
@@ -226,7 +236,7 @@ const useSelection = ({
       rowIndex === initialFocusedCell.rowIndex &&
       colIndex === initialFocusedCell.colIndex &&
       rowId === initialFocusedCell.rowId;
-  }, [initialFocusedCell, visibleRows]);
+  }, [initialFocusedCell]);
 
   return {
     getBorderClass,

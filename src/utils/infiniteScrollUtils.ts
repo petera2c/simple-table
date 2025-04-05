@@ -20,13 +20,13 @@ export const getTotalRowCount = (rows: Row[]): number => {
 // Get visible rows with their absolute positions
 export const getVisibleRows = ({
   bufferRowCount,
-  containerHeight,
+  contentHeight,
   rowHeight,
   rows,
   scrollTop,
 }: {
   bufferRowCount: number;
-  containerHeight: number;
+  contentHeight: number;
   rowHeight: number;
   rows: Row[];
   scrollTop: number;
@@ -34,7 +34,7 @@ export const getVisibleRows = ({
   const visibleRows: VisibleRow[] = [];
   let currentPosition = 0;
   const startOffset = Math.max(0, scrollTop - rowHeight * bufferRowCount);
-  const endOffset = scrollTop + containerHeight + rowHeight * bufferRowCount;
+  const endOffset = scrollTop + contentHeight + rowHeight * bufferRowCount;
 
   const traverseRows = (rowList: Row[], depth: number) => {
     for (const row of rowList) {

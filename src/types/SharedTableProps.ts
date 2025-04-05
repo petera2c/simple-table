@@ -19,6 +19,7 @@ interface SharedTableProps {
   pinnedRightColumns: HeaderObject[];
   pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedRightTemplateColumns: string;
+  rowHeight: number;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }
 
