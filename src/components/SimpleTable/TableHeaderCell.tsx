@@ -212,7 +212,9 @@ const TableHeaderCell = forwardRef(
       >
         {reverse && ResizeHandle}
         <div
-          className={`st-header-label ${header.align === "right" ? "right-aligned" : ""}`}
+          className={`st-header-label ${
+            header.align === "right" ? "right-aligned" : header.align === "center" ? "center-aligned" : ""
+          }`}
           draggable={columnReordering}
           onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragEnd={handleDragEndWrapper}

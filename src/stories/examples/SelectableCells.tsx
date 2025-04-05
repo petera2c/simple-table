@@ -11,6 +11,7 @@ const SelectableCellsExample = () => {
         columnResizing
         defaultHeaders={HEADERS}
         columnReordering
+        rowHeight={30}
         rows={EXAMPLE_DATA}
         selectableCells
         selectableColumns

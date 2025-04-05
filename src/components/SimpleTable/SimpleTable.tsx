@@ -80,6 +80,7 @@ const SimpleTable = ({
   theme = "light",
   totalPages,
 }: SimpleTableProps) => {
+  console.log(rowHeight);
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const headersRef = useRef(defaultHeaders);

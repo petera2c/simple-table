@@ -57,9 +57,7 @@ const TableCell = forwardRef(
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""} ${
-      header.align === "right" ? "right-aligned" : header.align === "center" ? "center-aligned" : "left-aligned"
-    }`;
+    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""}`;
 
     const updateLocalContent = (newValue: CellValue) => {
       setLocalContent(newValue);
@@ -126,7 +124,11 @@ const TableCell = forwardRef(
             </div>
           )
         ) : null}
-        <span className="st-cell-content">
+        <span
+          className={`st-cell-content ${
+            header.align === "right" ? "right-aligned" : header.align === "center" ? "center-aligned" : ""
+          }`}
+        >
           {header.cellRenderer ? header.cellRenderer({ accessor: header.accessor, colIndex, row }) : localContent}
         </span>
       </div>
