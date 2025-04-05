@@ -11,7 +11,7 @@ import { PAGE_SIZE } from "../../consts/general-consts";
 const TableBody = (props: TableBodyProps) => {
   const {
     centerHeaderRef,
-    currentRows,
+    flattenedRows,
     headerContainerRef,
     mainBodyRef,
     mainTemplateColumns,
@@ -25,6 +25,7 @@ const TableBody = (props: TableBodyProps) => {
     pinnedRightTemplateColumns,
     rowHeight,
     scrollbarWidth,
+    setFlattenedRows,
     setScrollTop,
     tableBodyContainerRef,
     visibleRows,
@@ -41,17 +42,12 @@ const TableBody = (props: TableBodyProps) => {
   const scrollTimeoutRef = useRef<number | null>(null);
 
   // Local state
-  const [rows, setRows] = useState<Row[]>(currentRows);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  useEffect(() => {
-    setRows(currentRows);
-  }, [currentRows]);
-
   // Derived state
-  const totalRowCount = getTotalRowCount(rows);
+  const totalRowCount = getTotalRowCount(flattenedRows);
   const totalHeight = totalRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 
   const toggleRow = (rowId: RowId) => {
@@ -64,18 +60,18 @@ const TableBody = (props: TableBodyProps) => {
       }
       return row;
     };
-    setRows((prevRows) => prevRows.map(updateRow));
+    setFlattenedRows((prevRows) => prevRows.map(updateRow));
   };
 
   const loadMoreRows = useCallback(async () => {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
-    const newRows = currentRows.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-    setRows((prevRows) => [...prevRows, ...newRows]);
+    const newRows = flattenedRows.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+    setFlattenedRows((prevRows) => [...prevRows, ...newRows]);
     setPage((prevPage) => prevPage + 1);
     setIsLoading(false);
     if (newRows.length < PAGE_SIZE / 3) setHasMore(false);
-  }, [currentRows, hasMore, isLoading, page]);
+  }, [flattenedRows, hasMore, isLoading, page, setFlattenedRows]);
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -102,7 +98,7 @@ const TableBody = (props: TableBodyProps) => {
     return () => {
       if (observerRef.current) observerRef.current.disconnect();
     };
-  }, [handleObserver, rows, tableBodyContainerRef]);
+  }, [handleObserver, flattenedRows, tableBodyContainerRef]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const newScrollTop = e.currentTarget.scrollTop;

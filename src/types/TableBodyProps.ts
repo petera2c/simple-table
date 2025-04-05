@@ -6,7 +6,7 @@ import Row from "./Row";
 import Cell from "./Cell";
 import VisibleRow from "./VisibleRow";
 interface TableBodyProps extends SharedTableProps {
-  currentRows: Row[];
+  flattenedRows: Row[];
   getBorderClass: (props: Cell) => string;
   handleMouseDown: (props: Cell) => void;
   handleMouseOver: (props: Cell) => void;
@@ -18,6 +18,7 @@ interface TableBodyProps extends SharedTableProps {
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   scrollbarWidth: number;
+  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
   setScrollTop: Dispatch<SetStateAction<number>>;
   shouldPaginate: boolean;
   visibleRows: VisibleRow[];

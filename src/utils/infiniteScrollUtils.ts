@@ -21,14 +21,14 @@ export const getTotalRowCount = (rows: Row[]): number => {
 export const getVisibleRows = ({
   bufferRowCount,
   contentHeight,
+  flattenedRows,
   rowHeight,
-  rows,
   scrollTop,
 }: {
   bufferRowCount: number;
   contentHeight: number;
+  flattenedRows: Row[];
   rowHeight: number;
-  rows: Row[];
   scrollTop: number;
 }): VisibleRow[] => {
   const visibleRows: VisibleRow[] = [];
@@ -58,7 +58,7 @@ export const getVisibleRows = ({
     }
   };
 
-  traverseRows(rows, 0);
+  traverseRows(flattenedRows, 0);
   return visibleRows;
 };
 

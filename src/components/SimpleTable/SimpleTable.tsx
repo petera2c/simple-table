@@ -80,7 +80,6 @@ const SimpleTable = ({
   theme = "light",
   totalPages,
 }: SimpleTableProps) => {
-  console.log(rowHeight);
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const headersRef = useRef(defaultHeaders);
@@ -96,6 +95,7 @@ const SimpleTable = ({
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [tableContentWidth, setTableContentWidth] = useState(0);
   const [scrollTop, setScrollTop] = useState<number>(0);
+  const [flattenedRows, setFlattenedRows] = useState<Row[]>(rows);
 
   // Use custom hook for sorting
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
@@ -140,11 +140,11 @@ const SimpleTable = ({
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
         contentHeight,
+        flattenedRows,
         rowHeight,
-        rows,
         scrollTop,
       }),
-    [contentHeight, rowHeight, rows, scrollTop]
+    [contentHeight, rowHeight, flattenedRows, scrollTop]
   );
 
   // Hooks
@@ -244,6 +244,7 @@ const SimpleTable = ({
             currentRows={currentRows}
             draggedHeaderRef={draggedHeaderRef}
             editColumns={editColumns}
+            flattenedRows={flattenedRows}
             forceUpdate={forceUpdate}
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
@@ -252,8 +253,8 @@ const SimpleTable = ({
             headersRef={headersRef}
             hiddenColumns={hiddenColumns}
             hoveredHeaderRef={hoveredHeaderRef}
-            isSelected={isSelected}
             isInitialFocusedCell={isInitialFocusedCell}
+            isSelected={isSelected}
             isWidthDragging={isWidthDragging}
             mainBodyRef={mainBodyRef}
             onCellEdit={onCellEdit}
@@ -266,6 +267,7 @@ const SimpleTable = ({
             scrollbarWidth={scrollbarWidth}
             selectableColumns={selectableColumns}
             setIsWidthDragging={setIsWidthDragging}
+            setFlattenedRows={setFlattenedRows}
             setScrollTop={setScrollTop}
             setSelectedCells={setSelectedCells}
             shouldPaginate={shouldPaginate}
