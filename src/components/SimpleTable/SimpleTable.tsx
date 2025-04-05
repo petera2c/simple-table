@@ -14,6 +14,10 @@ import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
+import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
+import { CONTAINER_HEIGHT } from "../../consts/general-consts";
+import { ROW_HEIGHT } from "../../consts/general-consts";
+import { getVisibleRows } from "../../utils/infiniteScrollUtils";
 
 // Create enum for consistent values
 enum ColumnEditorPosition {
@@ -90,6 +94,7 @@ const SimpleTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [tableContentWidth, setTableContentWidth] = useState(0);
+  const [scrollTop, setScrollTop] = useState<number>(0);
 
   // Use custom hook for sorting
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
@@ -97,7 +102,20 @@ const SimpleTable = ({
     tableRows: rows,
   });
 
+  const visibleRows = useMemo(
+    () =>
+      getVisibleRows({
+        bufferRowCount: BUFFER_ROW_COUNT,
+        containerHeight: CONTAINER_HEIGHT,
+        rowHeight: ROW_HEIGHT,
+        rows,
+        scrollTop,
+      }),
+    [rows, scrollTop]
+  );
+
   // Hooks
+
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const {
     handleMouseDown,
@@ -111,7 +129,7 @@ const SimpleTable = ({
   } = useSelection({
     selectableCells,
     headers: headersRef.current,
-    rows: sortedRows,
+    visibleRows,
   });
 
   // Memoize currentRows calculation
@@ -189,11 +207,12 @@ const SimpleTable = ({
         <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
           <TableContent
             allowAnimations={allowAnimations}
+            columnReordering={columnReordering}
             columnResizing={columnResizing}
             currentRows={currentRows}
             draggedHeaderRef={draggedHeaderRef}
             editColumns={editColumns}
-            columnReordering={columnReordering}
+            focusCell={focusCell}
             forceUpdate={forceUpdate}
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
@@ -215,13 +234,14 @@ const SimpleTable = ({
             scrollbarWidth={scrollbarWidth}
             selectableColumns={selectableColumns}
             setIsWidthDragging={setIsWidthDragging}
+            setScrollTop={setScrollTop}
             setSelectedCells={setSelectedCells}
             shouldPaginate={shouldPaginate}
             sort={sort}
             sortDownIcon={sortDownIcon}
             sortUpIcon={sortUpIcon}
             tableBodyContainerRef={tableBodyContainerRef}
-            focusCell={focusCell}
+            visibleRows={visibleRows}
           />
           <TableColumnEditor
             columnEditorText={columnEditorText}

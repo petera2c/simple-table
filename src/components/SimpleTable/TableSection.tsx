@@ -62,6 +62,7 @@ const TableSection = ({
               props={{
                 ...props,
                 onExpandRowClick,
+                visibleRows,
               }}
               rowHeight={rowHeight}
               visibleRow={visibleRow}

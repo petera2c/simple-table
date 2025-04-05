@@ -3,11 +3,13 @@ import HeaderObject from "./HeaderObject";
 import CellChangeProps from "./CellChangeProps";
 import { RowId } from "./RowId";
 import VisibleRow from "./VisibleRow";
+import Cell from "./Cell";
 
 export interface TableCellProps {
   borderClass: string;
   colIndex: number;
   draggedHeaderRef: RefObject<HeaderObject | null>;
+  focusCell?: (props: Cell) => void;
   header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
@@ -15,12 +17,11 @@ export interface TableCellProps {
   isTopLeftCell: boolean;
   onCellEdit?: (props: CellChangeProps) => void;
   onExpandRowClick: (rowId: RowId) => void;
-  onMouseDown: (rowIndex: number, colIndex: number) => void;
-  onMouseOver: (rowIndex: number, colIndex: number) => void;
+  onMouseDown: (props: Cell) => void;
+  onMouseOver: (props: Cell) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   rowIndex: number;
   visibleRow: VisibleRow;
-  focusCell?: (rowIndex: number, colIndex: number) => void;
 }
 
 export default TableCellProps;

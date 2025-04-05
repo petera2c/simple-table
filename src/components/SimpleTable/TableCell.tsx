@@ -100,8 +100,8 @@ const TableCell = forwardRef(
         className={cellClassName}
         id={cellId}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
-        onMouseDown={() => onMouseDown(rowIndex, colIndex)}
-        onMouseOver={() => onMouseOver(rowIndex, colIndex)}
+        onMouseDown={() => onMouseDown({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
+        onMouseOver={() => onMouseOver({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
         onDragOver={(event) =>
           throttle({
             callback: handleDragOver,

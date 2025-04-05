@@ -8,9 +8,9 @@ import TableContentProps from "../../types/TableContentProps";
 
 const TableContent = ({
   allowAnimations,
+  columnReordering,
   columnResizing,
   currentRows,
-  columnReordering,
   draggedHeaderRef,
   editColumns,
   focusCell,
@@ -34,12 +34,14 @@ const TableContent = ({
   scrollbarWidth,
   selectableColumns,
   setIsWidthDragging,
+  setScrollTop,
   setSelectedCells,
   shouldPaginate,
   sort,
   sortDownIcon,
   sortUpIcon,
   tableBodyContainerRef,
+  visibleRows,
 }: TableContentProps) => {
   // Refs
   const headerContainerRef = useRef<HTMLDivElement>(null);
@@ -104,6 +106,7 @@ const TableContent = ({
     centerHeaderRef,
     currentRows,
     draggedHeaderRef,
+    focusCell,
     getBorderClass,
     handleMouseDown,
     handleMouseOver,
@@ -129,8 +132,9 @@ const TableContent = ({
     pinnedRightTemplateColumns,
     scrollbarWidth,
     shouldPaginate,
+    setScrollTop,
     tableBodyContainerRef,
-    focusCell,
+    visibleRows,
   };
 
   return (

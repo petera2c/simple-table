@@ -44,15 +44,15 @@ const RenderCells = ({
         return (
           <TableCell
             {...props}
-            borderClass={getBorderClass(rowIndex, colIndex)}
+            borderClass={getBorderClass({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
             colIndex={colIndex}
             header={header}
-            isSelected={isSelected(rowIndex, colIndex)}
-            isTopLeftCell={isTopLeftCell(rowIndex, colIndex)}
+            isSelected={isSelected({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
+            isTopLeftCell={isTopLeftCell({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
             key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
             onExpandRowClick={onExpandRowClick}
-            onMouseDown={() => handleMouseDown({ rowIndex: rowIndex, colIndex })}
-            onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+            onMouseDown={() => handleMouseDown({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
+            onMouseOver={() => handleMouseOver({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
             rowIndex={rowIndex}
             visibleRow={visibleRow}
           />

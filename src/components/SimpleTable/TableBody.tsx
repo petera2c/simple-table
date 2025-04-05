@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableSection from "./TableSection";
-import { getTotalRowCount, getVisibleRows } from "../../utils/infiniteScrollUtils";
+import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
-import { CONTAINER_HEIGHT, ROW_HEIGHT, PAGE_SIZE, BUFFER_ROW_COUNT } from "../../consts/general-consts";
+import { ROW_HEIGHT, PAGE_SIZE } from "../../consts/general-consts";
 
 const TableBody = (props: TableBodyProps) => {
   const {
@@ -24,7 +24,9 @@ const TableBody = (props: TableBodyProps) => {
     pinnedRightRef,
     pinnedRightTemplateColumns,
     scrollbarWidth,
+    setScrollTop,
     tableBodyContainerRef,
+    visibleRows,
   } = props;
 
   useScrollbarVisibility({
@@ -42,7 +44,6 @@ const TableBody = (props: TableBodyProps) => {
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [scrollTop, setScrollTop] = useState<number>(0);
 
   useEffect(() => {
     setRows(currentRows);
@@ -64,18 +65,6 @@ const TableBody = (props: TableBodyProps) => {
     };
     setRows((prevRows) => prevRows.map(updateRow));
   };
-
-  const visibleRows = useMemo(
-    () =>
-      getVisibleRows({
-        bufferRowCount: BUFFER_ROW_COUNT,
-        containerHeight: CONTAINER_HEIGHT,
-        rowHeight: ROW_HEIGHT,
-        rows,
-        scrollTop,
-      }),
-    [rows, scrollTop]
-  );
 
   const loadMoreRows = useCallback(async () => {
     if (isLoading || !hasMore) return;

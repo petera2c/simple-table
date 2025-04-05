@@ -16,7 +16,7 @@ interface TableHeaderProps extends SharedTableProps {
   onSort: OnSortProps;
   selectableColumns: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
-  setSelectedCells: Dispatch<React.SetStateAction<Set<string>>>;
+  setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   sort: SortConfig | null;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
