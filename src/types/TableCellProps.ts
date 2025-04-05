@@ -9,12 +9,11 @@ export interface TableCellProps {
   borderClass: string;
   colIndex: number;
   draggedHeaderRef: RefObject<HeaderObject | null>;
-  focusCell?: (props: Cell) => void;
   header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   isSelected: boolean;
-  isTopLeftCell: boolean;
+  isInitialFocusedCell: boolean;
   onCellEdit?: (props: CellChangeProps) => void;
   onExpandRowClick: (rowId: RowId) => void;
   onMouseDown: (props: Cell) => void;

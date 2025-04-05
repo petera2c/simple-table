@@ -19,7 +19,7 @@ const TableCell = forwardRef(
       headersRef,
       hoveredHeaderRef,
       isSelected,
-      isTopLeftCell,
+      isInitialFocusedCell,
       onCellEdit,
       onExpandRowClick,
       onMouseDown,
@@ -53,7 +53,7 @@ const TableCell = forwardRef(
     const isOddRow = rowIndex % 2 === 0;
     const cellClassName = `st-cell ${depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""} ${
       isSelected
-        ? isTopLeftCell
+        ? isInitialFocusedCell
           ? `st-cell-selected-first-cell ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
@@ -110,7 +110,6 @@ const TableCell = forwardRef(
           })
         }
         onKeyDown={handleKeyDown}
-        tabIndex={isSelected ? 0 : -1}
         ref={ref}
         data-row-index={rowIndex}
         data-col-index={colIndex}

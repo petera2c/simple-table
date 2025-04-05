@@ -19,7 +19,6 @@ interface TableContentProps extends Omit<TableHeaderProps, OmittedTableProps>, O
   editColumns: boolean;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
-  focusCell?: (props: Cell) => void;
 }
 
 export default TableContentProps;

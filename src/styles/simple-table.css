@@ -1077,11 +1077,6 @@
   border: var(--st-border-width) solid transparent;
 }
 
-/* Style for focused cells */
-.st-cell[tabindex="0"] {
-  outline: none;
-}
-
 .st-cell-depth-1 {
   padding-left: calc(var(--st-cell-padding) * 4);
 }

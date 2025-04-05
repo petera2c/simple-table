@@ -123,9 +123,8 @@ const SimpleTable = ({
     handleMouseUp,
     isSelected,
     getBorderClass,
-    isTopLeftCell,
+    isInitialFocusedCell,
     setSelectedCells,
-    focusCell,
   } = useSelection({
     selectableCells,
     headers: headersRef.current,
@@ -212,7 +211,6 @@ const SimpleTable = ({
             currentRows={currentRows}
             draggedHeaderRef={draggedHeaderRef}
             editColumns={editColumns}
-            focusCell={focusCell}
             forceUpdate={forceUpdate}
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
@@ -222,7 +220,7 @@ const SimpleTable = ({
             hiddenColumns={hiddenColumns}
             hoveredHeaderRef={hoveredHeaderRef}
             isSelected={isSelected}
-            isTopLeftCell={isTopLeftCell}
+            isInitialFocusedCell={isInitialFocusedCell}
             isWidthDragging={isWidthDragging}
             mainBodyRef={mainBodyRef}
             onCellEdit={onCellEdit}

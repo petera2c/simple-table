@@ -7,13 +7,12 @@ import Cell from "./Cell";
 import VisibleRow from "./VisibleRow";
 interface TableBodyProps extends SharedTableProps {
   currentRows: Row[];
-  focusCell?: (props: Cell) => void;
   getBorderClass: (props: Cell) => string;
   handleMouseDown: (props: Cell) => void;
   handleMouseOver: (props: Cell) => void;
   headers: HeaderObject[];
   isSelected: (props: Cell) => boolean;
-  isTopLeftCell: (props: Cell) => boolean;
+  isInitialFocusedCell: (props: Cell) => boolean;
   onCellEdit?: (props: CellChangeProps) => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;

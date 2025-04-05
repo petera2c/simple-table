@@ -15,7 +15,6 @@ const useSelection = ({
   visibleRows: VisibleRow[];
 }) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
-  const [focusedCell, setFocusedCell] = useState<Cell | null>(null);
   const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(null);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
@@ -37,58 +36,54 @@ const useSelection = ({
     }
   }, [headers, selectedCells, visibleRows]);
 
-  // Get the cell ID that should receive focus
-  const getFocusableCellId = useCallback((rowIndex: number, colIndex: number) => {
-    return `cell-${rowIndex}-${colIndex}`;
-  }, []);
+  // Select cells from start to end coordinates
+  const selectCellRange = useCallback(
+    (startCell: Cell, endCell: Cell) => {
+      const newSelectedCells = new Set<string>();
+      const minRow = Math.min(startCell.rowIndex, endCell.rowIndex);
+      const maxRow = Math.max(startCell.rowIndex, endCell.rowIndex);
+      const minCol = Math.min(startCell.colIndex, endCell.colIndex);
+      const maxCol = Math.max(startCell.colIndex, endCell.colIndex);
 
-  // Focus a specific cell by coordinates
-  const focusCell = useCallback(
-    ({ rowIndex, colIndex, rowId }: Cell) => {
-      if (!selectableCells) return;
-
-      // Ensure valid bounds
-      if (rowIndex < 0 || rowIndex >= visibleRows.length) return;
-      if (colIndex < 0 || colIndex >= headers.length) return;
-
-      // Get the cell element
-      const cellId = getFocusableCellId(rowIndex, colIndex);
-      const cellElement = document.getElementById(cellId);
-
-      if (cellElement) {
-        cellElement.tabIndex = 0;
-        cellElement.focus();
-        setFocusedCell({ rowIndex, colIndex, rowId: visibleRows[rowIndex].row.rowMeta.rowId });
+      for (let row = minRow; row <= maxRow; row++) {
+        for (let col = minCol; col <= maxCol; col++) {
+          // Check if the row exists in the visible rows
+          if (row >= 0 && row < visibleRows.length) {
+            const rowId = visibleRows[row].row.rowMeta.rowId;
+            newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
+          }
+        }
       }
+
+      setSelectedCells(newSelectedCells);
     },
-    [getFocusableCellId, headers.length, selectableCells, visibleRows]
+    [visibleRows]
   );
 
-  // Select cells from start to end coordinates
-  const selectCellRange = useCallback((startCell: Cell, endCell: Cell) => {
-    const newSelectedCells = new Set<string>();
-    const minRow = Math.min(startCell.rowIndex, endCell.rowIndex);
-    const maxRow = Math.max(startCell.rowIndex, endCell.rowIndex);
-    const minCol = Math.min(startCell.colIndex, endCell.colIndex);
-    const maxCol = Math.max(startCell.colIndex, endCell.colIndex);
-
-    for (let row = minRow; row <= maxRow; row++) {
-      for (let col = minCol; col <= maxCol; col++) {
-        newSelectedCells.add(`${row}-${col}`);
+  // Select a single cell
+  const selectSingleCell = useCallback(
+    (cell: Cell) => {
+      if (
+        cell.rowIndex >= 0 &&
+        cell.rowIndex < visibleRows.length &&
+        cell.colIndex >= 0 &&
+        cell.colIndex < headers.length
+      ) {
+        const cellId = createSetString(cell);
+        setSelectedCells(new Set([cellId]));
+        setInitialFocusedCell(cell);
       }
-    }
-
-    setSelectedCells(newSelectedCells);
-  }, []);
+    },
+    [headers.length, visibleRows.length]
+  );
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Don't handle keyboard if cells aren't selectable
-      if (!selectableCells || !focusedCell) return;
+      if (!selectableCells) return;
 
-      // We will navigate based on the initial focused cell when a range is selected
-      const navCell = initialFocusedCell || focusedCell;
-      const { rowIndex, colIndex } = navCell;
+      // We will navigate based on the initial focused cell
+      if (!initialFocusedCell) return;
+      const { rowIndex, colIndex, rowId } = initialFocusedCell;
 
       // Copy functionality
       if ((event.ctrlKey || event.metaKey) && event.key === "c") {
@@ -96,50 +91,46 @@ const useSelection = ({
         return;
       }
 
-      // Handle keyboard navigation
+      // Handle keyboard navigation - only show one cell at a time
       if (event.key === "ArrowUp") {
         event.preventDefault();
         if (rowIndex > 0) {
-          // Just move focus
-          startCell.current = null;
-          setSelectedCells(new Set([`${rowIndex - 1}-${colIndex}`]));
-          setInitialFocusedCell({
+          const newCell = {
             rowIndex: rowIndex - 1,
             colIndex,
             rowId: visibleRows[rowIndex - 1].row.rowMeta.rowId,
-          });
-          focusCell({ rowIndex: rowIndex - 1, colIndex, rowId: visibleRows[rowIndex - 1].row.rowMeta.rowId });
+          };
+          selectSingleCell(newCell);
         }
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
         if (rowIndex < visibleRows.length - 1) {
-          // Just move focus
-          startCell.current = null;
-          setSelectedCells(new Set([`${rowIndex + 1}-${colIndex}`]));
-          setInitialFocusedCell({
+          const newCell = {
             rowIndex: rowIndex + 1,
             colIndex,
             rowId: visibleRows[rowIndex + 1].row.rowMeta.rowId,
-          });
-          focusCell({ rowIndex: rowIndex + 1, colIndex, rowId: visibleRows[rowIndex + 1].row.rowMeta.rowId });
+          };
+          selectSingleCell(newCell);
         }
       } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
         event.preventDefault();
         if (colIndex > 0) {
-          // Just move focus
-          startCell.current = null;
-          setSelectedCells(new Set([`${rowIndex}-${colIndex - 1}`]));
-          setInitialFocusedCell({ rowIndex, colIndex: colIndex - 1, rowId: visibleRows[rowIndex].row.rowMeta.rowId });
-          focusCell({ rowIndex, colIndex: colIndex - 1, rowId: visibleRows[rowIndex].row.rowMeta.rowId });
+          const newCell = {
+            rowIndex,
+            colIndex: colIndex - 1,
+            rowId: visibleRows[rowIndex].row.rowMeta.rowId,
+          };
+          selectSingleCell(newCell);
         }
       } else if (event.key === "ArrowRight" || event.key === "Tab") {
         event.preventDefault();
         if (colIndex < headers.length - 1) {
-          // Just move focus
-          startCell.current = null;
-          setSelectedCells(new Set([`${rowIndex}-${colIndex + 1}`]));
-          setInitialFocusedCell({ rowIndex, colIndex: colIndex + 1, rowId: visibleRows[rowIndex].row.rowMeta.rowId });
-          focusCell({ rowIndex, colIndex: colIndex + 1, rowId: visibleRows[rowIndex].row.rowMeta.rowId });
+          const newCell = {
+            rowIndex,
+            colIndex: colIndex + 1,
+            rowId: visibleRows[rowIndex].row.rowMeta.rowId,
+          };
+          selectSingleCell(newCell);
         }
       } else if (event.key === "Escape") {
         // Clear selection
@@ -153,18 +144,24 @@ const useSelection = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [copyToClipboard, focusCell, focusedCell, headers.length, initialFocusedCell, selectCellRange, selectableCells]);
+  }, [
+    copyToClipboard,
+    headers.length,
+    initialFocusedCell,
+    selectCellRange,
+    selectSingleCell,
+    selectableCells,
+    visibleRows,
+  ]);
 
   const handleMouseDown = ({ colIndex, rowIndex, rowId }: Cell) => {
     if (!selectableCells) return;
     isSelecting.current = true;
     startCell.current = { rowIndex, colIndex, rowId };
-    setSelectedCells(new Set([createSetString({ colIndex, rowIndex, rowId })]));
-    setFocusedCell({ rowIndex, colIndex, rowId });
-    setInitialFocusedCell({ rowIndex, colIndex, rowId });
 
-    // Focus the cell
-    focusCell({ rowIndex, colIndex, rowId: visibleRows[rowIndex].row.rowMeta.rowId });
+    const cellId = createSetString({ colIndex, rowIndex, rowId });
+    setSelectedCells(new Set([cellId]));
+    setInitialFocusedCell({ rowIndex, colIndex, rowId });
   };
 
   const handleMouseOver = ({ colIndex, rowIndex, rowId }: Cell) => {
@@ -178,13 +175,15 @@ const useSelection = ({
 
       for (let row = startRow; row <= endRow; row++) {
         for (let col = startCol; col <= endCol; col++) {
-          newSelectedCells.add(
-            createSetString({ colIndex: col, rowIndex: row, rowId: visibleRows[row].row.rowMeta.rowId })
-          );
+          // Ensure the row exists
+          if (row >= 0 && row < visibleRows.length) {
+            const rowId = visibleRows[row].row.rowMeta.rowId;
+            newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
+          }
         }
       }
+
       setSelectedCells(newSelectedCells);
-      setFocusedCell({ rowIndex, colIndex, rowId: visibleRows[rowIndex].row.rowMeta.rowId });
       // Initial focused cell remains the one where the drag started
     }
   };
@@ -218,26 +217,24 @@ const useSelection = ({
       if (!isSelected(rightCell)) classes.push("st-selected-right-border");
       return classes.join(" ");
     },
-    [isSelected]
+    [isSelected, visibleRows]
   );
 
-  const isTopLeftCell = useMemo(() => {
-    const minRow = Math.min(...Array.from(selectedCells).map((cell) => parseInt(cell.split("-")[0])));
-    const minCol = Math.min(...Array.from(selectedCells).map((cell) => parseInt(cell.split("-")[1])));
+  const isInitialFocusedCell = useMemo(() => {
+    if (!initialFocusedCell) return () => false;
     return ({ rowIndex, colIndex, rowId }: Cell) =>
-      rowIndex === minRow && colIndex === minCol && rowId === visibleRows[minRow].row.rowMeta.rowId;
-  }, [selectedCells, visibleRows]);
+      rowIndex === initialFocusedCell.rowIndex &&
+      colIndex === initialFocusedCell.colIndex &&
+      rowId === initialFocusedCell.rowId;
+  }, [initialFocusedCell, visibleRows]);
 
   return {
-    focusCell,
-    focusedCell,
     getBorderClass,
     handleMouseDown,
     handleMouseOver,
     handleMouseUp,
-    initialFocusedCell,
+    isInitialFocusedCell,
     isSelected,
-    isTopLeftCell,
     selectedCells,
     setSelectedCells,
   };

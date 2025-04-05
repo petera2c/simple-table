@@ -13,7 +13,7 @@ const RenderCells = ({
   headers,
   hiddenColumns,
   isSelected,
-  isTopLeftCell,
+  isInitialFocusedCell,
   onExpandRowClick,
   pinned,
   rowIndex,
@@ -48,7 +48,7 @@ const RenderCells = ({
             colIndex={colIndex}
             header={header}
             isSelected={isSelected({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
-            isTopLeftCell={isTopLeftCell({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
+            isInitialFocusedCell={isInitialFocusedCell({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
             key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
             onExpandRowClick={onExpandRowClick}
             onMouseDown={() => handleMouseDown({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId })}
