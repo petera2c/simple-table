@@ -5,10 +5,11 @@ interface TableFooterProps {
   hideFooter?: boolean;
   nextIcon?: ReactNode;
   onPageChange: (page: number) => void;
+  onNextPage?: (page: number) => void;
+  onPreviousPage?: (page: number) => void;
   prevIcon?: ReactNode;
-  rowsPerPage: number;
   shouldPaginate?: boolean;
-  totalRows: number;
+  totalPages: number;
 }
 
 const TableFooter = ({
@@ -16,36 +17,76 @@ const TableFooter = ({
   hideFooter,
   nextIcon,
   onPageChange,
+  onNextPage,
+  onPreviousPage,
   prevIcon,
-  rowsPerPage,
   shouldPaginate,
-  totalRows,
+  totalPages,
 }: TableFooterProps) => {
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
   const hasPrevPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
 
+  const handlePrevPage = () => {
+    const prevPage = currentPage - 1;
+
+    // First update the internal page state
+    if (prevPage >= 1) {
+      onPageChange(prevPage);
+    }
+
+    // Then call the custom handler if provided to fetch data
+    if (onPreviousPage) {
+      onPreviousPage(prevPage - 1); // Convert to 0-based for data fetching
+    }
+  };
+
+  const handleNextPage = () => {
+    const nextPage = currentPage + 1;
+
+    // First update the internal page state
+    if (nextPage <= totalPages || onNextPage) {
+      onPageChange(nextPage);
+    }
+
+    // Then call the custom handler if provided to fetch data
+    if (onNextPage) {
+      onNextPage(currentPage); // Current page is already the index for next page data
+    }
+  };
+
   const handlePageChange = (page: number) => {
+    // Only update page if within valid range
     if (page >= 1 && page <= totalPages) {
+      // Update internal state
       onPageChange(page);
+
+      // Call appropriate data fetch handler based on direction
+      if (page > currentPage && onNextPage) {
+        onNextPage(page - 1); // Convert to 0-based for data fetching
+      } else if (page < currentPage && onPreviousPage) {
+        onPreviousPage(page - 1); // Convert to 0-based for data fetching
+      }
     }
   };
 
   if (hideFooter || !shouldPaginate) return null;
 
+  const isPrevDisabled = !hasPrevPage && !onPreviousPage;
+  const isNextDisabled = !hasNextPage && !onNextPage;
+
   return (
     <div className="st-footer">
       <button
-        className={`st-next-prev-btn ${!hasPrevPage ? "disabled" : ""}`}
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={!hasPrevPage}
+        className={`st-next-prev-btn ${isPrevDisabled ? "disabled" : ""}`}
+        onClick={handlePrevPage}
+        disabled={isPrevDisabled}
       >
         {prevIcon}
       </button>
       <button
-        className={`st-next-prev-btn ${!hasNextPage ? "disabled" : ""}`}
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={!hasNextPage}
+        className={`st-next-prev-btn ${isNextDisabled ? "disabled" : ""}`}
+        onClick={handleNextPage}
+        disabled={isNextDisabled}
       >
         {nextIcon}
       </button>

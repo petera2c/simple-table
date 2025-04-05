@@ -35,6 +35,8 @@ interface SimpleTableProps {
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onNextPage?: (page: number) => void; // Custom handler for next page
+  onPreviousPage?: (page: number) => void; // Custom handler for previous page
   prevIcon?: ReactNode; // Previous icon
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
@@ -44,6 +46,7 @@ interface SimpleTableProps {
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
   theme?: Theme; // Theme
+  totalPages?: number; // Total pages
 }
 
 const SimpleTable = ({
@@ -60,6 +63,8 @@ const SimpleTable = ({
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
   onColumnOrderChange,
+  onNextPage,
+  onPreviousPage,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rows,
   rowsPerPage = 10,
@@ -69,6 +74,7 @@ const SimpleTable = ({
   sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   theme = "light",
+  totalPages,
 }: SimpleTableProps) => {
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
@@ -237,38 +243,14 @@ const SimpleTable = ({
         hideFooter={hideFooter}
         nextIcon={nextIcon}
         onPageChange={setCurrentPage}
+        onNextPage={onNextPage}
+        onPreviousPage={onPreviousPage}
         prevIcon={prevIcon}
-        rowsPerPage={rowsPerPage}
         shouldPaginate={shouldPaginate}
-        totalRows={sortedRows.length}
+        totalPages={totalPages || Math.ceil(sortedRows.length / rowsPerPage)}
       />
     </div>
   );
-};
-
-// Add prop validation
-SimpleTable.defaultProps = {
-  allowAnimations: false,
-  columnEditorPosition: ColumnEditorPosition.Right,
-  columnEditorText: "Columns",
-  columnResizing: false,
-  defaultHeaders: [],
-  editColumns: false,
-  editColumnsInitOpen: false,
-  columnReordering: false,
-  height: "",
-  hideFooter: false,
-  nextIcon: <AngleRightIcon className="st-next-prev-icon" />,
-  onCellEdit: () => {},
-  prevIcon: <AngleLeftIcon className="st-next-prev-icon" />,
-  rows: [],
-  rowsPerPage: 10,
-  selectableCells: false,
-  selectableColumns: false,
-  shouldPaginate: false,
-  sortDownIcon: <AngleDownIcon className="st-sort-icon" />,
-  sortUpIcon: <AngleUpIcon className="st-sort-icon" />,
-  theme: "light",
 };
 
 export default memo(SimpleTable);

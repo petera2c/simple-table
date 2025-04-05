@@ -3,32 +3,63 @@ import SimpleTable from "../../components/SimpleTable/SimpleTable";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
 
+const ROWS_PER_PAGE = 10;
+
 const EXAMPLE_DATA = generateSaaSData();
 const HEADERS = SAAS_HEADERS;
 
+/**
+ * Example showing pagination with "server-side" data fetching simulation
+ */
 const PaginationExample = () => {
-  const [rows, setRows] = useState(EXAMPLE_DATA);
+  // Only hold the current page data, not all data
+  const [rows, setRows] = useState(EXAMPLE_DATA.slice(0, ROWS_PER_PAGE));
 
-  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
-    setRows((prevRows) => {
-      const rowIndex = rows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
-      prevRows[rowIndex].rowData[accessor] = newValue;
-      return prevRows;
-    });
+  // Handler for next page data fetch
+  const onNextPage = (pageIndex: number) => {
+    const startIndex = pageIndex * ROWS_PER_PAGE;
+    const endIndex = startIndex + ROWS_PER_PAGE;
+    const newPageData = EXAMPLE_DATA.slice(startIndex, endIndex);
+
+    if (newPageData.length === 0 || rows.length > startIndex) {
+      return;
+    }
+
+    setRows((prevRows) => [...prevRows, ...newPageData]);
+  };
+
+  // Handler for previous page data fetch
+  const onPreviousPage = (pageIndex: number) => {
+    const startIndex = pageIndex * ROWS_PER_PAGE;
+    const endIndex = startIndex + ROWS_PER_PAGE;
+    const newPageData = EXAMPLE_DATA.slice(startIndex, endIndex);
+
+    if (newPageData.length === 0 || rows.length > startIndex) {
+      return;
+    }
+
+    setRows((prevRows) => [...newPageData, ...prevRows]);
   };
 
   return (
     <div style={{ padding: "2rem" }}>
+      <div style={{ marginBottom: "1rem" }}>
+        <h2>Server-Side Pagination Example</h2>
+        <p>This example simulates fetching data from a server. Check console for details.</p>
+      </div>
+
       <SimpleTable
-        columnResizing // Enable column resizing
-        defaultHeaders={HEADERS} // Set the headers
-        columnReordering // Enable draggable columns
-        onCellEdit={updateCell} // Handle cell changes
-        rows={rows} // Set rows data
-        selectableCells // Enable selectable cells
-        selectableColumns // Select column by clicking on the header. This will override sort on header click
+        columnReordering
+        columnResizing
+        defaultHeaders={HEADERS}
+        onNextPage={onNextPage}
+        onPreviousPage={onPreviousPage}
+        rows={rows}
+        rowsPerPage={ROWS_PER_PAGE}
+        selectableCells
+        selectableColumns
         shouldPaginate
-        rowsPerPage={10}
+        totalPages={Math.ceil(EXAMPLE_DATA.length / ROWS_PER_PAGE)}
       />
     </div>
   );
