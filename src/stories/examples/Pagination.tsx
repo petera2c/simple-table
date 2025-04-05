@@ -3,22 +3,6 @@ import SimpleTable from "../../components/SimpleTable/SimpleTable";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
 
-/**
- * # Pagination Example
- *
- * This example demonstrates the pagination functionality of Simple Table.
- *
- * ## Features Demonstrated
- * - Displaying data with pagination controls
- * - Configuring rows per page (set to 10)
- * - Automatic generation of page numbers and navigation controls
- * - Maintaining editable cells with pagination
- *
- * The pagination controls automatically adjust based on the total number of rows
- * and the selected rows per page. Users can navigate between pages using the
- * arrow buttons or by clicking on specific page numbers.
- */
-
 const EXAMPLE_DATA = generateSaaSData();
 const HEADERS = SAAS_HEADERS;
 
@@ -43,7 +27,6 @@ const PaginationExample = () => {
         rows={rows} // Set rows data
         selectableCells // Enable selectable cells
         selectableColumns // Select column by clicking on the header. This will override sort on header click
-        height="80vh"
         shouldPaginate
         rowsPerPage={10}
       />

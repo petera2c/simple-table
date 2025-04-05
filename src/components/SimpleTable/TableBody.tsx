@@ -48,6 +48,10 @@ const TableBody = (props: TableBodyProps) => {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [scrollTop, setScrollTop] = useState<number>(0);
 
+  useEffect(() => {
+    setRows(currentRows);
+  }, [currentRows]);
+
   // Derived state
   const totalRowCount = getTotalRowCount(rows);
   const totalHeight = totalRowCount * (ROW_HEIGHT + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;

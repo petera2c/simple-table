@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef } from "react";
+import { Fragment, RefObject, useEffect, useRef } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "./TableRow";
 import VisibleRow from "../../types/VisibleRow";
@@ -53,12 +53,11 @@ const TableSection = ({
       {visibleRows.map((visibleRow, index) => {
         const lastGroupRow = Boolean(visibleRow.row.rowMeta?.children?.length);
         return (
-          <>
+          <Fragment key={index}>
             <TableRow
               getNextRowIndex={getNextRowIndex}
               gridTemplateColumns={templateColumns}
               index={index}
-              key={index}
               pinned={pinned}
               props={{
                 ...props,
@@ -75,7 +74,7 @@ const TableSection = ({
                 templateColumns={templateColumns}
               />
             )}
-          </>
+          </Fragment>
         );
       })}
     </div>

@@ -1,4 +1,3 @@
-import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { RowId } from "../../types/RowId";
 import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";

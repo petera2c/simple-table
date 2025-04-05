@@ -2,7 +2,6 @@ import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
 import TableBodyProps from "../../types/TableBodyProps";
-import TableRowSeparator from "./TableRowSeparator";
 import Animate from "../Animate";
 import { RowId } from "../../types/RowId";
 import VisibleRow from "../../types/VisibleRow";
