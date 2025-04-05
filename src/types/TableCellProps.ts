@@ -20,6 +20,7 @@ export interface TableCellProps {
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   rowIndex: number;
   visibleRow: VisibleRow;
+  focusCell?: (rowIndex: number, colIndex: number) => void;
 }
 
 export default TableCellProps;

@@ -1,0 +1,24 @@
+import { RefObject } from "react";
+import TableHeaderProps from "./TableHeaderProps";
+import TableBodyProps from "./TableBodyProps";
+
+// Common properties to omit from both TableHeaderProps and TableBodyProps
+type OmittedTableProps =
+  | "centerHeaderRef"
+  | "headerContainerRef"
+  | "mainTemplateColumns"
+  | "pinnedLeftColumns"
+  | "pinnedLeftHeaderRef"
+  | "pinnedLeftTemplateColumns"
+  | "pinnedRightColumns"
+  | "pinnedRightHeaderRef"
+  | "pinnedRightTemplateColumns";
+
+interface TableContentProps extends Omit<TableHeaderProps, OmittedTableProps>, Omit<TableBodyProps, OmittedTableProps> {
+  editColumns: boolean;
+  pinnedLeftRef: RefObject<HTMLDivElement | null>;
+  pinnedRightRef: RefObject<HTMLDivElement | null>;
+  focusCell?: (rowIndex: number, colIndex: number) => void;
+}
+
+export default TableContentProps;

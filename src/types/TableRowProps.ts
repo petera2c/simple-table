@@ -25,6 +25,7 @@ type TableRowProps = {
   rowIndex: number;
   shouldPaginate: boolean;
   tableRef: RefObject<HTMLDivElement | null>;
+  focusCell?: (rowIndex: number, colIndex: number) => void;
 };
 
 export default TableRowProps;

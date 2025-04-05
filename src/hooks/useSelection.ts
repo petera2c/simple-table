@@ -17,6 +17,8 @@ const useSelection = ({
   rows: { [key: string]: any }[];
 }) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
+  const [focusedCell, setFocusedCell] = useState<Cell | null>(null);
+  const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(null);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
 
@@ -37,10 +39,107 @@ const useSelection = ({
     }
   }, [selectedCells, rows, headers]);
 
+  // Get the cell ID that should receive focus
+  const getFocusableCellId = useCallback((rowIndex: number, colIndex: number) => {
+    return `cell-${rowIndex}-${colIndex}`;
+  }, []);
+
+  // Focus a specific cell by coordinates
+  const focusCell = useCallback(
+    (rowIndex: number, colIndex: number) => {
+      if (!selectableCells) return;
+
+      // Ensure valid bounds
+      if (rowIndex < 0 || rowIndex >= rows.length) return;
+      if (colIndex < 0 || colIndex >= headers.length) return;
+
+      // Get the cell element
+      const cellId = getFocusableCellId(rowIndex, colIndex);
+      const cellElement = document.getElementById(cellId);
+
+      if (cellElement) {
+        cellElement.tabIndex = 0;
+        cellElement.focus();
+        setFocusedCell({ row: rowIndex, col: colIndex });
+      }
+    },
+    [getFocusableCellId, headers.length, rows.length, selectableCells]
+  );
+
+  // Select cells from start to end coordinates
+  const selectCellRange = useCallback((startRow: number, startCol: number, endRow: number, endCol: number) => {
+    const newSelectedCells = new Set<string>();
+    const minRow = Math.min(startRow, endRow);
+    const maxRow = Math.max(startRow, endRow);
+    const minCol = Math.min(startCol, endCol);
+    const maxCol = Math.max(startCol, endCol);
+
+    for (let row = minRow; row <= maxRow; row++) {
+      for (let col = minCol; col <= maxCol; col++) {
+        newSelectedCells.add(`${row}-${col}`);
+      }
+    }
+
+    setSelectedCells(newSelectedCells);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Don't handle keyboard if cells aren't selectable
+      if (!selectableCells || !focusedCell) return;
+
+      // We will navigate based on the initial focused cell when a range is selected
+      const navCell = initialFocusedCell || focusedCell;
+      const { row, col } = navCell;
+
+      // Copy functionality
       if ((event.ctrlKey || event.metaKey) && event.key === "c") {
         copyToClipboard();
+        return;
+      }
+
+      // Handle keyboard navigation
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (row > 0) {
+          // Just move focus
+          startCell.current = null;
+          setSelectedCells(new Set([`${row - 1}-${col}`]));
+          setInitialFocusedCell({ row: row - 1, col });
+          focusCell(row - 1, col);
+        }
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        if (row < rows.length - 1) {
+          // Just move focus
+          startCell.current = null;
+          setSelectedCells(new Set([`${row + 1}-${col}`]));
+          setInitialFocusedCell({ row: row + 1, col });
+          focusCell(row + 1, col);
+        }
+      } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
+        event.preventDefault();
+        if (col > 0) {
+          // Just move focus
+          startCell.current = null;
+          setSelectedCells(new Set([`${row}-${col - 1}`]));
+          setInitialFocusedCell({ row, col: col - 1 });
+          focusCell(row, col - 1);
+        }
+      } else if (event.key === "ArrowRight" || event.key === "Tab") {
+        event.preventDefault();
+        if (col < headers.length - 1) {
+          // Just move focus
+          startCell.current = null;
+          setSelectedCells(new Set([`${row}-${col + 1}`]));
+          setInitialFocusedCell({ row, col: col + 1 });
+          focusCell(row, col + 1);
+        }
+      } else if (event.key === "Escape") {
+        // Clear selection
+        setSelectedCells(new Set());
+        startCell.current = null;
+        setInitialFocusedCell(null);
       }
     };
 
@@ -48,13 +147,27 @@ const useSelection = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [copyToClipboard]);
+  }, [
+    copyToClipboard,
+    focusCell,
+    focusedCell,
+    headers.length,
+    initialFocusedCell,
+    rows.length,
+    selectCellRange,
+    selectableCells,
+  ]);
 
   const handleMouseDown = ({ colIndex, rowIndex }: MouseDownProps) => {
     if (!selectableCells) return;
     isSelecting.current = true;
     startCell.current = { row: rowIndex, col: colIndex };
     setSelectedCells(new Set([`${rowIndex}-${colIndex}`]));
+    setFocusedCell({ row: rowIndex, col: colIndex });
+    setInitialFocusedCell({ row: rowIndex, col: colIndex });
+
+    // Focus the cell
+    focusCell(rowIndex, colIndex);
   };
 
   const handleMouseOver = (rowIndex: number, colIndex: number) => {
@@ -72,12 +185,13 @@ const useSelection = ({
         }
       }
       setSelectedCells(newSelectedCells);
+      setFocusedCell({ row: rowIndex, col: colIndex });
+      // Initial focused cell remains the one where the drag started
     }
   };
 
   const handleMouseUp = () => {
     isSelecting.current = false;
-    startCell.current = null;
   };
 
   const isSelected = useCallback(
@@ -107,6 +221,8 @@ const useSelection = ({
 
   return {
     selectedCells,
+    focusedCell,
+    initialFocusedCell,
     handleMouseDown,
     handleMouseOver,
     handleMouseUp,
@@ -114,6 +230,7 @@ const useSelection = ({
     getBorderClass,
     isTopLeftCell,
     setSelectedCells,
+    focusCell,
   };
 };
 

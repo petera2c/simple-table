@@ -1,27 +1,10 @@
-import { RefObject, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import { getColumnWidth } from "../../utils/columnUtils";
-
-// Common properties to omit from both TableHeaderProps and TableBodyProps
-type OmittedTableProps =
-  | "centerHeaderRef"
-  | "headerContainerRef"
-  | "mainTemplateColumns"
-  | "pinnedLeftColumns"
-  | "pinnedLeftHeaderRef"
-  | "pinnedLeftTemplateColumns"
-  | "pinnedRightColumns"
-  | "pinnedRightHeaderRef"
-  | "pinnedRightTemplateColumns";
-
-interface TableContentProps extends Omit<TableHeaderProps, OmittedTableProps>, Omit<TableBodyProps, OmittedTableProps> {
-  editColumns: boolean;
-  pinnedLeftRef: RefObject<HTMLDivElement | null>;
-  pinnedRightRef: RefObject<HTMLDivElement | null>;
-}
+import TableContentProps from "../../types/TableContentProps";
 
 const TableContent = ({
   allowAnimations,
@@ -30,6 +13,7 @@ const TableContent = ({
   columnReordering,
   draggedHeaderRef,
   editColumns,
+  focusCell,
   forceUpdate,
   getBorderClass,
   handleMouseDown,
@@ -146,6 +130,7 @@ const TableContent = ({
     scrollbarWidth,
     shouldPaginate,
     tableBodyContainerRef,
+    focusCell,
   };
 
   return (

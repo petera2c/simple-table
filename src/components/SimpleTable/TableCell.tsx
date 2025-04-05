@@ -1,4 +1,4 @@
-import { forwardRef, Ref, useEffect, useState } from "react";
+import { forwardRef, Ref, useEffect, useState, KeyboardEvent } from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -44,6 +44,9 @@ const TableCell = forwardRef(
     });
     const throttle = useThrottle();
 
+    // Cell focus id (used for keyboard navigation)
+    const cellId = `cell-${rowIndex}-${colIndex}`;
+
     // Derived state
     const cellHasChildren = Boolean(row.rowMeta?.children?.length);
     const clickable = Boolean(header?.isEditable);
@@ -67,9 +70,19 @@ const TableCell = forwardRef(
         row,
       });
     };
+
     useEffect(() => {
       setLocalContent(row.rowData[header.accessor] as CellValue);
     }, [header.accessor, row]);
+
+    // Handle keyboard events when cell is focused
+    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+      // Start editing on F2 or Enter if the cell is editable
+      if ((e.key === "F2" || e.key === "Enter") && header.isEditable && !isEditing) {
+        e.preventDefault();
+        setIsEditing(true);
+      }
+    };
 
     if (isEditing) {
       return (
@@ -85,7 +98,7 @@ const TableCell = forwardRef(
     return (
       <div
         className={cellClassName}
-        id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
+        id={cellId}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
         onMouseDown={() => onMouseDown(rowIndex, colIndex)}
         onMouseOver={() => onMouseOver(rowIndex, colIndex)}
@@ -96,7 +109,12 @@ const TableCell = forwardRef(
             limit: DRAG_THROTTLE_LIMIT,
           })
         }
+        onKeyDown={handleKeyDown}
+        tabIndex={isSelected ? 0 : -1}
         ref={ref}
+        data-row-index={rowIndex}
+        data-col-index={colIndex}
+        aria-selected={isSelected}
       >
         {header.expandable && cellHasChildren ? (
           row.rowMeta.isExpanded ? (

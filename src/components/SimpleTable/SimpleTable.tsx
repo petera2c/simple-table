@@ -107,6 +107,7 @@ const SimpleTable = ({
     getBorderClass,
     isTopLeftCell,
     setSelectedCells,
+    focusCell,
   } = useSelection({
     selectableCells,
     headers: headersRef.current,
@@ -220,6 +221,7 @@ const SimpleTable = ({
             sortDownIcon={sortDownIcon}
             sortUpIcon={sortUpIcon}
             tableBodyContainerRef={tableBodyContainerRef}
+            focusCell={focusCell}
           />
           <TableColumnEditor
             columnEditorText={columnEditorText}

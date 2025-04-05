@@ -18,6 +18,7 @@ interface TableBodyProps extends SharedTableProps {
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   scrollbarWidth: number;
   shouldPaginate: boolean;
+  focusCell?: (rowIndex: number, colIndex: number) => void;
 }
 
 export default TableBodyProps;

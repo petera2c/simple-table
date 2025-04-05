@@ -1,7 +1,6 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
-import CellChangeProps from "../../types/CellChangeProps";
 
 const ROWS_PER_PAGE = 10;
 
