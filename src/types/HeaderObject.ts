@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Row from "./Row";
-import { Pinned } from "../enums/Pinned";
+import { Pinned } from "./Pinned";
 
 type HeaderObject = {
   accessor: string;

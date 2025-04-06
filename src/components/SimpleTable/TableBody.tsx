@@ -6,7 +6,6 @@ import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
-import { Pinned } from "../../enums/Pinned";
 
 const TableBody = (props: TableBodyProps) => {
   const {
@@ -84,7 +83,7 @@ const TableBody = (props: TableBodyProps) => {
         <TableSection
           {...props}
           onExpandRowClick={toggleRow}
-          pinned={Pinned.LEFT}
+          pinned="left"
           rowHeight={rowHeight}
           sectionRef={pinnedLeftRef}
           templateColumns={pinnedLeftTemplateColumns}
@@ -107,7 +106,7 @@ const TableBody = (props: TableBodyProps) => {
         <TableSection
           {...props}
           onExpandRowClick={toggleRow}
-          pinned={Pinned.RIGHT}
+          pinned="right"
           rowHeight={rowHeight}
           sectionRef={pinnedRightRef}
           templateColumns={pinnedRightTemplateColumns}

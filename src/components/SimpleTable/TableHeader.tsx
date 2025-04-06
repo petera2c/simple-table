@@ -3,7 +3,6 @@ import TableHeaderProps from "../../types/TableHeaderProps";
 import { displayCell } from "../../utils/cellUtils";
 import useScrollSync from "../../hooks/useScrollSync";
 import HeaderObject from "../../types/HeaderObject";
-import { Pinned } from "../../enums/Pinned";
 import TableHeaderSection from "./TableHeaderSection";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 
@@ -100,7 +99,7 @@ const TableHeader = ({
         <TableHeaderSection
           {...tableHeaderSectionProps}
           gridTemplateColumns={pinnedLeftTemplateColumns}
-          pinned={Pinned.LEFT}
+          pinned="left"
           sectionRef={pinnedLeftHeaderRef}
         />
       )}
@@ -115,7 +114,7 @@ const TableHeader = ({
         <TableHeaderSection
           {...tableHeaderSectionProps}
           gridTemplateColumns={pinnedRightTemplateColumns}
-          pinned={Pinned.RIGHT}
+          pinned="right"
           sectionRef={pinnedRightHeaderRef}
         />
       )}

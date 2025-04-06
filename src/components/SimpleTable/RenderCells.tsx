@@ -5,7 +5,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import Animate from "../Animate";
 import { RowId } from "../../types/RowId";
 import VisibleRow from "../../types/VisibleRow";
-import { Pinned } from "../../enums/Pinned";
+import { Pinned } from "../../types/Pinned";
 import { Fragment } from "react/jsx-runtime";
 
 type RenderCellsProps = {

@@ -1,5 +1,5 @@
 import { createRef, Fragment, useEffect, useRef } from "react";
-import { Pinned } from "../../enums/Pinned";
+import { Pinned } from "../../types/Pinned";
 import { displayCell } from "../../utils/cellUtils";
 import Animate from "../Animate";
 import TableHeaderCell, { TableHeaderCellProps } from "./TableHeaderCell";
@@ -164,7 +164,7 @@ const TableHeaderSection = ({
               onSort={onSort}
               onTableHeaderDragEnd={onTableHeaderDragEnd}
               pinned={pinned}
-              reverse={pinned === Pinned.RIGHT}
+              reverse={pinned === "right"}
               rowHeight={rowHeight}
               selectableColumns={selectableColumns}
               setIsWidthDragging={setIsWidthDragging}

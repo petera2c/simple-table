@@ -4,7 +4,7 @@ import TableRow from "./TableRow";
 import VisibleRow from "../../types/VisibleRow";
 import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
-import { Pinned } from "../../enums/Pinned";
+import { Pinned } from "../../types/Pinned";
 
 const TableSection = ({
   headerContainerRef,

@@ -1,5 +1,5 @@
 import HeaderObject from "../types/HeaderObject";
-import { Pinned } from "../enums/Pinned";
+import { Pinned } from "../types/Pinned";
 
 export const getCellId = ({ accessor, rowIndex }: { accessor: string; rowIndex: number }) => {
   return `cell-${accessor}-${rowIndex}`;

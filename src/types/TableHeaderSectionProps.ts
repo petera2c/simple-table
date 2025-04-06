@@ -1,6 +1,6 @@
 import { Dispatch, ReactNode, SetStateAction, UIEvent } from "react";
 import Row from "./Row";
-import { Pinned } from "../enums/Pinned";
+import { Pinned } from "./Pinned";
 import { OnSortProps, SortConfig } from "..";
 import { HeaderObject } from "..";
 import { RefObject } from "react";

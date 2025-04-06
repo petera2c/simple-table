@@ -3,7 +3,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
-import { Pinned } from "../../enums/Pinned";
+import { Pinned } from "../../types/Pinned";
 
 const TableRow = ({
   getNextRowIndex,
