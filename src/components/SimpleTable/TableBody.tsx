@@ -6,6 +6,7 @@ import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
+import { Pinned } from "../../enums/Pinned";
 
 const TableBody = (props: TableBodyProps) => {
   const {
@@ -49,7 +50,10 @@ const TableBody = (props: TableBodyProps) => {
         return { ...row, rowMeta: { ...row.rowMeta, isExpanded: !row.rowMeta.isExpanded } };
       }
       if (row.rowMeta.children) {
-        return { ...row, rowMeta: { ...row.rowMeta, children: row.rowMeta.children.map(updateRow) } };
+        return {
+          ...row,
+          rowMeta: { ...row.rowMeta, children: row.rowMeta.children.map(updateRow) },
+        };
       }
       return row;
     };
@@ -66,9 +70,13 @@ const TableBody = (props: TableBodyProps) => {
     });
   };
 
-  const leftWidth = pinnedLeftHeaderRef.current?.clientWidth ? pinnedLeftHeaderRef.current?.clientWidth + 1 : 0;
+  const leftWidth = pinnedLeftHeaderRef.current?.clientWidth
+    ? pinnedLeftHeaderRef.current?.clientWidth + 1
+    : 0;
   const centerWidth = centerHeaderRef.current?.clientWidth;
-  const rightWidth = pinnedRightHeaderRef.current?.clientWidth ? pinnedRightHeaderRef.current?.clientWidth + 1 : 0;
+  const rightWidth = pinnedRightHeaderRef.current?.clientWidth
+    ? pinnedRightHeaderRef.current?.clientWidth + 1
+    : 0;
 
   return (
     <div className="st-table-body-container" ref={tableBodyContainerRef} onScroll={handleScroll}>
@@ -76,7 +84,7 @@ const TableBody = (props: TableBodyProps) => {
         <TableSection
           {...props}
           onExpandRowClick={toggleRow}
-          pinned="left"
+          pinned={Pinned.LEFT}
           rowHeight={rowHeight}
           sectionRef={pinnedLeftRef}
           templateColumns={pinnedLeftTemplateColumns}
@@ -99,7 +107,7 @@ const TableBody = (props: TableBodyProps) => {
         <TableSection
           {...props}
           onExpandRowClick={toggleRow}
-          pinned="right"
+          pinned={Pinned.RIGHT}
           rowHeight={rowHeight}
           sectionRef={pinnedRightRef}
           templateColumns={pinnedRightTemplateColumns}
