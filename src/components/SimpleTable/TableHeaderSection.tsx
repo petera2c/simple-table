@@ -1,4 +1,4 @@
-import { createRef, Fragment, useEffect, useRef } from "react";
+import { createRef, Fragment, useEffect } from "react";
 import { Pinned } from "../../types/Pinned";
 import { displayCell } from "../../utils/cellUtils";
 import Animate from "../Animate";
@@ -112,16 +112,21 @@ const TableHeaderSection = ({
   sortDownIcon,
   sortUpIcon,
 }: TableHeaderSectionProps) => {
-  const colIndexRef = useRef(1);
+  // Replace useRef with a function closure for more predictable behavior
+  // This creates a new counter for each render to prevent issues across renders
+  const createColumnIndexTracker = () => {
+    let colIndex = 1;
+    return (add = 1) => {
+      colIndex += add;
+      return colIndex;
+    };
+  };
+
+  const getNextColIndex = createColumnIndexTracker();
 
   useEffect(() => {
-    colIndexRef.current = 1;
+    getNextColIndex(0);
   });
-
-  const getNextColIndex = (add = 1) => {
-    colIndexRef.current += add;
-    return colIndexRef.current;
-  };
 
   const headers = headersRef.current.filter((header) =>
     displayCell({ hiddenColumns, header, pinned })

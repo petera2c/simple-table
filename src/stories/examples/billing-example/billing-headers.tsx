@@ -1,8 +1,10 @@
 import HeaderObject from "../../../types/HeaderObject";
+import Row from "../../../types/Row";
+
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // Get current month and generate 12 months (current month + 11 previous)
 const generateMonthHeaders = () => {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
@@ -10,7 +12,7 @@ const generateMonthHeaders = () => {
   const headers: HeaderObject[] = [];
 
   // Generate 12 months of headers (current month and 11 previous)
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < months.length; i++) {
     const monthIndex = (currentMonth - i + 12) % 12; // Wrap around for previous year
     const year = currentMonth - i < 0 ? currentYear - 1 : currentYear;
     const shortYear = year.toString().slice(2);
@@ -18,28 +20,31 @@ const generateMonthHeaders = () => {
     headers.push({
       accessor: `month_${months[monthIndex]}_${year}`,
       label: `${months[monthIndex]} ${shortYear}`,
-      width: 100,
+      width: 200,
       isSortable: true,
       isEditable: false,
       align: "right",
-      cellRenderer: ({ row }) => {
-        const value = row.rowData[`month_${months[monthIndex]}_${year}`];
-        if (!value || value === 0) return "—";
-
-        const formattedValue = parseFloat(value as string);
-        const isNegative = formattedValue < 0;
-
-        // Format as currency
-        return (
-          <span className={isNegative ? "text-red-600" : "text-green-700"}>
-            $
-            {Math.abs(formattedValue).toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        );
-      },
+      type: "number",
+      children: [
+        {
+          label: "Balance",
+          accessor: `balance_${months[monthIndex]}_${year}`,
+          width: 200,
+          isSortable: true,
+          isEditable: false,
+          align: "right",
+          type: "number",
+        },
+        {
+          label: "Revenue",
+          accessor: `revenue_${months[monthIndex]}_${year}`,
+          width: 200,
+          isSortable: true,
+          isEditable: false,
+          align: "right",
+          type: "number",
+        },
+      ],
     });
   }
 
@@ -57,6 +62,7 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "left",
     pinned: "left",
+    type: "string",
     cellRenderer: ({ row }) => {
       const name = row.rowData.name as string;
 
@@ -70,6 +76,7 @@ export const HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: false,
     align: "right",
+    type: "number",
     cellRenderer: ({ row }) => {
       const amount = row.rowData.amount as number;
       if (!amount) return "—";
@@ -87,7 +94,8 @@ export const HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: false,
     align: "right",
-    cellRenderer: ({ row }) => {
+    type: "number",
+    cellRenderer: ({ row }: { row: Row }) => {
       const amount = row.rowData.amount as number;
       const deferred = row.rowData.deferredRevenue as number;
 
