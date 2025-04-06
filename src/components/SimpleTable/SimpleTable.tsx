@@ -102,11 +102,20 @@ const SimpleTable = ({
     tableRows: rows,
   });
 
-  const [flattenedRows, setFlattenedRows] = useState<Row[]>(sortedRows);
+  // Memoize currentRows calculation
+  const currentRows = useMemo(() => {
+    if (!shouldPaginate) return sortedRows;
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const rows = sortedRows.slice(startIndex, endIndex);
+    return rows;
+  }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
+
+  const [flattenedRows, setFlattenedRows] = useState<Row[]>(currentRows);
 
   useEffect(() => {
-    setFlattenedRows(sortedRows);
-  }, [sortedRows]);
+    setFlattenedRows(currentRows);
+  }, [currentRows]);
 
   // Calculate content height (total height minus header height)
   const contentHeight = useMemo(() => {
@@ -168,12 +177,6 @@ const SimpleTable = ({
     headers: headersRef.current,
     visibleRows,
   });
-
-  // Memoize currentRows calculation
-  const currentRows = useMemo(() => {
-    if (!shouldPaginate) return sortedRows;
-    return sortedRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
   // Memoize handlers
   const onSort = useCallback(

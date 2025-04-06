@@ -958,6 +958,8 @@
   height: max-content;
 }
 .st-table-body-pinned-left {
+  flex-shrink: 0;
+
   border-right: var(--st-border-width) solid var(--st-border-color);
 }
 .st-table-body-main {
@@ -966,6 +968,8 @@
 }
 
 .st-table-body-pinned-right {
+  flex-shrink: 0;
+
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
 
