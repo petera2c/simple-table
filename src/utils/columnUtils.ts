@@ -23,8 +23,26 @@ export const createGridTemplateColumns = ({
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
 }) => {
-  return `${headers
-    .filter((header) => hiddenColumns[header.accessor] !== true)
-    .map((header) => getColumnWidth(header))
-    .join(" ")}`;
+  // We only care about the most children headers to create the grid template columns
+  const flattenHeaders = ({
+    headers,
+    flattenedHeaders,
+  }: {
+    headers: HeaderObject[];
+    flattenedHeaders: HeaderObject[];
+  }): HeaderObject[] => {
+    headers.forEach((header) => {
+      if (hiddenColumns[header.accessor] === true) return;
+      if (header.children) {
+        flattenHeaders({ headers: header.children, flattenedHeaders });
+      } else {
+        flattenedHeaders.push(header);
+      }
+    });
+    return flattenedHeaders;
+  };
+
+  const flattenedHeaders = flattenHeaders({ headers, flattenedHeaders: [] });
+
+  return `${flattenedHeaders.map((header) => getColumnWidth(header)).join(" ")}`;
 };

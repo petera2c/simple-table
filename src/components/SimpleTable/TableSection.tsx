@@ -4,6 +4,7 @@ import TableRow from "./TableRow";
 import VisibleRow from "../../types/VisibleRow";
 import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
+import { Pinned } from "../../enums/Pinned";
 
 const TableSection = ({
   headerContainerRef,
@@ -19,7 +20,7 @@ const TableSection = ({
 }: {
   headerContainerRef: RefObject<HTMLDivElement | null>;
   onExpandRowClick: (rowId: RowId) => void;
-  pinned?: "left" | "right";
+  pinned?: Pinned;
   rowHeight: number;
   sectionRef?: RefObject<HTMLDivElement | null>;
   templateColumns: string;

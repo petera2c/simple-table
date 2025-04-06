@@ -1,6 +1,7 @@
 .simple-table-root {
   --st-after-width: 11.01px;
   --st-resize-handle-width: 2px;
+  --st-resize-handle-margin-right: 2px;
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
@@ -1030,7 +1031,10 @@
   text-align: center;
 }
 .st-cell.center-aligned {
-  padding-right: calc(var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width));
+  padding-right: calc(
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
+      var(--st-resize-handle-margin-right)
+  );
 }
 .st-cell.center-aligned > .st-cell-content {
   text-align: center;
@@ -1092,7 +1096,10 @@
   padding-right: var(--st-cell-padding);
 }
 .st-cell-content {
-  padding-right: calc(var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width));
+  padding-right: calc(
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
+      var(--st-resize-handle-margin-right)
+  );
 }
 .st-cell-content.right-aligned {
   justify-content: flex-end;
@@ -1148,9 +1155,10 @@
   top: 0;
   right: 0;
   width: var(--st-resize-handle-width);
-  height: 12px;
+  height: calc(100% - 20px);
   cursor: col-resize;
   background-color: var(--st-resize-handle-color);
+  margin-right: var(--st-resize-handle-margin-right);
 }
 
 .st-row-separator {

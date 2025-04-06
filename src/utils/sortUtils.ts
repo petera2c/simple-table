@@ -127,7 +127,11 @@ const compareValues = (
 };
 
 // Sort only top-level rows, preserving hierarchy
-const sortPreservingHierarchy = (rows: Row[], sortConfig: SortConfig, headers: HeaderObject[]): Row[] => {
+const sortPreservingHierarchy = (
+  rows: Row[],
+  sortConfig: SortConfig,
+  headers: HeaderObject[]
+): Row[] => {
   // Find the header object that matches the sort key
   const headerObject = headers.find((header) => header.accessor === sortConfig.key.accessor);
   const type = headerObject?.type || "string";
@@ -195,7 +199,11 @@ const sortPreservingHierarchy = (rows: Row[], sortConfig: SortConfig, headers: H
       // Process children if they exist
       if (newRow.rowMeta.children && newRow.rowMeta.children.length > 0) {
         // Sort the children
-        const sortedChildren = sortChildrenRecursively(newRow.rowMeta.children, sortConfig, headers);
+        const sortedChildren = sortChildrenRecursively(
+          newRow.rowMeta.children,
+          sortConfig,
+          headers
+        );
 
         // Update the row with sorted children
         newRow.rowMeta = {
@@ -218,7 +226,11 @@ const sortPreservingHierarchy = (rows: Row[], sortConfig: SortConfig, headers: H
 
       // Process header row's children if they exist
       if (headerRow.rowMeta.children && headerRow.rowMeta.children.length > 0) {
-        headerRow.rowMeta.children = sortChildrenRecursively(headerRow.rowMeta.children, sortConfig, headers);
+        headerRow.rowMeta.children = sortChildrenRecursively(
+          headerRow.rowMeta.children,
+          sortConfig,
+          headers
+        );
       }
 
       result.push(headerRow);
@@ -233,7 +245,11 @@ const sortPreservingHierarchy = (rows: Row[], sortConfig: SortConfig, headers: H
 };
 
 // Recursively sort children and their children
-const sortChildrenRecursively = (children: Row[], sortConfig: SortConfig, headers: HeaderObject[]): Row[] => {
+const sortChildrenRecursively = (
+  children: Row[],
+  sortConfig: SortConfig,
+  headers: HeaderObject[]
+): Row[] => {
   const headerObject = headers.find((header) => header.accessor === sortConfig.key.accessor);
   const type = headerObject?.type || "string";
   const { direction } = sortConfig;
@@ -274,20 +290,20 @@ export const handleSort = (headers: HeaderObject[], rows: Row[], sortConfig: Sor
 
 // Resize handler
 export const handleResizeStart = ({
+  colIndex,
   event,
   forceUpdate,
   header,
   headersRef,
-  index,
   reverse,
   setIsWidthDragging,
   startWidth,
 }: {
+  colIndex: number;
   event: MouseEvent;
   forceUpdate: () => void;
   header: HeaderObject;
   headersRef: React.RefObject<HeaderObject[]>;
-  index: number;
   reverse?: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   startWidth: number;
@@ -301,7 +317,7 @@ export const handleResizeStart = ({
     const newWidth = Math.max(startWidth + (event.clientX - startX), 40);
 
     if (!header || !headersRef.current) return;
-    headersRef.current[index].width = newWidth;
+    headersRef.current[colIndex].width = newWidth;
     forceUpdate();
   };
 

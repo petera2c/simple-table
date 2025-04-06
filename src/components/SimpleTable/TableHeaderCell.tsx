@@ -21,15 +21,20 @@ import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 import { createSetString } from "../../hooks/useSelection";
 
-interface TableHeaderCellProps {
+export interface TableHeaderCellProps {
+  colIndex: number;
+  columnReordering: boolean;
   columnResizing: boolean;
   currentRows: Row[];
-  columnReordering: boolean;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   forceUpdate: () => void;
+  gridColumnEnd: number;
+  gridColumnStart: number;
+  gridRowEnd: number;
+  gridRowStart: number;
+  header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
-  index: number;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
@@ -46,14 +51,19 @@ interface TableHeaderCellProps {
 const TableHeaderCell = forwardRef(
   (
     {
+      colIndex,
+      columnReordering,
       columnResizing,
       currentRows,
-      columnReordering,
       draggedHeaderRef,
       forceUpdate,
+      gridColumnEnd,
+      gridColumnStart,
+      gridRowEnd,
+      gridRowStart,
+      header,
       headersRef,
       hoveredHeaderRef,
-      index,
       onColumnOrderChange,
       onSort,
       onTableHeaderDragEnd,
@@ -72,12 +82,15 @@ const TableHeaderCell = forwardRef(
     const [isDragging, setIsDragging] = useState(false);
 
     // Derived state
-    const header = headersRef.current?.[index];
     const clickable = Boolean(header?.isSortable);
     const className = `st-header-cell ${header === hoveredHeaderRef.current ? "st-hovered" : ""} ${
       isDragging ? "st-dragging" : ""
     } ${clickable ? "clickable" : ""} ${columnReordering && !clickable ? "columnReordering" : ""} ${
-      header?.align === "right" ? "right-aligned" : header?.align === "center" ? "center-aligned" : ""
+      header?.align === "right"
+        ? "right-aligned"
+        : header?.align === "center"
+        ? "center-aligned"
+        : ""
     }`;
 
     // Hooks
@@ -103,14 +116,23 @@ const TableHeaderCell = forwardRef(
     };
 
     // Sort handler
-    const handleColumnHeaderClick = ({ event, header }: { event: MouseEvent; header: HeaderObject }) => {
+    const handleColumnHeaderClick = ({
+      event,
+      header,
+    }: {
+      event: MouseEvent;
+      header: HeaderObject;
+    }) => {
       if (selectableColumns) {
         const rowCount = currentRows.length;
         const newColumnCells = Array.from({ length: rowCount }, (_, rowIndex) =>
-          createSetString({ rowIndex, colIndex: index, rowId: currentRows[rowIndex].rowMeta.rowId })
+          createSetString({ rowIndex, colIndex, rowId: currentRows[rowIndex].rowMeta.rowId })
         );
 
-        const selectCellsInRange = (startColumnIndex: number, endColumnIndex: number): Set<string> => {
+        const selectCellsInRange = (
+          startColumnIndex: number,
+          endColumnIndex: number
+        ): Set<string> => {
           const selectedCells = new Set<string>();
           const minColumnIndex = Math.min(startColumnIndex, endColumnIndex);
           const maxColumnIndex = Math.max(startColumnIndex, endColumnIndex);
@@ -149,7 +171,7 @@ const TableHeaderCell = forwardRef(
         return;
       }
       if (!header.isSortable) return;
-      onSort(index, header.accessor);
+      onSort(colIndex, header.accessor);
     };
     // Drag handler
     const onDragStart = (event: DragEvent) => {
@@ -183,14 +205,16 @@ const TableHeaderCell = forwardRef(
           throttle({
             callback: handleResizeStart,
             callbackProps: {
+              colIndex,
               event,
               forceUpdate,
               header,
               headersRef,
-              index,
               setIsWidthDragging,
               startWidth:
-                typeof ref === "object" && ref !== null && "current" in ref ? ref.current?.offsetWidth : undefined,
+                typeof ref === "object" && ref !== null && "current" in ref
+                  ? ref.current?.offsetWidth
+                  : undefined,
             },
             limit: 10,
           });
@@ -199,7 +223,10 @@ const TableHeaderCell = forwardRef(
     );
 
     const SortIcon = sort && sort.key.accessor === header.accessor && (
-      <div className="st-sort-icon-container" onClick={(event) => handleColumnHeaderClick({ event, header })}>
+      <div
+        className="st-sort-icon-container"
+        onClick={(event) => handleColumnHeaderClick({ event, header })}
+      >
         {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
         {sort.direction === "descending" && sortDownIcon && sortDownIcon}
       </div>
@@ -217,12 +244,23 @@ const TableHeaderCell = forwardRef(
           });
         }}
         ref={ref}
-        style={{ width: header.width, height: rowHeight }}
+        style={{
+          gridRowStart,
+          gridRowEnd,
+          gridColumnStart,
+          gridColumnEnd,
+          ...(gridColumnEnd - gridColumnStart > 1 ? {} : { width: header.width }),
+          ...(gridRowEnd - gridRowStart > 1 ? {} : { height: rowHeight }),
+        }}
       >
         {reverse && ResizeHandle}
         <div
           className={`st-header-label ${
-            header.align === "right" ? "right-aligned" : header.align === "center" ? "center-aligned" : ""
+            header.align === "right"
+              ? "right-aligned"
+              : header.align === "center"
+              ? "center-aligned"
+              : ""
           }`}
           draggable={columnReordering}
           onClick={(event) => handleColumnHeaderClick({ event, header })}

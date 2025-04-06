@@ -1,9 +1,15 @@
-import { createRef, UIEvent } from "react";
-import Animate from "../Animate";
-import TableHeaderCell from "./TableHeaderCell";
+import { UIEvent, useMemo } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import { displayCell } from "../../utils/cellUtils";
 import useScrollSync from "../../hooks/useScrollSync";
+import HeaderObject from "../../types/HeaderObject";
+import { Pinned } from "../../enums/Pinned";
+import TableHeaderSection from "./TableHeaderSection";
+import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
+
+const getHeaderDepth = (header: HeaderObject): number => {
+  return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
+};
 
 const TableHeader = ({
   allowAnimations,
@@ -47,148 +53,71 @@ const TableHeader = ({
     }
   };
 
+  const { maxDepth } = useMemo(() => {
+    const headers = headersRef.current;
+    let maxDepth = 0;
+    headers.forEach((header) => {
+      if (displayCell({ hiddenColumns, header })) {
+        const depth = getHeaderDepth(header);
+        maxDepth = Math.max(maxDepth, depth);
+      }
+    });
+    return { maxDepth };
+  }, [headersRef, hiddenColumns]);
+
+  const tableHeaderSectionProps: Omit<
+    TableHeaderSectionProps,
+    "pinned" | "sectionRef" | "gridTemplateColumns"
+  > = {
+    allowAnimations,
+    columnReordering,
+    columnResizing,
+    currentRows,
+    draggedHeaderRef,
+    forceUpdate,
+    handleScroll,
+    headersRef,
+    hiddenColumns,
+    hoveredHeaderRef,
+    isWidthDragging,
+    mainBodyRef,
+    maxDepth,
+    onColumnOrderChange,
+    onSort,
+    onTableHeaderDragEnd,
+    rowHeight,
+    selectableColumns,
+    setIsWidthDragging,
+    setSelectedCells,
+    sort,
+    sortDownIcon,
+    sortUpIcon,
+  };
+
   return (
     <div className="st-header-container" ref={headerContainerRef}>
       {pinnedLeftColumns.length > 0 && (
-        <div
-          className="st-header-pinned-left"
-          ref={pinnedLeftHeaderRef}
-          style={{
-            gridTemplateColumns: pinnedLeftTemplateColumns,
-          }}
-        >
-          <Animate
-            allowAnimations={allowAnimations}
-            draggedHeaderRef={draggedHeaderRef}
-            headersRef={headersRef}
-            mainBodyRef={mainBodyRef}
-            pauseAnimation={isWidthDragging}
-            rowIndex={0}
-          >
-            {headersRef.current?.map((header, index) => {
-              if (!displayCell({ hiddenColumns, header, pinned: "left" })) return null;
-
-              return (
-                <TableHeaderCell
-                  columnResizing={columnResizing}
-                  currentRows={currentRows}
-                  columnReordering={columnReordering}
-                  draggedHeaderRef={draggedHeaderRef}
-                  forceUpdate={forceUpdate}
-                  headersRef={headersRef}
-                  hoveredHeaderRef={hoveredHeaderRef}
-                  index={index}
-                  key={header.accessor}
-                  onColumnOrderChange={onColumnOrderChange}
-                  onSort={onSort}
-                  onTableHeaderDragEnd={onTableHeaderDragEnd}
-                  ref={createRef()}
-                  rowHeight={rowHeight}
-                  selectableColumns={selectableColumns}
-                  setIsWidthDragging={setIsWidthDragging}
-                  setSelectedCells={setSelectedCells}
-                  sort={sort}
-                  sortDownIcon={sortDownIcon}
-                  sortUpIcon={sortUpIcon}
-                />
-              );
-            })}
-          </Animate>
-        </div>
+        <TableHeaderSection
+          {...tableHeaderSectionProps}
+          gridTemplateColumns={pinnedLeftTemplateColumns}
+          pinned={Pinned.LEFT}
+          sectionRef={pinnedLeftHeaderRef}
+        />
       )}
-      <div
-        className="st-header-main"
-        onScroll={handleScroll}
-        ref={centerHeaderRef}
-        style={{
-          gridTemplateColumns: mainTemplateColumns,
-        }}
-      >
-        <Animate
-          allowAnimations={allowAnimations}
-          draggedHeaderRef={draggedHeaderRef}
-          headersRef={headersRef}
-          mainBodyRef={mainBodyRef}
-          pauseAnimation={isWidthDragging}
-          rowIndex={0}
-        >
-          {headersRef.current?.map((header, index) => {
-            if (!displayCell({ hiddenColumns, header })) return null;
 
-            return (
-              <TableHeaderCell
-                columnResizing={columnResizing}
-                currentRows={currentRows}
-                columnReordering={columnReordering}
-                draggedHeaderRef={draggedHeaderRef}
-                forceUpdate={forceUpdate}
-                headersRef={headersRef}
-                hoveredHeaderRef={hoveredHeaderRef}
-                index={index}
-                key={header.accessor}
-                onColumnOrderChange={onColumnOrderChange}
-                onSort={onSort}
-                onTableHeaderDragEnd={onTableHeaderDragEnd}
-                ref={createRef()}
-                rowHeight={rowHeight}
-                selectableColumns={selectableColumns}
-                setIsWidthDragging={setIsWidthDragging}
-                setSelectedCells={setSelectedCells}
-                sort={sort}
-                sortDownIcon={sortDownIcon}
-                sortUpIcon={sortUpIcon}
-              />
-            );
-          })}
-        </Animate>
-      </div>
+      <TableHeaderSection
+        {...tableHeaderSectionProps}
+        gridTemplateColumns={mainTemplateColumns}
+        handleScroll={handleScroll}
+        sectionRef={centerHeaderRef}
+      />
       {pinnedRightColumns.length > 0 && (
-        <div
-          className="st-header-pinned-right"
-          ref={pinnedRightHeaderRef}
-          style={{
-            gridTemplateColumns: pinnedRightTemplateColumns,
-          }}
-        >
-          <Animate
-            allowAnimations={allowAnimations}
-            draggedHeaderRef={draggedHeaderRef}
-            headersRef={headersRef}
-            mainBodyRef={mainBodyRef}
-            pauseAnimation={isWidthDragging}
-            rowIndex={0}
-          >
-            {headersRef.current?.map((header, index) => {
-              if (!displayCell({ hiddenColumns, header, pinned: "right" })) return null;
-
-              return (
-                <TableHeaderCell
-                  columnResizing={columnResizing}
-                  currentRows={currentRows}
-                  columnReordering={columnReordering}
-                  draggedHeaderRef={draggedHeaderRef}
-                  forceUpdate={forceUpdate}
-                  headersRef={headersRef}
-                  hoveredHeaderRef={hoveredHeaderRef}
-                  index={index}
-                  key={header.accessor}
-                  onColumnOrderChange={onColumnOrderChange}
-                  onSort={onSort}
-                  onTableHeaderDragEnd={onTableHeaderDragEnd}
-                  reverse
-                  ref={createRef()}
-                  rowHeight={rowHeight}
-                  selectableColumns={selectableColumns}
-                  setIsWidthDragging={setIsWidthDragging}
-                  setSelectedCells={setSelectedCells}
-                  sort={sort}
-                  sortDownIcon={sortDownIcon}
-                  sortUpIcon={sortUpIcon}
-                />
-              );
-            })}
-          </Animate>
-        </div>
+        <TableHeaderSection
+          {...tableHeaderSectionProps}
+          gridTemplateColumns={pinnedRightTemplateColumns}
+          pinned={Pinned.RIGHT}
+          sectionRef={pinnedRightHeaderRef}
+        />
       )}
     </div>
   );

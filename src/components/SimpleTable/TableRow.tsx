@@ -3,6 +3,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
+import { Pinned } from "../../enums/Pinned";
 
 const TableRow = ({
   getNextRowIndex,
@@ -16,7 +17,7 @@ const TableRow = ({
   getNextRowIndex: () => number;
   gridTemplateColumns: string;
   index: number;
-  pinned?: "left" | "right";
+  pinned?: Pinned;
   props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
     onExpandRowClick: (rowId: RowId) => void;
   };
@@ -35,7 +36,13 @@ const TableRow = ({
         height: `${rowHeight}px`,
       }}
     >
-      <RenderCells key={index} pinned={pinned} rowIndex={rowIndex} visibleRow={visibleRow} {...props} />
+      <RenderCells
+        key={index}
+        pinned={pinned}
+        rowIndex={rowIndex}
+        visibleRow={visibleRow}
+        {...props}
+      />
     </div>
   );
 };
