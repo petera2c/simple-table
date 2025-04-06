@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableBodyProps from "../../types/TableBodyProps";
@@ -6,7 +6,6 @@ import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
-import { PAGE_SIZE } from "../../consts/general-consts";
 
 const TableBody = (props: TableBodyProps) => {
   const {
@@ -38,13 +37,7 @@ const TableBody = (props: TableBodyProps) => {
   });
 
   // Refs
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
-
-  // Local state
-  const [page, setPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true);
 
   // Derived state
   const totalRowCount = getTotalRowCount(flattenedRows);
@@ -62,43 +55,6 @@ const TableBody = (props: TableBodyProps) => {
     };
     setFlattenedRows((prevRows) => prevRows.map(updateRow));
   };
-
-  const loadMoreRows = useCallback(async () => {
-    if (isLoading || !hasMore) return;
-    setIsLoading(true);
-    const newRows = flattenedRows.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-    setFlattenedRows((prevRows) => [...prevRows, ...newRows]);
-    setPage((prevPage) => prevPage + 1);
-    setIsLoading(false);
-    if (newRows.length < PAGE_SIZE / 3) setHasMore(false);
-  }, [flattenedRows, hasMore, isLoading, page, setFlattenedRows]);
-
-  const handleObserver = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const target = entries[0];
-      if (target.isIntersecting && hasMore && !isLoading) {
-        loadMoreRows();
-      }
-    },
-    [hasMore, isLoading, loadMoreRows]
-  );
-
-  useEffect(() => {
-    const options: IntersectionObserverInit = {
-      root: null,
-      rootMargin: "100px",
-      threshold: 0,
-    };
-
-    observerRef.current = new IntersectionObserver(handleObserver, options);
-    if (tableBodyContainerRef.current) {
-      observerRef.current.observe(tableBodyContainerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) observerRef.current.disconnect();
-    };
-  }, [handleObserver, flattenedRows, tableBodyContainerRef]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const newScrollTop = e.currentTarget.scrollTop;
