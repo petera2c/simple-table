@@ -46,7 +46,15 @@ export const generateSpaceData = (): Row[] => {
 
 export const SPACE_HEADERS: HeaderObject[] = [
   { accessor: "agency", label: "Agency", width: 120, isSortable: true, isEditable: true, align: "left" },
-  { accessor: "missionName", label: "Mission Name", width: 250, isSortable: true, isEditable: true, align: "left" },
+  {
+    accessor: "missionName",
+    label: "Mission Name",
+    width: 250,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+    hide: true,
+  },
   {
     accessor: "launchDate",
     label: "Launch Date",

@@ -13,7 +13,8 @@ type OmittedTableProps =
   | "pinnedLeftTemplateColumns"
   | "pinnedRightColumns"
   | "pinnedRightHeaderRef"
-  | "pinnedRightTemplateColumns";
+  | "pinnedRightTemplateColumns"
+  | "headers";
 
 interface TableContentProps extends Omit<TableHeaderProps, OmittedTableProps>, Omit<TableBodyProps, OmittedTableProps> {
   editColumns: boolean;

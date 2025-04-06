@@ -3,7 +3,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
-import { getColumnWidth } from "../../utils/columnUtils";
+import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableContentProps from "../../types/TableContentProps";
 
 const TableContent = ({
@@ -52,23 +52,20 @@ const TableContent = ({
   const pinnedRightHeaderRef = useRef<HTMLDivElement>(null);
 
   // Derived state
-  const currentHeaders = headersRef.current.filter((header) => !header.hide && !header.pinned);
+  const currentHeaders = headersRef.current.filter((header) => !header.pinned);
 
-  const pinnedLeftColumns = headersRef.current.filter((header) => header.pinned === "left" && header.hide !== true);
-  const pinnedRightColumns = headersRef.current.filter((header) => header.pinned === "right" && header.hide !== true);
+  const pinnedLeftColumns = headersRef.current.filter((header) => header.pinned === "left");
+  const pinnedRightColumns = headersRef.current.filter((header) => header.pinned === "right");
 
   const pinnedLeftTemplateColumns = useMemo(() => {
-    return `${pinnedLeftColumns.map((header) => getColumnWidth(header)).join(" ")}`;
-  }, [pinnedLeftColumns]);
+    return createGridTemplateColumns({ headers: pinnedLeftColumns, hiddenColumns });
+  }, [pinnedLeftColumns, hiddenColumns]);
   const mainTemplateColumns = useMemo(() => {
-    return `${currentHeaders
-      .filter((header) => hiddenColumns[header.accessor] !== true)
-      .map((header) => getColumnWidth(header))
-      .join(" ")}`;
+    return createGridTemplateColumns({ headers: currentHeaders, hiddenColumns });
   }, [currentHeaders, hiddenColumns]);
   const pinnedRightTemplateColumns = useMemo(() => {
-    return `${pinnedRightColumns.map((header) => getColumnWidth(header)).join(" ")}`;
-  }, [pinnedRightColumns]);
+    return createGridTemplateColumns({ headers: pinnedRightColumns, hiddenColumns });
+  }, [pinnedRightColumns, hiddenColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
     allowAnimations,

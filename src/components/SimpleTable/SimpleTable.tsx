@@ -257,7 +257,6 @@ const SimpleTable = ({
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
             handleMouseOver={handleMouseOver}
-            headers={headersRef.current}
             headersRef={headersRef}
             hiddenColumns={hiddenColumns}
             hoveredHeaderRef={hoveredHeaderRef}
