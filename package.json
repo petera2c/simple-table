@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "0.7.22",
+  "version": "0.7.23",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",

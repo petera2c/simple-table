@@ -19,6 +19,7 @@ import Row from "../../types/Row";
 import { handleResizeStart } from "../../utils/sortUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
+import { createSetString } from "../../hooks/useSelection";
 
 interface TableHeaderCellProps {
   columnResizing: boolean;
@@ -105,7 +106,9 @@ const TableHeaderCell = forwardRef(
     const handleColumnHeaderClick = ({ event, header }: { event: MouseEvent; header: HeaderObject }) => {
       if (selectableColumns) {
         const rowCount = currentRows.length;
-        const newColumnCells = Array.from({ length: rowCount }, (_, rowIndex) => `${rowIndex}-${index}`);
+        const newColumnCells = Array.from({ length: rowCount }, (_, rowIndex) =>
+          createSetString({ rowIndex, colIndex: index, rowId: currentRows[rowIndex].rowMeta.rowId })
+        );
 
         const selectCellsInRange = (startColumnIndex: number, endColumnIndex: number): Set<string> => {
           const selectedCells = new Set<string>();
@@ -114,7 +117,13 @@ const TableHeaderCell = forwardRef(
 
           Array.from({ length: rowCount }).forEach((_, rowIndex) => {
             Array.from({ length: maxColumnIndex - minColumnIndex + 1 }).forEach((_, offset) => {
-              selectedCells.add(`${rowIndex}-${minColumnIndex + offset}`);
+              selectedCells.add(
+                createSetString({
+                  rowIndex,
+                  colIndex: minColumnIndex + offset,
+                  rowId: currentRows[rowIndex].rowMeta.rowId,
+                })
+              );
             });
           });
 

@@ -3,7 +3,7 @@ import HeaderObject from "../types/HeaderObject";
 import Cell from "../types/Cell";
 import VisibleRow from "../types/VisibleRow";
 
-const createSetString = ({ rowIndex, colIndex, rowId }: Cell) => `${rowIndex}-${colIndex}-${rowId}`;
+export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) => `${rowIndex}-${colIndex}-${rowId}`;
 
 const useSelection = ({
   selectableCells,
