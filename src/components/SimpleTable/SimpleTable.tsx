@@ -95,13 +95,18 @@ const SimpleTable = ({
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [tableContentWidth, setTableContentWidth] = useState(0);
   const [scrollTop, setScrollTop] = useState<number>(0);
-  const [flattenedRows, setFlattenedRows] = useState<Row[]>(rows);
 
   // Use custom hook for sorting
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
     headers: headersRef.current,
     tableRows: rows,
   });
+
+  const [flattenedRows, setFlattenedRows] = useState<Row[]>(sortedRows);
+
+  useEffect(() => {
+    setFlattenedRows(sortedRows);
+  }, [sortedRows]);
 
   // Calculate content height (total height minus header height)
   const contentHeight = useMemo(() => {

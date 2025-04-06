@@ -309,7 +309,7 @@
   --st-header-background-color: var(--st-white);
   --st-dragging-background-color: var(--st-gray-200);
   --st-selected-cell-background-color: var(--st-blue-200);
-  --st-selected-first-cell-background-color: var(--st-blue-200);
+  --st-selected-first-cell-background-color: var(--st-blue-100);
   --st-footer-background-color: var(--st-white);
   --st-cell-color: var(--st-gray-800);
   --st-cell-odd-row-color: var(--st-gray-700);
@@ -355,8 +355,8 @@
   --st-even-row-background-color: var(--st-slate-900);
   --st-header-background-color: var(--st-slate-700);
   --st-dragging-background-color: var(--st-blue-800);
-  --st-selected-cell-background-color: var(--st-blue-700);
-  --st-selected-first-cell-background-color: var(--st-amber-700);
+  --st-selected-cell-background-color: var(--st-blue-900);
+  --st-selected-first-cell-background-color: var(--st-blue-800);
   --st-footer-background-color: var(--st-slate-900);
   --st-cell-color: var(--st-white);
   --st-cell-odd-row-color: var(--st-slate-300);
@@ -366,10 +366,10 @@
   --st-resize-handle-color: var(--st-slate-600);
   --st-separator-border-color: var(--st-slate-500);
   --st-last-group-row-separator-border-color: var(--st-slate-700);
-  --st-selected-border-top-color: var(--st-blue-700);
-  --st-selected-border-bottom-color: var(--st-blue-700);
-  --st-selected-border-left-color: var(--st-blue-700);
-  --st-selected-border-right-color: var(--st-blue-700);
+  --st-selected-border-top-color: var(--st-blue-400);
+  --st-selected-border-bottom-color: var(--st-blue-400);
+  --st-selected-border-left-color: var(--st-blue-400);
+  --st-selected-border-right-color: var(--st-blue-400);
   --st-checkbox-checked-background-color: var(--st-blue-700);
   --st-checkbox-checked-border-color: var(--st-blue-700);
   --st-column-editor-background-color: var(--st-slate-800);
@@ -398,7 +398,7 @@
   --st-scrollbar-thumb-color: var(--st-slate-200);
 
   --st-border-color: var(--st-slate-900);
-  --st-odd-row-background-color: var(--st-slate-50);
+  --st-odd-row-background-color: var(--st-slate-400);
   --st-even-row-background-color: var(--st-slate-900);
   --st-header-background-color: var(--st-slate-900);
   --st-dragging-background-color: var(--st-yellow-500);
@@ -544,7 +544,7 @@
   --st-header-background-color: var(--st-yellow-200);
   --st-dragging-background-color: var(--st-yellow-300);
   --st-selected-cell-background-color: var(--st-slate-400);
-  --st-selected-first-cell-background-color: var(--st-amber-600);
+  --st-selected-first-cell-background-color: var(--st-slate-300);
   --st-footer-background-color: var(--st-yellow-50);
   --st-cell-color: var(--st-slate-600);
   --st-cell-odd-row-color: var(--st-slate-700);
@@ -591,7 +591,7 @@
   --st-header-background-color: var(--st-slate-800);
   --st-dragging-background-color: var(--st-slate-800);
   --st-selected-cell-background-color: var(--st-slate-600);
-  --st-selected-first-cell-background-color: var(--st-amber-600);
+  --st-selected-first-cell-background-color: var(--st-slate-500);
   --st-footer-background-color: var(--st-slate-900);
   --st-cell-color: var(--st-slate-300);
   --st-cell-odd-row-color: var(--st-slate-400);
@@ -638,7 +638,7 @@
   --st-header-background-color: var(--st-cyan-100);
   --st-dragging-background-color: var(--st-cyan-300);
   --st-selected-cell-background-color: var(--st-cyan-700);
-  --st-selected-first-cell-background-color: var(--st-slate-900);
+  --st-selected-first-cell-background-color: var(--st-cyan-600);
   --st-footer-background-color: var(--st-cyan-50);
   --st-cell-color: var(--st-slate-900);
   --st-cell-odd-row-color: var(--st-cyan-700);
@@ -685,7 +685,7 @@
   --st-header-background-color: var(--st-green-100);
   --st-dragging-background-color: var(--st-green-400);
   --st-selected-cell-background-color: var(--st-green-700);
-  --st-selected-first-cell-background-color: var(--st-green-900);
+  --st-selected-first-cell-background-color: var(--st-green-600);
   --st-footer-background-color: var(--st-green-50);
   --st-cell-color: var(--st-green-900);
   --st-cell-odd-row-color: var(--st-green-700);
@@ -732,7 +732,7 @@
   --st-header-background-color: var(--st-amber-100);
   --st-dragging-background-color: var(--st-amber-300);
   --st-selected-cell-background-color: var(--st-amber-600);
-  --st-selected-first-cell-background-color: var(--st-amber-800);
+  --st-selected-first-cell-background-color: var(--st-amber-500);
   --st-footer-background-color: var(--st-amber-50);
   --st-cell-color: var(--st-amber-800);
   --st-cell-odd-row-color: var(--st-amber-600);
@@ -779,7 +779,7 @@
   --st-header-background-color: var(--st-pink-200);
   --st-dragging-background-color: var(--st-pink-300);
   --st-selected-cell-background-color: var(--st-pink-400);
-  --st-selected-first-cell-background-color: var(--st-pink-600);
+  --st-selected-first-cell-background-color: var(--st-pink-300);
   --st-footer-background-color: var(--st-pink-50);
   --st-cell-color: var(--st-pink-900);
   --st-cell-odd-row-color: var(--st-pink-800);
@@ -826,7 +826,7 @@
   --st-header-background-color: var(--st-gray-300);
   --st-dragging-background-color: var(--st-gray-400);
   --st-selected-cell-background-color: var(--st-gray-500);
-  --st-selected-first-cell-background-color: var(--st-gray-600);
+  --st-selected-first-cell-background-color: var(--st-gray-400);
   --st-footer-background-color: var(--st-gray-100);
   --st-cell-color: var(--st-gray-900);
   --st-cell-odd-row-color: var(--st-gray-800);
@@ -1184,8 +1184,12 @@
 
 /* Style for the first selected table cell */
 .st-cell-selected-first {
-  background-color: var(--st-selected-first-cell-background-color);
+  background-color: var(--st-selected-first-cell-background-color) !important;
   color: var(--st-selected-first-cell-color);
+  border-top: var(--st-border-width) solid var(--st-selected-border-top-color);
+  border-bottom: var(--st-border-width) solid var(--st-selected-border-bottom-color);
+  border-left: var(--st-border-width) solid var(--st-selected-border-left-color);
+  border-right: var(--st-border-width) solid var(--st-selected-border-right-color);
 }
 
 /* Border for selected cells */

@@ -54,7 +54,7 @@ const TableCell = forwardRef(
     const cellClassName = `st-cell ${depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""} ${
       isSelected
         ? isInitialFocusedCell
-          ? `st-cell-selected-first-cell ${borderClass}`
+          ? `st-cell-selected-first ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
     } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""}`;
