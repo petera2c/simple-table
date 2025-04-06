@@ -1,4 +1,14 @@
-import { useState, useRef, useEffect, useReducer, ReactNode, useMemo, useCallback, memo, useLayoutEffect } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useReducer,
+  ReactNode,
+  useMemo,
+  useCallback,
+  memo,
+  useLayoutEffect,
+} from "react";
 import useSelection from "../../hooks/useSelection";
 import HeaderObject from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
@@ -88,6 +98,12 @@ const SimpleTable = ({
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
+  const centerHeaderRef = useRef<HTMLDivElement>(null);
+  const pinnedLeftHeaderRef = useRef<HTMLDivElement>(null);
+  const pinnedLeftTemplateColumns = useRef<string[]>([]);
+  const pinnedRightHeaderRef = useRef<HTMLDivElement>(null);
+  const pinnedRightTemplateColumns = useRef<string[]>([]);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
@@ -172,6 +188,10 @@ const SimpleTable = ({
     getBorderClass,
     isInitialFocusedCell,
     setSelectedCells,
+    setSelectedColumns,
+    selectedColumns,
+    lastSelectedColumnIndex,
+    selectColumns,
   } = useSelection({
     selectableCells,
     headers: headersRef.current,
@@ -198,10 +218,14 @@ const SimpleTable = ({
       if (
         !target.closest(".st-cell") &&
         (selectableColumns
-          ? !target.classList.contains("st-header-cell") && !target.classList.contains("st-header-label")
+          ? !target.classList.contains("st-header-cell") &&
+            !target.classList.contains("st-header-label")
           : true)
       ) {
         setSelectedCells(new Set());
+        if (selectableColumns) {
+          setSelectedColumns(new Set());
+        }
       }
     };
 
@@ -209,13 +233,14 @@ const SimpleTable = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [selectableColumns, setSelectedCells]);
+  }, [selectableColumns, setSelectedCells, setSelectedColumns]);
 
   // Calculate the width of the scrollbar
   useLayoutEffect(() => {
     if (!tableBodyContainerRef.current) return;
 
-    const newScrollbarWidth = tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
+    const newScrollbarWidth =
+      tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
     const newTableContentWidth = tableBodyContainerRef.current.clientWidth;
 
     setScrollbarWidth(newScrollbarWidth);
@@ -230,7 +255,8 @@ const SimpleTable = ({
       // Re-calculate the width of the scrollbar and table content
       if (!tableBodyContainerRef.current) return;
 
-      const newScrollbarWidth = tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
+      const newScrollbarWidth =
+        tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
       const newTableContentWidth = tableBodyContainerRef.current.clientWidth;
 
       setScrollbarWidth(newScrollbarWidth);
@@ -263,6 +289,7 @@ const SimpleTable = ({
             isInitialFocusedCell={isInitialFocusedCell}
             isSelected={isSelected}
             isWidthDragging={isWidthDragging}
+            lastSelectedColumnIndex={lastSelectedColumnIndex}
             mainBodyRef={mainBodyRef}
             onCellEdit={onCellEdit}
             onColumnOrderChange={onColumnOrderChange}
@@ -273,10 +300,11 @@ const SimpleTable = ({
             rowHeight={rowHeight}
             scrollbarWidth={scrollbarWidth}
             selectableColumns={selectableColumns}
-            setIsWidthDragging={setIsWidthDragging}
+            selectColumns={selectColumns}
             setFlattenedRows={setFlattenedRows}
+            setIsWidthDragging={setIsWidthDragging}
             setScrollTop={setScrollTop}
-            setSelectedCells={setSelectedCells}
+            setSelectedColumns={setSelectedColumns}
             shouldPaginate={shouldPaginate}
             sort={sort}
             sortDownIcon={sortDownIcon}

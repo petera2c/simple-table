@@ -20,6 +20,7 @@ import { handleResizeStart } from "../../utils/sortUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 import { createSetString } from "../../hooks/useSelection";
+import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
 
 export interface TableHeaderCellProps {
   colIndex: number;
@@ -42,10 +43,12 @@ export interface TableHeaderCellProps {
   rowHeight: number;
   selectableColumns: boolean;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
-  setSelectedCells: Dispatch<React.SetStateAction<Set<string>>>;
+  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   sort: SortConfig | null;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
+  lastSelectedColumnIndex?: number | null;
+  selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
 }
 
 const TableHeaderCell = forwardRef(
@@ -71,10 +74,12 @@ const TableHeaderCell = forwardRef(
       rowHeight,
       selectableColumns,
       setIsWidthDragging,
-      setSelectedCells,
+      setSelectedColumns,
       sort,
       sortDownIcon,
       sortUpIcon,
+      lastSelectedColumnIndex,
+      selectColumns,
     }: TableHeaderCellProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
@@ -124,52 +129,50 @@ const TableHeaderCell = forwardRef(
       header: HeaderObject;
     }) => {
       if (selectableColumns) {
-        const rowCount = currentRows.length;
-        const newColumnCells = Array.from({ length: rowCount }, (_, rowIndex) =>
-          createSetString({ rowIndex, colIndex, rowId: currentRows[rowIndex].rowMeta.rowId })
-        );
+        // Get all column indices that should be selected (including children)
+        const columnsToSelect = getHeaderLeafIndices(header, colIndex);
 
-        const selectCellsInRange = (
-          startColumnIndex: number,
-          endColumnIndex: number
-        ): Set<string> => {
-          const selectedCells = new Set<string>();
-          const minColumnIndex = Math.min(startColumnIndex, endColumnIndex);
-          const maxColumnIndex = Math.max(startColumnIndex, endColumnIndex);
-
-          Array.from({ length: rowCount }).forEach((_, rowIndex) => {
-            Array.from({ length: maxColumnIndex - minColumnIndex + 1 }).forEach((_, offset) => {
-              selectedCells.add(
-                createSetString({
-                  rowIndex,
-                  colIndex: minColumnIndex + offset,
-                  rowId: currentRows[rowIndex].rowMeta.rowId,
-                })
-              );
-            });
-          });
-
-          return selectedCells;
-        };
-
-        if (event.shiftKey) {
-          setSelectedCells((prevSelectedCells) => {
-            const firstPrevColumnIndex = Number(Array.from(prevSelectedCells)[0]?.split("-")[1]);
-            const newFirstColumnIndex = Number(newColumnCells[0].split("-")[1]);
-
-            if (firstPrevColumnIndex === newFirstColumnIndex) {
-              return new Set(newColumnCells);
-            } else if (firstPrevColumnIndex > newFirstColumnIndex) {
-              return selectCellsInRange(newFirstColumnIndex, firstPrevColumnIndex);
-            } else {
-              return selectCellsInRange(firstPrevColumnIndex, newFirstColumnIndex);
+        if (event.shiftKey && selectColumns) {
+          // If shift key is pressed and we have columns already selected
+          setSelectedColumns((prevSelected) => {
+            // If no columns are currently selected, just select the clicked columns
+            if (prevSelected.size === 0) {
+              return new Set(columnsToSelect);
             }
+
+            // Find the nearest column index in the existing selection
+            const currentColumnIndex = columnsToSelect[0]; // Use first column as reference
+            const selectedIndices = Array.from(prevSelected).sort((a, b) => a - b);
+
+            let nearestIndex = selectedIndices[0]; // Default to first selected column
+            let minDistance = Math.abs(currentColumnIndex - nearestIndex);
+
+            // Find the nearest column to the currently clicked one
+            selectedIndices.forEach((index) => {
+              const distance = Math.abs(currentColumnIndex - index);
+              if (distance < minDistance) {
+                minDistance = distance;
+                nearestIndex = index;
+              }
+            });
+
+            // Get all columns in the range between nearest and current
+            const columnsInRange = getColumnRange(nearestIndex, currentColumnIndex);
+
+            // Add all columns in the selected header
+            const allColumnsToSelect = [...columnsInRange, ...columnsToSelect];
+
+            // Create a new set with all existing selections plus the new range
+            const newSelection = new Set([...Array.from(prevSelected), ...allColumnsToSelect]);
+            return newSelection;
           });
-        } else {
-          setSelectedCells(new Set(newColumnCells));
+        } else if (selectColumns) {
+          // Regular click - just select the columns under this header
+          selectColumns(columnsToSelect);
         }
         return;
       }
+
       if (!header.isSortable) return;
       onSort(colIndex, header.accessor);
     };

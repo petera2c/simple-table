@@ -1,4 +1,4 @@
-import { createRef, Fragment, useEffect, useMemo } from "react";
+import { createRef, Dispatch, Fragment, SetStateAction, useMemo } from "react";
 import { Pinned } from "../../types/Pinned";
 import { displayCell } from "../../utils/cellUtils";
 import Animate from "../Animate";
@@ -24,6 +24,7 @@ const RecursiveTableHeaderRender = ({
   maxDepth,
   pinned,
   gridPosition,
+  lastSelectedColumnIndex,
   ...props
 }: Omit<
   TableHeaderCellProps,
@@ -36,6 +37,7 @@ const RecursiveTableHeaderRender = ({
   maxDepth: number;
   pinned?: Pinned;
   gridPosition: GridPosition;
+  lastSelectedColumnIndex?: number | null;
 }) => {
   if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
@@ -76,6 +78,7 @@ const RecursiveTableHeaderRender = ({
               index={childIndex}
               key={child.accessor}
               maxDepth={maxDepth}
+              lastSelectedColumnIndex={lastSelectedColumnIndex}
             />
           );
         })}
@@ -107,6 +110,7 @@ const TableHeaderSection = ({
   hiddenColumns,
   hoveredHeaderRef,
   isWidthDragging,
+  lastSelectedColumnIndex,
   mainBodyRef,
   maxDepth,
   onColumnOrderChange,
@@ -116,8 +120,9 @@ const TableHeaderSection = ({
   rowHeight,
   sectionRef,
   selectableColumns,
+  selectColumns,
   setIsWidthDragging,
-  setSelectedCells,
+  setSelectedColumns,
   sort,
   sortDownIcon,
   sortUpIcon,
@@ -223,6 +228,7 @@ const TableHeaderSection = ({
               hoveredHeaderRef={hoveredHeaderRef}
               index={index}
               key={header.accessor}
+              lastSelectedColumnIndex={lastSelectedColumnIndex}
               maxDepth={maxDepth}
               onColumnOrderChange={onColumnOrderChange}
               onSort={onSort}
@@ -231,8 +237,9 @@ const TableHeaderSection = ({
               reverse={pinned === "right"}
               rowHeight={rowHeight}
               selectableColumns={selectableColumns}
+              selectColumns={selectColumns}
               setIsWidthDragging={setIsWidthDragging}
-              setSelectedCells={setSelectedCells}
+              setSelectedColumns={setSelectedColumns}
               sort={sort}
               sortDownIcon={sortDownIcon}
               sortUpIcon={sortUpIcon}

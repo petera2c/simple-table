@@ -32,7 +32,9 @@ const TableCell = forwardRef(
   ) => {
     const { depth, row } = visibleRow;
     // Local state
-    const [localContent, setLocalContent] = useState<CellValue>(row.rowData[header.accessor] as CellValue);
+    const [localContent, setLocalContent] = useState<CellValue>(
+      row.rowData[header.accessor] as CellValue
+    );
     const [isEditing, setIsEditing] = useState(false);
 
     // Hooks
@@ -51,7 +53,9 @@ const TableCell = forwardRef(
     const cellHasChildren = Boolean(row.rowMeta?.children?.length);
     const clickable = Boolean(header?.isEditable);
     const isOddRow = rowIndex % 2 === 0;
-    const cellClassName = `st-cell ${depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""} ${
+    const cellClassName = `st-cell ${
+      depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
+    } ${
       isSelected
         ? isInitialFocusedCell
           ? `st-cell-selected-first ${borderClass}`
@@ -88,7 +92,11 @@ const TableCell = forwardRef(
           className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"}`}
           id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
         >
-          <EditableCell onChange={updateLocalContent} setIsEditing={setIsEditing} value={localContent} />
+          <EditableCell
+            onChange={updateLocalContent}
+            setIsEditing={setIsEditing}
+            value={localContent}
+          />
         </div>
       );
     }
@@ -115,21 +123,33 @@ const TableCell = forwardRef(
       >
         {header.expandable && cellHasChildren ? (
           row.rowMeta.isExpanded ? (
-            <div className="st-sort-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
+            <div
+              className="st-sort-icon-container"
+              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
+            >
               <AngleDownIcon className="st-sort-icon" />
             </div>
           ) : (
-            <div className="st-sort-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
+            <div
+              className="st-sort-icon-container"
+              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
+            >
               <AngleRightIcon className="st-sort-icon" />
             </div>
           )
         ) : null}
         <span
           className={`st-cell-content ${
-            header.align === "right" ? "right-aligned" : header.align === "center" ? "center-aligned" : ""
+            header.align === "right"
+              ? "right-aligned"
+              : header.align === "center"
+              ? "center-aligned"
+              : ""
           }`}
         >
-          {header.cellRenderer ? header.cellRenderer({ accessor: header.accessor, colIndex, row }) : localContent}
+          {header.cellRenderer
+            ? header.cellRenderer({ accessor: header.accessor, colIndex, row })
+            : localContent}
         </span>
       </div>
     );

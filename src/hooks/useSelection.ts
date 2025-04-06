@@ -3,7 +3,8 @@ import HeaderObject from "../types/HeaderObject";
 import Cell from "../types/Cell";
 import VisibleRow from "../types/VisibleRow";
 
-export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) => `${rowIndex}-${colIndex}-${rowId}`;
+export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
+  `${rowIndex}-${colIndex}-${rowId}`;
 
 const useSelection = ({
   selectableCells,
@@ -15,6 +16,8 @@ const useSelection = ({
   visibleRows: VisibleRow[];
 }) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
+  const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
+  const [lastSelectedColumnIndex, setLastSelectedColumnIndex] = useState<number | null>(null);
   const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(null);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
@@ -55,9 +58,13 @@ const useSelection = ({
         }
       }
 
+      // Clear column selections when selecting cells
+      setSelectedColumns(new Set());
+      setLastSelectedColumnIndex(null);
+
       setSelectedCells(newSelectedCells);
     },
-    [visibleRows]
+    [visibleRows, setSelectedColumns, setLastSelectedColumnIndex, setSelectedCells]
   );
 
   // Select a single cell
@@ -70,11 +77,44 @@ const useSelection = ({
         cell.colIndex < headers.length
       ) {
         const cellId = createSetString(cell);
+
+        // Clear column selections when selecting a single cell
+        setSelectedColumns(new Set());
+        setLastSelectedColumnIndex(null);
+
         setSelectedCells(new Set([cellId]));
         setInitialFocusedCell(cell);
       }
     },
-    [headers.length, visibleRows.length]
+    [
+      headers.length,
+      visibleRows.length,
+      setSelectedColumns,
+      setLastSelectedColumnIndex,
+      setSelectedCells,
+      setInitialFocusedCell,
+    ]
+  );
+
+  // Helper to select columns and update last selected index
+  const selectColumns = useCallback(
+    (columnIndices: number[], isShiftKey = false) => {
+      // Clear cell selections when selecting columns
+      setSelectedCells(new Set());
+      setInitialFocusedCell(null);
+
+      setSelectedColumns((prev) => {
+        const newSelection = new Set(isShiftKey ? prev : []);
+        columnIndices.forEach((idx) => newSelection.add(idx));
+        return newSelection;
+      });
+
+      // Update last selected column if applicable
+      if (columnIndices.length > 0) {
+        setLastSelectedColumnIndex(columnIndices[columnIndices.length - 1]);
+      }
+    },
+    [setSelectedCells, setInitialFocusedCell, setSelectedColumns, setLastSelectedColumnIndex]
   );
 
   useEffect(() => {
@@ -143,8 +183,10 @@ const useSelection = ({
           selectSingleCell(newCell);
         }
       } else if (event.key === "Escape") {
-        // Clear selection
+        // Clear all selections
         setSelectedCells(new Set());
+        setSelectedColumns(new Set());
+        setLastSelectedColumnIndex(null);
         startCell.current = null;
         setInitialFocusedCell(null);
       }
@@ -168,6 +210,10 @@ const useSelection = ({
     if (!selectableCells) return;
     isSelecting.current = true;
     startCell.current = { rowIndex, colIndex, rowId };
+
+    // When directly selecting cells, clear any selected columns
+    setSelectedColumns(new Set());
+    setLastSelectedColumnIndex(null);
 
     const cellId = createSetString({ colIndex, rowIndex, rowId });
     setSelectedCells(new Set([cellId]));
@@ -204,10 +250,17 @@ const useSelection = ({
 
   const isSelected = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
-      const hasString = createSetString({ colIndex, rowIndex, rowId });
-      return selectedCells.has(hasString);
+      // Check if the cell is in the selectedCells set
+      const cellId = createSetString({ colIndex, rowIndex, rowId });
+      const isCellSelected = selectedCells.has(cellId);
+
+      // Also check if the column is in the selectedColumns set
+      const isColumnSelected = selectedColumns.has(colIndex);
+
+      // Return true if either the cell or its column is selected
+      return isCellSelected || isColumnSelected;
     },
-    [selectedCells]
+    [selectedCells, selectedColumns]
   );
 
   const getBorderClass = useCallback(
@@ -221,13 +274,15 @@ const useSelection = ({
       const leftCell = { colIndex: colIndex - 1, rowIndex, rowId };
       const rightCell = { colIndex: colIndex + 1, rowIndex, rowId };
 
+      // Check if neighboring cells are selected
       if (!isSelected(topCell)) classes.push("st-selected-top-border");
       if (!isSelected(bottomCell)) classes.push("st-selected-bottom-border");
       if (!isSelected(leftCell)) classes.push("st-selected-left-border");
       if (!isSelected(rightCell)) classes.push("st-selected-right-border");
+
       return classes.join(" ");
     },
-    [isSelected, visibleRows]
+    [isSelected, visibleRows, selectedColumns]
   );
 
   const isInitialFocusedCell = useMemo(() => {
@@ -247,6 +302,10 @@ const useSelection = ({
     isSelected,
     selectedCells,
     setSelectedCells,
+    selectedColumns,
+    setSelectedColumns,
+    lastSelectedColumnIndex,
+    selectColumns,
   };
 };
 

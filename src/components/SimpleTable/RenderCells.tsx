@@ -1,3 +1,4 @@
+import { Fragment, useMemo } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
@@ -6,7 +7,9 @@ import Animate from "../Animate";
 import { RowId } from "../../types/RowId";
 import VisibleRow from "../../types/VisibleRow";
 import { Pinned } from "../../types/Pinned";
-import { Fragment } from "react/jsx-runtime";
+
+// Type to track column indices for each header
+type ColumnIndices = Record<string, number>;
 
 type RenderCellsProps = {
   headers: HeaderObject[];
@@ -31,6 +34,42 @@ const RenderCells = ({
   visibleRow,
   ...props
 }: RenderCellsProps) => {
+  const filteredHeaders = headers.filter((header) =>
+    displayCell({ hiddenColumns, header, pinned })
+  );
+
+  // Calculate column indices up front, similar to gridPositions in TableHeaderSection
+  const columnIndices = useMemo(() => {
+    const indices: ColumnIndices = {};
+    let columnCounter = 1;
+
+    const processHeader = (header: HeaderObject, isFirst: boolean = false): void => {
+      // Only increment for non-first siblings
+      if (!isFirst) {
+        columnCounter++;
+      }
+
+      // Store the column index for this header
+      indices[header.accessor] = columnCounter;
+
+      // Process children recursively
+      if (header.children && header.children.length > 0) {
+        header.children
+          .filter((child) => displayCell({ hiddenColumns, header: child, pinned }))
+          .forEach((child, i) => {
+            processHeader(child, i === 0);
+          });
+      }
+    };
+
+    // Process all top-level headers
+    filteredHeaders.forEach((header, i) => {
+      processHeader(header, i === 0);
+    });
+
+    return indices;
+  }, [filteredHeaders, hiddenColumns, pinned]);
+
   return (
     <Animate
       allowAnimations={props.allowAnimations}
@@ -42,12 +81,10 @@ const RenderCells = ({
       pauseAnimation={props.isWidthDragging}
       rowIndex={rowIndex + 1}
     >
-      {headers.map((header, colIndex) => {
-        if (!displayCell({ hiddenColumns, header, pinned })) return null;
-
+      {filteredHeaders.map((header) => {
         return (
           <RecursiveRenderCells
-            colIndex={colIndex}
+            columnIndices={columnIndices}
             getBorderClass={getBorderClass}
             handleMouseDown={handleMouseDown}
             handleMouseOver={handleMouseOver}
@@ -70,29 +107,39 @@ const RenderCells = ({
 };
 
 const RecursiveRenderCells = ({
-  colIndex,
+  columnIndices,
   getBorderClass,
   handleMouseDown,
   handleMouseOver,
   header,
+  hiddenColumns,
   isInitialFocusedCell,
   isSelected,
   onExpandRowClick,
+  pinned,
   rowIndex,
   visibleRow,
   ...props
-}: RenderCellsProps & { header: HeaderObject; colIndex: number }) => {
+}: RenderCellsProps & { header: HeaderObject; columnIndices: ColumnIndices }) => {
+  // Get the column index for this header from our pre-calculated mapping
+  const colIndex = columnIndices[header.accessor];
+
   if (header.children) {
+    const filteredChildren = header.children.filter((child) =>
+      displayCell({ hiddenColumns, header: child, pinned })
+    );
+
     return (
       <Fragment>
-        {header.children.map((child, index) => {
+        {filteredChildren.map((child) => {
           return (
             <RecursiveRenderCells
-              colIndex={colIndex + index}
+              columnIndices={columnIndices}
               getBorderClass={getBorderClass}
               handleMouseDown={handleMouseDown}
               handleMouseOver={handleMouseOver}
               header={child}
+              hiddenColumns={hiddenColumns}
               isSelected={isSelected}
               isInitialFocusedCell={isInitialFocusedCell}
               key={getCellId({ accessor: child.accessor, rowIndex: rowIndex + 1 })}
@@ -106,6 +153,7 @@ const RecursiveRenderCells = ({
       </Fragment>
     );
   }
+
   return (
     <TableCell
       {...props}

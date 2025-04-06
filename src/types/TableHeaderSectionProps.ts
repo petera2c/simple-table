@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, SetStateAction, UIEvent } from "react";
+import { Dispatch, ReactNode, SetStateAction, UIEvent, UIEventHandler } from "react";
 import Row from "./Row";
 import { Pinned } from "./Pinned";
 import { OnSortProps, SortConfig } from "..";
@@ -13,11 +13,12 @@ interface TableHeaderSectionProps {
   draggedHeaderRef: RefObject<HeaderObject | null>;
   forceUpdate: () => void;
   gridTemplateColumns: string;
-  handleScroll?: (event: UIEvent<HTMLDivElement>) => void;
+  handleScroll?: UIEventHandler<HTMLDivElement>;
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   isWidthDragging: boolean;
+  lastSelectedColumnIndex?: number | null;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   maxDepth: number;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
@@ -27,8 +28,9 @@ interface TableHeaderSectionProps {
   rowHeight: number;
   sectionRef: RefObject<HTMLDivElement | null>;
   selectableColumns: boolean;
+  selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
-  setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
+  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   sort: SortConfig | null;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;

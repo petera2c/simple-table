@@ -24,6 +24,7 @@ const TableContent = ({
   isSelected,
   isInitialFocusedCell,
   isWidthDragging,
+  lastSelectedColumnIndex,
   mainBodyRef,
   onCellEdit,
   onColumnOrderChange,
@@ -34,10 +35,11 @@ const TableContent = ({
   rowHeight,
   scrollbarWidth,
   selectableColumns,
-  setIsWidthDragging,
+  selectColumns,
   setFlattenedRows,
+  setIsWidthDragging,
   setScrollTop,
-  setSelectedCells,
+  setSelectedColumns,
   shouldPaginate,
   sort,
   sortDownIcon,
@@ -68,7 +70,7 @@ const TableContent = ({
   }, [pinnedRightColumns, hiddenColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
-    allowAnimations,
+    allowAnimations: allowAnimations || false,
     centerHeaderRef,
     columnResizing,
     currentRows,
@@ -80,6 +82,7 @@ const TableContent = ({
     hiddenColumns,
     hoveredHeaderRef,
     isWidthDragging,
+    lastSelectedColumnIndex,
     mainBodyRef,
     mainTemplateColumns,
     onColumnOrderChange,
@@ -93,16 +96,16 @@ const TableContent = ({
     pinnedRightTemplateColumns,
     rowHeight,
     selectableColumns,
+    selectColumns,
     setIsWidthDragging,
-    setSelectedCells,
+    setSelectedColumns,
     sort,
     sortDownIcon,
     sortUpIcon,
-    tableBodyContainerRef,
   };
 
   const tableBodyProps: TableBodyProps = {
-    allowAnimations,
+    allowAnimations: allowAnimations || false,
     centerHeaderRef,
     draggedHeaderRef,
     flattenedRows,
@@ -139,7 +142,10 @@ const TableContent = ({
   };
 
   return (
-    <div className="st-table-content" style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}>
+    <div
+      className="st-table-content"
+      style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
+    >
       <TableHeader {...tableHeaderProps} />
       <TableBody {...tableBodyProps} />
     </div>
