@@ -15,7 +15,6 @@ const TableHeader = ({
   headerContainerRef,
   headersRef,
   hiddenColumns,
-  isWidthDragging,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftHeaderRef,
@@ -56,7 +55,6 @@ const TableHeader = ({
           handleScroll={undefined}
           headersRef={headersRef}
           hiddenColumns={hiddenColumns}
-          isWidthDragging={isWidthDragging}
           maxDepth={maxDepth}
           pinned="left"
           sectionRef={pinnedLeftHeaderRef}
@@ -69,7 +67,6 @@ const TableHeader = ({
         handleScroll={handleScroll}
         headersRef={headersRef}
         hiddenColumns={hiddenColumns}
-        isWidthDragging={isWidthDragging}
         maxDepth={maxDepth}
         sectionRef={centerHeaderRef}
         sort={sort}
@@ -81,7 +78,6 @@ const TableHeader = ({
           handleScroll={undefined}
           headersRef={headersRef}
           hiddenColumns={hiddenColumns}
-          isWidthDragging={isWidthDragging}
           maxDepth={maxDepth}
           pinned="right"
           sectionRef={pinnedRightHeaderRef}

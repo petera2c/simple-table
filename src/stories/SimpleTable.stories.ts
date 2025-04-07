@@ -11,6 +11,7 @@ import RowGroupingExample from "./examples/row-grouping/RowGrouping";
 import FinancialExample from "./examples/finance-example/FinancialExample";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import BasicExampleComponent from "./examples/BasicExample";
+import CellHighlightingDemo from "./examples/CellHighlighting";
 
 const meta = {
   title: "Simple Table",
@@ -55,6 +56,9 @@ export const BillingExample: Story = {
 };
 export const BasicExample: Story = {
   render: BasicExampleComponent,
+};
+export const CellHighlighting: Story = {
+  render: CellHighlightingDemo,
 };
 // export const EditColumns: Story = {
 //   render: EditColumnsExample,

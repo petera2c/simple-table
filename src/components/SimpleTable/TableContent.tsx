@@ -56,7 +56,6 @@ const TableContent = ({
     headerContainerRef,
     headersRef,
     hiddenColumns,
-    isWidthDragging,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftHeaderRef,

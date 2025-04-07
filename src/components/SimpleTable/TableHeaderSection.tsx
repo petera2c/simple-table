@@ -102,7 +102,6 @@ const TableHeaderSection = ({
   handleScroll,
   headersRef,
   hiddenColumns,
-  isWidthDragging,
   maxDepth,
   pinned,
   sectionRef,

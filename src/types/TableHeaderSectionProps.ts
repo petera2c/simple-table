@@ -9,7 +9,6 @@ interface TableHeaderSectionProps {
   handleScroll?: UIEventHandler<HTMLDivElement>;
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
-  isWidthDragging: boolean;
   maxDepth: number;
   pinned?: Pinned;
   sectionRef: RefObject<HTMLDivElement | null>;

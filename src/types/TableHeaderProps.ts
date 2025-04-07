@@ -7,7 +7,6 @@ type TableHeaderProps = {
   headerContainerRef: RefObject<HTMLDivElement | null>;
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
-  isWidthDragging: boolean;
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
