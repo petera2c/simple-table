@@ -12,12 +12,12 @@ type GridPosition = {
   gridColumnEnd: number;
   gridRowStart: number;
   gridRowEnd: number;
-  colIndex: number;
   children?: Record<string, GridPosition>;
 };
 
 // Props for RecursiveTableHeaderRender
 interface RecursiveRenderProps {
+  columnIndices: TableHeaderSectionProps["columnIndices"];
   depth: number;
   header: HeaderObject;
   hiddenColumns: Record<string, boolean>;
@@ -29,6 +29,7 @@ interface RecursiveRenderProps {
 }
 
 const RecursiveTableHeaderRender = ({
+  columnIndices,
   depth,
   header,
   hiddenColumns,
@@ -40,7 +41,8 @@ const RecursiveTableHeaderRender = ({
 }: RecursiveRenderProps) => {
   if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
-  const { gridColumnStart, gridColumnEnd, gridRowStart, gridRowEnd, colIndex } = gridPosition;
+  const { gridColumnStart, gridColumnEnd, gridRowStart, gridRowEnd } = gridPosition;
+  const colIndex = columnIndices[header.accessor];
 
   if (header.children) {
     const children = header.children.filter((child) =>
@@ -66,6 +68,7 @@ const RecursiveTableHeaderRender = ({
 
           return (
             <RecursiveTableHeaderRender
+              columnIndices={columnIndices}
               depth={depth + 1}
               gridPosition={childGridPosition}
               header={child}
@@ -98,6 +101,7 @@ const RecursiveTableHeaderRender = ({
 };
 
 const TableHeaderSection = ({
+  columnIndices,
   gridTemplateColumns,
   handleScroll,
   headersRef,
@@ -128,12 +132,11 @@ const TableHeaderSection = ({
           columnCounter++;
         }
 
-        const colIndex = columnCounter;
         const childrenLength =
           header.children?.filter((child) => displayCell({ hiddenColumns, header: child, pinned }))
             .length ?? 0;
 
-        const gridColumnStart = colIndex;
+        const gridColumnStart = columnCounter;
         const gridColumnEnd =
           childrenLength > 0 ? gridColumnStart + childrenLength : gridColumnStart + 1;
         const gridRowStart = depth;
@@ -144,7 +147,6 @@ const TableHeaderSection = ({
           gridColumnEnd,
           gridRowStart,
           gridRowEnd,
-          colIndex,
           children: {},
         };
 
@@ -188,6 +190,7 @@ const TableHeaderSection = ({
 
           return (
             <RecursiveTableHeaderRender
+              columnIndices={columnIndices}
               depth={1}
               gridPosition={headerGridPosition}
               header={header}

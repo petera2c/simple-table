@@ -2,11 +2,11 @@ import { useMemo, useRef, Dispatch, SetStateAction } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
-import { createGridTemplateColumns } from "../../utils/columnUtils";
 import { useTableContext } from "../../context/TableContext";
 import Row from "../../types/Row";
 import SortConfig from "../../types/SortConfig";
 import VisibleRow from "../../types/VisibleRow";
+import { createGridTemplateColumns } from "../../utils/columnUtils";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {

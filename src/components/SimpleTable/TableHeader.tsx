@@ -5,6 +5,7 @@ import useScrollSync from "../../hooks/useScrollSync";
 import HeaderObject from "../../types/HeaderObject";
 import TableHeaderSection from "./TableHeaderSection";
 import { useTableContext } from "../../context/TableContext";
+import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 
 const getHeaderDepth = (header: HeaderObject): number => {
   return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
@@ -35,6 +36,16 @@ const TableHeader = ({
     }
   };
 
+  // Calculate column indices for all headers to ensure consistent colIndex values
+  const columnIndices = useMemo(() => {
+    return calculateColumnIndices({
+      headersRef,
+      hiddenColumns,
+      pinnedLeftColumns,
+      pinnedRightColumns,
+    });
+  }, [headersRef, hiddenColumns, pinnedLeftColumns, pinnedRightColumns]);
+
   const { maxDepth } = useMemo(() => {
     const headers = headersRef.current;
     let maxDepth = 0;
@@ -51,6 +62,7 @@ const TableHeader = ({
     <div className="st-header-container" ref={headerContainerRef}>
       {pinnedLeftColumns.length > 0 && (
         <TableHeaderSection
+          columnIndices={columnIndices}
           gridTemplateColumns={pinnedLeftTemplateColumns}
           handleScroll={undefined}
           headersRef={headersRef}
@@ -63,6 +75,7 @@ const TableHeader = ({
       )}
 
       <TableHeaderSection
+        columnIndices={columnIndices}
         gridTemplateColumns={mainTemplateColumns}
         handleScroll={handleScroll}
         headersRef={headersRef}
@@ -74,6 +87,7 @@ const TableHeader = ({
 
       {pinnedRightColumns.length > 0 && (
         <TableHeaderSection
+          columnIndices={columnIndices}
           gridTemplateColumns={pinnedRightTemplateColumns}
           handleScroll={undefined}
           headersRef={headersRef}

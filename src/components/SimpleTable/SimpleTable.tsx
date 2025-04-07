@@ -184,7 +184,6 @@ const SimpleTable = ({
     isInitialFocusedCell,
     setSelectedCells,
     setSelectedColumns,
-    lastSelectedColumnIndex,
     selectColumns,
     setInitialFocusedCell,
   } = useSelection({

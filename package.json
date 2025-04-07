@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "0.7.36",
+  "version": "0.7.45",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -69,7 +69,8 @@
     "publish-fast": "npm run build && git add . && git commit -m \"$npm_config_message\" && npm publish && git push",
     "build": "rollup -c",
     "start": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "preview": "rollup -c -w"
   },
   "eslintConfig": {
     "extends": [

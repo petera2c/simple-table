@@ -4,16 +4,17 @@ import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
-import { ColumnIndices } from "./TableBody";
+import ColumnIndices from "../../types/ColumnIndices";
+import RowIndices from "../../types/RowIndices";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
   columnIndices: ColumnIndices;
-  getNextRowIndex: () => number;
   gridTemplateColumns: string;
   index: number;
   pinned?: Pinned;
   rowHeight: number;
+  rowIndices: RowIndices;
   visibleRow: VisibleRow;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
@@ -23,7 +24,6 @@ interface TableRowProps {
 
 const TableRow = ({
   columnIndices,
-  getNextRowIndex,
   gridTemplateColumns,
   headers,
   hiddenColumns,
@@ -32,10 +32,12 @@ const TableRow = ({
   onExpandRowClick,
   pinned,
   rowHeight,
+  rowIndices,
   visibleRow,
 }: TableRowProps) => {
   const { position } = visibleRow;
-  const rowIndex = getNextRowIndex(); // Get the next available index
+  // Get row index from rowIndices using the row's ID
+  const rowIndex = index; // Use the provided index by default
 
   return (
     <div
@@ -55,6 +57,7 @@ const TableRow = ({
         onExpandRowClick={onExpandRowClick}
         pinned={pinned}
         rowIndex={rowIndex}
+        rowIndices={rowIndices}
         visibleRow={visibleRow}
       />
     </div>

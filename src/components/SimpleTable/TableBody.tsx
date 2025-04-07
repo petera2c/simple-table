@@ -8,12 +8,9 @@ import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { useTableContext } from "../../context/TableContext";
 import VisibleRow from "../../types/VisibleRow";
 import HeaderObject from "../../types/HeaderObject";
-import { displayCell } from "../../utils/cellUtils";
+import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
+import RowIndices from "../../types/RowIndices";
 
-// Type for column indices mapping
-export type ColumnIndices = Record<string, number>;
-
-// Define props for frequently changing values
 interface TableBodyLocalProps {
   centerHeaderRef: RefObject<HTMLDivElement | null>;
   flattenedRows: Row[];
@@ -74,48 +71,26 @@ const TableBody = ({
 
   // Calculate column indices for all headers (including pinned) in one place
   const columnIndices = useMemo(() => {
-    const indices: ColumnIndices = {};
-    let columnCounter = 0;
-
-    const processHeader = (header: HeaderObject, isFirst: boolean = false): void => {
-      // Only increment for headers that are displayed
-      columnCounter++;
-
-      // Store the column index for this header
-      indices[header.accessor] = columnCounter;
-
-      // Process children recursively, if any
-      if (header.children && header.children.length > 0) {
-        header.children
-          .filter((child) => displayCell({ hiddenColumns, header: child }))
-          .forEach((child) => {
-            processHeader(child);
-          });
-      }
-    };
-
-    // Process all headers in order: first left-pinned, then main, then right-pinned
-    // This ensures unique column indices across all sections
-
-    // Process left-pinned headers
-    pinnedLeftColumns.forEach((header) => {
-      processHeader(header);
+    return calculateColumnIndices({
+      headersRef,
+      hiddenColumns,
+      pinnedLeftColumns,
+      pinnedRightColumns,
     });
+  }, [headersRef, hiddenColumns, pinnedLeftColumns, pinnedRightColumns]);
 
-    // Process main headers
-    headersRef.current
-      .filter((header) => !header.pinned && displayCell({ hiddenColumns, header }))
-      .forEach((header) => {
-        processHeader(header);
-      });
+  // Calculate row indices for all visible rows
+  const rowIndices = useMemo(() => {
+    const indices: RowIndices = {};
 
-    // Process right-pinned headers
-    pinnedRightColumns.forEach((header) => {
-      processHeader(header);
+    // Map each row's ID to its index in the visible rows array
+    visibleRows.forEach((visibleRow, index) => {
+      const rowId = String(visibleRow.row.rowMeta.rowId);
+      indices[rowId] = index;
     });
 
     return indices;
-  }, [headersRef, hiddenColumns, pinnedLeftColumns, pinnedRightColumns]);
+  }, [visibleRows]);
 
   const toggleRow = (rowId: RowId) => {
     const updateRow = (row: Row): Row => {
@@ -160,6 +135,7 @@ const TableBody = ({
     rowHeight,
     visibleRows,
     columnIndices,
+    rowIndices,
   };
 
   return (

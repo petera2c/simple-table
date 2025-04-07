@@ -1,7 +1,8 @@
 import Row from "../../../types/Row";
 
 // Utility functions
-const randomBetween = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
+const randomBetween = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
 const randomChoice = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
 // Generate a random date between two dates
@@ -34,7 +35,16 @@ const generateAccountName = () => {
     "Dharma Initiative",
   ];
 
-  const suffixes = ["Inc", "LLC", "Corp", "Industries", "Technologies", "Solutions", "Software", "Group"];
+  const suffixes = [
+    "Inc",
+    "LLC",
+    "Corp",
+    "Industries",
+    "Technologies",
+    "Solutions",
+    "Software",
+    "Group",
+  ];
 
   if (Math.random() > 0.5) {
     return `${randomChoice(companies)} ${randomChoice(suffixes)}`;
@@ -69,7 +79,20 @@ const generateMonthlyData = (
   amount: number,
   monthsToDistribute: number = 12
 ) => {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
@@ -77,16 +100,24 @@ const generateMonthlyData = (
   let remainingAmount = amount;
   const monthlyValues: Record<string, number> = {};
 
+  // New revenue and balance records
+  const monthlyRevenue: Record<string, number> = {};
+  const monthlyBalance: Record<string, number> = {};
+
   for (let i = 0; i < 12; i++) {
     const monthIndex = (currentMonth - i + 12) % 12;
     const year = currentMonth - i < 0 ? currentYear - 1 : currentYear;
     const key = `month_${months[monthIndex]}_${year}`;
+    const revenueKey = `revenue_${months[monthIndex]}_${year}`;
+    const balanceKey = `balance_${months[monthIndex]}_${year}`;
 
     // If this month is before the start date or we've already distributed all months
     const isBeforeStart = year < startYear || (year === startYear && monthIndex < startMonth);
 
     if (isBeforeStart || i >= monthsToDistribute) {
       monthlyValues[key] = 0;
+      monthlyRevenue[revenueKey] = 0;
+      monthlyBalance[balanceKey] = 0;
       continue;
     }
 
@@ -105,15 +136,29 @@ const generateMonthlyData = (
       remainingAmount -= monthlyAmount;
       monthlyValues[key] = monthlyAmount;
     }
+
+    // Split the monthly amount between revenue and balance
+    // Revenue is typically 70-95% of the amount
+    const revenuePercentage = 0.7 + Math.random() * 0.25;
+    monthlyRevenue[revenueKey] = parseFloat((monthlyValues[key] * revenuePercentage).toFixed(2));
+    monthlyBalance[balanceKey] = parseFloat(
+      (monthlyValues[key] - monthlyRevenue[revenueKey]).toFixed(2)
+    );
   }
 
-  return monthlyValues;
+  return {
+    ...monthlyValues,
+    ...monthlyRevenue,
+    ...monthlyBalance,
+  };
 };
 
 // Generate revenue recognition data
 const calculateRevenueRecognition = (amount: number, createdDate: Date) => {
   const diffMonths =
-    currentDate.getMonth() - createdDate.getMonth() + 12 * (currentDate.getFullYear() - createdDate.getFullYear());
+    currentDate.getMonth() -
+    createdDate.getMonth() +
+    12 * (currentDate.getFullYear() - createdDate.getFullYear());
 
   // Calculate how much revenue has been recognized based on time elapsed
   const recognitionPeriod = randomBetween(1, 12); // Revenue is recognized over 1-12 months
@@ -129,7 +174,20 @@ const calculateRevenueRecognition = (amount: number, createdDate: Date) => {
 
 // Generate billing data with accounts -> invoices -> charges
 export const generateBillingData = (): Row[] => {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   let rowId = 0;
   const accountRows: Row[] = [];
 
@@ -247,7 +305,10 @@ export const generateBillingData = (): Row[] => {
         const chargeId = `CHG-${100000 + randomBetween(1, 999999)}`;
 
         // Calculate revenue recognition
-        const { recognizedRevenue, deferredRevenue } = calculateRevenueRecognition(chargeAmount, invoiceCreatedDate);
+        const { recognizedRevenue, deferredRevenue } = calculateRevenueRecognition(
+          chargeAmount,
+          invoiceCreatedDate
+        );
 
         invoiceRecognizedRevenue += recognizedRevenue;
         invoiceDeferredRevenue += deferredRevenue;
@@ -278,16 +339,33 @@ export const generateBillingData = (): Row[] => {
 
       // Calculate monthly data for the invoice by summing its charges
       const invoiceMonthlyData: Record<string, number> = {};
+      const invoiceMonthlyRevenue: Record<string, number> = {};
+      const invoiceMonthlyBalance: Record<string, number> = {};
 
       // For each month
       for (let i = 0; i < 12; i++) {
         const monthIndex = (currentDate.getMonth() - i + 12) % 12;
-        const year = currentDate.getMonth() - i < 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+        const year =
+          currentDate.getMonth() - i < 0
+            ? currentDate.getFullYear() - 1
+            : currentDate.getFullYear();
         const key = `month_${months[monthIndex]}_${year}`;
+        const revenueKey = `revenue_${months[monthIndex]}_${year}`;
+        const balanceKey = `balance_${months[monthIndex]}_${year}`;
 
         // Sum this month's value from all charges
         invoiceMonthlyData[key] = chargeChildren.reduce((sum, charge) => {
           return sum + ((charge.rowData[key] as number) || 0);
+        }, 0);
+
+        // Sum this month's revenue from all charges
+        invoiceMonthlyRevenue[revenueKey] = chargeChildren.reduce((sum, charge) => {
+          return sum + ((charge.rowData[revenueKey] as number) || 0);
+        }, 0);
+
+        // Sum this month's balance from all charges
+        invoiceMonthlyBalance[balanceKey] = chargeChildren.reduce((sum, charge) => {
+          return sum + ((charge.rowData[balanceKey] as number) || 0);
         }, 0);
       }
 
@@ -312,22 +390,39 @@ export const generateBillingData = (): Row[] => {
           recognizedRevenue: parseFloat(invoiceRecognizedRevenue.toFixed(2)),
           deferredRevenue: parseFloat(invoiceDeferredRevenue.toFixed(2)),
           ...invoiceMonthlyData,
+          ...invoiceMonthlyRevenue,
+          ...invoiceMonthlyBalance,
         },
       });
     }
 
     // Calculate monthly data for the account by summing its invoices
     const accountMonthlyData: Record<string, number> = {};
+    const accountMonthlyRevenue: Record<string, number> = {};
+    const accountMonthlyBalance: Record<string, number> = {};
 
     // For each month
     for (let i = 0; i < 12; i++) {
       const monthIndex = (currentDate.getMonth() - i + 12) % 12;
-      const year = currentDate.getMonth() - i < 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+      const year =
+        currentDate.getMonth() - i < 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
       const key = `month_${months[monthIndex]}_${year}`;
+      const revenueKey = `revenue_${months[monthIndex]}_${year}`;
+      const balanceKey = `balance_${months[monthIndex]}_${year}`;
 
       // Sum this month's value from all invoices
       accountMonthlyData[key] = invoiceChildren.reduce((sum, invoice) => {
         return sum + ((invoice.rowData[key] as number) || 0);
+      }, 0);
+
+      // Sum this month's revenue from all invoices
+      accountMonthlyRevenue[revenueKey] = invoiceChildren.reduce((sum, invoice) => {
+        return sum + ((invoice.rowData[revenueKey] as number) || 0);
+      }, 0);
+
+      // Sum this month's balance from all invoices
+      accountMonthlyBalance[balanceKey] = invoiceChildren.reduce((sum, invoice) => {
+        return sum + ((invoice.rowData[balanceKey] as number) || 0);
       }, 0);
     }
 
@@ -345,6 +440,8 @@ export const generateBillingData = (): Row[] => {
         recognizedRevenue: parseFloat(accountRecognizedRevenue.toFixed(2)),
         deferredRevenue: parseFloat(accountDeferredRevenue.toFixed(2)),
         ...accountMonthlyData,
+        ...accountMonthlyRevenue,
+        ...accountMonthlyBalance,
       },
     });
   }

@@ -6,7 +6,9 @@ import Animate from "../Animate";
 import { RowId } from "../../types/RowId";
 import VisibleRow from "../../types/VisibleRow";
 import { Pinned } from "../../types/Pinned";
-import { ColumnIndices } from "./TableBody";
+import { useTableContext } from "../../context/TableContext";
+import RowIndices from "../../types/RowIndices";
+import ColumnIndices from "../../types/ColumnIndices";
 
 interface RenderCellsProps {
   columnIndices: ColumnIndices;
@@ -16,6 +18,7 @@ interface RenderCellsProps {
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowIndex: number;
+  rowIndices: RowIndices;
   visibleRow: VisibleRow;
 }
 
@@ -27,6 +30,7 @@ const RenderCells = ({
   onExpandRowClick,
   pinned,
   rowIndex,
+  rowIndices,
   visibleRow,
 }: RenderCellsProps) => {
   const filteredHeaders = headers.filter((header) =>
@@ -46,6 +50,7 @@ const RenderCells = ({
             onExpandRowClick={onExpandRowClick}
             pinned={pinned}
             rowIndex={rowIndex}
+            rowIndices={rowIndices}
             visibleRow={visibleRow}
           />
         );
@@ -62,6 +67,7 @@ const RecursiveRenderCells = ({
   onExpandRowClick,
   pinned,
   rowIndex,
+  rowIndices,
   visibleRow,
 }: {
   columnIndices: ColumnIndices;
@@ -71,10 +77,14 @@ const RecursiveRenderCells = ({
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowIndex: number;
+  rowIndices: RowIndices;
   visibleRow: VisibleRow;
 }) => {
   // Get the column index for this header from our pre-calculated mapping
   const colIndex = columnIndices[header.accessor];
+
+  // Get selection state for this cell
+  const { getBorderClass, isSelected, isInitialFocusedCell } = useTableContext();
 
   if (header.children) {
     const filteredChildren = header.children.filter((child) =>
@@ -94,6 +104,7 @@ const RecursiveRenderCells = ({
               onExpandRowClick={onExpandRowClick}
               pinned={pinned}
               rowIndex={rowIndex}
+              rowIndices={rowIndices}
               visibleRow={visibleRow}
             />
           );
@@ -102,10 +113,19 @@ const RecursiveRenderCells = ({
     );
   }
 
+  // Calculate selection state for this specific cell
+  const cellData = { rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId };
+  const borderClass = getBorderClass(cellData);
+  const isHighlighted = isSelected(cellData);
+  const isInitialFocused = isInitialFocusedCell(cellData);
+
   return (
     <TableCell
+      borderClass={borderClass}
       colIndex={colIndex}
       header={header}
+      isHighlighted={isHighlighted}
+      isInitialFocused={isInitialFocused}
       key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
       onExpandRowClick={onExpandRowClick}
       rowIndex={rowIndex}

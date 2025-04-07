@@ -12,9 +12,8 @@ const generateMonthHeaders = () => {
   const headers: HeaderObject[] = [];
 
   // Generate 12 months of headers (current month and 11 previous)
-  for (let i = 0; i < months.length; i++) {
-    const monthIndex = (currentMonth - i + 12) % 12; // Wrap around for previous year
-    const year = currentMonth - i < 0 ? currentYear - 1 : currentYear;
+  for (let monthIndex = 0; monthIndex < months.length; monthIndex++) {
+    const year = currentMonth - monthIndex < 0 ? currentYear - 1 : currentYear;
     const shortYear = year.toString().slice(2);
 
     headers.push({

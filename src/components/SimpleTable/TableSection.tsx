@@ -1,11 +1,12 @@
-import { Fragment, RefObject, useEffect, useRef } from "react";
+import { Fragment, RefObject } from "react";
 import TableRow from "./TableRow";
 import VisibleRow from "../../types/VisibleRow";
 import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
-import { ColumnIndices } from "./TableBody";
+import ColumnIndices from "../../types/ColumnIndices";
+import RowIndices from "../../types/RowIndices";
 
 interface TableSectionProps {
   columnIndices: ColumnIndices;
@@ -16,6 +17,7 @@ interface TableSectionProps {
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowHeight: number;
+  rowIndices: RowIndices;
   sectionRef?: RefObject<HTMLDivElement | null>;
   templateColumns: string;
   totalHeight: number;
@@ -32,6 +34,7 @@ const TableSection = ({
   onExpandRowClick,
   pinned,
   rowHeight,
+  rowIndices,
   sectionRef,
   templateColumns,
   totalHeight,
@@ -39,17 +42,6 @@ const TableSection = ({
   width,
 }: TableSectionProps) => {
   const className = pinned ? `st-table-body-pinned-${pinned}` : "st-table-body-main";
-
-  const indexCounter = useRef(0); // Persistent counter across renders
-
-  // Reset the counter on each render
-  useEffect(() => {
-    indexCounter.current = 0; // Reset to 0 when Table re-renders
-  }); // No dependencies, runs on every render
-
-  const getNextRowIndex = (): number => {
-    return indexCounter.current++; // Increment and return the current index
-  };
 
   return (
     <div
@@ -67,7 +59,6 @@ const TableSection = ({
           <Fragment key={index}>
             <TableRow
               columnIndices={columnIndices}
-              getNextRowIndex={getNextRowIndex}
               gridTemplateColumns={templateColumns}
               headers={headers}
               hiddenColumns={hiddenColumns}
@@ -76,6 +67,7 @@ const TableSection = ({
               onExpandRowClick={onExpandRowClick}
               pinned={pinned}
               rowHeight={rowHeight}
+              rowIndices={rowIndices}
               visibleRow={visibleRow}
             />
             {index !== 0 && (

@@ -16,7 +16,7 @@ const BillingExample = ({ theme = "light" }: { theme?: "light" | "custom" }) => 
         height="70dvh"
         theme={theme}
         selectableCells
-        editColumns
+        selectableColumns
       />
     </div>
   );

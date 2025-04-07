@@ -12,8 +12,11 @@ import { useTableContext } from "../../context/TableContext";
 
 // Define minimal props that are specific to each cell
 interface MinimalCellProps {
+  borderClass: string;
   colIndex: number;
   header: TableCellProps["header"];
+  isHighlighted: boolean;
+  isInitialFocused: boolean;
   onExpandRowClick: TableCellProps["onExpandRowClick"];
   rowIndex: number;
   visibleRow: TableCellProps["visibleRow"];
@@ -21,7 +24,16 @@ interface MinimalCellProps {
 
 const TableCell = forwardRef(
   (
-    { colIndex, header, onExpandRowClick, rowIndex, visibleRow }: MinimalCellProps,
+    {
+      borderClass,
+      colIndex,
+      header,
+      isHighlighted,
+      isInitialFocused,
+      onExpandRowClick,
+      rowIndex,
+      visibleRow,
+    }: MinimalCellProps,
     ref: Ref<HTMLDivElement>
   ) => {
     // Get shared props from context
@@ -33,18 +45,7 @@ const TableCell = forwardRef(
       onTableHeaderDragEnd,
       handleMouseDown,
       handleMouseOver,
-      getBorderClass,
-      isSelected,
-      isInitialFocusedCell,
     } = useTableContext();
-
-    const borderClass = getBorderClass({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId });
-    const isHighlighted = isSelected({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId });
-    const isInitialFocused = isInitialFocusedCell({
-      rowIndex,
-      colIndex,
-      rowId: visibleRow.row.rowMeta.rowId,
-    });
 
     const { depth, row } = visibleRow;
     // Local state
