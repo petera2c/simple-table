@@ -4,6 +4,7 @@ import { displayCell } from "../../utils/cellUtils";
 import useScrollSync from "../../hooks/useScrollSync";
 import HeaderObject from "../../types/HeaderObject";
 import TableHeaderSection from "./TableHeaderSection";
+import { useTableContext } from "../../context/TableContext";
 
 const getHeaderDepth = (header: HeaderObject): number => {
   return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
@@ -11,10 +12,10 @@ const getHeaderDepth = (header: HeaderObject): number => {
 
 const TableHeader = ({
   centerHeaderRef,
+  headerContainerRef,
   headersRef,
   hiddenColumns,
   isWidthDragging,
-  mainBodyRef,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftHeaderRef,
@@ -22,9 +23,9 @@ const TableHeader = ({
   pinnedRightColumns,
   pinnedRightHeaderRef,
   pinnedRightTemplateColumns,
-  headerContainerRef,
   sort,
 }: TableHeaderProps) => {
+  const { mainBodyRef } = useTableContext();
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, centerHeaderRef);
 

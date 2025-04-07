@@ -9,7 +9,6 @@ import type OnSortProps from "./types/OnSortProps";
 import type Row from "./types/Row";
 import type SharedTableProps from "./types/SharedTableProps";
 import type SortConfig from "./types/SortConfig";
-import type TableBodyProps from "./types/TableBodyProps";
 import type TableCellProps from "./types/TableCellProps";
 import type TableHeaderProps from "./types/TableHeaderProps";
 import type TableRowProps from "./types/TableRowProps";
@@ -27,7 +26,6 @@ export type {
   Row,
   SharedTableProps,
   SortConfig,
-  TableBodyProps,
   TableCellProps,
   TableHeaderProps,
   TableRowProps,

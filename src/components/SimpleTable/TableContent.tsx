@@ -10,50 +10,24 @@ import VisibleRow from "../../types/VisibleRow";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
-  currentRows: Row[];
   flattenedRows: Row[];
   isWidthDragging: boolean;
-  lastSelectedColumnIndex: number | null;
   setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
   setScrollTop: Dispatch<SetStateAction<number>>;
-  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   sort: SortConfig | null;
   visibleRows: VisibleRow[];
 }
 
 const TableContent = ({
-  currentRows,
   flattenedRows,
   isWidthDragging,
-  lastSelectedColumnIndex,
   setFlattenedRows,
   setScrollTop,
-  setSelectedColumns,
   sort,
   visibleRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
-  const {
-    allowAnimations,
-    columnReordering,
-    columnResizing,
-    draggedHeaderRef,
-    editColumns,
-    forceUpdate,
-    headersRef,
-    hiddenColumns,
-    hoveredHeaderRef,
-    mainBodyRef,
-    onColumnOrderChange,
-    onSort,
-    onTableHeaderDragEnd,
-    rowHeight,
-    selectableColumns,
-    selectColumns,
-    setIsWidthDragging,
-    sortDownIcon,
-    sortUpIcon,
-  } = useTableContext();
+  const { editColumns, headersRef, hiddenColumns } = useTableContext();
 
   // Refs
   const headerContainerRef = useRef<HTMLDivElement>(null);
@@ -78,38 +52,19 @@ const TableContent = ({
   }, [pinnedRightColumns, hiddenColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
-    allowAnimations: allowAnimations || false,
     centerHeaderRef,
-    columnResizing,
-    currentRows,
-    columnReordering,
-    draggedHeaderRef,
-    forceUpdate,
     headerContainerRef,
     headersRef,
     hiddenColumns,
-    hoveredHeaderRef,
     isWidthDragging,
-    lastSelectedColumnIndex,
-    mainBodyRef,
     mainTemplateColumns,
-    onColumnOrderChange,
-    onSort,
-    onTableHeaderDragEnd,
     pinnedLeftColumns,
     pinnedLeftHeaderRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
     pinnedRightHeaderRef,
     pinnedRightTemplateColumns,
-    rowHeight,
-    selectableColumns,
-    selectColumns,
-    setIsWidthDragging,
-    setSelectedColumns,
     sort,
-    sortDownIcon,
-    sortUpIcon,
   };
 
   const tableBodyProps = {

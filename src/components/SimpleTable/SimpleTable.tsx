@@ -307,13 +307,10 @@ const SimpleTable = ({
         <div className="st-table-wrapper-container">
           <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <TableContent
-              currentRows={currentRows}
               flattenedRows={flattenedRows}
               isWidthDragging={isWidthDragging}
-              lastSelectedColumnIndex={lastSelectedColumnIndex}
               setFlattenedRows={setFlattenedRows}
               setScrollTop={setScrollTop}
-              setSelectedColumns={setSelectedColumns}
               sort={sort}
               visibleRows={visibleRows}
             />
