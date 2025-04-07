@@ -247,6 +247,7 @@ const useSelection = ({
   const handleMouseUp = () => {
     isSelecting.current = false;
   };
+  console.log(selectedCells);
 
   const isSelected = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
