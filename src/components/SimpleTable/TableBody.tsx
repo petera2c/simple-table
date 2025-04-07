@@ -1,4 +1,4 @@
-import { useRef, Dispatch, SetStateAction, RefObject } from "react";
+import { useRef, Dispatch, SetStateAction, RefObject, useMemo } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableSection from "./TableSection";
@@ -8,6 +8,10 @@ import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { useTableContext } from "../../context/TableContext";
 import VisibleRow from "../../types/VisibleRow";
 import HeaderObject from "../../types/HeaderObject";
+import { displayCell } from "../../utils/cellUtils";
+
+// Type for column indices mapping
+export type ColumnIndices = Record<string, number>;
 
 // Define props for frequently changing values
 interface TableBodyLocalProps {
@@ -68,6 +72,51 @@ const TableBody = ({
   const totalRowCount = getTotalRowCount(flattenedRows);
   const totalHeight = totalRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 
+  // Calculate column indices for all headers (including pinned) in one place
+  const columnIndices = useMemo(() => {
+    const indices: ColumnIndices = {};
+    let columnCounter = 0;
+
+    const processHeader = (header: HeaderObject, isFirst: boolean = false): void => {
+      // Only increment for headers that are displayed
+      columnCounter++;
+
+      // Store the column index for this header
+      indices[header.accessor] = columnCounter;
+
+      // Process children recursively, if any
+      if (header.children && header.children.length > 0) {
+        header.children
+          .filter((child) => displayCell({ hiddenColumns, header: child }))
+          .forEach((child) => {
+            processHeader(child);
+          });
+      }
+    };
+
+    // Process all headers in order: first left-pinned, then main, then right-pinned
+    // This ensures unique column indices across all sections
+
+    // Process left-pinned headers
+    pinnedLeftColumns.forEach((header) => {
+      processHeader(header);
+    });
+
+    // Process main headers
+    headersRef.current
+      .filter((header) => !header.pinned && displayCell({ hiddenColumns, header }))
+      .forEach((header) => {
+        processHeader(header);
+      });
+
+    // Process right-pinned headers
+    pinnedRightColumns.forEach((header) => {
+      processHeader(header);
+    });
+
+    return indices;
+  }, [headersRef, hiddenColumns, pinnedLeftColumns, pinnedRightColumns]);
+
   const toggleRow = (rowId: RowId) => {
     const updateRow = (row: Row): Row => {
       if (row.rowMeta.rowId === rowId && row.rowMeta.children) {
@@ -110,6 +159,7 @@ const TableBody = ({
     isWidthDragging,
     rowHeight,
     visibleRows,
+    columnIndices,
   };
 
   return (

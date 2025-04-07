@@ -5,8 +5,10 @@ import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
+import { ColumnIndices } from "./TableBody";
 
 interface TableSectionProps {
+  columnIndices: ColumnIndices;
   headerContainerRef: RefObject<HTMLDivElement | null>;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
@@ -22,6 +24,7 @@ interface TableSectionProps {
 }
 
 const TableSection = ({
+  columnIndices,
   headerContainerRef,
   headers,
   hiddenColumns,
@@ -63,6 +66,7 @@ const TableSection = ({
         return (
           <Fragment key={index}>
             <TableRow
+              columnIndices={columnIndices}
               getNextRowIndex={getNextRowIndex}
               gridTemplateColumns={templateColumns}
               headers={headers}

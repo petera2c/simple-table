@@ -4,9 +4,11 @@ import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
+import { ColumnIndices } from "./TableBody";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
+  columnIndices: ColumnIndices;
   getNextRowIndex: () => number;
   gridTemplateColumns: string;
   index: number;
@@ -20,6 +22,7 @@ interface TableRowProps {
 }
 
 const TableRow = ({
+  columnIndices,
   getNextRowIndex,
   gridTemplateColumns,
   headers,
@@ -44,6 +47,7 @@ const TableRow = ({
       }}
     >
       <RenderCells
+        columnIndices={columnIndices}
         headers={headers}
         hiddenColumns={hiddenColumns}
         isWidthDragging={isWidthDragging}

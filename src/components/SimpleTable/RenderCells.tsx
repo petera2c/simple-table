@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
@@ -6,11 +6,10 @@ import Animate from "../Animate";
 import { RowId } from "../../types/RowId";
 import VisibleRow from "../../types/VisibleRow";
 import { Pinned } from "../../types/Pinned";
-
-// Type to track column indices for each header
-type ColumnIndices = Record<string, number>;
+import { ColumnIndices } from "./TableBody";
 
 interface RenderCellsProps {
+  columnIndices: ColumnIndices;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   isWidthDragging: boolean;
@@ -21,6 +20,7 @@ interface RenderCellsProps {
 }
 
 const RenderCells = ({
+  columnIndices,
   headers,
   hiddenColumns,
   isWidthDragging,
@@ -32,38 +32,6 @@ const RenderCells = ({
   const filteredHeaders = headers.filter((header) =>
     displayCell({ hiddenColumns, header, pinned })
   );
-
-  // Calculate column indices up front, similar to gridPositions in TableHeaderSection
-  const columnIndices = useMemo(() => {
-    const indices: ColumnIndices = {};
-    let columnCounter = 1;
-
-    const processHeader = (header: HeaderObject, isFirst: boolean = false): void => {
-      // Only increment for non-first siblings
-      if (!isFirst) {
-        columnCounter++;
-      }
-
-      // Store the column index for this header
-      indices[header.accessor] = columnCounter;
-
-      // Process children recursively
-      if (header.children && header.children.length > 0) {
-        header.children
-          .filter((child) => displayCell({ hiddenColumns, header: child, pinned }))
-          .forEach((child, i) => {
-            processHeader(child, i === 0);
-          });
-      }
-    };
-
-    // Process all top-level headers
-    filteredHeaders.forEach((header, i) => {
-      processHeader(header, i === 0);
-    });
-
-    return indices;
-  }, [filteredHeaders, hiddenColumns, pinned]);
 
   return (
     <Animate isBody pauseAnimation={isWidthDragging} rowIndex={rowIndex + 1}>
