@@ -38,13 +38,15 @@ const TableCell = forwardRef(
   ) => {
     // Get shared props from context
     const {
+      collapseIcon,
       draggedHeaderRef,
+      expandIcon,
+      handleMouseDown,
+      handleMouseOver,
       headersRef,
       hoveredHeaderRef,
       onCellEdit,
       onTableHeaderDragEnd,
-      handleMouseDown,
-      handleMouseOver,
     } = useTableContext();
 
     const { depth, row } = visibleRow;
@@ -147,14 +149,14 @@ const TableCell = forwardRef(
               className="st-sort-icon-container"
               onClick={() => onExpandRowClick(row.rowMeta.rowId)}
             >
-              <AngleDownIcon className="st-sort-icon" />
+              {collapseIcon}
             </div>
           ) : (
             <div
               className="st-sort-icon-container"
               onClick={() => onExpandRowClick(row.rowMeta.rowId)}
             >
-              <AngleRightIcon className="st-sort-icon" />
+              {expandIcon}
             </div>
           )
         ) : null}

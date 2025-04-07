@@ -36,6 +36,7 @@ enum ColumnEditorPosition {
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
+  collapseIcon?: ReactNode; // Collapse icon
   columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
@@ -43,6 +44,7 @@ interface SimpleTableProps {
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
+  expandIcon?: ReactNode; // Expand icon
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -65,13 +67,15 @@ interface SimpleTableProps {
 
 const SimpleTable = ({
   allowAnimations = false,
+  collapseIcon = <AngleDownIcon className="st-sort-icon" />,
   columnEditorPosition = ColumnEditorPosition.Right,
   columnEditorText = "Columns",
+  columnReordering = false,
   columnResizing = false,
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
-  columnReordering = false,
+  expandIcon = <AngleRightIcon className="st-sort-icon" />,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
@@ -265,10 +269,12 @@ const SimpleTable = ({
     <TableProvider
       value={{
         allowAnimations,
+        collapseIcon,
         columnReordering,
         columnResizing,
         draggedHeaderRef,
         editColumns,
+        expandIcon,
         forceUpdate,
         getBorderClass,
         handleMouseDown,

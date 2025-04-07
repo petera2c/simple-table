@@ -6,10 +6,12 @@ import Cell from "../types/Cell";
 interface TableContextType {
   // Stable values that don't change frequently
   allowAnimations?: boolean;
+  collapseIcon?: ReactNode;
   columnReordering: boolean;
   columnResizing: boolean;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   editColumns?: boolean;
+  expandIcon?: ReactNode;
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
   handleMouseDown: (cell: Cell) => void;
