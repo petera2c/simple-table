@@ -191,6 +191,8 @@ const TableHeaderCell = forwardRef(
               forceUpdate,
               header,
               headersRef,
+              gridColumnEnd,
+              gridColumnStart,
               setIsWidthDragging,
               startWidth:
                 typeof ref === "object" && ref !== null && "current" in ref

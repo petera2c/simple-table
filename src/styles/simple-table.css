@@ -306,7 +306,7 @@
 
   --st-border-color: var(--st-gray-300);
   --st-odd-row-background-color: var(--st-white);
-  --st-even-row-background-color: var(--st-white);
+  --st-even-row-background-color: var(--st-slate-50);
   --st-header-background-color: var(--st-white);
   --st-dragging-background-color: var(--st-gray-200);
   --st-selected-cell-background-color: var(--st-blue-200);

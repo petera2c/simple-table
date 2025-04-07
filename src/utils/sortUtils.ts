@@ -295,7 +295,8 @@ export const handleResizeStart = ({
   forceUpdate,
   header,
   headersRef,
-  reverse,
+  gridColumnEnd,
+  gridColumnStart,
   setIsWidthDragging,
   startWidth,
 }: {
@@ -304,7 +305,8 @@ export const handleResizeStart = ({
   forceUpdate: () => void;
   header: HeaderObject;
   headersRef: React.RefObject<HeaderObject[]>;
-  reverse?: boolean;
+  gridColumnEnd: number;
+  gridColumnStart: number;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   startWidth: number;
 }) => {
@@ -313,11 +315,63 @@ export const handleResizeStart = ({
   const startX = event.clientX;
   if (!header) return;
 
-  const handleMouseMove = (event: any) => {
-    const newWidth = Math.max(startWidth + (event.clientX - startX), 40);
+  // Get the minimum width for this header (default to 40px)
+  const minWidth = typeof header.minWidth === "number" ? header.minWidth : 40;
 
-    if (!header || !headersRef.current) return;
-    headersRef.current[colIndex].width = newWidth;
+  // Function to find all leaf headers under a parent
+  const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
+    if (!header.children || header.children.length === 0) {
+      return [header]; // This is a leaf node
+    }
+
+    // Collect all leaf nodes from children
+    return header.children.flatMap((child) => findLeafHeaders(child));
+  };
+
+  // Get all leaf headers if this is a parent header
+  const isParentHeader = gridColumnEnd - gridColumnStart > 1;
+  const leafHeaders = isParentHeader ? findLeafHeaders(header) : [header];
+
+  // Store original widths for reference
+  const originalWidths = leafHeaders.map((leafHeader) => {
+    const width =
+      typeof leafHeader.width === "number"
+        ? leafHeader.width
+        : parseInt(String(leafHeader.width), 10) || 150;
+    return width;
+  });
+
+  // Calculate total original width
+  const totalOriginalWidth = originalWidths.reduce((sum, width) => sum + width, 0);
+
+  const handleMouseMove = (event: any) => {
+    // Calculate the width delta (how much the width has changed)
+    const delta = event.clientX - startX;
+
+    if (isParentHeader && leafHeaders.length > 1) {
+      // Calculate new total width with minimum constraints
+      const newTotalWidth = Math.max(totalOriginalWidth + delta, leafHeaders.length * minWidth);
+
+      // Distribute width equally among all child columns
+      const equalWidth = Math.max(Math.floor(newTotalWidth / leafHeaders.length), minWidth);
+
+      // Set equal width for all columns except the last one
+      for (let i = 0; i < leafHeaders.length - 1; i++) {
+        leafHeaders[i].width = equalWidth;
+      }
+
+      // Calculate the remaining width for the last column to account for rounding errors
+      const allocatedWidth = equalWidth * (leafHeaders.length - 1);
+      const lastColumnWidth = Math.max(newTotalWidth - allocatedWidth, minWidth);
+
+      // Set the last column width
+      leafHeaders[leafHeaders.length - 1].width = lastColumnWidth;
+    } else {
+      // For leaf headers or parents with only one leaf, just adjust the width directly
+      const newWidth = Math.max(startWidth + delta, minWidth);
+      header.width = newWidth;
+    }
+
     forceUpdate();
   };
 

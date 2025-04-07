@@ -1,19 +1,19 @@
 import { calculateSeparatorTopPosition } from "../../utils/infiniteScrollUtils";
 
 const TableRowSeparator = ({
-  lastGroupRow,
+  isExpandedGroupSeparator,
   position,
   rowHeight,
   templateColumns,
 }: {
-  lastGroupRow?: boolean;
+  isExpandedGroupSeparator?: boolean;
   position: number;
   rowHeight: number;
   templateColumns: string;
 }) => {
   return (
     <div
-      className={`st-row-separator ${lastGroupRow ? "st-last-group-row" : ""}`}
+      className={`st-row-separator ${isExpandedGroupSeparator ? "st-last-group-row" : ""}`}
       style={{
         display: "grid",
         gridTemplateColumns: templateColumns,

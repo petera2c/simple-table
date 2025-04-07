@@ -55,6 +55,7 @@ const TableSection = ({
     >
       {visibleRows.map((visibleRow, index) => {
         const lastGroupRow = Boolean(visibleRow.row.rowMeta?.children?.length);
+        const previousRowIsExpanded = visibleRows[index - 1]?.row.rowMeta?.isExpanded;
         return (
           <Fragment key={index}>
             <TableRow
@@ -72,7 +73,8 @@ const TableSection = ({
             />
             {index !== 0 && (
               <TableRowSeparator
-                lastGroupRow={lastGroupRow}
+                // Is last row group and it is open
+                isExpandedGroupSeparator={lastGroupRow && previousRowIsExpanded}
                 position={visibleRow.position}
                 rowHeight={rowHeight}
                 templateColumns={templateColumns}
