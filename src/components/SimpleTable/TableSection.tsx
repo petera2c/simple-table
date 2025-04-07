@@ -74,7 +74,7 @@ const TableSection = ({
             {index !== 0 && (
               <TableRowSeparator
                 // Is last row group and it is open
-                isExpandedGroupSeparator={lastGroupRow && previousRowIsExpanded}
+                displayStrongBorder={lastGroupRow && previousRowIsExpanded}
                 position={visibleRow.position}
                 rowHeight={rowHeight}
                 templateColumns={templateColumns}

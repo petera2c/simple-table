@@ -62,10 +62,22 @@ export const getVisibleRows = ({
   return visibleRows;
 };
 
-export const calculateSeparatorTopPosition = ({ position, rowHeight }: { position: number; rowHeight: number }) => {
+export const calculateSeparatorTopPosition = ({
+  position,
+  rowHeight,
+}: {
+  position: number;
+  rowHeight: number;
+}) => {
   return position * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 };
 
-export const calculateRowTopPosition = ({ position, rowHeight }: { position: number; rowHeight: number }) => {
+export const calculateRowTopPosition = ({
+  position,
+  rowHeight,
+}: {
+  position: number;
+  rowHeight: number;
+}) => {
   return position * (rowHeight + ROW_SEPARATOR_WIDTH);
 };
