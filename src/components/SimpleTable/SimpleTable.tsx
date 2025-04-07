@@ -26,6 +26,7 @@ import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
 import { getVisibleRows } from "../../utils/infiniteScrollUtils";
+import { TableProvider } from "../../context/TableContext";
 
 // Create enum for consistent values
 enum ColumnEditorPosition {
@@ -98,12 +99,6 @@ const SimpleTable = ({
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
-  const headerContainerRef = useRef<HTMLDivElement>(null);
-  const centerHeaderRef = useRef<HTMLDivElement>(null);
-  const pinnedLeftHeaderRef = useRef<HTMLDivElement>(null);
-  const pinnedLeftTemplateColumns = useRef<string[]>([]);
-  const pinnedRightHeaderRef = useRef<HTMLDivElement>(null);
-  const pinnedRightTemplateColumns = useRef<string[]>([]);
 
   // Local state
   const [isWidthDragging, setIsWidthDragging] = useState(false);
@@ -189,9 +184,9 @@ const SimpleTable = ({
     isInitialFocusedCell,
     setSelectedCells,
     setSelectedColumns,
-    selectedColumns,
     lastSelectedColumnIndex,
     selectColumns,
+    setInitialFocusedCell,
   } = useSelection({
     selectableCells,
     headers: headersRef.current,
@@ -268,79 +263,90 @@ const SimpleTable = ({
   }, []);
 
   return (
-    <div className={`simple-table-root st-wrapper theme-${theme}`} style={height ? { height } : {}}>
-      <div className="st-table-wrapper-container">
-        <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-          <TableContent
-            allowAnimations={allowAnimations}
-            columnReordering={columnReordering}
-            columnResizing={columnResizing}
-            currentRows={currentRows}
-            draggedHeaderRef={draggedHeaderRef}
-            editColumns={editColumns}
-            flattenedRows={flattenedRows}
-            forceUpdate={forceUpdate}
-            getBorderClass={getBorderClass}
-            handleMouseDown={handleMouseDown}
-            handleMouseOver={handleMouseOver}
-            headersRef={headersRef}
-            hiddenColumns={hiddenColumns}
-            hoveredHeaderRef={hoveredHeaderRef}
-            isInitialFocusedCell={isInitialFocusedCell}
-            isSelected={isSelected}
-            isWidthDragging={isWidthDragging}
-            lastSelectedColumnIndex={lastSelectedColumnIndex}
+    <TableProvider
+      value={{
+        allowAnimations,
+        columnReordering,
+        columnResizing,
+        draggedHeaderRef,
+        editColumns,
+        forceUpdate,
+        getBorderClass,
+        handleMouseDown,
+        handleMouseOver,
+        headersRef,
+        hiddenColumns,
+        hoveredHeaderRef,
+        isInitialFocusedCell,
+        isSelected,
+        mainBodyRef,
+        onCellEdit,
+        onColumnOrderChange,
+        onSort,
+        onTableHeaderDragEnd,
+        pinnedLeftRef,
+        pinnedRightRef,
+        rowHeight,
+        scrollbarWidth,
+        selectColumns,
+        selectableColumns,
+        setInitialFocusedCell,
+        setIsWidthDragging,
+        setSelectedCells,
+        setSelectedColumns,
+        shouldPaginate,
+        sortDownIcon,
+        sortUpIcon,
+        tableBodyContainerRef,
+      }}
+    >
+      <div
+        className={`simple-table-root st-wrapper theme-${theme}`}
+        style={height ? { height } : {}}
+      >
+        <div className="st-table-wrapper-container">
+          <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+            <TableContent
+              currentRows={currentRows}
+              flattenedRows={flattenedRows}
+              isWidthDragging={isWidthDragging}
+              lastSelectedColumnIndex={lastSelectedColumnIndex}
+              setFlattenedRows={setFlattenedRows}
+              setScrollTop={setScrollTop}
+              setSelectedColumns={setSelectedColumns}
+              sort={sort}
+              visibleRows={visibleRows}
+            />
+            <TableColumnEditor
+              columnEditorText={columnEditorText}
+              editColumns={editColumns}
+              editColumnsInitOpen={editColumnsInitOpen}
+              headers={headersRef.current}
+              hiddenColumns={hiddenColumns}
+              position={columnEditorPosition}
+              setHiddenColumns={setHiddenColumns}
+            />
+          </div>
+          <TableHorizontalScrollbar
             mainBodyRef={mainBodyRef}
-            onCellEdit={onCellEdit}
-            onColumnOrderChange={onColumnOrderChange}
-            onSort={onSort}
-            onTableHeaderDragEnd={onTableHeaderDragEnd}
             pinnedLeftRef={pinnedLeftRef}
             pinnedRightRef={pinnedRightRef}
-            rowHeight={rowHeight}
-            scrollbarWidth={scrollbarWidth}
-            selectableColumns={selectableColumns}
-            selectColumns={selectColumns}
-            setFlattenedRows={setFlattenedRows}
-            setIsWidthDragging={setIsWidthDragging}
-            setScrollTop={setScrollTop}
-            setSelectedColumns={setSelectedColumns}
-            shouldPaginate={shouldPaginate}
-            sort={sort}
-            sortDownIcon={sortDownIcon}
-            sortUpIcon={sortUpIcon}
-            tableBodyContainerRef={tableBodyContainerRef}
-            visibleRows={visibleRows}
-          />
-          <TableColumnEditor
-            columnEditorText={columnEditorText}
-            editColumns={editColumns}
-            editColumnsInitOpen={editColumnsInitOpen}
-            headers={headersRef.current}
-            hiddenColumns={hiddenColumns}
-            position={columnEditorPosition}
-            setHiddenColumns={setHiddenColumns}
+            tableContentWidth={tableContentWidth}
           />
         </div>
-        <TableHorizontalScrollbar
-          mainBodyRef={mainBodyRef}
-          pinnedLeftRef={pinnedLeftRef}
-          pinnedRightRef={pinnedRightRef}
-          tableContentWidth={tableContentWidth}
+        <TableFooter
+          currentPage={currentPage}
+          hideFooter={hideFooter}
+          nextIcon={nextIcon}
+          onPageChange={setCurrentPage}
+          onNextPage={onNextPage}
+          onPreviousPage={onPreviousPage}
+          prevIcon={prevIcon}
+          shouldPaginate={shouldPaginate}
+          totalPages={totalPages || Math.ceil(sortedRows.length / rowsPerPage)}
         />
       </div>
-      <TableFooter
-        currentPage={currentPage}
-        hideFooter={hideFooter}
-        nextIcon={nextIcon}
-        onPageChange={setCurrentPage}
-        onNextPage={onNextPage}
-        onPreviousPage={onPreviousPage}
-        prevIcon={prevIcon}
-        shouldPaginate={shouldPaginate}
-        totalPages={totalPages || Math.ceil(sortedRows.length / rowsPerPage)}
-      />
-    </div>
+    </TableProvider>
   );
 };
 

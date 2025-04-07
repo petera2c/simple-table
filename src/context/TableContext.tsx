@@ -1,32 +1,15 @@
-import { Dispatch, ReactNode, RefObject, SetStateAction } from "react";
-import HeaderObject from "./HeaderObject";
-import Row from "./Row";
-import SortConfig from "./SortConfig";
-import Cell from "./Cell";
-import VisibleRow from "./VisibleRow";
-import OnSortProps from "./OnSortProps";
+import { createContext, useContext, ReactNode, RefObject, Dispatch, SetStateAction } from "react";
+import HeaderObject from "../types/HeaderObject";
+import OnSortProps from "../types/OnSortProps";
+import Cell from "../types/Cell";
 
-// Common properties to omit from both TableHeaderProps and TableBodyProps
-type OmittedTableProps =
-  | "centerHeaderRef"
-  | "headerContainerRef"
-  | "mainTemplateColumns"
-  | "pinnedLeftColumns"
-  | "pinnedLeftHeaderRef"
-  | "pinnedLeftTemplateColumns"
-  | "pinnedRightColumns"
-  | "pinnedRightHeaderRef"
-  | "pinnedRightTemplateColumns"
-  | "headers";
-
-type TableContentProps = {
+interface TableContextType {
+  // Stable values that don't change frequently
   allowAnimations?: boolean;
   columnReordering: boolean;
   columnResizing: boolean;
-  currentRows: Row[];
   draggedHeaderRef: RefObject<HeaderObject | null>;
   editColumns?: boolean;
-  flattenedRows: Row[];
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
   handleMouseDown: (cell: Cell) => void;
@@ -36,8 +19,6 @@ type TableContentProps = {
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isSelected: (cell: Cell) => boolean;
-  isWidthDragging: boolean;
-  lastSelectedColumnIndex?: number | null;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   onCellEdit?: (props: any) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
@@ -47,18 +28,34 @@ type TableContentProps = {
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   scrollbarWidth: number;
-  selectableColumns: boolean;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
-  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
+  selectableColumns: boolean;
+  setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
-  setScrollTop: Dispatch<SetStateAction<number>>;
+  setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   shouldPaginate: boolean;
-  sort: SortConfig | null;
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
-  visibleRows: VisibleRow[];
+}
+
+export const TableContext = createContext<TableContextType | undefined>(undefined);
+
+export const TableProvider = ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: TableContextType;
+}) => {
+  return <TableContext.Provider value={value}>{children}</TableContext.Provider>;
 };
 
-export default TableContentProps;
+export const useTableContext = () => {
+  const context = useContext(TableContext);
+  if (context === undefined) {
+    throw new Error("useTableContext must be used within a TableProvider");
+  }
+  return context;
+};

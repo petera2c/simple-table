@@ -1,8 +1,8 @@
-import { createRef, Dispatch, Fragment, SetStateAction, useMemo } from "react";
+import { createRef, Fragment, useMemo } from "react";
 import { Pinned } from "../../types/Pinned";
 import { displayCell } from "../../utils/cellUtils";
 import Animate from "../Animate";
-import TableHeaderCell, { TableHeaderCellProps } from "./TableHeaderCell";
+import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
 
@@ -16,39 +16,31 @@ type GridPosition = {
   children?: Record<string, GridPosition>;
 };
 
+// Props for RecursiveTableHeaderRender
+interface RecursiveRenderProps {
+  depth: number;
+  header: HeaderObject;
+  hiddenColumns: Record<string, boolean>;
+  maxDepth: number;
+  pinned?: Pinned;
+  gridPosition: GridPosition;
+  reverse?: boolean;
+  sort: TableHeaderSectionProps["sort"];
+}
+
 const RecursiveTableHeaderRender = ({
   depth,
   header,
   hiddenColumns,
-  index,
   maxDepth,
   pinned,
   gridPosition,
-  lastSelectedColumnIndex,
-  ...props
-}: Omit<
-  TableHeaderCellProps,
-  "ref" | "gridColumnStart" | "gridColumnEnd" | "gridRowStart" | "gridRowEnd" | "colIndex"
-> & {
-  depth: number;
-  header: HeaderObject;
-  hiddenColumns: Record<string, boolean>;
-  index: number;
-  maxDepth: number;
-  pinned?: Pinned;
-  gridPosition: GridPosition;
-  lastSelectedColumnIndex?: number | null;
-}) => {
+  reverse,
+  sort,
+}: RecursiveRenderProps) => {
   if (!displayCell({ hiddenColumns, header, pinned })) return null;
 
   const { gridColumnStart, gridColumnEnd, gridRowStart, gridRowEnd, colIndex } = gridPosition;
-
-  const gridProps = {
-    gridColumnStart,
-    gridColumnEnd,
-    gridRowStart,
-    gridRowEnd,
-  };
 
   if (header.children) {
     const children = header.children.filter((child) =>
@@ -57,11 +49,15 @@ const RecursiveTableHeaderRender = ({
     return (
       <Fragment>
         <TableHeaderCell
-          {...props}
-          {...gridProps}
           colIndex={colIndex}
+          gridColumnEnd={gridColumnEnd}
+          gridColumnStart={gridColumnStart}
+          gridRowEnd={gridRowEnd}
+          gridRowStart={gridRowStart}
           header={header}
           ref={createRef()}
+          reverse={reverse}
+          sort={sort}
         />
         {children.map((child, childIndex) => {
           // Find the grid position for this child
@@ -70,15 +66,15 @@ const RecursiveTableHeaderRender = ({
 
           return (
             <RecursiveTableHeaderRender
-              {...props}
               depth={depth + 1}
               gridPosition={childGridPosition}
               header={child}
               hiddenColumns={hiddenColumns}
-              index={childIndex}
               key={child.accessor}
               maxDepth={maxDepth}
-              lastSelectedColumnIndex={lastSelectedColumnIndex}
+              pinned={pinned}
+              reverse={reverse}
+              sort={sort}
             />
           );
         })}
@@ -88,44 +84,29 @@ const RecursiveTableHeaderRender = ({
 
   return (
     <TableHeaderCell
-      {...props}
-      {...gridProps}
       colIndex={colIndex}
+      gridColumnEnd={gridColumnEnd}
+      gridColumnStart={gridColumnStart}
+      gridRowEnd={gridRowEnd}
+      gridRowStart={gridRowStart}
       header={header}
       ref={createRef()}
+      reverse={reverse}
+      sort={sort}
     />
   );
 };
 
 const TableHeaderSection = ({
-  allowAnimations,
-  columnReordering,
-  columnResizing,
-  currentRows,
-  draggedHeaderRef,
-  forceUpdate,
   gridTemplateColumns,
   handleScroll,
   headersRef,
   hiddenColumns,
-  hoveredHeaderRef,
   isWidthDragging,
-  lastSelectedColumnIndex,
-  mainBodyRef,
   maxDepth,
-  onColumnOrderChange,
-  onSort,
-  onTableHeaderDragEnd,
   pinned,
-  rowHeight,
   sectionRef,
-  selectableColumns,
-  selectColumns,
-  setIsWidthDragging,
-  setSelectedColumns,
   sort,
-  sortDownIcon,
-  sortUpIcon,
 }: TableHeaderSectionProps) => {
   const headers = headersRef.current.filter((header) =>
     displayCell({ hiddenColumns, header, pinned })
@@ -201,48 +182,22 @@ const TableHeaderSection = ({
         gridTemplateColumns,
       }}
     >
-      <Animate
-        allowAnimations={allowAnimations}
-        draggedHeaderRef={draggedHeaderRef}
-        headersRef={headersRef}
-        mainBodyRef={mainBodyRef}
-        pauseAnimation={isWidthDragging}
-        rowIndex={0}
-      >
-        {headers.map((header, index) => {
+      <Animate rowIndex={0}>
+        {headers.map((header) => {
           const headerGridPosition = gridPositions[header.accessor];
           if (!headerGridPosition) return null;
 
           return (
             <RecursiveTableHeaderRender
-              columnReordering={columnReordering}
-              columnResizing={columnResizing}
-              currentRows={currentRows}
               depth={1}
-              draggedHeaderRef={draggedHeaderRef}
-              forceUpdate={forceUpdate}
               gridPosition={headerGridPosition}
               header={header}
-              headersRef={headersRef}
               hiddenColumns={hiddenColumns}
-              hoveredHeaderRef={hoveredHeaderRef}
-              index={index}
               key={header.accessor}
-              lastSelectedColumnIndex={lastSelectedColumnIndex}
               maxDepth={maxDepth}
-              onColumnOrderChange={onColumnOrderChange}
-              onSort={onSort}
-              onTableHeaderDragEnd={onTableHeaderDragEnd}
               pinned={pinned}
               reverse={pinned === "right"}
-              rowHeight={rowHeight}
-              selectableColumns={selectableColumns}
-              selectColumns={selectColumns}
-              setIsWidthDragging={setIsWidthDragging}
-              setSelectedColumns={setSelectedColumns}
               sort={sort}
-              sortDownIcon={sortDownIcon}
-              sortUpIcon={sortUpIcon}
             />
           );
         })}

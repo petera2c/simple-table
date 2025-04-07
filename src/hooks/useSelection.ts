@@ -275,8 +275,13 @@ const useSelection = ({
       const rightCell = { colIndex: colIndex + 1, rowIndex, rowId };
 
       // Check if neighboring cells are selected
-      if (!isSelected(topCell)) classes.push("st-selected-top-border");
-      if (!isSelected(bottomCell)) classes.push("st-selected-bottom-border");
+      if (!isSelected(topCell) || (selectedColumns.has(colIndex) && rowIndex === 0))
+        classes.push("st-selected-top-border");
+      if (
+        !isSelected(bottomCell) ||
+        (selectedColumns.has(colIndex) && rowIndex === visibleRows.length - 1)
+      )
+        classes.push("st-selected-bottom-border");
       if (!isSelected(leftCell)) classes.push("st-selected-left-border");
       if (!isSelected(rightCell)) classes.push("st-selected-right-border");
 
@@ -300,12 +305,13 @@ const useSelection = ({
     handleMouseUp,
     isInitialFocusedCell,
     isSelected,
-    selectedCells,
-    setSelectedCells,
-    selectedColumns,
-    setSelectedColumns,
     lastSelectedColumnIndex,
     selectColumns,
+    selectedCells,
+    selectedColumns,
+    setInitialFocusedCell,
+    setSelectedCells,
+    setSelectedColumns,
   };
 };
 

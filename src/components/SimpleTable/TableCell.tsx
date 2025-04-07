@@ -8,28 +8,44 @@ import { getCellId } from "../../utils/cellUtils";
 import TableCellProps from "../../types/TableCellProps";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
+import { useTableContext } from "../../context/TableContext";
+
+// Define minimal props that are specific to each cell
+interface MinimalCellProps {
+  colIndex: number;
+  header: TableCellProps["header"];
+  onExpandRowClick: TableCellProps["onExpandRowClick"];
+  rowIndex: number;
+  visibleRow: TableCellProps["visibleRow"];
+}
 
 const TableCell = forwardRef(
   (
-    {
-      borderClass,
-      colIndex,
-      draggedHeaderRef,
-      header,
-      headersRef,
-      hoveredHeaderRef,
-      isSelected,
-      isInitialFocusedCell,
-      onCellEdit,
-      onExpandRowClick,
-      onMouseDown,
-      onMouseOver,
-      onTableHeaderDragEnd,
-      rowIndex,
-      visibleRow,
-    }: TableCellProps,
+    { colIndex, header, onExpandRowClick, rowIndex, visibleRow }: MinimalCellProps,
     ref: Ref<HTMLDivElement>
   ) => {
+    // Get shared props from context
+    const {
+      draggedHeaderRef,
+      headersRef,
+      hoveredHeaderRef,
+      onCellEdit,
+      onTableHeaderDragEnd,
+      handleMouseDown,
+      handleMouseOver,
+      getBorderClass,
+      isSelected,
+      isInitialFocusedCell,
+    } = useTableContext();
+
+    const borderClass = getBorderClass({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId });
+    const isHighlighted = isSelected({ rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId });
+    const isInitialFocused = isInitialFocusedCell({
+      rowIndex,
+      colIndex,
+      rowId: visibleRow.row.rowMeta.rowId,
+    });
+
     const { depth, row } = visibleRow;
     // Local state
     const [localContent, setLocalContent] = useState<CellValue>(
@@ -56,8 +72,8 @@ const TableCell = forwardRef(
     const cellClassName = `st-cell ${
       depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
     } ${
-      isSelected
-        ? isInitialFocusedCell
+      isHighlighted
+        ? isInitialFocused
           ? `st-cell-selected-first ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
@@ -106,8 +122,8 @@ const TableCell = forwardRef(
         className={cellClassName}
         id={cellId}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
-        onMouseDown={() => onMouseDown({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
-        onMouseOver={() => onMouseOver({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
+        onMouseDown={() => handleMouseDown({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
+        onMouseOver={() => handleMouseOver({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
         onDragOver={(event) =>
           throttle({
             callback: handleDragOver,
@@ -119,7 +135,7 @@ const TableCell = forwardRef(
         ref={ref}
         data-row-index={rowIndex}
         data-col-index={colIndex}
-        aria-selected={isSelected}
+        aria-selected={isHighlighted}
       >
         {header.expandable && cellHasChildren ? (
           row.rowMeta.isExpanded ? (

@@ -1,29 +1,36 @@
 import { RowId } from "../../types/RowId";
-import TableBodyProps from "../../types/TableBodyProps";
 import VisibleRow from "../../types/VisibleRow";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
 import { Pinned } from "../../types/Pinned";
+import HeaderObject from "../../types/HeaderObject";
 
-const TableRow = ({
-  getNextRowIndex,
-  gridTemplateColumns,
-  index,
-  pinned,
-  props,
-  rowHeight,
-  visibleRow,
-}: {
+// Define just the props needed for RenderCells
+interface TableRowProps {
   getNextRowIndex: () => number;
   gridTemplateColumns: string;
   index: number;
   pinned?: Pinned;
-  props: Omit<TableBodyProps, "currentRows" | "headerContainerRef"> & {
-    onExpandRowClick: (rowId: RowId) => void;
-  };
   rowHeight: number;
   visibleRow: VisibleRow;
-}) => {
+  headers: HeaderObject[];
+  hiddenColumns: Record<string, boolean>;
+  isWidthDragging: boolean;
+  onExpandRowClick: (rowId: RowId) => void;
+}
+
+const TableRow = ({
+  getNextRowIndex,
+  gridTemplateColumns,
+  headers,
+  hiddenColumns,
+  index,
+  isWidthDragging,
+  onExpandRowClick,
+  pinned,
+  rowHeight,
+  visibleRow,
+}: TableRowProps) => {
   const { position } = visibleRow;
   const rowIndex = getNextRowIndex(); // Get the next available index
 
@@ -37,11 +44,14 @@ const TableRow = ({
       }}
     >
       <RenderCells
+        headers={headers}
+        hiddenColumns={hiddenColumns}
+        isWidthDragging={isWidthDragging}
         key={index}
+        onExpandRowClick={onExpandRowClick}
         pinned={pinned}
         rowIndex={rowIndex}
         visibleRow={visibleRow}
-        {...props}
       />
     </div>
   );

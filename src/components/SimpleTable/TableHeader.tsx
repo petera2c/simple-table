@@ -4,45 +4,26 @@ import { displayCell } from "../../utils/cellUtils";
 import useScrollSync from "../../hooks/useScrollSync";
 import HeaderObject from "../../types/HeaderObject";
 import TableHeaderSection from "./TableHeaderSection";
-import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 
 const getHeaderDepth = (header: HeaderObject): number => {
   return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
 };
 
 const TableHeader = ({
-  allowAnimations,
   centerHeaderRef,
-  columnResizing,
-  currentRows,
-  columnReordering,
-  draggedHeaderRef,
-  forceUpdate,
-  headerContainerRef,
   headersRef,
   hiddenColumns,
-  hoveredHeaderRef,
   isWidthDragging,
-  lastSelectedColumnIndex,
   mainBodyRef,
   mainTemplateColumns,
-  onColumnOrderChange,
-  onSort,
-  onTableHeaderDragEnd,
   pinnedLeftColumns,
   pinnedLeftHeaderRef,
   pinnedLeftTemplateColumns,
   pinnedRightColumns,
   pinnedRightHeaderRef,
   pinnedRightTemplateColumns,
-  rowHeight,
-  selectableColumns,
-  selectColumns,
-  setIsWidthDragging,
-  setSelectedColumns,
+  headerContainerRef,
   sort,
-  sortDownIcon,
-  sortUpIcon,
 }: TableHeaderProps) => {
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, centerHeaderRef);
@@ -66,60 +47,44 @@ const TableHeader = ({
     return { maxDepth };
   }, [headersRef, hiddenColumns]);
 
-  const tableHeaderSectionProps: Omit<
-    TableHeaderSectionProps,
-    "pinned" | "sectionRef" | "gridTemplateColumns"
-  > = {
-    allowAnimations: allowAnimations || false,
-    columnReordering,
-    columnResizing,
-    currentRows,
-    draggedHeaderRef,
-    forceUpdate,
-    handleScroll,
-    headersRef,
-    hiddenColumns,
-    hoveredHeaderRef,
-    isWidthDragging,
-    lastSelectedColumnIndex,
-    mainBodyRef,
-    maxDepth,
-    onColumnOrderChange,
-    onSort,
-    onTableHeaderDragEnd,
-    rowHeight,
-    selectableColumns,
-    selectColumns,
-    setIsWidthDragging,
-    setSelectedColumns,
-    sort,
-    sortDownIcon,
-    sortUpIcon,
-  };
-
   return (
     <div className="st-header-container" ref={headerContainerRef}>
       {pinnedLeftColumns.length > 0 && (
         <TableHeaderSection
-          {...tableHeaderSectionProps}
           gridTemplateColumns={pinnedLeftTemplateColumns}
+          handleScroll={undefined}
+          headersRef={headersRef}
+          hiddenColumns={hiddenColumns}
+          isWidthDragging={isWidthDragging}
+          maxDepth={maxDepth}
           pinned="left"
           sectionRef={pinnedLeftHeaderRef}
+          sort={sort}
         />
       )}
 
       <TableHeaderSection
-        {...tableHeaderSectionProps}
         gridTemplateColumns={mainTemplateColumns}
         handleScroll={handleScroll}
+        headersRef={headersRef}
+        hiddenColumns={hiddenColumns}
+        isWidthDragging={isWidthDragging}
+        maxDepth={maxDepth}
         sectionRef={centerHeaderRef}
+        sort={sort}
       />
+
       {pinnedRightColumns.length > 0 && (
         <TableHeaderSection
-          {...tableHeaderSectionProps}
           gridTemplateColumns={pinnedRightTemplateColumns}
+          handleScroll={undefined}
+          headersRef={headersRef}
+          hiddenColumns={hiddenColumns}
+          isWidthDragging={isWidthDragging}
+          maxDepth={maxDepth}
           pinned="right"
           sectionRef={pinnedRightHeaderRef}
+          sort={sort}
         />
       )}
     </div>

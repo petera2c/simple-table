@@ -1,34 +1,59 @@
-import { useRef } from "react";
+import { useRef, Dispatch, SetStateAction, RefObject } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
-import TableBodyProps from "../../types/TableBodyProps";
 import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
+import { useTableContext } from "../../context/TableContext";
+import VisibleRow from "../../types/VisibleRow";
+import HeaderObject from "../../types/HeaderObject";
 
-const TableBody = (props: TableBodyProps) => {
+// Define props for frequently changing values
+interface TableBodyLocalProps {
+  centerHeaderRef: RefObject<HTMLDivElement | null>;
+  flattenedRows: Row[];
+  headerContainerRef: RefObject<HTMLDivElement | null>;
+  isWidthDragging: boolean;
+  mainTemplateColumns: string;
+  pinnedLeftColumns: HeaderObject[];
+  pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
+  pinnedLeftTemplateColumns: string;
+  pinnedRightColumns: HeaderObject[];
+  pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
+  pinnedRightTemplateColumns: string;
+  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
+  setScrollTop: Dispatch<SetStateAction<number>>;
+  visibleRows: VisibleRow[];
+}
+
+const TableBody = ({
+  centerHeaderRef,
+  flattenedRows,
+  headerContainerRef,
+  isWidthDragging,
+  mainTemplateColumns,
+  pinnedLeftColumns,
+  pinnedLeftHeaderRef,
+  pinnedLeftTemplateColumns,
+  pinnedRightColumns,
+  pinnedRightHeaderRef,
+  pinnedRightTemplateColumns,
+  setFlattenedRows,
+  setScrollTop,
+  visibleRows,
+}: TableBodyLocalProps) => {
+  // Get stable props from context
   const {
-    centerHeaderRef,
-    flattenedRows,
-    headerContainerRef,
-    mainBodyRef,
-    mainTemplateColumns,
-    pinnedLeftColumns,
-    pinnedLeftHeaderRef,
-    pinnedLeftRef,
-    pinnedLeftTemplateColumns,
-    pinnedRightColumns,
-    pinnedRightHeaderRef,
-    pinnedRightRef,
-    pinnedRightTemplateColumns,
     rowHeight,
     scrollbarWidth,
-    setFlattenedRows,
-    setScrollTop,
+    mainBodyRef,
+    pinnedLeftRef,
+    pinnedRightRef,
     tableBodyContainerRef,
-    visibleRows,
-  } = props;
+    hiddenColumns,
+    headersRef,
+  } = useTableContext();
 
   useScrollbarVisibility({
     headerContainerRef,
@@ -77,41 +102,45 @@ const TableBody = (props: TableBodyProps) => {
     ? pinnedRightHeaderRef.current?.clientWidth + 1
     : 0;
 
+  // Create all props needed for TableSection
+  const commonProps = {
+    headerContainerRef,
+    headers: headersRef.current,
+    hiddenColumns,
+    isWidthDragging,
+    rowHeight,
+    visibleRows,
+  };
+
   return (
     <div className="st-table-body-container" ref={tableBodyContainerRef} onScroll={handleScroll}>
       {pinnedLeftColumns.length > 0 && (
         <TableSection
-          {...props}
+          {...commonProps}
           onExpandRowClick={toggleRow}
           pinned="left"
-          rowHeight={rowHeight}
           sectionRef={pinnedLeftRef}
           templateColumns={pinnedLeftTemplateColumns}
           totalHeight={totalHeight}
-          visibleRows={visibleRows}
           width={leftWidth}
         />
       )}
       <TableSection
-        {...props}
+        {...commonProps}
         onExpandRowClick={toggleRow}
-        rowHeight={rowHeight}
         sectionRef={mainBodyRef}
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
-        visibleRows={visibleRows}
         width={centerWidth}
       />
       {pinnedRightColumns.length > 0 && (
         <TableSection
-          {...props}
+          {...commonProps}
           onExpandRowClick={toggleRow}
           pinned="right"
-          rowHeight={rowHeight}
           sectionRef={pinnedRightRef}
           templateColumns={pinnedRightTemplateColumns}
           totalHeight={totalHeight}
-          visibleRows={visibleRows}
           width={rightWidth}
         />
       )}

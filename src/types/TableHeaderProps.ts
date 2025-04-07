@@ -1,43 +1,22 @@
-import { Dispatch, ReactNode, RefObject, SetStateAction } from "react";
+import { RefObject } from "react";
 import SortConfig from "./SortConfig";
-import Row from "./Row";
-import SharedTableProps from "./SharedTableProps";
-import OnSortProps from "./OnSortProps";
 import HeaderObject from "./HeaderObject";
 
 type TableHeaderProps = {
-  allowAnimations: boolean;
   centerHeaderRef: RefObject<HTMLDivElement | null>;
-  columnReordering: boolean;
-  columnResizing: boolean;
-  currentRows: Row[];
-  draggedHeaderRef: RefObject<HeaderObject | null>;
-  forceUpdate: () => void;
   headerContainerRef: RefObject<HTMLDivElement | null>;
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
-  hoveredHeaderRef: RefObject<HeaderObject | null>;
   isWidthDragging: boolean;
-  lastSelectedColumnIndex?: number | null;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   mainTemplateColumns: string;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onSort: OnSortProps;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedLeftTemplateColumns: string;
   pinnedRightColumns: HeaderObject[];
   pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedRightTemplateColumns: string;
-  rowHeight: number;
-  selectableColumns: boolean;
-  selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
-  setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
-  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   sort: SortConfig | null;
-  sortDownIcon?: ReactNode;
-  sortUpIcon?: ReactNode;
 };
 
 export default TableHeaderProps;

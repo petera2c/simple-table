@@ -1,8 +1,8 @@
-import React, { useState, useLayoutEffect, useEffect, RefObject, useRef } from "react";
+import React, { useState, useLayoutEffect, useEffect, useRef } from "react";
 import calculateBoundingBoxes from "../helpers/calculateBoundingBoxes";
 import BoundingBox from "../types/BoundingBox";
-import HeaderObject from "../types/HeaderObject";
 import { getCellId } from "../utils/cellUtils";
+import { useTableContext } from "../context/TableContext";
 
 // const MAX_CHANGE = 120;
 // changeInX =
@@ -13,41 +13,25 @@ const ANIMATION_TIME = 400;
 export const TEST_KEY = "productId";
 
 interface AnimateProps {
-  allowHorizontalAnimate?: boolean;
   children: React.ReactNode | React.ReactNode[];
-  draggedHeaderRef?: RefObject<HeaderObject | null>;
-  headersRef: RefObject<HeaderObject[]>;
   isBody?: boolean;
-  mainBodyRef: RefObject<HTMLDivElement | null>;
   pauseAnimation?: boolean;
   rowIndex: number;
 }
 
-const AnimateWrapper = ({
-  allowAnimations,
-  children,
-  ...props
-}: AnimateProps & {
-  allowAnimations: boolean;
-}) => {
+const AnimateWrapper = ({ children, ...props }: AnimateProps) => {
+  const { allowAnimations } = useTableContext();
   if (!allowAnimations) {
     return <>{children}</>;
   }
   return <Animate {...props}>{children}</Animate>;
 };
 
-const Animate = ({
-  allowHorizontalAnimate = true,
-  children,
-  draggedHeaderRef,
-  headersRef,
-  isBody,
-  mainBodyRef,
-  pauseAnimation,
-  rowIndex,
-}: AnimateProps) => {
+const Animate = ({ children, isBody, pauseAnimation, rowIndex }: AnimateProps) => {
   // Refs
   const isScrolling = useRef(false);
+
+  const { draggedHeaderRef, headersRef, mainBodyRef, shouldPaginate } = useTableContext();
 
   // Local state
   const [boundingBox, setBoundingBox] = useState<{
@@ -113,7 +97,7 @@ const Animate = ({
         if (!prevBox || !currentBox) return;
 
         let changeInX = prevBox.left - currentBox.left;
-        let changeInY = !allowHorizontalAnimate ? prevBox.top - currentBox.top : 0;
+        let changeInY = !shouldPaginate ? prevBox.top - currentBox.top : 0;
 
         const absoluteChangeInX = Math.abs(changeInX);
         const absoluteChangeInY = Math.abs(changeInY);
@@ -131,7 +115,15 @@ const Animate = ({
         }
       });
     }
-  }, [allowHorizontalAnimate, boundingBox, currentHeaders, isBody, pauseAnimation, prevBoundingBox, rowIndex]);
+  }, [
+    boundingBox,
+    currentHeaders,
+    isBody,
+    pauseAnimation,
+    prevBoundingBox,
+    rowIndex,
+    shouldPaginate,
+  ]);
 
   return <>{children}</>;
 };

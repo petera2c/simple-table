@@ -1,24 +1,16 @@
 import { Fragment, RefObject, useEffect, useRef } from "react";
-import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "./TableRow";
 import VisibleRow from "../../types/VisibleRow";
 import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
 import { Pinned } from "../../types/Pinned";
+import HeaderObject from "../../types/HeaderObject";
 
-const TableSection = ({
-  headerContainerRef,
-  onExpandRowClick,
-  pinned,
-  rowHeight,
-  sectionRef,
-  templateColumns,
-  totalHeight,
-  visibleRows,
-  width,
-  ...props
-}: {
+interface TableSectionProps {
   headerContainerRef: RefObject<HTMLDivElement | null>;
+  headers: HeaderObject[];
+  hiddenColumns: Record<string, boolean>;
+  isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowHeight: number;
@@ -27,7 +19,22 @@ const TableSection = ({
   totalHeight: number;
   visibleRows: VisibleRow[];
   width?: number;
-} & Omit<TableBodyProps, "currentRows">) => {
+}
+
+const TableSection = ({
+  headerContainerRef,
+  headers,
+  hiddenColumns,
+  isWidthDragging,
+  onExpandRowClick,
+  pinned,
+  rowHeight,
+  sectionRef,
+  templateColumns,
+  totalHeight,
+  visibleRows,
+  width,
+}: TableSectionProps) => {
   const className = pinned ? `st-table-body-pinned-${pinned}` : "st-table-body-main";
 
   const indexCounter = useRef(0); // Persistent counter across renders
@@ -58,14 +65,12 @@ const TableSection = ({
             <TableRow
               getNextRowIndex={getNextRowIndex}
               gridTemplateColumns={templateColumns}
+              headers={headers}
+              hiddenColumns={hiddenColumns}
               index={index}
+              isWidthDragging={isWidthDragging}
+              onExpandRowClick={onExpandRowClick}
               pinned={pinned}
-              props={{
-                ...props,
-                onExpandRowClick,
-                rowHeight,
-                visibleRows,
-              }}
               rowHeight={rowHeight}
               visibleRow={visibleRow}
             />

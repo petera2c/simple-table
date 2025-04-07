@@ -1,88 +1,62 @@
-import {
-  forwardRef,
-  SetStateAction,
-  Dispatch,
-  useState,
-  ReactNode,
-  DragEvent,
-  useEffect,
-  ForwardedRef,
-  MouseEvent,
-  RefObject,
-} from "react";
+import { forwardRef, useState, DragEvent, useEffect, ForwardedRef, MouseEvent } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
-import OnSortProps from "../../types/OnSortProps";
-import Row from "../../types/Row";
 import { handleResizeStart } from "../../utils/sortUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
-import { createSetString } from "../../hooks/useSelection";
 import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
+import { useTableContext } from "../../context/TableContext";
 
-export interface TableHeaderCellProps {
+// Define minimal props that are specific to each header cell
+export interface MinimalHeaderCellProps {
   colIndex: number;
-  columnReordering: boolean;
-  columnResizing: boolean;
-  currentRows: Row[];
-  draggedHeaderRef: RefObject<HeaderObject | null>;
-  forceUpdate: () => void;
   gridColumnEnd: number;
   gridColumnStart: number;
   gridRowEnd: number;
   gridRowStart: number;
   header: HeaderObject;
-  headersRef: RefObject<HeaderObject[]>;
-  hoveredHeaderRef: RefObject<HeaderObject | null>;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onSort: OnSortProps;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   reverse?: boolean;
-  rowHeight: number;
-  selectableColumns: boolean;
-  setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
-  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   sort: SortConfig | null;
-  sortDownIcon?: ReactNode;
-  sortUpIcon?: ReactNode;
-  lastSelectedColumnIndex?: number | null;
-  selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
 }
 
 const TableHeaderCell = forwardRef(
   (
     {
       colIndex,
-      columnReordering,
-      columnResizing,
-      currentRows,
-      draggedHeaderRef,
-      forceUpdate,
       gridColumnEnd,
       gridColumnStart,
       gridRowEnd,
       gridRowStart,
       header,
+      reverse,
+      sort,
+    }: MinimalHeaderCellProps,
+    ref: ForwardedRef<HTMLDivElement>
+  ) => {
+    // Get shared props from context
+    const {
+      columnReordering,
+      columnResizing,
+      draggedHeaderRef,
+      forceUpdate,
       headersRef,
       hoveredHeaderRef,
       onColumnOrderChange,
       onSort,
       onTableHeaderDragEnd,
-      reverse,
       rowHeight,
+      selectColumns,
       selectableColumns,
+      setInitialFocusedCell,
       setIsWidthDragging,
+      setSelectedCells,
       setSelectedColumns,
-      sort,
       sortDownIcon,
       sortUpIcon,
-      lastSelectedColumnIndex,
-      selectColumns,
-    }: TableHeaderCellProps,
-    ref: ForwardedRef<HTMLDivElement>
-  ) => {
+    } = useTableContext();
+
     // Local state
     const [isDragging, setIsDragging] = useState(false);
 
@@ -134,7 +108,7 @@ const TableHeaderCell = forwardRef(
 
         if (event.shiftKey && selectColumns) {
           // If shift key is pressed and we have columns already selected
-          setSelectedColumns((prevSelected) => {
+          setSelectedColumns((prevSelected: Set<number>) => {
             // If no columns are currently selected, just select the clicked columns
             if (prevSelected.size === 0) {
               return new Set(columnsToSelect);
@@ -142,13 +116,13 @@ const TableHeaderCell = forwardRef(
 
             // Find the nearest column index in the existing selection
             const currentColumnIndex = columnsToSelect[0]; // Use first column as reference
-            const selectedIndices = Array.from(prevSelected).sort((a, b) => a - b);
+            const selectedIndices = Array.from(prevSelected).sort((a: number, b: number) => a - b);
 
             let nearestIndex = selectedIndices[0]; // Default to first selected column
             let minDistance = Math.abs(currentColumnIndex - nearestIndex);
 
             // Find the nearest column to the currently clicked one
-            selectedIndices.forEach((index) => {
+            selectedIndices.forEach((index: number) => {
               const distance = Math.abs(currentColumnIndex - index);
               if (distance < minDistance) {
                 minDistance = distance;
@@ -170,6 +144,10 @@ const TableHeaderCell = forwardRef(
           // Regular click - just select the columns under this header
           selectColumns(columnsToSelect);
         }
+
+        // Clear the selected cells
+        setSelectedCells(new Set());
+        setInitialFocusedCell(null);
         return;
       }
 

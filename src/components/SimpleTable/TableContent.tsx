@@ -1,52 +1,60 @@
-import { useMemo, useRef } from "react";
-import TableBodyProps from "../../types/TableBodyProps";
+import { useMemo, useRef, Dispatch, SetStateAction } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
-import TableContentProps from "../../types/TableContentProps";
+import { useTableContext } from "../../context/TableContext";
+import Row from "../../types/Row";
+import SortConfig from "../../types/SortConfig";
+import VisibleRow from "../../types/VisibleRow";
+
+// Define props for the frequently changing values not in context
+interface TableContentLocalProps {
+  currentRows: Row[];
+  flattenedRows: Row[];
+  isWidthDragging: boolean;
+  lastSelectedColumnIndex: number | null;
+  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
+  setScrollTop: Dispatch<SetStateAction<number>>;
+  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
+  sort: SortConfig | null;
+  visibleRows: VisibleRow[];
+}
 
 const TableContent = ({
-  allowAnimations,
-  columnReordering,
-  columnResizing,
   currentRows,
-  draggedHeaderRef,
-  editColumns,
   flattenedRows,
-  forceUpdate,
-  getBorderClass,
-  handleMouseDown,
-  handleMouseOver,
-  headersRef,
-  hiddenColumns,
-  hoveredHeaderRef,
-  isSelected,
-  isInitialFocusedCell,
   isWidthDragging,
   lastSelectedColumnIndex,
-  mainBodyRef,
-  onCellEdit,
-  onColumnOrderChange,
-  onSort,
-  onTableHeaderDragEnd,
-  pinnedLeftRef,
-  pinnedRightRef,
-  rowHeight,
-  scrollbarWidth,
-  selectableColumns,
-  selectColumns,
   setFlattenedRows,
-  setIsWidthDragging,
   setScrollTop,
   setSelectedColumns,
-  shouldPaginate,
   sort,
-  sortDownIcon,
-  sortUpIcon,
-  tableBodyContainerRef,
   visibleRows,
-}: TableContentProps) => {
+}: TableContentLocalProps) => {
+  // Get stable props from context
+  const {
+    allowAnimations,
+    columnReordering,
+    columnResizing,
+    draggedHeaderRef,
+    editColumns,
+    forceUpdate,
+    headersRef,
+    hiddenColumns,
+    hoveredHeaderRef,
+    mainBodyRef,
+    onColumnOrderChange,
+    onSort,
+    onTableHeaderDragEnd,
+    rowHeight,
+    selectableColumns,
+    selectColumns,
+    setIsWidthDragging,
+    sortDownIcon,
+    sortUpIcon,
+  } = useTableContext();
+
   // Refs
   const headerContainerRef = useRef<HTMLDivElement>(null);
   const pinnedLeftHeaderRef = useRef<HTMLDivElement>(null);
@@ -104,40 +112,20 @@ const TableContent = ({
     sortUpIcon,
   };
 
-  const tableBodyProps: TableBodyProps = {
-    allowAnimations: allowAnimations || false,
+  const tableBodyProps = {
     centerHeaderRef,
-    draggedHeaderRef,
     flattenedRows,
-    getBorderClass,
-    handleMouseDown,
-    handleMouseOver,
     headerContainerRef,
-    headers: headersRef.current,
-    headersRef,
-    hiddenColumns,
-    hoveredHeaderRef,
-    isSelected,
-    isInitialFocusedCell,
     isWidthDragging,
-    mainBodyRef,
     mainTemplateColumns,
-    onCellEdit,
-    onTableHeaderDragEnd,
     pinnedLeftColumns,
     pinnedLeftHeaderRef,
-    pinnedLeftRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
     pinnedRightHeaderRef,
-    pinnedRightRef,
     pinnedRightTemplateColumns,
-    rowHeight,
-    scrollbarWidth,
     setFlattenedRows,
-    shouldPaginate,
     setScrollTop,
-    tableBodyContainerRef,
     visibleRows,
   };
 
