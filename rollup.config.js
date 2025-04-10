@@ -16,9 +16,25 @@ export default {
     del({ targets: "dist/*" }),
     peerDepsExternal(),
     postcss({
-      extract: "styles.css", // Output CSS to a separate file
-      inject: false, // Prevent automatic injection into JS
+      extract: "styles.css",
+      inject: false,
       minimize: true,
+      modules: false,
+      config: false,
+      plugins: [
+        require("postcss-preset-env")({
+          browsers: "last 2 versions",
+          stage: 3,
+          features: {
+            "custom-properties": {
+              preserve: true,
+            },
+            "nesting-rules": true,
+            "custom-media-queries": true,
+            "media-query-ranges": true,
+          },
+        }),
+      ],
     }),
     babel({
       exclude: ["node_modules/**", "src/stories/**"],
