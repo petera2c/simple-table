@@ -361,7 +361,8 @@
   --st-footer-background-color: var(--st-slate-900);
   --st-cell-color: var(--st-white);
   --st-cell-odd-row-color: var(--st-slate-300);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-white / 0.1), 0 1px 2px -1px var(--st-white / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px -1px rgba(255, 255, 255, 0.1);
   --st-selected-cell-color: var(--st-white);
   --st-selected-first-cell-color: var(--st-white);
   --st-resize-handle-color: var(--st-slate-600);
@@ -455,7 +456,7 @@
   --st-footer-background-color: var(--st-purple-50);
   --st-cell-color: var(--st-slate-600);
   --st-cell-odd-row-color: var(--st-slate-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.1), 0 1px 2px -1px var(--st-black / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --st-selected-cell-color: var(--st-slate-600);
   --st-selected-first-cell-color: var(--st-slate-600);
   --st-resize-handle-color: var(--st-purple-200);
@@ -502,7 +503,7 @@
   --st-footer-background-color: var(--st-orange-50);
   --st-cell-color: var(--st-orange-900);
   --st-cell-odd-row-color: var(--st-orange-800);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.2), 0 1px 2px -1px var(--st-black / 0.2);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
   --st-selected-cell-color: var(--st-orange-900);
   --st-selected-first-cell-color: var(--st-orange-900);
   --st-resize-handle-color: var(--st-orange-400);
@@ -549,7 +550,7 @@
   --st-footer-background-color: var(--st-yellow-50);
   --st-cell-color: var(--st-slate-600);
   --st-cell-odd-row-color: var(--st-slate-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.1), 0 1px 2px -1px var(--st-black / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --st-selected-cell-color: var(--st-slate-600);
   --st-selected-first-cell-color: var(--st-slate-600);
   --st-resize-handle-color: var(--st-slate-400);
@@ -596,7 +597,8 @@
   --st-footer-background-color: var(--st-slate-900);
   --st-cell-color: var(--st-slate-300);
   --st-cell-odd-row-color: var(--st-slate-400);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-white / 0.1), 0 1px 2px -1px var(--st-white / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px -1px rgba(255, 255, 255, 0.1);
   --st-selected-cell-color: var(--st-slate-300);
   --st-selected-first-cell-color: var(--st-slate-300);
   --st-resize-handle-color: var(--st-slate-600);
@@ -643,7 +645,7 @@
   --st-footer-background-color: var(--st-cyan-50);
   --st-cell-color: var(--st-slate-900);
   --st-cell-odd-row-color: var(--st-cyan-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.1), 0 1px 2px -1px var(--st-black / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --st-selected-cell-color: var(--st-slate-900);
   --st-selected-first-cell-color: var(--st-slate-900);
   --st-resize-handle-color: var(--st-cyan-300);
@@ -690,7 +692,7 @@
   --st-footer-background-color: var(--st-green-50);
   --st-cell-color: var(--st-green-900);
   --st-cell-odd-row-color: var(--st-green-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.1), 0 1px 2px -1px var(--st-black / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --st-selected-cell-color: var(--st-green-900);
   --st-selected-first-cell-color: var(--st-green-900);
   --st-resize-handle-color: var(--st-green-400);
@@ -737,7 +739,7 @@
   --st-footer-background-color: var(--st-amber-50);
   --st-cell-color: var(--st-amber-800);
   --st-cell-odd-row-color: var(--st-amber-600);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.1), 0 1px 2px -1px var(--st-black / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --st-selected-cell-color: var(--st-amber-800);
   --st-selected-first-cell-color: var(--st-amber-800);
   --st-resize-handle-color: var(--st-amber-300);
@@ -784,7 +786,7 @@
   --st-footer-background-color: var(--st-pink-50);
   --st-cell-color: var(--st-pink-900);
   --st-cell-odd-row-color: var(--st-pink-800);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.1), 0 1px 2px -1px var(--st-black / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --st-selected-cell-color: var(--st-pink-900);
   --st-selected-first-cell-color: var(--st-pink-900);
   --st-resize-handle-color: var(--st-pink-400);
@@ -831,7 +833,7 @@
   --st-footer-background-color: var(--st-gray-100);
   --st-cell-color: var(--st-gray-900);
   --st-cell-odd-row-color: var(--st-gray-800);
-  --st-edit-cell-shadow: 0 1px 3px 0 var(--st-black / 0.1), 0 1px 2px -1px var(--st-black / 0.1);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --st-selected-cell-color: var(--st-gray-900);
   --st-selected-first-cell-color: var(--st-gray-900);
   --st-resize-handle-color: var(--st-gray-400);
