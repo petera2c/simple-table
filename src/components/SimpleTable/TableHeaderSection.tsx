@@ -61,7 +61,7 @@ const RecursiveTableHeaderRender = ({
           reverse={reverse}
           sort={sort}
         />
-        {children.map((child, childIndex) => {
+        {children.map((child) => {
           // Find the grid position for this child
           const childGridPosition = gridPosition.children?.[child.accessor];
           if (!childGridPosition) return null;

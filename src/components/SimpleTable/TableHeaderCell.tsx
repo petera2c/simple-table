@@ -1,4 +1,4 @@
-import { forwardRef, useState, DragEvent, useEffect, ForwardedRef, MouseEvent } from "react";
+import { forwardRef, DragEvent, useEffect, ForwardedRef, MouseEvent } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
@@ -9,8 +9,7 @@ import { getCellId } from "../../utils/cellUtils";
 import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
 import { useTableContext } from "../../context/TableContext";
 
-// Define minimal props that are specific to each header cell
-export interface MinimalHeaderCellProps {
+interface HeaderCellProps {
   colIndex: number;
   gridColumnEnd: number;
   gridColumnStart: number;
@@ -32,7 +31,7 @@ const TableHeaderCell = forwardRef(
       header,
       reverse,
       sort,
-    }: MinimalHeaderCellProps,
+    }: HeaderCellProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
     // Get shared props from context
@@ -57,14 +56,13 @@ const TableHeaderCell = forwardRef(
       sortUpIcon,
     } = useTableContext();
 
-    // Local state
-    const [isDragging, setIsDragging] = useState(false);
-
     // Derived state
     const clickable = Boolean(header?.isSortable);
-    const className = `st-header-cell ${header === hoveredHeaderRef.current ? "st-hovered" : ""} ${
-      isDragging ? "st-dragging" : ""
-    } ${clickable ? "clickable" : ""} ${columnReordering && !clickable ? "columnReordering" : ""} ${
+    const className = `st-header-cell ${
+      header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
+    } ${header.accessor === draggedHeaderRef.current?.accessor ? "st-dragging" : ""} ${
+      clickable ? "clickable" : ""
+    } ${columnReordering && !clickable ? "columnReordering" : ""} ${
       header?.align === "right"
         ? "right-aligned"
         : header?.align === "center"
@@ -85,12 +83,10 @@ const TableHeaderCell = forwardRef(
 
     // Handlers
     const handleDragStartWrapper = (header: HeaderObject) => {
-      setIsDragging(true);
       handleDragStart(header);
     };
     const handleDragEndWrapper = (event: DragEvent) => {
       event.preventDefault();
-      setIsDragging(false);
       handleDragEnd();
     };
 
