@@ -23,7 +23,20 @@ const useSortableData = ({ headers, tableRows }: { headers: HeaderObject[]; tabl
 
   // Simple sort handler
   const updateSort = (columnIndex: number, accessor: string) => {
-    const targetHeader = headers.find((h) => h.accessor === accessor);
+    const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+      for (const header of headers) {
+        if (header.accessor === accessor) {
+          return header;
+        }
+        if (header.children && header.children.length > 0) {
+          const found = findHeaderRecursively(header.children);
+          if (found) return found;
+        }
+      }
+      return undefined;
+    };
+
+    const targetHeader = findHeaderRecursively(headers);
     if (!targetHeader) return;
 
     setSort((prevSort) => {

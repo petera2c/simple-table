@@ -4,11 +4,46 @@ import { HeaderObject } from "../..";
 const BasicExampleComponent = () => {
   // Sample data for a quick start demo
   const data = [
-    { id: 1, name: "John Doe", age: 28, role: "Developer", department: "Engineering", startDate: "2020-01-01" },
-    { id: 2, name: "Jane Smith", age: 32, role: "Designer", department: "Design", startDate: "2020-01-01" },
-    { id: 3, name: "Bob Johnson", age: 45, role: "Manager", department: "Management", startDate: "2020-01-01" },
-    { id: 4, name: "Alice Williams", age: 24, role: "Intern", department: "Internship", startDate: "2020-01-01" },
-    { id: 5, name: "Charlie Brown", age: 37, role: "DevOps", department: "Engineering", startDate: "2020-01-01" },
+    {
+      id: 1,
+      name: "John Doe",
+      age: 28,
+      role: "Developer",
+      department: "Engineering",
+      startDate: "2020-01-01",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      age: 32,
+      role: "Designer",
+      department: "Design",
+      startDate: "2020-01-01",
+    },
+    {
+      id: 3,
+      name: "Bob Johnson",
+      age: 45,
+      role: "Manager",
+      department: "Management",
+      startDate: "2020-01-01",
+    },
+    {
+      id: 4,
+      name: "Alice Williams",
+      age: 24,
+      role: "Intern",
+      department: "Internship",
+      startDate: "2020-01-01",
+    },
+    {
+      id: 5,
+      name: "Charlie Brown",
+      age: 37,
+      role: "DevOps",
+      department: "Engineering",
+      startDate: "2020-01-01",
+    },
   ];
 
   // Define headers
@@ -27,7 +62,13 @@ const BasicExampleComponent = () => {
 
   return (
     <div style={{ padding: "2rem" }}>
-      <SimpleTable defaultHeaders={headers} editColumns rows={rows} selectableCells />
+      <SimpleTable
+        columnResizing
+        defaultHeaders={headers}
+        editColumns
+        rows={rows}
+        selectableCells
+      />
     </div>
   );
 };

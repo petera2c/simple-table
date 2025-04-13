@@ -6,8 +6,6 @@ import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 import TableCellProps from "../../types/TableCellProps";
-import AngleDownIcon from "../../icons/AngleDownIcon";
-import AngleRightIcon from "../../icons/AngleRightIcon";
 import { useTableContext } from "../../context/TableContext";
 
 // Define minimal props that are specific to each cell

@@ -15,6 +15,7 @@ type HeaderObject = {
     row: Row;
   }) => ReactNode | string;
   children?: HeaderObject[];
+  disableReorder?: boolean;
   expandable?: boolean;
   hide?: boolean;
   isEditable?: boolean;

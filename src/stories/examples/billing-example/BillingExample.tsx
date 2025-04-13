@@ -13,10 +13,10 @@ const BillingExample = ({ theme = "light" }: { theme?: "light" | "custom" }) => 
         columnReordering
         defaultHeaders={HEADERS}
         rows={data}
-        height="70dvh"
+        height="90dvh"
         theme={theme}
         selectableCells
-        selectableColumns
+        // selectableColumns
       />
     </div>
   );

@@ -94,7 +94,7 @@ const TableHeaderCell = forwardRef(
       handleDragEnd();
     };
 
-    // Sort handler
+    // Sort and select handler
     const handleColumnHeaderClick = ({
       event,
       header,
@@ -245,7 +245,7 @@ const TableHeaderCell = forwardRef(
               ? "center-aligned"
               : ""
           }`}
-          draggable={columnReordering}
+          draggable={columnReordering && !header.disableReorder}
           onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragEnd={handleDragEndWrapper}
           onDragStart={onDragStart}
