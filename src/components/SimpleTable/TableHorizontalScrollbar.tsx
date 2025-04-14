@@ -25,7 +25,11 @@ const TableHorizontalScrollbar = ({
   useWidthSync({ widthAttribute: "scrollWidth", callback: setMainBodyWidth, ref: mainBodyRef });
 
   // Keep up to date the width of the right pinned columns container
-  useWidthSync({ widthAttribute: "offsetWidth", callback: setPinnedRightWidth, ref: pinnedRightRef });
+  useWidthSync({
+    widthAttribute: "offsetWidth",
+    callback: setPinnedRightWidth,
+    ref: pinnedRightRef,
+  });
 
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, scrollRef);
@@ -43,6 +47,7 @@ const TableHorizontalScrollbar = ({
           style={{
             flexShrink: 0,
             width: pinnedLeftWidth,
+            height: scrollRef.current?.offsetHeight,
           }}
         />
       )}
@@ -61,6 +66,7 @@ const TableHorizontalScrollbar = ({
           <div
             style={{
               width: mainBodyWidth,
+              height: ".3px",
             }}
           />
         </div>
@@ -71,6 +77,7 @@ const TableHorizontalScrollbar = ({
           style={{
             flexShrink: 0,
             minWidth: pinnedRightWidth,
+            height: scrollRef.current?.offsetHeight,
           }}
         />
       )}

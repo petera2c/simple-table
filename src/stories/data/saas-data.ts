@@ -15,12 +15,14 @@ export const generateSaaSData = (): Row[] => {
     const monthlyRevenue = Math.floor(Math.random() * 100000) + 1000;
     const churnRate = parseFloat((Math.random() * 5).toFixed(1));
     const avgSessionTime = Math.floor(Math.random() * 60);
-    const renewalDate = `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, "0")}-${String(
-      Math.floor(Math.random() * 28) + 1
-    ).padStart(2, "0")}`;
-    const signUpDate = `${year}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, "0")}-${String(
-      Math.floor(Math.random() * 28) + 1
-    ).padStart(2, "0")}`;
+    const renewalDate = `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(
+      2,
+      "0"
+    )}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
+    const signUpDate = `${year}-${String(Math.floor(Math.random() * 12) + 1).padStart(
+      2,
+      "0"
+    )}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
     const lastLoginDay2 = Math.floor(Math.random() * 18) + 1;
     const lastLogin = `2025-03-${lastLoginDay2 < 10 ? `0${lastLoginDay2}` : lastLoginDay2}`;
     const supportTickets = Math.floor(Math.random() * 100);
@@ -49,8 +51,23 @@ export const generateSaaSData = (): Row[] => {
 };
 
 export const SAAS_HEADERS: HeaderObject[] = [
-  { accessor: "tier", label: "Tier", width: 120, isSortable: true, isEditable: true, align: "left" },
-  { accessor: "segment", label: "Customer Segment", width: 250, isSortable: true, isEditable: true, align: "left" },
+  {
+    accessor: "tier",
+    label: "Tier",
+    width: 120,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+    pinned: "left",
+  },
+  {
+    accessor: "segment",
+    label: "Customer Segment",
+    width: 250,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+  },
   {
     accessor: "monthlyRevenue",
     label: "Monthly Revenue",
@@ -60,7 +77,14 @@ export const SAAS_HEADERS: HeaderObject[] = [
     align: "right",
     cellRenderer: ({ row }) => `$${(row.rowData.monthlyRevenue as number).toLocaleString("en-US")}`,
   },
-  { accessor: "activeUsers", label: "Active Users", width: 150, isSortable: true, isEditable: true, align: "right" },
+  {
+    accessor: "activeUsers",
+    label: "Active Users",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "right",
+  },
   {
     accessor: "churnRate",
     label: "Churn Rate",
@@ -135,7 +159,14 @@ export const SAAS_HEADERS: HeaderObject[] = [
       });
     },
   },
-  { accessor: "featureUsage", label: "Top Feature", width: 150, isSortable: true, isEditable: true, align: "left" },
+  {
+    accessor: "featureUsage",
+    label: "Top Feature",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+  },
   {
     accessor: "customerSatisfaction",
     label: "Satisfaction",
@@ -145,5 +176,12 @@ export const SAAS_HEADERS: HeaderObject[] = [
     align: "right",
     cellRenderer: ({ row }) => `${(row.rowData.customerSatisfaction as number).toFixed(1)}/5`,
   },
-  { accessor: "paymentMethod", label: "Payment Method", width: 180, isSortable: true, isEditable: true, align: "left" },
+  {
+    accessor: "paymentMethod",
+    label: "Payment Method",
+    width: 180,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+  },
 ];

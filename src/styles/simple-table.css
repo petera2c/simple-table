@@ -942,7 +942,6 @@
 .st-horizontal-scrollbar-left,
 .st-horizontal-scrollbar-right {
   background-color: var(--st-scrollbar-bg-color);
-  height: 100%;
 }
 .st-horizontal-scrollbar-middle {
   overflow: auto;
