@@ -60,7 +60,7 @@ const TableHeaderCell = forwardRef(
     const clickable = Boolean(header?.isSortable);
     const className = `st-header-cell ${
       header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
-    } ${header.accessor === draggedHeaderRef.current?.accessor ? "st-dragging" : ""} ${
+    } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
       clickable ? "clickable" : ""
     } ${columnReordering && !clickable ? "columnReordering" : ""} ${
       header?.align === "right"
