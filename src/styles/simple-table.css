@@ -953,6 +953,7 @@
   width: 100%;
   overflow: auto;
   height: max-content;
+  background-color: var(--st-even-row-background-color);
 }
 .st-table-body-main,
 .st-table-body-pinned-left,
