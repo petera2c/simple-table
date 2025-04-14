@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
 .simple-table-root {
   --st-after-width: 11.01px;
   --st-resize-handle-width: 2px;
@@ -285,10 +288,22 @@
   --st-rose-800: #9f1239;
   --st-rose-900: #881337;
   --st-rose-950: #4c0519;
+
+  --st-stone-50: #fafaf9;
+  --st-stone-100: #f5f5f4;
+  --st-stone-200: #e7e5e4;
+  --st-stone-300: #d6d3d1;
+  --st-stone-400: #a8a29e;
+  --st-stone-500: #78716c;
+  --st-stone-600: #57534e;
+  --st-stone-700: #44403c;
+  --st-stone-800: #292524;
+  --st-stone-900: #1c1917;
+  --st-stone-950: #0c0a09;
 }
 
+/* Light Theme (Using Slate colors) */
 .theme-light {
-  /* Base Variables */
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
@@ -304,553 +319,239 @@
   --st-scrollbar-bg-color: var(--st-slate-50);
   --st-scrollbar-thumb-color: var(--st-slate-300);
 
-  --st-border-color: var(--st-gray-300);
+  --st-border-color: var(--st-slate-300);
   --st-odd-row-background-color: var(--st-white);
   --st-even-row-background-color: var(--st-slate-50);
-  --st-header-background-color: var(--st-white);
-  --st-dragging-background-color: var(--st-gray-200);
-  --st-selected-cell-background-color: var(--st-blue-200);
-  --st-selected-first-cell-background-color: var(--st-blue-100);
-  --st-footer-background-color: var(--st-white);
-  --st-cell-color: var(--st-gray-800);
-  --st-cell-odd-row-color: var(--st-gray-700);
-  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 1px -1px rgba(0, 0, 0, 0.05);
-  --st-selected-cell-color: var(--st-gray-900);
-  --st-selected-first-cell-color: var(--st-gray-900);
-  --st-resize-handle-color: var(--st-blue-300);
-  --st-separator-border-color: var(--st-slate-100);
-  --st-last-group-row-separator-border-color: var(--st-slate-300);
+  --st-header-background-color: var(--st-slate-100);
+  --st-header-label-color: var(
+    --st-slate-900
+  ); /* Added: Dark slate for contrast on light background */
+  --st-dragging-background-color: var(--st-slate-200);
+  --st-selected-cell-background-color: var(--st-blue-100);
+  --st-selected-first-cell-background-color: var(--st-blue-50);
+  --st-footer-background-color: var(--st-slate-50);
+  --st-cell-color: var(--st-slate-900);
+  --st-cell-odd-row-color: var(--st-slate-800);
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --st-selected-cell-color: var(--st-slate-900);
+  --st-selected-first-cell-color: var(--st-slate-900);
+  --st-resize-handle-color: var(--st-blue-400);
+  --st-separator-border-color: var(--st-slate-200);
+  --st-last-group-row-separator-border-color: var(--st-slate-400);
+  --st-selected-border-top-color: var(--st-blue-500);
+  --st-selected-border-bottom-color: var(--st-blue-500);
+  --st-selected-border-left-color: var(--st-blue-500);
+  --st-selected-border-right-color: var(--st-blue-500);
+  --st-checkbox-checked-background-color: var(--st-blue-600);
+  --st-checkbox-checked-border-color: var(--st-blue-600);
+  --st-column-editor-background-color: var(--st-white);
+  --st-column-editor-popout-background-color: var(--st-white);
+  --st-button-hover-background-color: var(--st-slate-100);
+  --st-button-active-background-color: var(--st-blue-600);
+  --st-font-family: "Inter", sans-serif;
+  --st-editable-cell-focus-border-color: var(--st-blue-500);
+}
+
+/* Dark Theme */
+.theme-dark {
+  --st-border-radius: 4px;
+  --st-border-width: 1px;
+  --st-cell-padding: 8px;
+  --st-font-size: 0.875rem;
+  --st-font-weight-normal: 400;
+  --st-font-weight-bold: 600;
+  --st-transition-duration: 0.2s;
+  --st-transition-ease: ease;
+  --st-opacity-disabled: 0.5;
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+  --st-spacing-large: 16px;
+  --st-scrollbar-bg-color: var(--st-gray-900);
+  --st-scrollbar-thumb-color: var(--st-gray-600);
+
+  --st-border-color: var(--st-gray-700);
+  --st-odd-row-background-color: var(--st-gray-800);
+  --st-even-row-background-color: var(--st-gray-900);
+  --st-header-background-color: var(--st-gray-800);
+  --st-header-label-color: var(
+    --st-gray-100
+  ); /* Added: Light gray for contrast on dark background */
+  --st-dragging-background-color: var(--st-gray-600);
+  --st-selected-cell-background-color: var(--st-blue-900);
+  --st-selected-first-cell-background-color: var(--st-blue-800);
+  --st-footer-background-color: var(--st-gray-900);
+  --st-cell-color: var(--st-gray-100);
+  --st-cell-odd-row-color: var(--st-gray-200);
+  --st-edit-cell-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1);
+  --st-selected-cell-color: var(--st-white);
+  --st-selected-first-cell-color: var(--st-white);
+  --st-resize-handle-color: var(--st-gray-500);
+  --st-separator-border-color: var(--st-gray-600);
+  --st-last-group-row-separator-border-color: var(--st-gray-500);
+  --st-selected-border-top-color: var(--st-blue-400);
+  --st-selected-border-bottom-color: var(--st-blue-400);
+  --st-selected-border-left-color: var(--st-blue-400);
+  --st-selected-border-right-color: var(--st-blue-400);
+  --st-checkbox-checked-background-color: var(--st-blue-500);
+  --st-checkbox-checked-border-color: var(--st-blue-500);
+  --st-column-editor-background-color: var(--st-gray-800);
+  --st-column-editor-popout-background-color: var(--st-gray-800);
+  --st-button-hover-background-color: var(--st-gray-700);
+  --st-button-active-background-color: var(--st-blue-500);
+  --st-font-family: "Inter", sans-serif;
+  --st-editable-cell-focus-border-color: var(--st-blue-400);
+}
+
+/* Neutral Theme */
+.theme-neutral {
+  --st-border-radius: 4px;
+  --st-border-width: 1px;
+  --st-cell-padding: 8px;
+  --st-font-size: 0.875rem;
+  --st-font-weight-normal: 400;
+  --st-font-weight-bold: 600;
+  --st-transition-duration: 0.2s;
+  --st-transition-ease: ease;
+  --st-opacity-disabled: 0.5;
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+  --st-spacing-large: 16px;
+  --st-scrollbar-bg-color: var(--st-neutral-100);
+  --st-scrollbar-thumb-color: var(--st-neutral-400);
+
+  --st-border-color: var(--st-neutral-300);
+  --st-odd-row-background-color: var(--st-neutral-50);
+  --st-even-row-background-color: var(--st-neutral-100);
+  --st-header-background-color: var(--st-neutral-200);
+  --st-header-label-color: var(
+    --st-neutral-900
+  ); /* Added: Dark neutral for contrast on light background */
+  --st-dragging-background-color: var(--st-neutral-300);
+  --st-selected-cell-background-color: var(--st-neutral-400);
+  --st-selected-first-cell-background-color: var(--st-neutral-300);
+  --st-footer-background-color: var(--st-neutral-50);
+  --st-cell-color: var(--st-neutral-900);
+  --st-cell-odd-row-color: var(--st-neutral-800);
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --st-selected-cell-color: var(--st-neutral-900);
+  --st-selected-first-cell-color: var(--st-neutral-900);
+  --st-resize-handle-color: var(--st-neutral-400);
+  --st-separator-border-color: var(--st-neutral-200);
+  --st-last-group-row-separator-border-color: var(--st-neutral-400);
+  --st-selected-border-top-color: var(--st-neutral-600);
+  --st-selected-border-bottom-color: var(--st-neutral-600);
+  --st-selected-border-left-color: var(--st-neutral-600);
+  --st-selected-border-right-color: var(--st-neutral-600);
+  --st-checkbox-checked-background-color: var(--st-neutral-600);
+  --st-checkbox-checked-border-color: var(--st-neutral-600);
+  --st-column-editor-background-color: var(--st-neutral-50);
+  --st-column-editor-popout-background-color: var(--st-neutral-50);
+  --st-button-hover-background-color: var(--st-neutral-200);
+  --st-button-active-background-color: var(--st-neutral-600);
+  --st-font-family: "Inter", sans-serif;
+  --st-editable-cell-focus-border-color: var(--st-neutral-500);
+}
+
+/* Sky Theme */
+.theme-sky {
+  --st-border-radius: 4px;
+  --st-border-width: 1px;
+  --st-cell-padding: 8px;
+  --st-font-size: 0.875rem;
+  --st-font-weight-normal: 400;
+  --st-font-weight-bold: 600;
+  --st-transition-duration: 0.2s;
+  --st-transition-ease: ease;
+  --st-opacity-disabled: 0.5;
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+  --st-spacing-large: 16px;
+  --st-scrollbar-bg-color: var(--st-blue-50);
+  --st-scrollbar-thumb-color: var(--st-blue-300);
+
+  --st-border-color: var(--st-blue-300);
+  --st-odd-row-background-color: var(--st-blue-50);
+  --st-even-row-background-color: var(--st-blue-100);
+  --st-header-background-color: var(--st-blue-200);
+  --st-header-label-color: var(
+    --st-blue-900
+  ); /* Added: Dark blue for contrast on light blue background */
+  --st-dragging-background-color: var(--st-blue-300);
+  --st-selected-cell-background-color: var(--st-blue-400);
+  --st-selected-first-cell-background-color: var(--st-blue-300);
+  --st-footer-background-color: var(--st-blue-50);
+  --st-cell-color: var(--st-blue-900);
+  --st-cell-odd-row-color: var(--st-blue-800);
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --st-selected-cell-color: var(--st-blue-900);
+  --st-selected-first-cell-color: var(--st-blue-900);
+  --st-resize-handle-color: var(--st-blue-400);
+  --st-separator-border-color: var(--st-blue-200);
+  --st-last-group-row-separator-border-color: var(--st-blue-400);
   --st-selected-border-top-color: var(--st-blue-600);
   --st-selected-border-bottom-color: var(--st-blue-600);
   --st-selected-border-left-color: var(--st-blue-600);
   --st-selected-border-right-color: var(--st-blue-600);
   --st-checkbox-checked-background-color: var(--st-blue-600);
   --st-checkbox-checked-border-color: var(--st-blue-600);
-  --st-column-editor-background-color: var(--st-white);
-  --st-column-editor-popout-background-color: var(--st-white);
-  --st-button-hover-background-color: var(--st-gray-200);
-  --st-button-active-background-color: var(--st-blue-800);
-  --st-font-family: "Roboto", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-blue-600);
+  --st-column-editor-background-color: var(--st-blue-50);
+  --st-column-editor-popout-background-color: var(--st-blue-50);
+  --st-button-hover-background-color: var(--st-blue-200);
+  --st-button-active-background-color: var(--st-blue-600);
+  --st-font-family: "Inter", sans-serif;
+  --st-editable-cell-focus-border-color: var(--st-blue-500);
 }
 
-.theme-dark {
-  /* Base Variables */
-  --st-border-radius: 6px;
-  --st-border-width: 1px;
-  --st-cell-padding: 10px;
-  --st-font-size: 0.875rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 600;
-  --st-transition-duration: 0.2s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 6px;
-  --st-spacing-medium: 10px;
-  --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: var(--st-slate-800);
-  --st-scrollbar-thumb-color: var(--st-slate-600);
-
-  --st-border-color: var(--st-slate-800);
-  --st-odd-row-background-color: var(--st-slate-800);
-  --st-even-row-background-color: var(--st-slate-900);
-  --st-header-background-color: var(--st-slate-700);
-  --st-dragging-background-color: var(--st-blue-800);
-  --st-selected-cell-background-color: var(--st-blue-900);
-  --st-selected-first-cell-background-color: var(--st-blue-800);
-  --st-footer-background-color: var(--st-slate-900);
-  --st-cell-color: var(--st-white);
-  --st-cell-odd-row-color: var(--st-slate-300);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1),
-    0 1px 2px -1px rgba(255, 255, 255, 0.1);
-  --st-selected-cell-color: var(--st-white);
-  --st-selected-first-cell-color: var(--st-white);
-  --st-resize-handle-color: var(--st-slate-600);
-  --st-separator-border-color: var(--st-slate-500);
-  --st-last-group-row-separator-border-color: var(--st-slate-700);
-  --st-selected-border-top-color: var(--st-blue-400);
-  --st-selected-border-bottom-color: var(--st-blue-400);
-  --st-selected-border-left-color: var(--st-blue-400);
-  --st-selected-border-right-color: var(--st-blue-400);
-  --st-checkbox-checked-background-color: var(--st-blue-700);
-  --st-checkbox-checked-border-color: var(--st-blue-700);
-  --st-column-editor-background-color: var(--st-slate-800);
-  --st-column-editor-popout-background-color: var(--st-slate-800);
-  --st-button-hover-background-color: var(--st-slate-600);
-  --st-button-active-background-color: var(--st-slate-700);
-  --st-font-family: "Open Sans", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-slate-600);
-}
-
-.theme-high-contrast {
-  /* Base Variables */
-  --st-border-radius: 0;
-  --st-border-width: 2px;
-  --st-cell-padding: 12px;
-  --st-font-size: 1rem;
-  --st-font-weight-normal: 500;
-  --st-font-weight-bold: 800;
-  --st-transition-duration: 0s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.7;
-  --st-spacing-small: 8px;
-  --st-spacing-medium: 12px;
-  --st-spacing-large: 24px;
-  --st-scrollbar-bg-color: var(--st-slate-950);
-  --st-scrollbar-thumb-color: var(--st-slate-200);
-
-  --st-border-color: var(--st-slate-900);
-  --st-odd-row-background-color: var(--st-slate-400);
-  --st-even-row-background-color: var(--st-slate-900);
-  --st-header-background-color: var(--st-slate-900);
-  --st-dragging-background-color: var(--st-yellow-500);
-  --st-selected-cell-background-color: var(--st-slate-900);
-  --st-selected-first-cell-background-color: var(--st-red-500);
-  --st-footer-background-color: var(--st-slate-900);
-  --st-cell-color: var(--st-white);
-  --st-cell-odd-row-color: var(--st-slate-900);
-  --st-edit-cell-shadow: none;
-  --st-selected-cell-color: var(--st-white);
-  --st-selected-first-cell-color: var(--st-white);
-  --st-resize-handle-color: var(--st-white);
-  --st-separator-border-color: var(--st-slate-200);
-  --st-last-group-row-separator-border-color: var(--st-slate-900);
-  --st-selected-border-top-color: var(--st-orange-600);
-  --st-selected-border-bottom-color: var(--st-orange-600);
-  --st-selected-border-left-color: var(--st-orange-600);
-  --st-selected-border-right-color: var(--st-orange-600);
-  --st-checkbox-checked-background-color: var(--st-slate-50);
-  --st-checkbox-checked-border-color: var(--st-slate-50);
-  --st-column-editor-background-color: var(--st-slate-900);
-  --st-column-editor-popout-background-color: var(--st-slate-900);
-  --st-button-hover-background-color: var(--st-slate-50);
-  --st-button-active-background-color: var(--st-slate-900);
-  --st-font-family: "Arial", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-orange-600);
-}
-
-.theme-pastel {
-  /* Base Variables */
+/* Funky Theme */
+.theme-funky {
   --st-border-radius: 8px;
   --st-border-width: 1px;
-  --st-cell-padding: 10px;
-  --st-font-size: 0.9rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 600;
-  --st-transition-duration: 0.3s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 6px;
-  --st-spacing-medium: 10px;
-  --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: var(--st-purple-100);
-  --st-scrollbar-thumb-color: var(--st-purple-300);
-
-  --st-border-color: var(--st-purple-200);
-  --st-odd-row-background-color: var(--st-purple-50);
-  --st-even-row-background-color: var(--st-blue-50);
-  --st-header-background-color: var(--st-blue-50);
-  --st-dragging-background-color: var(--st-cyan-50);
-  --st-selected-cell-background-color: var(--st-orange-50);
-  --st-selected-first-cell-background-color: var(--st-amber-50);
-  --st-footer-background-color: var(--st-purple-50);
-  --st-cell-color: var(--st-slate-600);
-  --st-cell-odd-row-color: var(--st-slate-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --st-selected-cell-color: var(--st-slate-600);
-  --st-selected-first-cell-color: var(--st-slate-600);
-  --st-resize-handle-color: var(--st-purple-200);
-  --st-separator-border-color: var(--st-purple-200);
-  --st-last-group-row-separator-border-color: var(--st-purple-500);
-  --st-selected-border-top-color: var(--st-amber-500);
-  --st-selected-border-bottom-color: var(--st-amber-500);
-  --st-selected-border-left-color: var(--st-amber-500);
-  --st-selected-border-right-color: var(--st-amber-500);
-  --st-checkbox-checked-background-color: var(--st-purple-200);
-  --st-checkbox-checked-border-color: var(--st-purple-200);
-  --st-column-editor-background-color: var(--st-purple-50);
-  --st-column-editor-popout-background-color: var(--st-purple-50);
-  --st-button-hover-background-color: var(--st-purple-100);
-  --st-button-active-background-color: var(--st-purple-200);
-  --st-font-family: "Comic Sans MS", cursive, sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-purple-300);
-}
-
-.theme-vibrant {
-  /* Base Variables */
-  --st-border-radius: 12px;
-  --st-border-width: 2px;
   --st-cell-padding: 12px;
-  --st-font-size: 1rem;
-  --st-font-weight-normal: 500;
-  --st-font-weight-bold: 700;
-  --st-transition-duration: 0.3s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 8px;
-  --st-spacing-medium: 12px;
-  --st-spacing-large: 24px;
-  --st-scrollbar-bg-color: var(--st-orange-200);
-  --st-scrollbar-thumb-color: var(--st-orange-300);
-
-  --st-border-color: var(--st-orange-500);
-  --st-odd-row-background-color: var(--st-orange-100);
-  --st-even-row-background-color: var(--st-orange-200);
-  --st-header-background-color: var(--st-orange-300);
-  --st-dragging-background-color: var(--st-blue-300);
-  --st-selected-cell-background-color: var(--st-blue-400);
-  --st-selected-first-cell-background-color: var(--st-amber-300);
-  --st-footer-background-color: var(--st-orange-50);
-  --st-cell-color: var(--st-orange-900);
-  --st-cell-odd-row-color: var(--st-orange-800);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
-  --st-selected-cell-color: var(--st-orange-900);
-  --st-selected-first-cell-color: var(--st-orange-900);
-  --st-resize-handle-color: var(--st-orange-400);
-  --st-separator-border-color: var(--st-orange-200);
-  --st-last-group-row-separator-border-color: var(--st-orange-500);
-  --st-selected-border-top-color: var(--st-orange-700);
-  --st-selected-border-bottom-color: var(--st-orange-700);
-  --st-selected-border-left-color: var(--st-orange-700);
-  --st-selected-border-right-color: var(--st-orange-700);
-  --st-checkbox-checked-background-color: var(--st-orange-500);
-  --st-checkbox-checked-border-color: var(--st-orange-500);
-  --st-column-editor-background-color: var(--st-orange-100);
-  --st-column-editor-popout-background-color: var(--st-orange-100);
-  --st-button-hover-background-color: var(--st-orange-300);
-  --st-button-active-background-color: var(--st-orange-400);
-  --st-font-family: "Lobster", cursive;
-  --st-editable-cell-focus-border-color: var(--st-orange-600);
-}
-
-.theme-solarized-light {
-  /* Base Variables */
-  --st-border-radius: 4px;
-  --st-border-width: 1px;
-  --st-cell-padding: 8px;
-  --st-font-size: 0.875rem;
+  --st-font-size: 0.95rem;
   --st-font-weight-normal: 400;
   --st-font-weight-bold: 600;
-  --st-transition-duration: 0.2s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 4px;
-  --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: var(--st-yellow-100);
-  --st-scrollbar-thumb-color: var(--st-yellow-300);
-
-  --st-border-color: var(--st-yellow-300);
-  --st-odd-row-background-color: var(--st-yellow-50);
-  --st-even-row-background-color: var(--st-yellow-200);
-  --st-header-background-color: var(--st-yellow-200);
-  --st-dragging-background-color: var(--st-yellow-300);
-  --st-selected-cell-background-color: var(--st-slate-400);
-  --st-selected-first-cell-background-color: var(--st-slate-300);
-  --st-footer-background-color: var(--st-yellow-50);
-  --st-cell-color: var(--st-slate-600);
-  --st-cell-odd-row-color: var(--st-slate-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --st-selected-cell-color: var(--st-slate-600);
-  --st-selected-first-cell-color: var(--st-slate-600);
-  --st-resize-handle-color: var(--st-slate-400);
-  --st-separator-border-color: var(--st-yellow-300);
-  --st-last-group-row-separator-border-color: var(--st-yellow-500);
-  --st-selected-border-top-color: var(--st-yellow-600);
-  --st-selected-border-bottom-color: var(--st-yellow-600);
-  --st-selected-border-left-color: var(--st-yellow-600);
-  --st-selected-border-right-color: var(--st-yellow-600);
-  --st-checkbox-checked-background-color: var(--st-slate-400);
-  --st-checkbox-checked-border-color: var(--st-slate-400);
-  --st-column-editor-background-color: var(--st-yellow-200);
-  --st-column-editor-popout-background-color: var(--st-yellow-200);
-  --st-button-hover-background-color: var(--st-yellow-200);
-  --st-button-active-background-color: var(--st-slate-400);
-  --st-font-family: "Georgia", serif;
-  --st-editable-cell-focus-border-color: var(--st-yellow-400);
-}
-
-.theme-solarized-dark {
-  /* Base Variables */
-  --st-border-radius: 4px;
-  --st-border-width: 1px;
-  --st-cell-padding: 8px;
-  --st-font-size: 0.875rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 600;
-  --st-transition-duration: 0.2s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 4px;
-  --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: var(--st-slate-800);
-  --st-scrollbar-thumb-color: var(--st-slate-600);
-
-  --st-border-color: var(--st-slate-800);
-  --st-odd-row-background-color: var(--st-slate-900);
-  --st-even-row-background-color: var(--st-slate-800);
-  --st-header-background-color: var(--st-slate-800);
-  --st-dragging-background-color: var(--st-slate-800);
-  --st-selected-cell-background-color: var(--st-slate-600);
-  --st-selected-first-cell-background-color: var(--st-slate-500);
-  --st-footer-background-color: var(--st-slate-900);
-  --st-cell-color: var(--st-slate-300);
-  --st-cell-odd-row-color: var(--st-slate-400);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1),
-    0 1px 2px -1px rgba(255, 255, 255, 0.1);
-  --st-selected-cell-color: var(--st-slate-300);
-  --st-selected-first-cell-color: var(--st-slate-300);
-  --st-resize-handle-color: var(--st-slate-600);
-  --st-separator-border-color: var(--st-slate-400);
-  --st-last-group-row-separator-border-color: var(--st-slate-600);
-  --st-selected-border-top-color: var(--st-blue-800);
-  --st-selected-border-bottom-color: var(--st-blue-800);
-  --st-selected-border-left-color: var(--st-blue-800);
-  --st-selected-border-right-color: var(--st-blue-800);
-  --st-checkbox-checked-background-color: var(--st-slate-600);
-  --st-checkbox-checked-border-color: var(--st-slate-600);
-  --st-column-editor-background-color: var(--st-slate-800);
-  --st-column-editor-popout-background-color: var(--st-slate-800);
-  --st-button-hover-background-color: var(--st-slate-600);
-  --st-button-active-background-color: var(--st-slate-800);
-  --st-font-family: "Courier New", monospace;
-  --st-editable-cell-focus-border-color: var(--st-blue-800);
-}
-
-.theme-ocean {
-  /* Base Variables */
-  --st-border-radius: 6px;
-  --st-border-width: 1px;
-  --st-cell-padding: 10px;
-  --st-font-size: 0.9rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 600;
-  --st-transition-duration: 0.3s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
+  --st-transition-duration: 0.25s;
+  --st-transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --st-opacity-disabled: 0.6;
   --st-spacing-small: 6px;
   --st-spacing-medium: 10px;
   --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: var(--st-cyan-100);
-  --st-scrollbar-thumb-color: var(--st-cyan-300);
 
-  --st-border-color: var(--st-cyan-700);
-  --st-odd-row-background-color: var(--st-cyan-50);
-  --st-even-row-background-color: var(--st-cyan-100);
-  --st-header-background-color: var(--st-cyan-100);
-  --st-dragging-background-color: var(--st-cyan-300);
-  --st-selected-cell-background-color: var(--st-cyan-700);
-  --st-selected-first-cell-background-color: var(--st-cyan-600);
-  --st-footer-background-color: var(--st-cyan-50);
-  --st-cell-color: var(--st-slate-900);
-  --st-cell-odd-row-color: var(--st-cyan-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --st-selected-cell-color: var(--st-slate-900);
-  --st-selected-first-cell-color: var(--st-slate-900);
-  --st-resize-handle-color: var(--st-cyan-300);
-  --st-separator-border-color: var(--st-cyan-200);
-  --st-last-group-row-separator-border-color: var(--st-cyan-500);
-  --st-selected-border-top-color: var(--st-blue-700);
-  --st-selected-border-bottom-color: var(--st-blue-700);
-  --st-selected-border-left-color: var(--st-blue-700);
-  --st-selected-border-right-color: var(--st-blue-700);
-  --st-checkbox-checked-background-color: var(--st-cyan-700);
-  --st-checkbox-checked-border-color: var(--st-cyan-700);
-  --st-column-editor-background-color: var(--st-cyan-100);
-  --st-column-editor-popout-background-color: var(--st-cyan-100);
-  --st-button-hover-background-color: var(--st-cyan-300);
-  --st-button-active-background-color: var(--st-cyan-700);
-  --st-font-family: "Verdana", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-cyan-500);
-}
+  --st-scrollbar-bg-color: var(--st-stone-100);
+  --st-scrollbar-thumb-color: var(--st-violet-500);
 
-.theme-forest {
-  /* Base Variables */
-  --st-border-radius: 4px;
-  --st-border-width: 1px;
-  --st-cell-padding: 8px;
-  --st-font-size: 0.875rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 600;
-  --st-transition-duration: 0.2s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 4px;
-  --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: var(--st-green-100);
-  --st-scrollbar-thumb-color: var(--st-green-400);
-
-  --st-border-color: var(--st-green-800);
-  --st-odd-row-background-color: var(--st-green-50);
-  --st-even-row-background-color: var(--st-green-100);
-  --st-header-background-color: var(--st-green-100);
-  --st-dragging-background-color: var(--st-green-400);
-  --st-selected-cell-background-color: var(--st-green-700);
-  --st-selected-first-cell-background-color: var(--st-green-600);
-  --st-footer-background-color: var(--st-green-50);
-  --st-cell-color: var(--st-green-900);
-  --st-cell-odd-row-color: var(--st-green-700);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --st-selected-cell-color: var(--st-green-900);
-  --st-selected-first-cell-color: var(--st-green-900);
-  --st-resize-handle-color: var(--st-green-400);
-  --st-separator-border-color: var(--st-green-200);
-  --st-last-group-row-separator-border-color: var(--st-green-500);
-  --st-selected-border-top-color: var(--st-green-600);
-  --st-selected-border-bottom-color: var(--st-green-600);
-  --st-selected-border-left-color: var(--st-green-600);
-  --st-selected-border-right-color: var(--st-green-600);
-  --st-checkbox-checked-background-color: var(--st-green-700);
-  --st-checkbox-checked-border-color: var(--st-green-700);
-  --st-column-editor-background-color: var(--st-green-100);
-  --st-column-editor-popout-background-color: var(--st-green-100);
-  --st-button-hover-background-color: var(--st-green-400);
-  --st-button-active-background-color: var(--st-green-700);
-  --st-font-family: "Tahoma", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-green-600);
-}
-
-.theme-desert {
-  /* Base Variables */
-  --st-border-radius: 8px;
-  --st-border-width: 1px;
-  --st-cell-padding: 10px;
-  --st-font-size: 0.9rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 600;
-  --st-transition-duration: 0.3s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 6px;
-  --st-spacing-medium: 10px;
-  --st-spacing-large: 20px;
-  --st-scrollbar-bg-color: var(--st-amber-100);
-  --st-scrollbar-thumb-color: var(--st-amber-300);
-
-  --st-border-color: var(--st-amber-600);
+  --st-border-color: var(--st-stone-200);
   --st-odd-row-background-color: var(--st-amber-50);
   --st-even-row-background-color: var(--st-amber-100);
-  --st-header-background-color: var(--st-amber-100);
-  --st-dragging-background-color: var(--st-amber-300);
-  --st-selected-cell-background-color: var(--st-amber-600);
-  --st-selected-first-cell-background-color: var(--st-amber-500);
-  --st-footer-background-color: var(--st-amber-50);
-  --st-cell-color: var(--st-amber-800);
-  --st-cell-odd-row-color: var(--st-amber-600);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --st-selected-cell-color: var(--st-amber-800);
-  --st-selected-first-cell-color: var(--st-amber-800);
-  --st-resize-handle-color: var(--st-amber-300);
-  --st-separator-border-color: var(--st-amber-200);
-  --st-last-group-row-separator-border-color: var(--st-amber-500);
-  --st-selected-border-top-color: var(--st-amber-700);
-  --st-selected-border-bottom-color: var(--st-amber-700);
-  --st-selected-border-left-color: var(--st-amber-700);
-  --st-selected-border-right-color: var(--st-amber-700);
-  --st-checkbox-checked-background-color: var(--st-amber-600);
-  --st-checkbox-checked-border-color: var(--st-amber-600);
-  --st-column-editor-background-color: var(--st-amber-100);
-  --st-column-editor-popout-background-color: var(--st-amber-100);
-  --st-button-hover-background-color: var(--st-amber-300);
-  --st-button-active-background-color: var(--st-amber-600);
-  --st-font-family: "Times New Roman", serif;
-  --st-editable-cell-focus-border-color: var(--st-amber-700);
-}
-
-.theme-bubblegum {
-  /* Base Variables */
-  --st-border-radius: 16px;
-  --st-border-width: 2px;
-  --st-cell-padding: 12px;
-  --st-font-size: 1rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 600;
-  --st-transition-duration: 0.3s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 8px;
-  --st-spacing-medium: 12px;
-  --st-spacing-large: 24px;
-  --st-scrollbar-bg-color: var(--st-pink-50);
-  --st-scrollbar-thumb-color: var(--st-pink-300);
-
-  --st-border-color: var(--st-pink-500);
-  --st-odd-row-background-color: var(--st-pink-50);
-  --st-even-row-background-color: var(--st-pink-100);
-  --st-header-background-color: var(--st-pink-200);
-  --st-dragging-background-color: var(--st-pink-300);
-  --st-selected-cell-background-color: var(--st-pink-400);
-  --st-selected-first-cell-background-color: var(--st-pink-300);
-  --st-footer-background-color: var(--st-pink-50);
-  --st-cell-color: var(--st-pink-900);
-  --st-cell-odd-row-color: var(--st-pink-800);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --st-selected-cell-color: var(--st-pink-900);
-  --st-selected-first-cell-color: var(--st-pink-900);
-  --st-resize-handle-color: var(--st-pink-400);
-  --st-separator-border-color: var(--st-pink-200);
-  --st-last-group-row-separator-border-color: var(--st-pink-500);
-  --st-selected-border-top-color: var(--st-pink-700);
-  --st-selected-border-bottom-color: var(--st-pink-700);
-  --st-selected-border-left-color: var(--st-pink-700);
-  --st-selected-border-right-color: var(--st-pink-700);
-  --st-checkbox-checked-background-color: var(--st-pink-500);
-  --st-checkbox-checked-border-color: var(--st-pink-500);
-  --st-column-editor-background-color: var(--st-pink-100);
-  --st-column-editor-popout-background-color: var(--st-pink-100);
-  --st-button-hover-background-color: var(--st-pink-300);
-  --st-button-active-background-color: var(--st-pink-400);
-  --st-font-family: "Pacifico", cursive;
-  --st-editable-cell-focus-border-color: var(--st-pink-600);
-}
-
-.theme-90s {
-  /* Base Variables */
-  --st-border-radius: 0;
-  --st-border-width: 2px;
-  --st-cell-padding: 8px;
-  --st-font-size: 0.875rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 700;
-  --st-transition-duration: 0.1s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 4px;
-  --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: var(--st-gray-200);
-  --st-scrollbar-thumb-color: var(--st-gray-400);
-
-  --st-border-color: var(--st-gray-500);
-  --st-odd-row-background-color: var(--st-gray-100);
-  --st-even-row-background-color: var(--st-gray-200);
-  --st-header-background-color: var(--st-gray-300);
-  --st-dragging-background-color: var(--st-gray-400);
-  --st-selected-cell-background-color: var(--st-gray-500);
-  --st-selected-first-cell-background-color: var(--st-gray-400);
-  --st-footer-background-color: var(--st-gray-100);
-  --st-cell-color: var(--st-gray-900);
-  --st-cell-odd-row-color: var(--st-gray-800);
-  --st-edit-cell-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --st-selected-cell-color: var(--st-gray-900);
-  --st-selected-first-cell-color: var(--st-gray-900);
-  --st-resize-handle-color: var(--st-gray-400);
-  --st-separator-border-color: var(--st-gray-200);
-  --st-last-group-row-separator-border-color: var(--st-gray-500);
-  --st-selected-border-top-color: var(--st-gray-700);
-  --st-selected-border-bottom-color: var(--st-gray-700);
-  --st-selected-border-left-color: var(--st-gray-700);
-  --st-selected-border-right-color: var(--st-gray-700);
-  --st-checkbox-checked-background-color: var(--st-gray-500);
-  --st-checkbox-checked-border-color: var(--st-gray-500);
-  --st-column-editor-background-color: var(--st-gray-200);
-  --st-column-editor-popout-background-color: var(--st-gray-200);
-  --st-button-hover-background-color: var(--st-gray-300);
-  --st-button-active-background-color: var(--st-gray-400);
-  --st-font-family: "Courier New", monospace;
-  --st-editable-cell-focus-border-color: var(--st-gray-600);
+  --st-header-background-color: var(--st-violet-600);
+  --st-header-label-color: var(
+    --st-white
+  ); /* Added: White for contrast on vibrant purple background */
+  --st-dragging-background-color: var(--st-violet-50);
+  --st-selected-cell-background-color: var(--st-violet-50);
+  --st-selected-first-cell-background-color: var(--st-violet-100);
+  --st-footer-background-color: var(--st-stone-100);
+  --st-cell-color: var(--st-stone-700);
+  --st-cell-odd-row-color: var(--st-stone-700);
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.1),
+    0 2px 4px -1px rgba(124, 58, 237, 0.06);
+  --st-selected-cell-color: var(--st-violet-800);
+  --st-selected-first-cell-color: var(--st-violet-800);
+  --st-resize-handle-color: var(--st-violet-400);
+  --st-separator-border-color: var(--st-stone-200);
+  --st-last-group-row-separator-border-color: var(--st-stone-300);
+  --st-selected-border-top-color: var(--st-violet-500);
+  --st-selected-border-bottom-color: var(--st-violet-500);
+  --st-selected-border-left-color: var(--st-violet-500);
+  --st-selected-border-right-color: var(--st-violet-500);
+  --st-checkbox-checked-background-color: var(--st-violet-500);
+  --st-checkbox-checked-border-color: var(--st-violet-600);
+  --st-column-editor-background-color: var(--st-white);
+  --st-column-editor-popout-background-color: var(--st-white);
+  --st-button-hover-background-color: var(--st-violet-50);
+  --st-button-active-background-color: var(--st-violet-600);
+  --st-font-family: "Inter", sans-serif;
+  --st-editable-cell-focus-border-color: var(--st-violet-500);
 }
 
 .simple-table-root,
@@ -1079,7 +780,6 @@
 .st-header-label,
 .st-cell-content {
   flex: 1;
-  color: var(--st-cell-color);
   display: flex;
   align-items: center;
 
@@ -1097,8 +797,10 @@
 
 .st-header-label {
   padding-right: var(--st-cell-padding);
+  color: var(--st-header-label-color);
 }
 .st-cell-content {
+  color: var(--st-cell-color);
   padding-right: calc(
     var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
       var(--st-resize-handle-margin-right)

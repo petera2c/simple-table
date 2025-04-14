@@ -1,16 +1,3 @@
-type Theme =
-  | "custom"
-  | "dark"
-  | "desert"
-  | "forest"
-  | "high-contrast"
-  | "light"
-  | "ocean"
-  | "pastel"
-  | "solarized-dark"
-  | "solarized-light"
-  | "vibrant"
-  | "bubblegum"
-  | "90s";
+type Theme = "light" | "dark" | "sky" | "funky" | "neutral";
 
 export default Theme;
