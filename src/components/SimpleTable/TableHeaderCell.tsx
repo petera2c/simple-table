@@ -11,6 +11,7 @@ import { useTableContext } from "../../context/TableContext";
 
 interface HeaderCellProps {
   colIndex: number;
+  forceHeadersUpdate: () => void;
   gridColumnEnd: number;
   gridColumnStart: number;
   gridRowEnd: number;
@@ -24,6 +25,7 @@ const TableHeaderCell = forwardRef(
   (
     {
       colIndex,
+      forceHeadersUpdate,
       gridColumnEnd,
       gridColumnStart,
       gridRowEnd,
@@ -88,6 +90,7 @@ const TableHeaderCell = forwardRef(
     const handleDragEndWrapper = (event: DragEvent) => {
       event.preventDefault();
       handleDragEnd();
+      forceHeadersUpdate();
     };
 
     // Sort and select handler

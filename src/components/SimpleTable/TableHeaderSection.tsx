@@ -1,4 +1,4 @@
-import { createRef, useMemo } from "react";
+import { createRef, useMemo, useReducer } from "react";
 import { displayCell } from "../../utils/cellUtils";
 import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
@@ -26,6 +26,7 @@ const TableHeaderSection = ({
   sectionRef,
   sort,
 }: TableHeaderSectionProps) => {
+  const [, forceHeadersUpdate] = useReducer((x) => x + 1, 0);
   // First, flatten all headers into grid cells
   const gridCells = useMemo(() => {
     const cells: GridCell[] = [];
@@ -103,13 +104,14 @@ const TableHeaderSection = ({
       <Animate rowIndex={0}>
         {gridCells.map((cell) => (
           <TableHeaderCell
-            key={cell.header.accessor}
             colIndex={cell.colIndex}
-            gridColumnStart={cell.gridColumnStart}
+            forceHeadersUpdate={forceHeadersUpdate}
             gridColumnEnd={cell.gridColumnEnd}
-            gridRowStart={cell.gridRowStart}
+            gridColumnStart={cell.gridColumnStart}
             gridRowEnd={cell.gridRowEnd}
+            gridRowStart={cell.gridRowStart}
             header={cell.header}
+            key={cell.header.accessor}
             ref={createRef()}
             reverse={pinned === "right"}
             sort={sort}
