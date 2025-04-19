@@ -4,7 +4,8 @@ const usePrevious = <T>(value: T) => {
   const prevChildrenRef = useRef<T>(value);
 
   useEffect(() => {
-    prevChildrenRef.current = value;
+    if (JSON.stringify(prevChildrenRef.current) !== JSON.stringify(value))
+      prevChildrenRef.current = value;
   }, [value]);
 
   return prevChildrenRef.current;

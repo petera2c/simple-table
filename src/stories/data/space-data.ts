@@ -143,35 +143,35 @@ export const SPACE_HEADERS: HeaderObject[] = [
       },
     ],
   },
-  // {
-  //   accessor: "duration",
-  //   label: "Duration",
-  //   width: 150,
-  //   isSortable: true,
-  //   isEditable: true,
-  //   align: "right",
-  //   cellRenderer: ({ row }) => {
-  //     if (row.rowData.duration === "Ongoing") return "Ongoing";
-  //     return `${row.rowData.duration}y`;
-  //   },
-  // },
-  // {
-  //   accessor: "payloadWeight",
-  //   label: "Payload Weight",
-  //   width: 150,
-  //   isSortable: true,
-  //   isEditable: true,
-  //   align: "right",
-  //   cellRenderer: ({ row }) => `${row.rowData.payloadWeight as number}kg`,
-  // },
-  // {
-  //   accessor: "launchSite",
-  //   label: "Launch Site",
-  //   width: 180,
-  //   isSortable: true,
-  //   isEditable: true,
-  //   align: "left",
-  // },
+  {
+    accessor: "duration",
+    label: "Duration",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "right",
+    cellRenderer: ({ row }) => {
+      if (row.rowData.duration === "Ongoing") return "Ongoing";
+      return `${row.rowData.duration}y`;
+    },
+  },
+  {
+    accessor: "payloadWeight",
+    label: "Payload Weight",
+    width: 150,
+    isSortable: true,
+    isEditable: true,
+    align: "right",
+    cellRenderer: ({ row }) => `${row.rowData.payloadWeight as number}kg`,
+  },
+  {
+    accessor: "launchSite",
+    label: "Launch Site",
+    width: 180,
+    isSortable: true,
+    isEditable: true,
+    align: "left",
+  },
   {
     accessor: "missionCostPerKg",
     label: "Cost per Kg",

@@ -3,9 +3,74 @@ import HeaderObject from "../types/HeaderObject";
 import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
 
-const REVERT_TO_PREVIOUS_HEADERS_DELAY = 800;
+const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 let prevUpdateTime = Date.now();
 let prevDraggingPosition = { screenX: 0, screenY: 0 };
+
+const getHeaderIndexPath = (
+  headers: HeaderObject[],
+  targetAccessor: string,
+  currentPath: number[] = []
+): number[] | null => {
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i];
+    if (header.accessor === targetAccessor) {
+      return [...currentPath, i];
+    }
+    if (header.children && header.children.length > 0) {
+      const path = getHeaderIndexPath(header.children, targetAccessor, [...currentPath, i]);
+      if (path) return path;
+    }
+  }
+  return null;
+};
+
+function swapHeaders(
+  headers: HeaderObject[],
+  draggedPath: number[],
+  hoveredPath: number[]
+): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
+  // Create a deep copy of headers to avoid mutating the original array
+  const newHeaders = JSON.parse(JSON.stringify(headers));
+  let emergencyBreak = false;
+
+  // Helper function to get a header at a given path
+  function getHeaderAtPath(headers: HeaderObject[], path: number[]): HeaderObject {
+    let current = headers;
+    let header: HeaderObject | undefined;
+    for (let i = 0; i < path.length - 1; i++) {
+      current = current[path[i]].children!;
+    }
+    header = current[path[path.length - 1]];
+    return header;
+  }
+
+  // Helper function to set a header at a given path
+  function setHeaderAtPath(headers: HeaderObject[], path: number[], value: HeaderObject): void {
+    let current = headers;
+    for (let i = 0; i < path.length - 1; i++) {
+      if (current[path[i]].children) {
+        current = current[path[i]].children!;
+      } else {
+        // If the header is not a child, we need to break out of the loop
+        // This is an emergency because it meant that the header order has changed while this function was running
+        emergencyBreak = true;
+        break;
+      }
+    }
+    current[path[path.length - 1]] = value;
+  }
+
+  // Get the headers at the dragged and hovered paths
+  const draggedHeader = getHeaderAtPath(newHeaders, draggedPath);
+  const hoveredHeader = getHeaderAtPath(newHeaders, hoveredPath);
+
+  // Swap the headers
+  setHeaderAtPath(newHeaders, draggedPath, hoveredHeader);
+  setHeaderAtPath(newHeaders, hoveredPath, draggedHeader);
+
+  return { newHeaders, emergencyBreak };
+}
 
 const useDragHandler = ({
   draggedHeaderRef,
@@ -48,71 +113,6 @@ const useDragHandler = ({
     hoveredHeaderRef.current = hoveredHeader;
 
     // Function to get the index path to a header
-    const getHeaderIndexPath = (
-      headers: HeaderObject[],
-      targetAccessor: string,
-      currentPath: number[] = []
-    ): number[] | null => {
-      for (let i = 0; i < headers.length; i++) {
-        const header = headers[i];
-        if (header.accessor === targetAccessor) {
-          return [...currentPath, i];
-        }
-        if (header.children && header.children.length > 0) {
-          const path = getHeaderIndexPath(header.children, targetAccessor, [...currentPath, i]);
-          if (path) return path;
-        }
-      }
-      return null;
-    };
-
-    let emergencyBreak = false;
-
-    function swapHeaders(
-      headers: HeaderObject[],
-      draggedPath: number[],
-      hoveredPath: number[]
-    ): HeaderObject[] {
-      // Create a deep copy of headers to avoid mutating the original array
-      const newHeaders = JSON.parse(JSON.stringify(headers));
-
-      // Helper function to get a header at a given path
-      function getHeaderAtPath(headers: HeaderObject[], path: number[]): HeaderObject {
-        let current = headers;
-        let header: HeaderObject | undefined;
-        for (let i = 0; i < path.length - 1; i++) {
-          current = current[path[i]].children!;
-        }
-        header = current[path[path.length - 1]];
-        return header;
-      }
-
-      // Helper function to set a header at a given path
-      function setHeaderAtPath(headers: HeaderObject[], path: number[], value: HeaderObject): void {
-        let current = headers;
-        for (let i = 0; i < path.length - 1; i++) {
-          if (current[path[i]].children) {
-            current = current[path[i]].children!;
-          } else {
-            // If the header is not a child, we need to break out of the loop
-            // This is an emergency because it meant that the header order has changed while this function was running
-            emergencyBreak = true;
-            break;
-          }
-        }
-        current[path[path.length - 1]] = value;
-      }
-
-      // Get the headers at the dragged and hovered paths
-      const draggedHeader = getHeaderAtPath(newHeaders, draggedPath);
-      const hoveredHeader = getHeaderAtPath(newHeaders, hoveredPath);
-
-      // Swap the headers
-      setHeaderAtPath(newHeaders, draggedPath, hoveredHeader);
-      setHeaderAtPath(newHeaders, hoveredPath, draggedHeader);
-
-      return newHeaders;
-    }
 
     const currentHeaders = headersRef.current;
 
@@ -123,14 +123,28 @@ const useDragHandler = ({
     );
     const hoveredHeaderIndexPath = getHeaderIndexPath(currentHeaders, hoveredHeader.accessor);
 
-    const draggedHeaderDepth = draggedHeaderIndexPath?.length || 0;
-    const hoveredHeaderDepth = hoveredHeaderIndexPath?.length || 0;
-
     if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) return;
 
+    const draggedHeaderDepth = draggedHeaderIndexPath.length;
+    const hoveredHeaderDepth = hoveredHeaderIndexPath.length;
+
+    let targetHoveredIndexPath = hoveredHeaderIndexPath;
+
+    if (draggedHeaderDepth !== hoveredHeaderDepth) {
+      const depthDifference = hoveredHeaderDepth - draggedHeaderDepth;
+      if (depthDifference > 0) {
+        // Go up the hierarchy to find the parent at the same depth as the dragged header
+        targetHoveredIndexPath = hoveredHeaderIndexPath.slice(0, -depthDifference);
+      }
+    }
+
     // Create a copy of the headers
-    const newHeaders = swapHeaders(currentHeaders, draggedHeaderIndexPath, hoveredHeaderIndexPath);
-    // const newHeaders = [...currentHeaders];
+    const { newHeaders, emergencyBreak } = swapHeaders(
+      currentHeaders,
+      draggedHeaderIndexPath,
+      targetHoveredIndexPath
+    );
+
     if (
       // If the header is animating, don't allow the drag
       isAnimating ||
@@ -142,11 +156,9 @@ const useDragHandler = ({
       distance < 10 ||
       // If the dragged header index or hovered header index is undefined, don't allow the drag
       draggedHeaderIndexPath.length === 0 ||
-      hoveredHeaderIndexPath.length === 0 ||
+      targetHoveredIndexPath.length === 0 ||
       // If the new headers are the same as the previous headers, don't allow the drag
       JSON.stringify(newHeaders) === JSON.stringify(headersRef.current) ||
-      // If the depths are different, don't allow the drag
-      draggedHeaderDepth !== hoveredHeaderDepth ||
       emergencyBreak
     )
       return;
@@ -159,9 +171,7 @@ const useDragHandler = ({
 
     if (
       arePreviousHeadersAndNewHeadersTheSame &&
-      shouldRevertToPreviousHeaders &&
-      // If the user is moving the header quickly they will have a larger distance and we should allow the drag
-      distance < 50
+      (shouldRevertToPreviousHeaders || distance < 40)
     ) {
       return;
     }
