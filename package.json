@@ -1,9 +1,16 @@
 {
   "name": "simple-table-core",
-  "version": "0.7.58",
+  "version": "0.7.59",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "scripts": {
+    "publish-fast": "npm run build && git add . && git commit -m \"$npm_config_message\" && npm publish && git push",
+    "build": "rollup -c",
+    "start": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "preview": "rollup -c -w"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
@@ -67,13 +74,6 @@
     "storybook": "^8.4.1",
     "typescript": "^4.9.5",
     "webpack": "^5.95.0"
-  },
-  "scripts": {
-    "publish-fast": "npm run build && git add . && git commit -m \"$npm_config_message\" && npm publish && git push",
-    "build": "rollup -c",
-    "start": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "preview": "rollup -c -w"
   },
   "eslintConfig": {
     "extends": [

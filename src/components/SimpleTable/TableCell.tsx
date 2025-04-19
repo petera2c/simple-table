@@ -139,7 +139,6 @@ const TableCell = forwardRef(
         ref={ref}
         data-row-index={rowIndex}
         data-col-index={colIndex}
-        aria-selected={isHighlighted}
       >
         {header.expandable && cellHasChildren ? (
           row.rowMeta.isExpanded ? (
