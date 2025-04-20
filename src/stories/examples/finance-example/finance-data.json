@@ -1,0 +1,1007 @@
+[
+  {
+    "rowMeta": {
+      "rowId": 0,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "AAPL",
+      "companyName": "Apple Inc.",
+      "price": 165.3434459897529,
+      "priceChangePercent": 3.16,
+      "marketCap": 2852.4,
+      "peRatio": 24.3,
+      "dividendYield": 0.5
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 1,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "MSFT",
+      "companyName": "Microsoft Corporation",
+      "price": 358.1857014567559,
+      "priceChangePercent": 3.41,
+      "marketCap": 2512.9,
+      "peRatio": 20.6,
+      "dividendYield": 0.79
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 2,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "GOOGL",
+      "companyName": "Alphabet Inc.",
+      "price": 152.0938097426853,
+      "priceChangePercent": -2.24,
+      "marketCap": 1789.3,
+      "peRatio": 20.5,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 3,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "AMZN",
+      "companyName": "Amazon.com Inc.",
+      "price": 159.79251233265188,
+      "priceChangePercent": 2.28,
+      "marketCap": 1811.2,
+      "peRatio": 74.4,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 4,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "META",
+      "companyName": "Meta Platforms Inc.",
+      "price": 446.8624677997628,
+      "priceChangePercent": 5.5,
+      "marketCap": 1214.6,
+      "peRatio": 21.9,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 5,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "TSLA",
+      "companyName": "Tesla Inc.",
+      "price": 166.99662394710847,
+      "priceChangePercent": 5.67,
+      "marketCap": 567.2,
+      "peRatio": 79.3,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 6,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "price": 119.28516470381082,
+      "priceChangePercent": 4.63,
+      "marketCap": 2724.1,
+      "peRatio": 63.6,
+      "dividendYield": 0.05
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 7,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "NFLX",
+      "companyName": "Netflix Inc.",
+      "price": 672.6166680453416,
+      "priceChangePercent": 1.65,
+      "marketCap": 272.3,
+      "peRatio": 75.5,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 8,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "JNJ",
+      "companyName": "Johnson & Johnson",
+      "price": 154.1640755661653,
+      "priceChangePercent": -3.14,
+      "marketCap": 355.3,
+      "peRatio": 25.2,
+      "dividendYield": 2.92
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 9,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "PFE",
+      "companyName": "Pfizer Inc.",
+      "price": 29.02649416521245,
+      "priceChangePercent": -2.98,
+      "marketCap": 152.9,
+      "peRatio": 33.7,
+      "dividendYield": 4.45
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 10,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "UNH",
+      "companyName": "UnitedHealth Group Inc.",
+      "price": 578.4750155191749,
+      "priceChangePercent": -4.21,
+      "marketCap": 487.5,
+      "peRatio": 28.3,
+      "dividendYield": 1.54
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 11,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "MRK",
+      "companyName": "Merck & Co Inc.",
+      "price": 94.65585872629534,
+      "priceChangePercent": 4.37,
+      "marketCap": 265.8,
+      "peRatio": 34.5,
+      "dividendYield": 2.53
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 12,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "ABT",
+      "companyName": "Abbott Laboratories",
+      "price": 102.46801720910734,
+      "priceChangePercent": 4.47,
+      "marketCap": 187.1,
+      "peRatio": 20.8,
+      "dividendYield": 1.98
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 13,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "LLY",
+      "companyName": "Eli Lilly & Co.",
+      "price": 737.4410078138983,
+      "priceChangePercent": -1.83,
+      "marketCap": 745.2,
+      "peRatio": 32.9,
+      "dividendYield": 0.76
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 14,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "TMO",
+      "companyName": "Thermo Fisher Scientific",
+      "price": 600.4646541312694,
+      "priceChangePercent": 4.96,
+      "marketCap": 225.7,
+      "peRatio": 7.3,
+      "dividendYield": 0.32
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 15,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "JPM",
+      "companyName": "JPMorgan Chase & Co.",
+      "price": 169.50295266244254,
+      "priceChangePercent": 19.18,
+      "marketCap": 522.7,
+      "peRatio": 11.1,
+      "dividendYield": 2.7
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 16,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "BAC",
+      "companyName": "Bank of America Corp.",
+      "price": 38.2295378861612,
+      "priceChangePercent": -13.86,
+      "marketCap": 301.2,
+      "peRatio": 11.2,
+      "dividendYield": 2.72
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 17,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "WFC",
+      "companyName": "Wells Fargo & Co.",
+      "price": 51.27269982643095,
+      "priceChangePercent": 4.97,
+      "marketCap": 204.1,
+      "peRatio": 10.4,
+      "dividendYield": 2.54
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 18,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "V",
+      "companyName": "Visa Inc.",
+      "price": 300.2553223549954,
+      "priceChangePercent": -1.63,
+      "marketCap": 583.2,
+      "peRatio": 29.3,
+      "dividendYield": 0.79
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 19,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "MA",
+      "companyName": "Mastercard Inc.",
+      "price": 429.0403658221971,
+      "priceChangePercent": 2.59,
+      "marketCap": 416.8,
+      "peRatio": 30,
+      "dividendYield": 0.58
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 20,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "GS",
+      "companyName": "Goldman Sachs Group",
+      "price": 480.080067317049,
+      "priceChangePercent": 3.94,
+      "marketCap": 142.5,
+      "peRatio": 25.8,
+      "dividendYield": 2.35
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 21,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "MS",
+      "companyName": "Morgan Stanley",
+      "price": 87.16760326009842,
+      "priceChangePercent": -5.56,
+      "marketCap": 153.2,
+      "peRatio": 34.6,
+      "dividendYield": 3.19
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 22,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "BLK",
+      "companyName": "BlackRock Inc.",
+      "price": 786.1636614278441,
+      "priceChangePercent": 2.59,
+      "marketCap": 124.3,
+      "peRatio": 20.9,
+      "dividendYield": 2.29
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 23,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "PG",
+      "companyName": "Procter & Gamble Co.",
+      "price": 157.42837259698436,
+      "priceChangePercent": -3.12,
+      "marketCap": 400.2,
+      "peRatio": 25,
+      "dividendYield": 2.26
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 24,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "KO",
+      "companyName": "Coca-Cola Co.",
+      "price": 65.7884771421418,
+      "priceChangePercent": -4.17,
+      "marketCap": 268.6,
+      "peRatio": 15.3,
+      "dividendYield": 3.23
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 25,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "PEP",
+      "companyName": "PepsiCo Inc.",
+      "price": 185.76174694717352,
+      "priceChangePercent": 0.66,
+      "marketCap": 233.2,
+      "peRatio": 20.4,
+      "dividendYield": 3.06
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 26,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "WMT",
+      "companyName": "Walmart Inc.",
+      "price": 62.62004093458487,
+      "priceChangePercent": 9.6,
+      "marketCap": 481.4,
+      "peRatio": 34.1,
+      "dividendYield": 1.53
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 27,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "MCD",
+      "companyName": "McDonald's Corp.",
+      "price": 256.37632643392726,
+      "priceChangePercent": -4.88,
+      "marketCap": 186.9,
+      "peRatio": 17.4,
+      "dividendYield": 2.28
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 28,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "COST",
+      "companyName": "Costco Wholesale",
+      "price": 721.959160144905,
+      "priceChangePercent": -1.43,
+      "marketCap": 324.8,
+      "peRatio": 21.3,
+      "dividendYield": 0.77
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 29,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "HD",
+      "companyName": "Home Depot Inc.",
+      "price": 331.69793584898076,
+      "priceChangePercent": 0.61,
+      "marketCap": 342.5,
+      "peRatio": 23.7,
+      "dividendYield": 2.36
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 30,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "NKE",
+      "companyName": "Nike Inc.",
+      "price": 94.27353592625353,
+      "priceChangePercent": 3.14,
+      "marketCap": 142.6,
+      "peRatio": 26.6,
+      "dividendYield": 1.35
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 31,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "XOM",
+      "companyName": "Exxon Mobil Corp.",
+      "price": 110.07673324893491,
+      "priceChangePercent": 15.55,
+      "marketCap": 453.2,
+      "peRatio": 10,
+      "dividendYield": 3.86
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 32,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "CVX",
+      "companyName": "Chevron Corp.",
+      "price": 159.68072933094942,
+      "priceChangePercent": 0.13,
+      "marketCap": 271.4,
+      "peRatio": 13.8,
+      "dividendYield": 4.48
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 33,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "COP",
+      "companyName": "ConocoPhillips",
+      "price": 117.69640131690093,
+      "priceChangePercent": -0.11,
+      "marketCap": 126.5,
+      "peRatio": 9.9,
+      "dividendYield": 2.7
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 34,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "SLB",
+      "companyName": "Schlumberger NV",
+      "price": 42.035289382943475,
+      "priceChangePercent": 12.84,
+      "marketCap": 62.1,
+      "peRatio": 33.9,
+      "dividendYield": 2.38
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 35,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "EOG",
+      "companyName": "EOG Resources",
+      "price": 121.73672804535393,
+      "priceChangePercent": 3.17,
+      "marketCap": 71.1,
+      "peRatio": 34.2,
+      "dividendYield": 2.88
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 36,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "OXY",
+      "companyName": "Occidental Petroleum",
+      "price": 61.94486577255631,
+      "priceChangePercent": 5.32,
+      "marketCap": 50.7,
+      "peRatio": 18.6,
+      "dividendYield": 1.42
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 37,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "GE",
+      "companyName": "General Electric Co.",
+      "price": 155.44772546630068,
+      "priceChangePercent": 0.66,
+      "marketCap": 174.5,
+      "peRatio": 29.2,
+      "dividendYield": 0.31
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 38,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "BA",
+      "companyName": "Boeing Co.",
+      "price": 183.39773308873012,
+      "priceChangePercent": -2.3,
+      "marketCap": 110.9,
+      "peRatio": 17,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 39,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "HON",
+      "companyName": "Honeywell International Inc.",
+      "price": 190.99201019358406,
+      "priceChangePercent": 1.93,
+      "marketCap": 131.7,
+      "peRatio": 28.2,
+      "dividendYield": 1.87
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 40,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "CAT",
+      "companyName": "Caterpillar Inc.",
+      "price": 378.25195394953124,
+      "priceChangePercent": 4.28,
+      "marketCap": 168.9,
+      "peRatio": 26.9,
+      "dividendYield": 1.86
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 41,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "UPS",
+      "companyName": "United Parcel Service Inc.",
+      "price": 145.57169283507116,
+      "priceChangePercent": 4.75,
+      "marketCap": 115.3,
+      "peRatio": 24.8,
+      "dividendYield": 4.32
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 42,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "LMT",
+      "companyName": "Lockheed Martin",
+      "price": 454.9622964210286,
+      "priceChangePercent": 3.88,
+      "marketCap": 110.3,
+      "peRatio": 17.7,
+      "dividendYield": 2.62
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 43,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "RTX",
+      "companyName": "RTX Corporation",
+      "price": 94.46129878522696,
+      "priceChangePercent": -4.31,
+      "marketCap": 123.7,
+      "peRatio": 19.8,
+      "dividendYield": 2.26
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 44,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "DE",
+      "companyName": "Deere & Company",
+      "price": 394.8314716802688,
+      "priceChangePercent": 1.93,
+      "marketCap": 107.2,
+      "peRatio": 21.8,
+      "dividendYield": 1.5
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 45,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "VZ",
+      "companyName": "Verizon Communications Inc.",
+      "price": 41.52738900442697,
+      "priceChangePercent": 9.55,
+      "marketCap": 171.9,
+      "peRatio": 7.7,
+      "dividendYield": 6.83
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 46,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "T",
+      "companyName": "AT&T Inc.",
+      "price": 15.982884055082591,
+      "priceChangePercent": -0.78,
+      "marketCap": 123,
+      "peRatio": 5.3,
+      "dividendYield": 5.99
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 47,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "CMCSA",
+      "companyName": "Comcast Corp.",
+      "price": 39.64156501739863,
+      "priceChangePercent": 3.85,
+      "marketCap": 158.1,
+      "peRatio": 18.9,
+      "dividendYield": 2.78
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 48,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "TMUS",
+      "companyName": "T-Mobile US",
+      "price": 179.21815949873744,
+      "priceChangePercent": 12.22,
+      "marketCap": 196.4,
+      "peRatio": 10.6,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 49,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "CRM",
+      "companyName": "Salesforce Inc.",
+      "price": 222.2159542820992,
+      "priceChangePercent": -4.02,
+      "marketCap": 235.6,
+      "peRatio": 34.2,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 50,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "ADBE",
+      "companyName": "Adobe Inc.",
+      "price": 537.0060635219803,
+      "priceChangePercent": -1.27,
+      "marketCap": 233.2,
+      "peRatio": 22.8,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 51,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "ORCL",
+      "companyName": "Oracle Corporation",
+      "price": 115.0189853109858,
+      "priceChangePercent": 3.36,
+      "marketCap": 323.5,
+      "peRatio": 17.8,
+      "dividendYield": 1.41
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 52,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "INTC",
+      "companyName": "Intel Corporation",
+      "price": 29.326773571082654,
+      "priceChangePercent": 1.12,
+      "marketCap": 132.1,
+      "peRatio": 19.5,
+      "dividendYield": 1.66
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 53,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "CSCO",
+      "companyName": "Cisco Systems",
+      "price": 46.23388789595745,
+      "priceChangePercent": -1.26,
+      "marketCap": 193.4,
+      "peRatio": 31.9,
+      "dividendYield": 3.43
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 54,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "AMD",
+      "companyName": "Advanced Micro Devices",
+      "price": 159.39445493787036,
+      "priceChangePercent": 0.47,
+      "marketCap": 253.9,
+      "peRatio": 31.7,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 55,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "IBM",
+      "companyName": "IBM Corporation",
+      "price": 185.33202351170763,
+      "priceChangePercent": 2.5,
+      "marketCap": 158.7,
+      "peRatio": 20.5,
+      "dividendYield": 4.22
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 56,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "SBUX",
+      "companyName": "Starbucks Corporation",
+      "price": 80.15075921859415,
+      "priceChangePercent": 3.03,
+      "marketCap": 88.5,
+      "peRatio": 26.7,
+      "dividendYield": 2.51
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 57,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "TGT",
+      "companyName": "Target Corporation",
+      "price": 150.97045204011133,
+      "priceChangePercent": 21.74,
+      "marketCap": 65.4,
+      "peRatio": 11,
+      "dividendYield": 3.08
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 58,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "LOW",
+      "companyName": "Lowe's Companies",
+      "price": 212.1810602727343,
+      "priceChangePercent": 3.25,
+      "marketCap": 121.6,
+      "peRatio": 30.3,
+      "dividendYield": 1.81
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 59,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "EBAY",
+      "companyName": "eBay Inc.",
+      "price": 51.644794709958624,
+      "priceChangePercent": 0.65,
+      "marketCap": 26.2,
+      "peRatio": 22.7,
+      "dividendYield": 2.24
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 60,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "ETSY",
+      "companyName": "Etsy Inc.",
+      "price": 66.93337571524877,
+      "priceChangePercent": 1.01,
+      "marketCap": 7.7,
+      "peRatio": 78.7,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 61,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "DIS",
+      "companyName": "Walt Disney Co.",
+      "price": 82.61215329308779,
+      "priceChangePercent": 3.11,
+      "marketCap": 162.8,
+      "peRatio": 31.4,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 62,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "NFLX",
+      "companyName": "Netflix Inc.",
+      "price": 660.7025488900946,
+      "priceChangePercent": 5.38,
+      "marketCap": 272.3,
+      "peRatio": 52.6,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 63,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "PYPL",
+      "companyName": "PayPal Holdings",
+      "price": 61.95970207219237,
+      "priceChangePercent": 8.38,
+      "marketCap": 65.7,
+      "peRatio": 15,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 64,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "ABNB",
+      "companyName": "Airbnb Inc.",
+      "price": 154.5069052642555,
+      "priceChangePercent": 1.16,
+      "marketCap": 92.1,
+      "peRatio": 75.5,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 65,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "UBER",
+      "companyName": "Uber Technologies",
+      "price": 61.6335329548541,
+      "priceChangePercent": 1.77,
+      "marketCap": 139.7,
+      "peRatio": 63.7,
+      "dividendYield": null
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 66,
+      "isExpanded": false
+    },
+    "rowData": {
+      "ticker": "ZM",
+      "companyName": "Zoom Video Communications",
+      "price": 58.72500684778228,
+      "priceChangePercent": -1.27,
+      "marketCap": 18.9,
+      "peRatio": 67.3,
+      "dividendYield": null
+    }
+  }
+]

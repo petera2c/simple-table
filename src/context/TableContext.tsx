@@ -2,6 +2,12 @@ import { createContext, useContext, ReactNode, RefObject, Dispatch, SetStateActi
 import HeaderObject from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Cell from "../types/Cell";
+import CellValue from "../types/CellValue";
+
+// Define the interface for cell registry entries
+export interface CellRegistryEntry {
+  updateContent: (newValue: CellValue) => void;
+}
 
 interface TableContextType {
   // Stable values that don't change frequently
@@ -40,6 +46,7 @@ interface TableContextType {
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
+  cellRegistry?: Map<string, CellRegistryEntry>;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);

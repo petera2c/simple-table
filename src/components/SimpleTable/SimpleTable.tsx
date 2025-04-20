@@ -7,7 +7,6 @@ import {
   useMemo,
   useCallback,
   useLayoutEffect,
-  useImperativeHandle,
   RefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
@@ -27,10 +26,11 @@ import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
 import { getVisibleRows } from "../../utils/infiniteScrollUtils";
-import { TableProvider } from "../../context/TableContext";
+import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
+import { getCellKey } from "../../utils/cellUtils";
 
 // Create enum for consistent values
 
@@ -266,22 +266,33 @@ const SimpleTable = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Create a registry for cells to enable direct updates
+  const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
+
   // Set up API methods on the ref if provided
   useEffect(() => {
     if (tableRef) {
       tableRef.current = {
         updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          console.log("Updating cell", accessor, rowIndex, newValue);
-          console.log("Rows", rows);
-          console.log(rows?.[rowIndex]?.rowData?.[accessor]);
-          if (rows?.[rowIndex]?.rowData?.[accessor]) {
-            console.log("Updating cell", accessor, rowIndex, newValue);
-            rows[rowIndex].rowData[accessor] = newValue;
+          // Direct cell update through registry if cell is visible/registered
+          const rowId = rows?.[rowIndex]?.rowMeta?.rowId;
+          if (rowId !== undefined) {
+            const key = getCellKey({ rowId, accessor });
+            const cell = cellRegistryRef.current.get(key);
+            if (cell) {
+              // If the cell is registered (visible), update it directly
+              cell.updateContent(newValue);
+            }
+
+            // Always update the data source
+            if (rows?.[rowIndex]?.rowData?.[accessor] !== undefined) {
+              rows[rowIndex].rowData[accessor] = newValue;
+            }
           }
         },
       };
     }
-  }, [tableRef]);
+  }, [tableRef, rows]);
 
   return (
     <TableProvider
@@ -321,6 +332,7 @@ const SimpleTable = ({
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
+        cellRegistry: cellRegistryRef.current,
       }}
     >
       <div

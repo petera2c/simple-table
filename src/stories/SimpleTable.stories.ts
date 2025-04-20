@@ -8,7 +8,7 @@ import EditableCellsExample from "./examples/EditableCells";
 import FilterColumnsExample from "./examples/FilterColumns";
 import SelectableCellsExample from "./examples/SelectableCells";
 import RowGroupingExample from "./examples/row-grouping/RowGrouping";
-import FinancialExample from "./examples/finance-example/FinancialExample";
+import { FinancialExample } from "./examples/finance-example/FinancialExample";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import BasicExampleComponent from "./examples/BasicExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";

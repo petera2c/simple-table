@@ -1,9 +1,34 @@
-import SimpleTable from "../../../components/SimpleTable/SimpleTable";
-import { generateFinanceData } from "./finance-rows";
-import { HEADERS } from "./finance-headers";
+import { useEffect, useRef } from "react";
 
-const data = generateFinanceData();
-const FinancialExample = () => {
+import { HEADERS } from "./finance-headers";
+import data from "./finance-data.json";
+import TableRefType from "../../../types/TableRefType";
+import SimpleTable from "../../../components/SimpleTable/SimpleTable";
+
+export const FinancialExample = () => {
+  const tableRef = useRef<TableRefType | null>(null);
+
+  useEffect(() => {
+    // Repeat every 10 seconds
+    const interval = setInterval(() => {
+      if (tableRef.current) {
+        // Update a random row
+        const indexToUpdate = Math.floor(Math.random() * data.length);
+        // Get the current value
+        const currentValue = data[indexToUpdate].rowData.priceChangePercent;
+        // Add or subtract between 0 and 0.2
+        const newValue = currentValue + (Math.random() * 0.2 - 0.1);
+        tableRef.current.updateData({
+          accessor: "priceChangePercent",
+          rowIndex: indexToUpdate,
+          newValue,
+        });
+      }
+    }, 25);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
@@ -11,13 +36,11 @@ const FinancialExample = () => {
         columnReordering
         defaultHeaders={HEADERS}
         rows={data}
-        height="400px"
+        height="90dvh"
         theme="light"
         selectableCells
-        editColumns
+        tableRef={tableRef}
       />
     </div>
   );
 };
-
-export default FinancialExample;

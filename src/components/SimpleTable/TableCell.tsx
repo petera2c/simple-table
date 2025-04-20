@@ -1,10 +1,10 @@
-import { forwardRef, Ref, useEffect, useState, KeyboardEvent } from "react";
+import { forwardRef, Ref, useEffect, useState, KeyboardEvent, useCallback } from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
 import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
-import { getCellId } from "../../utils/cellUtils";
+import { getCellId, getCellKey } from "../../utils/cellUtils";
 import TableCellProps from "../../types/TableCellProps";
 import { useTableContext } from "../../context/TableContext";
 
@@ -45,6 +45,7 @@ const TableCell = forwardRef(
       hoveredHeaderRef,
       onCellEdit,
       onTableHeaderDragEnd,
+      cellRegistry,
     } = useTableContext();
 
     const { depth, row } = visibleRow;
@@ -66,6 +67,30 @@ const TableCell = forwardRef(
     // Cell focus id (used for keyboard navigation)
     const cellId = `cell-${rowIndex}-${colIndex}`;
 
+    // Generate a unique key that includes the content value to force re-render when it changes
+    const cellKey = getCellKey({ rowId: row.rowMeta.rowId, accessor: header.accessor });
+
+    // Register this cell with the cell registry for direct updates
+    useEffect(() => {
+      if (cellRegistry) {
+        const key = `${row.rowMeta.rowId}-${header.accessor}`;
+        cellRegistry.set(key, {
+          updateContent: (newValue: CellValue) => {
+            setLocalContent(newValue);
+          },
+        });
+
+        return () => {
+          cellRegistry.delete(key);
+        };
+      }
+    }, [cellRegistry, row.rowMeta.rowId, header.accessor]);
+
+    // Update local content when row data changes
+    useEffect(() => {
+      setLocalContent(row.rowData[header.accessor] as CellValue);
+    }, [row.rowData, header.accessor]);
+
     // Derived state
     const cellHasChildren = Boolean(row.rowMeta?.children?.length);
     const clickable = Boolean(header?.isEditable);
@@ -83,19 +108,18 @@ const TableCell = forwardRef(
         : ""
     } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""}`;
 
-    const updateLocalContent = (newValue: CellValue) => {
-      setLocalContent(newValue);
+    const updateLocalContent = useCallback(
+      (newValue: CellValue) => {
+        setLocalContent(newValue);
 
-      onCellEdit?.({
-        accessor: header.accessor,
-        newValue,
-        row,
-      });
-    };
-
-    useEffect(() => {
-      setLocalContent(row.rowData[header.accessor] as CellValue);
-    }, [header.accessor, row]);
+        onCellEdit?.({
+          accessor: header.accessor,
+          newValue,
+          row,
+        });
+      },
+      [header.accessor, onCellEdit, row]
+    );
 
     // Handle keyboard events when cell is focused
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -123,6 +147,7 @@ const TableCell = forwardRef(
 
     return (
       <div
+        key={cellKey}
         className={cellClassName}
         id={cellId}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
@@ -139,6 +164,8 @@ const TableCell = forwardRef(
         ref={ref}
         data-row-index={rowIndex}
         data-col-index={colIndex}
+        data-row-id={row.rowMeta.rowId}
+        data-accessor={header.accessor}
       >
         {header.expandable && cellHasChildren ? (
           row.rowMeta.isExpanded ? (
