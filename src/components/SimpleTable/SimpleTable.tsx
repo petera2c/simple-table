@@ -36,6 +36,7 @@ import { getCellKey } from "../../utils/cellUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
+  cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   collapseIcon?: ReactNode; // Collapse icon
   columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
@@ -68,6 +69,7 @@ interface SimpleTableProps {
 
 const SimpleTable = ({
   allowAnimations = false,
+  cellUpdateFlash = false,
   collapseIcon = <AngleDownIcon className="st-sort-icon" />,
   columnEditorPosition = "right",
   columnEditorText = "Columns",
@@ -298,6 +300,7 @@ const SimpleTable = ({
     <TableProvider
       value={{
         allowAnimations,
+        cellUpdateFlash,
         collapseIcon,
         columnReordering,
         columnResizing,

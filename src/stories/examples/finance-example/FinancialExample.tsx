@@ -9,7 +9,6 @@ export const FinancialExample = () => {
   const tableRef = useRef<TableRefType | null>(null);
 
   useEffect(() => {
-    // Repeat every 10 seconds
     const interval = setInterval(() => {
       if (tableRef.current) {
         // Update a random row
@@ -24,7 +23,7 @@ export const FinancialExample = () => {
           newValue,
         });
       }
-    }, 25);
+    }, 100);
 
     return () => clearInterval(interval);
   }, []);
@@ -37,7 +36,7 @@ export const FinancialExample = () => {
         defaultHeaders={HEADERS}
         rows={data}
         height="90dvh"
-        theme="light"
+        theme="dark"
         selectableCells
         tableRef={tableRef}
       />

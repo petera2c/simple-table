@@ -12,6 +12,8 @@ export interface CellRegistryEntry {
 interface TableContextType {
   // Stable values that don't change frequently
   allowAnimations?: boolean;
+  cellRegistry?: Map<string, CellRegistryEntry>;
+  cellUpdateFlash?: boolean;
   collapseIcon?: ReactNode;
   columnReordering: boolean;
   columnResizing: boolean;
@@ -46,7 +48,6 @@ interface TableContextType {
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
-  cellRegistry?: Map<string, CellRegistryEntry>;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);

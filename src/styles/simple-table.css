@@ -19,6 +19,7 @@
   --st-spacing-large: 16px;
   --st-scrollbar-bg-color: transparent;
   --st-scrollbar-thumb-color: var(--st-slate-200);
+  --st-cell-flash-color: var(--st-slate-300);
 
   /* Tailwind Colors - renamed to avoid conflicts */
   --st-white: #fff;
@@ -350,6 +351,7 @@
   --st-button-active-background-color: var(--st-blue-600);
   --st-font-family: "Inter", sans-serif;
   --st-editable-cell-focus-border-color: var(--st-blue-500);
+  --st-cell-flash-color: var(--st-slate-200);
 }
 
 /* Dark Theme */
@@ -400,6 +402,7 @@
   --st-button-active-background-color: var(--st-blue-500);
   --st-font-family: "Inter", sans-serif;
   --st-editable-cell-focus-border-color: var(--st-blue-400);
+  --st-cell-flash-color: var(--st-gray-600);
 }
 
 /* Neutral Theme */
@@ -450,6 +453,7 @@
   --st-button-active-background-color: var(--st-neutral-600);
   --st-font-family: "Inter", sans-serif;
   --st-editable-cell-focus-border-color: var(--st-neutral-500);
+  --st-cell-flash-color: var(--st-neutral-400);
 }
 
 /* Sky Theme */
@@ -500,6 +504,7 @@
   --st-button-active-background-color: var(--st-blue-600);
   --st-font-family: "Inter", sans-serif;
   --st-editable-cell-focus-border-color: var(--st-blue-500);
+  --st-cell-flash-color: var(--st-blue-300);
 }
 
 /* Funky Theme */
@@ -552,6 +557,7 @@
   --st-button-active-background-color: var(--st-violet-600);
   --st-font-family: "Inter", sans-serif;
   --st-editable-cell-focus-border-color: var(--st-violet-500);
+  --st-cell-flash-color: var(--st-violet-200);
 }
 
 .simple-table-root,
@@ -1181,3 +1187,22 @@
   transform: rotate(-90deg);
   transition: transform var(--st-transition-duration) var(--st-transition-ease);
 }
+
+/* Cell update animation */
+@keyframes cell-flash {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: var(--st-cell-flash-color);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.st-cell-updating {
+  animation: cell-flash 0.6s ease-in-out;
+}
+
+/* Remove increase/decrease animations that are not needed */

@@ -1,4 +1,4 @@
-import { forwardRef, Ref, useEffect, useState, KeyboardEvent, useCallback } from "react";
+import { forwardRef, Ref, useEffect, useState, KeyboardEvent, useCallback, useRef } from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -36,6 +36,8 @@ const TableCell = forwardRef(
   ) => {
     // Get shared props from context
     const {
+      cellRegistry,
+      cellUpdateFlash,
       collapseIcon,
       draggedHeaderRef,
       expandIcon,
@@ -45,7 +47,6 @@ const TableCell = forwardRef(
       hoveredHeaderRef,
       onCellEdit,
       onTableHeaderDragEnd,
-      cellRegistry,
     } = useTableContext();
 
     const { depth, row } = visibleRow;
@@ -54,6 +55,8 @@ const TableCell = forwardRef(
       row.rowData[header.accessor] as CellValue
     );
     const [isEditing, setIsEditing] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
     // Hooks
     const { handleDragOver } = useDragHandler({
@@ -76,15 +79,48 @@ const TableCell = forwardRef(
         const key = `${row.rowMeta.rowId}-${header.accessor}`;
         cellRegistry.set(key, {
           updateContent: (newValue: CellValue) => {
-            setLocalContent(newValue);
+            // If the value is different, trigger the update animation
+            if (localContent !== newValue) {
+              setLocalContent(newValue);
+              if (cellUpdateFlash) {
+                setIsUpdating(true);
+
+                // Clear any existing timeout
+                if (updateTimeout.current) {
+                  clearTimeout(updateTimeout.current);
+                }
+
+                // Remove the animation class after animation completes
+                updateTimeout.current = setTimeout(() => {
+                  setIsUpdating(false);
+                }, 800);
+              }
+            } else {
+              setLocalContent(newValue);
+            }
           },
         });
 
         return () => {
           cellRegistry.delete(key);
+          // Clear timeout on unmount
+          if (updateTimeout.current) {
+            clearTimeout(updateTimeout.current);
+          }
         };
       }
-    }, [cellRegistry, row.rowMeta.rowId, header.accessor]);
+    }, [cellRegistry, cellUpdateFlash, row.rowMeta.rowId, header.accessor, localContent]);
+
+    // Add another effect to ensure animation gets removed
+    useEffect(() => {
+      if (isUpdating) {
+        const timer = setTimeout(() => {
+          setIsUpdating(false);
+        }, 850);
+
+        return () => clearTimeout(timer);
+      }
+    }, [isUpdating]);
 
     // Update local content when row data changes
     useEffect(() => {
@@ -106,7 +142,9 @@ const TableCell = forwardRef(
           ? `st-cell-selected-first ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""}`;
+    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""} ${
+      isUpdating ? "st-cell-updating" : ""
+    }`;
 
     const updateLocalContent = useCallback(
       (newValue: CellValue) => {
