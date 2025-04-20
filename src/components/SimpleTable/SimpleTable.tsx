@@ -6,8 +6,9 @@ import {
   ReactNode,
   useMemo,
   useCallback,
-  memo,
   useLayoutEffect,
+  useImperativeHandle,
+  RefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
 import HeaderObject from "../../types/HeaderObject";
@@ -27,12 +28,11 @@ import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
 import { getVisibleRows } from "../../utils/infiniteScrollUtils";
 import { TableProvider } from "../../context/TableContext";
+import ColumnEditorPosition from "../../types/ColumnEditorPosition";
+import UpdateDataProps from "../../types/UpdateCellProps";
+import TableRefType from "../../types/TableRefType";
 
 // Create enum for consistent values
-enum ColumnEditorPosition {
-  Left = "left",
-  Right = "right",
-}
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -61,6 +61,7 @@ interface SimpleTableProps {
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
+  tableRef?: RefObject<TableRefType | null>;
   theme?: Theme; // Theme
   totalPages?: number; // Total pages
 }
@@ -68,7 +69,7 @@ interface SimpleTableProps {
 const SimpleTable = ({
   allowAnimations = false,
   collapseIcon = <AngleDownIcon className="st-sort-icon" />,
-  columnEditorPosition = ColumnEditorPosition.Right,
+  columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnReordering = false,
   columnResizing = false,
@@ -92,6 +93,7 @@ const SimpleTable = ({
   shouldPaginate = false,
   sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
+  tableRef,
   theme = "light",
   totalPages,
 }: SimpleTableProps) => {
@@ -177,7 +179,6 @@ const SimpleTable = ({
   );
 
   // Hooks
-
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const {
     handleMouseDown,
@@ -264,6 +265,23 @@ const SimpleTable = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Set up API methods on the ref if provided
+  useEffect(() => {
+    if (tableRef) {
+      tableRef.current = {
+        updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
+          console.log("Updating cell", accessor, rowIndex, newValue);
+          console.log("Rows", rows);
+          console.log(rows?.[rowIndex]?.rowData?.[accessor]);
+          if (rows?.[rowIndex]?.rowData?.[accessor]) {
+            console.log("Updating cell", accessor, rowIndex, newValue);
+            rows[rowIndex].rowData[accessor] = newValue;
+          }
+        },
+      };
+    }
+  }, [tableRef]);
 
   return (
     <TableProvider
@@ -352,4 +370,4 @@ const SimpleTable = ({
   );
 };
 
-export default memo(SimpleTable);
+export default SimpleTable;
