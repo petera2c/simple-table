@@ -12,6 +12,7 @@ import { FinancialExample } from "./examples/finance-example/FinancialExample";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import BasicExampleComponent from "./examples/BasicExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";
+import { SalesExampleComponent } from "./examples/sales-example/SalesExample";
 
 const meta = {
   title: "Simple Table",
@@ -59,6 +60,9 @@ export const BasicExample: Story = {
 };
 export const CellHighlighting: Story = {
   render: CellHighlightingDemo,
+};
+export const SalesExample: Story = {
+  render: SalesExampleComponent,
 };
 // export const EditColumns: Story = {
 //   render: EditColumnsExample,

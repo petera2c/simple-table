@@ -2,6 +2,8 @@ import { ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
 import Row from "../types/Row";
 import VisibleRow from "../types/VisibleRow";
 
+const SEPARATOR_HEIGHT = 1;
+
 // Calculate total row count recursively
 export const getTotalRowCount = (rows: Row[]): number => {
   let count = 0;
@@ -31,17 +33,18 @@ export const getVisibleRows = ({
   rowHeight: number;
   scrollTop: number;
 }): VisibleRow[] => {
+  const rowHeightWithSeparator = rowHeight + SEPARATOR_HEIGHT;
   const visibleRows: VisibleRow[] = [];
   let currentPosition = 0;
-  const startOffset = Math.max(0, scrollTop - rowHeight * bufferRowCount);
-  const endOffset = scrollTop + contentHeight + rowHeight * bufferRowCount;
+  const startOffset = Math.max(0, scrollTop - rowHeightWithSeparator * bufferRowCount);
+  const endOffset = scrollTop + contentHeight + rowHeightWithSeparator * bufferRowCount;
 
   const traverseRows = (rowList: Row[], depth: number) => {
     for (const row of rowList) {
-      const rowTop = currentPosition * rowHeight;
+      const rowTop = currentPosition * rowHeightWithSeparator;
       if (rowTop >= endOffset) break;
 
-      if (rowTop + rowHeight > startOffset) {
+      if (rowTop + rowHeightWithSeparator > startOffset) {
         visibleRows.push({
           row,
           depth,
