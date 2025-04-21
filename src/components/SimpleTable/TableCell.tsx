@@ -142,9 +142,7 @@ const TableCell = forwardRef(
           ? `st-cell-selected-first ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"} ${clickable ? "clickable" : ""} ${
-      isUpdating ? "st-cell-updating" : ""
-    }`;
+    } ${clickable ? "clickable" : ""} ${isUpdating ? "st-cell-updating" : ""}`;
 
     const updateLocalContent = useCallback(
       (newValue: CellValue) => {
@@ -171,7 +169,7 @@ const TableCell = forwardRef(
     if (isEditing) {
       return (
         <div
-          className={`st-cell-editing ${isOddRow ? "st-cell-odd-row" : "st-cell-even-row"}`}
+          className="st-cell-editing"
           id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
         >
           <EditableCell

@@ -623,6 +623,7 @@
 /* Header */
 .st-header-container {
   display: flex;
+  background-color: var(--st-header-background-color);
 }
 
 .st-header-container.st-header-scroll-padding::after {
@@ -690,6 +691,13 @@
   transform: translateZ(0);
   transition: background 0.2s ease;
   width: 100%;
+}
+.st-table-row.even {
+  background-color: var(--st-even-row-background-color);
+}
+.st-table-row.odd {
+  background-color: var(--st-odd-row-background-color);
+  color: var(--st-cell-odd-row-color);
 }
 
 /* Styles for table header cells */
@@ -879,19 +887,6 @@
 }
 .st-row-separator.st-last-group-row {
   background-color: var(--st-last-group-row-separator-border-color);
-}
-.st-cell-even-row {
-  background-color: var(--st-even-row-background-color);
-}
-
-.st-cell-odd-row:not(.st-cell-selected) {
-  background-color: var(--st-odd-row-background-color);
-  color: var(--st-cell-odd-row-color);
-}
-.st-cell:not(.st-cell-odd-row):not(.st-cell-selected) {
-  color: var(--st-cell-color);
-}
-.st-last-group-row {
 }
 
 /* Style for a cell when it is being dragged */

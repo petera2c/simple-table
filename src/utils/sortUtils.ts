@@ -288,28 +288,25 @@ export const handleSort = (headers: HeaderObject[], rows: Row[], sortConfig: Sor
   return { sortedData, newSortConfig: sortConfig };
 };
 
-// Resize handler
-export const handleResizeStart = ({
-  colIndex,
-  event,
-  forceUpdate,
-  header,
-  headersRef,
-  gridColumnEnd,
-  gridColumnStart,
-  setIsWidthDragging,
-  startWidth,
-}: {
-  colIndex: number;
+export type HandleResizeStartProps = {
   event: MouseEvent;
   forceUpdate: () => void;
   header: HeaderObject;
-  headersRef: React.RefObject<HeaderObject[]>;
   gridColumnEnd: number;
   gridColumnStart: number;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   startWidth: number;
-}) => {
+};
+// Resize handler
+export const handleResizeStart = ({
+  event,
+  forceUpdate,
+  header,
+  gridColumnEnd,
+  gridColumnStart,
+  setIsWidthDragging,
+  startWidth,
+}: HandleResizeStartProps) => {
   setIsWidthDragging(true);
   event.preventDefault();
   const startX = event.clientX;

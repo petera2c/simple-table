@@ -41,7 +41,7 @@ const TableRow = ({
 
   return (
     <div
-      className="st-table-row"
+      className={`st-table-row ${rowIndex % 2 === 0 ? "even" : "odd"}`}
       style={{
         gridTemplateColumns,
         top: calculateRowTopPosition({ position, rowHeight }),
