@@ -103,7 +103,8 @@ const compareValues = (
     const aNum = parseNumericValue(aValue);
     const bNum = parseNumericValue(bValue);
 
-    return comparators.number(aNum, bNum, direction);
+    const result = comparators.number(aNum, bNum, direction);
+    return result;
   }
 
   // For date columns, handle date strings or date objects
@@ -132,8 +133,7 @@ const sortPreservingHierarchy = (
   headers: HeaderObject[]
 ): Row[] => {
   // Find the header object that matches the sort key
-  const headerObject = headers.find((header) => header.accessor === sortConfig.key.accessor);
-  const type = headerObject?.type || "string";
+  const type = sortConfig.key?.type || "string";
   const { direction } = sortConfig;
 
   // Group rows by sectors or other grouping criteria
@@ -142,13 +142,14 @@ const sortPreservingHierarchy = (
   let currentGroup = "";
 
   // First pass - identify and group rows by sector
+
   rows.forEach((row) => {
     // Check if this is a group header row (like "Sector 1", "Sector 2")
     const isSectorHeader =
       row.rowData &&
       // Assuming sector headers have some indicator (e.g., no data in key columns)
-      !row.rowData[sortConfig.key.accessor] &&
-      row.rowMeta.isExpanded !== undefined;
+      row.rowMeta.isExpanded === true &&
+      sortConfig.key.expandable === true;
 
     if (isSectorHeader) {
       // Extract sector name from the row (assuming it's in a column like 'sector')
@@ -174,7 +175,6 @@ const sortPreservingHierarchy = (
       groupedRows.get(defaultGroup)?.push(row);
     }
   });
-
   // Helper function to sort rows by the specified column
   const sortRowsByColumn = (rowsToSort: Row[]): Row[] => {
     return [...rowsToSort].sort((a, b) => {

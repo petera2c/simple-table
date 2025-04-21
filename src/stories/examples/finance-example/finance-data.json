@@ -1,8 +1,7 @@
 [
   {
     "rowMeta": {
-      "rowId": 0,
-      "isExpanded": false
+      "rowId": 0
     },
     "rowData": {
       "ticker": "AAPL",
@@ -16,8 +15,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 1,
-      "isExpanded": false
+      "rowId": 1
     },
     "rowData": {
       "ticker": "MSFT",
@@ -31,8 +29,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 2,
-      "isExpanded": false
+      "rowId": 2
     },
     "rowData": {
       "ticker": "GOOGL",
@@ -46,8 +43,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 3,
-      "isExpanded": false
+      "rowId": 3
     },
     "rowData": {
       "ticker": "AMZN",
@@ -61,8 +57,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 4,
-      "isExpanded": false
+      "rowId": 4
     },
     "rowData": {
       "ticker": "META",
@@ -76,8 +71,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 5,
-      "isExpanded": false
+      "rowId": 5
     },
     "rowData": {
       "ticker": "TSLA",
@@ -91,8 +85,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 6,
-      "isExpanded": false
+      "rowId": 6
     },
     "rowData": {
       "ticker": "NVDA",
@@ -106,8 +99,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 7,
-      "isExpanded": false
+      "rowId": 7
     },
     "rowData": {
       "ticker": "NFLX",
@@ -121,8 +113,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 8,
-      "isExpanded": false
+      "rowId": 8
     },
     "rowData": {
       "ticker": "JNJ",
@@ -136,8 +127,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 9,
-      "isExpanded": false
+      "rowId": 9
     },
     "rowData": {
       "ticker": "PFE",
@@ -151,8 +141,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 10,
-      "isExpanded": false
+      "rowId": 10
     },
     "rowData": {
       "ticker": "UNH",
@@ -166,8 +155,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 11,
-      "isExpanded": false
+      "rowId": 11
     },
     "rowData": {
       "ticker": "MRK",
@@ -181,8 +169,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 12,
-      "isExpanded": false
+      "rowId": 12
     },
     "rowData": {
       "ticker": "ABT",
@@ -196,8 +183,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 13,
-      "isExpanded": false
+      "rowId": 13
     },
     "rowData": {
       "ticker": "LLY",
@@ -211,8 +197,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 14,
-      "isExpanded": false
+      "rowId": 14
     },
     "rowData": {
       "ticker": "TMO",
@@ -226,8 +211,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 15,
-      "isExpanded": false
+      "rowId": 15
     },
     "rowData": {
       "ticker": "JPM",
@@ -241,8 +225,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 16,
-      "isExpanded": false
+      "rowId": 16
     },
     "rowData": {
       "ticker": "BAC",
@@ -256,8 +239,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 17,
-      "isExpanded": false
+      "rowId": 17
     },
     "rowData": {
       "ticker": "WFC",
@@ -271,8 +253,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 18,
-      "isExpanded": false
+      "rowId": 18
     },
     "rowData": {
       "ticker": "V",
@@ -286,8 +267,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 19,
-      "isExpanded": false
+      "rowId": 19
     },
     "rowData": {
       "ticker": "MA",
@@ -301,8 +281,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 20,
-      "isExpanded": false
+      "rowId": 20
     },
     "rowData": {
       "ticker": "GS",
@@ -316,8 +295,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 21,
-      "isExpanded": false
+      "rowId": 21
     },
     "rowData": {
       "ticker": "MS",
@@ -331,8 +309,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 22,
-      "isExpanded": false
+      "rowId": 22
     },
     "rowData": {
       "ticker": "BLK",
@@ -346,8 +323,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 23,
-      "isExpanded": false
+      "rowId": 23
     },
     "rowData": {
       "ticker": "PG",
@@ -361,8 +337,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 24,
-      "isExpanded": false
+      "rowId": 24
     },
     "rowData": {
       "ticker": "KO",
@@ -376,8 +351,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 25,
-      "isExpanded": false
+      "rowId": 25
     },
     "rowData": {
       "ticker": "PEP",
@@ -391,8 +365,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 26,
-      "isExpanded": false
+      "rowId": 26
     },
     "rowData": {
       "ticker": "WMT",
@@ -406,8 +379,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 27,
-      "isExpanded": false
+      "rowId": 27
     },
     "rowData": {
       "ticker": "MCD",
@@ -421,8 +393,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 28,
-      "isExpanded": false
+      "rowId": 28
     },
     "rowData": {
       "ticker": "COST",
@@ -436,8 +407,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 29,
-      "isExpanded": false
+      "rowId": 29
     },
     "rowData": {
       "ticker": "HD",
@@ -451,8 +421,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 30,
-      "isExpanded": false
+      "rowId": 30
     },
     "rowData": {
       "ticker": "NKE",
@@ -466,8 +435,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 31,
-      "isExpanded": false
+      "rowId": 31
     },
     "rowData": {
       "ticker": "XOM",
@@ -481,8 +449,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 32,
-      "isExpanded": false
+      "rowId": 32
     },
     "rowData": {
       "ticker": "CVX",
@@ -496,8 +463,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 33,
-      "isExpanded": false
+      "rowId": 33
     },
     "rowData": {
       "ticker": "COP",
@@ -511,8 +477,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 34,
-      "isExpanded": false
+      "rowId": 34
     },
     "rowData": {
       "ticker": "SLB",
@@ -526,8 +491,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 35,
-      "isExpanded": false
+      "rowId": 35
     },
     "rowData": {
       "ticker": "EOG",
@@ -541,8 +505,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 36,
-      "isExpanded": false
+      "rowId": 36
     },
     "rowData": {
       "ticker": "OXY",
@@ -556,8 +519,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 37,
-      "isExpanded": false
+      "rowId": 37
     },
     "rowData": {
       "ticker": "GE",
@@ -571,8 +533,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 38,
-      "isExpanded": false
+      "rowId": 38
     },
     "rowData": {
       "ticker": "BA",
@@ -586,8 +547,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 39,
-      "isExpanded": false
+      "rowId": 39
     },
     "rowData": {
       "ticker": "HON",
@@ -601,8 +561,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 40,
-      "isExpanded": false
+      "rowId": 40
     },
     "rowData": {
       "ticker": "CAT",
@@ -616,8 +575,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 41,
-      "isExpanded": false
+      "rowId": 41
     },
     "rowData": {
       "ticker": "UPS",
@@ -631,8 +589,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 42,
-      "isExpanded": false
+      "rowId": 42
     },
     "rowData": {
       "ticker": "LMT",
@@ -646,8 +603,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 43,
-      "isExpanded": false
+      "rowId": 43
     },
     "rowData": {
       "ticker": "RTX",
@@ -661,8 +617,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 44,
-      "isExpanded": false
+      "rowId": 44
     },
     "rowData": {
       "ticker": "DE",
@@ -676,8 +631,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 45,
-      "isExpanded": false
+      "rowId": 45
     },
     "rowData": {
       "ticker": "VZ",
@@ -691,8 +645,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 46,
-      "isExpanded": false
+      "rowId": 46
     },
     "rowData": {
       "ticker": "T",
@@ -706,8 +659,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 47,
-      "isExpanded": false
+      "rowId": 47
     },
     "rowData": {
       "ticker": "CMCSA",
@@ -721,8 +673,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 48,
-      "isExpanded": false
+      "rowId": 48
     },
     "rowData": {
       "ticker": "TMUS",
@@ -736,8 +687,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 49,
-      "isExpanded": false
+      "rowId": 49
     },
     "rowData": {
       "ticker": "CRM",
@@ -751,8 +701,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 50,
-      "isExpanded": false
+      "rowId": 50
     },
     "rowData": {
       "ticker": "ADBE",
@@ -766,8 +715,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 51,
-      "isExpanded": false
+      "rowId": 51
     },
     "rowData": {
       "ticker": "ORCL",
@@ -781,8 +729,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 52,
-      "isExpanded": false
+      "rowId": 52
     },
     "rowData": {
       "ticker": "INTC",
@@ -796,8 +743,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 53,
-      "isExpanded": false
+      "rowId": 53
     },
     "rowData": {
       "ticker": "CSCO",
@@ -811,8 +757,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 54,
-      "isExpanded": false
+      "rowId": 54
     },
     "rowData": {
       "ticker": "AMD",
@@ -826,8 +771,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 55,
-      "isExpanded": false
+      "rowId": 55
     },
     "rowData": {
       "ticker": "IBM",
@@ -841,8 +785,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 56,
-      "isExpanded": false
+      "rowId": 56
     },
     "rowData": {
       "ticker": "SBUX",
@@ -856,8 +799,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 57,
-      "isExpanded": false
+      "rowId": 57
     },
     "rowData": {
       "ticker": "TGT",
@@ -871,8 +813,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 58,
-      "isExpanded": false
+      "rowId": 58
     },
     "rowData": {
       "ticker": "LOW",
@@ -886,8 +827,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 59,
-      "isExpanded": false
+      "rowId": 59
     },
     "rowData": {
       "ticker": "EBAY",
@@ -901,8 +841,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 60,
-      "isExpanded": false
+      "rowId": 60
     },
     "rowData": {
       "ticker": "ETSY",
@@ -916,8 +855,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 61,
-      "isExpanded": false
+      "rowId": 61
     },
     "rowData": {
       "ticker": "DIS",
@@ -931,8 +869,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 62,
-      "isExpanded": false
+      "rowId": 62
     },
     "rowData": {
       "ticker": "NFLX",
@@ -946,8 +883,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 63,
-      "isExpanded": false
+      "rowId": 63
     },
     "rowData": {
       "ticker": "PYPL",
@@ -961,8 +897,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 64,
-      "isExpanded": false
+      "rowId": 64
     },
     "rowData": {
       "ticker": "ABNB",
@@ -976,8 +911,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 65,
-      "isExpanded": false
+      "rowId": 65
     },
     "rowData": {
       "ticker": "UBER",
@@ -991,8 +925,7 @@
   },
   {
     "rowMeta": {
-      "rowId": 66,
-      "isExpanded": false
+      "rowId": 66
     },
     "rowData": {
       "ticker": "ZM",

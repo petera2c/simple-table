@@ -67,10 +67,10 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => {
-          if (row.rowData.dividendYield === "—" || row.rowData.dividendYield === null) return "—";
-          return `${(row.rowData.dividendYield as number).toFixed(2)}%`;
-        },
+        // cellRenderer: ({ row }) => {
+        //   if (row.rowData.dividendYield === "—" || row.rowData.dividendYield === null) return "—";
+        //   return `${(row.rowData.dividendYield as number).toFixed(2)}%`;
+        // },
       },
     ],
   },
