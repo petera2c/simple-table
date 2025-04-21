@@ -185,7 +185,7 @@ const TableHeaderCell = forwardRef(
           throttle({
             callback: handleResizeStart,
             callbackProps: {
-              event,
+              event: event.nativeEvent,
               forceUpdate,
               header,
               gridColumnEnd,
@@ -195,7 +195,7 @@ const TableHeaderCell = forwardRef(
                 typeof ref === "object" && ref !== null && "current" in ref
                   ? ref.current?.offsetWidth
                   : undefined,
-            },
+            } as HandleResizeStartProps,
             limit: 10,
           });
         }}
