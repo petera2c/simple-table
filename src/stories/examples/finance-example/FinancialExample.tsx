@@ -36,7 +36,7 @@ export const FinancialExample = () => {
         defaultHeaders={HEADERS}
         rows={data}
         height="90dvh"
-        theme="dark"
+        theme="light"
         selectableCells
         tableRef={tableRef}
       />

@@ -32,15 +32,6 @@ export const handleResizeStart = ({
   const isParentHeader = gridColumnEnd - gridColumnStart > 1;
   const leafHeaders = isParentHeader ? findLeafHeaders(header) : [header];
 
-  // Store original widths for reference
-  const originalWidths = leafHeaders.map((leafHeader) => {
-    const width =
-      typeof leafHeader.width === "number"
-        ? leafHeader.width
-        : parseInt(String(leafHeader.width), 10) || 150;
-    return width;
-  });
-
   const handleMouseMove = (event: MouseEvent) => {
     // Calculate the width delta (how much the width has changed)
     const delta = event.clientX - startX;

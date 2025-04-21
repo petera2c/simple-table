@@ -11,15 +11,15 @@ import RowIndices from "../../types/RowIndices";
 interface TableRowProps {
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
+  headers: HeaderObject[];
+  hiddenColumns: Record<string, boolean>;
   index: number;
+  isWidthDragging: boolean;
+  onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
   visibleRow: VisibleRow;
-  headers: HeaderObject[];
-  hiddenColumns: Record<string, boolean>;
-  isWidthDragging: boolean;
-  onExpandRowClick: (rowId: RowId) => void;
 }
 
 const TableRow = ({
@@ -37,11 +37,12 @@ const TableRow = ({
 }: TableRowProps) => {
   const { position } = visibleRow;
   // Get row index from rowIndices using the row's ID
-  const rowIndex = index; // Use the provided index by default
+
+  const isOdd = position % 2 === 0;
 
   return (
     <div
-      className={`st-row ${rowIndex % 2 === 0 ? "even" : "odd"}`}
+      className={`st-row ${isOdd ? "even" : "odd"}`}
       style={{
         gridTemplateColumns,
         top: calculateRowTopPosition({ position, rowHeight }),
@@ -56,7 +57,7 @@ const TableRow = ({
         key={index}
         onExpandRowClick={onExpandRowClick}
         pinned={pinned}
-        rowIndex={rowIndex}
+        rowIndex={index}
         rowIndices={rowIndices}
         visibleRow={visibleRow}
       />

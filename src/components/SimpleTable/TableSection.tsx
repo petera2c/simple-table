@@ -10,7 +10,6 @@ import RowIndices from "../../types/RowIndices";
 
 interface TableSectionProps {
   columnIndices: ColumnIndices;
-  headerContainerRef: RefObject<HTMLDivElement | null>;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   isWidthDragging: boolean;
@@ -27,7 +26,6 @@ interface TableSectionProps {
 
 const TableSection = ({
   columnIndices,
-  headerContainerRef,
   headers,
   hiddenColumns,
   isWidthDragging,
@@ -41,7 +39,7 @@ const TableSection = ({
   visibleRows,
   width,
 }: TableSectionProps) => {
-  const className = pinned ? `st-table-body-pinned-${pinned}` : "st-body-main";
+  const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
 
   return (
     <div
@@ -57,7 +55,7 @@ const TableSection = ({
         const lastGroupRow = Boolean(visibleRow.row.rowMeta?.children?.length);
         const previousRowIsExpanded = visibleRows[index - 1]?.row.rowMeta?.isExpanded;
         return (
-          <Fragment key={index}>
+          <Fragment key={visibleRow.position}>
             <TableRow
               columnIndices={columnIndices}
               gridTemplateColumns={templateColumns}
