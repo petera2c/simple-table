@@ -23,54 +23,7 @@ export const HEADERS: HeaderObject[] = [
     align: "left",
     type: "string",
   },
-  {
-    accessor: "priceMetrics",
-    label: "Price Performance",
-    width: 250,
-    isSortable: false,
-    children: [
-      {
-        accessor: "price",
-        label: "Price (USD)",
-        width: "1fr",
-        isSortable: true,
-        isEditable: false,
-        align: "right",
-        type: "number",
-        cellRenderer: ({ row }) => {
-          if (row.rowData.price === "—") return "—";
-          return `$${(row.rowData.price as number).toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`;
-        },
-      },
-      {
-        accessor: "priceChangePercent",
-        label: "Change %",
-        width: "1fr",
-        isSortable: true,
-        isEditable: false,
-        align: "right",
-        type: "number",
-        cellRenderer: ({ row }) => {
-          if (row.rowData.priceChangePercent === "—" || row.rowData.priceChangePercent === null)
-            return "—";
-          const value = row.rowData.priceChangePercent as number;
-          const color = value < 0 ? "text-red-600" : value > 0 ? "text-green-600" : "text-gray-600";
-          const prefix = value > 0 ? "+" : "";
-          const bgColor = value < 0 ? "bg-red-50" : value > 0 ? "bg-green-50" : "";
 
-          return (
-            <div className={`px-2 py-1 rounded font-medium ${bgColor} ${color}`}>
-              {prefix}
-              {value.toFixed(2)}%
-            </div>
-          );
-        },
-      },
-    ],
-  },
   {
     accessor: "fundamentals",
     label: "Fundamentals",
@@ -120,5 +73,53 @@ export const HEADERS: HeaderObject[] = [
         },
       },
     ],
+  },
+  {
+    accessor: "priceMetrics",
+    label: "Price Performance",
+    width: "1fr",
+    isSortable: false,
+    // children: [
+    //   {
+    //     accessor: "price",
+    //     label: "Price (USD)",
+    //     width: "1fr",
+    //     isSortable: true,
+    //     isEditable: false,
+    //     align: "right",
+    //     type: "number",
+    //     cellRenderer: ({ row }) => {
+    //       if (row.rowData.price === "—") return "—";
+    //       return `$${(row.rowData.price as number).toLocaleString("en-US", {
+    //         minimumFractionDigits: 2,
+    //         maximumFractionDigits: 2,
+    //       })}`;
+    //     },
+    //   },
+    //   {
+    //     accessor: "priceChangePercent",
+    //     label: "Change %",
+    //     width: "1fr",
+    //     isSortable: true,
+    //     isEditable: false,
+    //     align: "right",
+    //     type: "number",
+    //     cellRenderer: ({ row }) => {
+    //       if (row.rowData.priceChangePercent === "—" || row.rowData.priceChangePercent === null)
+    //         return "—";
+    //       const value = row.rowData.priceChangePercent as number;
+    //       const color = value < 0 ? "text-red-600" : value > 0 ? "text-green-600" : "text-gray-600";
+    //       const prefix = value > 0 ? "+" : "";
+    //       const bgColor = value < 0 ? "bg-red-50" : value > 0 ? "bg-green-50" : "";
+
+    //       return (
+    //         <div className={`px-2 py-1 rounded font-medium ${bgColor} ${color}`}>
+    //           {prefix}
+    //           {value.toFixed(2)}%
+    //         </div>
+    //       );
+    //     },
+    //   },
+    // ],
   },
 ];

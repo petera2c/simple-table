@@ -638,7 +638,7 @@
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
-  flex-shrink: 0;
+  /* flex-shrink: 0; */
   display: grid;
 }
 .st-header-pinned-left {

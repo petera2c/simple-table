@@ -338,34 +338,39 @@ export const handleResizeStart = ({
     return width;
   });
 
-  // Calculate total original width
-  const totalOriginalWidth = originalWidths.reduce((sum, width) => sum + width, 0);
-
-  const handleMouseMove = (event: any) => {
+  const handleMouseMove = (event: MouseEvent) => {
     // Calculate the width delta (how much the width has changed)
     const delta = event.clientX - startX;
 
     if (isParentHeader && leafHeaders.length > 1) {
+      const totalMinWidth = leafHeaders.reduce((min, header) => {
+        return Math.min(min, typeof header.minWidth === "number" ? header.minWidth : 40);
+      }, 40);
+
+      // Calculate the total original width first
+      const totalOriginalWidth = leafHeaders.reduce((sum, header) => {
+        const width = typeof header.width === "number" ? header.width : 150;
+        return sum + width;
+      }, 0);
+
       // Calculate new total width with minimum constraints
-      const newTotalWidth = Math.max(totalOriginalWidth + delta, leafHeaders.length * minWidth);
+      const newTotalWidth = Math.max(startWidth + delta, totalMinWidth);
 
-      // Distribute width equally among all child columns
-      const equalWidth = Math.max(Math.floor(newTotalWidth / leafHeaders.length), minWidth);
+      // Calculate the total width to distribute
+      const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
 
-      // Set equal width for all columns except the last one
-      for (let i = 0; i < leafHeaders.length - 1; i++) {
-        leafHeaders[i].width = equalWidth;
-      }
-
-      // Calculate the remaining width for the last column to account for rounding errors
-      const allocatedWidth = equalWidth * (leafHeaders.length - 1);
-      const lastColumnWidth = Math.max(newTotalWidth - allocatedWidth, minWidth);
-
-      // Set the last column width
-      leafHeaders[leafHeaders.length - 1].width = lastColumnWidth;
+      // Distribute the width proportionally based on original widths
+      leafHeaders.forEach((header, index) => {
+        const originalWidth = typeof header.width === "number" ? header.width : 150;
+        const proportion = originalWidth / totalOriginalWidth;
+        const widthIncrease = totalWidthToDistribute * proportion;
+        const newWidth = Math.max(originalWidth + widthIncrease, minWidth);
+        header.width = newWidth;
+      });
     } else {
       // For leaf headers or parents with only one leaf, just adjust the width directly
       const newWidth = Math.max(startWidth + delta, minWidth);
+
       header.width = newWidth;
     }
 

@@ -131,9 +131,6 @@ const TableCell = forwardRef(
     const cellHasChildren = Boolean(row.rowMeta?.children?.length);
     const clickable = Boolean(header?.isEditable);
 
-    // Use the absolute position value from visibleRow for stable odd/even determination
-    const isOddRow = visibleRow.position % 2 === 0;
-
     const cellClassName = `st-cell ${
       depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
     } ${
