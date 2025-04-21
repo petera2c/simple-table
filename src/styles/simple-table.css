@@ -947,6 +947,7 @@
 }
 .st-horizontal-scrollbar-middle {
   overflow: auto;
+  min-height: 11px;
 }
 .st-horizontal-scrollbar-middle > div {
   height: 1px;

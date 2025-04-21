@@ -15,14 +15,10 @@ const TableHorizontalScrollbar = ({
 }) => {
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
-  const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Keep up to date the width of the left pinned columns container
   useWidthSync({ widthAttribute: "offsetWidth", callback: setPinnedLeftWidth, ref: pinnedLeftRef });
-
-  // Keep up to date the middle scrollable width table container
-  useWidthSync({ widthAttribute: "scrollWidth", callback: setMainBodyWidth, ref: mainBodyRef });
 
   // Keep up to date the width of the right pinned columns container
   useWidthSync({
@@ -38,6 +34,8 @@ const TableHorizontalScrollbar = ({
   if (!mainBodyRef.current || mainBodyRef.current.scrollWidth <= mainBodyRef.current.clientWidth) {
     return null;
   }
+
+  const mainBodyWidth = mainBodyRef.current?.scrollWidth;
 
   return (
     <div className="st-horizontal-scrollbar-container" style={{ width: tableContentWidth }}>
