@@ -1,19 +1,24 @@
 import { useState } from "react";
 import SimpleTable from "../../components/SimpleTable/SimpleTable";
-import { generateFinanceData, FINANCE_HEADERS } from "../data/finance-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import Row from "../../types/Row";
 import { RowId } from "../../types/RowId";
 import CellValue from "../../types/CellValue";
 import HeaderObject from "../../types/HeaderObject";
+import data from "../examples/finance-example/finance-data.json";
+import { HEADERS } from "../examples/finance-example/finance-headers";
 
-const EXAMPLE_DATA = generateFinanceData();
-const HEADERS = FINANCE_HEADERS;
+const EXAMPLE_DATA = data;
 
 const EditableCellsExample = () => {
-  const [rows, setRows] = useState(EXAMPLE_DATA);
+  const [rows, setRows] = useState<Row[]>(EXAMPLE_DATA);
   const [headers, setHeaders] = useState(HEADERS);
-  const updateRowData = (rows: Row[], rowId: RowId, accessor: string, newValue: CellValue): Row[] => {
+  const updateRowData = (
+    rows: Row[],
+    rowId: RowId,
+    accessor: string,
+    newValue: CellValue
+  ): Row[] => {
     return rows.map((row) => {
       if (row.rowMeta.rowId === rowId) {
         // Found the row, update its data
