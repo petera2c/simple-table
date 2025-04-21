@@ -139,7 +139,7 @@ const TableBody = ({
   };
 
   return (
-    <div className="st-table-body-container" ref={tableBodyContainerRef} onScroll={handleScroll}>
+    <div className="st-body-container" ref={tableBodyContainerRef} onScroll={handleScroll}>
       {pinnedLeftColumns.length > 0 && (
         <TableSection
           {...commonProps}

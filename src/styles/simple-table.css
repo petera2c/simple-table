@@ -562,16 +562,16 @@
 
 .simple-table-root,
 .st-wrapper,
-.st-table-wrapper-container,
-.st-table-wrapper,
-.st-table-content,
+.st-wrapper-container,
+.st-wrapper,
+.st-content,
 .st-header-container,
 .st-header-cell,
 .st-cell,
-.st-table-body-container,
-.st-table-body-main,
-.st-table-body-pinned-left,
-.st-table-body-pinned-right,
+.st-body-container,
+.st-body-main,
+.st-body-pinned-left,
+.st-body-pinned-right,
 .st-footer,
 .st-column-editor,
 .st-column-editor-popout,
@@ -601,21 +601,21 @@
   overflow: hidden;
 }
 
-.st-table-wrapper-container {
+.st-wrapper-container {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
 }
-.st-table-wrapper {
+.st-content-wrapper {
   flex: 1;
   position: relative;
   display: flex;
   width: 100%;
   min-height: 0;
 }
-.st-table-content {
+.st-content {
   display: flex;
   flex-direction: column;
 }
@@ -638,7 +638,7 @@
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
-  /* flex-shrink: 0; */
+  flex-shrink: 0;
   display: grid;
 }
 .st-header-pinned-left {
@@ -650,53 +650,53 @@
 .st-header-main {
   overflow: auto;
   scrollbar-width: none;
-  width: 100%;
+  flex-grow: 1;
 }
 .st-header-main::-webkit-scrollbar {
   display: none;
 }
 
 /* Body */
-.st-table-body-container {
+.st-body-container {
   display: flex;
   width: 100%;
   overflow: auto;
   height: max-content;
   background-color: var(--st-even-row-background-color);
 }
-.st-table-body-main,
-.st-table-body-pinned-left,
-.st-table-body-pinned-right {
+.st-body-main,
+.st-body-pinned-left,
+.st-body-pinned-right {
   display: grid;
   height: max-content;
 }
-.st-table-body-pinned-left {
+.st-body-pinned-left {
   flex-shrink: 0;
 
   border-right: var(--st-border-width) solid var(--st-border-color);
 }
-.st-table-body-main {
+.st-body-main {
   overflow: auto;
   scrollbar-width: none;
 }
 
-.st-table-body-pinned-right {
+.st-body-pinned-right {
   flex-shrink: 0;
 
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
 
-.st-table-row {
+.st-row {
   display: grid;
   position: absolute;
   transform: translateZ(0);
   transition: background 0.2s ease;
-  width: 100%;
+  min-width: 100%;
 }
-.st-table-row.even {
+.st-row.even {
   background-color: var(--st-even-row-background-color);
 }
-.st-table-row.odd {
+.st-row.odd {
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-odd-row-color);
 }

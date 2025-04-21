@@ -10,9 +10,13 @@ const getColumnWidth = (header: HeaderObject) => {
     minWidth = `${minWidth}px`;
   }
   if (minWidth !== undefined) {
-    return `minmax(${minWidth}, ${width})`;
+    // If width is in fr units, we need to ensure the minimum is respected
+    if (typeof width === "string" && width.endsWith("fr")) {
+      return `minmax(${minWidth}, ${width})`;
+    }
+    // For fixed widths, use max()
+    return `max(${minWidth}, ${width})`;
   }
-
   return width;
 };
 

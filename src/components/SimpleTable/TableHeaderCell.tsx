@@ -3,11 +3,12 @@ import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
 import SortConfig from "../../types/SortConfig";
-import { handleResizeStart, HandleResizeStartProps } from "../../utils/sortUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
 import { useTableContext } from "../../context/TableContext";
+import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
+import { handleResizeStart } from "../../utils/resizeUtils";
 
 interface HeaderCellProps {
   colIndex: number;

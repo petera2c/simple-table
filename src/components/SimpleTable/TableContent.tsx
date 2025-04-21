@@ -84,10 +84,7 @@ const TableContent = ({
   };
 
   return (
-    <div
-      className="st-table-content"
-      style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
-    >
+    <div className="st-content" style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}>
       <TableHeader {...tableHeaderProps} />
       <TableBody {...tableBodyProps} />
     </div>

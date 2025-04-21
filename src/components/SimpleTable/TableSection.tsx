@@ -41,7 +41,7 @@ const TableSection = ({
   visibleRows,
   width,
 }: TableSectionProps) => {
-  const className = pinned ? `st-table-body-pinned-${pinned}` : "st-table-body-main";
+  const className = pinned ? `st-table-body-pinned-${pinned}` : "st-body-main";
 
   return (
     <div

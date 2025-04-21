@@ -342,8 +342,12 @@ const SimpleTable = ({
         className={`simple-table-root st-wrapper theme-${theme}`}
         style={height ? { height } : {}}
       >
-        <div className="st-table-wrapper-container">
-          <div className="st-table-wrapper" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+        <div className="st-wrapper-container">
+          <div
+            className="st-content-wrapper"
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
             <TableContent
               flattenedRows={flattenedRows}
               isWidthDragging={isWidthDragging}
