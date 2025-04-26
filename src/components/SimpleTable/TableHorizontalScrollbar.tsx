@@ -1,4 +1,4 @@
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useRef, useState, useEffect } from "react";
 import useWidthSync from "../../hooks/useWidthSync";
 import useScrollSync from "../../hooks/useScrollSync";
 
@@ -15,6 +15,8 @@ const TableHorizontalScrollbar = ({
 }) => {
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
+  const [mainBodyWidth, setMainBodyWidth] = useState(0);
+  const [isScrollable, setIsScrollable] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Keep up to date the width of the left pinned columns container
@@ -30,12 +32,28 @@ const TableHorizontalScrollbar = ({
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, scrollRef);
 
-  // If the table is not scrollable, don't render the scrollbar
-  if (!mainBodyRef.current || mainBodyRef.current.scrollWidth <= mainBodyRef.current.clientWidth) {
+  // Use ResizeObserver to track mainBodyRef width changes
+  useEffect(() => {
+    const updateScrollState = () => {
+      if (!mainBodyRef.current) return;
+
+      const scrollWidth = mainBodyRef.current.scrollWidth;
+      const clientWidth = mainBodyRef.current.clientWidth;
+
+      setMainBodyWidth(scrollWidth);
+      setIsScrollable(scrollWidth > clientWidth);
+    };
+
+    // This is a hack to ensure the scrollbar is rendered
+    setTimeout(() => {
+      updateScrollState();
+    }, 1);
+  }, [mainBodyRef]);
+
+  if (!isScrollable) {
+    // If the table is not scrollable, don't render the scrollbar
     return null;
   }
-
-  const mainBodyWidth = mainBodyRef.current?.scrollWidth;
 
   return (
     <div className="st-horizontal-scrollbar-container" style={{ width: tableContentWidth }}>

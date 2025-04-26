@@ -933,10 +933,12 @@
   display: flex;
   align-items: center;
   border-top: var(--st-border-width) solid var(--st-border-color);
+  height: 12px;
 }
 
 .st-horizontal-scrollbar-left {
   border-right: var(--st-border-width) solid var(--st-border-color);
+  height: 100%;
 }
 .st-horizontal-scrollbar-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
