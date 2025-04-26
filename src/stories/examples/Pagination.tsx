@@ -46,7 +46,6 @@ const PaginationExample = () => {
         selectableCells
         selectableColumns
         shouldPaginate
-        totalPages={Math.ceil(rows.length / ROWS_PER_PAGE)}
         theme="dark"
       />
     </div>

@@ -65,7 +65,6 @@ interface SimpleTableProps {
   sortUpIcon?: ReactNode; // Sort up icon
   tableRef?: RefObject<TableRefType | null>;
   theme?: Theme; // Theme
-  totalPages?: number; // Total pages
 }
 
 const SimpleTable = (props: SimpleTableProps) => {
@@ -107,7 +106,6 @@ const SimpleTableComp = ({
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   tableRef,
   theme = "light",
-  totalPages,
 }: SimpleTableProps) => {
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
@@ -390,7 +388,7 @@ const SimpleTableComp = ({
           onNextPage={onNextPage}
           prevIcon={prevIcon}
           shouldPaginate={shouldPaginate}
-          totalPages={totalPages || Math.ceil(sortedRows.length / rowsPerPage)}
+          totalPages={Math.ceil(rows.length / rowsPerPage)}
         />
       </div>
     </TableProvider>
