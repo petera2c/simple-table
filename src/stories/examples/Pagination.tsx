@@ -15,29 +15,18 @@ const PaginationExample = () => {
   const [rows, setRows] = useState(EXAMPLE_DATA.slice(0, ROWS_PER_PAGE));
 
   // Handler for next page data fetch
-  const onNextPage = (pageIndex: number) => {
+  const onNextPage = async (pageIndex: number) => {
     const startIndex = pageIndex * ROWS_PER_PAGE;
     const endIndex = startIndex + ROWS_PER_PAGE;
+    // Create a promise to mimic async data fetching
+    await new Promise((resolve) => setTimeout(resolve, 100));
     const newPageData = EXAMPLE_DATA.slice(startIndex, endIndex);
-
     if (newPageData.length === 0 || rows.length > startIndex) {
-      return;
+      return false;
     }
 
     setRows((prevRows) => [...prevRows, ...newPageData]);
-  };
-
-  // Handler for previous page data fetch
-  const onPreviousPage = (pageIndex: number) => {
-    const startIndex = pageIndex * ROWS_PER_PAGE;
-    const endIndex = startIndex + ROWS_PER_PAGE;
-    const newPageData = EXAMPLE_DATA.slice(startIndex, endIndex);
-
-    if (newPageData.length === 0 || rows.length > startIndex) {
-      return;
-    }
-
-    setRows((prevRows) => [...newPageData, ...prevRows]);
+    return true;
   };
 
   return (
@@ -52,13 +41,12 @@ const PaginationExample = () => {
         columnResizing
         defaultHeaders={HEADERS}
         onNextPage={onNextPage}
-        onPreviousPage={onPreviousPage}
         rows={rows}
         rowsPerPage={ROWS_PER_PAGE}
         selectableCells
         selectableColumns
         shouldPaginate
-        totalPages={Math.ceil(EXAMPLE_DATA.length / ROWS_PER_PAGE)}
+        totalPages={Math.ceil(rows.length / ROWS_PER_PAGE)}
         theme="dark"
       />
     </div>

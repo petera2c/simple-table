@@ -63,12 +63,12 @@ const useSortableData = ({ headers, tableRows }: { headers: HeaderObject[]; tabl
   }, [tableRows, sort, headers]);
 
   return {
-    sort,
-    setSort,
-    updateSort,
-    sortedRows,
     hiddenColumns,
     setHiddenColumns,
+    setSort,
+    sort,
+    sortedRows,
+    updateSort,
   };
 };
 

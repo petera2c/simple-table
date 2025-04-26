@@ -31,6 +31,7 @@ import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
 import { getCellKey } from "../../utils/cellUtils";
+import OnNextPage from "../../types/OnNextPage";
 
 // Create enum for consistent values
 
@@ -52,8 +53,7 @@ interface SimpleTableProps {
   onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onGridReady?: () => void; // Custom handler for when the grid is ready
-  onNextPage?: (page: number) => void; // Custom handler for next page
-  onPreviousPage?: (page: number) => void; // Custom handler for previous page
+  onNextPage?: OnNextPage; // Custom handler for next page
   prevIcon?: ReactNode; // Previous icon
   rowHeight?: number; // Height of each row
   rows: Row[]; // Rows data
@@ -96,7 +96,6 @@ const SimpleTableComp = ({
   onColumnOrderChange,
   onGridReady,
   onNextPage,
-  onPreviousPage,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowHeight = 40,
   rows,
@@ -394,7 +393,6 @@ const SimpleTableComp = ({
           nextIcon={nextIcon}
           onPageChange={setCurrentPage}
           onNextPage={onNextPage}
-          onPreviousPage={onPreviousPage}
           prevIcon={prevIcon}
           shouldPaginate={shouldPaginate}
           totalPages={totalPages || Math.ceil(sortedRows.length / rowsPerPage)}

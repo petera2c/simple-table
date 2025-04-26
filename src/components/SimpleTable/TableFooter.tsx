@@ -1,12 +1,12 @@
-import { ReactNode } from "react";
-
+import { ReactNode, useState } from "react";
+import OnNextPage from "../../types/OnNextPage";
 interface TableFooterProps {
   currentPage: number;
   hideFooter?: boolean;
   nextIcon?: ReactNode;
   onPageChange: (page: number) => void;
-  onNextPage?: (page: number) => void;
-  onPreviousPage?: (page: number) => void;
+  onNextPage?: OnNextPage;
+  onPreviousPage?: OnNextPage;
   prevIcon?: ReactNode;
   shouldPaginate?: boolean;
   totalPages: number;
@@ -18,39 +18,44 @@ const TableFooter = ({
   nextIcon,
   onPageChange,
   onNextPage,
-  onPreviousPage,
   prevIcon,
   shouldPaginate,
   totalPages,
 }: TableFooterProps) => {
+  const [hasMoreData, setHasMoreData] = useState(true);
   const hasPrevPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
+  const isOnLastPage = currentPage === totalPages;
+
+  const isPrevDisabled = !hasPrevPage;
+
+  const isNextDisabled = (!hasNextPage && !onNextPage) || (!hasMoreData && isOnLastPage);
 
   const handlePrevPage = () => {
     const prevPage = currentPage - 1;
 
-    // First update the internal page state
+    // Then update the internal page state
     if (prevPage >= 1) {
       onPageChange(prevPage);
     }
-
-    // Then call the custom handler if provided to fetch data
-    if (onPreviousPage) {
-      onPreviousPage(prevPage - 1); // Convert to 0-based for data fetching
-    }
   };
 
-  const handleNextPage = () => {
+  const handleNextPage = async () => {
+    const needsMoreData = currentPage === totalPages;
     const nextPage = currentPage + 1;
 
-    // First update the internal page state
-    if (nextPage <= totalPages || onNextPage) {
-      onPageChange(nextPage);
+    // First call the custom handler if provided to fetch data
+    if (onNextPage && needsMoreData) {
+      const hasMoreData = await onNextPage(currentPage); // Current page is already the index for next page data
+      if (!hasMoreData) {
+        setHasMoreData(false);
+        return;
+      }
     }
 
-    // Then call the custom handler if provided to fetch data
-    if (onNextPage) {
-      onNextPage(currentPage); // Current page is already the index for next page data
+    // Then update the internal page state
+    if (nextPage <= totalPages || onNextPage) {
+      onPageChange(nextPage);
     }
   };
 
@@ -59,20 +64,10 @@ const TableFooter = ({
     if (page >= 1 && page <= totalPages) {
       // Update internal state
       onPageChange(page);
-
-      // Call appropriate data fetch handler based on direction
-      if (page > currentPage && onNextPage) {
-        onNextPage(page - 1); // Convert to 0-based for data fetching
-      } else if (page < currentPage && onPreviousPage) {
-        onPreviousPage(page - 1); // Convert to 0-based for data fetching
-      }
     }
   };
 
   if (hideFooter || !shouldPaginate) return null;
-
-  const isPrevDisabled = !hasPrevPage && !onPreviousPage;
-  const isNextDisabled = !hasNextPage && !onNextPage;
 
   return (
     <div className="st-footer">
