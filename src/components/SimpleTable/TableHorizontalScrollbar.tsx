@@ -62,6 +62,8 @@ const TableHorizontalScrollbar = ({
       const scrollWidth = mainBodyRef.current.scrollWidth;
       const clientWidth = mainBodyRef.current.clientWidth;
 
+      console.log(scrollWidth, clientWidth);
+
       setMainBodyWidth(scrollWidth);
       setIsScrollable(scrollWidth > clientWidth);
     };

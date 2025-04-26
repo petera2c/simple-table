@@ -1,4 +1,4 @@
-import { useRef, Dispatch, SetStateAction, RefObject, useMemo } from "react";
+import { useRef, Dispatch, SetStateAction, RefObject, useMemo, useState, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableSection from "./TableSection";
@@ -55,6 +55,35 @@ const TableBody = ({
     hiddenColumns,
     headersRef,
   } = useTableContext();
+
+  // Add state for section widths
+  const [leftWidth, setLeftWidth] = useState(0);
+  const [centerWidth, setCenterWidth] = useState<number | undefined>(undefined);
+  const [rightWidth, setRightWidth] = useState(0);
+
+  // Update widths when references change or on window resize
+  useEffect(() => {
+    const updateWidths = () => {
+      setLeftWidth(
+        pinnedLeftHeaderRef.current?.clientWidth ? pinnedLeftHeaderRef.current.clientWidth + 1 : 0
+      );
+      setCenterWidth(centerHeaderRef.current?.clientWidth);
+      setRightWidth(
+        pinnedRightHeaderRef.current?.clientWidth ? pinnedRightHeaderRef.current.clientWidth + 1 : 0
+      );
+    };
+
+    // Initial update
+    updateWidths();
+
+    // Listen for resize events
+    window.addEventListener("resize", updateWidths);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", updateWidths);
+    };
+  }, [pinnedLeftHeaderRef, centerHeaderRef, pinnedRightHeaderRef, isWidthDragging]);
 
   useScrollbarVisibility({
     headerContainerRef,
@@ -117,14 +146,6 @@ const TableBody = ({
       setScrollTop(newScrollTop);
     });
   };
-
-  const leftWidth = pinnedLeftHeaderRef.current?.clientWidth
-    ? pinnedLeftHeaderRef.current?.clientWidth + 1
-    : 0;
-  const centerWidth = centerHeaderRef.current?.clientWidth;
-  const rightWidth = pinnedRightHeaderRef.current?.clientWidth
-    ? pinnedRightHeaderRef.current?.clientWidth + 1
-    : 0;
 
   // Create all props needed for TableSection
   const commonProps = {

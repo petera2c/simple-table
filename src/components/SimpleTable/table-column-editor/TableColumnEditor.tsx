@@ -1,4 +1,4 @@
-import { Dispatch, RefObject, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import TableColumnEditorPopout from "./TableColumnEditorPopout";
 import HeaderObject from "../../../types/HeaderObject";
 import { COLUMN_EDIT_WIDTH } from "../../../consts/general-consts";

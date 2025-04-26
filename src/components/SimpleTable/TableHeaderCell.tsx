@@ -1,4 +1,4 @@
-import { forwardRef, DragEvent, useEffect, ForwardedRef, MouseEvent, RefObject } from "react";
+import { forwardRef, DragEvent, useEffect, ForwardedRef, MouseEvent } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";

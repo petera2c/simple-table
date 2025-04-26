@@ -336,7 +336,7 @@
   --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --st-selected-cell-color: var(--st-slate-900);
   --st-selected-first-cell-color: var(--st-slate-900);
-  --st-resize-handle-color: var(--st-blue-400);
+  --st-resize-handle-color: var(--st-slate-400);
   --st-separator-border-color: var(--st-slate-200);
   --st-last-group-row-separator-border-color: var(--st-slate-400);
   --st-selected-border-top-color: var(--st-blue-500);
@@ -1085,6 +1085,9 @@
   align-items: center;
   cursor: pointer;
   gap: var(--st-spacing-medium);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .st-checkbox-input {

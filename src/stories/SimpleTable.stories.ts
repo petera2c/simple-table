@@ -24,11 +24,23 @@ const meta = {
 
 type Story = StoryObj<typeof meta>;
 
+export const BasicExample: Story = {
+  render: BasicExampleComponent,
+};
+export const BillingExample: Story = {
+  render: BillingExampleComponent,
+};
+export const CellHighlighting: Story = {
+  render: CellHighlightingDemo,
+};
 export const EditableCells: Story = {
   render: EditableCellsExample,
 };
 export const FilterColumns: Story = {
   render: FilterColumnsExample,
+};
+export const FinanceExample: Story = {
+  render: FinancialExample,
 };
 export const InfiniteScroll: Story = {
   render: InfiniteScrollExample,
@@ -42,27 +54,14 @@ export const PinnedColumns: Story = {
 export const RowGrouping: Story = {
   render: RowGroupingExample,
 };
+export const SalesExample: Story = {
+  render: SalesExampleComponent,
+};
 export const SelectableCells: Story = {
   render: SelectableCellsExample,
 };
 export const Theming: Story = {
   render: ThemingExample,
-};
-
-export const FinanceExample: Story = {
-  render: FinancialExample,
-};
-export const BillingExample: Story = {
-  render: BillingExampleComponent,
-};
-export const BasicExample: Story = {
-  render: BasicExampleComponent,
-};
-export const CellHighlighting: Story = {
-  render: CellHighlightingDemo,
-};
-export const SalesExample: Story = {
-  render: SalesExampleComponent,
 };
 // export const EditColumns: Story = {
 //   render: EditColumnsExample,
