@@ -1,10 +1,13 @@
 import { HeaderObject } from "..";
+import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
+import { getCellId } from "./cellUtils";
 
 export const handleResizeStart = ({
   event,
   forceUpdate,
   header,
+  headersRef,
   gridColumnEnd,
   gridColumnStart,
   setIsWidthDragging,
@@ -55,7 +58,7 @@ export const handleResizeStart = ({
       const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
 
       // Distribute the width proportionally based on original widths
-      leafHeaders.forEach((header, index) => {
+      leafHeaders.forEach((header) => {
         const originalWidth = typeof header.width === "number" ? header.width : 150;
         const proportion = originalWidth / totalOriginalWidth;
         const widthIncrease = totalWidthToDistribute * proportion;
@@ -68,6 +71,25 @@ export const handleResizeStart = ({
 
       header.width = newWidth;
     }
+
+    // After a header is resized we need up update any headers that use fractional widths
+    // This must happen recursively
+    const removeAllFractionalWidths = (header: HeaderObject) => {
+      const headerWidth = header.width;
+      if (typeof headerWidth === "string" && headerWidth.includes("fr")) {
+        header.width =
+          document.getElementById(getCellId({ accessor: header.accessor, rowIndex: 0 }))
+            ?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
+      }
+      if (header.children) {
+        header.children.forEach((child) => {
+          removeAllFractionalWidths(child);
+        });
+      }
+    };
+    headersRef.current.forEach((header) => {
+      removeAllFractionalWidths(header);
+    });
 
     forceUpdate();
   };

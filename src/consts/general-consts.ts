@@ -5,3 +5,4 @@ export const PAGE_SIZE = 20;
 export const BUFFER_ROW_COUNT = 5;
 
 export const COLUMN_EDIT_WIDTH = 28;
+export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
