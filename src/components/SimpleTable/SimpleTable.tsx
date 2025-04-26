@@ -32,6 +32,9 @@ import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
 import { getCellKey } from "../../utils/cellUtils";
 
+// Add this at the top of the file, after imports
+const isBrowser = typeof window !== "undefined";
+
 // Create enum for consistent values
 
 interface SimpleTableProps {
@@ -67,7 +70,23 @@ interface SimpleTableProps {
   totalPages?: number; // Total pages
 }
 
-const SimpleTable = ({
+// Create a client-side only wrapper component
+const ClientOnlySimpleTable = (props: SimpleTableProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null; // or a loading placeholder
+  }
+
+  return <SimpleTableImpl {...props} />;
+};
+
+// Rename the existing SimpleTable to SimpleTableImpl
+const SimpleTableImpl = ({
   allowAnimations = false,
   cellUpdateFlash = false,
   collapseIcon = <AngleDownIcon className="st-sort-icon" />,
@@ -138,7 +157,6 @@ const SimpleTable = ({
 
   // Calculate content height (total height minus header height)
   const contentHeight = useMemo(() => {
-    if (typeof window === "undefined") return 0;
     // Default height if none provided
     if (!height) return window.innerHeight - rowHeight;
 
@@ -251,7 +269,6 @@ const SimpleTable = ({
 
   // On window risize completely re-render the table
   useLayoutEffect(() => {
-    if (typeof window === "undefined") return;
     const handleResize = () => {
       // Force a re-render of the table
       forceUpdate();
@@ -391,4 +408,7 @@ const SimpleTable = ({
   );
 };
 
-export default SimpleTable;
+// Export the client-only version as the default
+export default ClientOnlySimpleTable;
+// Export the implementation for testing purposes
+export { SimpleTableImpl };
