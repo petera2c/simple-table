@@ -34,7 +34,8 @@ export const handleResizeStart = ({
 
   const handleMouseMove = (event: MouseEvent) => {
     // Calculate the width delta (how much the width has changed)
-    const delta = event.clientX - startX;
+    // Check if header.pinned is right because if it is, we need to subtract the width of the pinned columns from the delta
+    const delta = header.pinned === "right" ? startX - event.clientX : event.clientX - startX;
 
     if (isParentHeader && leafHeaders.length > 1) {
       const totalMinWidth = leafHeaders.reduce((min, header) => {

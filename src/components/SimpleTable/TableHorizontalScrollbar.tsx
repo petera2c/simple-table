@@ -1,23 +1,45 @@
 import { RefObject, useRef, useState, useEffect } from "react";
 import useWidthSync from "../../hooks/useWidthSync";
 import useScrollSync from "../../hooks/useScrollSync";
+import { useTableContext } from "../../context/TableContext";
+import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 
 const TableHorizontalScrollbar = ({
   mainBodyRef,
   pinnedLeftRef,
   pinnedRightRef,
-  tableContentWidth,
+  tableBodyContainerRef,
 }: {
   mainBodyRef: RefObject<HTMLDivElement | null>;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
-  tableContentWidth: number;
+  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }) => {
+  // Context
+  const { editColumns } = useTableContext();
+
+  // Local state
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
   const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [isScrollable, setIsScrollable] = useState(false);
+
+  // Refs
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Derived state
+  // Check if the content is scrollable
+  const isContentVerticalScrollable =
+    tableBodyContainerRef.current &&
+    tableBodyContainerRef.current.scrollHeight > tableBodyContainerRef.current.clientHeight;
+  const scrollbarWidth =
+    tableBodyContainerRef.current && isContentVerticalScrollable
+      ? tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth
+      : 0;
+  const editorWidth = editColumns ? COLUMN_EDIT_WIDTH : 0;
+  // If edit columns is enabled, add the width of the editor to the right section
+  // If the content is scrollable, add the width of the scrollbar to the right section
+  const rightSectionWidth = pinnedRightWidth + editorWidth + scrollbarWidth - 0.6;
 
   // Keep up to date the width of the left pinned columns container
   useWidthSync({ widthAttribute: "offsetWidth", callback: setPinnedLeftWidth, ref: pinnedLeftRef });
@@ -56,7 +78,7 @@ const TableHorizontalScrollbar = ({
   }
 
   return (
-    <div className="st-horizontal-scrollbar-container" style={{ width: tableContentWidth }}>
+    <div className="st-horizontal-scrollbar-container">
       {pinnedLeftWidth > 0 && (
         <div
           className="st-horizontal-scrollbar-left"
@@ -78,6 +100,7 @@ const TableHorizontalScrollbar = ({
             }
           }}
           ref={scrollRef}
+          style={{ flexGrow: 1 }}
         >
           <div
             style={{
@@ -92,7 +115,7 @@ const TableHorizontalScrollbar = ({
           className="st-horizontal-scrollbar-right"
           style={{
             flexShrink: 0,
-            minWidth: pinnedRightWidth,
+            minWidth: rightSectionWidth,
             height: scrollRef.current?.offsetHeight,
           }}
         />

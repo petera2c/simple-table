@@ -122,7 +122,6 @@ const SimpleTableComp = ({
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
-  const [tableContentWidth, setTableContentWidth] = useState(0);
   const [scrollTop, setScrollTop] = useState<number>(0);
 
   // Use custom hook for sorting
@@ -256,10 +255,8 @@ const SimpleTableComp = ({
 
     const newScrollbarWidth =
       tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
-    const newTableContentWidth = tableBodyContainerRef.current.clientWidth;
 
     setScrollbarWidth(newScrollbarWidth);
-    setTableContentWidth(newTableContentWidth);
   }, []);
 
   // On window risize completely re-render the table
@@ -275,7 +272,6 @@ const SimpleTableComp = ({
       const newTableContentWidth = tableBodyContainerRef.current.clientWidth;
 
       setScrollbarWidth(newScrollbarWidth);
-      setTableContentWidth(newTableContentWidth);
     };
 
     window.addEventListener("resize", handleResize);
@@ -384,7 +380,7 @@ const SimpleTableComp = ({
             mainBodyRef={mainBodyRef}
             pinnedLeftRef={pinnedLeftRef}
             pinnedRightRef={pinnedRightRef}
-            tableContentWidth={tableContentWidth}
+            tableBodyContainerRef={tableBodyContainerRef}
           />
         </div>
         <TableFooter

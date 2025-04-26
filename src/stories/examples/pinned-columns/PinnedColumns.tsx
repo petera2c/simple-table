@@ -15,6 +15,7 @@ const PinnedColumnsExample = () => {
         height="calc(100dvh - 112px)" // If not using pagination use a fixed height
         selectableCells
         selectableColumns
+        editColumns
       />
     </div>
   );

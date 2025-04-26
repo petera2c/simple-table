@@ -934,18 +934,19 @@
   align-items: center;
   border-top: var(--st-border-width) solid var(--st-border-color);
   height: 12px;
+  width: 100%;
+  background-color: var(--st-scrollbar-bg-color);
 }
 
 .st-horizontal-scrollbar-left {
   border-right: var(--st-border-width) solid var(--st-border-color);
-  height: 100%;
 }
 .st-horizontal-scrollbar-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
 .st-horizontal-scrollbar-left,
 .st-horizontal-scrollbar-right {
-  background-color: var(--st-scrollbar-bg-color);
+  height: 100%;
 }
 .st-horizontal-scrollbar-middle {
   overflow: auto;
