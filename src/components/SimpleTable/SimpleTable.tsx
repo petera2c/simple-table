@@ -138,7 +138,7 @@ const SimpleTable = ({
 
   // Calculate content height (total height minus header height)
   const contentHeight = useMemo(() => {
-    if (!window || typeof window === "undefined") return 0;
+    if (typeof window === "undefined") return 0;
     // Default height if none provided
     if (!height) return window.innerHeight - rowHeight;
 
@@ -251,7 +251,7 @@ const SimpleTable = ({
 
   // On window risize completely re-render the table
   useLayoutEffect(() => {
-    if (!window || typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
     const handleResize = () => {
       // Force a re-render of the table
       forceUpdate();
