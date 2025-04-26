@@ -32,9 +32,6 @@ import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
 import { getCellKey } from "../../utils/cellUtils";
 
-// Add this at the top of the file, after imports
-const isBrowser = typeof window !== "undefined";
-
 // Create enum for consistent values
 
 interface SimpleTableProps {
@@ -54,6 +51,7 @@ interface SimpleTableProps {
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onGridReady?: () => void; // Custom handler for when the grid is ready
   onNextPage?: (page: number) => void; // Custom handler for next page
   onPreviousPage?: (page: number) => void; // Custom handler for previous page
   prevIcon?: ReactNode; // Previous icon
@@ -70,23 +68,16 @@ interface SimpleTableProps {
   totalPages?: number; // Total pages
 }
 
-// Create a client-side only wrapper component
-const ClientOnlySimpleTable = (props: SimpleTableProps) => {
-  const [isMounted, setIsMounted] = useState(false);
-
+const SimpleTable = (props: SimpleTableProps) => {
+  const [isClient, setIsClient] = useState(false);
   useEffect(() => {
-    setIsMounted(true);
+    setIsClient(true);
   }, []);
-
-  if (!isMounted) {
-    return null; // or a loading placeholder
-  }
-
-  return <SimpleTableImpl {...props} />;
+  if (!isClient) return null;
+  return <SimpleTableComp {...props} />;
 };
 
-// Rename the existing SimpleTable to SimpleTableImpl
-const SimpleTableImpl = ({
+const SimpleTableComp = ({
   allowAnimations = false,
   cellUpdateFlash = false,
   collapseIcon = <AngleDownIcon className="st-sort-icon" />,
@@ -103,6 +94,7 @@ const SimpleTableImpl = ({
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
   onColumnOrderChange,
+  onGridReady,
   onNextPage,
   onPreviousPage,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
@@ -139,6 +131,10 @@ const SimpleTableImpl = ({
     headers: headersRef.current,
     tableRows: rows,
   });
+
+  useEffect(() => {
+    onGridReady?.();
+  }, [onGridReady]);
 
   // Memoize currentRows calculation
   const currentRows = useMemo(() => {
@@ -408,7 +404,4 @@ const SimpleTableImpl = ({
   );
 };
 
-// Export the client-only version as the default
-export default ClientOnlySimpleTable;
-// Export the implementation for testing purposes
-export { SimpleTableImpl };
+export default SimpleTable;
