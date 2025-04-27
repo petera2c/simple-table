@@ -2,14 +2,15 @@ import { RefObject, useRef, useState, useEffect } from "react";
 import useScrollSync from "../../hooks/useScrollSync";
 import { useTableContext } from "../../context/TableContext";
 import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-consts";
-import { calculatePinnedWidth } from "../../utils/headerUtils";
 
 const TableHorizontalScrollbar = ({
+  hiddenColumns,
   mainBodyRef,
   pinnedLeftWidth,
   pinnedRightWidth,
   tableBodyContainerRef,
 }: {
+  hiddenColumns: Record<string, boolean>;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
@@ -37,12 +38,12 @@ const TableHorizontalScrollbar = ({
   const editorWidth = editColumns ? COLUMN_EDIT_WIDTH : 0;
   // If edit columns is enabled, add the width of the editor to the right section
   // If the content is scrollable, add the width of the scrollbar to the right section
-  const rightSectionWidth = calculatePinnedWidth(pinnedRightWidth) + scrollbarWidth;
+  const rightSectionWidth =
+    (editColumns ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
 
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, scrollRef);
 
-  // Use ResizeObserver to track mainBodyRef width changes
   useEffect(() => {
     const updateScrollState = () => {
       if (!mainBodyRef.current) return;
@@ -58,7 +59,7 @@ const TableHorizontalScrollbar = ({
     setTimeout(() => {
       updateScrollState();
     }, 1);
-  }, [mainBodyRef]);
+  }, [hiddenColumns, mainBodyRef]);
 
   if (!isScrollable) {
     // If the table is not scrollable, don't render the scrollbar

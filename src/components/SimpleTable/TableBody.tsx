@@ -11,7 +11,6 @@ import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
 
 const TableBody = ({
-  centerWidth,
   flattenedRows,
   headerContainerRef,
   isWidthDragging,

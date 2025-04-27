@@ -6,7 +6,6 @@ import VisibleRow from "./VisibleRow";
 import { Row } from "..";
 
 interface TableBodyProps {
-  centerWidth: number;
   flattenedRows: Row[];
   headerContainerRef: RefObject<HTMLDivElement | null>;
   isWidthDragging: boolean;

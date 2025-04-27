@@ -74,7 +74,6 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
-    centerWidth,
     flattenedRows,
     headerContainerRef,
     isWidthDragging,

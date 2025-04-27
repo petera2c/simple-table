@@ -381,6 +381,7 @@ const SimpleTableComp = ({
             />
           </div>
           <TableHorizontalScrollbar
+            hiddenColumns={hiddenColumns}
             mainBodyRef={mainBodyRef}
             pinnedLeftWidth={pinnedLeftWidth}
             pinnedRightWidth={pinnedRightWidth}
