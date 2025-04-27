@@ -638,8 +638,8 @@
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
-  /* flex-shrink: 0; */
   display: grid;
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-pinned-left {
   border-right: var(--st-border-width) solid var(--st-border-color);
@@ -713,6 +713,8 @@
   align-items: center;
   gap: var(--st-spacing-small);
   border-top: var(--st-border-width) solid transparent;
+}
+.st-header-cell.parent {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-cell.clickable {

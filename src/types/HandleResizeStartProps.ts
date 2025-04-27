@@ -9,6 +9,8 @@ export type HandleResizeStartProps = {
   header: HeaderObject;
   headersRef: RefObject<HeaderObject[]>;
   mainBodyRef: RefObject<HTMLDivElement | null>;
+  pinnedLeftRef: RefObject<HTMLDivElement | null>;
+  pinnedRightRef: RefObject<HTMLDivElement | null>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   setMainBodyWidth: Dispatch<SetStateAction<number>>;
   setPinnedLeftWidth: Dispatch<SetStateAction<number>>;

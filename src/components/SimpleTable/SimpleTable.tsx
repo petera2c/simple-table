@@ -115,7 +115,6 @@ const SimpleTableComp = ({
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
 
   // Local state
-  const [centerWidth, setCenterWidth] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
@@ -337,7 +336,6 @@ const SimpleTableComp = ({
         scrollbarWidth,
         selectColumns,
         selectableColumns,
-        setCenterWidth,
         setInitialFocusedCell,
         setIsWidthDragging,
         setMainBodyWidth,
@@ -362,7 +360,6 @@ const SimpleTableComp = ({
             onMouseLeave={handleMouseUp}
           >
             <TableContent
-              centerWidth={centerWidth}
               flattenedRows={flattenedRows}
               isWidthDragging={isWidthDragging}
               pinnedLeftWidth={pinnedLeftWidth}

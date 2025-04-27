@@ -45,7 +45,6 @@ const TableHeaderCell = forwardRef(
       forceUpdate,
       headersRef,
       hoveredHeaderRef,
-      mainBodyRef,
       onColumnOrderChange,
       onSort,
       onTableHeaderDragEnd,
@@ -75,7 +74,7 @@ const TableHeaderCell = forwardRef(
         : header?.align === "center"
         ? "center-aligned"
         : ""
-    }`;
+    } ${header.children ? "parent" : ""}`;
 
     // Hooks
     const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
@@ -196,7 +195,6 @@ const TableHeaderCell = forwardRef(
               gridColumnStart,
               header,
               headersRef,
-              mainBodyRef,
               setIsWidthDragging,
               setMainBodyWidth,
               setPinnedLeftWidth,

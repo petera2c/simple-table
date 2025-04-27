@@ -9,10 +9,8 @@ type TableHeaderProps = {
   hiddenColumns: Record<string, boolean>;
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
-  pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedLeftTemplateColumns: string;
   pinnedRightColumns: HeaderObject[];
-  pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedRightTemplateColumns: string;
   sort: SortConfig | null;
 };

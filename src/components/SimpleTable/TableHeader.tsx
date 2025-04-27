@@ -19,14 +19,12 @@ const TableHeader = ({
   hiddenColumns,
   mainTemplateColumns,
   pinnedLeftColumns,
-  pinnedLeftHeaderRef,
   pinnedLeftTemplateColumns,
   pinnedRightColumns,
-  pinnedRightHeaderRef,
   pinnedRightTemplateColumns,
   sort,
 }: TableHeaderProps) => {
-  const { mainBodyRef, setCenterWidth, setPinnedLeftWidth, setPinnedRightWidth } =
+  const { mainBodyRef, pinnedLeftRef, pinnedRightRef, setPinnedLeftWidth, setPinnedRightWidth } =
     useTableContext();
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, centerHeaderRef);
@@ -61,17 +59,9 @@ const TableHeader = ({
   }, [headersRef, hiddenColumns]);
 
   useLayoutEffect(() => {
-    setCenterWidth(centerHeaderRef.current?.clientWidth || 0);
-    setPinnedLeftWidth(calculatePinnedWidth(pinnedLeftHeaderRef.current?.clientWidth));
-    setPinnedRightWidth(calculatePinnedWidth(pinnedRightHeaderRef.current?.clientWidth));
-  }, [
-    centerHeaderRef,
-    pinnedLeftHeaderRef,
-    pinnedRightHeaderRef,
-    setCenterWidth,
-    setPinnedLeftWidth,
-    setPinnedRightWidth,
-  ]);
+    setPinnedLeftWidth(calculatePinnedWidth(pinnedLeftRef.current?.clientWidth));
+    setPinnedRightWidth(calculatePinnedWidth(pinnedRightRef.current?.clientWidth));
+  }, [pinnedLeftRef, pinnedRightRef, setPinnedLeftWidth, setPinnedRightWidth]);
 
   return (
     <div className="st-header-container" ref={headerContainerRef}>
@@ -84,7 +74,7 @@ const TableHeader = ({
           hiddenColumns={hiddenColumns}
           maxDepth={maxDepth}
           pinned="left"
-          sectionRef={pinnedLeftHeaderRef}
+          sectionRef={pinnedLeftRef}
           sort={sort}
         />
       )}
@@ -109,7 +99,7 @@ const TableHeader = ({
           hiddenColumns={hiddenColumns}
           maxDepth={maxDepth}
           pinned="right"
-          sectionRef={pinnedRightHeaderRef}
+          sectionRef={pinnedRightRef}
           sort={sort}
         />
       )}

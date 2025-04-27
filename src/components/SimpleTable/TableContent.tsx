@@ -11,7 +11,6 @@ import TableBodyProps from "../../types/TableBodyProps";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
-  centerWidth: number;
   flattenedRows: Row[];
   isWidthDragging: boolean;
   pinnedLeftWidth: number;
@@ -23,7 +22,6 @@ interface TableContentLocalProps {
 }
 
 const TableContent = ({
-  centerWidth,
   flattenedRows,
   isWidthDragging,
   pinnedLeftWidth,
@@ -38,9 +36,7 @@ const TableContent = ({
 
   // Refs
   const headerContainerRef = useRef<HTMLDivElement>(null);
-  const pinnedLeftHeaderRef = useRef<HTMLDivElement>(null);
   const centerHeaderRef = useRef<HTMLDivElement>(null);
-  const pinnedRightHeaderRef = useRef<HTMLDivElement>(null);
 
   // Derived state
   const currentHeaders = headersRef.current.filter((header) => !header.pinned);
@@ -65,10 +61,8 @@ const TableContent = ({
     hiddenColumns,
     mainTemplateColumns,
     pinnedLeftColumns,
-    pinnedLeftHeaderRef,
     pinnedLeftTemplateColumns,
     pinnedRightColumns,
-    pinnedRightHeaderRef,
     pinnedRightTemplateColumns,
     sort,
   };

@@ -4,6 +4,72 @@ import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
 import { getCellId } from "./cellUtils";
 import { calculatePinnedWidth } from "./headerUtils";
 
+const calculateTotalSectionWidth = ({
+  header,
+  headers,
+  newWidth,
+}: {
+  header: HeaderObject;
+  headers: HeaderObject[];
+  newWidth: number;
+}) => {
+  const targetPinned = header.pinned;
+  let totalWidth = 0;
+
+  // Find all leaf headers in a header tree
+  const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
+    if (!header.children || header.children.length === 0) {
+      return [header];
+    }
+    return header.children.flatMap((child) => findLeafHeaders(child));
+  };
+
+  // Get actual width of a header in pixels
+  const getHeaderWidthInPixels = (header: HeaderObject): number => {
+    // If width is a number, use it directly
+    if (typeof header.width === "number") {
+      return header.width;
+    }
+    // If width is a string that ends with "px", parse it
+    else if (typeof header.width === "string" && header.width.endsWith("px")) {
+      return parseFloat(header.width);
+    }
+    // For fr, %, or any other format, get the actual DOM element width
+    else {
+      const cellElement = document.getElementById(
+        getCellId({ accessor: header.accessor, rowIndex: 0 })
+      );
+      return cellElement?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
+    }
+  };
+
+  // Process headers that match the target pinned value
+  headers.forEach((h) => {
+    if (h.pinned === targetPinned) {
+      // If this is the header being resized, use the new width
+      if (h.accessor === header.accessor) {
+        totalWidth += newWidth;
+      } else {
+        // Get all leaf headers if this is a parent header
+        const leafHeaders = findLeafHeaders(h);
+
+        // Sum up the widths of all leaf headers
+        leafHeaders.forEach((leafHeader) => {
+          // If this specific leaf is the one being resized, use new width
+          if (leafHeader.accessor === header.accessor) {
+            totalWidth += newWidth;
+          } else {
+            totalWidth += getHeaderWidthInPixels(leafHeader);
+          }
+        });
+      }
+    }
+  });
+
+  const totalWidthWithPinned = header.pinned ? calculatePinnedWidth(totalWidth) : totalWidth;
+  return totalWidthWithPinned;
+};
+
 export const handleResizeStart = ({
   event,
   forceUpdate,
@@ -11,7 +77,6 @@ export const handleResizeStart = ({
   gridColumnStart,
   header,
   headersRef,
-  mainBodyRef,
   setIsWidthDragging,
   setMainBodyWidth,
   setPinnedLeftWidth,
@@ -46,12 +111,17 @@ export const handleResizeStart = ({
     const delta = header.pinned === "right" ? startX - event.clientX : event.clientX - startX;
 
     const updateSectionWidth = (header: HeaderObject, newWidth: number) => {
+      const totalSectionWidth = calculateTotalSectionWidth({
+        header,
+        headers: headersRef.current,
+        newWidth,
+      });
       if (header.pinned === "left") {
-        setPinnedLeftWidth(calculatePinnedWidth(newWidth));
+        setPinnedLeftWidth(totalSectionWidth);
       } else if (header.pinned === "right") {
-        setPinnedRightWidth(calculatePinnedWidth(newWidth));
+        setPinnedRightWidth(totalSectionWidth);
       } else if (!header.pinned) {
-        setMainBodyWidth(mainBodyRef.current?.scrollWidth || 0);
+        setMainBodyWidth(totalSectionWidth);
       }
     };
 

@@ -40,7 +40,6 @@ interface TableContextType {
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
-  setCenterWidth: Dispatch<SetStateAction<number>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   setMainBodyWidth: Dispatch<SetStateAction<number>>;
