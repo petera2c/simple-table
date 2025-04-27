@@ -53,10 +53,24 @@ const TableSection = ({
       }}
     >
       {visibleRows.map((visibleRow, index) => {
-        const lastGroupRow = Boolean(visibleRow.row.rowMeta?.children?.length);
-        const previousRowIsExpanded = visibleRows[index - 1]?.row.rowMeta?.isExpanded;
+        const lastRow = visibleRows[index - 1];
+        const isRowExpanded = Boolean(
+          lastRow?.depth !== visibleRow?.depth &&
+            visibleRow?.row.rowMeta?.children?.length &&
+            visibleRow.depth === 0
+        );
+
         return (
           <Fragment key={visibleRow.position}>
+            {index !== 0 && (
+              <TableRowSeparator
+                // Is last row group and it is open
+                displayStrongBorder={isRowExpanded}
+                position={visibleRow.position}
+                rowHeight={rowHeight}
+                templateColumns={templateColumns}
+              />
+            )}
             <TableRow
               columnIndices={columnIndices}
               gridTemplateColumns={templateColumns}
@@ -70,15 +84,6 @@ const TableSection = ({
               rowIndices={rowIndices}
               visibleRow={visibleRow}
             />
-            {index !== 0 && (
-              <TableRowSeparator
-                // Is last row group and it is open
-                displayStrongBorder={lastGroupRow && previousRowIsExpanded}
-                position={visibleRow.position}
-                rowHeight={rowHeight}
-                templateColumns={templateColumns}
-              />
-            )}
           </Fragment>
         );
       })}
