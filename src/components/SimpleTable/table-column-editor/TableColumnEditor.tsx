@@ -41,7 +41,6 @@ const TableColumnEditor = ({
         headers={headers}
         open={open}
         position={position}
-        setOpen={setOpen}
         setHiddenColumns={setHiddenColumns}
         hiddenColumns={hiddenColumns}
       />

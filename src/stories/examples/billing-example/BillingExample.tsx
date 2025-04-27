@@ -9,6 +9,7 @@ const BillingExample = ({ theme = "light" }: { theme?: "light" | "custom" }) => 
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
+        editColumns
         columnResizing
         columnReordering
         defaultHeaders={HEADERS}

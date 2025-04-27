@@ -1061,14 +1061,39 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
-  gap: var(--st-spacing-small);
+  gap: var(--st-spacing-medium);
   padding: var(--st-spacing-medium) var(--st-spacing-small);
   border-left: var(--st-border-width) solid var(--st-border-color);
   height: 100%;
 }
 
+/* Column Editor Header Checkbox Styles */
+.st-header-checkbox-item {
+  display: flex;
+  align-items: center;
+}
+
+.st-header-icon-container {
+  width: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.st-collapsible-header-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.st-nested-headers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--st-spacing-medium);
+}
+
 .st-column-editor-popout.open {
-  width: 200px;
+  min-width: 200px;
+  width: auto;
 }
 
 .st-column-editor-popout.left {
