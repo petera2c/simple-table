@@ -117,9 +117,9 @@ const SimpleTableComp = ({
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
   const [isWidthDragging, setIsWidthDragging] = useState(false);
+  const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
-  const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
@@ -195,16 +195,16 @@ const SimpleTableComp = ({
   // Hooks
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const {
+    getBorderClass,
     handleMouseDown,
     handleMouseOver,
     handleMouseUp,
-    isSelected,
-    getBorderClass,
     isInitialFocusedCell,
-    setSelectedCells,
-    setSelectedColumns,
+    isSelected,
     selectColumns,
     setInitialFocusedCell,
+    setSelectedCells,
+    setSelectedColumns,
   } = useSelection({
     selectableCells,
     headers: headersRef.current,

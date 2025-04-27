@@ -5,21 +5,6 @@
   --st-after-width: 11.01px;
   --st-resize-handle-width: 2px;
   --st-resize-handle-margin-right: 2px;
-  --st-border-radius: 4px;
-  --st-border-width: 1px;
-  --st-cell-padding: 8px;
-  --st-font-size: 1rem;
-  --st-font-weight-normal: 400;
-  --st-font-weight-bold: 700;
-  --st-transition-duration: 0.3s;
-  --st-transition-ease: ease;
-  --st-opacity-disabled: 0.5;
-  --st-spacing-small: 4px;
-  --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
-  --st-scrollbar-bg-color: transparent;
-  --st-scrollbar-thumb-color: var(--st-slate-200);
-  --st-cell-flash-color: var(--st-slate-300);
 
   /* Tailwind Colors - renamed to avoid conflicts */
   --st-white: #fff;
@@ -289,44 +274,40 @@
   --st-rose-800: #9f1239;
   --st-rose-900: #881337;
   --st-rose-950: #4c0519;
-
-  --st-stone-50: #fafaf9;
-  --st-stone-100: #f5f5f4;
-  --st-stone-200: #e7e5e4;
-  --st-stone-300: #d6d3d1;
-  --st-stone-400: #a8a29e;
-  --st-stone-500: #78716c;
-  --st-stone-600: #57534e;
-  --st-stone-700: #44403c;
-  --st-stone-800: #292524;
-  --st-stone-900: #1c1917;
-  --st-stone-950: #0c0a09;
 }
 
 /* Light Theme (Using Slate colors) */
 .theme-light {
+  /* Layout/Structure variables */
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
+
+  /* Typography variables */
+  --st-font-family: "Inter", sans-serif;
   --st-font-size: 0.875rem;
   --st-font-weight-normal: 400;
   --st-font-weight-bold: 600;
+
+  /* Animation variables */
   --st-transition-duration: 0.2s;
   --st-transition-ease: ease;
   --st-opacity-disabled: 0.5;
+
+  /* Spacing variables */
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
+
+  /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-slate-50);
   --st-scrollbar-thumb-color: var(--st-slate-300);
 
+  /* Color variables */
   --st-border-color: var(--st-slate-300);
   --st-odd-row-background-color: var(--st-white);
   --st-even-row-background-color: var(--st-slate-50);
   --st-header-background-color: var(--st-slate-100);
-  --st-header-label-color: var(
-    --st-slate-900
-  ); /* Added: Dark slate for contrast on light background */
+  --st-header-label-color: var(--st-slate-900);
   --st-dragging-background-color: var(--st-slate-200);
   --st-selected-cell-background-color: var(--st-blue-100);
   --st-selected-first-cell-background-color: var(--st-blue-50);
@@ -339,45 +320,53 @@
   --st-resize-handle-color: var(--st-slate-400);
   --st-separator-border-color: var(--st-slate-200);
   --st-last-group-row-separator-border-color: var(--st-slate-400);
-  --st-selected-border-top-color: var(--st-blue-500);
-  --st-selected-border-bottom-color: var(--st-blue-500);
-  --st-selected-border-left-color: var(--st-blue-500);
-  --st-selected-border-right-color: var(--st-blue-500);
+
+  /* Border colors */
+  --st-selected-border-color: var(--st-blue-500);
+  --st-editable-cell-focus-border-color: var(--st-blue-500);
+
+  /* Component-specific colors */
   --st-checkbox-checked-background-color: var(--st-blue-600);
   --st-checkbox-checked-border-color: var(--st-blue-600);
   --st-column-editor-background-color: var(--st-white);
   --st-column-editor-popout-background-color: var(--st-white);
   --st-button-hover-background-color: var(--st-slate-100);
   --st-button-active-background-color: var(--st-blue-600);
-  --st-font-family: "Inter", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-blue-500);
   --st-cell-flash-color: var(--st-slate-200);
 }
 
 /* Dark Theme */
 .theme-dark {
+  /* Layout/Structure variables */
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
+
+  /* Typography variables */
+  --st-font-family: "Inter", sans-serif;
   --st-font-size: 0.875rem;
   --st-font-weight-normal: 400;
   --st-font-weight-bold: 600;
+
+  /* Animation variables */
   --st-transition-duration: 0.2s;
   --st-transition-ease: ease;
   --st-opacity-disabled: 0.5;
+
+  /* Spacing variables */
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
+
+  /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-gray-900);
   --st-scrollbar-thumb-color: var(--st-gray-600);
 
+  /* Color variables */
   --st-border-color: var(--st-gray-700);
   --st-odd-row-background-color: var(--st-gray-800);
   --st-even-row-background-color: var(--st-gray-900);
   --st-header-background-color: var(--st-gray-800);
-  --st-header-label-color: var(
-    --st-gray-100
-  ); /* Added: Light gray for contrast on dark background */
+  --st-header-label-color: var(--st-gray-100);
   --st-dragging-background-color: var(--st-gray-600);
   --st-selected-cell-background-color: var(--st-blue-900);
   --st-selected-first-cell-background-color: var(--st-blue-800);
@@ -390,45 +379,53 @@
   --st-resize-handle-color: var(--st-gray-500);
   --st-separator-border-color: var(--st-gray-600);
   --st-last-group-row-separator-border-color: var(--st-gray-500);
-  --st-selected-border-top-color: var(--st-blue-400);
-  --st-selected-border-bottom-color: var(--st-blue-400);
-  --st-selected-border-left-color: var(--st-blue-400);
-  --st-selected-border-right-color: var(--st-blue-400);
+
+  /* Border colors */
+  --st-selected-border-color: var(--st-blue-400);
+  --st-editable-cell-focus-border-color: var(--st-blue-400);
+
+  /* Component-specific colors */
   --st-checkbox-checked-background-color: var(--st-blue-500);
   --st-checkbox-checked-border-color: var(--st-blue-500);
   --st-column-editor-background-color: var(--st-gray-800);
   --st-column-editor-popout-background-color: var(--st-gray-800);
   --st-button-hover-background-color: var(--st-gray-700);
   --st-button-active-background-color: var(--st-blue-500);
-  --st-font-family: "Inter", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-blue-400);
   --st-cell-flash-color: var(--st-gray-600);
 }
 
 /* Neutral Theme */
 .theme-neutral {
+  /* Layout/Structure variables */
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
+
+  /* Typography variables */
+  --st-font-family: "Inter", sans-serif;
   --st-font-size: 0.875rem;
   --st-font-weight-normal: 400;
   --st-font-weight-bold: 600;
+
+  /* Animation variables */
   --st-transition-duration: 0.2s;
   --st-transition-ease: ease;
   --st-opacity-disabled: 0.5;
+
+  /* Spacing variables */
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
+
+  /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-neutral-100);
   --st-scrollbar-thumb-color: var(--st-neutral-400);
 
+  /* Color variables */
   --st-border-color: var(--st-neutral-300);
   --st-odd-row-background-color: var(--st-neutral-50);
   --st-even-row-background-color: var(--st-neutral-100);
   --st-header-background-color: var(--st-neutral-200);
-  --st-header-label-color: var(
-    --st-neutral-900
-  ); /* Added: Dark neutral for contrast on light background */
+  --st-header-label-color: var(--st-neutral-900);
   --st-dragging-background-color: var(--st-neutral-300);
   --st-selected-cell-background-color: var(--st-neutral-400);
   --st-selected-first-cell-background-color: var(--st-neutral-300);
@@ -441,45 +438,53 @@
   --st-resize-handle-color: var(--st-neutral-400);
   --st-separator-border-color: var(--st-neutral-200);
   --st-last-group-row-separator-border-color: var(--st-neutral-400);
-  --st-selected-border-top-color: var(--st-neutral-600);
-  --st-selected-border-bottom-color: var(--st-neutral-600);
-  --st-selected-border-left-color: var(--st-neutral-600);
-  --st-selected-border-right-color: var(--st-neutral-600);
+
+  /* Border colors */
+  --st-selected-border-color: var(--st-neutral-600);
+  --st-editable-cell-focus-border-color: var(--st-neutral-500);
+
+  /* Component-specific colors */
   --st-checkbox-checked-background-color: var(--st-neutral-600);
   --st-checkbox-checked-border-color: var(--st-neutral-600);
   --st-column-editor-background-color: var(--st-neutral-50);
   --st-column-editor-popout-background-color: var(--st-neutral-50);
   --st-button-hover-background-color: var(--st-neutral-200);
   --st-button-active-background-color: var(--st-neutral-600);
-  --st-font-family: "Inter", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-neutral-500);
   --st-cell-flash-color: var(--st-neutral-400);
 }
 
 /* Sky Theme */
 .theme-sky {
+  /* Layout/Structure variables */
   --st-border-radius: 4px;
   --st-border-width: 1px;
   --st-cell-padding: 8px;
+
+  /* Typography variables */
+  --st-font-family: "Inter", sans-serif;
   --st-font-size: 0.875rem;
   --st-font-weight-normal: 400;
   --st-font-weight-bold: 600;
+
+  /* Animation variables */
   --st-transition-duration: 0.2s;
   --st-transition-ease: ease;
   --st-opacity-disabled: 0.5;
+
+  /* Spacing variables */
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
-  --st-spacing-large: 16px;
+
+  /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-blue-50);
   --st-scrollbar-thumb-color: var(--st-blue-300);
 
+  /* Color variables */
   --st-border-color: var(--st-blue-300);
   --st-odd-row-background-color: var(--st-blue-50);
   --st-even-row-background-color: var(--st-blue-100);
   --st-header-background-color: var(--st-blue-200);
-  --st-header-label-color: var(
-    --st-blue-900
-  ); /* Added: Dark blue for contrast on light blue background */
+  --st-header-label-color: var(--st-blue-900);
   --st-dragging-background-color: var(--st-blue-300);
   --st-selected-cell-background-color: var(--st-blue-400);
   --st-selected-first-cell-background-color: var(--st-blue-300);
@@ -492,46 +497,53 @@
   --st-resize-handle-color: var(--st-blue-400);
   --st-separator-border-color: var(--st-blue-200);
   --st-last-group-row-separator-border-color: var(--st-blue-400);
-  --st-selected-border-top-color: var(--st-blue-600);
-  --st-selected-border-bottom-color: var(--st-blue-600);
-  --st-selected-border-left-color: var(--st-blue-600);
-  --st-selected-border-right-color: var(--st-blue-600);
+
+  /* Border colors */
+  --st-selected-border-color: var(--st-blue-600);
+  --st-editable-cell-focus-border-color: var(--st-blue-500);
+
+  /* Component-specific colors */
   --st-checkbox-checked-background-color: var(--st-blue-600);
   --st-checkbox-checked-border-color: var(--st-blue-600);
   --st-column-editor-background-color: var(--st-blue-50);
   --st-column-editor-popout-background-color: var(--st-blue-50);
   --st-button-hover-background-color: var(--st-blue-200);
   --st-button-active-background-color: var(--st-blue-600);
-  --st-font-family: "Inter", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-blue-500);
   --st-cell-flash-color: var(--st-blue-300);
 }
 
 /* Funky Theme */
 .theme-funky {
+  /* Layout/Structure variables */
   --st-border-radius: 8px;
   --st-border-width: 1px;
   --st-cell-padding: 12px;
+
+  /* Typography variables */
+  --st-font-family: "Inter", sans-serif;
   --st-font-size: 0.95rem;
   --st-font-weight-normal: 400;
   --st-font-weight-bold: 600;
+
+  /* Animation variables */
   --st-transition-duration: 0.25s;
   --st-transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --st-opacity-disabled: 0.6;
+
+  /* Spacing variables */
   --st-spacing-small: 6px;
   --st-spacing-medium: 10px;
-  --st-spacing-large: 20px;
 
+  /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-stone-100);
   --st-scrollbar-thumb-color: var(--st-violet-500);
 
+  /* Color variables */
   --st-border-color: var(--st-stone-200);
   --st-odd-row-background-color: var(--st-amber-50);
   --st-even-row-background-color: var(--st-amber-100);
   --st-header-background-color: var(--st-violet-600);
-  --st-header-label-color: var(
-    --st-white
-  ); /* Added: White for contrast on vibrant purple background */
+  --st-header-label-color: var(--st-white);
   --st-dragging-background-color: var(--st-violet-50);
   --st-selected-cell-background-color: var(--st-violet-50);
   --st-selected-first-cell-background-color: var(--st-violet-100);
@@ -545,18 +557,18 @@
   --st-resize-handle-color: var(--st-violet-400);
   --st-separator-border-color: var(--st-stone-200);
   --st-last-group-row-separator-border-color: var(--st-stone-300);
-  --st-selected-border-top-color: var(--st-violet-500);
-  --st-selected-border-bottom-color: var(--st-violet-500);
-  --st-selected-border-left-color: var(--st-violet-500);
-  --st-selected-border-right-color: var(--st-violet-500);
+
+  /* Border colors */
+  --st-selected-border-color: var(--st-violet-500);
+  --st-editable-cell-focus-border-color: var(--st-violet-500);
+
+  /* Component-specific colors */
   --st-checkbox-checked-background-color: var(--st-violet-500);
   --st-checkbox-checked-border-color: var(--st-violet-600);
   --st-column-editor-background-color: var(--st-white);
   --st-column-editor-popout-background-color: var(--st-white);
   --st-button-hover-background-color: var(--st-violet-50);
   --st-button-active-background-color: var(--st-violet-600);
-  --st-font-family: "Inter", sans-serif;
-  --st-editable-cell-focus-border-color: var(--st-violet-500);
   --st-cell-flash-color: var(--st-violet-200);
 }
 
@@ -907,27 +919,24 @@
 .st-cell-selected-first {
   background-color: var(--st-selected-first-cell-background-color) !important;
   color: var(--st-selected-first-cell-color);
-  border-top: var(--st-border-width) solid var(--st-selected-border-top-color);
-  border-bottom: var(--st-border-width) solid var(--st-selected-border-bottom-color);
-  border-left: var(--st-border-width) solid var(--st-selected-border-left-color);
-  border-right: var(--st-border-width) solid var(--st-selected-border-right-color);
+  border: var(--st-border-width) solid var(--st-selected-border-color);
 }
 
 /* Border for selected cells */
 .st-selected-top-border {
-  border-top: var(--st-border-width) solid var(--st-selected-border-top-color);
+  border-top: var(--st-border-width) solid var(--st-selected-border-color);
 }
 
 .st-selected-bottom-border {
-  border-bottom: var(--st-border-width) solid var(--st-selected-border-bottom-color);
+  border-bottom: var(--st-border-width) solid var(--st-selected-border-color);
 }
 
 .st-selected-left-border {
-  border-left: var(--st-border-width) solid var(--st-selected-border-left-color);
+  border-left: var(--st-border-width) solid var(--st-selected-border-color);
 }
 
 .st-selected-right-border {
-  border-right: var(--st-border-width) solid var(--st-selected-border-right-color);
+  border-right: var(--st-border-width) solid var(--st-selected-border-color);
 }
 
 .st-horizontal-scrollbar-container {
