@@ -1,10 +1,18 @@
+import { RefObject } from "react";
 import { HeaderObject } from "..";
-import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
-import { getCellId } from "./cellUtils";
 import { calculatePinnedWidth } from "./headerUtils";
+import {
+  findLeafHeaders,
+  getHeaderWidthInPixels,
+  removeAllFractionalWidths,
+  getHeaderMinWidth,
+} from "./headerWidthUtils";
 
-export const calculateTotalSectionWidth = ({
+/**
+ * Calculate total width for a specific section (left, right, or main)
+ */
+const calculateTotalSectionWidth = ({
   header,
   headers,
   newWidth,
@@ -12,41 +20,9 @@ export const calculateTotalSectionWidth = ({
   header: HeaderObject;
   headers: HeaderObject[];
   newWidth: number;
-}) => {
+}): number => {
   const targetPinned = header.pinned;
   let totalWidth = 0;
-
-  // Find all leaf headers in a header tree
-  const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
-    // Skip hidden headers
-    if (header.hide) {
-      return [];
-    }
-
-    if (!header.children || header.children.length === 0) {
-      return [header];
-    }
-    return header.children.flatMap((child) => findLeafHeaders(child));
-  };
-
-  // Get actual width of a header in pixels
-  const getHeaderWidthInPixels = (header: HeaderObject): number => {
-    // If width is a number, use it directly
-    if (typeof header.width === "number") {
-      return header.width;
-    }
-    // If width is a string that ends with "px", parse it
-    else if (typeof header.width === "string" && header.width.endsWith("px")) {
-      return parseFloat(header.width);
-    }
-    // For fr, %, or any other format, get the actual DOM element width
-    else {
-      const cellElement = document.getElementById(
-        getCellId({ accessor: header.accessor, rowIndex: 0 })
-      );
-      return cellElement?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
-    }
-  };
 
   // Process headers that match the target pinned value
   headers.forEach((h) => {
@@ -79,6 +55,42 @@ export const calculateTotalSectionWidth = ({
   return totalWidthWithPinned;
 };
 
+/**
+ * Update the width of a section (left, right, or main)
+ */
+export const updateSectionWidth = ({
+  header,
+  headers,
+  newWidth,
+  setMainBodyWidth,
+  setPinnedLeftWidth,
+  setPinnedRightWidth,
+}: {
+  header: HeaderObject;
+  headers: HeaderObject[];
+  newWidth: number;
+  setMainBodyWidth: (width: number) => void;
+  setPinnedLeftWidth: (width: number) => void;
+  setPinnedRightWidth: (width: number) => void;
+}): void => {
+  const totalSectionWidth = calculateTotalSectionWidth({
+    header,
+    headers,
+    newWidth,
+  });
+
+  if (header.pinned === "left") {
+    setPinnedLeftWidth(totalSectionWidth);
+  } else if (header.pinned === "right") {
+    setPinnedRightWidth(totalSectionWidth);
+  } else if (!header.pinned) {
+    setMainBodyWidth(totalSectionWidth);
+  }
+};
+
+/**
+ * Handler for when resize dragging starts
+ */
 export const handleResizeStart = ({
   event,
   forceUpdate,
@@ -91,29 +103,14 @@ export const handleResizeStart = ({
   setPinnedLeftWidth,
   setPinnedRightWidth,
   startWidth,
-}: HandleResizeStartProps) => {
+}: HandleResizeStartProps): void => {
   setIsWidthDragging(true);
   event.preventDefault();
   const startX = event.clientX;
   if (!header || header.hide) return;
 
-  // Get the minimum width for this header (default to 40px)
-  const minWidth = typeof header.minWidth === "number" ? header.minWidth : 40;
-
-  // Function to find all leaf headers under a parent
-  const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
-    // Skip hidden headers
-    if (header.hide) {
-      return [];
-    }
-
-    if (!header.children || header.children.length === 0) {
-      return [header]; // This is a leaf node
-    }
-
-    // Collect all leaf nodes from children
-    return header.children.flatMap((child) => findLeafHeaders(child));
-  };
+  // Get the minimum width for this header
+  const minWidth = getHeaderMinWidth(header);
 
   // Get all leaf headers if this is a parent header
   const isParentHeader = gridColumnEnd - gridColumnStart > 1;
@@ -121,74 +118,37 @@ export const handleResizeStart = ({
 
   const handleMouseMove = (event: MouseEvent) => {
     // Calculate the width delta (how much the width has changed)
-    // Check if header.pinned is right because if it is, we need to subtract the width of the pinned columns from the delta
+    // For right-pinned headers, delta is reversed
     const delta = header.pinned === "right" ? startX - event.clientX : event.clientX - startX;
 
-    const updateSectionWidth = (header: HeaderObject, newWidth: number) => {
-      const totalSectionWidth = calculateTotalSectionWidth({
-        header,
-        headers: headersRef.current,
-        newWidth,
-      });
-      if (header.pinned === "left") {
-        setPinnedLeftWidth(totalSectionWidth);
-      } else if (header.pinned === "right") {
-        setPinnedRightWidth(totalSectionWidth);
-      } else if (!header.pinned) {
-        setMainBodyWidth(totalSectionWidth);
-      }
-    };
-
     if (isParentHeader && leafHeaders.length > 1) {
-      const totalMinWidth = leafHeaders.reduce((min, header) => {
-        return Math.min(min, typeof header.minWidth === "number" ? header.minWidth : 40);
-      }, 40);
-
-      // Calculate the total original width first
-      const totalOriginalWidth = leafHeaders.reduce((sum, header) => {
-        const width = typeof header.width === "number" ? header.width : 150;
-        return sum + width;
-      }, 0);
-
-      // Calculate new total width with minimum constraints
-      const newTotalWidth = Math.max(startWidth + delta, totalMinWidth);
-
-      updateSectionWidth(header, newTotalWidth);
-
-      // Calculate the total width to distribute
-      const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
-
-      // Distribute the width proportionally based on original widths
-      leafHeaders.forEach((header) => {
-        const originalWidth = typeof header.width === "number" ? header.width : 150;
-        const proportion = originalWidth / totalOriginalWidth;
-        const widthIncrease = totalWidthToDistribute * proportion;
-        const newWidth = Math.max(originalWidth + widthIncrease, minWidth);
-        header.width = newWidth;
+      handleParentHeaderResize({
+        delta,
+        header,
+        headersRef,
+        leafHeaders,
+        minWidth,
+        setMainBodyWidth,
+        setPinnedLeftWidth,
+        setPinnedRightWidth,
+        startWidth,
       });
     } else {
       // For leaf headers or parents with only one leaf, just adjust the width directly
       const newWidth = Math.max(startWidth + delta, minWidth);
-
       header.width = newWidth;
-      updateSectionWidth(header, newWidth);
+
+      updateSectionWidth({
+        header,
+        headers: headersRef.current,
+        newWidth,
+        setMainBodyWidth,
+        setPinnedLeftWidth,
+        setPinnedRightWidth,
+      });
     }
 
-    // After a header is resized we need up update any headers that use fractional widths
-    // This must happen recursively
-    const removeAllFractionalWidths = (header: HeaderObject) => {
-      const headerWidth = header.width;
-      if (typeof headerWidth === "string" && headerWidth.includes("fr")) {
-        header.width =
-          document.getElementById(getCellId({ accessor: header.accessor, rowIndex: 0 }))
-            ?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
-      }
-      if (header.children) {
-        header.children.forEach((child) => {
-          removeAllFractionalWidths(child);
-        });
-      }
-    };
+    // After a header is resized, update any headers that use fractional widths
     headersRef.current.forEach((header) => {
       removeAllFractionalWidths(header);
     });
@@ -201,10 +161,75 @@ export const handleResizeStart = ({
     document.removeEventListener("mouseup", handleMouseUp);
     setIsWidthDragging(false);
   };
+
   document.addEventListener("mousemove", handleMouseMove);
   document.addEventListener("mouseup", handleMouseUp);
 };
 
+/**
+ * Handle resizing of parent headers with multiple children
+ */
+const handleParentHeaderResize = ({
+  delta,
+  header,
+  headersRef,
+  leafHeaders,
+  minWidth,
+  setMainBodyWidth,
+  setPinnedLeftWidth,
+  setPinnedRightWidth,
+  startWidth,
+}: {
+  delta: number;
+  header: HeaderObject;
+  headersRef: RefObject<HeaderObject[]>;
+  leafHeaders: HeaderObject[];
+  minWidth: number;
+  setMainBodyWidth: (width: number) => void;
+  setPinnedLeftWidth: (width: number) => void;
+  setPinnedRightWidth: (width: number) => void;
+  startWidth: number;
+}): void => {
+  // Find the minimum width across all leaf headers
+  const totalMinWidth = leafHeaders.reduce((min, header) => {
+    return Math.min(min, getHeaderMinWidth(header));
+  }, 40);
+
+  // Calculate the total original width
+  const totalOriginalWidth = leafHeaders.reduce((sum, header) => {
+    const width = typeof header.width === "number" ? header.width : 150;
+    return sum + width;
+  }, 0);
+
+  // Calculate new total width with minimum constraints
+  const newTotalWidth = Math.max(startWidth + delta, totalMinWidth);
+
+  // Update the section width
+  updateSectionWidth({
+    header,
+    headers: headersRef.current,
+    newWidth: newTotalWidth,
+    setMainBodyWidth,
+    setPinnedLeftWidth,
+    setPinnedRightWidth,
+  });
+
+  // Calculate the total width to distribute
+  const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
+
+  // Distribute the width proportionally based on original widths
+  leafHeaders.forEach((header) => {
+    const originalWidth = typeof header.width === "number" ? header.width : 150;
+    const proportion = originalWidth / totalOriginalWidth;
+    const widthIncrease = totalWidthToDistribute * proportion;
+    const newWidth = Math.max(originalWidth + widthIncrease, minWidth);
+    header.width = newWidth;
+  });
+};
+
+/**
+ * Recalculate widths for all sections (left, right, main)
+ */
 export const recalculateAllSectionWidths = ({
   headers,
   setMainBodyWidth,
@@ -215,47 +240,14 @@ export const recalculateAllSectionWidths = ({
   setMainBodyWidth: (width: number) => void;
   setPinnedLeftWidth: (width: number) => void;
   setPinnedRightWidth: (width: number) => void;
-}) => {
+}): {
+  leftWidth: number;
+  rightWidth: number;
+  mainWidth: number;
+} => {
   let leftWidth = 0;
   let rightWidth = 0;
   let mainWidth = 0;
-
-  // Get actual width of a header in pixels
-  const getHeaderWidthInPixels = (header: HeaderObject): number => {
-    // Skip hidden headers
-    if (header.hide) {
-      return 0;
-    }
-
-    // If width is a number, use it directly
-    if (typeof header.width === "number") {
-      return header.width;
-    }
-    // If width is a string that ends with "px", parse it
-    else if (typeof header.width === "string" && header.width.endsWith("px")) {
-      return parseFloat(header.width);
-    }
-    // For fr, %, or any other format, get the actual DOM element width
-    else {
-      const cellElement = document.getElementById(
-        getCellId({ accessor: header.accessor, rowIndex: 0 })
-      );
-      return cellElement?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
-    }
-  };
-
-  // Find all leaf headers in a header tree
-  const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
-    // Skip hidden headers
-    if (header.hide) {
-      return [];
-    }
-
-    if (!header.children || header.children.length === 0) {
-      return [header];
-    }
-    return header.children.flatMap((child) => findLeafHeaders(child));
-  };
 
   headers.forEach((header) => {
     // Skip hidden headers
