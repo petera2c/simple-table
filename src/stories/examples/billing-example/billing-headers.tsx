@@ -1,24 +1,19 @@
-import HeaderObject from "../../../types/HeaderObject";
-import Row from "../../../types/Row";
+import { HeaderObject } from "../../..";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// Get current month and generate 12 months (current month + 11 previous)
+// Generate header configs for 2024 months
 const generateMonthHeaders = () => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
   const headers: HeaderObject[] = [];
+  const year = 2024;
 
-  // Generate 12 months of headers (current month and 11 previous)
-  for (let monthIndex = 0; monthIndex < months.length; monthIndex++) {
-    const year = currentMonth - monthIndex < 0 ? currentYear - 1 : currentYear;
-    const shortYear = year.toString().slice(2);
+  // Add all months for 2024 in reverse chronological order (Dec to Jan)
+  for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
+    const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
 
     headers.push({
       accessor: `month_${months[monthIndex]}_${year}`,
-      label: `${months[monthIndex]} ${shortYear}`,
+      label: `${fullMonthName} ${year}`,
       width: 200,
       isSortable: true,
       isEditable: false,
@@ -26,6 +21,7 @@ const generateMonthHeaders = () => {
       type: "number",
       children: [
         {
+          disableReorder: true,
           label: "Balance",
           accessor: `balance_${months[monthIndex]}_${year}`,
           width: 200,
@@ -33,8 +29,18 @@ const generateMonthHeaders = () => {
           isEditable: false,
           align: "right",
           type: "number",
+          cellRenderer: ({ row, accessor }) => {
+            const balance = row.rowData[accessor] as number;
+            if (!balance) return "—";
+
+            return `$${balance.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`;
+          },
         },
         {
+          disableReorder: true,
           label: "Revenue",
           accessor: `revenue_${months[monthIndex]}_${year}`,
           width: 200,
@@ -42,6 +48,15 @@ const generateMonthHeaders = () => {
           isEditable: false,
           align: "right",
           type: "number",
+          cellRenderer: ({ row, accessor }) => {
+            const revenue = row.rowData[accessor] as number;
+            if (!revenue) return "—";
+
+            return `$${revenue.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`;
+          },
         },
       ],
     });
@@ -89,12 +104,12 @@ export const HEADERS: HeaderObject[] = [
   {
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
-    width: 150,
+    width: 180,
     isSortable: true,
     isEditable: false,
     align: "right",
     type: "number",
-    cellRenderer: ({ row }: { row: Row }) => {
+    cellRenderer: ({ row }) => {
       const amount = row.rowData.amount as number;
       const deferred = row.rowData.deferredRevenue as number;
 

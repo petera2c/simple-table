@@ -1,11 +1,8 @@
-import { useState } from "react";
-import { generateBillingData } from "./billing-rows";
 import { HEADERS } from "./billing-headers";
 import SimpleTable from "../../../components/SimpleTable/SimpleTable";
+import billingData from "./billing-data.json";
 
 const BillingExample = ({ theme = "light" }: { theme?: "light" | "custom" }) => {
-  const [data] = useState(generateBillingData());
-
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
@@ -13,7 +10,7 @@ const BillingExample = ({ theme = "light" }: { theme?: "light" | "custom" }) => 
         columnResizing
         columnReordering
         defaultHeaders={HEADERS}
-        rows={data}
+        rows={billingData}
         height="90dvh"
         theme={theme}
         selectableCells
