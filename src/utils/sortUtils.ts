@@ -142,7 +142,6 @@ const sortPreservingHierarchy = (
   let currentGroup = "";
 
   // First pass - identify and group rows by sector
-
   rows.forEach((row) => {
     // Check if this is a group header row (like "Sector 1", "Sector 2")
     const isSectorHeader =

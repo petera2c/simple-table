@@ -17,7 +17,6 @@ import AngleRightIcon from "../../icons/AngleRightIcon";
 import CellChangeProps from "../../types/CellChangeProps";
 import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
-import "../../styles/simple-table.css";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
@@ -32,8 +31,7 @@ import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
 import { getCellKey } from "../../utils/cellUtils";
 import OnNextPage from "../../types/OnNextPage";
-
-// Create enum for consistent values
+import "../../styles/simple-table.css";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations

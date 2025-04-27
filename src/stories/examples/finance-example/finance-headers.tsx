@@ -3,14 +3,15 @@ import HeaderObject from "../../../types/HeaderObject";
 export const HEADERS: HeaderObject[] = [
   {
     accessor: "ticker",
-    label: "Symbol",
-    width: "1fr",
-    minWidth: 100,
-    isSortable: true,
-    isEditable: false,
     align: "left",
+    expandable: true,
+    isEditable: false,
+    isSortable: true,
+    label: "Symbol",
+    minWidth: 100,
     pinned: "left",
     type: "string",
+    width: "1fr",
   },
 
   {
