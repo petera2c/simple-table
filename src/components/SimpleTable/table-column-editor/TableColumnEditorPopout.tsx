@@ -1,7 +1,5 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import HeaderObject from "../../../types/HeaderObject";
-import Checkbox from "../../Checkbox";
-import { useTableContext } from "../../../context/TableContext";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
 
 type TableColumnEditorPopoutProps = {

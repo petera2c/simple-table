@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 interface CheckboxProps {
   checked?: boolean;

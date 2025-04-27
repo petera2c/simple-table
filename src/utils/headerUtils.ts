@@ -66,5 +66,5 @@ export const getColumnRange = (startColIndex: number, endColIndex: number): numb
 };
 
 export const calculatePinnedWidth = (width = 0): number => {
-  return width + PINNED_BORDER_WIDTH;
+  return width ? width + PINNED_BORDER_WIDTH : 0;
 };

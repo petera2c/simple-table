@@ -1,7 +1,8 @@
 import { RefObject, useRef, useState, useEffect } from "react";
 import useScrollSync from "../../hooks/useScrollSync";
 import { useTableContext } from "../../context/TableContext";
-import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
+import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-consts";
+import { calculatePinnedWidth } from "../../utils/headerUtils";
 
 const TableHorizontalScrollbar = ({
   mainBodyRef,
@@ -36,7 +37,7 @@ const TableHorizontalScrollbar = ({
   const editorWidth = editColumns ? COLUMN_EDIT_WIDTH : 0;
   // If edit columns is enabled, add the width of the editor to the right section
   // If the content is scrollable, add the width of the scrollbar to the right section
-  const rightSectionWidth = pinnedRightWidth + editorWidth + scrollbarWidth - 0.6;
+  const rightSectionWidth = calculatePinnedWidth(pinnedRightWidth) + scrollbarWidth;
 
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, scrollRef);
@@ -98,14 +99,19 @@ const TableHorizontalScrollbar = ({
         </div>
       )}
       {pinnedRightWidth > 0 && (
-        <div
-          className="st-horizontal-scrollbar-right"
-          style={{
-            flexShrink: 0,
-            minWidth: rightSectionWidth,
-            height: scrollRef.current?.offsetHeight,
-          }}
-        />
+        <>
+          <div
+            className="st-horizontal-scrollbar-right"
+            style={{
+              flexShrink: 0,
+              minWidth: rightSectionWidth,
+              height: scrollRef.current?.offsetHeight,
+            }}
+          />
+        </>
+      )}
+      {editorWidth > 0 && (
+        <div style={{ width: editorWidth - 1.5, height: "100%", flexShrink: 0 }} />
       )}
     </div>
   );
