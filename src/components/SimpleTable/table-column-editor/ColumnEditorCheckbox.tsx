@@ -5,6 +5,7 @@ import HeaderObject from "../../../types/HeaderObject";
 import { useTableContext } from "../../../context/TableContext";
 import { areAllChildrenHidden, findAndMarkParentsVisible } from "./columnEditorUtils";
 import { updateParentHeaders } from "./columnEditorUtils";
+import { recalculateAllSectionWidths } from "../../../utils/resizeUtils";
 
 // Recursive component to render headers with proper indentation
 const ColumnEditorCheckbox = ({
@@ -21,7 +22,14 @@ const ColumnEditorCheckbox = ({
   setHiddenColumns: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const { expandIcon, collapseIcon } = useTableContext();
+  const {
+    expandIcon,
+    collapseIcon,
+    headersRef,
+    setMainBodyWidth,
+    setPinnedLeftWidth,
+    setPinnedRightWidth,
+  } = useTableContext();
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
@@ -63,6 +71,19 @@ const ColumnEditorCheckbox = ({
 
     // Update state
     setHiddenColumns(updatedHiddenColumns);
+
+    // Apply hide/show state to headers
+    headersRef.current.forEach((header) => {
+      header.hide = updatedHiddenColumns[header.accessor] === true;
+    });
+
+    // Recalculate section widths
+    recalculateAllSectionWidths({
+      headers: headersRef.current,
+      setMainBodyWidth,
+      setPinnedLeftWidth,
+      setPinnedRightWidth,
+    });
   };
 
   return (
@@ -89,12 +110,12 @@ const ColumnEditorCheckbox = ({
         <div className="st-nested-headers">
           {header.children.map((childHeader, index) => (
             <ColumnEditorCheckbox
-              key={`${childHeader.accessor}-${index}`}
-              header={childHeader}
-              depth={depth + 1}
-              hiddenColumns={hiddenColumns}
-              setHiddenColumns={setHiddenColumns}
               allHeaders={allHeaders}
+              depth={depth + 1}
+              header={childHeader}
+              hiddenColumns={hiddenColumns}
+              key={`${childHeader.accessor}-${index}`}
+              setHiddenColumns={setHiddenColumns}
             />
           ))}
         </div>

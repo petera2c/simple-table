@@ -5,14 +5,12 @@ import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-con
 
 const TableHorizontalScrollbar = ({
   mainBodyWidth,
-  hiddenColumns,
   mainBodyRef,
   pinnedLeftWidth,
   pinnedRightWidth,
   setMainBodyWidth,
   tableBodyContainerRef,
 }: {
-  hiddenColumns: Record<string, boolean>;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   mainBodyWidth: number;
   pinnedLeftWidth: number;
@@ -51,16 +49,14 @@ const TableHorizontalScrollbar = ({
     const updateScrollState = () => {
       if (!mainBodyRef.current) return;
 
-      const scrollWidth = mainBodyRef.current.scrollWidth;
+      const newMainBodyWidth = mainBodyRef.current.scrollWidth;
 
-      setMainBodyWidth(scrollWidth);
+      setMainBodyWidth(newMainBodyWidth);
     };
 
     // This is a hack to ensure the scrollbar is rendered
-    setTimeout(() => {
-      updateScrollState();
-    }, 1);
-  }, [hiddenColumns, mainBodyRef, setMainBodyWidth]);
+    updateScrollState();
+  }, [mainBodyRef, setMainBodyWidth]);
 
   useEffect(() => {
     const updateScrollState = () => {
