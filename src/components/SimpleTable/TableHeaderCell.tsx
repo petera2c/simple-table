@@ -53,6 +53,8 @@ const TableHeaderCell = forwardRef(
       selectableColumns,
       setInitialFocusedCell,
       setIsWidthDragging,
+      setPinnedLeftWidth,
+      setPinnedRightWidth,
       setSelectedCells,
       setSelectedColumns,
       sortDownIcon,
@@ -193,6 +195,8 @@ const TableHeaderCell = forwardRef(
               gridColumnEnd,
               gridColumnStart,
               setIsWidthDragging,
+              setPinnedLeftWidth,
+              setPinnedRightWidth,
               startWidth:
                 typeof ref === "object" && ref !== null && "current" in ref
                   ? ref.current?.offsetWidth

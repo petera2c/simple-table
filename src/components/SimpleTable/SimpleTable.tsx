@@ -117,10 +117,13 @@ const SimpleTableComp = ({
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
 
   // Local state
-  const [isWidthDragging, setIsWidthDragging] = useState(false);
+  const [centerWidth, setCenterWidth] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [scrollbarWidth, setScrollbarWidth] = useState(0);
+  const [isWidthDragging, setIsWidthDragging] = useState(false);
+  const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
+  const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
   const [scrollTop, setScrollTop] = useState<number>(0);
+  const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
   // Use custom hook for sorting
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
@@ -307,6 +310,7 @@ const SimpleTableComp = ({
     <TableProvider
       value={{
         allowAnimations,
+        cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
         collapseIcon,
         columnReordering,
@@ -334,15 +338,17 @@ const SimpleTableComp = ({
         scrollbarWidth,
         selectColumns,
         selectableColumns,
+        setCenterWidth,
         setInitialFocusedCell,
         setIsWidthDragging,
+        setPinnedLeftWidth,
+        setPinnedRightWidth,
         setSelectedCells,
         setSelectedColumns,
         shouldPaginate,
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
-        cellRegistry: cellRegistryRef.current,
       }}
     >
       <div
@@ -356,8 +362,11 @@ const SimpleTableComp = ({
             onMouseLeave={handleMouseUp}
           >
             <TableContent
+              centerWidth={centerWidth}
               flattenedRows={flattenedRows}
               isWidthDragging={isWidthDragging}
+              pinnedLeftWidth={pinnedLeftWidth}
+              pinnedRightWidth={pinnedRightWidth}
               setFlattenedRows={setFlattenedRows}
               setScrollTop={setScrollTop}
               sort={sort}
@@ -375,8 +384,8 @@ const SimpleTableComp = ({
           </div>
           <TableHorizontalScrollbar
             mainBodyRef={mainBodyRef}
-            pinnedLeftRef={pinnedLeftRef}
-            pinnedRightRef={pinnedRightRef}
+            pinnedLeftWidth={pinnedLeftWidth}
+            pinnedRightWidth={pinnedRightWidth}
             tableBodyContainerRef={tableBodyContainerRef}
           />
         </div>

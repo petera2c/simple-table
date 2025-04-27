@@ -6,3 +6,4 @@ export const BUFFER_ROW_COUNT = 5;
 
 export const COLUMN_EDIT_WIDTH = 28;
 export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
+export const PINNED_BORDER_WIDTH = 1;

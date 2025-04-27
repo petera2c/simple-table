@@ -15,9 +15,9 @@ interface TableSectionProps {
   isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
+  ref?: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   rowIndices: RowIndices;
-  sectionRef?: RefObject<HTMLDivElement | null>;
   templateColumns: string;
   totalHeight: number;
   visibleRows: VisibleRow[];
@@ -31,9 +31,9 @@ const TableSection = ({
   isWidthDragging,
   onExpandRowClick,
   pinned,
+  ref,
   rowHeight,
   rowIndices,
-  sectionRef,
   templateColumns,
   totalHeight,
   visibleRows,
@@ -44,11 +44,12 @@ const TableSection = ({
   return (
     <div
       className={className}
-      ref={sectionRef}
+      ref={ref}
       style={{
         position: "relative",
         height: `${totalHeight}px`,
         width,
+        ...(!pinned && { flexGrow: 1 }),
       }}
     >
       {visibleRows.map((visibleRow, index) => {

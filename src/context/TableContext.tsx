@@ -40,8 +40,11 @@ interface TableContextType {
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
+  setCenterWidth: Dispatch<SetStateAction<number>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
+  setPinnedLeftWidth: Dispatch<SetStateAction<number>>;
+  setPinnedRightWidth: Dispatch<SetStateAction<number>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   shouldPaginate: boolean;

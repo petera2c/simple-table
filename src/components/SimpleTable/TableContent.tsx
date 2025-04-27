@@ -7,11 +7,15 @@ import Row from "../../types/Row";
 import SortConfig from "../../types/SortConfig";
 import VisibleRow from "../../types/VisibleRow";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
+import TableBodyProps from "../../types/TableBodyProps";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
+  centerWidth: number;
   flattenedRows: Row[];
   isWidthDragging: boolean;
+  pinnedLeftWidth: number;
+  pinnedRightWidth: number;
   setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
   setScrollTop: Dispatch<SetStateAction<number>>;
   sort: SortConfig | null;
@@ -19,8 +23,11 @@ interface TableContentLocalProps {
 }
 
 const TableContent = ({
+  centerWidth,
   flattenedRows,
   isWidthDragging,
+  pinnedLeftWidth,
+  pinnedRightWidth,
   setFlattenedRows,
   setScrollTop,
   sort,
@@ -66,18 +73,18 @@ const TableContent = ({
     sort,
   };
 
-  const tableBodyProps = {
-    centerHeaderRef,
+  const tableBodyProps: TableBodyProps = {
+    centerWidth,
     flattenedRows,
     headerContainerRef,
     isWidthDragging,
     mainTemplateColumns,
     pinnedLeftColumns,
-    pinnedLeftHeaderRef,
     pinnedLeftTemplateColumns,
+    pinnedLeftWidth,
     pinnedRightColumns,
-    pinnedRightHeaderRef,
     pinnedRightTemplateColumns,
+    pinnedRightWidth,
     setFlattenedRows,
     setScrollTop,
     visibleRows,

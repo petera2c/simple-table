@@ -1,26 +1,23 @@
 import { RefObject, useRef, useState, useEffect } from "react";
-import useWidthSync from "../../hooks/useWidthSync";
 import useScrollSync from "../../hooks/useScrollSync";
 import { useTableContext } from "../../context/TableContext";
 import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 
 const TableHorizontalScrollbar = ({
   mainBodyRef,
-  pinnedLeftRef,
-  pinnedRightRef,
+  pinnedLeftWidth,
+  pinnedRightWidth,
   tableBodyContainerRef,
 }: {
   mainBodyRef: RefObject<HTMLDivElement | null>;
-  pinnedLeftRef: RefObject<HTMLDivElement | null>;
-  pinnedRightRef: RefObject<HTMLDivElement | null>;
+  pinnedLeftWidth: number;
+  pinnedRightWidth: number;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }) => {
   // Context
   const { editColumns } = useTableContext();
 
   // Local state
-  const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
-  const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
   const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [isScrollable, setIsScrollable] = useState(false);
 
@@ -41,16 +38,6 @@ const TableHorizontalScrollbar = ({
   // If the content is scrollable, add the width of the scrollbar to the right section
   const rightSectionWidth = pinnedRightWidth + editorWidth + scrollbarWidth - 0.6;
 
-  // Keep up to date the width of the left pinned columns container
-  useWidthSync({ widthAttribute: "offsetWidth", callback: setPinnedLeftWidth, ref: pinnedLeftRef });
-
-  // Keep up to date the width of the right pinned columns container
-  useWidthSync({
-    widthAttribute: "offsetWidth",
-    callback: setPinnedRightWidth,
-    ref: pinnedRightRef,
-  });
-
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, scrollRef);
 
@@ -61,8 +48,6 @@ const TableHorizontalScrollbar = ({
 
       const scrollWidth = mainBodyRef.current.scrollWidth;
       const clientWidth = mainBodyRef.current.clientWidth;
-
-      console.log(scrollWidth, clientWidth);
 
       setMainBodyWidth(scrollWidth);
       setIsScrollable(scrollWidth > clientWidth);

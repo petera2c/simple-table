@@ -1,4 +1,4 @@
-import { useRef, Dispatch, SetStateAction, RefObject, useMemo, useState, useEffect } from "react";
+import { useRef, useMemo } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableSection from "./TableSection";
@@ -6,85 +6,37 @@ import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { useTableContext } from "../../context/TableContext";
-import VisibleRow from "../../types/VisibleRow";
-import HeaderObject from "../../types/HeaderObject";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
-
-interface TableBodyLocalProps {
-  centerHeaderRef: RefObject<HTMLDivElement | null>;
-  flattenedRows: Row[];
-  headerContainerRef: RefObject<HTMLDivElement | null>;
-  isWidthDragging: boolean;
-  mainTemplateColumns: string;
-  pinnedLeftColumns: HeaderObject[];
-  pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
-  pinnedLeftTemplateColumns: string;
-  pinnedRightColumns: HeaderObject[];
-  pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
-  pinnedRightTemplateColumns: string;
-  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
-  setScrollTop: Dispatch<SetStateAction<number>>;
-  visibleRows: VisibleRow[];
-}
+import TableBodyProps from "../../types/TableBodyProps";
 
 const TableBody = ({
-  centerHeaderRef,
+  centerWidth,
   flattenedRows,
   headerContainerRef,
   isWidthDragging,
   mainTemplateColumns,
   pinnedLeftColumns,
-  pinnedLeftHeaderRef,
   pinnedLeftTemplateColumns,
+  pinnedLeftWidth,
   pinnedRightColumns,
-  pinnedRightHeaderRef,
   pinnedRightTemplateColumns,
+  pinnedRightWidth,
   setFlattenedRows,
   setScrollTop,
   visibleRows,
-}: TableBodyLocalProps) => {
+}: TableBodyProps) => {
   // Get stable props from context
   const {
+    headersRef,
+    hiddenColumns,
+    mainBodyRef,
     rowHeight,
     scrollbarWidth,
-    mainBodyRef,
-    pinnedLeftRef,
-    pinnedRightRef,
     tableBodyContainerRef,
-    hiddenColumns,
-    headersRef,
   } = useTableContext();
 
   // Add state for section widths
-  const [leftWidth, setLeftWidth] = useState(0);
-  const [centerWidth, setCenterWidth] = useState<number | undefined>(undefined);
-  const [rightWidth, setRightWidth] = useState(0);
-
-  // Update widths when references change or on window resize
-  useEffect(() => {
-    const updateWidths = () => {
-      setLeftWidth(
-        pinnedLeftHeaderRef.current?.clientWidth ? pinnedLeftHeaderRef.current.clientWidth + 1 : 0
-      );
-      setCenterWidth(centerHeaderRef.current?.clientWidth);
-      setRightWidth(
-        pinnedRightHeaderRef.current?.clientWidth ? pinnedRightHeaderRef.current.clientWidth + 1 : 0
-      );
-    };
-
-    // Initial update
-    updateWidths();
-
-    // Listen for resize events
-    window.addEventListener("resize", updateWidths);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", updateWidths);
-    };
-  }, [pinnedLeftHeaderRef, centerHeaderRef, pinnedRightHeaderRef, isWidthDragging]);
-
   useScrollbarVisibility({
     headerContainerRef,
     mainSectionRef: tableBodyContainerRef,
@@ -166,29 +118,26 @@ const TableBody = ({
           {...commonProps}
           onExpandRowClick={toggleRow}
           pinned="left"
-          sectionRef={pinnedLeftRef}
           templateColumns={pinnedLeftTemplateColumns}
           totalHeight={totalHeight}
-          width={leftWidth}
+          width={pinnedLeftWidth}
         />
       )}
       <TableSection
         {...commonProps}
+        ref={mainBodyRef}
         onExpandRowClick={toggleRow}
-        sectionRef={mainBodyRef}
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
-        width={centerWidth}
       />
       {pinnedRightColumns.length > 0 && (
         <TableSection
           {...commonProps}
           onExpandRowClick={toggleRow}
           pinned="right"
-          sectionRef={pinnedRightRef}
           templateColumns={pinnedRightTemplateColumns}
           totalHeight={totalHeight}
-          width={rightWidth}
+          width={pinnedRightWidth}
         />
       )}
     </div>

@@ -2,15 +2,18 @@ import { HeaderObject } from "..";
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
 import { getCellId } from "./cellUtils";
+import { calculatePinnedWidth } from "./headerUtils";
 
 export const handleResizeStart = ({
   event,
   forceUpdate,
-  header,
-  headersRef,
   gridColumnEnd,
   gridColumnStart,
+  header,
+  headersRef,
   setIsWidthDragging,
+  setPinnedLeftWidth,
+  setPinnedRightWidth,
   startWidth,
 }: HandleResizeStartProps) => {
   setIsWidthDragging(true);
@@ -40,6 +43,14 @@ export const handleResizeStart = ({
     // Check if header.pinned is right because if it is, we need to subtract the width of the pinned columns from the delta
     const delta = header.pinned === "right" ? startX - event.clientX : event.clientX - startX;
 
+    const updatePinnedWidth = (header: HeaderObject, newWidth: number) => {
+      if (header.pinned === "left") {
+        setPinnedLeftWidth(calculatePinnedWidth(newWidth));
+      } else if (header.pinned === "right") {
+        setPinnedRightWidth(calculatePinnedWidth(newWidth));
+      }
+    };
+
     if (isParentHeader && leafHeaders.length > 1) {
       const totalMinWidth = leafHeaders.reduce((min, header) => {
         return Math.min(min, typeof header.minWidth === "number" ? header.minWidth : 40);
@@ -53,6 +64,8 @@ export const handleResizeStart = ({
 
       // Calculate new total width with minimum constraints
       const newTotalWidth = Math.max(startWidth + delta, totalMinWidth);
+
+      updatePinnedWidth(header, newTotalWidth);
 
       // Calculate the total width to distribute
       const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
@@ -70,6 +83,7 @@ export const handleResizeStart = ({
       const newWidth = Math.max(startWidth + delta, minWidth);
 
       header.width = newWidth;
+      updatePinnedWidth(header, newWidth);
     }
 
     // After a header is resized we need up update any headers that use fractional widths

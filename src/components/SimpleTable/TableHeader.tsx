@@ -1,4 +1,4 @@
-import { UIEvent, useMemo } from "react";
+import { UIEvent, useLayoutEffect, useMemo } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import { displayCell } from "../../utils/cellUtils";
 import useScrollSync from "../../hooks/useScrollSync";
@@ -6,6 +6,7 @@ import HeaderObject from "../../types/HeaderObject";
 import TableHeaderSection from "./TableHeaderSection";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
+import { calculatePinnedWidth } from "../../utils/headerUtils";
 
 const getHeaderDepth = (header: HeaderObject): number => {
   return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
@@ -25,7 +26,8 @@ const TableHeader = ({
   pinnedRightTemplateColumns,
   sort,
 }: TableHeaderProps) => {
-  const { mainBodyRef } = useTableContext();
+  const { mainBodyRef, setCenterWidth, setPinnedLeftWidth, setPinnedRightWidth } =
+    useTableContext();
   // Keep up to date the scroll position of the visible scroll
   useScrollSync(mainBodyRef, centerHeaderRef);
 
@@ -57,6 +59,19 @@ const TableHeader = ({
     });
     return { maxDepth };
   }, [headersRef, hiddenColumns]);
+
+  useLayoutEffect(() => {
+    setCenterWidth(centerHeaderRef.current?.clientWidth || 0);
+    setPinnedLeftWidth(calculatePinnedWidth(pinnedLeftHeaderRef.current?.clientWidth));
+    setPinnedRightWidth(calculatePinnedWidth(pinnedRightHeaderRef.current?.clientWidth));
+  }, [
+    centerHeaderRef,
+    pinnedLeftHeaderRef,
+    pinnedRightHeaderRef,
+    setCenterWidth,
+    setPinnedLeftWidth,
+    setPinnedRightWidth,
+  ]);
 
   return (
     <div className="st-header-container" ref={headerContainerRef}>
