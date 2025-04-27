@@ -43,6 +43,7 @@ interface TableContextType {
   setCenterWidth: Dispatch<SetStateAction<number>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
+  setMainBodyWidth: Dispatch<SetStateAction<number>>;
   setPinnedLeftWidth: Dispatch<SetStateAction<number>>;
   setPinnedRightWidth: Dispatch<SetStateAction<number>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;

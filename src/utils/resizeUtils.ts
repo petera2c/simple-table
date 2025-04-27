@@ -11,7 +11,9 @@ export const handleResizeStart = ({
   gridColumnStart,
   header,
   headersRef,
+  mainBodyRef,
   setIsWidthDragging,
+  setMainBodyWidth,
   setPinnedLeftWidth,
   setPinnedRightWidth,
   startWidth,
@@ -43,11 +45,13 @@ export const handleResizeStart = ({
     // Check if header.pinned is right because if it is, we need to subtract the width of the pinned columns from the delta
     const delta = header.pinned === "right" ? startX - event.clientX : event.clientX - startX;
 
-    const updatePinnedWidth = (header: HeaderObject, newWidth: number) => {
+    const updateSectionWidth = (header: HeaderObject, newWidth: number) => {
       if (header.pinned === "left") {
         setPinnedLeftWidth(calculatePinnedWidth(newWidth));
       } else if (header.pinned === "right") {
         setPinnedRightWidth(calculatePinnedWidth(newWidth));
+      } else if (!header.pinned) {
+        setMainBodyWidth(mainBodyRef.current?.scrollWidth || 0);
       }
     };
 
@@ -65,7 +69,7 @@ export const handleResizeStart = ({
       // Calculate new total width with minimum constraints
       const newTotalWidth = Math.max(startWidth + delta, totalMinWidth);
 
-      updatePinnedWidth(header, newTotalWidth);
+      updateSectionWidth(header, newTotalWidth);
 
       // Calculate the total width to distribute
       const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
@@ -83,7 +87,7 @@ export const handleResizeStart = ({
       const newWidth = Math.max(startWidth + delta, minWidth);
 
       header.width = newWidth;
-      updatePinnedWidth(header, newWidth);
+      updateSectionWidth(header, newWidth);
     }
 
     // After a header is resized we need up update any headers that use fractional widths

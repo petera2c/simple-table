@@ -1,26 +1,29 @@
-import { RefObject, useRef, useState, useEffect } from "react";
+import { RefObject, useRef, useState, useEffect, SetStateAction, Dispatch } from "react";
 import useScrollSync from "../../hooks/useScrollSync";
 import { useTableContext } from "../../context/TableContext";
 import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-consts";
 
 const TableHorizontalScrollbar = ({
+  mainBodyWidth,
   hiddenColumns,
   mainBodyRef,
   pinnedLeftWidth,
   pinnedRightWidth,
+  setMainBodyWidth,
   tableBodyContainerRef,
 }: {
   hiddenColumns: Record<string, boolean>;
   mainBodyRef: RefObject<HTMLDivElement | null>;
+  mainBodyWidth: number;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
+  setMainBodyWidth: Dispatch<SetStateAction<number>>;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }) => {
   // Context
   const { editColumns } = useTableContext();
 
   // Local state
-  const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [isScrollable, setIsScrollable] = useState(false);
 
   // Refs
@@ -49,17 +52,30 @@ const TableHorizontalScrollbar = ({
       if (!mainBodyRef.current) return;
 
       const scrollWidth = mainBodyRef.current.scrollWidth;
-      const clientWidth = mainBodyRef.current.clientWidth;
 
       setMainBodyWidth(scrollWidth);
-      setIsScrollable(scrollWidth > clientWidth);
     };
 
     // This is a hack to ensure the scrollbar is rendered
     setTimeout(() => {
       updateScrollState();
     }, 1);
-  }, [hiddenColumns, mainBodyRef]);
+  }, [hiddenColumns, mainBodyRef, setMainBodyWidth]);
+
+  useEffect(() => {
+    const updateScrollState = () => {
+      if (!mainBodyRef.current) return;
+
+      const clientWidth = mainBodyRef.current.clientWidth;
+
+      setIsScrollable(mainBodyWidth > clientWidth);
+    };
+
+    // This is a hack to ensure the scrollbar is rendered
+    setTimeout(() => {
+      updateScrollState();
+    }, 1);
+  }, [mainBodyRef, mainBodyWidth, setMainBodyWidth]);
 
   if (!isScrollable) {
     // If the table is not scrollable, don't render the scrollbar

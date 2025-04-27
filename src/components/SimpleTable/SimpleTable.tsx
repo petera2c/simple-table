@@ -120,6 +120,7 @@ const SimpleTableComp = ({
   const [isWidthDragging, setIsWidthDragging] = useState(false);
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
+  const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
@@ -339,6 +340,7 @@ const SimpleTableComp = ({
         setCenterWidth,
         setInitialFocusedCell,
         setIsWidthDragging,
+        setMainBodyWidth,
         setPinnedLeftWidth,
         setPinnedRightWidth,
         setSelectedCells,
@@ -383,8 +385,10 @@ const SimpleTableComp = ({
           <TableHorizontalScrollbar
             hiddenColumns={hiddenColumns}
             mainBodyRef={mainBodyRef}
+            mainBodyWidth={mainBodyWidth}
             pinnedLeftWidth={pinnedLeftWidth}
             pinnedRightWidth={pinnedRightWidth}
+            setMainBodyWidth={setMainBodyWidth}
             tableBodyContainerRef={tableBodyContainerRef}
           />
         </div>
