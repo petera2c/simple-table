@@ -67,7 +67,54 @@ const TableFooter = ({
     }
   };
 
+  // Generate visible page numbers
+  const getVisiblePages = () => {
+    // If there are 15 or fewer pages, show all
+    if (totalPages <= 15) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    // Otherwise, show a window of pages with focus on the current page
+    const pages = [];
+    const maxDisplayed = 15; // Show maximum 15 page buttons
+
+    // Calculate how to distribute the page numbers
+    let startPage: number;
+    let endPage: number;
+
+    if (currentPage <= Math.ceil(maxDisplayed / 2)) {
+      // Near the beginning - show first maxDisplayed-1 pages and the last page
+      startPage = 1;
+      endPage = maxDisplayed - 1;
+    } else if (currentPage >= totalPages - Math.floor(maxDisplayed / 2)) {
+      // Near the end - show last maxDisplayed pages
+      startPage = Math.max(1, totalPages - maxDisplayed + 1);
+      endPage = totalPages;
+    } else {
+      // In the middle - show a window around current page
+      const pagesBeforeCurrent = Math.floor((maxDisplayed - 1) / 2);
+      const pagesAfterCurrent = maxDisplayed - pagesBeforeCurrent - 1;
+      startPage = currentPage - pagesBeforeCurrent;
+      endPage = currentPage + pagesAfterCurrent;
+    }
+
+    // Add pages in the primary range
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    // Add ellipsis and last page if not already included
+    if (endPage < totalPages - 1) {
+      pages.push(-1); // Ellipsis
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
   if (hideFooter || !shouldPaginate) return null;
+
+  const visiblePages = getVisiblePages();
 
   return (
     <div className="st-footer">
@@ -78,6 +125,7 @@ const TableFooter = ({
       >
         {prevIcon}
       </button>
+
       <button
         className={`st-next-prev-btn ${isNextDisabled ? "disabled" : ""}`}
         onClick={handleNextPage}
@@ -85,15 +133,24 @@ const TableFooter = ({
       >
         {nextIcon}
       </button>
-      {Array.from({ length: totalPages }, (_, index) => (
-        <button
-          key={index}
-          onClick={() => handlePageChange(index + 1)}
-          className={`st-page-btn ${currentPage === index + 1 ? "active" : ""}`}
-        >
-          {index + 1}
-        </button>
-      ))}
+
+      {visiblePages.map((page, index) =>
+        page < 0 ? (
+          // Render ellipsis
+          <span key={`ellipsis-${page}`} className="st-page-ellipsis">
+            ...
+          </span>
+        ) : (
+          // Render page button
+          <button
+            key={`page-${page}`}
+            onClick={() => handlePageChange(page)}
+            className={`st-page-btn ${currentPage === page ? "active" : ""}`}
+          >
+            {page}
+          </button>
+        )
+      )}
     </div>
   );
 };
