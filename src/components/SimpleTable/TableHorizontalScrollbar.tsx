@@ -55,7 +55,9 @@ const TableHorizontalScrollbar = ({
     };
 
     // This is a hack to ensure the scrollbar is rendered
-    updateScrollState();
+    setTimeout(() => {
+      updateScrollState();
+    }, 1);
   }, [mainBodyRef, setMainBodyWidth]);
 
   useEffect(() => {
