@@ -387,17 +387,17 @@ const SimpleTableComp = ({
             setMainBodyWidth={setMainBodyWidth}
             tableBodyContainerRef={tableBodyContainerRef}
           />
+          <TableFooter
+            currentPage={currentPage}
+            hideFooter={hideFooter}
+            nextIcon={nextIcon}
+            onPageChange={setCurrentPage}
+            onNextPage={onNextPage}
+            prevIcon={prevIcon}
+            shouldPaginate={shouldPaginate}
+            totalPages={Math.ceil(rows.length / rowsPerPage)}
+          />
         </div>
-        <TableFooter
-          currentPage={currentPage}
-          hideFooter={hideFooter}
-          nextIcon={nextIcon}
-          onPageChange={setCurrentPage}
-          onNextPage={onNextPage}
-          prevIcon={prevIcon}
-          shouldPaginate={shouldPaginate}
-          totalPages={Math.ceil(rows.length / rowsPerPage)}
-        />
       </div>
     </TableProvider>
   );
