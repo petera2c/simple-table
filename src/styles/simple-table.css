@@ -616,6 +616,7 @@
 
 /* Body */
 .st-body-container {
+  flex-grow: 1;
   display: flex;
   width: 100%;
   overflow: auto;
@@ -627,6 +628,7 @@
 .st-body-pinned-right {
   display: grid;
   height: max-content;
+  min-height: 100%;
 }
 .st-body-pinned-left {
   flex-shrink: 0;

@@ -16,6 +16,7 @@ type HeaderObject = {
   }) => ReactNode | string;
   children?: HeaderObject[];
   disableReorder?: boolean;
+  enumOptions?: string[];
   expandable?: boolean;
   hide?: boolean;
   isEditable?: boolean;

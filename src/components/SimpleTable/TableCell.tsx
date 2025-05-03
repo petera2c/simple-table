@@ -54,7 +54,7 @@ const TableCell = forwardRef(
     const [localContent, setLocalContent] = useState<CellValue>(
       row.rowData[header.accessor] as CellValue
     );
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
     const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -173,6 +173,11 @@ const TableCell = forwardRef(
             onChange={updateLocalContent}
             setIsEditing={setIsEditing}
             value={localContent}
+            type={header.type}
+            enumOptions={header.enumOptions}
+            useDropdown={
+              header.type === "boolean" || header.type === "date" || header.type === "enum"
+            }
           />
         </div>
       );
@@ -234,7 +239,7 @@ const TableCell = forwardRef(
         >
           {header.cellRenderer
             ? header.cellRenderer({ accessor: header.accessor, colIndex, row })
-            : localContent}
+            : String(localContent)}
         </span>
       </div>
     );

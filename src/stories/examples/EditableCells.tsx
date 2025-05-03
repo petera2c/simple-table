@@ -5,13 +5,62 @@ import Row from "../../types/Row";
 import { RowId } from "../../types/RowId";
 import CellValue from "../../types/CellValue";
 import HeaderObject from "../../types/HeaderObject";
-import data from "../examples/finance-example/finance-data.json";
-import { HEADERS } from "../examples/finance-example/finance-headers";
 
-const EXAMPLE_DATA = data;
+const HEADERS: HeaderObject[] = [
+  {
+    accessor: "name",
+    label: "Name",
+    width: 100,
+    type: "string",
+    isEditable: true,
+  },
+  {
+    accessor: "age",
+    label: "Age",
+    width: 100,
+    type: "number",
+    isEditable: true,
+  },
+  {
+    accessor: "jobTitle",
+    label: "Job Title",
+    width: 100,
+    type: "enum",
+    enumOptions: ["Engineer", "Manager", "Designer", "QA", "Other"],
+    isEditable: true,
+  },
+  {
+    accessor: "employed",
+    label: "Employed",
+    width: 100,
+    type: "boolean",
+    isEditable: true,
+  },
+  {
+    accessor: "startDate",
+    label: "Start Date",
+    width: 100,
+    type: "date",
+    isEditable: true,
+  },
+];
+const ROWS: Row[] = [
+  {
+    rowMeta: {
+      rowId: "1",
+    },
+    rowData: {
+      name: "John Doe",
+      age: 30,
+      jobTitle: "Engineer",
+      employed: true,
+      startDate: "2020-01-01",
+    },
+  },
+];
 
 const EditableCellsExample = () => {
-  const [rows, setRows] = useState<Row[]>(EXAMPLE_DATA);
+  const [rows, setRows] = useState<Row[]>(ROWS);
   const [headers, setHeaders] = useState(HEADERS);
   const updateRowData = (
     rows: Row[],
