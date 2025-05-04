@@ -3,14 +3,20 @@ import { Dropdown } from "../../Dropdown";
 import { DatePicker } from "../../DatePicker";
 
 interface DateDropdownEditProps {
-  value: string | Date; // Can accept ISO string or Date object
-  onChange: (value: string) => void;
   onBlur: () => void;
+  onChange: (value: string) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  value: string | Date; // Can accept ISO string or Date object
 }
 
-const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({ value, onChange, onBlur }) => {
-  const [isOpen, setIsOpen] = useState(true);
-
+const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
+  onBlur,
+  onChange,
+  open,
+  setOpen,
+  value,
+}) => {
   // Convert the input value to a Date object
   const parseDate = (value: string | Date): Date => {
     if (value instanceof Date) {
@@ -22,11 +28,6 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({ value, onChange, on
   };
 
   const [currentDate, setCurrentDate] = useState<Date>(parseDate(value));
-
-  // Format the date for display
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString();
-  };
 
   // Auto-focus on mount
   useEffect(() => {
@@ -45,7 +46,7 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({ value, onChange, on
     setCurrentDate(newDate);
     // Format the date as ISO string for storage
     onChange(newDate.toISOString());
-    setIsOpen(false);
+    setOpen(false);
     onBlur();
   };
 
@@ -55,10 +56,10 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({ value, onChange, on
 
   return (
     <Dropdown
-      isOpen={isOpen}
+      open={open}
       onClose={handleClose}
-      trigger={<div className="st-date-dropdown-trigger">{formatDate(currentDate)}</div>}
       position="bottom-left"
+      setOpen={setOpen}
       width={280}
     >
       <DatePicker value={currentDate} onChange={handleDateChange} onClose={handleClose} />

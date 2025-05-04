@@ -2,13 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Dropdown, DropdownItem } from "../../Dropdown";
 
 interface BooleanDropdownEditProps {
-  value: boolean;
-  onChange: (value: boolean) => void;
   onBlur: () => void;
+  onChange: (value: boolean) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  value: boolean;
 }
 
-const BooleanDropdownEdit: React.FC<BooleanDropdownEditProps> = ({ value, onChange, onBlur }) => {
-  const [isOpen, setIsOpen] = useState(true);
+const BooleanDropdownEdit: React.FC<BooleanDropdownEditProps> = ({
+  onBlur,
+  onChange,
+  open,
+  setOpen,
+  value,
+}) => {
   const [currentValue, setCurrentValue] = useState(value);
 
   // Auto-focus on mount
@@ -27,7 +34,7 @@ const BooleanDropdownEdit: React.FC<BooleanDropdownEditProps> = ({ value, onChan
   const handleSelect = (newValue: boolean) => {
     setCurrentValue(newValue);
     onChange(newValue);
-    setIsOpen(false);
+    setOpen(false);
     onBlur();
   };
 
@@ -37,10 +44,10 @@ const BooleanDropdownEdit: React.FC<BooleanDropdownEditProps> = ({ value, onChan
 
   return (
     <Dropdown
-      isOpen={isOpen}
+      open={open}
       onClose={handleClose}
-      trigger={<div className="st-boolean-dropdown-trigger">{currentValue ? "True" : "False"}</div>}
       position="bottom-left"
+      setOpen={setOpen}
       width={120}
     >
       <DropdownItem isSelected={currentValue === true} onClick={() => handleSelect(true)}>

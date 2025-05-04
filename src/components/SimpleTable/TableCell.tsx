@@ -20,6 +20,13 @@ interface MinimalCellProps {
   visibleRow: TableCellProps["visibleRow"];
 }
 
+const displayContent = (content: CellValue) => {
+  if (typeof content === "boolean") {
+    return content ? "True" : "False";
+  }
+  return content;
+};
+
 const TableCell = forwardRef(
   (
     {
@@ -54,7 +61,7 @@ const TableCell = forwardRef(
     const [localContent, setLocalContent] = useState<CellValue>(
       row.rowData[header.accessor] as CellValue
     );
-    const [isEditing, setIsEditing] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -128,6 +135,8 @@ const TableCell = forwardRef(
     }, [row.rowData, header.accessor]);
 
     // Derived state
+    const isEditInDropdown =
+      header.type === "boolean" || header.type === "date" || header.type === "enum";
     const cellHasChildren = Boolean(row.rowMeta?.children?.length);
     const clickable = Boolean(header?.isEditable);
 
@@ -163,21 +172,18 @@ const TableCell = forwardRef(
       }
     };
 
-    if (isEditing) {
+    if (isEditing && !isEditInDropdown) {
       return (
         <div
           className="st-cell-editing"
           id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
         >
           <EditableCell
+            enumOptions={header.enumOptions}
             onChange={updateLocalContent}
             setIsEditing={setIsEditing}
-            value={localContent}
             type={header.type}
-            enumOptions={header.enumOptions}
-            useDropdown={
-              header.type === "boolean" || header.type === "date" || header.type === "enum"
-            }
+            value={localContent}
           />
         </div>
       );
@@ -239,8 +245,17 @@ const TableCell = forwardRef(
         >
           {header.cellRenderer
             ? header.cellRenderer({ accessor: header.accessor, colIndex, row })
-            : String(localContent)}
+            : displayContent(localContent)}
         </span>
+        {isEditing && isEditInDropdown && (
+          <EditableCell
+            enumOptions={header.enumOptions}
+            onChange={updateLocalContent}
+            setIsEditing={setIsEditing}
+            type={header.type}
+            value={localContent}
+          />
+        )}
       </div>
     );
   }

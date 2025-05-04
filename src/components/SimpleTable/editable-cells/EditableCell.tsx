@@ -1,4 +1,3 @@
-import BooleanEdit from "./BooleanEdit";
 import BooleanDropdownEdit from "./BooleanDropdownEdit";
 import StringEdit from "./StringEdit";
 import CellValue from "../../../types/CellValue";
@@ -7,49 +6,34 @@ import DateDropdownEdit from "./DateDropdownEdit";
 import EnumDropdownEdit from "./EnumDropdownEdit";
 
 interface EditableCellProps {
+  enumOptions?: string[];
   onChange: (newValue: CellValue) => void;
   setIsEditing: (isEditing: boolean) => void;
-  value: CellValue;
   type?: "string" | "number" | "boolean" | "date" | "enum";
-  enumOptions?: string[];
-  useDropdown?: boolean;
+  value: CellValue;
 }
 
 const EditableCell = ({
+  enumOptions = [],
   onChange,
   setIsEditing,
-  value,
   type = "string",
-  enumOptions = [],
-  useDropdown = false,
+  value,
 }: EditableCellProps) => {
   const handleBlur = () => {
+    console.log("handleBlur");
     setIsEditing(false);
   };
 
   // Determine which editor to use based on the type and infer value types
   if (type === "boolean" && typeof value === "boolean") {
-    return useDropdown ? (
-      <BooleanDropdownEdit
-        value={value}
-        onChange={(val: boolean) => onChange(val)}
-        onBlur={handleBlur}
-      />
-    ) : (
-      <BooleanEdit value={value} onChange={(val: boolean) => onChange(val)} onBlur={handleBlur} />
-    );
-  }
-
-  if (type === "number" && typeof value === "number") {
     return (
-      <NumberEdit
-        defaultValue={value}
-        onChange={(val: string) => {
-          // Convert string back to number for storage
-          const numVal = val === "" ? 0 : parseFloat(val);
-          onChange(isNaN(numVal) ? 0 : numVal);
-        }}
+      <BooleanDropdownEdit
         onBlur={handleBlur}
+        onChange={(val: boolean) => onChange(val)}
+        open
+        setOpen={setIsEditing}
+        value={value}
       />
     );
   }
@@ -58,9 +42,11 @@ const EditableCell = ({
     const dateValue = typeof value === "string" ? value : "";
     return (
       <DateDropdownEdit
-        value={dateValue}
-        onChange={(val: string) => onChange(val)}
         onBlur={handleBlur}
+        onChange={(val: string) => onChange(val)}
+        open
+        setOpen={setIsEditing}
+        value={dateValue}
       />
     );
   }
@@ -69,10 +55,26 @@ const EditableCell = ({
     const enumValue = typeof value === "string" ? value : "";
     return (
       <EnumDropdownEdit
-        value={enumValue}
-        options={enumOptions}
-        onChange={(val: string) => onChange(val)}
         onBlur={handleBlur}
+        onChange={(val: string) => onChange(val)}
+        open
+        options={enumOptions}
+        setOpen={setIsEditing}
+        value={enumValue}
+      />
+    );
+  }
+
+  if (type === "number" && typeof value === "number") {
+    return (
+      <NumberEdit
+        defaultValue={value}
+        onBlur={handleBlur}
+        onChange={(val: string) => {
+          // Convert string back to number for storage
+          const numVal = val === "" ? 0 : parseFloat(val);
+          onChange(isNaN(numVal) ? 0 : numVal);
+        }}
       />
     );
   }
@@ -82,8 +84,8 @@ const EditableCell = ({
   return (
     <StringEdit
       defaultValue={stringValue}
-      onChange={(val: string) => onChange(val)}
       onBlur={handleBlur}
+      onChange={(val: string) => onChange(val)}
     />
   );
 };

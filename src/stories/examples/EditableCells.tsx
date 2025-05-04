@@ -17,14 +17,14 @@ const HEADERS: HeaderObject[] = [
   {
     accessor: "age",
     label: "Age",
-    width: 100,
+    width: 120,
     type: "number",
     isEditable: true,
   },
   {
     accessor: "jobTitle",
     label: "Job Title",
-    width: 100,
+    width: 120,
     type: "enum",
     enumOptions: ["Engineer", "Manager", "Designer", "QA", "Other"],
     isEditable: true,
@@ -32,14 +32,14 @@ const HEADERS: HeaderObject[] = [
   {
     accessor: "employed",
     label: "Employed",
-    width: 100,
+    width: 120,
     type: "boolean",
     isEditable: true,
   },
   {
     accessor: "startDate",
     label: "Start Date",
-    width: 100,
+    width: 140,
     type: "date",
     isEditable: true,
   },

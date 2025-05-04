@@ -1,13 +1,3 @@
-.st-dropdown-container {
-  position: relative;
-  display: inline-block;
-}
-
-.st-dropdown-trigger {
-  cursor: pointer;
-  user-select: none;
-}
-
 .st-dropdown-content {
   position: absolute;
   z-index: 100;

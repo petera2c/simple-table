@@ -2,19 +2,22 @@ import React, { useEffect, useState } from "react";
 import { Dropdown, DropdownItem } from "../../Dropdown";
 
 interface EnumDropdownEditProps {
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
   onBlur: () => void;
+  onChange: (value: string) => void;
+  open: boolean;
+  options: string[];
+  setOpen: (open: boolean) => void;
+  value: string;
 }
 
 const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
-  value,
-  options,
-  onChange,
   onBlur,
+  onChange,
+  open,
+  options,
+  setOpen,
+  value,
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
   const [currentValue, setCurrentValue] = useState<string>(value || "");
 
   // Auto-focus on mount
@@ -33,7 +36,7 @@ const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
   const handleSelect = (newValue: string) => {
     setCurrentValue(newValue);
     onChange(newValue);
-    setIsOpen(false);
+    setOpen(false);
     onBlur();
   };
 
@@ -43,10 +46,10 @@ const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
 
   return (
     <Dropdown
-      isOpen={isOpen}
+      open={open}
       onClose={handleClose}
-      trigger={<div className="st-enum-dropdown-trigger">{currentValue}</div>}
       position="bottom-left"
+      setOpen={setOpen}
       width={150}
     >
       <div className="st-enum-dropdown-content">

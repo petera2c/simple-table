@@ -227,6 +227,7 @@ const SimpleTableComp = ({
   // Handle outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      console.log("handleClickOutside1");
       const target = event.target as HTMLElement;
       if (
         !target.closest(".st-cell") &&
