@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Dropdown, DropdownItem } from "../../dropdown";
+import Dropdown from "../../dropdown/Dropdown";
+import DropdownItem from "../../dropdown/DropdownItem";
 
 interface EnumDropdownEditProps {
   onBlur: () => void;
