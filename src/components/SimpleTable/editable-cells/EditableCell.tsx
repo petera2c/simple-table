@@ -21,7 +21,6 @@ const EditableCell = ({
   value,
 }: EditableCellProps) => {
   const handleBlur = () => {
-    console.log("handleBlur");
     setIsEditing(false);
   };
 

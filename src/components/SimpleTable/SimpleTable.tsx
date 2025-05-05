@@ -202,6 +202,8 @@ const SimpleTableComp = ({
     isInitialFocusedCell,
     isSelected,
     selectColumns,
+    selectedCells,
+    selectedColumns,
     setInitialFocusedCell,
     setSelectedCells,
     setSelectedColumns,
@@ -227,7 +229,6 @@ const SimpleTableComp = ({
   // Handle outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      console.log("handleClickOutside1");
       const target = event.target as HTMLElement;
       if (
         !target.closest(".st-cell") &&
@@ -236,8 +237,11 @@ const SimpleTableComp = ({
             !target.classList.contains("st-header-label")
           : true)
       ) {
-        setSelectedCells(new Set());
-        if (selectableColumns) {
+        // Check if there actually are any selected cells
+        if (selectedCells.size > 0) {
+          setSelectedCells(new Set());
+        }
+        if (selectedColumns.size > 0) {
           setSelectedColumns(new Set());
         }
       }
@@ -247,7 +251,7 @@ const SimpleTableComp = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [selectableColumns, setSelectedCells, setSelectedColumns]);
+  }, [selectableColumns, selectedCells, selectedColumns, setSelectedCells, setSelectedColumns]);
 
   // Calculate the width of the scrollbar
   useLayoutEffect(() => {
@@ -274,7 +278,9 @@ const SimpleTableComp = ({
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   // Create a registry for cells to enable direct updates

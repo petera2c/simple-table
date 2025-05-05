@@ -134,6 +134,13 @@ const TableCell = forwardRef(
       setLocalContent(row.rowData[header.accessor] as CellValue);
     }, [row.rowData, header.accessor]);
 
+    // If the cell is not highlighted, stop editing
+    useEffect(() => {
+      if (!isHighlighted) {
+        setIsEditing(false);
+      }
+    }, [isHighlighted]);
+
     // Derived state
     const isEditInDropdown =
       header.type === "boolean" || header.type === "date" || header.type === "enum";

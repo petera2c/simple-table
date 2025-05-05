@@ -20,7 +20,6 @@ const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  console.log("open", open);
   // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
