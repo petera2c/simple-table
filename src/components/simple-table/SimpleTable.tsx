@@ -333,12 +333,14 @@ const SimpleTableComp = ({
         isInitialFocusedCell,
         isSelected,
         mainBodyRef,
+        nextIcon,
         onCellEdit,
         onColumnOrderChange,
         onSort,
         onTableHeaderDragEnd,
         pinnedLeftRef,
         pinnedRightRef,
+        prevIcon,
         rowHeight,
         scrollbarWidth,
         selectColumns,
@@ -397,10 +399,8 @@ const SimpleTableComp = ({
           <TableFooter
             currentPage={currentPage}
             hideFooter={hideFooter}
-            nextIcon={nextIcon}
             onPageChange={setCurrentPage}
             onNextPage={onNextPage}
-            prevIcon={prevIcon}
             shouldPaginate={shouldPaginate}
             totalPages={Math.ceil(rows.length / rowsPerPage)}
           />

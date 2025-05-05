@@ -1,14 +1,16 @@
 import React, { useState, ReactNode } from "react";
 import "./datepicker.css";
+import { useTableContext } from "../../context/TableContext";
 
 interface DatePickerProps {
-  value: Date;
+  value: Date | string;
   onChange: (date: Date) => void;
   onClose?: () => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, onClose }) => {
-  const [currentDate, setCurrentDate] = useState(value || new Date());
+  const { nextIcon, prevIcon } = useTableContext();
+  const [currentDate, setCurrentDate] = useState(new Date(value) || new Date());
   const [currentView, setCurrentView] = useState<"days" | "months" | "years">("days");
 
   // Helper functions
@@ -51,11 +53,30 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, onClose }) => 
     onClose?.();
   };
 
+  const handlePrevMonthDateSelect = (day: number) => {
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, day);
+    setCurrentDate(newDate);
+    onChange(newDate);
+    onClose?.();
+  };
+
+  const handleNextMonthDateSelect = (day: number) => {
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, day);
+    setCurrentDate(newDate);
+    onChange(newDate);
+    onClose?.();
+  };
+
   // Render days view
   const renderDays = () => {
     const days: ReactNode[] = [];
-    const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
-    const firstDay = getFirstDayOfMonth(currentDate.getFullYear(), currentDate.getMonth());
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const daysInMonth = getDaysInMonth(year, month);
+    const firstDay = getFirstDayOfMonth(year, month);
+
+    // Calculate days from previous month to display
+    const daysInPrevMonth = getDaysInMonth(year, month - 1);
 
     // Add weekday headers
     const weekdays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -67,28 +88,54 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, onClose }) => 
       );
     });
 
-    // Add empty cells for days before the first day of the month
+    // Add days from previous month
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="st-datepicker-day empty"></div>);
+      const prevMonthDay = daysInPrevMonth - firstDay + i + 1;
+      days.push(
+        <div
+          key={`prev-${prevMonthDay}`}
+          className="st-datepicker-day other-month"
+          onClick={() => handlePrevMonthDateSelect(prevMonthDay)}
+        >
+          {prevMonthDay}
+        </div>
+      );
     }
 
-    // Add days of the month
+    // Add days of the current month
     for (let day = 1; day <= daysInMonth; day++) {
       const isToday =
         day === new Date().getDate() &&
-        currentDate.getMonth() === new Date().getMonth() &&
-        currentDate.getFullYear() === new Date().getFullYear();
+        month === new Date().getMonth() &&
+        year === new Date().getFullYear();
 
       const isSelected =
-        day === value.getDate() &&
-        currentDate.getMonth() === value.getMonth() &&
-        currentDate.getFullYear() === value.getFullYear();
+        day === new Date(value).getDate() &&
+        month === new Date(value).getMonth() &&
+        year === new Date(value).getFullYear();
 
       days.push(
         <div
           key={`day-${day}`}
           className={`st-datepicker-day ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}`}
           onClick={() => handleDateSelect(day)}
+        >
+          {day}
+        </div>
+      );
+    }
+
+    // Calculate how many more days we need to add to make a grid with 5 rows (5*7=35)
+    // We already added firstDay + daysInMonth cells
+    const remainingCells = 35 - (firstDay + daysInMonth);
+
+    // Add days from next month to fill the grid
+    for (let day = 1; day <= remainingCells; day++) {
+      days.push(
+        <div
+          key={`next-${day}`}
+          className="st-datepicker-day other-month"
+          onClick={() => handleNextMonthDateSelect(day)}
         >
           {day}
         </div>
@@ -149,13 +196,13 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, onClose }) => 
         {currentView === "days" && (
           <>
             <button onClick={handlePrevMonth} className="st-datepicker-nav-btn">
-              &lt;
+              {prevIcon}
             </button>
             <div className="st-datepicker-header-label" onClick={() => setCurrentView("months")}>
               {formatMonth(currentDate)} {currentDate.getFullYear()}
             </div>
             <button onClick={handleNextMonth} className="st-datepicker-nav-btn">
-              &gt;
+              {nextIcon}
             </button>
           </>
         )}

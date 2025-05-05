@@ -1,13 +1,13 @@
 .st-dropdown-content {
   position: absolute;
   z-index: 100;
-  min-width: 120px;
-  background-color: var(--st-background-color);
+  background-color: var(--st-odd-row-background-color);
   border: 1px solid var(--st-border-color);
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: var(--st-border-radius);
+  box-shadow: var(--st-edit-cell-shadow);
   overflow: auto;
-  max-height: 300px;
+  min-width: 120px;
+  max-height: 400px;
 }
 
 /* Position variants */
@@ -40,23 +40,23 @@
   padding: 8px 12px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-dropdown-item:hover {
-  background-color: var(--st-hover-color);
+  background-color: var(--st-button-hover-background-color);
 }
 
 .st-dropdown-item.selected {
-  background-color: var(--st-selected-color);
-  color: var(--st-selected-text-color);
+  background-color: var(--st-selected-cell-background-color);
+  color: var(--st-selected-cell-color);
 }
 
 /* Dropdown groups */
 .st-dropdown-group-label {
   padding: 6px 12px;
   font-size: 0.8em;
-  color: var(--st-secondary-text-color);
+  color: var(--st-slate-500);
   font-weight: 600;
 }
 

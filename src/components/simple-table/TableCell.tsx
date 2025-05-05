@@ -61,7 +61,7 @@ const TableCell = forwardRef(
     const [localContent, setLocalContent] = useState<CellValue>(
       row.rowData[header.accessor] as CellValue
     );
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
     const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -137,7 +137,7 @@ const TableCell = forwardRef(
     // If the cell is not highlighted, stop editing
     useEffect(() => {
       if (!isHighlighted) {
-        setIsEditing(false);
+        // setIsEditing(false);
       }
     }, [isHighlighted]);
 

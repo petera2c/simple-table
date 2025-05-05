@@ -30,12 +30,14 @@ interface TableContextType {
   isInitialFocusedCell: (cell: Cell) => boolean;
   isSelected: (cell: Cell) => boolean;
   mainBodyRef: RefObject<HTMLDivElement | null>;
+  nextIcon: ReactNode;
   onCellEdit?: (props: any) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
+  prevIcon: ReactNode;
   rowHeight: number;
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;

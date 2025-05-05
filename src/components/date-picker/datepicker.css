@@ -1,8 +1,5 @@
 .st-datepicker {
-  width: 280px;
-  background-color: var(--st-background-color);
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--st-odd-row-background-color);
   font-family: inherit;
 }
 
@@ -26,13 +23,13 @@
   border: none;
   cursor: pointer;
   font-size: 1.2em;
-  color: var(--st-text-color);
+  color: var(--st-cell-color);
   padding: 0 8px;
-  border-radius: 4px;
+  border-radius: var(--st-border-radius);
 }
 
 .st-datepicker-nav-btn:hover {
-  background-color: var(--st-hover-color);
+  background-color: var(--st-button-hover-background-color);
 }
 
 .st-datepicker-grid {
@@ -60,7 +57,7 @@
   font-size: 0.8em;
   font-weight: 600;
   padding: 6px 0;
-  color: var(--st-secondary-text-color);
+  color: var(--st-slate-500);
 }
 
 .st-datepicker-day {
@@ -70,7 +67,7 @@
   height: 32px;
   border-radius: 50%;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-datepicker-day.empty {
@@ -78,17 +75,21 @@
 }
 
 .st-datepicker-day:not(.empty):hover {
-  background-color: var(--st-hover-color);
+  background-color: var(--st-button-hover-background-color);
 }
 
 .st-datepicker-day.today {
   font-weight: 600;
-  color: var(--st-primary-color);
+  color: var(--st-button-active-background-color);
 }
 
 .st-datepicker-day.selected {
-  background-color: var(--st-selected-color);
-  color: var(--st-selected-text-color);
+  background-color: var(--st-selected-cell-background-color);
+  color: var(--st-selected-cell-color);
+}
+
+.st-datepicker-day.other-month {
+  color: var(--st-slate-400);
 }
 
 .st-datepicker-month,
@@ -97,20 +98,20 @@
   align-items: center;
   justify-content: center;
   padding: 12px 8px;
-  border-radius: 4px;
+  border-radius: var(--st-border-radius);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-datepicker-month:hover,
 .st-datepicker-year:hover {
-  background-color: var(--st-hover-color);
+  background-color: var(--st-button-hover-background-color);
 }
 
 .st-datepicker-month.selected,
 .st-datepicker-year.selected {
-  background-color: var(--st-selected-color);
-  color: var(--st-selected-text-color);
+  background-color: var(--st-selected-cell-background-color);
+  color: var(--st-selected-cell-color);
 }
 
 .st-datepicker-footer {
@@ -123,13 +124,13 @@
 .st-datepicker-today-btn {
   background-color: transparent;
   border: 1px solid var(--st-border-color);
-  border-radius: 4px;
+  border-radius: var(--st-border-radius);
   padding: 6px 12px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  color: var(--st-text-color);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  color: var(--st-cell-color);
 }
 
 .st-datepicker-today-btn:hover {
-  background-color: var(--st-hover-color);
+  background-color: var(--st-button-hover-background-color);
 }

@@ -1,6 +1,6 @@
 import React from "react";
 
-const AngleLeftIcon = ({ className }: { className: string }) => (
+const AngleLeftIcon = ({ className }: { className?: string }) => (
   <svg
     className={className}
     viewBox="0 0 24 24"
