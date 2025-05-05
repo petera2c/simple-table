@@ -1,4 +1,4 @@
-import SimpleTable from "./components/SimpleTable/SimpleTable";
+import SimpleTable from "./components/simple-table/SimpleTable";
 import type BoundingBox from "./types/BoundingBox";
 import type Cell from "./types/Cell";
 import type CellChangeProps from "./types/CellChangeProps";

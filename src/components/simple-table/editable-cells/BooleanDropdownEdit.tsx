@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Dropdown, DropdownItem } from "../../Dropdown";
+import { Dropdown, DropdownItem } from "../../dropdown";
 
-interface EnumDropdownEditProps {
+interface BooleanDropdownEditProps {
   onBlur: () => void;
-  onChange: (value: string) => void;
+  onChange: (value: boolean) => void;
   open: boolean;
-  options: string[];
   setOpen: (open: boolean) => void;
-  value: string;
+  value: boolean;
 }
 
-const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
+const BooleanDropdownEdit: React.FC<BooleanDropdownEditProps> = ({
   onBlur,
   onChange,
   open,
-  options,
   setOpen,
   value,
 }) => {
-  const [currentValue, setCurrentValue] = useState<string>(value || "");
+  const [currentValue, setCurrentValue] = useState(value);
 
   // Auto-focus on mount
   useEffect(() => {
@@ -33,7 +31,7 @@ const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
     return () => clearTimeout(timerId);
   }, []);
 
-  const handleSelect = (newValue: string) => {
+  const handleSelect = (newValue: boolean) => {
     setCurrentValue(newValue);
     onChange(newValue);
     setOpen(false);
@@ -50,21 +48,16 @@ const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
       onClose={handleClose}
       position="bottom-left"
       setOpen={setOpen}
-      width={150}
+      width={120}
     >
-      <div className="st-enum-dropdown-content">
-        {options.map((option) => (
-          <DropdownItem
-            key={option}
-            isSelected={currentValue === option}
-            onClick={() => handleSelect(option)}
-          >
-            {option}
-          </DropdownItem>
-        ))}
-      </div>
+      <DropdownItem isSelected={currentValue === true} onClick={() => handleSelect(true)}>
+        True
+      </DropdownItem>
+      <DropdownItem isSelected={currentValue === false} onClick={() => handleSelect(false)}>
+        False
+      </DropdownItem>
     </Dropdown>
   );
 };
 
-export default EnumDropdownEdit;
+export default BooleanDropdownEdit;

@@ -1,5 +1,5 @@
 import { HEADERS } from "./billing-headers";
-import SimpleTable from "../../../components/SimpleTable/SimpleTable";
+import SimpleTable from "../../../components/simple-table/SimpleTable";
 import billingData from "./billing-data.json";
 
 const BillingExample = ({ theme = "light" }: { theme?: "light" | "custom" }) => {

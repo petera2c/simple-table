@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SimpleTable from "../../components/SimpleTable/SimpleTable";
+import SimpleTable from "../../components/simple-table/SimpleTable";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 
 const ROWS_PER_PAGE = 10;

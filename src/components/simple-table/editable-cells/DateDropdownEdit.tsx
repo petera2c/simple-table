@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Dropdown } from "../../Dropdown";
-import { DatePicker } from "../../DatePicker";
+import { Dropdown } from "../../dropdown";
+import { DatePicker } from "../../date-picker";
 
 interface DateDropdownEditProps {
   onBlur: () => void;

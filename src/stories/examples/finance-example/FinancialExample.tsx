@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { HEADERS } from "./finance-headers";
 import data from "./finance-data.json";
 import TableRefType from "../../../types/TableRefType";
-import SimpleTable from "../../../components/SimpleTable/SimpleTable";
+import SimpleTable from "../../../components/simple-table/SimpleTable";
 
 export const FinancialExample = () => {
   const tableRef = useRef<TableRefType | null>(null);

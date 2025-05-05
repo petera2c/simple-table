@@ -1,4 +1,4 @@
-import SimpleTable from "../../../components/SimpleTable/SimpleTable";
+import SimpleTable from "../../../components/simple-table/SimpleTable";
 import { HeaderObject } from "../../..";
 
 const headers: HeaderObject[] = [

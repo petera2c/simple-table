@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SimpleTable from "../../components/SimpleTable/SimpleTable";
+import SimpleTable from "../../components/simple-table/SimpleTable";
 import CellChangeProps from "../../types/CellChangeProps";
 import Row from "../../types/Row";
 import { RowId } from "../../types/RowId";
