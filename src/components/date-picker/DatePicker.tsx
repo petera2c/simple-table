@@ -1,5 +1,4 @@
 import React, { useState, ReactNode } from "react";
-import "./datepicker.css";
 import { useTableContext } from "../../context/TableContext";
 
 interface DatePickerProps {

@@ -8,6 +8,14 @@ import HeaderObject from "../../types/HeaderObject";
 
 // Define headers with editable property and various types
 const HEADERS: HeaderObject[] = [
+  {
+    accessor: "status",
+    label: "Status",
+    width: 130,
+    isEditable: true,
+    type: "enum",
+    enumOptions: ["New", "In Progress", "Completed", "On Hold", "Cancelled"],
+  },
   { accessor: "id", label: "ID", width: 80, isEditable: false, type: "number" },
   { accessor: "firstName", label: "First Name", width: 150, isEditable: true, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 150, isEditable: true, type: "string" },
@@ -48,6 +56,13 @@ const HEADERS: HeaderObject[] = [
     isEditable: true,
     type: "number",
   },
+  {
+    accessor: "reviewDate",
+    label: "Next Review",
+    width: 150,
+    isEditable: true,
+    type: "date",
+  },
 ];
 
 // Sample initial data
@@ -55,6 +70,7 @@ const ROWS = [
   {
     rowMeta: { rowId: 1 },
     rowData: {
+      status: "Completed",
       id: 1,
       firstName: "John",
       lastName: "Doe",
@@ -63,11 +79,13 @@ const ROWS = [
       hireDate: "2020-01-15",
       isActive: true,
       salary: 85000,
+      reviewDate: "2023-08-15",
     },
   },
   {
     rowMeta: { rowId: 2 },
     rowData: {
+      status: "In Progress",
       id: 2,
       firstName: "Jane",
       lastName: "Smith",
@@ -76,11 +94,13 @@ const ROWS = [
       hireDate: "2021-03-22",
       isActive: true,
       salary: 78000,
+      reviewDate: "2023-09-22",
     },
   },
   {
     rowMeta: { rowId: 3 },
     rowData: {
+      status: "Completed",
       id: 3,
       firstName: "Bob",
       lastName: "Johnson",
@@ -89,11 +109,13 @@ const ROWS = [
       hireDate: "2019-11-05",
       isActive: true,
       salary: 92000,
+      reviewDate: "2023-07-05",
     },
   },
   {
     rowMeta: { rowId: 4 },
     rowData: {
+      status: "On Hold",
       id: 4,
       firstName: "Alice",
       lastName: "Williams",
@@ -102,11 +124,13 @@ const ROWS = [
       hireDate: "2022-01-10",
       isActive: false,
       salary: 83000,
+      reviewDate: "2023-10-10",
     },
   },
   {
     rowMeta: { rowId: 5 },
     rowData: {
+      status: "New",
       id: 5,
       firstName: "Charlie",
       lastName: "Brown",
@@ -115,13 +139,13 @@ const ROWS = [
       hireDate: "2021-08-17",
       isActive: true,
       salary: 76000,
+      reviewDate: "2023-11-17",
     },
   },
 ];
 
 const EditableCellsExample = () => {
   const [rows, setRows] = useState<Row[]>(ROWS);
-  const [headers, setHeaders] = useState(HEADERS);
   const updateRowData = (
     rows: Row[],
     rowId: RowId,
@@ -156,23 +180,17 @@ const EditableCellsExample = () => {
     });
   };
 
-  const onColumnOrderChange = (newHeaders: HeaderObject[]) => {
-    setHeaders(newHeaders);
-  };
-
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
     setRows((prevRows) => updateRowData(prevRows, row.rowMeta.rowId, accessor, newValue));
   };
 
   return (
     <div style={{ padding: "2rem" }}>
-      <div>{headers.map((header) => header.accessor).join(", ")}</div>
       <SimpleTable
         columnResizing // Enable column resizing
         defaultHeaders={HEADERS} // Set the headers
         columnReordering // Enable draggable columns
         onCellEdit={updateCell} // Handle cell changes
-        onColumnOrderChange={onColumnOrderChange} // Handle column order changes
         rows={rows} // Set rows data
         selectableCells // Enable selectable cells
         height="80vh"
