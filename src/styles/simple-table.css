@@ -1187,7 +1187,7 @@
 /* Dropdown css */
 
 .st-dropdown-content {
-  position: absolute;
+  position: fixed;
   z-index: 100;
   background-color: var(--st-odd-row-background-color);
   border: 1px solid var(--st-border-color);
@@ -1202,26 +1202,18 @@
 
 /* Position variants */
 .st-dropdown-bottom-left {
-  top: 100%;
-  left: 0;
   margin-top: 4px;
 }
 
 .st-dropdown-bottom-right {
-  top: 100%;
-  right: 0;
   margin-top: 4px;
 }
 
 .st-dropdown-top-left {
-  bottom: 100%;
-  left: 0;
   margin-bottom: 4px;
 }
 
 .st-dropdown-top-right {
-  bottom: 100%;
-  right: 0;
   margin-bottom: 4px;
 }
 

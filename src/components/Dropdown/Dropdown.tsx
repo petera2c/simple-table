@@ -23,7 +23,14 @@ const Dropdown: React.FC<DropdownProps> = ({
   const mainBodyRef = tableContext?.mainBodyRef;
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
   const [calculatedPosition, setCalculatedPosition] = useState<string>("bottom-left");
+  const [fixedPosition, setFixedPosition] = useState<{
+    top?: number;
+    left?: number;
+    right?: number;
+    bottom?: number;
+  }>({});
   const [isPositioned, setIsPositioned] = useState(false);
 
   // Calculate optimal position when dropdown opens
@@ -31,12 +38,17 @@ const Dropdown: React.FC<DropdownProps> = ({
     if (open && dropdownRef.current) {
       setIsPositioned(false);
 
+      // Store the trigger element (parent of dropdown)
+      if (!triggerRef.current && dropdownRef.current.parentElement) {
+        triggerRef.current = dropdownRef.current.parentElement;
+      }
+
       // Use requestAnimationFrame to ensure DOM is fully rendered
       requestAnimationFrame(() => {
-        if (!dropdownRef.current) return;
+        if (!dropdownRef.current || !triggerRef.current) return;
 
         const dropdownElement = dropdownRef.current;
-        const dropdownRect = dropdownElement.getBoundingClientRect();
+        const triggerRect = triggerRef.current.getBoundingClientRect();
 
         // Get dropdown dimensions
         const dropdownHeight = dropdownElement.offsetHeight;
@@ -44,8 +56,6 @@ const Dropdown: React.FC<DropdownProps> = ({
 
         // Get container boundaries
         let containerRect: DOMRect;
-        const parentElement = dropdownElement.parentElement;
-        const parentRect = parentElement ? parentElement.getBoundingClientRect() : dropdownRect;
 
         // Use containerRef from props if provided, otherwise use mainBodyRef
         if (containerRef?.current) {
@@ -68,12 +78,13 @@ const Dropdown: React.FC<DropdownProps> = ({
         }
 
         // Calculate space available in each direction
-        const spaceBottom = containerRect.bottom - parentRect.bottom;
-        const spaceTop = parentRect.top - containerRect.top;
-        const spaceRight = containerRect.right - parentRect.right;
+        const spaceBottom = containerRect.bottom - triggerRect.bottom;
+        const spaceTop = triggerRect.top - containerRect.top;
+        const spaceRight = containerRect.right - triggerRect.right;
 
         // Determine vertical position (top or bottom)
         let verticalPosition = "bottom";
+        let newFixedPosition: { top?: number; left?: number; right?: number; bottom?: number } = {};
 
         // If there's not enough space below and more space above
         if (dropdownHeight > spaceBottom && dropdownHeight <= spaceTop) {
@@ -88,18 +99,55 @@ const Dropdown: React.FC<DropdownProps> = ({
         let horizontalPosition = "left";
 
         // If there's not enough space to the right, try to position to the left
-        if (dropdownWidth > spaceRight + parentRect.width) {
+        if (dropdownWidth > spaceRight + triggerRect.width) {
           horizontalPosition = "right";
+        }
+
+        // Calculate exact positioning
+        if (verticalPosition === "bottom") {
+          newFixedPosition.top = triggerRect.bottom + 4; // Add margin
+        } else {
+          newFixedPosition.bottom = window.innerHeight - triggerRect.top + 4; // Add margin
+        }
+
+        if (horizontalPosition === "left") {
+          newFixedPosition.left = triggerRect.left;
+        } else {
+          newFixedPosition.right = window.innerWidth - triggerRect.right;
         }
 
         // Set the calculated position
         setCalculatedPosition(`${verticalPosition}-${horizontalPosition}`);
+        setFixedPosition(newFixedPosition);
         setIsPositioned(true);
       });
     } else if (!open) {
       setIsPositioned(false);
     }
   }, [open, width, containerRef, mainBodyRef]);
+
+  // Handle scroll events to close dropdown
+  useEffect(() => {
+    const handleScroll = (event: Event) => {
+      if (!open || !dropdownRef.current) return;
+
+      // Close the dropdown if the scroll event is not from the dropdown itself or its children
+      const target = event.target as Node;
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+        setOpen(false);
+        onClose?.();
+      }
+    };
+
+    if (open) {
+      // Use capture phase to catch all scroll events
+      window.addEventListener("scroll", handleScroll, true);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [open, onClose, setOpen]);
 
   // Close when clicking outside
   useEffect(() => {
@@ -147,6 +195,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       style={{
         width: width ? `${width}px` : "auto",
         visibility: isPositioned ? "visible" : "hidden",
+        ...fixedPosition,
       }}
     >
       {children}
