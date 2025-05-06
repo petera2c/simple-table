@@ -124,7 +124,7 @@ const ROWS = [
       hireDate: "2022-01-10",
       isActive: false,
       salary: 83000,
-      reviewDate: "2023-10-10",
+      reviewDate: "Mar 10, 2023",
     },
   },
   {
@@ -139,7 +139,7 @@ const ROWS = [
       hireDate: "2021-08-17",
       isActive: true,
       salary: 76000,
-      reviewDate: "2023-11-17",
+      reviewDate: "Mar 17, 2023",
     },
   },
 ];

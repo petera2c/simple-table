@@ -7,6 +7,8 @@ import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId, getCellKey } from "../../utils/cellUtils";
 import TableCellProps from "../../types/TableCellProps";
 import { useTableContext } from "../../context/TableContext";
+import HeaderObject from "../../types/HeaderObject";
+import { formatDate } from "../../utils/formatters";
 
 // Define minimal props that are specific to each cell
 interface MinimalCellProps {
@@ -20,9 +22,17 @@ interface MinimalCellProps {
   visibleRow: TableCellProps["visibleRow"];
 }
 
-const displayContent = (content: CellValue) => {
+const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
     return content ? "True" : "False";
+  } else if (
+    header.type === "date" &&
+    content !== null &&
+    (typeof content === "string" ||
+      typeof content === "number" ||
+      (typeof content === "object" && (content as any) instanceof Date))
+  ) {
+    return formatDate(content);
   }
   return content;
 };
@@ -252,7 +262,7 @@ const TableCell = forwardRef(
         >
           {header.cellRenderer
             ? header.cellRenderer({ accessor: header.accessor, colIndex, row })
-            : displayContent(localContent)}
+            : displayContent({ content: localContent, header })}
         </span>
         {isEditing && isEditInDropdown && (
           <EditableCell

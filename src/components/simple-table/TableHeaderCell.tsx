@@ -242,6 +242,7 @@ const TableHeaderCell = forwardRef(
         }}
       >
         {reverse && ResizeHandle}
+        {header.align === "right" && SortIcon}
         <div
           className={`st-header-label ${
             header.align === "right"
@@ -255,10 +256,9 @@ const TableHeaderCell = forwardRef(
           onDragEnd={handleDragEndWrapper}
           onDragStart={onDragStart}
         >
-          {header.align === "right" && SortIcon}
           {header?.label}
-          {header.align !== "right" && SortIcon}
         </div>
+        {header.align !== "right" && SortIcon}
 
         {!reverse && ResizeHandle}
       </div>
