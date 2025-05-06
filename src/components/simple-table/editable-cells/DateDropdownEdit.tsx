@@ -7,7 +7,7 @@ interface DateDropdownEditProps {
   onChange: (value: string) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
-  value: string | Date; // Can accept ISO string or Date object
+  value: string;
 }
 
 const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
@@ -18,20 +18,14 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
   value,
 }) => {
   // Convert the input value to a Date object
-  const parseDate = (value: string | Date): Date => {
-    if (value instanceof Date) {
-      return value;
-    }
+  const parseDate = (value: string): Date => {
+    const [year, month, day] = value.split("-").map(Number);
 
-    // If it's a date string in YYYY-MM-DD format (like "2020-01-01")
-    if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      const [year, month, day] = value.split("-").map(Number);
-      // Create date with local timezone (month is 0-indexed in JS Date)
-      return new Date(year, month - 1, day);
-    }
+    const parsedDate = new Date();
+    parsedDate.setUTCFullYear(year);
+    parsedDate.setUTCMonth(month - 1);
+    parsedDate.setUTCDate(day);
 
-    // Otherwise use standard parsing
-    const parsedDate = new Date(value);
     return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
   };
 
