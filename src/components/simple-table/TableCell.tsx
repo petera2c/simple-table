@@ -137,7 +137,7 @@ const TableCell = forwardRef(
     // If the cell is not highlighted, stop editing
     useEffect(() => {
       if (!isHighlighted) {
-        // setIsEditing(false);
+        setIsEditing(false);
       }
     }, [isHighlighted]);
 

@@ -23,6 +23,14 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
       return value;
     }
 
+    // If it's a date string in YYYY-MM-DD format (like "2020-01-01")
+    if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = value.split("-").map(Number);
+      // Create date with local timezone (month is 0-indexed in JS Date)
+      return new Date(year, month - 1, day);
+    }
+
+    // Otherwise use standard parsing
     const parsedDate = new Date(value);
     return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
   };

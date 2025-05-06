@@ -3,14 +3,14 @@ import "./datepicker.css";
 import { useTableContext } from "../../context/TableContext";
 
 interface DatePickerProps {
-  value: Date | string;
+  value: Date;
   onChange: (date: Date) => void;
   onClose?: () => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, onClose }) => {
   const { nextIcon, prevIcon } = useTableContext();
-  const [currentDate, setCurrentDate] = useState(new Date(value) || new Date());
+  const [currentDate, setCurrentDate] = useState(value || new Date());
   const [currentView, setCurrentView] = useState<"days" | "months" | "years">("days");
 
   // Helper functions
