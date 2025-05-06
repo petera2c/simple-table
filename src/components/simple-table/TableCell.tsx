@@ -61,7 +61,7 @@ const TableCell = forwardRef(
     const [localContent, setLocalContent] = useState<CellValue>(
       row.rowData[header.accessor] as CellValue
     );
-    const [isEditing, setIsEditing] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 

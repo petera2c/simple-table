@@ -6,55 +6,115 @@ import { RowId } from "../../types/RowId";
 import CellValue from "../../types/CellValue";
 import HeaderObject from "../../types/HeaderObject";
 
+// Define headers with editable property and various types
 const HEADERS: HeaderObject[] = [
+  { accessor: "id", label: "ID", width: 80, isEditable: false, type: "number" },
+  { accessor: "firstName", label: "First Name", width: 150, isEditable: true, type: "string" },
+  { accessor: "lastName", label: "Last Name", width: 150, isEditable: true, type: "string" },
   {
-    accessor: "name",
-    label: "Name",
-    width: 100,
+    accessor: "email",
+    label: "Email",
+    minWidth: 100,
+    width: "1fr",
+    isEditable: true,
     type: "string",
-    isEditable: true,
   },
   {
-    accessor: "age",
-    label: "Age",
-    width: 120,
-    type: "number",
+    accessor: "role",
+    label: "Role",
+    width: 150,
     isEditable: true,
-  },
-  {
-    accessor: "jobTitle",
-    label: "Job Title",
-    width: 120,
     type: "enum",
-    enumOptions: ["Engineer", "Manager", "Designer", "QA", "Other"],
-    isEditable: true,
+    enumOptions: ["Developer", "Designer", "Manager", "Marketing", "QA"],
   },
   {
-    accessor: "employed",
-    label: "Employed",
-    width: 120,
-    type: "boolean",
+    accessor: "hireDate",
+    label: "Hire Date",
+    width: 150,
     isEditable: true,
-  },
-  {
-    accessor: "startDate",
-    label: "Start Date",
-    width: 140,
     type: "date",
+  },
+  {
+    accessor: "isActive",
+    label: "Active",
+    width: 100,
     isEditable: true,
+    type: "boolean",
+  },
+  {
+    accessor: "salary",
+    label: "Salary",
+    width: 120,
+    isEditable: true,
+    type: "number",
   },
 ];
-const ROWS: Row[] = [
+
+// Sample initial data
+const ROWS = [
   {
-    rowMeta: {
-      rowId: "1",
-    },
+    rowMeta: { rowId: 1 },
     rowData: {
-      name: "John Doe",
-      age: 30,
-      jobTitle: "Engineer",
-      employed: true,
-      startDate: "2020-01-01",
+      id: 1,
+      firstName: "John",
+      lastName: "Doe",
+      email: "john@example.com",
+      role: "Developer",
+      hireDate: "2020-01-15",
+      isActive: true,
+      salary: 85000,
+    },
+  },
+  {
+    rowMeta: { rowId: 2 },
+    rowData: {
+      id: 2,
+      firstName: "Jane",
+      lastName: "Smith",
+      email: "jane@example.com",
+      role: "Designer",
+      hireDate: "2021-03-22",
+      isActive: true,
+      salary: 78000,
+    },
+  },
+  {
+    rowMeta: { rowId: 3 },
+    rowData: {
+      id: 3,
+      firstName: "Bob",
+      lastName: "Johnson",
+      email: "bob@example.com",
+      role: "Manager",
+      hireDate: "2019-11-05",
+      isActive: true,
+      salary: 92000,
+    },
+  },
+  {
+    rowMeta: { rowId: 4 },
+    rowData: {
+      id: 4,
+      firstName: "Alice",
+      lastName: "Williams",
+      email: "alice@example.com",
+      role: "Developer",
+      hireDate: "2022-01-10",
+      isActive: false,
+      salary: 83000,
+    },
+  },
+  {
+    rowMeta: { rowId: 5 },
+    rowData: {
+      id: 5,
+      firstName: "Charlie",
+      lastName: "Brown",
+      email: "charlie@example.com",
+      role: "Marketing",
+      hireDate: "2021-08-17",
+      isActive: true,
+      salary: 76000,
     },
   },
 ];

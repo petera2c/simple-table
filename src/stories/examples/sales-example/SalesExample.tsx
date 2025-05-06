@@ -4,10 +4,10 @@ import { SALES_HEADERS } from "./sales-headers";
 import data from "./sales-data.json";
 import { Row, SimpleTable } from "../../..";
 
-const shouldPaginate = true;
+const shouldPaginate = false;
 const howManyRowsCanFit = 10;
 
-export const SalesExampleComponent = ({ height = "70dvh" }: { height?: string }) => {
+export const SalesExampleComponent = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
@@ -20,7 +20,7 @@ export const SalesExampleComponent = ({ height = "70dvh" }: { height?: string })
         {...(shouldPaginate
           ? { rowsPerPage: howManyRowsCanFit, shouldPaginate }
           : {
-              height: height ? `${height}px` : "70dvh",
+              height: "70dvh",
             })}
       />
     </div>
