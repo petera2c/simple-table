@@ -649,7 +649,6 @@
 .st-row {
   display: grid;
   position: absolute;
-  transform: translateZ(0);
   transition: background 0.2s ease;
   min-width: 100%;
 }

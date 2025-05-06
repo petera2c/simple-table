@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react";
 import OnNextPage from "../../types/OnNextPage";
+import { useTableContext } from "../../context/TableContext";
 interface TableFooterProps {
   currentPage: number;
   hideFooter?: boolean;
@@ -15,13 +16,12 @@ interface TableFooterProps {
 const TableFooter = ({
   currentPage,
   hideFooter,
-  nextIcon,
   onPageChange,
   onNextPage,
-  prevIcon,
   shouldPaginate,
   totalPages,
 }: TableFooterProps) => {
+  const { nextIcon, prevIcon } = useTableContext();
   const [hasMoreData, setHasMoreData] = useState(true);
   const hasPrevPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
