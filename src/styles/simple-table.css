@@ -678,6 +678,7 @@
   align-items: center;
   color: var(--st-slate-800);
   gap: var(--st-spacing-small);
+  overflow: hidden;
 }
 .st-header-cell.right-aligned,
 .st-cell.right-aligned {
@@ -748,7 +749,6 @@
   overflow: hidden;
   width: 100%;
   /* height: 100%; */
-  box-sizing: border-box;
 }
 
 .st-header-label {
@@ -971,7 +971,6 @@
   width: 100%;
   padding: var(--st-cell-padding);
   font-size: 0.875rem;
-  box-sizing: border-box;
 }
 .editable-cell-input:focus {
   border: var(--st-border-width) solid var(--st-editable-cell-focus-border-color);
