@@ -63,13 +63,7 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
   };
 
   return (
-    <Dropdown
-      open={open}
-      onClose={handleClose}
-      position="bottom-left"
-      setOpen={setOpen}
-      width={280}
-    >
+    <Dropdown open={open} onClose={handleClose} setOpen={setOpen} width={280}>
       <DatePicker value={currentDate} onChange={handleDateChange} onClose={handleClose} />
     </Dropdown>
   );

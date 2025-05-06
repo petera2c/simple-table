@@ -44,13 +44,7 @@ const BooleanDropdownEdit: React.FC<BooleanDropdownEditProps> = ({
   };
 
   return (
-    <Dropdown
-      open={open}
-      onClose={handleClose}
-      position="bottom-left"
-      setOpen={setOpen}
-      width={120}
-    >
+    <Dropdown open={open} onClose={handleClose} setOpen={setOpen} width={120}>
       <DropdownItem isSelected={currentValue === true} onClick={() => handleSelect(true)}>
         True
       </DropdownItem>

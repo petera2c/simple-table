@@ -46,13 +46,7 @@ const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
   };
 
   return (
-    <Dropdown
-      open={open}
-      onClose={handleClose}
-      position="bottom-left"
-      setOpen={setOpen}
-      width={150}
-    >
+    <Dropdown open={open} onClose={handleClose} setOpen={setOpen} width={150}>
       <div className="st-enum-dropdown-content">
         {options.map((option) => (
           <DropdownItem
