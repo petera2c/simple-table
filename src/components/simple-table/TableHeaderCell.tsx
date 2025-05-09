@@ -244,19 +244,23 @@ const TableHeaderCell = forwardRef(
         {reverse && ResizeHandle}
         {header.align === "right" && SortIcon}
         <div
-          className={`st-header-label ${
-            header.align === "right"
-              ? "right-aligned"
-              : header.align === "center"
-              ? "center-aligned"
-              : ""
-          }`}
+          className="st-header-label"
           draggable={columnReordering && !header.disableReorder}
           onClick={(event) => handleColumnHeaderClick({ event, header })}
           onDragEnd={handleDragEndWrapper}
           onDragStart={onDragStart}
         >
-          {header?.label}
+          <span
+            className={`st-header-label-text ${
+              header.align === "right"
+                ? "right-aligned"
+                : header.align === "center"
+                ? "center-aligned"
+                : ""
+            }`}
+          >
+            {header?.label}
+          </span>
         </div>
         {header.align !== "right" && SortIcon}
 

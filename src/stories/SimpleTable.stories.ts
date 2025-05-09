@@ -13,6 +13,7 @@ import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import BasicExampleComponent from "./examples/BasicExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";
 import { SalesExampleComponent } from "./examples/sales-example/SalesExample";
+import CellRendererExample from "./examples/CellRenderer";
 
 const meta = {
   title: "Simple Table",
@@ -32,6 +33,10 @@ export const BillingExample: Story = {
 };
 export const CellHighlighting: Story = {
   render: CellHighlightingDemo,
+};
+
+export const CellRenderer: Story = {
+  render: CellRendererExample,
 };
 export const EditableCells: Story = {
   render: EditableCellsExample,
