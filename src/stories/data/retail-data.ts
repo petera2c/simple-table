@@ -152,7 +152,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     width: 200,
     isSortable: true,
     isEditable: true,
-    align: "right",
+    align: "center",
     cellRenderer: ({ row }) =>
       `$${(row.rowData.electronicsSales as number).toLocaleString("en-US")}`,
   },
@@ -162,7 +162,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     width: 200,
     isSortable: true,
     isEditable: true,
-    align: "right",
+    align: "left",
     cellRenderer: ({ row }) => `$${(row.rowData.clothingSales as number).toLocaleString("en-US")}`,
   },
   {
@@ -180,7 +180,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     width: 200,
     isSortable: true,
     isEditable: true,
-    align: "right",
+    align: "center",
     cellRenderer: ({ row }) => `$${(row.rowData.furnitureSales as number).toLocaleString("en-US")}`,
   },
   {
@@ -190,7 +190,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     pinned: "right",
-    align: "right",
+    align: "center",
     cellRenderer: ({ row }) => `$${(row.rowData.totalSales as number).toLocaleString("en-US")}`,
   },
 ];

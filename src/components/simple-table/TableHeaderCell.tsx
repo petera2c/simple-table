@@ -69,12 +69,8 @@ const TableHeaderCell = forwardRef(
     } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
       clickable ? "clickable" : ""
     } ${columnReordering && !clickable ? "columnReordering" : ""} ${
-      header?.align === "right"
-        ? "right-aligned"
-        : header?.align === "center"
-        ? "center-aligned"
-        : ""
-    } ${header.children ? "parent" : ""}`;
+      header.children ? "parent" : ""
+    }`;
 
     // Hooks
     const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
@@ -256,7 +252,7 @@ const TableHeaderCell = forwardRef(
                 ? "right-aligned"
                 : header.align === "center"
                 ? "center-aligned"
-                : ""
+                : "left-aligned"
             }`}
           >
             {header?.label}

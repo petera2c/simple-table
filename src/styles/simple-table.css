@@ -680,21 +680,14 @@
   gap: var(--st-spacing-small);
   overflow: hidden;
 }
-.st-header-cell.right-aligned,
-.st-cell.right-aligned {
-  justify-content: flex-end;
-  text-align: right;
-}
-.st-cell.right-aligned > .st-cell-content {
-  text-align: right;
-}
-.st-header-cell.right-aligned > .st-header-label-text {
-  text-align: right;
-}
 
+.st-header-cell.left-aligned,
+.st-cell.left-aligned {
+  padding-left: var(--st-cell-padding);
+  text-align: left;
+}
 .st-header-cell.center-aligned,
 .st-cell.center-aligned {
-  justify-content: center;
   text-align: center;
 }
 .st-cell.center-aligned {
@@ -724,18 +717,6 @@
 .st-cell-editing {
   position: relative;
 }
-.st-header-label-text.right-aligned {
-  justify-content: flex-end;
-  text-align: right;
-}
-.st-header-label-text.left-aligned {
-  justify-content: flex-start;
-  text-align: left;
-}
-.st-header-label-text.center-aligned {
-  justify-content: center;
-  text-align: center;
-}
 
 .st-header-label {
   flex: 1;
@@ -749,8 +730,6 @@
 .st-cell-content {
   flex: 1;
 
-  padding-left: var(--st-cell-padding);
-
   user-select: none;
   text-align: left;
   white-space: nowrap;
@@ -760,27 +739,48 @@
 }
 
 .st-header-label-text {
-  padding-right: var(--st-cell-padding);
   color: var(--st-header-label-color);
+  padding-left: var(--st-cell-padding);
+  padding-right: var(--st-cell-padding);
 }
-.st-cell-content {
+
+.st-cell-content.left-aligned,
+.st-header-label-text.left-aligned {
+  text-align: left;
+}
+.st-cell-content.center-aligned,
+.st-header-label-text.center-aligned {
+  text-align: center;
+}
+.st-cell-content.right-aligned,
+.st-header-label-text.right-aligned {
+  text-align: right;
+}
+
+/* If the table is not resizeable then we don't need the extra right padding */
+.st-not-resizeable .st-cell-content {
+  padding-left: var(--st-cell-padding);
+  padding-right: var(--st-cell-padding);
+}
+
+/* If the cell is in the main body or pinned left then the resize handle is on the right */
+.st-resizeable .st-body-pinned-right .st-cell-content {
+  padding-left: calc(
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
+      var(--st-resize-handle-margin-right)
+  );
+  padding-right: var(--st-cell-padding);
+}
+/* If the cell is in the main body or pinned left then the resize handle is on the right */
+.st-resizeable .st-body-pinned-left .st-cell-content,
+.st-resizeable .st-body-main .st-cell-content {
+  padding-left: var(--st-cell-padding);
   padding-right: calc(
     var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
       var(--st-resize-handle-margin-right)
   );
 }
-.st-cell-content.right-aligned {
-  justify-content: flex-end;
-  text-align: right;
-}
-.st-cell-content.left-aligned {
-  justify-content: flex-start;
-  text-align: left;
-}
-.st-cell-content.center-aligned {
-  justify-content: center;
-  text-align: center;
-}
+
 .st-cell {
   border: var(--st-border-width) solid transparent;
 }

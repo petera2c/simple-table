@@ -14,6 +14,7 @@ import BasicExampleComponent from "./examples/BasicExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";
 import { SalesExampleComponent } from "./examples/sales-example/SalesExample";
 import CellRendererExample from "./examples/CellRenderer";
+import AlignmentExample from "./examples/AlignmentExample";
 
 const meta = {
   title: "Simple Table",
@@ -25,6 +26,9 @@ const meta = {
 
 type Story = StoryObj<typeof meta>;
 
+export const Alignment: Story = {
+  render: AlignmentExample,
+};
 export const BasicExample: Story = {
   render: BasicExampleComponent,
 };

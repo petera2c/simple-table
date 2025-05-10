@@ -32,7 +32,7 @@ const TableContent = ({
   visibleRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
-  const { editColumns, headersRef, hiddenColumns } = useTableContext();
+  const { columnResizing, editColumns, headersRef, hiddenColumns } = useTableContext();
 
   // Refs
   const headerContainerRef = useRef<HTMLDivElement>(null);
@@ -84,7 +84,10 @@ const TableContent = ({
   };
 
   return (
-    <div className="st-content" style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}>
+    <div
+      className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
+      style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
+    >
       <TableHeader {...tableHeaderProps} />
       <TableBody {...tableBodyProps} />
     </div>

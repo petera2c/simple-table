@@ -257,12 +257,14 @@ const TableCell = forwardRef(
               ? "right-aligned"
               : header.align === "center"
               ? "center-aligned"
-              : ""
+              : "left-aligned"
           }`}
         >
-          {header.cellRenderer
-            ? header.cellRenderer({ accessor: header.accessor, colIndex, row })
-            : displayContent({ content: localContent, header })}
+          <span>
+            {header.cellRenderer
+              ? header.cellRenderer({ accessor: header.accessor, colIndex, row })
+              : displayContent({ content: localContent, header })}
+          </span>
         </span>
         {isEditing && isEditInDropdown && (
           <EditableCell
