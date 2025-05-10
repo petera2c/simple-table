@@ -55,18 +55,21 @@ const CellRendererExample = () => {
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
         const value = row.rowData[accessor];
-        return <div style={{ backgroundColor: "red" }}>{value}</div>;
+        return (
+          <div style={{ backgroundColor: "red", width: "100%", overflow: "hidden" }}>{value}</div>
+        );
       },
     },
     {
       accessor: "name",
       label: "Name",
-      minWidth: 80,
-      width: "1fr",
+      width: 100,
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
         const value = row.rowData[accessor];
-        return <div style={{ backgroundColor: "blue" }}>{value}</div>;
+        return (
+          <div style={{ backgroundColor: "blue", width: "100%", overflow: "hidden" }}>{value}</div>
+        );
       },
     },
     {
@@ -76,7 +79,7 @@ const CellRendererExample = () => {
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
         const value = row.rowData[accessor];
-        return <div style={{ backgroundColor: "green" }}>{value}</div>;
+        return <div style={{ backgroundColor: "green", width: "100%" }}>{value}</div>;
       },
     },
     {
@@ -100,9 +103,9 @@ const CellRendererExample = () => {
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
+        columnReordering
         columnResizing
         defaultHeaders={headers}
-        editColumns
         rows={rows}
         selectableCells
       />

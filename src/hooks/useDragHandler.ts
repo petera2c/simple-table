@@ -2,6 +2,7 @@ import { DragEvent } from "react";
 import HeaderObject from "../types/HeaderObject";
 import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
+import { deepClone } from "../utils/generalUtils";
 
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 let prevUpdateTime = Date.now();
@@ -30,8 +31,8 @@ function swapHeaders(
   draggedPath: number[],
   hoveredPath: number[]
 ): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
-  // Create a deep copy of headers to avoid mutating the original array
-  const newHeaders = JSON.parse(JSON.stringify(headers));
+  // Create a deep copy of headers using our custom deep clone function
+  const newHeaders = deepClone(headers);
   let emergencyBreak = false;
 
   // Helper function to get a header at a given path
