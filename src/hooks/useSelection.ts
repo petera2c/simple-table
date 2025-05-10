@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import HeaderObject from "../types/HeaderObject";
 import Cell from "../types/Cell";
 import VisibleRow from "../types/VisibleRow";
+import { findLeafHeaders } from "../utils/headerWidthUtils";
 
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
@@ -23,13 +24,47 @@ const useSelection = ({
   const startCell = useRef<Cell | null>(null);
 
   const copyToClipboard = useCallback(() => {
+    // Find all leaf headers (flattened) from the nested headers structure
+    // Example: converts [{label: "A"}, {label: "B", children: [{label: "B1"}, {label: "B2"}]}]
+    // into [header A, header B1, header B2]
+    const flattenedLeafHeaders = headers.flatMap(findLeafHeaders).filter((header) => !header.hide);
+
+    // Create a mapping of column indices to accessors for quick lookup
+    // Example: {0: "name", 1: "age", 2: "email"}
+    const colIndexToAccessor = new Map<number, string>();
+    flattenedLeafHeaders.forEach((header, index) => {
+      colIndexToAccessor.set(index, header.accessor);
+    });
+
+    // Convert selectedCells (Set of "row-col-depth" strings) to a text format suitable for clipboard
+    // Example: selectedCells = new Set(["0-0-0", "0-1-0", "1-0-0"])
     const rowsText = Array.from(selectedCells).reduce((acc, cellKey) => {
+      // Parse the row and column indices from the cell key
+      // Example: "0-2-1" → row=0, col=2 (depth is ignored)
       const [row, col] = cellKey.split("-").map(Number);
+
+      // Initialize row array if this is the first cell in this row
+      // Example: if row=2 and acc={0:[...], 1:[...]}, then create acc[2]=[]
       if (!acc[row]) acc[row] = [];
-      acc[row][col] = visibleRows[row].row.rowData[headers[col].accessor];
+
+      // Get the accessor for this column using our mapping
+      // Example: for col=2, might get accessor="email"
+      const accessor = colIndexToAccessor.get(col);
+
+      if (accessor) {
+        // Use the accessor to get the cell value
+        // Example: if accessor="name", get rowData.name
+        acc[row][col] = visibleRows[row].row.rowData[accessor];
+      } else {
+        // If no accessor found (shouldn't happen), use empty string
+        acc[row][col] = "";
+      }
+
       return acc;
     }, {} as { [key: number]: { [key: number]: any } });
 
+    // Convert the structured data to a tab-separated string
+    // Example: {0: ["John", 25], 1: ["Mary", 30]} → "John\t25\nMary\t30"
     const text = Object.values(rowsText)
       .map((row) => Object.values(row).join("\t"))
       .join("\n");
