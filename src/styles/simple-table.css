@@ -538,6 +538,7 @@
   border-radius: var(--st-border-radius);
   max-height: 100dvh;
   overflow: hidden;
+  flex-grow: 1;
 }
 
 .st-wrapper-container {
