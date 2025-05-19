@@ -32,6 +32,8 @@ import TableRefType from "../../types/TableRefType";
 import { getCellKey } from "../../utils/cellUtils";
 import OnNextPage from "../../types/OnNextPage";
 import "../../styles/simple-table.css";
+import DescIcon from "../../icons/DescIcon";
+import AscIcon from "../../icons/AscIcon";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -103,8 +105,8 @@ const SimpleTableComp = ({
   selectableCells = false,
   selectableColumns = false,
   shouldPaginate = false,
-  sortDownIcon = <AngleDownIcon className="st-sort-icon" />,
-  sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
+  sortDownIcon = <DescIcon className="st-sort-icon" />,
+  sortUpIcon = <AscIcon className="st-sort-icon" />,
   tableRef,
   theme = "light",
   useHoverRowBackground = true,
