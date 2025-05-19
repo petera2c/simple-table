@@ -18,7 +18,7 @@ const useScrollSync = (
       }
     };
 
-    sourceElement.addEventListener("scroll", handleScroll);
+    sourceElement.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       sourceElement?.removeEventListener("scroll", handleScroll);

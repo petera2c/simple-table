@@ -93,6 +93,10 @@ const TableBody = ({
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const newScrollTop = e.currentTarget.scrollTop;
+    if (scrollTimeoutRef.current) {
+      cancelAnimationFrame(scrollTimeoutRef.current);
+    }
+
     scrollTimeoutRef.current = requestAnimationFrame(() => {
       setScrollTop(newScrollTop);
     });
