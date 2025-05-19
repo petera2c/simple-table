@@ -1,6 +1,9 @@
 import { RefObject, useEffect } from "react";
 
-const useScrollSync = (sourceRef: RefObject<HTMLElement | null>, targetRef: RefObject<HTMLElement | null>) => {
+const useScrollSync = (
+  sourceRef: RefObject<HTMLElement | null>,
+  targetRef: RefObject<HTMLElement | null>
+) => {
   useEffect(() => {
     if (!sourceRef.current) return;
 

@@ -15,7 +15,6 @@ import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
 import CellChangeProps from "../../types/CellChangeProps";
-import AngleUpIcon from "../../icons/AngleUpIcon";
 import AngleDownIcon from "../../icons/AngleDownIcon";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
@@ -189,6 +188,7 @@ const SimpleTableComp = ({
     return Math.max(0, totalHeightPx - rowHeight);
   }, [height, rowHeight]);
 
+  // We could probably move this to the table body component
   const visibleRows = useMemo(
     () =>
       getVisibleRows({
