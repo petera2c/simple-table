@@ -626,6 +626,9 @@
   overflow: auto;
   scrollbar-width: none;
 }
+.st-body-main::-webkit-scrollbar {
+  display: none;
+}
 
 .st-body-pinned-right {
   flex-shrink: 0;
