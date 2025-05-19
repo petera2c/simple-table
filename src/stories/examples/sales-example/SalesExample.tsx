@@ -15,7 +15,7 @@ export const SalesExampleComponent = () => {
         columnReordering
         defaultHeaders={SALES_HEADERS}
         rows={data as Row[]}
-        theme={"light"}
+        theme={"dark"}
         selectableCells
         {...(shouldPaginate
           ? { rowsPerPage: howManyRowsCanFit, shouldPaginate }

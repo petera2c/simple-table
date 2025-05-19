@@ -541,6 +541,21 @@
   font-family: inherit;
 }
 
+/* Safari scrollbar styling */
+.simple-table-root *::-webkit-scrollbar {
+  width: 8px; /* equivalent to "thin" */
+  height: 8px;
+}
+
+.simple-table-root *::-webkit-scrollbar-track {
+  background: var(--st-scrollbar-bg-color);
+}
+
+.simple-table-root *::-webkit-scrollbar-thumb {
+  background: var(--st-scrollbar-thumb-color);
+  border-radius: 4px;
+}
+
 .simple-table-root {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -604,6 +619,8 @@
 }
 .st-header-main {
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   scrollbar-width: none;
   flex-grow: 1;
 }
@@ -617,6 +634,8 @@
   display: flex;
   width: 100%;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   height: max-content;
   background-color: var(--st-even-row-background-color);
 }
@@ -634,6 +653,8 @@
 }
 .st-body-main {
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   scrollbar-width: none;
 }
 .st-body-main::-webkit-scrollbar {
@@ -927,6 +948,8 @@
 }
 .st-horizontal-scrollbar-middle {
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   min-height: 11px;
 }
 .st-horizontal-scrollbar-middle > div {
@@ -1048,6 +1071,8 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   gap: var(--st-spacing-medium);
   padding: var(--st-spacing-medium) var(--st-spacing-small);
   border-left: var(--st-border-width) solid var(--st-border-color);
@@ -1230,6 +1255,8 @@
   border-radius: var(--st-border-radius);
   box-shadow: var(--st-edit-cell-shadow);
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   min-width: 120px;
   max-height: 400px;
   transform: translateZ(0);
