@@ -300,6 +300,7 @@
   --st-border-color: var(--st-slate-300);
   --st-odd-row-background-color: var(--st-white);
   --st-even-row-background-color: var(--st-slate-50);
+  --st-hover-row-background-color: var(--st-slate-100);
   --st-header-background-color: var(--st-slate-100);
   --st-header-label-color: var(--st-slate-900);
   --st-dragging-background-color: var(--st-slate-200);
@@ -347,6 +348,7 @@
   --st-border-color: var(--st-gray-700);
   --st-odd-row-background-color: var(--st-gray-800);
   --st-even-row-background-color: var(--st-gray-900);
+  --st-hover-row-background-color: var(--st-gray-700);
   --st-header-background-color: var(--st-gray-800);
   --st-header-label-color: var(--st-gray-100);
   --st-dragging-background-color: var(--st-gray-600);
@@ -394,6 +396,7 @@
   --st-border-color: var(--st-neutral-300);
   --st-odd-row-background-color: var(--st-neutral-50);
   --st-even-row-background-color: var(--st-neutral-100);
+  --st-hover-row-background-color: var(--st-neutral-200);
   --st-header-background-color: var(--st-neutral-200);
   --st-header-label-color: var(--st-neutral-900);
   --st-dragging-background-color: var(--st-neutral-300);
@@ -441,6 +444,7 @@
   --st-border-color: var(--st-blue-300);
   --st-odd-row-background-color: var(--st-blue-50);
   --st-even-row-background-color: var(--st-blue-100);
+  --st-hover-row-background-color: var(--st-blue-200);
   --st-header-background-color: var(--st-blue-200);
   --st-header-label-color: var(--st-blue-900);
   --st-dragging-background-color: var(--st-blue-300);
@@ -488,6 +492,7 @@
   --st-border-color: var(--st-stone-200);
   --st-odd-row-background-color: var(--st-amber-50);
   --st-even-row-background-color: var(--st-amber-100);
+  --st-hover-row-background-color: var(--st-amber-200);
   --st-header-background-color: var(--st-violet-600);
   --st-header-label-color: var(--st-white);
   --st-dragging-background-color: var(--st-violet-50);
@@ -633,6 +638,9 @@
   position: absolute;
   transition: background 0.2s ease;
   min-width: 100%;
+}
+.st-row.hovered .st-cell:not(.st-cell-selected) {
+  background-color: var(--st-hover-row-background-color);
 }
 .st-row.even {
   background-color: var(--st-even-row-background-color);

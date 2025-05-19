@@ -6,6 +6,7 @@ import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
+import { useState } from "react";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -13,12 +14,14 @@ interface TableRowProps {
   gridTemplateColumns: string;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
+  hoveredIndex: number | null;
   index: number;
   isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
+  setHoveredIndex: (index: number | null) => void;
   visibleRow: VisibleRow;
 }
 
@@ -27,12 +30,14 @@ const TableRow = ({
   gridTemplateColumns,
   headers,
   hiddenColumns,
+  hoveredIndex,
   index,
   isWidthDragging,
   onExpandRowClick,
   pinned,
   rowHeight,
   rowIndices,
+  setHoveredIndex,
   visibleRow,
 }: TableRowProps) => {
   const { position } = visibleRow;
@@ -42,7 +47,10 @@ const TableRow = ({
 
   return (
     <div
-      className={`st-row ${isOdd ? "even" : "odd"}`}
+      className={`st-row ${isOdd ? "even" : "odd"} ${hoveredIndex === index ? "hovered" : ""}`}
+      onMouseEnter={() => {
+        setHoveredIndex(index);
+      }}
       style={{
         gridTemplateColumns,
         top: calculateRowTopPosition({ position, rowHeight }),

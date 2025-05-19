@@ -12,12 +12,14 @@ interface TableSectionProps {
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
+  hoveredIndex: number | null;
   isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   ref?: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   rowIndices: RowIndices;
+  setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
   visibleRows: VisibleRow[];
@@ -28,12 +30,14 @@ const TableSection = ({
   columnIndices,
   headers,
   hiddenColumns,
+  hoveredIndex,
   isWidthDragging,
   onExpandRowClick,
   pinned,
   ref,
   rowHeight,
   rowIndices,
+  setHoveredIndex,
   templateColumns,
   totalHeight,
   visibleRows,
@@ -76,12 +80,14 @@ const TableSection = ({
               gridTemplateColumns={templateColumns}
               headers={headers}
               hiddenColumns={hiddenColumns}
+              hoveredIndex={hoveredIndex}
               index={index}
               isWidthDragging={isWidthDragging}
               onExpandRowClick={onExpandRowClick}
               pinned={pinned}
               rowHeight={rowHeight}
               rowIndices={rowIndices}
+              setHoveredIndex={setHoveredIndex}
               visibleRow={visibleRow}
             />
           </Fragment>

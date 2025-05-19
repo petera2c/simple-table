@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import Row from "../../types/Row";
 import TableSection from "./TableSection";
@@ -34,6 +34,9 @@ const TableBody = ({
     scrollbarWidth,
     tableBodyContainerRef,
   } = useTableContext();
+
+  // Local state
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Add state for section widths
   useScrollbarVisibility({
@@ -100,18 +103,25 @@ const TableBody = ({
 
   // Create all props needed for TableSection
   const commonProps = {
+    columnIndices,
     headerContainerRef,
     headers: headersRef.current,
     hiddenColumns,
+    hoveredIndex,
     isWidthDragging,
     rowHeight,
-    visibleRows,
-    columnIndices,
     rowIndices,
+    setHoveredIndex,
+    visibleRows,
   };
 
   return (
-    <div className="st-body-container" ref={tableBodyContainerRef} onScroll={handleScroll}>
+    <div
+      className="st-body-container"
+      onMouseLeave={() => setHoveredIndex(null)}
+      onScroll={handleScroll}
+      ref={tableBodyContainerRef}
+    >
       {pinnedLeftColumns.length > 0 && (
         <TableSection
           {...commonProps}
