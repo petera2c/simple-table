@@ -806,10 +806,10 @@
 .st-cell {
   border: var(--st-border-width) solid transparent;
 }
-.st-cell.even-column {
+.st-cell.even-column:not(.st-cell-selected) {
   background-color: var(--st-even-column-background-color);
 }
-.st-cell.odd-column {
+.st-cell.odd-column:not(.st-cell-selected) {
   background-color: var(--st-odd-column-background-color);
 }
 
