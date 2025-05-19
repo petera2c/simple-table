@@ -11,6 +11,7 @@ import RowIndices from "../../types/RowIndices";
 import ColumnIndices from "../../types/ColumnIndices";
 
 interface RenderCellsProps {
+  columnIndexStart?: number;
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
@@ -23,6 +24,7 @@ interface RenderCellsProps {
 }
 
 const RenderCells = ({
+  columnIndexStart,
   columnIndices,
   headers,
   hiddenColumns,
@@ -39,7 +41,7 @@ const RenderCells = ({
 
   return (
     <Animate isBody pauseAnimation={isWidthDragging} rowIndex={rowIndex + 1}>
-      {filteredHeaders.map((header) => {
+      {filteredHeaders.map((header, index) => {
         return (
           <RecursiveRenderCells
             columnIndices={columnIndices}
@@ -47,6 +49,7 @@ const RenderCells = ({
             headers={headers}
             hiddenColumns={hiddenColumns}
             key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
+            nestedIndex={index + (columnIndexStart ?? 0)}
             onExpandRowClick={onExpandRowClick}
             pinned={pinned}
             rowIndex={rowIndex}
@@ -64,6 +67,7 @@ const RecursiveRenderCells = ({
   header,
   headers,
   hiddenColumns,
+  nestedIndex,
   onExpandRowClick,
   pinned,
   rowIndex,
@@ -74,6 +78,7 @@ const RecursiveRenderCells = ({
   header: HeaderObject;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
+  nestedIndex: number;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowIndex: number;
@@ -101,6 +106,7 @@ const RecursiveRenderCells = ({
               headers={headers}
               hiddenColumns={hiddenColumns}
               key={getCellId({ accessor: child.accessor, rowIndex: rowIndex + 1 })}
+              nestedIndex={nestedIndex}
               onExpandRowClick={onExpandRowClick}
               pinned={pinned}
               rowIndex={rowIndex}
@@ -127,6 +133,7 @@ const RecursiveRenderCells = ({
       isHighlighted={isHighlighted}
       isInitialFocused={isInitialFocused}
       key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
+      nestedIndex={nestedIndex}
       onExpandRowClick={onExpandRowClick}
       rowIndex={rowIndex}
       visibleRow={visibleRow}

@@ -53,6 +53,9 @@ interface TableContextType {
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
+  useHoverRowBackground?: boolean;
+  useOddColumnBackground?: boolean;
+  useOddEvenRowBackground?: boolean;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);

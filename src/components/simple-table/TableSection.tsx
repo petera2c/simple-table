@@ -9,6 +9,7 @@ import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 
 interface TableSectionProps {
+  columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
@@ -27,6 +28,7 @@ interface TableSectionProps {
 }
 
 const TableSection = ({
+  columnIndexStart,
   columnIndices,
   headers,
   hiddenColumns,
@@ -76,6 +78,7 @@ const TableSection = ({
               />
             )}
             <TableRow
+              columnIndexStart={columnIndexStart}
               columnIndices={columnIndices}
               gridTemplateColumns={templateColumns}
               headers={headers}

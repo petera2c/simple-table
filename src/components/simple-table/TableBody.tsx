@@ -134,14 +134,16 @@ const TableBody = ({
       )}
       <TableSection
         {...commonProps}
-        ref={mainBodyRef}
+        columnIndexStart={pinnedLeftColumns.length}
         onExpandRowClick={toggleRow}
+        ref={mainBodyRef}
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
       />
       {pinnedRightColumns.length > 0 && (
         <TableSection
           {...commonProps}
+          columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
           onExpandRowClick={toggleRow}
           pinned="right"
           templateColumns={pinnedRightTemplateColumns}

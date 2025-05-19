@@ -6,10 +6,11 @@ import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
-import { useState } from "react";
+import { useTableContext } from "../../context/TableContext";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
+  columnIndexStart?: number;
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
   headers: HeaderObject[];
@@ -27,6 +28,7 @@ interface TableRowProps {
 
 const TableRow = ({
   columnIndices,
+  columnIndexStart,
   gridTemplateColumns,
   headers,
   hiddenColumns,
@@ -40,6 +42,7 @@ const TableRow = ({
   setHoveredIndex,
   visibleRow,
 }: TableRowProps) => {
+  const { useHoverRowBackground } = useTableContext();
   const { position } = visibleRow;
   // Get row index from rowIndices using the row's ID
 
@@ -47,7 +50,9 @@ const TableRow = ({
 
   return (
     <div
-      className={`st-row ${isOdd ? "even" : "odd"} ${hoveredIndex === index ? "hovered" : ""}`}
+      className={`st-row ${isOdd ? "even" : "odd"} ${
+        hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
+      }`}
       onMouseEnter={() => {
         setHoveredIndex(index);
       }}
@@ -58,6 +63,7 @@ const TableRow = ({
       }}
     >
       <RenderCells
+        columnIndexStart={columnIndexStart}
         columnIndices={columnIndices}
         headers={headers}
         hiddenColumns={hiddenColumns}

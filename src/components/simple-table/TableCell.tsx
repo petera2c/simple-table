@@ -10,13 +10,13 @@ import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 
-// Define minimal props that are specific to each cell
-interface MinimalCellProps {
+interface CellProps {
   borderClass: string;
   colIndex: number;
   header: TableCellProps["header"];
   isHighlighted: boolean;
   isInitialFocused: boolean;
+  nestedIndex: number;
   onExpandRowClick: TableCellProps["onExpandRowClick"];
   rowIndex: number;
   visibleRow: TableCellProps["visibleRow"];
@@ -45,10 +45,11 @@ const TableCell = forwardRef(
       header,
       isHighlighted,
       isInitialFocused,
+      nestedIndex,
       onExpandRowClick,
       rowIndex,
       visibleRow,
-    }: MinimalCellProps,
+    }: CellProps,
     ref: Ref<HTMLDivElement>
   ) => {
     // Get shared props from context
@@ -64,6 +65,7 @@ const TableCell = forwardRef(
       hoveredHeaderRef,
       onCellEdit,
       onTableHeaderDragEnd,
+      useOddColumnBackground,
     } = useTableContext();
 
     const { depth, row } = visibleRow;
@@ -165,7 +167,9 @@ const TableCell = forwardRef(
           ? `st-cell-selected-first ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${clickable ? "clickable" : ""} ${isUpdating ? "st-cell-updating" : ""}`;
+    } ${clickable ? "clickable" : ""} ${isUpdating ? "st-cell-updating" : ""} ${
+      useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""
+    }`;
 
     const updateLocalContent = useCallback(
       (newValue: CellValue) => {

@@ -15,6 +15,8 @@ const BillingExample = ({ theme = "light" }: { theme?: "light" | "custom" }) => 
         theme={theme}
         selectableCells
         // selectableColumns
+        useOddColumnBackground
+        useHoverRowBackground={false}
       />
     </div>
   );

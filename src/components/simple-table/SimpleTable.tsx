@@ -63,6 +63,9 @@ interface SimpleTableProps {
   sortUpIcon?: ReactNode; // Sort up icon
   tableRef?: RefObject<TableRefType | null>;
   theme?: Theme; // Theme
+  useOddColumnBackground?: boolean; // Flag for using column background
+  useHoverRowBackground?: boolean; // Flag for using hover row background
+  useOddEvenRowBackground?: boolean; // Flag for using odd/even row background
 }
 
 const SimpleTable = (props: SimpleTableProps) => {
@@ -104,7 +107,11 @@ const SimpleTableComp = ({
   sortUpIcon = <AngleUpIcon className="st-sort-icon" />,
   tableRef,
   theme = "light",
+  useHoverRowBackground = true,
+  useOddEvenRowBackground = true,
+  useOddColumnBackground = false,
 }: SimpleTableProps) => {
+  if (useOddColumnBackground) useOddEvenRowBackground = false;
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const headersRef = useRef(defaultHeaders);
@@ -356,6 +363,9 @@ const SimpleTableComp = ({
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
+        useOddColumnBackground,
+        useHoverRowBackground,
+        useOddEvenRowBackground,
       }}
     >
       <div
