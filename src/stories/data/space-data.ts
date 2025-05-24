@@ -68,6 +68,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
   {
     accessor: "launchDate",
     label: "Launch Date",
+    type: "date",
     width: 150,
     isSortable: true,
     isEditable: true,

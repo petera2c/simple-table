@@ -1324,9 +1324,11 @@
   align-items: center;
   padding: 10px;
   border-bottom: 1px solid var(--st-border-color);
+  background-color: var(--st-header-background-color);
 }
 
 .st-datepicker-header-label {
+  color: var(--st-header-label-color);
   font-weight: 600;
   cursor: pointer;
   text-align: center;
@@ -1335,12 +1337,18 @@
 
 .st-datepicker-nav-btn {
   background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   cursor: pointer;
   font-size: 1.2em;
   color: var(--st-cell-color);
   padding: 0 8px;
   border-radius: var(--st-border-radius);
+}
+.st-datepicker-nav-btn > * {
+  fill: var(--st-cell-color) !important;
 }
 
 .st-datepicker-nav-btn:hover {
@@ -1376,6 +1384,7 @@
 }
 
 .st-datepicker-day {
+  color: var(--st-cell-color);
   display: flex;
   align-items: center;
   justify-content: center;
