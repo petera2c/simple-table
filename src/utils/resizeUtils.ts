@@ -106,7 +106,9 @@ export const handleResizeStart = ({
 }: HandleResizeStartProps): void => {
   setIsWidthDragging(true);
   event.preventDefault();
-  const startX = event.clientX;
+  const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
+  const isTouchEvent = "touches" in event;
+
   if (!header || header.hide) return;
 
   // Get the minimum width for this header
@@ -116,10 +118,10 @@ export const handleResizeStart = ({
   const isParentHeader = gridColumnEnd - gridColumnStart > 1;
   const leafHeaders = isParentHeader ? findLeafHeaders(header) : [header];
 
-  const handleMouseMove = (event: MouseEvent) => {
+  const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
     // For right-pinned headers, delta is reversed
-    const delta = header.pinned === "right" ? startX - event.clientX : event.clientX - startX;
+    const delta = header.pinned === "right" ? startX - clientX : clientX - startX;
 
     if (isParentHeader && leafHeaders.length > 1) {
       handleParentHeaderResize({
@@ -156,14 +158,34 @@ export const handleResizeStart = ({
     forceUpdate();
   };
 
-  const handleMouseUp = () => {
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-    setIsWidthDragging(false);
-  };
+  if (isTouchEvent) {
+    const handleTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      handleMove(touch.clientX);
+    };
 
-  document.addEventListener("mousemove", handleMouseMove);
-  document.addEventListener("mouseup", handleMouseUp);
+    const handleTouchEnd = () => {
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+      setIsWidthDragging(false);
+    };
+
+    document.addEventListener("touchmove", handleTouchMove);
+    document.addEventListener("touchend", handleTouchEnd);
+  } else {
+    const handleMouseMove = (event: MouseEvent) => {
+      handleMove(event.clientX);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      setIsWidthDragging(false);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  }
 };
 
 /**

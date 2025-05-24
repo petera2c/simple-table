@@ -1,8 +1,8 @@
-import { Dispatch, RefObject, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction, TouchEvent } from "react";
 import { HeaderObject } from "..";
 
 export type HandleResizeStartProps = {
-  event: MouseEvent;
+  event: MouseEvent | TouchEvent;
   forceUpdate: () => void;
   gridColumnEnd: number;
   gridColumnStart: number;

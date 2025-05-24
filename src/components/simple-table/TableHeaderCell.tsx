@@ -1,4 +1,4 @@
-import { forwardRef, DragEvent, useEffect, ForwardedRef, MouseEvent } from "react";
+import { forwardRef, DragEvent, useEffect, ForwardedRef, MouseEvent, TouchEvent } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
@@ -186,6 +186,28 @@ const TableHeaderCell = forwardRef(
             callback: handleResizeStart,
             callbackProps: {
               event: event.nativeEvent,
+              forceUpdate,
+              gridColumnEnd,
+              gridColumnStart,
+              header,
+              headersRef,
+              setIsWidthDragging,
+              setMainBodyWidth,
+              setPinnedLeftWidth,
+              setPinnedRightWidth,
+              startWidth:
+                typeof ref === "object" && ref !== null && "current" in ref
+                  ? ref.current?.offsetWidth
+                  : undefined,
+            } as HandleResizeStartProps,
+            limit: 10,
+          });
+        }}
+        onTouchStart={(event: TouchEvent) => {
+          throttle({
+            callback: handleResizeStart,
+            callbackProps: {
+              event,
               forceUpdate,
               gridColumnEnd,
               gridColumnStart,
