@@ -20,8 +20,7 @@ export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children, o
   }, []);
 
   const syncScrollPosition = useCallback((scrolledPane: HTMLElement, pane: HTMLElement) => {
-    const { clientHeight, clientWidth, scrollHeight, scrollLeft, scrollTop, scrollWidth } =
-      scrolledPane;
+    const { clientWidth, scrollLeft, scrollWidth } = scrolledPane;
 
     const scrollLeftOffset = scrollWidth - clientWidth;
 

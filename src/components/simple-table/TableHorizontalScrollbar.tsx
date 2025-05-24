@@ -44,11 +44,13 @@ const TableHorizontalScrollbar = ({
 
   useEffect(() => {
     const updateScrollState = () => {
-      if (!mainBodyRef.current) return;
+      const div = document.getElementById("testss");
 
-      const newMainBodyWidth = mainBodyRef.current.scrollWidth;
+      const newMainBodyWidth = div?.scrollWidth;
+      console.log(newMainBodyWidth);
+      if (!div) return;
 
-      setMainBodyWidth(newMainBodyWidth);
+      setMainBodyWidth(newMainBodyWidth || 0);
     };
 
     // This is a hack to ensure the scrollbar is rendered
@@ -59,9 +61,10 @@ const TableHorizontalScrollbar = ({
 
   useEffect(() => {
     const updateScrollState = () => {
-      if (!mainBodyRef.current) return;
+      const div = document.getElementById("testss");
+      if (!div) return;
 
-      const clientWidth = mainBodyRef.current.clientWidth;
+      const clientWidth = div.clientWidth;
 
       setIsScrollable(mainBodyWidth > clientWidth);
     };
@@ -90,11 +93,7 @@ const TableHorizontalScrollbar = ({
         />
       )}
       {mainBodyWidth > 0 && (
-        <>
-          <ScrollSyncPane attachTo={scrollRef as React.RefObject<HTMLElement>}>
-            <div />
-          </ScrollSyncPane>
-
+        <ScrollSyncPane>
           <div className="st-horizontal-scrollbar-middle" ref={scrollRef} style={{ flexGrow: 1 }}>
             <div
               style={{
@@ -103,19 +102,17 @@ const TableHorizontalScrollbar = ({
               }}
             />
           </div>
-        </>
+        </ScrollSyncPane>
       )}
       {pinnedRightWidth > 0 && (
-        <>
-          <div
-            className="st-horizontal-scrollbar-right"
-            style={{
-              flexShrink: 0,
-              minWidth: rightSectionWidth,
-              height: scrollRef.current?.offsetHeight,
-            }}
-          />
-        </>
+        <div
+          className="st-horizontal-scrollbar-right"
+          style={{
+            flexShrink: 0,
+            minWidth: rightSectionWidth,
+            height: scrollRef.current?.offsetHeight,
+          }}
+        />
       )}
       {editorWidth > 0 && (
         <div style={{ width: editorWidth - 1.5, height: "100%", flexShrink: 0 }} />

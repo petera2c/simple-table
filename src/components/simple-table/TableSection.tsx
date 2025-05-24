@@ -8,6 +8,7 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
+import ConditionalWrapper from "../ConditionalWrapper";
 
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
@@ -47,61 +48,64 @@ const TableSection = ({
   width,
 }: TableSectionProps) => {
   const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
-  const component = (
-    <div
-      className={className}
-      ref={ref}
-      style={{
-        position: "relative",
-        height: `${totalHeight}px`,
-        width,
-        ...(!pinned && { flexGrow: 1 }),
-      }}
+
+  return (
+    <ConditionalWrapper
+      condition={!pinned}
+      wrapper={(children) => <ScrollSyncPane>{children}</ScrollSyncPane>}
     >
-      {visibleRows.map((visibleRow, index) => {
-        const lastRow = visibleRows[index - 1];
-        const isRowExpanded = Boolean(
-          lastRow?.depth !== visibleRow?.depth &&
-            visibleRow?.row.rowMeta?.children?.length &&
-            visibleRow.depth === 0
-        );
+      <div
+        className={className}
+        ref={ref}
+        id={ref ? "testss" : undefined}
+        style={{
+          position: "relative",
+          height: `${totalHeight}px`,
+          width,
+          ...(!pinned && { flexGrow: 1 }),
+        }}
+      >
+        {visibleRows.map((visibleRow, index) => {
+          const lastRow = visibleRows[index - 1];
+          const isRowExpanded = Boolean(
+            lastRow?.depth !== visibleRow?.depth &&
+              visibleRow?.row.rowMeta?.children?.length &&
+              visibleRow.depth === 0
+          );
 
-        return (
-          <Fragment key={visibleRow.position}>
-            {index !== 0 && (
-              <TableRowSeparator
-                // Is last row group and it is open
-                displayStrongBorder={isRowExpanded}
-                position={visibleRow.position}
+          return (
+            <Fragment key={visibleRow.position}>
+              {index !== 0 && (
+                <TableRowSeparator
+                  // Is last row group and it is open
+                  displayStrongBorder={isRowExpanded}
+                  position={visibleRow.position}
+                  rowHeight={rowHeight}
+                  templateColumns={templateColumns}
+                />
+              )}
+              <TableRow
+                columnIndexStart={columnIndexStart}
+                columnIndices={columnIndices}
+                gridTemplateColumns={templateColumns}
+                headers={headers}
+                hiddenColumns={hiddenColumns}
+                hoveredIndex={hoveredIndex}
+                index={index}
+                isWidthDragging={isWidthDragging}
+                onExpandRowClick={onExpandRowClick}
+                pinned={pinned}
                 rowHeight={rowHeight}
-                templateColumns={templateColumns}
+                rowIndices={rowIndices}
+                setHoveredIndex={setHoveredIndex}
+                visibleRow={visibleRow}
               />
-            )}
-            <TableRow
-              columnIndexStart={columnIndexStart}
-              columnIndices={columnIndices}
-              gridTemplateColumns={templateColumns}
-              headers={headers}
-              hiddenColumns={hiddenColumns}
-              hoveredIndex={hoveredIndex}
-              index={index}
-              isWidthDragging={isWidthDragging}
-              onExpandRowClick={onExpandRowClick}
-              pinned={pinned}
-              rowHeight={rowHeight}
-              rowIndices={rowIndices}
-              setHoveredIndex={setHoveredIndex}
-              visibleRow={visibleRow}
-            />
-          </Fragment>
-        );
-      })}
-    </div>
+            </Fragment>
+          );
+        })}
+      </div>
+    </ConditionalWrapper>
   );
-
-  if (pinned) return component;
-
-  return <ScrollSyncPane>{component}</ScrollSyncPane>;
 };
 
 export default TableSection;

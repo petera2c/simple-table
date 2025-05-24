@@ -33,6 +33,7 @@ import OnNextPage from "../../types/OnNextPage";
 import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
+import { ScrollSync } from "../scroll-sync/ScrollSync";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -374,49 +375,51 @@ const SimpleTableComp = ({
         className={`simple-table-root st-wrapper theme-${theme}`}
         style={height ? { height } : {}}
       >
-        <div className="st-wrapper-container">
-          <div
-            className="st-content-wrapper"
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-          >
-            <TableContent
-              flattenedRows={flattenedRows}
-              isWidthDragging={isWidthDragging}
+        <ScrollSync>
+          <div className="st-wrapper-container">
+            <div
+              className="st-content-wrapper"
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            >
+              <TableContent
+                flattenedRows={flattenedRows}
+                isWidthDragging={isWidthDragging}
+                pinnedLeftWidth={pinnedLeftWidth}
+                pinnedRightWidth={pinnedRightWidth}
+                setFlattenedRows={setFlattenedRows}
+                setScrollTop={setScrollTop}
+                sort={sort}
+                visibleRows={visibleRows}
+              />
+              <TableColumnEditor
+                columnEditorText={columnEditorText}
+                editColumns={editColumns}
+                editColumnsInitOpen={editColumnsInitOpen}
+                headers={headersRef.current}
+                hiddenColumns={hiddenColumns}
+                position={columnEditorPosition}
+                setHiddenColumns={setHiddenColumns}
+              />
+            </div>
+            <TableHorizontalScrollbar
+              mainBodyRef={mainBodyRef}
+              mainBodyWidth={mainBodyWidth}
               pinnedLeftWidth={pinnedLeftWidth}
               pinnedRightWidth={pinnedRightWidth}
-              setFlattenedRows={setFlattenedRows}
-              setScrollTop={setScrollTop}
-              sort={sort}
-              visibleRows={visibleRows}
+              setMainBodyWidth={setMainBodyWidth}
+              tableBodyContainerRef={tableBodyContainerRef}
             />
-            <TableColumnEditor
-              columnEditorText={columnEditorText}
-              editColumns={editColumns}
-              editColumnsInitOpen={editColumnsInitOpen}
-              headers={headersRef.current}
-              hiddenColumns={hiddenColumns}
-              position={columnEditorPosition}
-              setHiddenColumns={setHiddenColumns}
+            <TableFooter
+              currentPage={currentPage}
+              hideFooter={hideFooter}
+              onPageChange={setCurrentPage}
+              onNextPage={onNextPage}
+              shouldPaginate={shouldPaginate}
+              totalPages={Math.ceil(rows.length / rowsPerPage)}
             />
           </div>
-          <TableHorizontalScrollbar
-            mainBodyRef={mainBodyRef}
-            mainBodyWidth={mainBodyWidth}
-            pinnedLeftWidth={pinnedLeftWidth}
-            pinnedRightWidth={pinnedRightWidth}
-            setMainBodyWidth={setMainBodyWidth}
-            tableBodyContainerRef={tableBodyContainerRef}
-          />
-          <TableFooter
-            currentPage={currentPage}
-            hideFooter={hideFooter}
-            onPageChange={setCurrentPage}
-            onNextPage={onNextPage}
-            shouldPaginate={shouldPaginate}
-            totalPages={Math.ceil(rows.length / rowsPerPage)}
-          />
-        </div>
+        </ScrollSync>
       </div>
     </TableProvider>
   );

@@ -8,7 +8,6 @@ import SortConfig from "../../types/SortConfig";
 import VisibleRow from "../../types/VisibleRow";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableBodyProps from "../../types/TableBodyProps";
-import { ScrollSync } from "../scroll-sync/ScrollSync";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
@@ -85,15 +84,13 @@ const TableContent = ({
   };
 
   return (
-    <ScrollSync>
-      <div
-        className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
-        style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
-      >
-        <TableHeader {...tableHeaderProps} />
-        <TableBody {...tableBodyProps} />
-      </div>
-    </ScrollSync>
+    <div
+      className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
+      style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
+    >
+      <TableHeader {...tableHeaderProps} />
+      <TableBody {...tableBodyProps} />
+    </div>
   );
 };
 
