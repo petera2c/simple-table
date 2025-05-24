@@ -1,4 +1,4 @@
-import { cloneElement, FC, ReactElement, RefObject, useCallback, useEffect, useRef } from "react";
+import { cloneElement, FC, ReactElement, RefObject, useEffect } from "react";
 
 import { useScrollSyncContext } from "../../context/useScrollSyncContext";
 
@@ -10,25 +10,15 @@ interface ScrollSyncPaneProps {
 }
 
 export const ScrollSyncPane: FC<ScrollSyncPaneProps> = ({ childRef, children }) => {
-  const context = useScrollSyncContext();
-  const nodeRef = useRef<HTMLElement | null>(null);
-
-  const updateNode = useCallback(() => {
-    nodeRef.current = childRef.current;
-  }, [childRef]);
+  const { registerPane, unregisterPane } = useScrollSyncContext();
 
   useEffect(() => {
-    updateNode();
+    if (childRef.current) registerPane(childRef.current, GROUPS);
 
-    if (nodeRef.current) {
-      context.registerPane(nodeRef.current, GROUPS);
-    }
     return () => {
-      if (nodeRef.current) {
-        context.unregisterPane(nodeRef.current, GROUPS);
-      }
+      if (childRef.current) unregisterPane(childRef.current, GROUPS);
     };
-  }, [context, updateNode]);
+  }, [childRef, registerPane, unregisterPane]);
 
   return cloneElement(children, {
     ref: (node: HTMLElement | null) => {
