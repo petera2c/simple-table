@@ -1,5 +1,6 @@
 import React from "react";
 import { FILTER_OPERATOR_LABELS, FilterOperator } from "../../../types/FilterTypes";
+import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 
 interface OperatorSelectorProps<T extends FilterOperator> {
   value: T;
@@ -12,19 +13,18 @@ const OperatorSelector = <T extends FilterOperator>({
   onChange,
   operators,
 }: OperatorSelectorProps<T>) => {
+  const options: CustomSelectOption[] = operators.map((operator) => ({
+    value: operator,
+    label: FILTER_OPERATOR_LABELS[operator],
+  }));
+
+  const handleChange = (selectedValue: string) => {
+    onChange(selectedValue as T);
+  };
+
   return (
     <div className="st-filter-section">
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as T)}
-        className="st-filter-select"
-      >
-        {operators.map((operator) => (
-          <option key={operator} value={operator}>
-            {FILTER_OPERATOR_LABELS[operator]}
-          </option>
-        ))}
-      </select>
+      <CustomSelect value={value} onChange={handleChange} options={options} />
     </div>
   );
 };

@@ -1,0 +1,175 @@
+import React, { useState, useRef, useEffect } from "react";
+
+export interface CustomSelectOption {
+  value: string;
+  label: string;
+}
+
+interface CustomSelectProps {
+  value: string;
+  onChange: (value: string) => void;
+  options: CustomSelectOption[];
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
+}
+
+const CustomSelect: React.FC<CustomSelectProps> = ({
+  value,
+  onChange,
+  options,
+  placeholder = "Select...",
+  className = "",
+  disabled = false,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const selectRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find((option) => option.value === value);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setFocusedIndex(-1);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isOpen]);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      switch (event.key) {
+        case "ArrowDown":
+          event.preventDefault();
+          setFocusedIndex((prev) => {
+            const nextIndex = prev < options.length - 1 ? prev + 1 : 0;
+            return nextIndex;
+          });
+          break;
+        case "ArrowUp":
+          event.preventDefault();
+          setFocusedIndex((prev) => {
+            const nextIndex = prev > 0 ? prev - 1 : options.length - 1;
+            return nextIndex;
+          });
+          break;
+        case "Enter":
+          event.preventDefault();
+          if (focusedIndex >= 0) {
+            onChange(options[focusedIndex].value);
+            setIsOpen(false);
+            setFocusedIndex(-1);
+          }
+          break;
+        case "Escape":
+          event.preventDefault();
+          setIsOpen(false);
+          setFocusedIndex(-1);
+          break;
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isOpen, focusedIndex, options, onChange]);
+
+  // Scroll focused option into view
+  useEffect(() => {
+    if (isOpen && focusedIndex >= 0 && optionsRef.current) {
+      const focusedElement = optionsRef.current.children[focusedIndex] as HTMLElement;
+      if (focusedElement) {
+        focusedElement.scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [focusedIndex, isOpen]);
+
+  const handleToggle = () => {
+    if (disabled) return;
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      // Set focus to current selected option when opening
+      const currentIndex = options.findIndex((option) => option.value === value);
+      setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
+    } else {
+      setFocusedIndex(-1);
+    }
+  };
+
+  const handleOptionClick = (optionValue: string) => {
+    onChange(optionValue);
+    setIsOpen(false);
+    setFocusedIndex(-1);
+  };
+
+  return (
+    <div
+      ref={selectRef}
+      className={`st-custom-select ${className} ${disabled ? "st-custom-select-disabled" : ""} ${
+        isOpen ? "st-custom-select-open" : ""
+      }`.trim()}
+    >
+      <button
+        type="button"
+        className="st-custom-select-trigger"
+        onClick={handleToggle}
+        disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-labelledby="select-label"
+      >
+        <span className="st-custom-select-value">
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <svg
+          className="st-custom-select-arrow"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 4.5L6 7.5L9 4.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div ref={optionsRef} className="st-custom-select-dropdown" role="listbox">
+          {options.map((option, index) => (
+            <div
+              key={option.value}
+              className={`st-custom-select-option ${
+                option.value === value ? "st-custom-select-option-selected" : ""
+              } ${index === focusedIndex ? "st-custom-select-option-focused" : ""}`.trim()}
+              role="option"
+              aria-selected={option.value === value}
+              onClick={() => handleOptionClick(option.value)}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CustomSelect;

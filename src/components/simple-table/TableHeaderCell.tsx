@@ -302,6 +302,7 @@ const TableHeaderCell = forwardRef(
 
         <Dropdown
           open={isFilterDropdownOpen}
+          overflow="visible"
           setOpen={setIsFilterDropdownOpen}
           onClose={() => setIsFilterDropdownOpen(false)}
         >

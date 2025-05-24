@@ -3,17 +3,19 @@ import { useTableContext } from "../../context/TableContext";
 
 export interface DropdownProps {
   children: ReactNode;
+  containerRef?: React.RefObject<HTMLElement>;
   onClose: () => void;
   open?: boolean;
+  overflow?: "auto" | "visible";
   setOpen: (open: boolean) => void;
   width?: number;
-  containerRef?: React.RefObject<HTMLElement>;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
   children,
   onClose,
   open,
+  overflow = "auto",
   setOpen,
   width,
   containerRef,
@@ -196,6 +198,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         width: width ? `${width}px` : "auto",
         visibility: isPositioned ? "visible" : "hidden",
         ...fixedPosition,
+        overflow,
       }}
     >
       {children}

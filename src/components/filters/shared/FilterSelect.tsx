@@ -1,16 +1,13 @@
 import React from "react";
-
-interface FilterSelectOption {
-  value: string;
-  label: string;
-}
+import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 
 interface FilterSelectProps {
   value: string;
   onChange: (value: string) => void;
-  options: FilterSelectOption[];
+  options: CustomSelectOption[];
   autoFocus?: boolean;
   className?: string;
+  placeholder?: string;
 }
 
 const FilterSelect: React.FC<FilterSelectProps> = ({
@@ -19,20 +16,16 @@ const FilterSelect: React.FC<FilterSelectProps> = ({
   options,
   autoFocus = false,
   className = "",
+  placeholder,
 }) => {
   return (
-    <select
+    <CustomSelect
       value={value}
-      onChange={(e) => onChange(e.target.value)}
-      autoFocus={autoFocus}
-      className={`st-filter-select ${className}`.trim()}
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+      onChange={onChange}
+      options={options}
+      className={className}
+      placeholder={placeholder}
+    />
   );
 };
 
