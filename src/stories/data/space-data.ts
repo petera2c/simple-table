@@ -89,6 +89,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
+    type: "enum",
+    enumOptions: ["Moon", "Mars", "Venus", "Jupiter", "Asteroid Belt", "Saturn"],
   },
   {
     accessor: "status",

@@ -1286,6 +1286,7 @@
   cursor: pointer;
   white-space: nowrap;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  color: var(--st-cell-color);
 }
 
 .st-dropdown-item:hover {
