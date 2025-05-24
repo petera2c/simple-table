@@ -95,7 +95,7 @@ const TableHeaderSection = ({
   return (
     <ConditionalWrapper
       condition={!pinned}
-      wrapper={(children) => <ScrollSyncPane>{children}</ScrollSyncPane>}
+      wrapper={(children) => <ScrollSyncPane childRef={sectionRef}>{children}</ScrollSyncPane>}
     >
       <div
         className={`st-header-${pinned ? `pinned-${pinned}` : "main"}`}

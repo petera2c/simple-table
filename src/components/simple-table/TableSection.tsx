@@ -52,12 +52,11 @@ const TableSection = ({
   return (
     <ConditionalWrapper
       condition={!pinned}
-      wrapper={(children) => <ScrollSyncPane>{children}</ScrollSyncPane>}
+      wrapper={(children) => <ScrollSyncPane childRef={ref!}>{children}</ScrollSyncPane>}
     >
       <div
         className={className}
         ref={ref}
-        id={ref ? "testss" : undefined}
         style={{
           position: "relative",
           height: `${totalHeight}px`,

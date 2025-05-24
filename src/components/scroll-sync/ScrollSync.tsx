@@ -2,14 +2,8 @@ import React, { FC, PropsWithChildren, useCallback, useRef } from "react";
 
 import { ScrollSyncContext } from "../../context/useScrollSyncContext";
 
-export interface ScrollSyncProps {
-  /**
-   * Callback fired after panes are synchronized.
-   * Receives the scrolled HTMLElement as an argument.
-   */
-  onSync?: (el: HTMLElement) => void;
-}
-export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children, onSync }) => {
+export interface ScrollSyncProps {}
+export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children }) => {
   const panesRef = useRef<Record<string, HTMLElement[]>>({});
 
   const findPane = useCallback((node: HTMLElement, group: string) => {
@@ -54,13 +48,9 @@ export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children, o
             });
           });
         });
-
-        if (onSync) {
-          onSync(node);
-        }
       };
     },
-    [onSync, removeEvents, syncScrollPosition]
+    [removeEvents, syncScrollPosition]
   );
 
   const registerPane = useCallback(

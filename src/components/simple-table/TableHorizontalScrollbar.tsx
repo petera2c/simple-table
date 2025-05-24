@@ -43,35 +43,32 @@ const TableHorizontalScrollbar = ({
     (editColumns ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
 
   useEffect(() => {
-    const updateScrollState = () => {
-      const div = document.getElementById("testss");
+    const updateMainBodyWidth = () => {
+      if (!mainBodyRef.current) return;
 
-      const newMainBodyWidth = div?.scrollWidth;
-      console.log(newMainBodyWidth);
-      if (!div) return;
+      const newMainBodyWidth = mainBodyRef.current?.scrollWidth;
 
       setMainBodyWidth(newMainBodyWidth || 0);
     };
 
     // This is a hack to ensure the scrollbar is rendered
     setTimeout(() => {
-      updateScrollState();
+      updateMainBodyWidth();
     }, 1);
   }, [mainBodyRef, setMainBodyWidth]);
 
   useEffect(() => {
-    const updateScrollState = () => {
-      const div = document.getElementById("testss");
-      if (!div) return;
+    const updateIsScrollable = () => {
+      if (!mainBodyRef.current) return;
 
-      const clientWidth = div.clientWidth;
+      const clientWidth = mainBodyRef.current.clientWidth;
 
       setIsScrollable(mainBodyWidth > clientWidth);
     };
 
     // This is a hack to ensure the scrollbar is rendered
     setTimeout(() => {
-      updateScrollState();
+      updateIsScrollable();
     }, 1);
   }, [mainBodyRef, mainBodyWidth, setMainBodyWidth]);
 
@@ -93,7 +90,7 @@ const TableHorizontalScrollbar = ({
         />
       )}
       {mainBodyWidth > 0 && (
-        <ScrollSyncPane>
+        <ScrollSyncPane childRef={scrollRef}>
           <div className="st-horizontal-scrollbar-middle" ref={scrollRef} style={{ flexGrow: 1 }}>
             <div
               style={{

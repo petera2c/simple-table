@@ -19,8 +19,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   containerRef,
 }) => {
   // Get table context to access mainBodyRef
-  const tableContext = useTableContext();
-  const mainBodyRef = tableContext?.mainBodyRef;
+  const { mainBodyRef } = useTableContext();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
