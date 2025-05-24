@@ -4,6 +4,7 @@ import OnSortProps from "../types/OnSortProps";
 import Cell from "../types/Cell";
 import CellValue from "../types/CellValue";
 import { Theme } from "..";
+import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -21,8 +22,12 @@ interface TableContextType {
   draggedHeaderRef: RefObject<HeaderObject | null>;
   editColumns?: boolean;
   expandIcon?: ReactNode;
+  filters: TableFilterState;
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
+  handleApplyFilter: (filter: FilterCondition) => void;
+  handleClearFilter: (accessor: string) => void;
+  handleClearAllFilters: () => void;
   handleMouseDown: (cell: Cell) => void;
   handleMouseOver: (cell: Cell) => void;
   headersRef: RefObject<HeaderObject[]>;

@@ -1,0 +1,452 @@
+[
+  {
+    "rowMeta": {
+      "rowId": 0,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "iPhone 15 Pro Max",
+      "category": "Electronics",
+      "brand": "Apple",
+      "rating": 4.8,
+      "price": 1199.99,
+      "stockLevel": 45,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 1,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Galaxy S24 Ultra",
+      "category": "Electronics",
+      "brand": "Samsung",
+      "rating": 4.6,
+      "price": 1299.99,
+      "stockLevel": 23,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 2,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "MacBook Air M3",
+      "category": "Computers",
+      "brand": "Apple",
+      "rating": 4.9,
+      "price": 1399.99,
+      "stockLevel": 12,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 3,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Dell XPS 13",
+      "category": "Computers",
+      "brand": "Dell",
+      "rating": 4.4,
+      "price": 999.99,
+      "stockLevel": 8,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 4,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "AirPods Pro",
+      "category": "Audio",
+      "brand": "Apple",
+      "rating": 4.7,
+      "price": 249.99,
+      "stockLevel": 67,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 5,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Sony WH-1000XM5",
+      "category": "Audio",
+      "brand": "Sony",
+      "rating": 4.8,
+      "price": 399.99,
+      "stockLevel": 34,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 6,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Nintendo Switch OLED",
+      "category": "Gaming",
+      "brand": "Nintendo",
+      "rating": 4.6,
+      "price": 349.99,
+      "stockLevel": 0,
+      "isActive": false
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 7,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "PlayStation 5",
+      "category": "Gaming",
+      "brand": "Sony",
+      "rating": 4.9,
+      "price": 499.99,
+      "stockLevel": 3,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 8,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Levi's 501 Jeans",
+      "category": "Clothing",
+      "brand": "Levi's",
+      "rating": 4.2,
+      "price": 89.99,
+      "stockLevel": 156,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 9,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Nike Air Max 270",
+      "category": "Footwear",
+      "brand": "Nike",
+      "rating": 4.5,
+      "price": 129.99,
+      "stockLevel": 89,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 10,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Adidas Ultraboost 22",
+      "category": "Footwear",
+      "brand": "Adidas",
+      "rating": 4.3,
+      "price": 179.99,
+      "stockLevel": 45,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 11,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Instant Pot Duo 7-in-1",
+      "category": "Kitchen",
+      "brand": "Instant Pot",
+      "rating": 4.7,
+      "price": 79.99,
+      "stockLevel": 92,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 12,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "KitchenAid Stand Mixer",
+      "category": "Kitchen",
+      "brand": "KitchenAid",
+      "rating": 4.8,
+      "price": 449.99,
+      "stockLevel": 16,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 13,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Dyson V15 Vacuum",
+      "category": "Home & Garden",
+      "brand": "Dyson",
+      "rating": 4.6,
+      "price": 749.99,
+      "stockLevel": 27,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 14,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Tesla Model Y Floor Mats",
+      "category": "Automotive",
+      "brand": "Tesla",
+      "rating": 4.4,
+      "price": 199.99,
+      "stockLevel": 78,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 15,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Fitbit Charge 6",
+      "category": "Wearables",
+      "brand": "Fitbit",
+      "rating": 4.1,
+      "price": 159.99,
+      "stockLevel": 134,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 16,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Apple Watch Series 9",
+      "category": "Wearables",
+      "brand": "Apple",
+      "rating": 4.8,
+      "price": 429.99,
+      "stockLevel": 56,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 17,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Bose QuietComfort Earbuds",
+      "category": "Audio",
+      "brand": "Bose",
+      "rating": 4.5,
+      "price": 279.99,
+      "stockLevel": 41,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 18,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Surface Laptop 5",
+      "category": "Computers",
+      "brand": "Microsoft",
+      "rating": 4.3,
+      "price": 1299.99,
+      "stockLevel": 19,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 19,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Canon EOS R5",
+      "category": "Photography",
+      "brand": "Canon",
+      "rating": 4.9,
+      "price": 3899.99,
+      "stockLevel": 7,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 20,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "GoPro Hero 12",
+      "category": "Photography",
+      "brand": "GoPro",
+      "rating": 4.4,
+      "price": 399.99,
+      "stockLevel": 62,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 21,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Patagonia Down Jacket",
+      "category": "Clothing",
+      "brand": "Patagonia",
+      "rating": 4.7,
+      "price": 279.99,
+      "stockLevel": 28,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 22,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "YETI Rambler Tumbler",
+      "category": "Outdoor",
+      "brand": "YETI",
+      "rating": 4.8,
+      "price": 39.99,
+      "stockLevel": 245,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 23,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Weber Genesis Gas Grill",
+      "category": "Outdoor",
+      "brand": "Weber",
+      "rating": 4.6,
+      "price": 1199.99,
+      "stockLevel": 11,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 24,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Roomba j7+",
+      "category": "Home & Garden",
+      "brand": "iRobot",
+      "rating": 4.2,
+      "price": 799.99,
+      "stockLevel": 33,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 25,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Ring Video Doorbell Pro 2",
+      "category": "Home Security",
+      "brand": "Ring",
+      "rating": 4.1,
+      "price": 249.99,
+      "stockLevel": 87,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 26,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Nest Learning Thermostat",
+      "category": "Smart Home",
+      "brand": "Google",
+      "rating": 4.3,
+      "price": 249.99,
+      "stockLevel": 54,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 27,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Philips Hue Smart Bulbs (4-pack)",
+      "category": "Smart Home",
+      "brand": "Philips",
+      "rating": 4.5,
+      "price": 199.99,
+      "stockLevel": 123,
+      "isActive": true
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 28,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Xbox Series X",
+      "category": "Gaming",
+      "brand": "Microsoft",
+      "rating": 4.8,
+      "price": 499.99,
+      "stockLevel": 0,
+      "isActive": false
+    }
+  },
+  {
+    "rowMeta": {
+      "rowId": 29,
+      "isExpanded": true
+    },
+    "rowData": {
+      "productName": "Meta Quest 3",
+      "category": "VR/AR",
+      "brand": "Meta",
+      "rating": 4.2,
+      "price": 499.99,
+      "stockLevel": 18,
+      "isActive": true
+    }
+  }
+]

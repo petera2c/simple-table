@@ -20,6 +20,7 @@ type HeaderObject = {
   disableReorder?: boolean;
   enumOptions?: string[];
   expandable?: boolean;
+  filterable?: boolean;
   hide?: boolean;
   isEditable?: boolean;
   isSortable?: boolean;

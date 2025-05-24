@@ -1,4 +1,12 @@
-import { forwardRef, DragEvent, useEffect, ForwardedRef, MouseEvent, TouchEvent } from "react";
+import {
+  forwardRef,
+  DragEvent,
+  useEffect,
+  ForwardedRef,
+  MouseEvent,
+  TouchEvent,
+  useState,
+} from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
@@ -9,6 +17,9 @@ import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
 import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
+import FilterIcon from "../../icons/FilterIcon";
+import Dropdown from "../dropdown/Dropdown";
+import FilterDropdown from "../filters/FilterDropdown";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -37,12 +48,18 @@ const TableHeaderCell = forwardRef(
     }: HeaderCellProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    // Local state for filter dropdown
+    const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+
     // Get shared props from context
     const {
       columnReordering,
       columnResizing,
       draggedHeaderRef,
+      filters,
       forceUpdate,
+      handleApplyFilter,
+      handleClearFilter,
       headersRef,
       hoveredHeaderRef,
       onColumnOrderChange,
@@ -64,6 +81,8 @@ const TableHeaderCell = forwardRef(
 
     // Derived state
     const clickable = Boolean(header?.isSortable);
+    const filterable = Boolean(header?.filterable);
+    const currentFilter = filters[header.accessor];
     const className = `st-header-cell ${
       header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
     } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
@@ -91,6 +110,22 @@ const TableHeaderCell = forwardRef(
       event.preventDefault();
       handleDragEnd();
       forceHeadersUpdate();
+    };
+
+    // Filter handlers
+    const handleFilterIconClick = (event: MouseEvent) => {
+      event.stopPropagation();
+      setIsFilterDropdownOpen(!isFilterDropdownOpen);
+    };
+
+    const handleApplyFilterWrapper = (filter: any) => {
+      handleApplyFilter(filter);
+      setIsFilterDropdownOpen(false);
+    };
+
+    const handleClearFilterWrapper = () => {
+      handleClearFilter(header.accessor);
+      setIsFilterDropdownOpen(false);
     };
 
     // Sort and select handler
@@ -240,6 +275,46 @@ const TableHeaderCell = forwardRef(
       </div>
     );
 
+    const FilterIconComponent = filterable && (
+      <div
+        className="st-filter-icon-container"
+        onClick={handleFilterIconClick}
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginLeft: "4px",
+          cursor: "pointer",
+          padding: "2px",
+        }}
+      >
+        <FilterIcon
+          className="st-filter-icon"
+          style={{
+            width: "12px",
+            height: "12px",
+            fill: currentFilter
+              ? "var(--st-button-active-background-color)"
+              : "var(--st-slate-500)",
+          }}
+        />
+
+        <Dropdown
+          open={isFilterDropdownOpen}
+          setOpen={setIsFilterDropdownOpen}
+          onClose={() => setIsFilterDropdownOpen(false)}
+        >
+          <FilterDropdown
+            header={header}
+            currentFilter={currentFilter}
+            onApplyFilter={handleApplyFilterWrapper}
+            onClearFilter={handleClearFilterWrapper}
+          />
+        </Dropdown>
+      </div>
+    );
+
     return (
       <div
         className={className}
@@ -263,6 +338,7 @@ const TableHeaderCell = forwardRef(
       >
         {reverse && ResizeHandle}
         {header.align === "right" && SortIcon}
+        {header.align === "right" && FilterIconComponent}
         <div
           className="st-header-label"
           draggable={columnReordering && !header.disableReorder}
@@ -283,6 +359,7 @@ const TableHeaderCell = forwardRef(
           </span>
         </div>
         {header.align !== "right" && SortIcon}
+        {header.align !== "right" && FilterIconComponent}
 
         {!reverse && ResizeHandle}
       </div>

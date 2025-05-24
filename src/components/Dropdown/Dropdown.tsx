@@ -191,6 +191,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     <div
       ref={dropdownRef}
       className={`st-dropdown-content st-dropdown-${calculatedPosition}`}
+      onClick={(e) => e.stopPropagation()}
       style={{
         width: width ? `${width}px` : "auto",
         visibility: isPositioned ? "visible" : "hidden",

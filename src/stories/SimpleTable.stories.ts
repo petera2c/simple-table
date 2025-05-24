@@ -1,20 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import ThemingExample from "./examples/Theming";
-import PinnedColumnsExample from "./examples/pinned-columns/PinnedColumns";
-import PaginationExample from "./examples/Pagination";
-import InfiniteScrollExample from "./examples/InfiniteScroll";
-import EditableCellsExample from "./examples/EditableCells";
-import FilterColumnsExample from "./examples/FilterColumns";
-import SelectableCellsExample from "./examples/SelectableCells";
-import RowGroupingExample from "./examples/row-grouping/RowGrouping";
-import { FinancialExample } from "./examples/finance-example/FinancialExample";
-import BillingExampleComponent from "./examples/billing-example/BillingExample";
-import BasicExampleComponent from "./examples/BasicExample";
-import CellHighlightingDemo from "./examples/CellHighlighting";
-import { SalesExampleComponent } from "./examples/sales-example/SalesExample";
-import CellRendererExample from "./examples/CellRenderer";
 import AlignmentExample from "./examples/AlignmentExample";
+import BasicExampleComponent from "./examples/BasicExample";
+import BillingExampleComponent from "./examples/billing-example/BillingExample";
+import CellHighlightingDemo from "./examples/CellHighlighting";
+import CellRendererExample from "./examples/CellRenderer";
+import EditableCellsExample from "./examples/EditableCells";
+import HiddenColumnsExample from "./examples/HiddenColumnsExample";
+import InfiniteScrollExample from "./examples/InfiniteScroll";
+import PaginationExample from "./examples/Pagination";
+import PinnedColumnsExample from "./examples/pinned-columns/PinnedColumns";
+import RowGroupingExample from "./examples/row-grouping/RowGrouping";
+import SelectableCellsExample from "./examples/SelectableCells";
+import ThemingExample from "./examples/Theming";
+import { FinancialExample } from "./examples/finance-example/FinancialExample";
+import { SalesExampleComponent } from "./examples/sales-example/SalesExample";
+import { FilterExampleComponent } from "./examples/filter-example/FilterExample";
 
 const meta = {
   title: "Simple Table",
@@ -45,11 +46,14 @@ export const CellRenderer: Story = {
 export const EditableCells: Story = {
   render: EditableCellsExample,
 };
-export const FilterColumns: Story = {
-  render: FilterColumnsExample,
+export const FilterExample: Story = {
+  render: FilterExampleComponent,
 };
 export const FinanceExample: Story = {
   render: FinancialExample,
+};
+export const HiddenColumns: Story = {
+  render: HiddenColumnsExample,
 };
 export const InfiniteScroll: Story = {
   render: InfiniteScrollExample,

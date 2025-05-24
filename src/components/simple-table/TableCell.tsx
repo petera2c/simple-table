@@ -238,9 +238,6 @@ const TableCell = forwardRef(
             <div
               className="st-sort-icon-container"
               onClick={() => onExpandRowClick(row.rowMeta.rowId)}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-              }}
             >
               {collapseIcon}
             </div>
@@ -248,9 +245,6 @@ const TableCell = forwardRef(
             <div
               className="st-sort-icon-container"
               onClick={() => onExpandRowClick(row.rowMeta.rowId)}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-              }}
             >
               {expandIcon}
             </div>

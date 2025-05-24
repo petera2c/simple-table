@@ -34,6 +34,7 @@ import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
+import { TableFilterState, FilterCondition } from "../../types/FilterTypes";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -132,10 +133,80 @@ const SimpleTableComp = ({
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
-  // Use custom hook for sorting
+  // Filter state
+  const [filters, setFilters] = useState<TableFilterState>({});
+
+  // Apply filters to rows
+  const filteredRows = useMemo(() => {
+    if (Object.keys(filters).length === 0) return rows;
+
+    return rows.filter((row) => {
+      return Object.values(filters).every((filter) => {
+        const cellValue = row.rowData[filter.accessor];
+        return applyFilter(cellValue, filter);
+      });
+    });
+  }, [rows, filters]);
+
+  // Filter application logic
+  const applyFilter = useCallback((cellValue: any, filter: FilterCondition): boolean => {
+    const { operator, value, values } = filter;
+
+    // Handle null/undefined values
+    if (cellValue == null) {
+      return operator === "isEmpty";
+    }
+
+    const cellString = String(cellValue).toLowerCase();
+    const filterString = value ? String(value).toLowerCase() : "";
+
+    switch (operator) {
+      case "equals":
+        return cellString === filterString;
+      case "notEquals":
+        return cellString !== filterString;
+      case "contains":
+        return cellString.includes(filterString);
+      case "notContains":
+        return !cellString.includes(filterString);
+      case "startsWith":
+        return cellString.startsWith(filterString);
+      case "endsWith":
+        return cellString.endsWith(filterString);
+      case "isEmpty":
+        return !cellValue || cellString.trim() === "";
+      case "isNotEmpty":
+        return cellValue && cellString.trim() !== "";
+      // TODO: Add number, date, boolean, enum operators
+      default:
+        return true;
+    }
+  }, []);
+
+  // Filter handlers
+  const handleApplyFilter = useCallback((filter: FilterCondition) => {
+    setFilters((prev) => ({
+      ...prev,
+      [filter.accessor]: filter,
+    }));
+  }, []);
+
+  const handleClearFilter = useCallback((accessor: string) => {
+    setFilters((prev) => {
+      const newFilters = { ...prev };
+      delete newFilters[accessor];
+      return newFilters;
+    });
+  }, []);
+
+  const handleClearAllFilters = useCallback(() => {
+    setFilters({});
+  }, []);
+
+  // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
     headers: headersRef.current,
-    tableRows: rows,
+    tableRows: filteredRows,
   });
 
   useEffect(() => {
@@ -333,8 +404,12 @@ const SimpleTableComp = ({
         draggedHeaderRef,
         editColumns,
         expandIcon,
+        filters,
         forceUpdate,
         getBorderClass,
+        handleApplyFilter,
+        handleClearFilter,
+        handleClearAllFilters,
         handleMouseDown,
         handleMouseOver,
         headersRef,
@@ -417,7 +492,7 @@ const SimpleTableComp = ({
               onPageChange={setCurrentPage}
               onNextPage={onNextPage}
               shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil(rows.length / rowsPerPage)}
+              totalPages={Math.ceil(filteredRows.length / rowsPerPage)}
             />
           </div>
         </ScrollSync>
