@@ -870,11 +870,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: col-resize;
 }
 .st-header-resize-handle {
   width: var(--st-resize-handle-width);
   height: calc(100% - 20px);
-  cursor: col-resize;
   background-color: var(--st-resize-handle-color);
 }
 

@@ -179,32 +179,32 @@ const TableHeaderCell = forwardRef(
     }
 
     const ResizeHandle = columnResizing && (
-      <div className="st-header-resize-handle-container">
-        <div
-          className="st-header-resize-handle"
-          onMouseDown={(event: MouseEvent) => {
-            throttle({
-              callback: handleResizeStart,
-              callbackProps: {
-                event: event.nativeEvent,
-                forceUpdate,
-                gridColumnEnd,
-                gridColumnStart,
-                header,
-                headersRef,
-                setIsWidthDragging,
-                setMainBodyWidth,
-                setPinnedLeftWidth,
-                setPinnedRightWidth,
-                startWidth:
-                  typeof ref === "object" && ref !== null && "current" in ref
-                    ? ref.current?.offsetWidth
-                    : undefined,
-              } as HandleResizeStartProps,
-              limit: 10,
-            });
-          }}
-        />
+      <div
+        className="st-header-resize-handle-container"
+        onMouseDown={(event: MouseEvent) => {
+          throttle({
+            callback: handleResizeStart,
+            callbackProps: {
+              event: event.nativeEvent,
+              forceUpdate,
+              gridColumnEnd,
+              gridColumnStart,
+              header,
+              headersRef,
+              setIsWidthDragging,
+              setMainBodyWidth,
+              setPinnedLeftWidth,
+              setPinnedRightWidth,
+              startWidth:
+                typeof ref === "object" && ref !== null && "current" in ref
+                  ? ref.current?.offsetWidth
+                  : undefined,
+            } as HandleResizeStartProps,
+            limit: 10,
+          });
+        }}
+      >
+        <div className="st-header-resize-handle" />
       </div>
     );
 
