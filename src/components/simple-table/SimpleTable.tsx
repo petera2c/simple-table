@@ -366,6 +366,7 @@ const SimpleTableComp = ({
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
+        theme,
         useOddColumnBackground,
         useHoverRowBackground,
         useOddEvenRowBackground,

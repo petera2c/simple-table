@@ -3,6 +3,7 @@ import HeaderObject from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Cell from "../types/Cell";
 import CellValue from "../types/CellValue";
+import { Theme } from "..";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -53,6 +54,7 @@ interface TableContextType {
   sortDownIcon?: ReactNode;
   sortUpIcon?: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
+  theme: Theme;
   useHoverRowBackground?: boolean;
   useOddColumnBackground?: boolean;
   useOddEvenRowBackground?: boolean;

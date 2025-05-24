@@ -65,6 +65,7 @@ const TableCell = forwardRef(
       hoveredHeaderRef,
       onCellEdit,
       onTableHeaderDragEnd,
+      theme,
       useOddColumnBackground,
     } = useTableContext();
 
@@ -266,7 +267,7 @@ const TableCell = forwardRef(
         >
           <span>
             {header.cellRenderer
-              ? header.cellRenderer({ accessor: header.accessor, colIndex, row })
+              ? header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
               : displayContent({ content: localContent, header })}
           </span>
         </span>

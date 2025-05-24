@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Row from "./Row";
 import { Pinned } from "./Pinned";
+import Theme from "./Theme";
 
 type HeaderObject = {
   accessor: string;
@@ -13,6 +14,7 @@ type HeaderObject = {
     accessor: string;
     colIndex: number;
     row: Row;
+    theme: Theme;
   }) => ReactNode | string;
   children?: HeaderObject[];
   disableReorder?: boolean;
