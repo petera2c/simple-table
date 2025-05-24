@@ -4,7 +4,7 @@
 .simple-table-root {
   --st-after-width: 11.01px;
   --st-resize-handle-width: 2px;
-  --st-resize-handle-margin-right: 2px;
+  --st-resize-handle-container-width: 10px;
   --st-border-width: 1px;
 
   /* Animation variables */
@@ -735,8 +735,7 @@
 }
 .st-cell.center-aligned {
   padding-right: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
-      var(--st-resize-handle-margin-right)
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
 }
 .st-cell.center-aligned > .st-cell-content {
@@ -809,8 +808,7 @@
 /* If the cell is in the main body or pinned left then the resize handle is on the right */
 .st-resizeable .st-body-pinned-right .st-cell-content {
   padding-left: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
-      var(--st-resize-handle-margin-right)
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
   padding-right: var(--st-cell-padding);
 }
@@ -819,8 +817,7 @@
 .st-resizeable .st-body-main .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-width) +
-      var(--st-resize-handle-margin-right)
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
 }
 
@@ -866,16 +863,19 @@
 .st-sort-icon {
   fill: var(--st-slate-500);
 }
+.st-header-resize-handle-container {
+  width: var(--st-resize-handle-container-width);
+  height: 100%;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .st-header-resize-handle {
-  flex-shrink: 0;
-  top: 0;
-  right: 0;
   width: var(--st-resize-handle-width);
   height: calc(100% - 20px);
   cursor: col-resize;
   background-color: var(--st-resize-handle-color);
-  margin-right: var(--st-resize-handle-margin-right);
 }
 
 .st-row-separator {
