@@ -7,6 +7,7 @@ import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
+import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
@@ -46,8 +47,7 @@ const TableSection = ({
   width,
 }: TableSectionProps) => {
   const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
-
-  return (
+  const component = (
     <div
       className={className}
       ref={ref}
@@ -98,6 +98,10 @@ const TableSection = ({
       })}
     </div>
   );
+
+  if (pinned) return component;
+
+  return <ScrollSyncPane>{component}</ScrollSyncPane>;
 };
 
 export default TableSection;

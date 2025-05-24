@@ -1,7 +1,7 @@
 import { RefObject, useRef, useState, useEffect, SetStateAction, Dispatch } from "react";
-import useScrollSync from "../../hooks/useScrollSync";
 import { useTableContext } from "../../context/TableContext";
 import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-consts";
+import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 
 const TableHorizontalScrollbar = ({
   mainBodyWidth,
@@ -41,9 +41,6 @@ const TableHorizontalScrollbar = ({
   // If the content is scrollable, add the width of the scrollbar to the right section
   const rightSectionWidth =
     (editColumns ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
-
-  // Keep up to date the scroll position of the visible scroll
-  useScrollSync(mainBodyRef, scrollRef);
 
   useEffect(() => {
     const updateScrollState = () => {
@@ -93,25 +90,20 @@ const TableHorizontalScrollbar = ({
         />
       )}
       {mainBodyWidth > 0 && (
-        <div
-          className="st-horizontal-scrollbar-middle"
-          onScroll={(e) => {
-            const scrollLeft = (e.target as HTMLDivElement).scrollLeft;
+        <>
+          <ScrollSyncPane attachTo={scrollRef as React.RefObject<HTMLElement>}>
+            <div />
+          </ScrollSyncPane>
 
-            if (scrollLeft !== undefined && mainBodyRef.current) {
-              mainBodyRef.current.scrollTo({ left: scrollLeft, behavior: "auto" });
-            }
-          }}
-          ref={scrollRef}
-          style={{ flexGrow: 1 }}
-        >
-          <div
-            style={{
-              width: mainBodyWidth,
-              height: ".3px",
-            }}
-          />
-        </div>
+          <div className="st-horizontal-scrollbar-middle" ref={scrollRef} style={{ flexGrow: 1 }}>
+            <div
+              style={{
+                width: mainBodyWidth,
+                height: ".3px",
+              }}
+            />
+          </div>
+        </>
       )}
       {pinnedRightWidth > 0 && (
         <>

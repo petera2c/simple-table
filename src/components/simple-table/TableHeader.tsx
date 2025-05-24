@@ -1,7 +1,6 @@
-import { UIEvent, useLayoutEffect, useMemo } from "react";
+import { useLayoutEffect, useMemo } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import { displayCell } from "../../utils/cellUtils";
-import useScrollSync from "../../hooks/useScrollSync";
 import HeaderObject from "../../types/HeaderObject";
 import TableHeaderSection from "./TableHeaderSection";
 import { useTableContext } from "../../context/TableContext";
@@ -24,17 +23,8 @@ const TableHeader = ({
   pinnedRightTemplateColumns,
   sort,
 }: TableHeaderProps) => {
-  const { mainBodyRef, pinnedLeftRef, pinnedRightRef, setPinnedLeftWidth, setPinnedRightWidth } =
+  const { pinnedLeftRef, pinnedRightRef, setPinnedLeftWidth, setPinnedRightWidth } =
     useTableContext();
-  // Keep up to date the scroll position of the visible scroll
-  useScrollSync(mainBodyRef, centerHeaderRef);
-
-  const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-    const scrollLeft = centerHeaderRef.current?.scrollLeft;
-    if (scrollLeft !== undefined) {
-      mainBodyRef.current?.scrollTo(scrollLeft, 0);
-    }
-  };
 
   // Calculate column indices for all headers to ensure consistent colIndex values
   const columnIndices = useMemo(() => {
@@ -82,7 +72,7 @@ const TableHeader = ({
       <TableHeaderSection
         columnIndices={columnIndices}
         gridTemplateColumns={mainTemplateColumns}
-        handleScroll={handleScroll}
+        handleScroll={undefined}
         headersRef={headersRef}
         hiddenColumns={hiddenColumns}
         maxDepth={maxDepth}

@@ -4,6 +4,7 @@ import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
+import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 
 // Define a type for grid cell position
 type GridCell = {
@@ -90,7 +91,7 @@ const TableHeaderSection = ({
     return cells;
   }, [headersRef, hiddenColumns, maxDepth, pinned, columnIndices]);
 
-  return (
+  const component = (
     <div
       className={`st-header-${pinned ? `pinned-${pinned}` : "main"}`}
       {...(handleScroll && { onScroll: handleScroll })}
@@ -120,6 +121,10 @@ const TableHeaderSection = ({
       </Animate>
     </div>
   );
+
+  if (pinned) return component;
+
+  return <ScrollSyncPane>{component}</ScrollSyncPane>;
 };
 
 export default TableHeaderSection;
