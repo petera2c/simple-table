@@ -855,19 +855,15 @@
 }
 
 .st-cell-depth-1 .st-cell-content {
-  color: color-mix(in srgb, var(--st-cell-color) 0.5, red) !important;
+  color: rgb(from var(--st-cell-color) r g b / 80%) !important;
 }
-.st-cell-depth-2 .st-cell-content {
-  color: color-mix(in srgb, var(--st-cell-color) 0.4, red) !important;
-}
-.st-cell-depth-3 .st-cell-content {
-  color: color-mix(in srgb, var(--st-cell-color) 0.3, red) !important;
-}
+.st-cell-depth-2 .st-cell-content,
+.st-cell-depth-3 .st-cell-content,
 .st-cell-depth-4 .st-cell-content,
 .st-cell-depth-5 .st-cell-content,
 .st-cell-depth-6 .st-cell-content,
 .st-cell-depth-7 .st-cell-content {
-  color: color-mix(in srgb, var(--st-cell-color) 0.2, red) !important;
+  color: rgb(from var(--st-cell-color) r g b / 70%) !important;
 }
 
 .st-sort-icon-container {
