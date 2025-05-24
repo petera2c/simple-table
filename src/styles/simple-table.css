@@ -620,7 +620,7 @@
 .st-header-main {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: auto;
   scrollbar-width: none;
   flex-grow: 1;
 }
@@ -635,7 +635,7 @@
   width: 100%;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: auto;
   height: max-content;
   background-color: var(--st-even-row-background-color);
 }
@@ -654,7 +654,7 @@
 .st-body-main {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: auto;
   scrollbar-width: none;
 }
 .st-body-main::-webkit-scrollbar {
@@ -949,7 +949,7 @@
 .st-horizontal-scrollbar-middle {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: auto;
   min-height: 11px;
 }
 .st-horizontal-scrollbar-middle > div {
@@ -1072,7 +1072,7 @@
   flex-direction: column;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: auto;
   gap: var(--st-spacing-medium);
   padding: var(--st-spacing-medium) var(--st-spacing-small);
   border-left: var(--st-border-width) solid var(--st-border-color);
@@ -1256,7 +1256,7 @@
   box-shadow: var(--st-edit-cell-shadow);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: auto;
   min-width: 120px;
   max-height: 400px;
   transform: translateZ(0);
