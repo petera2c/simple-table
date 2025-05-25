@@ -1147,8 +1147,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   border: var(--st-border-width) solid var(--st-slate-300);
   border-radius: var(--st-border-radius);
   background-color: white;

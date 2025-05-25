@@ -8,7 +8,7 @@ const CheckIcon = ({ className, style }: { className?: string; style?: CSSProper
     viewBox="0 0 448 512"
     className={className}
     style={{
-      height: "1em",
+      height: "10px",
       ...style,
     }}
   >
