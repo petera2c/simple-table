@@ -54,6 +54,13 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   };
 
   const handleApplyFilter = () => {
+    // If all values are selected, clear the filter instead of applying it
+    // because selecting all values is equivalent to no filter
+    if (selectedValues.length === enumOptions.length) {
+      onClearFilter();
+      return;
+    }
+
     const filter: FilterCondition = {
       accessor: header.accessor,
       operator: selectedOperator,
@@ -64,13 +71,19 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   };
 
   const canApply = () => {
-    return selectedValues.length > 0;
+    // Can't apply if no values are selected
+    if (selectedValues.length === 0) return false;
+
+    // Can't apply if all values are selected (equivalent to no filter)
+    if (selectedValues.length === enumOptions.length) return false;
+
+    // Can apply if some but not all values are selected
+    return true;
   };
 
   // Check if all options are selected
   const isAllSelected = selectedValues.length === enumOptions.length;
   // Check if some but not all options are selected (for indeterminate state)
-  const isSomeSelected = selectedValues.length > 0 && selectedValues.length < enumOptions.length;
 
   return (
     <FilterContainer>
