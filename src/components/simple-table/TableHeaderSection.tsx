@@ -1,6 +1,5 @@
 import { createRef, useMemo, useReducer } from "react";
 import { displayCell } from "../../utils/cellUtils";
-import Animate from "../Animate";
 import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
@@ -107,7 +106,7 @@ const TableHeaderSection = ({
           position: "relative",
         }}
       >
-        <Animate rowIndex={0}>
+        <>
           {gridCells.map((cell) => (
             <TableHeaderCell
               colIndex={cell.colIndex}
@@ -123,7 +122,7 @@ const TableHeaderSection = ({
               sort={sort}
             />
           ))}
-        </Animate>
+        </>
       </div>
     </ConditionalWrapper>
   );

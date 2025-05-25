@@ -12,14 +12,14 @@ interface EnumDropdownEditProps {
   value: string;
 }
 
-const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
+const EnumDropdownEdit = ({
   onBlur,
   onChange,
   open,
   options,
   setOpen,
   value,
-}) => {
+}: EnumDropdownEditProps) => {
   const [currentValue, setCurrentValue] = useState<string>(value || "");
 
   const handleSelect = (newValue: string) => {

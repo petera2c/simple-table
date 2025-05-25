@@ -167,12 +167,6 @@ const DateFilter: React.FC<DateFilterProps> = ({
     );
   };
 
-  //   <DatePicker
-  //   value={currentDate}
-  //   onChange={handleDateChange}
-  //   onClose={() => setIsOpen(false)}
-  // />
-
   return (
     <FilterContainer>
       <OperatorSelector

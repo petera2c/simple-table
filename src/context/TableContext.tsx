@@ -5,6 +5,7 @@ import Cell from "../types/Cell";
 import CellValue from "../types/CellValue";
 import { Theme } from "..";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
+import UpdateCellProps from "../types/UpdateCellProps";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -60,6 +61,7 @@ interface TableContextType {
   sortUpIcon?: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
   theme: Theme;
+  updateCell: ({ rowIndex, accessor, newValue }: UpdateCellProps) => void;
   useHoverRowBackground?: boolean;
   useOddColumnBackground?: boolean;
   useOddEvenRowBackground?: boolean;

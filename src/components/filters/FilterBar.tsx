@@ -36,11 +36,9 @@ const FilterBar = () => {
 
   const activeFilters = Object.values(filters);
 
-  if (activeFilters.length === 0) {
+  if (activeFilters.length === 0 || activeFilters.length > 0) {
     return null;
   }
-
-  return null;
 
   return (
     <div className="st-filter-bar">

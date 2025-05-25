@@ -66,6 +66,7 @@ const TableCell = forwardRef(
       onCellEdit,
       onTableHeaderDragEnd,
       theme,
+      updateCell,
       useOddColumnBackground,
     } = useTableContext();
 
@@ -172,17 +173,19 @@ const TableCell = forwardRef(
       useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""
     }`;
 
-    const updateLocalContent = useCallback(
+    const updateContent = useCallback(
       (newValue: CellValue) => {
         setLocalContent(newValue);
+        updateCell({ rowIndex, accessor: header.accessor, newValue });
 
         onCellEdit?.({
           accessor: header.accessor,
           newValue,
           row,
+          rowIndex,
         });
       },
-      [header.accessor, onCellEdit, row]
+      [header.accessor, onCellEdit, row, updateCell, rowIndex]
     );
 
     // Handle keyboard events when cell is focused
@@ -202,7 +205,7 @@ const TableCell = forwardRef(
         >
           <EditableCell
             enumOptions={header.enumOptions}
-            onChange={updateLocalContent}
+            onChange={updateContent}
             setIsEditing={setIsEditing}
             type={header.type}
             value={localContent}
@@ -262,7 +265,7 @@ const TableCell = forwardRef(
         {isEditing && isEditInDropdown && (
           <EditableCell
             enumOptions={header.enumOptions}
-            onChange={updateLocalContent}
+            onChange={updateContent}
             setIsEditing={setIsEditing}
             type={header.type}
             value={localContent}

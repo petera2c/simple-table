@@ -37,6 +37,9 @@ import { ScrollSync } from "../scroll-sync/ScrollSync";
 import FilterBar from "../filters/FilterBar";
 import { useTableFilters } from "../../hooks/useTableFilters";
 import { useContentHeight } from "../../hooks/useContentHeight";
+import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
+import useWindowResize from "../../hooks/useWindowResize";
+import UpdateCellProps from "../../types/UpdateCellProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -215,32 +218,13 @@ const SimpleTableComp = ({
   }, []);
 
   // Handle outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        !target.closest(".st-cell") &&
-        (selectableColumns
-          ? !target.classList.contains("st-header-cell") &&
-            !target.classList.contains("st-header-label")
-          : true)
-      ) {
-        // Check if there actually are any selected cells
-        if (selectedCells.size > 0) {
-          setSelectedCells(new Set());
-        }
-        if (selectedColumns.size > 0) {
-          setSelectedColumns(new Set());
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [selectableColumns, selectedCells, selectedColumns, setSelectedCells, setSelectedColumns]);
-
+  useHandleOutsideClick({
+    selectableColumns,
+    selectedCells,
+    selectedColumns,
+    setSelectedCells,
+    setSelectedColumns,
+  });
   // Calculate the width of the scrollbar
   useLayoutEffect(() => {
     if (!tableBodyContainerRef.current) return;
@@ -250,29 +234,21 @@ const SimpleTableComp = ({
 
     setScrollbarWidth(newScrollbarWidth);
   }, []);
-
-  // On window risize completely re-render the table
-  useLayoutEffect(() => {
-    const handleResize = () => {
-      // Force a re-render of the table
-      forceUpdate();
-      // Re-calculate the width of the scrollbar and table content
-      if (!tableBodyContainerRef.current) return;
-
-      const newScrollbarWidth =
-        tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
-
-      setScrollbarWidth(newScrollbarWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  useWindowResize({
+    forceUpdate,
+    tableBodyContainerRef,
+    setScrollbarWidth,
+  });
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
+
+  const updateCell = useCallback(
+    ({ rowIndex, accessor, newValue }: UpdateCellProps) => {
+      rows[rowIndex].rowData[accessor] = newValue;
+    },
+    [rows]
+  );
 
   // Set up API methods on the ref if provided
   useEffect(() => {
@@ -349,8 +325,9 @@ const SimpleTableComp = ({
         sortUpIcon,
         tableBodyContainerRef,
         theme,
-        useOddColumnBackground,
+        updateCell,
         useHoverRowBackground,
+        useOddColumnBackground,
         useOddEvenRowBackground,
       }}
     >
