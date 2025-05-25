@@ -34,8 +34,9 @@ import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
-import { TableFilterState, FilterCondition } from "../../types/FilterTypes";
 import FilterBar from "../filters/FilterBar";
+import { useTableFilters } from "../../hooks/useTableFilters";
+import { useContentHeight } from "../../hooks/useContentHeight";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -134,201 +135,9 @@ const SimpleTableComp = ({
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
-  // Filter state
-  const [filters, setFilters] = useState<TableFilterState>({});
-
-  // Filter application logic
-  const applyFilter = useCallback((cellValue: any, filter: FilterCondition): boolean => {
-    const { operator, value, values } = filter;
-
-    // Handle null/undefined values for isEmpty/isNotEmpty
-    if (cellValue == null) {
-      return operator === "isEmpty";
-    }
-
-    // Handle isEmpty/isNotEmpty for all types
-    if (operator === "isEmpty") {
-      return !cellValue || String(cellValue).trim() === "";
-    }
-    if (operator === "isNotEmpty") {
-      return cellValue && String(cellValue).trim() !== "";
-    }
-
-    // String operations
-    if (
-      typeof cellValue === "string" ||
-      operator === "contains" ||
-      operator === "notContains" ||
-      operator === "startsWith" ||
-      operator === "endsWith"
-    ) {
-      const cellString = String(cellValue).toLowerCase();
-      const filterString = value ? String(value).toLowerCase() : "";
-
-      switch (operator) {
-        case "equals":
-          return cellString === filterString;
-        case "notEquals":
-          return cellString !== filterString;
-        case "contains":
-          return cellString.includes(filterString);
-        case "notContains":
-          return !cellString.includes(filterString);
-        case "startsWith":
-          return cellString.startsWith(filterString);
-        case "endsWith":
-          return cellString.endsWith(filterString);
-        default:
-          break;
-      }
-    }
-
-    // Number operations
-    if (typeof cellValue === "number" || !isNaN(Number(cellValue))) {
-      const cellNumber = Number(cellValue);
-      const filterNumber = Number(value);
-
-      switch (operator) {
-        case "equals":
-          return cellNumber === filterNumber;
-        case "notEquals":
-          return cellNumber !== filterNumber;
-        case "greaterThan":
-          return cellNumber > filterNumber;
-        case "lessThan":
-          return cellNumber < filterNumber;
-        case "greaterThanOrEqual":
-          return cellNumber >= filterNumber;
-        case "lessThanOrEqual":
-          return cellNumber <= filterNumber;
-        case "between":
-          if (values && values.length === 2) {
-            const [min, max] = values.map(Number);
-            return cellNumber >= min && cellNumber <= max;
-          }
-          return false;
-        case "notBetween":
-          if (values && values.length === 2) {
-            const [min, max] = values.map(Number);
-            return cellNumber < min || cellNumber > max;
-          }
-          return true;
-        default:
-          break;
-      }
-    }
-
-    // Date operations
-    if (cellValue instanceof Date || !isNaN(Date.parse(cellValue))) {
-      const cellDate = new Date(cellValue);
-      const filterDate = new Date(value);
-
-      // Normalize dates to remove time component for accurate comparison
-      const normalizeDate = (date: Date) => {
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      };
-
-      const normalizedCellDate = normalizeDate(cellDate);
-      const normalizedFilterDate = normalizeDate(filterDate);
-
-      switch (operator) {
-        case "equals":
-          return normalizedCellDate.getTime() === normalizedFilterDate.getTime();
-        case "notEquals":
-          return normalizedCellDate.getTime() !== normalizedFilterDate.getTime();
-        case "before":
-          return normalizedCellDate < normalizedFilterDate;
-        case "after":
-          return normalizedCellDate > normalizedFilterDate;
-        case "between":
-          if (values && values.length === 2) {
-            const [startDate, endDate] = values.map((d) => normalizeDate(new Date(d)));
-            return normalizedCellDate >= startDate && normalizedCellDate <= endDate;
-          }
-          return false;
-        case "notBetween":
-          if (values && values.length === 2) {
-            const [startDate, endDate] = values.map((d) => normalizeDate(new Date(d)));
-            return normalizedCellDate < startDate || normalizedCellDate > endDate;
-          }
-          return true;
-        default:
-          break;
-      }
-    }
-
-    // Boolean operations
-    if (typeof cellValue === "boolean") {
-      const filterBoolean = Boolean(value);
-
-      switch (operator) {
-        case "equals":
-          return cellValue === filterBoolean;
-        default:
-          break;
-      }
-    }
-
-    // Enum operations (array-based filtering)
-    if (operator === "in" || operator === "notIn") {
-      if (values && Array.isArray(values)) {
-        const cellString = String(cellValue);
-        const isIncluded = values.includes(cellString);
-        return operator === "in" ? isIncluded : !isIncluded;
-      }
-      return false;
-    }
-
-    // Fallback for string comparison if no specific type matched
-    const cellString = String(cellValue).toLowerCase();
-    const filterString = value ? String(value).toLowerCase() : "";
-
-    switch (operator) {
-      case "equals":
-        return cellString === filterString;
-      case "notEquals":
-        return cellString !== filterString;
-      default:
-        return true;
-    }
-  }, []);
-
-  // Apply filters to rows
-  const filteredRows = useMemo(() => {
-    if (Object.keys(filters).length === 0) return rows;
-
-    return rows.filter((row) => {
-      return Object.values(filters).every((filter) => {
-        try {
-          const cellValue = row.rowData[filter.accessor];
-          return applyFilter(cellValue, filter);
-        } catch (error) {
-          console.warn(`Filter error for accessor ${filter.accessor}:`, error);
-          return true; // Include row if filter fails
-        }
-      });
-    });
-  }, [rows, filters, applyFilter]);
-
-  // Filter handlers
-  const handleApplyFilter = useCallback((filter: FilterCondition) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filter.accessor]: filter,
-    }));
-  }, []);
-
-  const handleClearFilter = useCallback((accessor: string) => {
-    setFilters((prev) => {
-      const newFilters = { ...prev };
-      delete newFilters[accessor];
-      return newFilters;
-    });
-  }, []);
-
-  const handleClearAllFilters = useCallback(() => {
-    setFilters({});
-  }, []);
+  // Use filter hook
+  const { filters, filteredRows, handleApplyFilter, handleClearFilter, handleClearAllFilters } =
+    useTableFilters({ rows });
 
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
@@ -355,37 +164,8 @@ const SimpleTableComp = ({
     setFlattenedRows(currentRows);
   }, [currentRows]);
 
-  // Calculate content height (total height minus header height)
-  const contentHeight = useMemo(() => {
-    // Default height if none provided
-    if (!height) return window.innerHeight - rowHeight;
-
-    // Get the container element for measurement
-    const container = document.querySelector(".simple-table-root");
-
-    // Convert height string to pixels
-    let totalHeightPx = 0;
-
-    if (height.endsWith("px")) {
-      // Direct pixel value
-      totalHeightPx = parseInt(height, 10);
-    } else if (height.endsWith("vh")) {
-      // Viewport height percentage
-      const vh = parseInt(height, 10);
-      totalHeightPx = (window.innerHeight * vh) / 100;
-    } else if (height.endsWith("%")) {
-      // Percentage of parent
-      const percentage = parseInt(height, 10);
-      const parentHeight = container?.parentElement?.clientHeight || window.innerHeight;
-      totalHeightPx = (parentHeight * percentage) / 100;
-    } else {
-      // Fall back to inner height if format is unknown
-      totalHeightPx = window.innerHeight;
-    }
-
-    // Subtract header height
-    return Math.max(0, totalHeightPx - rowHeight);
-  }, [height, rowHeight]);
+  // Calculate content height using hook
+  const contentHeight = useContentHeight({ height, rowHeight });
 
   // We could probably move this to the table body component
   const visibleRows = useMemo(
