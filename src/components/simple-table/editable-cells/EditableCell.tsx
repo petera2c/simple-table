@@ -39,14 +39,13 @@ const EditableCell = ({
   }
 
   if (type === "date") {
-    const dateValue = typeof value === "string" ? value : "";
     return (
       <DateDropdownEdit
         onBlur={handleBlur}
         onChange={onChange}
         open
         setOpen={setIsEditing}
-        value={dateValue}
+        value={value}
       />
     );
   }

@@ -219,12 +219,24 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         filterable: true,
         cellRenderer: ({ row }: { row: Row }) => {
           if (row.rowData.releaseDate === "—") return "—";
-          const date = new Date(row.rowData.releaseDate as string);
-          return date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
+          // Parse ISO date string directly to avoid timezone issues
+          const dateString = row.rowData.releaseDate as string;
+          const [year, month, day] = dateString.split("-").map(Number);
+          const monthNames = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
+          return `${monthNames[month - 1]} ${day}, ${year}`;
         },
       },
     ],
