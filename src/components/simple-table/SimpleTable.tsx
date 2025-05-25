@@ -136,27 +136,141 @@ const SimpleTableComp = ({
   // Filter state
   const [filters, setFilters] = useState<TableFilterState>({});
 
-  // Apply filters to rows
-  const filteredRows = useMemo(() => {
-    if (Object.keys(filters).length === 0) return rows;
-
-    return rows.filter((row) => {
-      return Object.values(filters).every((filter) => {
-        const cellValue = row.rowData[filter.accessor];
-        return applyFilter(cellValue, filter);
-      });
-    });
-  }, [rows, filters]);
-
   // Filter application logic
   const applyFilter = useCallback((cellValue: any, filter: FilterCondition): boolean => {
     const { operator, value, values } = filter;
 
-    // Handle null/undefined values
+    // Handle null/undefined values for isEmpty/isNotEmpty
     if (cellValue == null) {
       return operator === "isEmpty";
     }
 
+    // Handle isEmpty/isNotEmpty for all types
+    if (operator === "isEmpty") {
+      return !cellValue || String(cellValue).trim() === "";
+    }
+    if (operator === "isNotEmpty") {
+      return cellValue && String(cellValue).trim() !== "";
+    }
+
+    // String operations
+    if (
+      typeof cellValue === "string" ||
+      operator === "contains" ||
+      operator === "notContains" ||
+      operator === "startsWith" ||
+      operator === "endsWith"
+    ) {
+      const cellString = String(cellValue).toLowerCase();
+      const filterString = value ? String(value).toLowerCase() : "";
+
+      switch (operator) {
+        case "equals":
+          return cellString === filterString;
+        case "notEquals":
+          return cellString !== filterString;
+        case "contains":
+          return cellString.includes(filterString);
+        case "notContains":
+          return !cellString.includes(filterString);
+        case "startsWith":
+          return cellString.startsWith(filterString);
+        case "endsWith":
+          return cellString.endsWith(filterString);
+        default:
+          break;
+      }
+    }
+
+    // Number operations
+    if (typeof cellValue === "number" || !isNaN(Number(cellValue))) {
+      const cellNumber = Number(cellValue);
+      const filterNumber = Number(value);
+
+      switch (operator) {
+        case "equals":
+          return cellNumber === filterNumber;
+        case "notEquals":
+          return cellNumber !== filterNumber;
+        case "greaterThan":
+          return cellNumber > filterNumber;
+        case "lessThan":
+          return cellNumber < filterNumber;
+        case "greaterThanOrEqual":
+          return cellNumber >= filterNumber;
+        case "lessThanOrEqual":
+          return cellNumber <= filterNumber;
+        case "between":
+          if (values && values.length === 2) {
+            const [min, max] = values.map(Number);
+            return cellNumber >= min && cellNumber <= max;
+          }
+          return false;
+        case "notBetween":
+          if (values && values.length === 2) {
+            const [min, max] = values.map(Number);
+            return cellNumber < min || cellNumber > max;
+          }
+          return true;
+        default:
+          break;
+      }
+    }
+
+    // Date operations
+    if (cellValue instanceof Date || !isNaN(Date.parse(cellValue))) {
+      const cellDate = new Date(cellValue);
+      const filterDate = new Date(value);
+
+      switch (operator) {
+        case "equals":
+          return cellDate.toDateString() === filterDate.toDateString();
+        case "notEquals":
+          return cellDate.toDateString() !== filterDate.toDateString();
+        case "before":
+          return cellDate < filterDate;
+        case "after":
+          return cellDate > filterDate;
+        case "between":
+          if (values && values.length === 2) {
+            const [startDate, endDate] = values.map((d) => new Date(d));
+            return cellDate >= startDate && cellDate <= endDate;
+          }
+          return false;
+        case "notBetween":
+          if (values && values.length === 2) {
+            const [startDate, endDate] = values.map((d) => new Date(d));
+            return cellDate < startDate || cellDate > endDate;
+          }
+          return true;
+        default:
+          break;
+      }
+    }
+
+    // Boolean operations
+    if (typeof cellValue === "boolean") {
+      const filterBoolean = Boolean(value);
+
+      switch (operator) {
+        case "equals":
+          return cellValue === filterBoolean;
+        default:
+          break;
+      }
+    }
+
+    // Enum operations (array-based filtering)
+    if (operator === "in" || operator === "notIn") {
+      if (values && Array.isArray(values)) {
+        const cellString = String(cellValue);
+        const isIncluded = values.includes(cellString);
+        return operator === "in" ? isIncluded : !isIncluded;
+      }
+      return false;
+    }
+
+    // Fallback for string comparison if no specific type matched
     const cellString = String(cellValue).toLowerCase();
     const filterString = value ? String(value).toLowerCase() : "";
 
@@ -165,23 +279,27 @@ const SimpleTableComp = ({
         return cellString === filterString;
       case "notEquals":
         return cellString !== filterString;
-      case "contains":
-        return cellString.includes(filterString);
-      case "notContains":
-        return !cellString.includes(filterString);
-      case "startsWith":
-        return cellString.startsWith(filterString);
-      case "endsWith":
-        return cellString.endsWith(filterString);
-      case "isEmpty":
-        return !cellValue || cellString.trim() === "";
-      case "isNotEmpty":
-        return cellValue && cellString.trim() !== "";
-      // TODO: Add number, date, boolean, enum operators
       default:
         return true;
     }
   }, []);
+
+  // Apply filters to rows
+  const filteredRows = useMemo(() => {
+    if (Object.keys(filters).length === 0) return rows;
+
+    return rows.filter((row) => {
+      return Object.values(filters).every((filter) => {
+        try {
+          const cellValue = row.rowData[filter.accessor];
+          return applyFilter(cellValue, filter);
+        } catch (error) {
+          console.warn(`Filter error for accessor ${filter.accessor}:`, error);
+          return true; // Include row if filter fails
+        }
+      });
+    });
+  }, [rows, filters, applyFilter]);
 
   // Filter handlers
   const handleApplyFilter = useCallback((filter: FilterCondition) => {

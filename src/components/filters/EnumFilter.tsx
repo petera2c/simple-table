@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import { FilterCondition, EnumFilterOperator } from "../../types/FilterTypes";
 import FilterContainer from "./shared/FilterContainer";
@@ -18,9 +18,12 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   onApplyFilter,
   onClearFilter,
 }) => {
-  const [selectedValues, setSelectedValues] = useState<string[]>(currentFilter?.values || []);
+  const enumOptions = useMemo(() => header.enumOptions || [], [header.enumOptions]);
+  // Default to all options selected if no current filter
+  const [selectedValues, setSelectedValues] = useState<string[]>(
+    currentFilter?.values || enumOptions
+  );
 
-  const enumOptions = header.enumOptions || [];
   // Always use "in" operator for enum filters since it's the most logical
   const selectedOperator: EnumFilterOperator = "in";
 
@@ -29,9 +32,10 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
     if (currentFilter) {
       setSelectedValues(currentFilter.values || []);
     } else {
-      setSelectedValues([]);
+      // If no filter, default to all options selected
+      setSelectedValues(enumOptions);
     }
-  }, [currentFilter]);
+  }, [currentFilter, enumOptions]);
 
   const handleValueToggle = (value: string) => {
     setSelectedValues((prev) =>
