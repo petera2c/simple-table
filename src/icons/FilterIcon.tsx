@@ -16,15 +16,4 @@ const FilterIcon = ({ className, style }: { className?: string; style?: CSSPrope
   </svg>
 );
 
-// <svg
-//   aria-hidden="true"
-//   focusable="false"
-//   data-prefix="fas"
-//   data-icon="filter"
-//   class="svg-inline--fa fa-filter text-4xl"
-//   xmlns="http://www.w3.org/2000/svg"
-// >
-
-// </svg>;
-
 export default FilterIcon;

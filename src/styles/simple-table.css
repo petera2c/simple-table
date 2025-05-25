@@ -1162,11 +1162,7 @@
 }
 
 .st-checkbox-checkmark {
-  width: 6px;
-  height: 11px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  fill: white;
 }
 
 @keyframes slide-in-left {
@@ -1708,34 +1704,23 @@
    ENUM FILTER STYLES
    =========================== */
 
-/* Enum filter controls (Select All/None buttons) */
-.st-enum-filter-controls {
-  display: flex;
-  gap: var(--st-spacing-small);
-  margin-bottom: var(--st-spacing-medium);
-}
-
-.st-enum-filter-control-btn {
-  flex: 1;
-  padding: var(--st-spacing-small) var(--st-spacing-medium);
-  border: var(--st-border-width) solid var(--st-border-color);
-  border-radius: var(--st-border-radius);
-  background-color: transparent;
-  color: var(--st-cell-color);
-  font-size: 12px;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
-}
-
-.st-enum-filter-control-btn:hover {
-  background-color: var(--st-button-hover-background-color);
-}
-
+/* Enum filter options container */
 .st-enum-filter-options {
   display: flex;
   flex-direction: column;
   gap: var(--st-spacing-small);
+}
+
+/* Select All checkbox styling */
+.st-enum-select-all {
+  padding-bottom: var(--st-spacing-small);
+  margin-bottom: var(--st-spacing-small);
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-enum-select-all-label {
+  font-weight: 600;
+  color: var(--st-header-label-color);
 }
 
 /* Enum option label */

@@ -4,6 +4,7 @@ import { FilterCondition, EnumFilterOperator } from "../../types/FilterTypes";
 import FilterContainer from "./shared/FilterContainer";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
+import Checkbox from "../Checkbox";
 
 interface EnumFilterProps {
   header: HeaderObject;
@@ -19,6 +20,7 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   onClearFilter,
 }) => {
   const enumOptions = useMemo(() => header.enumOptions || [], [header.enumOptions]);
+
   // Default to all options selected if no current filter
   const [selectedValues, setSelectedValues] = useState<string[]>(
     currentFilter?.values || enumOptions
@@ -43,12 +45,12 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
     );
   };
 
-  const handleSelectAll = () => {
-    setSelectedValues(enumOptions);
-  };
-
-  const handleSelectNone = () => {
-    setSelectedValues([]);
+  const handleSelectAllToggle = (checked: boolean) => {
+    if (checked) {
+      setSelectedValues(enumOptions);
+    } else {
+      setSelectedValues([]);
+    }
   };
 
   const handleApplyFilter = () => {
@@ -65,35 +67,31 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
     return selectedValues.length > 0;
   };
 
+  // Check if all options are selected
+  const isAllSelected = selectedValues.length === enumOptions.length;
+  // Check if some but not all options are selected (for indeterminate state)
+  const isSomeSelected = selectedValues.length > 0 && selectedValues.length < enumOptions.length;
+
   return (
     <FilterContainer>
       <FilterSection>
-        <div className="st-enum-filter-controls">
-          <button type="button" className="st-enum-filter-control-btn" onClick={handleSelectAll}>
-            Select All
-          </button>
-          <button type="button" className="st-enum-filter-control-btn" onClick={handleSelectNone}>
-            Select None
-          </button>
-        </div>
         <div className="st-enum-filter-options">
+          {/* Select All checkbox */}
+          <div className="st-enum-select-all">
+            <Checkbox checked={isAllSelected} onChange={handleSelectAllToggle}>
+              <span className="st-enum-option-label st-enum-select-all-label">Select All</span>
+            </Checkbox>
+          </div>
+
+          {/* Individual option checkboxes */}
           {enumOptions.map((option) => (
-            <label key={option} className="st-checkbox-label">
-              <input
-                type="checkbox"
-                className="st-checkbox-input"
-                checked={selectedValues.includes(option)}
-                onChange={() => handleValueToggle(option)}
-              />
-              <div
-                className={`st-checkbox-custom ${
-                  selectedValues.includes(option) ? "st-checked" : ""
-                }`}
-              >
-                {selectedValues.includes(option) && <div className="st-checkbox-checkmark"></div>}
-              </div>
+            <Checkbox
+              key={option}
+              checked={selectedValues.includes(option)}
+              onChange={() => handleValueToggle(option)}
+            >
               <span className="st-enum-option-label">{option}</span>
-            </label>
+            </Checkbox>
           ))}
         </div>
       </FilterSection>
