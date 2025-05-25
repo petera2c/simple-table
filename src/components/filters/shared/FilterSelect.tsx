@@ -5,7 +5,6 @@ interface FilterSelectProps {
   value: string;
   onChange: (value: string) => void;
   options: CustomSelectOption[];
-  autoFocus?: boolean;
   className?: string;
   placeholder?: string;
 }
@@ -14,7 +13,6 @@ const FilterSelect: React.FC<FilterSelectProps> = ({
   value,
   onChange,
   options,
-  autoFocus = false,
   className = "",
   placeholder,
 }) => {

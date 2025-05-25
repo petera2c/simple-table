@@ -5,7 +5,6 @@ import FilterContainer from "./shared/FilterContainer";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 import Checkbox from "../Checkbox";
-import EnumOption from "../../types/EnumOption";
 
 interface EnumFilterProps {
   header: HeaderObject;

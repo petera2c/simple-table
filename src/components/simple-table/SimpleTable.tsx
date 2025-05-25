@@ -223,25 +223,33 @@ const SimpleTableComp = ({
       const cellDate = new Date(cellValue);
       const filterDate = new Date(value);
 
+      // Normalize dates to remove time component for accurate comparison
+      const normalizeDate = (date: Date) => {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      };
+
+      const normalizedCellDate = normalizeDate(cellDate);
+      const normalizedFilterDate = normalizeDate(filterDate);
+
       switch (operator) {
         case "equals":
-          return cellDate.toDateString() === filterDate.toDateString();
+          return normalizedCellDate.getTime() === normalizedFilterDate.getTime();
         case "notEquals":
-          return cellDate.toDateString() !== filterDate.toDateString();
+          return normalizedCellDate.getTime() !== normalizedFilterDate.getTime();
         case "before":
-          return cellDate < filterDate;
+          return normalizedCellDate < normalizedFilterDate;
         case "after":
-          return cellDate > filterDate;
+          return normalizedCellDate > normalizedFilterDate;
         case "between":
           if (values && values.length === 2) {
-            const [startDate, endDate] = values.map((d) => new Date(d));
-            return cellDate >= startDate && cellDate <= endDate;
+            const [startDate, endDate] = values.map((d) => normalizeDate(new Date(d)));
+            return normalizedCellDate >= startDate && normalizedCellDate <= endDate;
           }
           return false;
         case "notBetween":
           if (values && values.length === 2) {
-            const [startDate, endDate] = values.map((d) => new Date(d));
-            return cellDate < startDate || cellDate > endDate;
+            const [startDate, endDate] = values.map((d) => normalizeDate(new Date(d)));
+            return normalizedCellDate < startDate || normalizedCellDate > endDate;
           }
           return true;
         default:

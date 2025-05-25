@@ -1111,7 +1111,7 @@
 
 .st-header-icon {
   transition: fill var(--st-transition-duration) var(--st-transition-ease);
-  fill: var(--st-header-icon-color) !important;
+  fill: var(--st-header-icon-color);
 }
 
 .st-collapsible-header-icon {
