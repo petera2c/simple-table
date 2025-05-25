@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import HeaderObject from "../../types/HeaderObject";
-import { FilterCondition } from "../../types/FilterTypes";
-import StringFilter from "./StringFilter";
+import { FilterCondition, EnumFilterOperator } from "../../types/FilterTypes";
+import FilterContainer from "./shared/FilterContainer";
+import FilterSection from "./shared/FilterSection";
+import FilterActions from "./shared/FilterActions";
 
 interface EnumFilterProps {
   header: HeaderObject;
@@ -10,9 +12,96 @@ interface EnumFilterProps {
   onClearFilter: () => void;
 }
 
-// Temporary implementation - reusing StringFilter logic for now
-const EnumFilter: React.FC<EnumFilterProps> = (props) => {
-  return <StringFilter {...props} />;
+const EnumFilter: React.FC<EnumFilterProps> = ({
+  header,
+  currentFilter,
+  onApplyFilter,
+  onClearFilter,
+}) => {
+  const [selectedValues, setSelectedValues] = useState<string[]>(currentFilter?.values || []);
+
+  const enumOptions = header.enumOptions || [];
+  // Always use "in" operator for enum filters since it's the most logical
+  const selectedOperator: EnumFilterOperator = "in";
+
+  // Reset form when current filter changes
+  useEffect(() => {
+    if (currentFilter) {
+      setSelectedValues(currentFilter.values || []);
+    } else {
+      setSelectedValues([]);
+    }
+  }, [currentFilter]);
+
+  const handleValueToggle = (value: string) => {
+    setSelectedValues((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedValues(enumOptions);
+  };
+
+  const handleSelectNone = () => {
+    setSelectedValues([]);
+  };
+
+  const handleApplyFilter = () => {
+    const filter: FilterCondition = {
+      accessor: header.accessor,
+      operator: selectedOperator,
+      values: selectedValues,
+    };
+
+    onApplyFilter(filter);
+  };
+
+  const canApply = () => {
+    return selectedValues.length > 0;
+  };
+
+  return (
+    <FilterContainer>
+      <FilterSection>
+        <div className="st-enum-filter-controls">
+          <button type="button" className="st-enum-filter-control-btn" onClick={handleSelectAll}>
+            Select All
+          </button>
+          <button type="button" className="st-enum-filter-control-btn" onClick={handleSelectNone}>
+            Select None
+          </button>
+        </div>
+        <div className="st-enum-filter-options">
+          {enumOptions.map((option) => (
+            <label key={option} className="st-checkbox-label">
+              <input
+                type="checkbox"
+                className="st-checkbox-input"
+                checked={selectedValues.includes(option)}
+                onChange={() => handleValueToggle(option)}
+              />
+              <div
+                className={`st-checkbox-custom ${
+                  selectedValues.includes(option) ? "st-checked" : ""
+                }`}
+              >
+                {selectedValues.includes(option) && <div className="st-checkbox-checkmark"></div>}
+              </div>
+              <span className="st-enum-option-label">{option}</span>
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterActions
+        onApply={handleApplyFilter}
+        onClear={onClearFilter}
+        canApply={canApply()}
+        showClear={!!currentFilter}
+      />
+    </FilterContainer>
+  );
 };
 
 export default EnumFilter;

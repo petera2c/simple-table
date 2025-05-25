@@ -95,7 +95,7 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
         </FilterSection>
       )}
 
-      {requiresMultipleValues(selectedOperator) && selectedOperator === "between" && (
+      {requiresMultipleValues(selectedOperator) && (
         <FilterSection>
           <FilterInput
             type="number"

@@ -1,7 +1,7 @@
 import React from "react";
 
 interface FilterInputProps {
-  type?: "text" | "number";
+  type?: "text" | "number" | "date";
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;

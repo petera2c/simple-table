@@ -1485,6 +1485,8 @@
 
 /* Filter Section - Used for spacing between form sections */
 .st-filter-section {
+  display: flex;
+  flex-direction: column;
   margin-bottom: var(--st-spacing-medium);
 }
 
@@ -1700,4 +1702,45 @@
   cursor: not-allowed;
   background-color: var(--st-slate-100);
   color: var(--st-slate-500);
+}
+
+/* ===========================
+   ENUM FILTER STYLES
+   =========================== */
+
+/* Enum filter controls (Select All/None buttons) */
+.st-enum-filter-controls {
+  display: flex;
+  gap: var(--st-spacing-small);
+  margin-bottom: var(--st-spacing-medium);
+}
+
+.st-enum-filter-control-btn {
+  flex: 1;
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  border: var(--st-border-width) solid var(--st-border-color);
+  border-radius: var(--st-border-radius);
+  background-color: transparent;
+  color: var(--st-cell-color);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-enum-filter-control-btn:hover {
+  background-color: var(--st-button-hover-background-color);
+}
+
+.st-enum-filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--st-spacing-small);
+}
+
+/* Enum option label */
+.st-enum-option-label {
+  font-size: 14px;
+  color: var(--st-cell-color);
+  user-select: none;
 }
