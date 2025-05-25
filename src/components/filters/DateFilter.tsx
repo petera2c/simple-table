@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import {
   FilterCondition,
@@ -10,9 +10,10 @@ import {
 } from "../../types/FilterTypes";
 import FilterContainer from "./shared/FilterContainer";
 import OperatorSelector from "./shared/OperatorSelector";
-import FilterInput from "./shared/FilterInput";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
+import DatePicker from "../date-picker/DatePicker";
+import Dropdown from "../dropdown/Dropdown";
 
 interface DateFilterProps {
   header: HeaderObject;
@@ -75,6 +76,104 @@ const DateFilter: React.FC<DateFilterProps> = ({
     return false;
   };
 
+  // Custom DateInput component that wraps the DatePicker
+  interface DateInputProps {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder: string;
+    autoFocus?: boolean;
+    className?: string;
+  }
+
+  const DateInput: React.FC<DateInputProps> = ({
+    value,
+    onChange,
+    placeholder,
+    autoFocus,
+    className,
+  }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [displayValue, setDisplayValue] = useState("");
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // Update display value when value changes
+    useEffect(() => {
+      if (value) {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          setDisplayValue(
+            date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          );
+        }
+      } else {
+        setDisplayValue("");
+      }
+    }, [value]);
+
+    // Auto focus if requested
+    useEffect(() => {
+      if (autoFocus && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [autoFocus]);
+
+    const handleDateChange = (date: Date) => {
+      const isoString = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+      onChange(isoString);
+      setIsOpen(false);
+    };
+
+    const handleInputClick = () => {
+      setIsOpen(!isOpen);
+    };
+
+    const handleInputKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        setIsOpen(!isOpen);
+      } else if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    const currentDate = value ? new Date(value) : new Date();
+
+    return (
+      <div className="st-date-input-container" style={{ position: "relative" }}>
+        <input
+          ref={inputRef}
+          type="text"
+          value={displayValue}
+          placeholder={placeholder}
+          onClick={handleInputClick}
+          onKeyDown={handleInputKeyDown}
+          readOnly
+          className={`st-filter-input ${className || ""}`}
+          style={{ cursor: "pointer" }}
+        />
+        {isOpen && (
+          <div className="st-custom-select-dropdown">
+            <DatePicker
+              value={currentDate}
+              onChange={handleDateChange}
+              onClose={() => setIsOpen(false)}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  //   <DatePicker
+  //   value={currentDate}
+  //   onChange={handleDateChange}
+  //   onClose={() => setIsOpen(false)}
+  // />
+
   return (
     <FilterContainer>
       <OperatorSelector
@@ -85,8 +184,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
 
       {requiresSingleValue(selectedOperator) && (
         <FilterSection>
-          <FilterInput
-            type="date"
+          <DateInput
             value={filterValue}
             onChange={setFilterValue}
             placeholder="Select date..."
@@ -97,20 +195,14 @@ const DateFilter: React.FC<DateFilterProps> = ({
 
       {requiresMultipleValues(selectedOperator) && (
         <FilterSection>
-          <FilterInput
-            type="date"
+          <DateInput
             value={filterValueFrom}
             onChange={setFilterValueFrom}
             placeholder="From date..."
             autoFocus
             className="st-filter-input-range-from"
           />
-          <FilterInput
-            type="date"
-            value={filterValueTo}
-            onChange={setFilterValueTo}
-            placeholder="To date..."
-          />
+          <DateInput value={filterValueTo} onChange={setFilterValueTo} placeholder="To date..." />
         </FilterSection>
       )}
 

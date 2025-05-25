@@ -208,6 +208,25 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
           );
         },
       },
+      {
+        accessor: "releaseDate",
+        label: "Release Date",
+        width: "1fr",
+        isSortable: true,
+        isEditable: true,
+        align: "center",
+        type: "date",
+        filterable: true,
+        cellRenderer: ({ row }: { row: Row }) => {
+          if (row.rowData.releaseDate === "—") return "—";
+          const date = new Date(row.rowData.releaseDate as string);
+          return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        },
+      },
     ],
   },
 ];

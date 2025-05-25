@@ -40,6 +40,8 @@ const FilterBar = () => {
     return null;
   }
 
+  return null;
+
   return (
     <div className="st-filter-bar">
       <div className="st-filter-bar-content">

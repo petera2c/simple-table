@@ -267,7 +267,7 @@ const TableHeaderCell = forwardRef(
 
     const SortIcon = sort && sort.key.accessor === header.accessor && (
       <div
-        className="st-sort-icon-container"
+        className="st-icon-container"
         onClick={(event) => handleColumnHeaderClick({ event, header })}
       >
         {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
@@ -276,27 +276,13 @@ const TableHeaderCell = forwardRef(
     );
 
     const FilterIconComponent = filterable && (
-      <div
-        className="st-filter-icon-container"
-        onClick={handleFilterIconClick}
-        style={{
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginLeft: "4px",
-          cursor: "pointer",
-          padding: "2px",
-        }}
-      >
+      <div className="st-icon-container" onClick={handleFilterIconClick}>
         <FilterIcon
-          className="st-filter-icon"
+          className="st-header-icon"
           style={{
-            width: "12px",
-            height: "12px",
             fill: currentFilter
               ? "var(--st-button-active-background-color)"
-              : "var(--st-slate-500)",
+              : "var(--st-header-icon-color)",
           }}
         />
 
@@ -338,8 +324,8 @@ const TableHeaderCell = forwardRef(
         }}
       >
         {reverse && ResizeHandle}
-        {header.align === "right" && SortIcon}
         {header.align === "right" && FilterIconComponent}
+        {header.align === "right" && SortIcon}
         <div
           className="st-header-label"
           draggable={columnReordering && !header.disableReorder}

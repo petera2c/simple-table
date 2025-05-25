@@ -11,7 +11,8 @@
       "rating": 4.8,
       "price": 1199.99,
       "stockLevel": 45,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-09-22"
     }
   },
   {
@@ -26,7 +27,8 @@
       "rating": 4.6,
       "price": 1299.99,
       "stockLevel": 23,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2024-01-17"
     }
   },
   {
@@ -41,7 +43,8 @@
       "rating": 4.9,
       "price": 1399.99,
       "stockLevel": 12,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2024-03-04"
     }
   },
   {
@@ -56,7 +59,8 @@
       "rating": 4.4,
       "price": 999.99,
       "stockLevel": 8,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-05-15"
     }
   },
   {
@@ -71,7 +75,8 @@
       "rating": 4.7,
       "price": 249.99,
       "stockLevel": 67,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-09-23"
     }
   },
   {
@@ -86,7 +91,8 @@
       "rating": 4.8,
       "price": 399.99,
       "stockLevel": 34,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-05-12"
     }
   },
   {
@@ -101,7 +107,8 @@
       "rating": 4.6,
       "price": 349.99,
       "stockLevel": 0,
-      "isActive": false
+      "isActive": false,
+      "releaseDate": "2021-10-08"
     }
   },
   {
@@ -116,7 +123,8 @@
       "rating": 4.9,
       "price": 499.99,
       "stockLevel": 3,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2020-11-12"
     }
   },
   {
@@ -131,7 +139,8 @@
       "rating": 4.2,
       "price": 89.99,
       "stockLevel": 156,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-01-15"
     }
   },
   {
@@ -146,7 +155,8 @@
       "rating": 4.5,
       "price": 129.99,
       "stockLevel": 89,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-03-26"
     }
   },
   {
@@ -161,7 +171,8 @@
       "rating": 4.3,
       "price": 179.99,
       "stockLevel": 45,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-02-25"
     }
   },
   {
@@ -176,7 +187,8 @@
       "rating": 4.7,
       "price": 79.99,
       "stockLevel": 92,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2021-08-30"
     }
   },
   {
@@ -191,7 +203,8 @@
       "rating": 4.8,
       "price": 449.99,
       "stockLevel": 16,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-11-15"
     }
   },
   {
@@ -206,7 +219,8 @@
       "rating": 4.6,
       "price": 749.99,
       "stockLevel": 27,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-04-12"
     }
   },
   {
@@ -221,7 +235,8 @@
       "rating": 4.4,
       "price": 199.99,
       "stockLevel": 78,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-07-20"
     }
   },
   {
@@ -236,7 +251,8 @@
       "rating": 4.1,
       "price": 159.99,
       "stockLevel": 134,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-10-04"
     }
   },
   {
@@ -251,7 +267,8 @@
       "rating": 4.8,
       "price": 429.99,
       "stockLevel": 56,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-09-22"
     }
   },
   {
@@ -266,7 +283,8 @@
       "rating": 4.5,
       "price": 279.99,
       "stockLevel": 41,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-09-29"
     }
   },
   {
@@ -281,7 +299,8 @@
       "rating": 4.3,
       "price": 1299.99,
       "stockLevel": 19,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-10-05"
     }
   },
   {
@@ -296,7 +315,8 @@
       "rating": 4.9,
       "price": 3899.99,
       "stockLevel": 7,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2020-07-09"
     }
   },
   {
@@ -311,7 +331,8 @@
       "rating": 4.4,
       "price": 399.99,
       "stockLevel": 62,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-09-13"
     }
   },
   {
@@ -326,7 +347,8 @@
       "rating": 4.7,
       "price": 279.99,
       "stockLevel": 28,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-08-15"
     }
   },
   {
@@ -341,7 +363,8 @@
       "rating": 4.8,
       "price": 39.99,
       "stockLevel": 245,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2022-04-18"
     }
   },
   {
@@ -446,7 +469,8 @@
       "rating": 4.2,
       "price": 499.99,
       "stockLevel": 18,
-      "isActive": true
+      "isActive": true,
+      "releaseDate": "2023-10-10"
     }
   }
 ]

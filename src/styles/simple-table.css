@@ -305,6 +305,7 @@
   --st-hover-row-background-color: var(--st-slate-100);
   --st-header-background-color: var(--st-slate-100);
   --st-header-label-color: var(--st-slate-900);
+  --st-header-icon-color: var(--st-slate-500);
   --st-dragging-background-color: var(--st-slate-200);
   --st-selected-cell-background-color: var(--st-blue-100);
   --st-selected-first-cell-background-color: var(--st-blue-50);
@@ -355,6 +356,7 @@
   --st-hover-row-background-color: var(--st-gray-700);
   --st-header-background-color: var(--st-gray-800);
   --st-header-label-color: var(--st-gray-100);
+  --st-header-icon-color: var(--st-gray-400);
   --st-dragging-background-color: var(--st-gray-600);
   --st-selected-cell-background-color: var(--st-blue-900);
   --st-selected-first-cell-background-color: var(--st-blue-800);
@@ -405,6 +407,7 @@
   --st-hover-row-background-color: var(--st-neutral-200);
   --st-header-background-color: var(--st-neutral-200);
   --st-header-label-color: var(--st-neutral-900);
+  --st-header-icon-color: var(--st-neutral-500);
   --st-dragging-background-color: var(--st-neutral-300);
   --st-selected-cell-background-color: var(--st-neutral-400);
   --st-selected-first-cell-background-color: var(--st-neutral-300);
@@ -455,6 +458,7 @@
   --st-hover-row-background-color: var(--st-blue-200);
   --st-header-background-color: var(--st-blue-200);
   --st-header-label-color: var(--st-blue-900);
+  --st-header-icon-color: var(--st-blue-600);
   --st-dragging-background-color: var(--st-blue-300);
   --st-selected-cell-background-color: var(--st-blue-400);
   --st-selected-first-cell-background-color: var(--st-blue-300);
@@ -505,6 +509,7 @@
   --st-hover-row-background-color: var(--st-amber-200);
   --st-header-background-color: var(--st-violet-600);
   --st-header-label-color: var(--st-white);
+  --st-header-icon-color: var(--st-violet-200);
   --st-dragging-background-color: var(--st-violet-50);
   --st-selected-cell-background-color: var(--st-violet-50);
   --st-selected-first-cell-background-color: var(--st-violet-100);
@@ -865,15 +870,16 @@
   color: rgb(from var(--st-cell-color) r g b / 70%) !important;
 }
 
-.st-sort-icon-container {
+.st-icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-left: 4px;
 }
 
-.st-sort-icon {
-  fill: var(--st-slate-500);
+.st-expand-icon {
+  cursor: pointer;
+  fill: var(--st-header-label-color);
 }
 .st-header-resize-handle-container {
   width: var(--st-resize-handle-container-width);
@@ -1103,6 +1109,11 @@
   justify-content: center;
 }
 
+.st-header-icon {
+  transition: fill var(--st-transition-duration) var(--st-transition-ease);
+  fill: var(--st-header-icon-color) !important;
+}
+
 .st-collapsible-header-icon {
   cursor: pointer;
   display: flex;
@@ -1134,7 +1145,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: var(--st-spacing-medium);
+  gap: var(--st-spacing-small);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -1328,6 +1339,7 @@
 .st-datepicker {
   background-color: var(--st-odd-row-background-color);
   font-family: inherit;
+  min-width: 280px;
 }
 
 .st-datepicker-header {
@@ -1504,7 +1516,7 @@
 /* Filter Input - Text and number inputs */
 .st-filter-input {
   width: 100%;
-  padding: var(--st-spacing-medium) var(--st-spacing-medium);
+  padding: var(--st-spacing-small);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   font-size: 14px;
@@ -1553,7 +1565,7 @@
 
 .st-filter-button {
   flex: 1;
-  padding: var(--st-spacing-medium) calc(var(--st-spacing-medium) * 2);
+  padding: var(--st-spacing-small);
   border: none;
   border-radius: var(--st-border-radius);
   cursor: pointer;
@@ -1591,23 +1603,6 @@
   background-color: var(--st-button-hover-background-color);
 }
 
-/* Filter Icon Styles */
-.st-filter-icon-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: var(--st-spacing-small);
-  cursor: pointer;
-  padding: 2px;
-}
-
-.st-filter-icon {
-  width: 12px;
-  height: 12px;
-  transition: fill var(--st-transition-duration) var(--st-transition-ease);
-}
-
 /* Custom Select Component */
 .st-custom-select {
   position: relative;
@@ -1616,7 +1611,7 @@
 
 .st-custom-select-trigger {
   width: 100%;
-  padding: var(--st-spacing-medium) var(--st-spacing-medium);
+  padding: var(--st-spacing-small);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   background-color: var(--st-odd-row-background-color);
@@ -1650,11 +1645,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--st-cell-color);
 }
 
 .st-custom-select-arrow {
   flex-shrink: 0;
-  color: var(--st-slate-500);
+  color: var(--st-header-label-color);
   transition: transform var(--st-transition-duration) var(--st-transition-ease);
 }
 
@@ -1666,26 +1662,27 @@
 .st-custom-select-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
   right: 0;
   z-index: 1000;
   background-color: var(--st-odd-row-background-color);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  max-height: 200px;
-  overflow-y: auto;
+  overflow: auto;
   overflow-x: hidden;
   margin-top: 2px;
+  width: min-content;
 }
 
 .st-custom-select-option {
-  padding: var(--st-spacing-medium);
+  padding: var(--st-spacing-small);
   cursor: pointer;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--st-cell-color);
+  font-size: 14px;
 }
 
 .st-custom-select-option:hover,
@@ -1711,8 +1708,8 @@
 
 .st-custom-select-disabled .st-custom-select-trigger {
   cursor: not-allowed;
-  background-color: var(--st-slate-100);
-  color: var(--st-slate-500);
+  background-color: var(--st-header-background-color);
+  color: var(--st-header-label-color);
 }
 
 /* ===========================
@@ -1812,4 +1809,11 @@
 
 .st-filter-chip-remove:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+.st-filter-bar-label {
+  font-weight: 600;
+  color: var(--st-header-label-color);
+  font-size: 14px;
+  flex-shrink: 0;
 }
