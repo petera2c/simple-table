@@ -35,6 +35,7 @@ import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import { TableFilterState, FilterCondition } from "../../types/FilterTypes";
+import FilterBar from "../filters/FilterBar";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -571,6 +572,7 @@ const SimpleTableComp = ({
       >
         <ScrollSync>
           <div className="st-wrapper-container">
+            <FilterBar />
             <div
               className="st-content-wrapper"
               onMouseUp={handleMouseUp}
