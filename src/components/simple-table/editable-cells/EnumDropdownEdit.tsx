@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Dropdown from "../../dropdown/Dropdown";
 import DropdownItem from "../../dropdown/DropdownItem";
 
@@ -20,19 +20,6 @@ const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
   value,
 }) => {
   const [currentValue, setCurrentValue] = useState<string>(value || "");
-
-  // Auto-focus on mount
-  useEffect(() => {
-    // Set focus to the dropdown container
-    const timerId = setTimeout(() => {
-      const dropdownContainer = document.querySelector(".st-dropdown-container");
-      if (dropdownContainer instanceof HTMLElement) {
-        dropdownContainer.focus();
-      }
-    }, 0);
-
-    return () => clearTimeout(timerId);
-  }, []);
 
   const handleSelect = (newValue: string) => {
     setCurrentValue(newValue);
