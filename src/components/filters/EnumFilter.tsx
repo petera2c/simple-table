@@ -5,6 +5,7 @@ import FilterContainer from "./shared/FilterContainer";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 import Checkbox from "../Checkbox";
+import EnumOption from "../../types/EnumOption";
 
 interface EnumFilterProps {
   header: HeaderObject;
@@ -21,9 +22,12 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
 }) => {
   const enumOptions = useMemo(() => header.enumOptions || [], [header.enumOptions]);
 
-  // Default to all options selected if no current filter
+  // Work with string values instead of full EnumOption objects
+  const allValues = useMemo(() => enumOptions.map((option) => option.value), [enumOptions]);
+
+  // Default to all option values selected if no current filter
   const [selectedValues, setSelectedValues] = useState<string[]>(
-    currentFilter?.values || enumOptions
+    currentFilter?.values || allValues
   );
 
   // Always use "in" operator for enum filters since it's the most logical
@@ -34,10 +38,10 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
     if (currentFilter) {
       setSelectedValues(currentFilter.values || []);
     } else {
-      // If no filter, default to all options selected
-      setSelectedValues(enumOptions);
+      // If no filter, default to all option values selected
+      setSelectedValues(allValues);
     }
-  }, [currentFilter, enumOptions]);
+  }, [currentFilter, allValues]);
 
   const handleValueToggle = (value: string) => {
     setSelectedValues((prev) =>
@@ -47,7 +51,7 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
 
   const handleSelectAllToggle = (checked: boolean) => {
     if (checked) {
-      setSelectedValues(enumOptions);
+      setSelectedValues(allValues);
     } else {
       setSelectedValues([]);
     }
@@ -56,7 +60,7 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   const handleApplyFilter = () => {
     // If all values are selected, clear the filter instead of applying it
     // because selecting all values is equivalent to no filter
-    if (selectedValues.length === enumOptions.length) {
+    if (selectedValues.length === allValues.length) {
       onClearFilter();
       return;
     }
@@ -75,15 +79,14 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
     if (selectedValues.length === 0) return false;
 
     // Can't apply if all values are selected (equivalent to no filter)
-    if (selectedValues.length === enumOptions.length) return false;
+    if (selectedValues.length === allValues.length) return false;
 
     // Can apply if some but not all values are selected
     return true;
   };
 
   // Check if all options are selected
-  const isAllSelected = selectedValues.length === enumOptions.length;
-  // Check if some but not all options are selected (for indeterminate state)
+  const isAllSelected = selectedValues.length === allValues.length;
 
   return (
     <FilterContainer>
@@ -99,11 +102,11 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
           {/* Individual option checkboxes */}
           {enumOptions.map((option) => (
             <Checkbox
-              key={option}
-              checked={selectedValues.includes(option)}
-              onChange={() => handleValueToggle(option)}
+              key={option.value}
+              checked={selectedValues.includes(option.value)}
+              onChange={() => handleValueToggle(option.value)}
             >
-              <span className="st-enum-option-label">{option}</span>
+              <span className="st-enum-option-label">{option.label}</span>
             </Checkbox>
           ))}
         </div>

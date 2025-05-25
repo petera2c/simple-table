@@ -4,9 +4,10 @@ import CellValue from "../../../types/CellValue";
 import NumberEdit from "./NumberEdit";
 import DateDropdownEdit from "./DateDropdownEdit";
 import EnumDropdownEdit from "./EnumDropdownEdit";
+import EnumOption from "../../../types/EnumOption";
 
 interface EditableCellProps {
-  enumOptions?: string[];
+  enumOptions?: EnumOption[];
   onChange: (newValue: CellValue) => void;
   setIsEditing: (isEditing: boolean) => void;
   type?: "string" | "number" | "boolean" | "date" | "enum";
