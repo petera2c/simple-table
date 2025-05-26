@@ -546,6 +546,10 @@
   font-family: inherit;
 }
 
+input {
+  color: black;
+}
+
 /* Safari scrollbar styling */
 .simple-table-root *::-webkit-scrollbar {
   width: 8px; /* equivalent to "thin" */
@@ -678,6 +682,7 @@
   transition: background 0.2s ease;
   min-width: 100%;
 }
+.st-row.hovered .st-cell-editing,
 .st-row.hovered .st-cell:not(.st-cell-selected) {
   background-color: var(--st-hover-row-background-color);
 }

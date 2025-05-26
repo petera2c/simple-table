@@ -1,5 +1,5 @@
 {
-  "version": "0.8.36",
+  "version": "0.8.37",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",

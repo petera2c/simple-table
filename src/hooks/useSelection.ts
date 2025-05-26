@@ -246,13 +246,16 @@ const useSelection = ({
     isSelecting.current = true;
     startCell.current = { rowIndex, colIndex, rowId };
 
-    // When directly selecting cells, clear any selected columns
-    setSelectedColumns(new Set());
-    setLastSelectedColumnIndex(null);
-
-    const cellId = createSetString({ colIndex, rowIndex, rowId });
-    setSelectedCells(new Set([cellId]));
-    setInitialFocusedCell({ rowIndex, colIndex, rowId });
+    // Defer state updates to allow the current event cycle to complete
+    // This prevents interference with useHandleOutsideClick
+    setTimeout(() => {
+      // When directly selecting cells, clear any selected columns
+      setSelectedColumns(new Set());
+      setLastSelectedColumnIndex(null);
+      const cellId = createSetString({ colIndex, rowIndex, rowId });
+      setSelectedCells(new Set([cellId]));
+      setInitialFocusedCell({ rowIndex, colIndex, rowId });
+    }, 0);
   };
 
   const handleMouseOver = ({ colIndex, rowIndex, rowId }: Cell) => {
