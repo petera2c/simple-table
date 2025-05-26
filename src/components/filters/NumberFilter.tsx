@@ -30,9 +30,11 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
   const [selectedOperator, setSelectedOperator] = useState<NumberFilterOperator>(
     (currentFilter?.operator as NumberFilterOperator) || "equals"
   );
-  const [filterValue, setFilterValue] = useState<string>(currentFilter?.value || "");
-  const [filterValueFrom, setFilterValueFrom] = useState<string>(currentFilter?.values?.[0] || "");
-  const [filterValueTo, setFilterValueTo] = useState<string>(currentFilter?.values?.[1] || "");
+  const [filterValue, setFilterValue] = useState<string>(String(currentFilter?.value || ""));
+  const [filterValueFrom, setFilterValueFrom] = useState(String(currentFilter?.values?.[0] || ""));
+  const [filterValueTo, setFilterValueTo] = useState<string>(
+    String(currentFilter?.values?.[1] || "")
+  );
 
   const availableOperators = getAvailableOperators("number") as NumberFilterOperator[];
 
@@ -40,9 +42,9 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
   useEffect(() => {
     if (currentFilter) {
       setSelectedOperator(currentFilter.operator as NumberFilterOperator);
-      setFilterValue(currentFilter.value || "");
-      setFilterValueFrom(currentFilter.values?.[0] || "");
-      setFilterValueTo(currentFilter.values?.[1] || "");
+      setFilterValue(String(currentFilter.value || ""));
+      setFilterValueFrom(String(currentFilter.values?.[0] || ""));
+      setFilterValueTo(String(currentFilter.values?.[1] || ""));
     } else {
       setSelectedOperator("equals");
       setFilterValue("");
@@ -60,7 +62,10 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
     if (requiresSingleValue(selectedOperator)) {
       filter.value = parseFloat(filterValue);
     } else if (requiresMultipleValues(selectedOperator)) {
-      filter.values = [parseFloat(filterValueFrom), parseFloat(filterValueTo)];
+      filter.values = [
+        parseFloat(filterValueFrom.toString()),
+        parseFloat(filterValueTo.toString()),
+      ];
     }
 
     onApplyFilter(filter);
@@ -70,7 +75,7 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
     if (requiresNoValue(selectedOperator)) return true;
     if (requiresSingleValue(selectedOperator)) return filterValue.trim() !== "";
     if (requiresMultipleValues(selectedOperator)) {
-      return filterValueFrom.trim() !== "" && filterValueTo.trim() !== "";
+      return String(filterValueFrom).trim() !== "" && String(filterValueTo).trim() !== "";
     }
     return false;
   };

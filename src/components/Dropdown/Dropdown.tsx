@@ -9,6 +9,7 @@ export interface DropdownProps {
   overflow?: "auto" | "visible";
   setOpen: (open: boolean) => void;
   width?: number;
+  positioning?: "fixed" | "absolute";
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -19,6 +20,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   setOpen,
   width,
   containerRef,
+  positioning = "fixed",
 }) => {
   // Get table context to access mainBodyRef
   const { mainBodyRef } = useTableContext();
@@ -104,17 +106,32 @@ const Dropdown: React.FC<DropdownProps> = ({
           horizontalPosition = "right";
         }
 
-        // Calculate exact positioning
-        if (verticalPosition === "bottom") {
-          newFixedPosition.top = triggerRect.bottom + 4; // Add margin
-        } else {
-          newFixedPosition.bottom = window.innerHeight - triggerRect.top + 4; // Add margin
-        }
+        // Calculate exact positioning based on positioning type
+        if (positioning === "fixed") {
+          if (verticalPosition === "bottom") {
+            newFixedPosition.top = triggerRect.bottom + 4; // Add margin
+          } else {
+            newFixedPosition.bottom = window.innerHeight - triggerRect.top + 4; // Add margin
+          }
 
-        if (horizontalPosition === "left") {
-          newFixedPosition.left = triggerRect.left;
+          if (horizontalPosition === "left") {
+            newFixedPosition.left = triggerRect.left;
+          } else {
+            newFixedPosition.right = window.innerWidth - triggerRect.right;
+          }
         } else {
-          newFixedPosition.right = window.innerWidth - triggerRect.right;
+          // Absolute positioning - relative to the trigger element
+          if (verticalPosition === "bottom") {
+            newFixedPosition.top = triggerRect.height + 4; // Add margin
+          } else {
+            newFixedPosition.bottom = triggerRect.height + 4; // Add margin
+          }
+
+          if (horizontalPosition === "left") {
+            newFixedPosition.left = 0;
+          } else {
+            newFixedPosition.right = 0;
+          }
         }
 
         // Set the calculated position
@@ -125,7 +142,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     } else if (!open) {
       setIsPositioned(false);
     }
-  }, [open, width, containerRef, mainBodyRef]);
+  }, [open, width, containerRef, mainBodyRef, positioning]);
 
   // Handle scroll events to close dropdown
   useEffect(() => {
@@ -195,6 +212,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       className={`st-dropdown-content st-dropdown-${calculatedPosition}`}
       onClick={(e) => e.stopPropagation()}
       style={{
+        position: positioning,
         width: width ? `${width}px` : "auto",
         visibility: isPositioned ? "visible" : "hidden",
         ...fixedPosition,

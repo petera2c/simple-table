@@ -13,6 +13,7 @@ import OperatorSelector from "./shared/OperatorSelector";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 import DatePicker from "../date-picker/DatePicker";
+import Dropdown from "../dropdown/Dropdown";
 
 interface DateFilterProps {
   header: HeaderObject;
@@ -139,6 +140,10 @@ const DateFilter: React.FC<DateFilterProps> = ({
       }
     };
 
+    const handleClose = () => {
+      setIsOpen(false);
+    };
+
     const currentDate = value ? new Date(value) : new Date();
 
     return (
@@ -154,15 +159,19 @@ const DateFilter: React.FC<DateFilterProps> = ({
           className={`st-filter-input ${className || ""}`}
           style={{ cursor: "pointer" }}
         />
-        {isOpen && (
-          <div className="st-custom-select-dropdown">
-            <DatePicker
-              value={currentDate}
-              onChange={handleDateChange}
-              onClose={() => setIsOpen(false)}
-            />
-          </div>
-        )}
+        <Dropdown
+          open={isOpen}
+          setOpen={setIsOpen}
+          onClose={handleClose}
+          positioning="absolute"
+          overflow="visible"
+        >
+          <DatePicker
+            value={currentDate}
+            onChange={handleDateChange}
+            onClose={() => setIsOpen(false)}
+          />
+        </Dropdown>
       </div>
     );
   };

@@ -1,3 +1,5 @@
+import CellValue from "./CellValue";
+
 // Filter operators for different data types
 export type StringFilterOperator =
   | "equals"
@@ -47,8 +49,8 @@ export type FilterOperator =
 export interface FilterCondition {
   accessor: string;
   operator: FilterOperator;
-  value?: any;
-  values?: any[]; // For operators like 'between', 'in', etc.
+  value?: CellValue;
+  values?: CellValue[]; // For operators like 'between', 'in', etc.
 }
 
 // Filter state for the entire table

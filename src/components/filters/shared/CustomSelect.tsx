@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import SelectIcon from "../../../icons/SelectIcon";
+import Dropdown from "../../dropdown/Dropdown";
 
 export interface CustomSelectOption {
   value: string;
@@ -26,24 +27,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const selectRef = useRef<HTMLDivElement>(null);
-  const optionsRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = options.find((option) => option.value === value);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setFocusedIndex(-1);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [isOpen]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -87,16 +72,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     }
   }, [isOpen, focusedIndex, options, onChange]);
 
-  // Scroll focused option into view
-  useEffect(() => {
-    if (isOpen && focusedIndex >= 0 && optionsRef.current) {
-      const focusedElement = optionsRef.current.children[focusedIndex] as HTMLElement;
-      if (focusedElement) {
-        focusedElement.scrollIntoView({ block: "nearest" });
-      }
-    }
-  }, [focusedIndex, isOpen]);
-
   const handleToggle = () => {
     if (disabled) return;
     setIsOpen(!isOpen);
@@ -111,6 +86,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
   const handleOptionClick = (optionValue: string) => {
     onChange(optionValue);
+    setIsOpen(false);
+    setFocusedIndex(-1);
+  };
+
+  const handleClose = () => {
     setIsOpen(false);
     setFocusedIndex(-1);
   };
@@ -137,8 +117,14 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         <SelectIcon />
       </button>
 
-      {isOpen && (
-        <div ref={optionsRef} className="st-custom-select-dropdown" role="listbox">
+      <Dropdown
+        open={isOpen}
+        setOpen={setIsOpen}
+        onClose={handleClose}
+        positioning="absolute"
+        overflow="auto"
+      >
+        <div className="st-custom-select-options" role="listbox">
           {options.map((option, index) => (
             <div
               key={option.value}
@@ -153,7 +139,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             </div>
           ))}
         </div>
-      )}
+      </Dropdown>
     </div>
   );
 };

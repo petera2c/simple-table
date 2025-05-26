@@ -221,6 +221,7 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
           if (row.rowData.releaseDate === "—") return "—";
           // Parse ISO date string directly to avoid timezone issues
           const dateString = row.rowData.releaseDate as string;
+          if (!dateString) return "—";
           const [year, month, day] = dateString.split("-").map(Number);
           const monthNames = [
             "Jan",
