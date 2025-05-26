@@ -93,7 +93,7 @@ export const applyFilterToValue = (cellValue: any, filter: FilterCondition): boo
   // Date operations
   if (cellValue instanceof Date || !isNaN(Date.parse(cellValue))) {
     const cellDate = new Date(cellValue);
-    const filterDate = new Date(value);
+    const filterDate = new Date(String(value || ""));
 
     const normalizedCellDate = normalizeDate(cellDate);
     const normalizedFilterDate = normalizeDate(filterDate);
@@ -109,13 +109,13 @@ export const applyFilterToValue = (cellValue: any, filter: FilterCondition): boo
         return normalizedCellDate > normalizedFilterDate;
       case "between":
         if (values && values.length === 2) {
-          const [startDate, endDate] = values.map((d) => normalizeDate(new Date(d)));
+          const [startDate, endDate] = values.map((d) => normalizeDate(new Date(String(d || ""))));
           return normalizedCellDate >= startDate && normalizedCellDate <= endDate;
         }
         return false;
       case "notBetween":
         if (values && values.length === 2) {
-          const [startDate, endDate] = values.map((d) => normalizeDate(new Date(d)));
+          const [startDate, endDate] = values.map((d) => normalizeDate(new Date(String(d || ""))));
           return normalizedCellDate < startDate || normalizedCellDate > endDate;
         }
         return true;
