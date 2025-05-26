@@ -76,12 +76,7 @@ const BooleanFilter: React.FC<BooleanFilterProps> = ({
 
       {requiresSingleValue(selectedOperator) && (
         <FilterSection>
-          <FilterSelect
-            value={filterValue}
-            onChange={setFilterValue}
-            options={booleanOptions}
-            autoFocus
-          />
+          <FilterSelect value={filterValue} onChange={setFilterValue} options={booleanOptions} />
         </FilterSection>
       )}
 

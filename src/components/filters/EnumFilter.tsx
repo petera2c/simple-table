@@ -26,7 +26,7 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
 
   // Default to all option values selected if no current filter
   const [selectedValues, setSelectedValues] = useState<string[]>(
-    currentFilter?.values || allValues
+    currentFilter?.values ? currentFilter.values.map(String) : allValues
   );
 
   // Always use "in" operator for enum filters since it's the most logical
@@ -35,7 +35,7 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   // Reset form when current filter changes
   useEffect(() => {
     if (currentFilter) {
-      setSelectedValues(currentFilter.values || []);
+      setSelectedValues(currentFilter.values ? currentFilter.values.map(String) : []);
     } else {
       // If no filter, default to all option values selected
       setSelectedValues(allValues);

@@ -29,7 +29,7 @@ const StringFilter: React.FC<StringFilterProps> = ({
   const [selectedOperator, setSelectedOperator] = useState<StringFilterOperator>(
     (currentFilter?.operator as StringFilterOperator) || "contains"
   );
-  const [filterValue, setFilterValue] = useState<string>(currentFilter?.value || "");
+  const [filterValue, setFilterValue] = useState<string>(String(currentFilter?.value || ""));
 
   const availableOperators = getAvailableOperators("string") as StringFilterOperator[];
 
@@ -37,7 +37,7 @@ const StringFilter: React.FC<StringFilterProps> = ({
   useEffect(() => {
     if (currentFilter) {
       setSelectedOperator(currentFilter.operator as StringFilterOperator);
-      setFilterValue(currentFilter.value || "");
+      setFilterValue(String(currentFilter.value || ""));
     } else {
       setSelectedOperator("contains");
       setFilterValue("");
