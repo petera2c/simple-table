@@ -39,7 +39,6 @@ import { useTableFilters } from "../../hooks/useTableFilters";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
-import UpdateCellProps from "../../types/UpdateCellProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -243,13 +242,6 @@ const SimpleTableComp = ({
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
 
-  const updateCell = useCallback(
-    ({ rowIndex, accessor, newValue }: UpdateCellProps) => {
-      rows[rowIndex].rowData[accessor] = newValue;
-    },
-    [rows]
-  );
-
   // Set up API methods on the ref if provided
   useEffect(() => {
     if (tableRef) {
@@ -325,7 +317,6 @@ const SimpleTableComp = ({
         sortUpIcon,
         tableBodyContainerRef,
         theme,
-        updateCell,
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,

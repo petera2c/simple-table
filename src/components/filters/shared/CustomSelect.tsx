@@ -16,14 +16,14 @@ interface CustomSelectProps {
   disabled?: boolean;
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({
+const CustomSelect = ({
   value,
   onChange,
   options,
   placeholder = "Select...",
   className = "",
   disabled = false,
-}) => {
+}: CustomSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const selectRef = useRef<HTMLDivElement>(null);

@@ -66,7 +66,6 @@ const TableCell = forwardRef(
       onCellEdit,
       onTableHeaderDragEnd,
       theme,
-      updateCell,
       useOddColumnBackground,
     } = useTableContext();
 
@@ -176,7 +175,7 @@ const TableCell = forwardRef(
     const updateContent = useCallback(
       (newValue: CellValue) => {
         setLocalContent(newValue);
-        updateCell({ rowIndex, accessor: header.accessor, newValue });
+        row.rowData[header.accessor] = newValue;
 
         onCellEdit?.({
           accessor: header.accessor,
@@ -185,7 +184,7 @@ const TableCell = forwardRef(
           rowIndex,
         });
       },
-      [header.accessor, onCellEdit, row, updateCell, rowIndex]
+      [header.accessor, onCellEdit, row, rowIndex]
     );
 
     // Handle keyboard events when cell is focused

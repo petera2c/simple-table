@@ -31,9 +31,15 @@ const DateFilter: React.FC<DateFilterProps> = ({
   const [selectedOperator, setSelectedOperator] = useState<DateFilterOperator>(
     (currentFilter?.operator as DateFilterOperator) || "equals"
   );
-  const [filterValue, setFilterValue] = useState<string>(currentFilter?.value || "");
-  const [filterValueFrom, setFilterValueFrom] = useState<string>(currentFilter?.values?.[0] || "");
-  const [filterValueTo, setFilterValueTo] = useState<string>(currentFilter?.values?.[1] || "");
+  const [filterValue, setFilterValue] = useState<string>(
+    currentFilter?.value ? String(currentFilter.value) : ""
+  );
+  const [filterValueFrom, setFilterValueFrom] = useState<string>(
+    currentFilter?.values?.[0] ? String(currentFilter.values[0]) : ""
+  );
+  const [filterValueTo, setFilterValueTo] = useState<string>(
+    String(currentFilter?.values?.[1] || "")
+  );
 
   const availableOperators = getAvailableOperators("date") as DateFilterOperator[];
 
@@ -41,9 +47,9 @@ const DateFilter: React.FC<DateFilterProps> = ({
   useEffect(() => {
     if (currentFilter) {
       setSelectedOperator(currentFilter.operator as DateFilterOperator);
-      setFilterValue(currentFilter.value || "");
-      setFilterValueFrom(currentFilter.values?.[0] || "");
-      setFilterValueTo(currentFilter.values?.[1] || "");
+      setFilterValue(String(currentFilter.value || ""));
+      setFilterValueFrom(String(currentFilter.values?.[0] || ""));
+      setFilterValueTo(String(currentFilter.values?.[1] || ""));
     } else {
       setSelectedOperator("equals");
       setFilterValue("");

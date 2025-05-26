@@ -9,9 +9,9 @@ const parseDate = (value: CellValue): Date => {
   const [year, month, day] = value.toString().split("-").map(Number);
 
   const parsedDate = new Date();
-  parsedDate.setUTCFullYear(year);
-  parsedDate.setUTCMonth(month - 1);
-  parsedDate.setUTCDate(day);
+  parsedDate.setFullYear(year);
+  parsedDate.setMonth(month - 1);
+  parsedDate.setDate(day);
 
   return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
 };
