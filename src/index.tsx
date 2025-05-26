@@ -5,6 +5,7 @@ import type CellChangeProps from "./types/CellChangeProps";
 import type CellValue from "./types/CellValue";
 import type ColumnEditorPosition from "./types/ColumnEditorPosition";
 import type DragHandlerProps from "./types/DragHandlerProps";
+import EnumOption from "./types/EnumOption";
 import type HeaderObject from "./types/HeaderObject";
 import type OnSortProps from "./types/OnSortProps";
 import type Row from "./types/Row";
@@ -25,6 +26,7 @@ export type {
   CellValue,
   ColumnEditorPosition,
   DragHandlerProps,
+  EnumOption,
   HeaderObject,
   OnSortProps,
   Row,

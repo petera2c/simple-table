@@ -1,36 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Dropdown from "../../dropdown/Dropdown";
 import DatePicker from "../../date-picker/DatePicker";
+import CellValue from "../../../types/CellValue";
 
+// Convert the input value to a Date object
+const parseDate = (value: CellValue): Date => {
+  if (!value) return new Date();
+  const [year, month, day] = value.toString().split("-").map(Number);
+
+  const parsedDate = new Date();
+  parsedDate.setFullYear(year);
+  parsedDate.setMonth(month - 1);
+  parsedDate.setDate(day);
+
+  return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+};
 interface DateDropdownEditProps {
   onBlur: () => void;
   onChange: (value: string) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
-  value: string;
+  value: CellValue;
 }
 
-const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
-  onBlur,
-  onChange,
-  open,
-  setOpen,
-  value,
-}) => {
-  // Convert the input value to a Date object
-  const parseDate = (value: string): Date => {
-    const [year, month, day] = value.split("-").map(Number);
-
-    const parsedDate = new Date();
-    parsedDate.setUTCFullYear(year);
-    parsedDate.setUTCMonth(month - 1);
-    parsedDate.setUTCDate(day);
-
-    return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
-  };
-
-  const [currentDate, setCurrentDate] = useState<Date>(parseDate(value));
-
+const DateDropdownEdit = ({ onBlur, onChange, open, setOpen, value }: DateDropdownEditProps) => {
   // Auto-focus on mount
   useEffect(() => {
     // Set focus to the dropdown container
@@ -45,9 +38,9 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
   }, []);
 
   const handleDateChange = (newDate: Date) => {
-    setCurrentDate(newDate);
-    // Format the date as ISO string for storage
-    onChange(newDate.toISOString());
+    // format date as yyyy-mm-dd
+    const formattedDate = newDate.toISOString().split("T")[0];
+    onChange(formattedDate);
     setOpen(false);
     onBlur();
   };
@@ -58,7 +51,7 @@ const DateDropdownEdit: React.FC<DateDropdownEditProps> = ({
 
   return (
     <Dropdown open={open} onClose={handleClose} setOpen={setOpen} width={280}>
-      <DatePicker value={currentDate} onChange={handleDateChange} onClose={handleClose} />
+      <DatePicker value={parseDate(value)} onChange={handleDateChange} onClose={handleClose} />
     </Dropdown>
   );
 };

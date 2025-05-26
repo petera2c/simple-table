@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
-import Animate from "../Animate";
 import { RowId } from "../../types/RowId";
 import VisibleRow from "../../types/VisibleRow";
 import { Pinned } from "../../types/Pinned";
@@ -40,7 +39,7 @@ const RenderCells = ({
   );
 
   return (
-    <Animate isBody pauseAnimation={isWidthDragging} rowIndex={rowIndex + 1}>
+    <>
       {filteredHeaders.map((header, index) => {
         return (
           <RecursiveRenderCells
@@ -58,7 +57,7 @@ const RenderCells = ({
           />
         );
       })}
-    </Animate>
+    </>
   );
 };
 

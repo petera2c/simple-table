@@ -4,9 +4,10 @@ import CellValue from "../../../types/CellValue";
 import NumberEdit from "./NumberEdit";
 import DateDropdownEdit from "./DateDropdownEdit";
 import EnumDropdownEdit from "./EnumDropdownEdit";
+import EnumOption from "../../../types/EnumOption";
 
 interface EditableCellProps {
-  enumOptions?: string[];
+  enumOptions?: EnumOption[];
   onChange: (newValue: CellValue) => void;
   setIsEditing: (isEditing: boolean) => void;
   type?: "string" | "number" | "boolean" | "date" | "enum";
@@ -38,14 +39,13 @@ const EditableCell = ({
   }
 
   if (type === "date") {
-    const dateValue = typeof value === "string" ? value : "";
     return (
       <DateDropdownEdit
         onBlur={handleBlur}
-        onChange={(val: string) => onChange(val)}
+        onChange={onChange}
         open
         setOpen={setIsEditing}
-        value={dateValue}
+        value={value}
       />
     );
   }
@@ -55,7 +55,7 @@ const EditableCell = ({
     return (
       <EnumDropdownEdit
         onBlur={handleBlur}
-        onChange={(val: string) => onChange(val)}
+        onChange={onChange}
         open
         options={enumOptions}
         setOpen={setIsEditing}
@@ -80,13 +80,7 @@ const EditableCell = ({
 
   // Default to string type
   const stringValue = value === null || value === undefined ? "" : String(value);
-  return (
-    <StringEdit
-      defaultValue={stringValue}
-      onBlur={handleBlur}
-      onChange={(val: string) => onChange(val)}
-    />
-  );
+  return <StringEdit defaultValue={stringValue} onBlur={handleBlur} onChange={onChange} />;
 };
 
 export default EditableCell;

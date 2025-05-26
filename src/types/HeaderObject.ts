@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import Row from "./Row";
 import { Pinned } from "./Pinned";
 import Theme from "./Theme";
+import EnumOption from "./EnumOption";
 
 type HeaderObject = {
   accessor: string;
@@ -18,8 +19,9 @@ type HeaderObject = {
   }) => ReactNode | string;
   children?: HeaderObject[];
   disableReorder?: boolean;
-  enumOptions?: string[];
+  enumOptions?: EnumOption[];
   expandable?: boolean;
+  filterable?: boolean;
   hide?: boolean;
   isEditable?: boolean;
   isSortable?: boolean;

@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import CheckIcon from "../icons/CheckIcon";
 
 interface CheckboxProps {
   checked?: boolean;
@@ -22,7 +23,7 @@ const Checkbox = ({ checked = false, children, onChange }: CheckboxProps) => {
         type="checkbox"
       />
       <span className={`st-checkbox-custom ${checked ? "st-checked" : ""}`}>
-        {checked && <span className="st-checkbox-checkmark" />}
+        {checked && <CheckIcon className="st-checkbox-checkmark" />}
       </span>
       {children}
     </label>

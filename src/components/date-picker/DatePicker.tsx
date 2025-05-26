@@ -2,12 +2,12 @@ import React, { useState, ReactNode } from "react";
 import { useTableContext } from "../../context/TableContext";
 
 interface DatePickerProps {
-  value: Date;
   onChange: (date: Date) => void;
   onClose?: () => void;
+  value: Date;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, onClose }) => {
+const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
   const { nextIcon, prevIcon } = useTableContext();
   const [currentDate, setCurrentDate] = useState(value || new Date());
   const [currentView, setCurrentView] = useState<"days" | "months" | "years">("days");

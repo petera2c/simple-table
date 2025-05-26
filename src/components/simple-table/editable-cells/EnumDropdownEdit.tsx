@@ -1,38 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Dropdown from "../../dropdown/Dropdown";
 import DropdownItem from "../../dropdown/DropdownItem";
+import EnumOption from "../../../types/EnumOption";
 
 interface EnumDropdownEditProps {
   onBlur: () => void;
   onChange: (value: string) => void;
   open: boolean;
-  options: string[];
+  options: EnumOption[];
   setOpen: (open: boolean) => void;
   value: string;
 }
 
-const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
+const EnumDropdownEdit = ({
   onBlur,
   onChange,
   open,
   options,
   setOpen,
   value,
-}) => {
+}: EnumDropdownEditProps) => {
   const [currentValue, setCurrentValue] = useState<string>(value || "");
-
-  // Auto-focus on mount
-  useEffect(() => {
-    // Set focus to the dropdown container
-    const timerId = setTimeout(() => {
-      const dropdownContainer = document.querySelector(".st-dropdown-container");
-      if (dropdownContainer instanceof HTMLElement) {
-        dropdownContainer.focus();
-      }
-    }, 0);
-
-    return () => clearTimeout(timerId);
-  }, []);
 
   const handleSelect = (newValue: string) => {
     setCurrentValue(newValue);
@@ -50,11 +38,11 @@ const EnumDropdownEdit: React.FC<EnumDropdownEditProps> = ({
       <div className="st-enum-dropdown-content">
         {options.map((option) => (
           <DropdownItem
-            key={option}
-            isSelected={currentValue === option}
-            onClick={() => handleSelect(option)}
+            key={option.value}
+            isSelected={currentValue === option.value}
+            onClick={() => handleSelect(option.value)}
           >
-            {option}
+            {option.label}
           </DropdownItem>
         ))}
       </div>

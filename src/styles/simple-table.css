@@ -305,6 +305,7 @@
   --st-hover-row-background-color: var(--st-slate-100);
   --st-header-background-color: var(--st-slate-100);
   --st-header-label-color: var(--st-slate-900);
+  --st-header-icon-color: var(--st-slate-500);
   --st-dragging-background-color: var(--st-slate-200);
   --st-selected-cell-background-color: var(--st-blue-100);
   --st-selected-first-cell-background-color: var(--st-blue-50);
@@ -355,6 +356,7 @@
   --st-hover-row-background-color: var(--st-gray-700);
   --st-header-background-color: var(--st-gray-800);
   --st-header-label-color: var(--st-gray-100);
+  --st-header-icon-color: var(--st-gray-400);
   --st-dragging-background-color: var(--st-gray-600);
   --st-selected-cell-background-color: var(--st-blue-900);
   --st-selected-first-cell-background-color: var(--st-blue-800);
@@ -405,6 +407,7 @@
   --st-hover-row-background-color: var(--st-neutral-200);
   --st-header-background-color: var(--st-neutral-200);
   --st-header-label-color: var(--st-neutral-900);
+  --st-header-icon-color: var(--st-neutral-500);
   --st-dragging-background-color: var(--st-neutral-300);
   --st-selected-cell-background-color: var(--st-neutral-400);
   --st-selected-first-cell-background-color: var(--st-neutral-300);
@@ -455,6 +458,7 @@
   --st-hover-row-background-color: var(--st-blue-200);
   --st-header-background-color: var(--st-blue-200);
   --st-header-label-color: var(--st-blue-900);
+  --st-header-icon-color: var(--st-blue-600);
   --st-dragging-background-color: var(--st-blue-300);
   --st-selected-cell-background-color: var(--st-blue-400);
   --st-selected-first-cell-background-color: var(--st-blue-300);
@@ -505,6 +509,7 @@
   --st-hover-row-background-color: var(--st-amber-200);
   --st-header-background-color: var(--st-violet-600);
   --st-header-label-color: var(--st-white);
+  --st-header-icon-color: var(--st-violet-200);
   --st-dragging-background-color: var(--st-violet-50);
   --st-selected-cell-background-color: var(--st-violet-50);
   --st-selected-first-cell-background-color: var(--st-violet-100);
@@ -695,7 +700,6 @@
   position: sticky;
   top: 0;
   background-color: var(--st-header-background-color);
-  z-index: 1;
   font-weight: var(--st-font-weight-bold);
 
   display: flex;
@@ -866,15 +870,16 @@
   color: rgb(from var(--st-cell-color) r g b / 70%) !important;
 }
 
-.st-sort-icon-container {
+.st-icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-left: 4px;
 }
 
-.st-sort-icon {
-  fill: var(--st-slate-500);
+.st-expand-icon {
+  cursor: pointer;
+  fill: var(--st-header-label-color);
 }
 .st-header-resize-handle-container {
   width: var(--st-resize-handle-container-width);
@@ -1104,6 +1109,11 @@
   justify-content: center;
 }
 
+.st-header-icon {
+  transition: fill var(--st-transition-duration) var(--st-transition-ease);
+  fill: var(--st-header-icon-color);
+}
+
 .st-collapsible-header-icon {
   cursor: pointer;
   display: flex;
@@ -1131,10 +1141,11 @@
 
 /* Checkbox styles */
 .st-checkbox-label {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: var(--st-spacing-medium);
+  gap: var(--st-spacing-small);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -1148,8 +1159,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   border: var(--st-border-width) solid var(--st-slate-300);
   border-radius: var(--st-border-radius);
   background-color: white;
@@ -1163,11 +1174,7 @@
 }
 
 .st-checkbox-checkmark {
-  width: 6px;
-  height: 11px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  fill: white;
 }
 
 @keyframes slide-in-left {
@@ -1261,19 +1268,21 @@
 /* Dropdown css */
 
 .st-dropdown-content {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   z-index: 100;
   background-color: var(--st-odd-row-background-color);
   border: 1px solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   box-shadow: var(--st-edit-cell-shadow);
-  overflow: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: auto;
   min-width: 120px;
   max-height: 400px;
   transform: translateZ(0);
   will-change: transform;
+  cursor: default;
 }
 
 /* Position variants */
@@ -1330,6 +1339,7 @@
 .st-datepicker {
   background-color: var(--st-odd-row-background-color);
   font-family: inherit;
+  min-width: 280px;
 }
 
 .st-datepicker-header {
@@ -1471,4 +1481,334 @@
 
 .st-datepicker-today-btn:hover {
   background-color: var(--st-button-hover-background-color);
+}
+
+/* ===========================
+   FILTER COMPONENT STYLES
+   =========================== */
+
+.st-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--st-spacing-medium);
+  background-color: var(--st-header-background-color);
+  padding: var(--st-spacing-medium);
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+/* Filter Container */
+.st-filter-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: var(--st-spacing-medium);
+  min-width: 150px;
+}
+
+/* Filter Section - Used for spacing between form sections */
+.st-filter-section {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-bottom: var(--st-spacing-medium);
+}
+
+/* Filter Input - Text and number inputs */
+.st-filter-input {
+  width: 100%;
+  padding: var(--st-spacing-small);
+  border: var(--st-border-width) solid var(--st-border-color);
+  border-radius: var(--st-border-radius);
+  font-size: 14px;
+  background-color: var(--st-odd-row-background-color);
+  color: var(--st-cell-color);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-filter-input:focus {
+  border-color: var(--st-editable-cell-focus-border-color);
+}
+
+/* Range input specific styling */
+.st-filter-input-range-from {
+  margin-bottom: var(--st-spacing-medium);
+}
+
+/* Filter Select - Dropdown selectors */
+.st-filter-select {
+  width: 100%;
+  padding: var(--st-spacing-medium) var(--st-spacing-medium);
+  border: var(--st-border-width) solid var(--st-border-color);
+  border-radius: var(--st-border-radius);
+  font-size: 14px;
+  background-color: var(--st-odd-row-background-color);
+  color: var(--st-cell-color);
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-filter-select:focus {
+  border-color: var(--st-editable-cell-focus-border-color);
+}
+
+/* Filter Actions - Button container and buttons */
+.st-filter-actions {
+  display: flex;
+  gap: var(--st-spacing-medium);
+  padding-top: var(--st-spacing-medium);
+  border-top: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-filter-button {
+  flex: 1;
+  padding: var(--st-spacing-small);
+  border: none;
+  border-radius: var(--st-border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+/* Apply Button */
+.st-filter-button-apply {
+  background-color: var(--st-button-active-background-color);
+  color: white;
+}
+
+.st-filter-button-apply:hover:not(.st-filter-button-disabled) {
+  opacity: 0.9;
+}
+
+/* Disabled Apply Button */
+.st-filter-button-disabled {
+  background-color: var(--st-slate-300);
+  color: var(--st-slate-500);
+  cursor: not-allowed;
+}
+
+/* Clear Button */
+.st-filter-button-clear {
+  background-color: transparent;
+  color: var(--st-cell-color);
+  border: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-filter-button-clear:hover {
+  background-color: var(--st-button-hover-background-color);
+}
+
+/* Custom Select Component */
+.st-custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.st-custom-select-trigger {
+  width: 100%;
+  padding: var(--st-spacing-small);
+  border: var(--st-border-width) solid var(--st-border-color);
+  border-radius: var(--st-border-radius);
+  background-color: var(--st-odd-row-background-color);
+  color: var(--st-cell-color);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--st-spacing-medium);
+  outline: none;
+  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-custom-select-trigger:focus {
+  border-color: var(--st-editable-cell-focus-border-color);
+}
+
+.st-custom-select-trigger:hover:not(:disabled) {
+  border-color: var(--st-editable-cell-focus-border-color);
+}
+
+.st-custom-select-open .st-custom-select-trigger {
+  border-color: var(--st-editable-cell-focus-border-color);
+}
+
+.st-custom-select-value {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--st-cell-color);
+}
+
+.st-custom-select-arrow {
+  flex-shrink: 0;
+  color: var(--st-header-label-color);
+  transition: transform var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-custom-select-open .st-custom-select-arrow {
+  transform: rotate(180deg);
+}
+
+/* Custom select options container */
+.st-custom-select-options {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  max-height: 200px;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.st-custom-select-option {
+  flex-shrink: 0;
+  padding: var(--st-spacing-small);
+  cursor: pointer;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--st-cell-color);
+  font-size: 14px;
+}
+
+.st-custom-select-option:hover,
+.st-custom-select-option-focused {
+  background-color: var(--st-button-hover-background-color);
+}
+
+.st-custom-select-option-selected {
+  background-color: var(--st-selected-cell-background-color);
+  color: var(--st-selected-cell-color);
+}
+
+.st-custom-select-option-selected.st-custom-select-option-focused {
+  background-color: var(--st-selected-cell-background-color);
+  opacity: 0.9;
+}
+
+/* Disabled state */
+.st-custom-select-disabled {
+  opacity: var(--st-opacity-disabled);
+  pointer-events: none;
+}
+
+.st-custom-select-disabled .st-custom-select-trigger {
+  cursor: not-allowed;
+  background-color: var(--st-header-background-color);
+  color: var(--st-header-label-color);
+}
+
+/* ===========================
+   ENUM FILTER STYLES
+   =========================== */
+
+/* Enum filter options container */
+.st-enum-filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--st-spacing-small);
+  overflow: auto;
+  flex-grow: 1;
+  max-height: 200px;
+}
+
+/* Select All checkbox styling */
+.st-enum-select-all {
+  padding-bottom: var(--st-spacing-small);
+  margin-bottom: var(--st-spacing-small);
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-enum-select-all-label {
+  font-weight: 600;
+  color: var(--st-header-label-color);
+}
+
+/* Enum option label */
+.st-enum-option-label {
+  font-size: 14px;
+  color: var(--st-cell-color);
+  user-select: none;
+}
+
+/* ===========================
+   FILTER BAR STYLES
+   =========================== */
+
+/* Filter bar container */
+.st-filter-bar {
+  background-color: var(--st-header-background-color);
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+  padding: var(--st-spacing-medium);
+}
+
+.st-filter-bar-content {
+  display: flex;
+  align-items: center;
+  gap: var(--st-spacing-medium);
+  flex-wrap: wrap;
+}
+
+/* Filter chips container */
+.st-filter-chips {
+  display: flex;
+  gap: var(--st-spacing-small);
+  flex-wrap: wrap;
+}
+
+/* Individual filter chip */
+.st-filter-chip {
+  display: flex;
+  align-items: center;
+  background-color: var(--st-selected-cell-background-color);
+  color: var(--st-selected-cell-color);
+  border-radius: calc(var(--st-border-radius) * 2);
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  font-size: 13px;
+  border: var(--st-border-width) solid var(--st-selected-border-color);
+}
+
+.st-filter-chip-text {
+  margin-right: var(--st-spacing-small);
+  white-space: nowrap;
+}
+
+/* Remove button */
+.st-filter-chip-remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0;
+  margin-left: var(--st-spacing-small);
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-filter-chip-remove:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.st-filter-bar-label {
+  font-weight: 600;
+  color: var(--st-header-label-color);
+  font-size: 14px;
+  flex-shrink: 0;
 }

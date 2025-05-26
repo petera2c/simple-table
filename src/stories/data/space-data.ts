@@ -90,7 +90,14 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "left",
     type: "enum",
-    enumOptions: ["Moon", "Mars", "Venus", "Jupiter", "Asteroid Belt", "Saturn"],
+    enumOptions: [
+      { label: "Moon", value: "Moon" },
+      { label: "Mars", value: "Mars" },
+      { label: "Venus", value: "Venus" },
+      { label: "Jupiter", value: "Jupiter" },
+      { label: "Asteroid Belt", value: "Asteroid Belt" },
+      { label: "Saturn", value: "Saturn" },
+    ],
   },
   {
     accessor: "status",

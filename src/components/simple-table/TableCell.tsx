@@ -172,17 +172,19 @@ const TableCell = forwardRef(
       useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""
     }`;
 
-    const updateLocalContent = useCallback(
+    const updateContent = useCallback(
       (newValue: CellValue) => {
         setLocalContent(newValue);
+        row.rowData[header.accessor] = newValue;
 
         onCellEdit?.({
           accessor: header.accessor,
           newValue,
           row,
+          rowIndex,
         });
       },
-      [header.accessor, onCellEdit, row]
+      [header.accessor, onCellEdit, row, rowIndex]
     );
 
     // Handle keyboard events when cell is focused
@@ -202,7 +204,7 @@ const TableCell = forwardRef(
         >
           <EditableCell
             enumOptions={header.enumOptions}
-            onChange={updateLocalContent}
+            onChange={updateContent}
             setIsEditing={setIsEditing}
             type={header.type}
             value={localContent}
@@ -235,23 +237,11 @@ const TableCell = forwardRef(
       >
         {header.expandable && cellHasChildren ? (
           row.rowMeta.isExpanded ? (
-            <div
-              className="st-sort-icon-container"
-              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-              }}
-            >
+            <div className="st-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
               {collapseIcon}
             </div>
           ) : (
-            <div
-              className="st-sort-icon-container"
-              onClick={() => onExpandRowClick(row.rowMeta.rowId)}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-              }}
-            >
+            <div className="st-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
               {expandIcon}
             </div>
           )
@@ -274,7 +264,7 @@ const TableCell = forwardRef(
         {isEditing && isEditInDropdown && (
           <EditableCell
             enumOptions={header.enumOptions}
-            onChange={updateLocalContent}
+            onChange={updateContent}
             setIsEditing={setIsEditing}
             type={header.type}
             value={localContent}

@@ -34,6 +34,11 @@ import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
+import FilterBar from "../filters/FilterBar";
+import { useTableFilters } from "../../hooks/useTableFilters";
+import { useContentHeight } from "../../hooks/useContentHeight";
+import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
+import useWindowResize from "../../hooks/useWindowResize";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -82,7 +87,7 @@ const SimpleTable = (props: SimpleTableProps) => {
 const SimpleTableComp = ({
   allowAnimations = false,
   cellUpdateFlash = false,
-  collapseIcon = <AngleDownIcon className="st-sort-icon" />,
+  collapseIcon = <AngleDownIcon className="st-expand-icon" />,
   columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnReordering = false,
@@ -90,7 +95,7 @@ const SimpleTableComp = ({
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
-  expandIcon = <AngleRightIcon className="st-sort-icon" />,
+  expandIcon = <AngleRightIcon className="st-expand-icon" />,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
@@ -105,8 +110,8 @@ const SimpleTableComp = ({
   selectableCells = false,
   selectableColumns = false,
   shouldPaginate = false,
-  sortDownIcon = <DescIcon className="st-sort-icon" />,
-  sortUpIcon = <AscIcon className="st-sort-icon" />,
+  sortDownIcon = <DescIcon className="st-header-icon" />,
+  sortUpIcon = <AscIcon className="st-header-icon" />,
   tableRef,
   theme = "light",
   useHoverRowBackground = true,
@@ -132,10 +137,14 @@ const SimpleTableComp = ({
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
-  // Use custom hook for sorting
+  // Use filter hook
+  const { filters, filteredRows, handleApplyFilter, handleClearFilter, handleClearAllFilters } =
+    useTableFilters({ rows });
+
+  // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
     headers: headersRef.current,
-    tableRows: rows,
+    tableRows: filteredRows,
   });
 
   useEffect(() => {
@@ -157,37 +166,8 @@ const SimpleTableComp = ({
     setFlattenedRows(currentRows);
   }, [currentRows]);
 
-  // Calculate content height (total height minus header height)
-  const contentHeight = useMemo(() => {
-    // Default height if none provided
-    if (!height) return window.innerHeight - rowHeight;
-
-    // Get the container element for measurement
-    const container = document.querySelector(".simple-table-root");
-
-    // Convert height string to pixels
-    let totalHeightPx = 0;
-
-    if (height.endsWith("px")) {
-      // Direct pixel value
-      totalHeightPx = parseInt(height, 10);
-    } else if (height.endsWith("vh")) {
-      // Viewport height percentage
-      const vh = parseInt(height, 10);
-      totalHeightPx = (window.innerHeight * vh) / 100;
-    } else if (height.endsWith("%")) {
-      // Percentage of parent
-      const percentage = parseInt(height, 10);
-      const parentHeight = container?.parentElement?.clientHeight || window.innerHeight;
-      totalHeightPx = (parentHeight * percentage) / 100;
-    } else {
-      // Fall back to inner height if format is unknown
-      totalHeightPx = window.innerHeight;
-    }
-
-    // Subtract header height
-    return Math.max(0, totalHeightPx - rowHeight);
-  }, [height, rowHeight]);
+  // Calculate content height using hook
+  const contentHeight = useContentHeight({ height, rowHeight });
 
   // We could probably move this to the table body component
   const visibleRows = useMemo(
@@ -237,32 +217,13 @@ const SimpleTableComp = ({
   }, []);
 
   // Handle outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        !target.closest(".st-cell") &&
-        (selectableColumns
-          ? !target.classList.contains("st-header-cell") &&
-            !target.classList.contains("st-header-label")
-          : true)
-      ) {
-        // Check if there actually are any selected cells
-        if (selectedCells.size > 0) {
-          setSelectedCells(new Set());
-        }
-        if (selectedColumns.size > 0) {
-          setSelectedColumns(new Set());
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [selectableColumns, selectedCells, selectedColumns, setSelectedCells, setSelectedColumns]);
-
+  useHandleOutsideClick({
+    selectableColumns,
+    selectedCells,
+    selectedColumns,
+    setSelectedCells,
+    setSelectedColumns,
+  });
   // Calculate the width of the scrollbar
   useLayoutEffect(() => {
     if (!tableBodyContainerRef.current) return;
@@ -272,26 +233,11 @@ const SimpleTableComp = ({
 
     setScrollbarWidth(newScrollbarWidth);
   }, []);
-
-  // On window risize completely re-render the table
-  useLayoutEffect(() => {
-    const handleResize = () => {
-      // Force a re-render of the table
-      forceUpdate();
-      // Re-calculate the width of the scrollbar and table content
-      if (!tableBodyContainerRef.current) return;
-
-      const newScrollbarWidth =
-        tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
-
-      setScrollbarWidth(newScrollbarWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  useWindowResize({
+    forceUpdate,
+    tableBodyContainerRef,
+    setScrollbarWidth,
+  });
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -333,8 +279,12 @@ const SimpleTableComp = ({
         draggedHeaderRef,
         editColumns,
         expandIcon,
+        filters,
         forceUpdate,
         getBorderClass,
+        handleApplyFilter,
+        handleClearFilter,
+        handleClearAllFilters,
         handleMouseDown,
         handleMouseOver,
         headersRef,
@@ -367,8 +317,8 @@ const SimpleTableComp = ({
         sortUpIcon,
         tableBodyContainerRef,
         theme,
-        useOddColumnBackground,
         useHoverRowBackground,
+        useOddColumnBackground,
         useOddEvenRowBackground,
       }}
     >
@@ -378,6 +328,7 @@ const SimpleTableComp = ({
       >
         <ScrollSync>
           <div className="st-wrapper-container">
+            <FilterBar />
             <div
               className="st-content-wrapper"
               onMouseUp={handleMouseUp}
@@ -417,7 +368,7 @@ const SimpleTableComp = ({
               onPageChange={setCurrentPage}
               onNextPage={onNextPage}
               shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil(rows.length / rowsPerPage)}
+              totalPages={Math.ceil(filteredRows.length / rowsPerPage)}
             />
           </div>
         </ScrollSync>
