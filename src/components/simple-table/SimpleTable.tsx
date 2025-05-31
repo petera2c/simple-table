@@ -173,16 +173,8 @@ const SimpleTableComp = ({
       return currentRows.map((row) => ({ row, depth: 0 }));
     }
 
-    // Add expansion state to rows
-    const rowsWithExpansion = currentRows.map((row, index) => {
-      const rowId = getRowId(row, index, rowIdAccessor);
-      return {
-        ...row,
-        __isExpanded: expandedRows.has(String(rowId)),
-      };
-    });
-
-    return flattenRowsWithGrouping(rowsWithExpansion, rowGrouping, rowIdAccessor);
+    // Use the expandedRows set directly instead of setting __isExpanded on rows
+    return flattenRowsWithGrouping(currentRows, rowGrouping, rowIdAccessor, 0, expandedRows);
   }, [currentRows, rowGrouping, rowIdAccessor, expandedRows]);
 
   const [flattenedRows, setFlattenedRows] = useState(flattenedRowsData.map((item) => item.row));
@@ -200,11 +192,11 @@ const SimpleTableComp = ({
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
         contentHeight,
-        flattenedRows,
+        flattenedRowsData,
         rowHeight,
         scrollTop,
       }),
-    [contentHeight, rowHeight, flattenedRows, scrollTop]
+    [contentHeight, rowHeight, flattenedRowsData, scrollTop]
   );
 
   // Hooks
@@ -368,7 +360,7 @@ const SimpleTableComp = ({
               onMouseLeave={handleMouseUp}
             >
               <TableContent
-                flattenedRows={flattenedRows}
+                flattenedRowsData={flattenedRowsData}
                 isWidthDragging={isWidthDragging}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}

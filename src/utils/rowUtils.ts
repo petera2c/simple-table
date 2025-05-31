@@ -60,7 +60,8 @@ export const flattenRowsWithGrouping = (
   rows: Row[],
   rowGrouping: string[] = [],
   rowIdAccessor?: string,
-  depth: number = 0
+  depth: number = 0,
+  expandedRows?: Set<string>
 ): Array<{ row: Row; depth: number; groupingKey?: string }> => {
   const result: Array<{ row: Row; depth: number; groupingKey?: string }> = [];
 
@@ -70,18 +71,22 @@ export const flattenRowsWithGrouping = (
     // Add the main row
     result.push({ row, depth, groupingKey: rowGrouping[depth] });
 
+    // Check if row is expanded using either __isExpanded property or expandedRows set
+    const isExpanded = expandedRows ? expandedRows.has(String(rowId)) : isRowExpanded(row);
+
     // If row is expanded and has nested data for the current grouping level
-    if (isRowExpanded(row) && depth < rowGrouping.length) {
+    if (isExpanded && depth < rowGrouping.length) {
       const currentGroupingKey = rowGrouping[depth];
       const nestedRows = getNestedRows(row, currentGroupingKey);
 
       if (nestedRows.length > 0) {
-        // Recursively flatten nested rows
+        // Recursively flatten nested rows with the expandedRows set
         const flattenedNested = flattenRowsWithGrouping(
           nestedRows,
           rowGrouping,
           rowIdAccessor,
-          depth + 1
+          depth + 1,
+          expandedRows
         );
         result.push(...flattenedNested);
       }

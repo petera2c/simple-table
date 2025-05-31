@@ -11,7 +11,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
-  flattenedRows: Row[];
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
   isWidthDragging: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
@@ -22,7 +22,7 @@ interface TableContentLocalProps {
 }
 
 const TableContent = ({
-  flattenedRows,
+  flattenedRowsData,
   isWidthDragging,
   pinnedLeftWidth,
   pinnedRightWidth,
@@ -68,7 +68,7 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
-    flattenedRows,
+    flattenedRowsData,
     headerContainerRef,
     isWidthDragging,
     mainTemplateColumns,

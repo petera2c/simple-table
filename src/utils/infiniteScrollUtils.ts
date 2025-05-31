@@ -5,21 +5,23 @@ import VisibleRow from "../types/VisibleRow";
 const SEPARATOR_HEIGHT = 1;
 
 // Calculate total row count for flat rows (since we now use flattened data)
-export const getTotalRowCount = (rows: Row[]): number => {
-  return rows.length;
+export const getTotalRowCount = (
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>
+): number => {
+  return flattenedRowsData.length;
 };
 
 // Get visible rows with their absolute positions
 export const getVisibleRows = ({
   bufferRowCount,
   contentHeight,
-  flattenedRows,
+  flattenedRowsData,
   rowHeight,
   scrollTop,
 }: {
   bufferRowCount: number;
   contentHeight: number;
-  flattenedRows: Row[];
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
   rowHeight: number;
   scrollTop: number;
 }): VisibleRow[] => {
@@ -28,8 +30,8 @@ export const getVisibleRows = ({
   const startOffset = Math.max(0, scrollTop - rowHeightWithSeparator * bufferRowCount);
   const endOffset = scrollTop + contentHeight + rowHeightWithSeparator * bufferRowCount;
 
-  for (let i = 0; i < flattenedRows.length; i++) {
-    const row = flattenedRows[i];
+  for (let i = 0; i < flattenedRowsData.length; i++) {
+    const { row, depth } = flattenedRowsData[i];
     const rowTop = i * rowHeightWithSeparator;
 
     if (rowTop >= endOffset) break;
@@ -37,7 +39,7 @@ export const getVisibleRows = ({
     if (rowTop + rowHeightWithSeparator > startOffset) {
       visibleRows.push({
         row,
-        depth: 0, // With flattened structure, all rows are at depth 0
+        depth,
         position: i,
         isLastGroupRow: false, // Will be determined by grouping logic elsewhere
       });
