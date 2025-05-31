@@ -16,7 +16,6 @@ type TableRowProps = {
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isInitialFocusedCell: (rowIndex: number, columnIndex: number) => boolean;
-  isWidthDragging: boolean;
   onCellEdit?: (props: CellChangeProps) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   onToggleGroup: (rowId: number) => void;

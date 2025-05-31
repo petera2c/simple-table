@@ -15,7 +15,6 @@ interface RenderCellsProps {
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
-  isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowIndex: number;
@@ -28,7 +27,6 @@ const RenderCells = ({
   columnIndices,
   headers,
   hiddenColumns,
-  isWidthDragging,
   onExpandRowClick,
   pinned,
   rowIndex,

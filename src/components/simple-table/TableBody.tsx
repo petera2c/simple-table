@@ -14,7 +14,6 @@ import { getRowId } from "../../utils/rowUtils";
 const TableBody = ({
   flattenedRowsData,
   headerContainerRef,
-  isWidthDragging,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -101,7 +100,6 @@ const TableBody = ({
     headers: headersRef.current,
     hiddenColumns,
     hoveredIndex,
-    isWidthDragging,
     rowHeight,
     rowIndices,
     setHoveredIndex,

@@ -6,6 +6,7 @@ import CellValue from "../types/CellValue";
 import { Theme } from "..";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import Row from "../types/Row";
+import FlattenedRowWithGrouping from "../types/FlattenedRowWithGrouping";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -55,7 +56,6 @@ interface TableContextType {
   selectableColumns: boolean;
   setExpandedRows: Dispatch<SetStateAction<Set<string>>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
-  setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   setMainBodyWidth: Dispatch<SetStateAction<number>>;
   setPinnedLeftWidth: Dispatch<SetStateAction<number>>;
   setPinnedRightWidth: Dispatch<SetStateAction<number>>;

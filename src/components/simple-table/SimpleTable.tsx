@@ -135,7 +135,6 @@ const SimpleTableComp = ({
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
-  const [isWidthDragging, setIsWidthDragging] = useState(false);
   const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
@@ -330,7 +329,6 @@ const SimpleTableComp = ({
         selectableColumns,
         setExpandedRows,
         setInitialFocusedCell,
-        setIsWidthDragging,
         setMainBodyWidth,
         setPinnedLeftWidth,
         setPinnedRightWidth,
@@ -360,7 +358,6 @@ const SimpleTableComp = ({
             >
               <TableContent
                 flattenedRowsData={flattenedRowsData}
-                isWidthDragging={isWidthDragging}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}

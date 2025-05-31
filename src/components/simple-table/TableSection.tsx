@@ -16,7 +16,6 @@ interface TableSectionProps {
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
-  isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   ref?: RefObject<HTMLDivElement | null>;
@@ -35,7 +34,6 @@ const TableSection = ({
   headers,
   hiddenColumns,
   hoveredIndex,
-  isWidthDragging,
   onExpandRowClick,
   pinned,
   ref,
@@ -86,7 +84,6 @@ const TableSection = ({
                 hiddenColumns={hiddenColumns}
                 hoveredIndex={hoveredIndex}
                 index={index}
-                isWidthDragging={isWidthDragging}
                 onExpandRowClick={onExpandRowClick}
                 pinned={pinned}
                 rowHeight={rowHeight}

@@ -12,7 +12,6 @@ import FlattenedRowWithGrouping from "../../types/FlattenedRowWithGrouping";
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
   flattenedRowsData: FlattenedRowWithGrouping[];
-  isWidthDragging: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: Dispatch<SetStateAction<number>>;
@@ -22,7 +21,6 @@ interface TableContentLocalProps {
 
 const TableContent = ({
   flattenedRowsData,
-  isWidthDragging,
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
@@ -68,7 +66,6 @@ const TableContent = ({
   const tableBodyProps: TableBodyProps = {
     flattenedRowsData,
     headerContainerRef,
-    isWidthDragging,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,

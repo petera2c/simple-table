@@ -98,13 +98,11 @@ export const handleResizeStart = ({
   gridColumnStart,
   header,
   headersRef,
-  setIsWidthDragging,
   setMainBodyWidth,
   setPinnedLeftWidth,
   setPinnedRightWidth,
   startWidth,
 }: HandleResizeStartProps): void => {
-  setIsWidthDragging(true);
   event.preventDefault();
   const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
   const isTouchEvent = "touches" in event;
@@ -167,7 +165,6 @@ export const handleResizeStart = ({
     const handleTouchEnd = () => {
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
-      setIsWidthDragging(false);
     };
 
     document.addEventListener("touchmove", handleTouchMove);
@@ -180,7 +177,6 @@ export const handleResizeStart = ({
     const handleMouseUp = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      setIsWidthDragging(false);
     };
 
     document.addEventListener("mousemove", handleMouseMove);
