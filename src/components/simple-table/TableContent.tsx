@@ -11,22 +11,20 @@ import TableBodyProps from "../../types/TableBodyProps";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
-  flattenedRows: Row[];
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
   isWidthDragging: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
-  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
   setScrollTop: Dispatch<SetStateAction<number>>;
   sort: SortConfig | null;
   visibleRows: VisibleRow[];
 }
 
 const TableContent = ({
-  flattenedRows,
+  flattenedRowsData,
   isWidthDragging,
   pinnedLeftWidth,
   pinnedRightWidth,
-  setFlattenedRows,
   setScrollTop,
   sort,
   visibleRows,
@@ -68,7 +66,7 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
-    flattenedRows,
+    flattenedRowsData,
     headerContainerRef,
     isWidthDragging,
     mainTemplateColumns,
@@ -78,7 +76,6 @@ const TableContent = ({
     pinnedRightColumns,
     pinnedRightTemplateColumns,
     pinnedRightWidth,
-    setFlattenedRows,
     setScrollTop,
     visibleRows,
   };

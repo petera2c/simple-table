@@ -13,6 +13,8 @@ const AlignmentExample = () => {
         defaultHeaders={HEADERS} // Set the headers
         columnReordering // Enable draggable columns
         rows={EXAMPLE_DATA} // Set rows data
+        rowGrouping={["stores"]}
+        rowIdAccessor="id"
         height="calc(100dvh - 112px)" // If not using pagination use a fixed height
         selectableCells
         selectableColumns

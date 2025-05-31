@@ -4,64 +4,48 @@ import VisibleRow from "../types/VisibleRow";
 
 const SEPARATOR_HEIGHT = 1;
 
-// Calculate total row count recursively
-export const getTotalRowCount = (rows: Row[]): number => {
-  let count = 0;
-  const countRows = (rowList: Row[]) => {
-    rowList.forEach((row) => {
-      count += 1;
-      if (row.rowMeta.isExpanded && row.rowMeta.children) {
-        countRows(row.rowMeta.children);
-      }
-    });
-  };
-  countRows(rows);
-  return count;
+// Calculate total row count for flat rows (since we now use flattened data)
+export const getTotalRowCount = (
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>
+): number => {
+  return flattenedRowsData.length;
 };
 
 // Get visible rows with their absolute positions
 export const getVisibleRows = ({
   bufferRowCount,
   contentHeight,
-  flattenedRows,
+  flattenedRowsData,
   rowHeight,
   scrollTop,
 }: {
   bufferRowCount: number;
   contentHeight: number;
-  flattenedRows: Row[];
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
   rowHeight: number;
   scrollTop: number;
 }): VisibleRow[] => {
   const rowHeightWithSeparator = rowHeight + SEPARATOR_HEIGHT;
   const visibleRows: VisibleRow[] = [];
-  let currentPosition = 0;
   const startOffset = Math.max(0, scrollTop - rowHeightWithSeparator * bufferRowCount);
   const endOffset = scrollTop + contentHeight + rowHeightWithSeparator * bufferRowCount;
 
-  const traverseRows = (rowList: Row[], depth: number) => {
-    for (const row of rowList) {
-      const rowTop = currentPosition * rowHeightWithSeparator;
-      if (rowTop >= endOffset) break;
+  for (let i = 0; i < flattenedRowsData.length; i++) {
+    const { row, depth } = flattenedRowsData[i];
+    const rowTop = i * rowHeightWithSeparator;
 
-      if (rowTop + rowHeightWithSeparator > startOffset) {
-        visibleRows.push({
-          row,
-          depth,
-          position: currentPosition,
-          isLastGroupRow: Boolean(row.rowMeta.children?.length) && depth > 1,
-        });
-      }
+    if (rowTop >= endOffset) break;
 
-      currentPosition += 1;
-
-      if (row.rowMeta.isExpanded && row.rowMeta.children) {
-        traverseRows(row.rowMeta.children, depth + 1);
-      }
+    if (rowTop + rowHeightWithSeparator > startOffset) {
+      visibleRows.push({
+        row,
+        depth,
+        position: i,
+        isLastGroupRow: false, // Will be determined by grouping logic elsewhere
+      });
     }
-  };
+  }
 
-  traverseRows(flattenedRows, 0);
   return visibleRows;
 };
 

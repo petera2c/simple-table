@@ -11,8 +11,12 @@ const FilterColumnsExample = () => {
 
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
     setRows((prevRows) => {
-      const rowIndex = rows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
-      prevRows[rowIndex].rowData[accessor] = newValue;
+      const rowIndex = prevRows.findIndex((r) => r.id === row.id);
+      if (rowIndex !== -1) {
+        const updatedRows = [...prevRows];
+        updatedRows[rowIndex] = { ...updatedRows[rowIndex], [accessor]: newValue };
+        return updatedRows;
+      }
       return prevRows;
     });
   };
@@ -26,6 +30,7 @@ const FilterColumnsExample = () => {
         editColumns // Enable column management
         onCellEdit={updateCell} // Handle cell changes
         rows={rows} // Set rows data
+        rowIdAccessor="id"
         height="80vh"
         editColumnsInitOpen
       />

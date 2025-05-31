@@ -9,7 +9,7 @@ export const generateRetailSalesData = (): Row[] => {
 
   return regions.map((region) => {
     const numStores = Math.floor(Math.random() * 7) + 2; // 2 to 8 children
-    const children = Array.from({ length: numStores }, () => {
+    const stores = Array.from({ length: numStores }, () => {
       const storeName = storeNames[Math.floor(Math.random() * storeNames.length)];
       const city = cities[Math.floor(Math.random() * cities.length)];
       const electronicsSales = Math.floor(Math.random() * 100000) + 5000;
@@ -22,39 +22,28 @@ export const generateRetailSalesData = (): Row[] => {
       ).padStart(2, "0")}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
 
       return {
-        rowMeta: { rowId: rowId++, isExpanded: true },
-        rowData: {
-          name: `${storeName} - ${city}`,
-          city,
-          employees: Math.floor(Math.random() * 200) + 10,
-          squareFootage: Math.floor(Math.random() * 10000) + 1000,
-          openingDate,
-          customerRating: (Math.random() * 5).toFixed(1),
-          electronicsSales,
-          clothingSales,
-          groceriesSales,
-          furnitureSales,
-          totalSales,
-        },
+        id: rowId++,
+        name: `${storeName} - ${city}`,
+        city,
+        employees: Math.floor(Math.random() * 200) + 10,
+        squareFootage: Math.floor(Math.random() * 10000) + 1000,
+        openingDate,
+        customerRating: (Math.random() * 5).toFixed(1),
+        electronicsSales,
+        clothingSales,
+        groceriesSales,
+        furnitureSales,
+        totalSales,
       };
     });
 
-    const regionTotalElectronicsSales = children.reduce(
-      (sum, child) => sum + child.rowData.electronicsSales,
+    const regionTotalElectronicsSales = stores.reduce(
+      (sum, store) => sum + store.electronicsSales,
       0
     );
-    const regionTotalClothingSales = children.reduce(
-      (sum, child) => sum + child.rowData.clothingSales,
-      0
-    );
-    const regionTotalGroceriesSales = children.reduce(
-      (sum, child) => sum + child.rowData.groceriesSales,
-      0
-    );
-    const regionTotalFurnitureSales = children.reduce(
-      (sum, child) => sum + child.rowData.furnitureSales,
-      0
-    );
+    const regionTotalClothingSales = stores.reduce((sum, store) => sum + store.clothingSales, 0);
+    const regionTotalGroceriesSales = stores.reduce((sum, store) => sum + store.groceriesSales, 0);
+    const regionTotalFurnitureSales = stores.reduce((sum, store) => sum + store.furnitureSales, 0);
     const regionTotalSales =
       regionTotalElectronicsSales +
       regionTotalClothingSales +
@@ -62,23 +51,19 @@ export const generateRetailSalesData = (): Row[] => {
       regionTotalFurnitureSales;
 
     return {
-      rowMeta: { rowId: rowId++, isExpanded: true, children },
-      rowData: {
-        name: region,
-        city: "-",
-        employees: children.reduce((sum, child) => sum + (child.rowData.employees as number), 0),
-        squareFootage: children.reduce(
-          (sum, child) => sum + (child.rowData.squareFootage as number),
-          0
-        ),
-        openingDate: "-",
-        customerRating: "-",
-        electronicsSales: regionTotalElectronicsSales,
-        clothingSales: regionTotalClothingSales,
-        groceriesSales: regionTotalGroceriesSales,
-        furnitureSales: regionTotalFurnitureSales,
-        totalSales: regionTotalSales,
-      },
+      id: rowId++,
+      name: region,
+      city: "-",
+      employees: stores.reduce((sum, store) => sum + store.employees, 0),
+      squareFootage: stores.reduce((sum, store) => sum + store.squareFootage, 0),
+      openingDate: "-",
+      customerRating: "-",
+      electronicsSales: regionTotalElectronicsSales,
+      clothingSales: regionTotalClothingSales,
+      groceriesSales: regionTotalGroceriesSales,
+      furnitureSales: regionTotalFurnitureSales,
+      totalSales: regionTotalSales,
+      stores: stores, // Nested stores for row grouping
     };
   });
 };
@@ -127,8 +112,8 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "left",
     cellRenderer: ({ row }) => {
-      if (row.rowData.openingDate === "-") return "-";
-      const date = new Date(row.rowData.openingDate as string);
+      if (row.openingDate === "-") return "-";
+      const date = new Date(row.openingDate as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
         day: "numeric",
@@ -143,8 +128,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) =>
-      row.rowData.customerRating === "-" ? "-" : `${row.rowData.customerRating}/5`,
+    cellRenderer: ({ row }) => (row.customerRating === "-" ? "-" : `${row.customerRating}/5`),
   },
   {
     accessor: "electronicsSales",
@@ -153,8 +137,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "center",
-    cellRenderer: ({ row }) =>
-      `$${(row.rowData.electronicsSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.electronicsSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "clothingSales",
@@ -163,7 +146,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: ({ row }) => `$${(row.rowData.clothingSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.clothingSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "groceriesSales",
@@ -172,7 +155,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `$${(row.rowData.groceriesSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.groceriesSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "furnitureSales",
@@ -181,7 +164,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "center",
-    cellRenderer: ({ row }) => `$${(row.rowData.furnitureSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.furnitureSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "totalSales",
@@ -191,6 +174,6 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isEditable: true,
     pinned: "right",
     align: "center",
-    cellRenderer: ({ row }) => `$${(row.rowData.totalSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.totalSales as number).toLocaleString("en-US")}`,
   },
 ];

@@ -2,7 +2,7 @@
 
 import { SALES_HEADERS } from "./sales-headers";
 import data from "./sales-data.json";
-import { Row, SimpleTable } from "../../..";
+import { SimpleTable } from "../../..";
 
 const shouldPaginate = false;
 const howManyRowsCanFit = 10;
@@ -14,7 +14,7 @@ export const SalesExampleComponent = () => {
         columnResizing
         columnReordering
         defaultHeaders={SALES_HEADERS}
-        rows={data as Row[]}
+        rows={data}
         theme={"dark"}
         selectableCells
         {...(shouldPaginate

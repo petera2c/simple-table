@@ -1,476 +1,387 @@
 [
   {
-    "rowMeta": {
-      "rowId": 0,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "iPhone 15 Pro Max",
-      "category": "Electronics",
-      "brand": "Apple",
-      "rating": 4.8,
-      "price": 1199.99,
-      "stockLevel": 45,
-      "isActive": true,
-      "releaseDate": "2023-09-22"
-    }
+    "id": 0,
+    "productName": "iPhone 15 Pro Max",
+    "category": "Electronics",
+    "brand": "Apple",
+    "rating": 5,
+    "price": 1299.93,
+    "stockLevel": 124,
+    "isActive": true,
+    "releaseDate": "2023-12-21"
   },
   {
-    "rowMeta": {
-      "rowId": 1,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Galaxy S24 Ultra",
-      "category": "Electronics",
-      "brand": "Samsung",
-      "rating": 4.6,
-      "price": 1299.99,
-      "stockLevel": 23,
-      "isActive": true,
-      "releaseDate": "2024-01-17"
-    }
+    "id": 1,
+    "productName": "Galaxy S24 Ultra",
+    "category": "Electronics",
+    "brand": "Samsung",
+    "rating": 4.4,
+    "price": 1424.42,
+    "stockLevel": 68,
+    "isActive": true,
+    "releaseDate": "2023-09-21"
   },
   {
-    "rowMeta": {
-      "rowId": 2,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "MacBook Air M3",
-      "category": "Computers",
-      "brand": "Apple",
-      "rating": 4.9,
-      "price": 1399.99,
-      "stockLevel": 12,
-      "isActive": true,
-      "releaseDate": "2024-03-04"
-    }
+    "id": 2,
+    "productName": "Pixel 8 Pro",
+    "category": "Electronics",
+    "brand": "Google",
+    "rating": 4.6,
+    "price": 1063.58,
+    "stockLevel": 164,
+    "isActive": true,
+    "releaseDate": "2025-01-11"
   },
   {
-    "rowMeta": {
-      "rowId": 3,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Dell XPS 13",
-      "category": "Computers",
-      "brand": "Dell",
-      "rating": 4.4,
-      "price": 999.99,
-      "stockLevel": 8,
-      "isActive": true,
-      "releaseDate": "2023-05-15"
-    }
+    "id": 3,
+    "productName": "iPhone 14",
+    "category": "Electronics",
+    "brand": "Apple",
+    "rating": 4.5,
+    "price": 953.88,
+    "stockLevel": 101,
+    "isActive": true,
+    "releaseDate": "2023-10-07"
   },
   {
-    "rowMeta": {
-      "rowId": 4,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "AirPods Pro",
-      "category": "Audio",
-      "brand": "Apple",
-      "rating": 4.7,
-      "price": 249.99,
-      "stockLevel": 67,
-      "isActive": true,
-      "releaseDate": "2022-09-23"
-    }
+    "id": 4,
+    "productName": "Galaxy S23",
+    "category": "Electronics",
+    "brand": "Samsung",
+    "rating": 4.6,
+    "price": 1028.56,
+    "stockLevel": 28,
+    "isActive": false,
+    "releaseDate": "2023-09-26"
   },
   {
-    "rowMeta": {
-      "rowId": 5,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Sony WH-1000XM5",
-      "category": "Audio",
-      "brand": "Sony",
-      "rating": 4.8,
-      "price": 399.99,
-      "stockLevel": 34,
-      "isActive": true,
-      "releaseDate": "2022-05-12"
-    }
+    "id": 5,
+    "productName": "MacBook Air M3",
+    "category": "Computers",
+    "brand": "Apple",
+    "rating": 5,
+    "price": 1463.12,
+    "stockLevel": 120,
+    "isActive": true,
+    "releaseDate": "2025-04-28"
   },
   {
-    "rowMeta": {
-      "rowId": 6,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Nintendo Switch OLED",
-      "category": "Gaming",
-      "brand": "Nintendo",
-      "rating": 4.6,
-      "price": 349.99,
-      "stockLevel": 0,
-      "isActive": false,
-      "releaseDate": "2021-10-08"
-    }
+    "id": 6,
+    "productName": "Dell XPS 13",
+    "category": "Computers",
+    "brand": "Dell",
+    "rating": 4.2,
+    "price": 1045.72,
+    "stockLevel": 96,
+    "isActive": true,
+    "releaseDate": "2023-09-22"
   },
   {
-    "rowMeta": {
-      "rowId": 7,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "PlayStation 5",
-      "category": "Gaming",
-      "brand": "Sony",
-      "rating": 4.9,
-      "price": 499.99,
-      "stockLevel": 3,
-      "isActive": true,
-      "releaseDate": "2020-11-12"
-    }
+    "id": 7,
+    "productName": "ThinkPad X1 Carbon",
+    "category": "Computers",
+    "brand": "Lenovo",
+    "rating": 4.2,
+    "price": 1289.83,
+    "stockLevel": 167,
+    "isActive": true,
+    "releaseDate": "2024-04-20"
   },
   {
-    "rowMeta": {
-      "rowId": 8,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Levi's 501 Jeans",
-      "category": "Clothing",
-      "brand": "Levi's",
-      "rating": 4.2,
-      "price": 89.99,
-      "stockLevel": 156,
-      "isActive": true,
-      "releaseDate": "2023-01-15"
-    }
+    "id": 8,
+    "productName": "Surface Laptop 5",
+    "category": "Computers",
+    "brand": "Microsoft",
+    "rating": 4,
+    "price": 1418.45,
+    "stockLevel": 166,
+    "isActive": true,
+    "releaseDate": "2024-03-29"
   },
   {
-    "rowMeta": {
-      "rowId": 9,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Nike Air Max 270",
-      "category": "Footwear",
-      "brand": "Nike",
-      "rating": 4.5,
-      "price": 129.99,
-      "stockLevel": 89,
-      "isActive": true,
-      "releaseDate": "2022-03-26"
-    }
+    "id": 9,
+    "productName": "HP Spectre x360",
+    "category": "Computers",
+    "brand": "HP",
+    "rating": 3.8,
+    "price": 1213.33,
+    "stockLevel": 19,
+    "isActive": false,
+    "releaseDate": "2024-12-26"
   },
   {
-    "rowMeta": {
-      "rowId": 10,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Adidas Ultraboost 22",
-      "category": "Footwear",
-      "brand": "Adidas",
-      "rating": 4.3,
-      "price": 179.99,
-      "stockLevel": 45,
-      "isActive": true,
-      "releaseDate": "2022-02-25"
-    }
+    "id": 10,
+    "productName": "AirPods Pro",
+    "category": "Audio",
+    "brand": "Apple",
+    "rating": 4.5,
+    "price": 209.41,
+    "stockLevel": 148,
+    "isActive": true,
+    "releaseDate": "2023-12-11"
   },
   {
-    "rowMeta": {
-      "rowId": 11,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Instant Pot Duo 7-in-1",
-      "category": "Kitchen",
-      "brand": "Instant Pot",
-      "rating": 4.7,
-      "price": 79.99,
-      "stockLevel": 92,
-      "isActive": true,
-      "releaseDate": "2021-08-30"
-    }
+    "id": 11,
+    "productName": "Sony WH-1000XM5",
+    "category": "Audio",
+    "brand": "Sony",
+    "rating": 4.9,
+    "price": 398.9,
+    "stockLevel": 165,
+    "isActive": true,
+    "releaseDate": "2024-05-03"
   },
   {
-    "rowMeta": {
-      "rowId": 12,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "KitchenAid Stand Mixer",
-      "category": "Kitchen",
-      "brand": "KitchenAid",
-      "rating": 4.8,
-      "price": 449.99,
-      "stockLevel": 16,
-      "isActive": true,
-      "releaseDate": "2022-11-15"
-    }
+    "id": 12,
+    "productName": "Bose QuietComfort Earbuds",
+    "category": "Audio",
+    "brand": "Bose",
+    "rating": 4.5,
+    "price": 243.08,
+    "stockLevel": 89,
+    "isActive": true,
+    "releaseDate": "2023-11-05"
   },
   {
-    "rowMeta": {
-      "rowId": 13,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Dyson V15 Vacuum",
-      "category": "Home & Garden",
-      "brand": "Dyson",
-      "rating": 4.6,
-      "price": 749.99,
-      "stockLevel": 27,
-      "isActive": true,
-      "releaseDate": "2023-04-12"
-    }
+    "id": 13,
+    "productName": "AirPods Max",
+    "category": "Audio",
+    "brand": "Apple",
+    "rating": 4.1,
+    "price": 580.05,
+    "stockLevel": 152,
+    "isActive": true,
+    "releaseDate": "2024-03-19"
   },
   {
-    "rowMeta": {
-      "rowId": 14,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Tesla Model Y Floor Mats",
-      "category": "Automotive",
-      "brand": "Tesla",
-      "rating": 4.4,
-      "price": 199.99,
-      "stockLevel": 78,
-      "isActive": true,
-      "releaseDate": "2023-07-20"
-    }
+    "id": 14,
+    "productName": "Sennheiser HD 660S",
+    "category": "Audio",
+    "brand": "Sennheiser",
+    "rating": 4.5,
+    "price": 570.4,
+    "stockLevel": 60,
+    "isActive": true,
+    "releaseDate": "2025-05-17"
   },
   {
-    "rowMeta": {
-      "rowId": 15,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Fitbit Charge 6",
-      "category": "Wearables",
-      "brand": "Fitbit",
-      "rating": 4.1,
-      "price": 159.99,
-      "stockLevel": 134,
-      "isActive": true,
-      "releaseDate": "2023-10-04"
-    }
+    "id": 15,
+    "productName": "Nintendo Switch OLED",
+    "category": "Gaming",
+    "brand": "Nintendo",
+    "rating": 4.6,
+    "price": 301.11,
+    "stockLevel": 186,
+    "isActive": true,
+    "releaseDate": "2023-09-17"
   },
   {
-    "rowMeta": {
-      "rowId": 16,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Apple Watch Series 9",
-      "category": "Wearables",
-      "brand": "Apple",
-      "rating": 4.8,
-      "price": 429.99,
-      "stockLevel": 56,
-      "isActive": true,
-      "releaseDate": "2023-09-22"
-    }
+    "id": 16,
+    "productName": "PlayStation 5",
+    "category": "Gaming",
+    "brand": "Sony",
+    "rating": 4.8,
+    "price": 581.45,
+    "stockLevel": 0,
+    "isActive": false,
+    "releaseDate": "2024-12-05"
   },
   {
-    "rowMeta": {
-      "rowId": 17,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Bose QuietComfort Earbuds",
-      "category": "Audio",
-      "brand": "Bose",
-      "rating": 4.5,
-      "price": 279.99,
-      "stockLevel": 41,
-      "isActive": true,
-      "releaseDate": "2022-09-29"
-    }
+    "id": 17,
+    "productName": "Xbox Series X",
+    "category": "Gaming",
+    "brand": "Microsoft",
+    "rating": 5,
+    "price": 482.26,
+    "stockLevel": 98,
+    "isActive": true,
+    "releaseDate": "2025-05-19"
   },
   {
-    "rowMeta": {
-      "rowId": 18,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Surface Laptop 5",
-      "category": "Computers",
-      "brand": "Microsoft",
-      "rating": 4.3,
-      "price": 1299.99,
-      "stockLevel": 19,
-      "isActive": true,
-      "releaseDate": "2022-10-05"
-    }
+    "id": 18,
+    "productName": "Steam Deck",
+    "category": "Gaming",
+    "brand": "Valve",
+    "rating": 4.2,
+    "price": 420.3,
+    "stockLevel": 178,
+    "isActive": true,
+    "releaseDate": "2024-02-13"
   },
   {
-    "rowMeta": {
-      "rowId": 19,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Canon EOS R5",
-      "category": "Photography",
-      "brand": "Canon",
-      "rating": 4.9,
-      "price": 3899.99,
-      "stockLevel": 7,
-      "isActive": true,
-      "releaseDate": "2020-07-09"
-    }
+    "id": 19,
+    "productName": "Levi's 501 Jeans",
+    "category": "Clothing",
+    "brand": "Levi's",
+    "rating": 4.3,
+    "price": 82.48,
+    "stockLevel": 73,
+    "isActive": true,
+    "releaseDate": "2024-01-06"
   },
   {
-    "rowMeta": {
-      "rowId": 20,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "GoPro Hero 12",
-      "category": "Photography",
-      "brand": "GoPro",
-      "rating": 4.4,
-      "price": 399.99,
-      "stockLevel": 62,
-      "isActive": true,
-      "releaseDate": "2023-09-13"
-    }
+    "id": 20,
+    "productName": "Nike Tech Fleece",
+    "category": "Clothing",
+    "brand": "Nike",
+    "rating": 4.3,
+    "price": 116.4,
+    "stockLevel": 173,
+    "isActive": true,
+    "releaseDate": "2025-02-08"
   },
   {
-    "rowMeta": {
-      "rowId": 21,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Patagonia Down Jacket",
-      "category": "Clothing",
-      "brand": "Patagonia",
-      "rating": 4.7,
-      "price": 279.99,
-      "stockLevel": 28,
-      "isActive": true,
-      "releaseDate": "2023-08-15"
-    }
+    "id": 21,
+    "productName": "Patagonia Down Jacket",
+    "category": "Clothing",
+    "brand": "Patagonia",
+    "rating": 4.7,
+    "price": 358.64,
+    "stockLevel": 99,
+    "isActive": true,
+    "releaseDate": "2024-06-21"
   },
   {
-    "rowMeta": {
-      "rowId": 22,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "YETI Rambler Tumbler",
-      "category": "Outdoor",
-      "brand": "YETI",
-      "rating": 4.8,
-      "price": 39.99,
-      "stockLevel": 245,
-      "isActive": true,
-      "releaseDate": "2022-04-18"
-    }
+    "id": 22,
+    "productName": "Nike Air Max 270",
+    "category": "Footwear",
+    "brand": "Nike",
+    "rating": 4.6,
+    "price": 147.93,
+    "stockLevel": 36,
+    "isActive": true,
+    "releaseDate": "2024-03-17"
   },
   {
-    "rowMeta": {
-      "rowId": 23,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Weber Genesis Gas Grill",
-      "category": "Outdoor",
-      "brand": "Weber",
-      "rating": 4.6,
-      "price": 1199.99,
-      "stockLevel": 11,
-      "isActive": true
-    }
+    "id": 23,
+    "productName": "Adidas Ultraboost 22",
+    "category": "Footwear",
+    "brand": "Adidas",
+    "rating": 4.5,
+    "price": 201.68,
+    "stockLevel": 134,
+    "isActive": true,
+    "releaseDate": "2023-09-21"
   },
   {
-    "rowMeta": {
-      "rowId": 24,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Roomba j7+",
-      "category": "Home & Garden",
-      "brand": "iRobot",
-      "rating": 4.2,
-      "price": 799.99,
-      "stockLevel": 33,
-      "isActive": true
-    }
+    "id": 24,
+    "productName": "Allbirds Tree Runners",
+    "category": "Footwear",
+    "brand": "Allbirds",
+    "rating": 4,
+    "price": 116.9,
+    "stockLevel": 126,
+    "isActive": true,
+    "releaseDate": "2023-10-30"
   },
   {
-    "rowMeta": {
-      "rowId": 25,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Ring Video Doorbell Pro 2",
-      "category": "Home Security",
-      "brand": "Ring",
-      "rating": 4.1,
-      "price": 249.99,
-      "stockLevel": 87,
-      "isActive": true
-    }
+    "id": 25,
+    "productName": "Instant Pot Duo 7-in-1",
+    "category": "Kitchen",
+    "brand": "Instant Pot",
+    "rating": 5,
+    "price": 80.89,
+    "stockLevel": 33,
+    "isActive": true,
+    "releaseDate": "2024-05-02"
   },
   {
-    "rowMeta": {
-      "rowId": 26,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Nest Learning Thermostat",
-      "category": "Smart Home",
-      "brand": "Google",
-      "rating": 4.3,
-      "price": 249.99,
-      "stockLevel": 54,
-      "isActive": true
-    }
+    "id": 26,
+    "productName": "KitchenAid Stand Mixer",
+    "category": "Kitchen",
+    "brand": "KitchenAid",
+    "rating": 4.6,
+    "price": 452.54,
+    "stockLevel": 12,
+    "isActive": true,
+    "releaseDate": "2024-05-26"
   },
   {
-    "rowMeta": {
-      "rowId": 27,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Philips Hue Smart Bulbs (4-pack)",
-      "category": "Smart Home",
-      "brand": "Philips",
-      "rating": 4.5,
-      "price": 199.99,
-      "stockLevel": 123,
-      "isActive": true
-    }
+    "id": 27,
+    "productName": "Vitamix 5200",
+    "category": "Kitchen",
+    "brand": "Vitamix",
+    "rating": 4.7,
+    "price": 487.95,
+    "stockLevel": 127,
+    "isActive": false,
+    "releaseDate": "2024-01-08"
   },
   {
-    "rowMeta": {
-      "rowId": 28,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Xbox Series X",
-      "category": "Gaming",
-      "brand": "Microsoft",
-      "rating": 4.8,
-      "price": 499.99,
-      "stockLevel": 0,
-      "isActive": false
-    }
+    "id": 28,
+    "productName": "Dyson V15 Vacuum",
+    "category": "Home & Garden",
+    "brand": "Dyson",
+    "rating": 4.3,
+    "price": 786.93,
+    "stockLevel": 25,
+    "isActive": true,
+    "releaseDate": "2023-10-15"
   },
   {
-    "rowMeta": {
-      "rowId": 29,
-      "isExpanded": true
-    },
-    "rowData": {
-      "productName": "Meta Quest 3",
-      "category": "VR/AR",
-      "brand": "Meta",
-      "rating": 4.2,
-      "price": 499.99,
-      "stockLevel": 18,
-      "isActive": true,
-      "releaseDate": "2023-10-10"
-    }
+    "id": 29,
+    "productName": "iRobot Roomba j7+",
+    "category": "Home & Garden",
+    "brand": "iRobot",
+    "rating": 4.7,
+    "price": 540.36,
+    "stockLevel": 174,
+    "isActive": true,
+    "releaseDate": "2023-07-14"
+  },
+  {
+    "id": 30,
+    "productName": "Tesla Model Y Floor Mats",
+    "category": "Automotive",
+    "brand": "Tesla",
+    "rating": 4.4,
+    "price": 182.94,
+    "stockLevel": 141,
+    "isActive": true,
+    "releaseDate": "2024-06-16"
+  },
+  {
+    "id": 31,
+    "productName": "Garmin DriveSmart 86",
+    "category": "Automotive",
+    "brand": "Garmin",
+    "rating": 4,
+    "price": 371.9,
+    "stockLevel": 113,
+    "isActive": true,
+    "releaseDate": "2023-08-14"
+  },
+  {
+    "id": 32,
+    "productName": "Fitbit Charge 6",
+    "category": "Wearables",
+    "brand": "Fitbit",
+    "rating": 4.4,
+    "price": 148.13,
+    "stockLevel": 34,
+    "isActive": true,
+    "releaseDate": "2023-07-12"
+  },
+  {
+    "id": 33,
+    "productName": "Apple Watch Series 9",
+    "category": "Wearables",
+    "brand": "Apple",
+    "rating": 4.7,
+    "price": 384.62,
+    "stockLevel": 107,
+    "isActive": true,
+    "releaseDate": "2025-05-04"
+  },
+  {
+    "id": 34,
+    "productName": "Garmin Forerunner 965",
+    "category": "Wearables",
+    "brand": "Garmin",
+    "rating": 4.7,
+    "price": 688.86,
+    "stockLevel": 177,
+    "isActive": true,
+    "releaseDate": "2024-02-24"
   }
 ]

@@ -42,6 +42,7 @@ const PaginationExample = () => {
         defaultHeaders={HEADERS}
         onNextPage={onNextPage}
         rows={rows}
+        rowIdAccessor="id"
         rowsPerPage={ROWS_PER_PAGE}
         selectableCells
         selectableColumns

@@ -8,6 +8,7 @@ import { Pinned } from "../../types/Pinned";
 import { useTableContext } from "../../context/TableContext";
 import RowIndices from "../../types/RowIndices";
 import ColumnIndices from "../../types/ColumnIndices";
+import { getRowId } from "../../utils/rowUtils";
 
 interface RenderCellsProps {
   columnIndexStart?: number;
@@ -88,7 +89,7 @@ const RecursiveRenderCells = ({
   const colIndex = columnIndices[header.accessor];
 
   // Get selection state for this cell
-  const { getBorderClass, isSelected, isInitialFocusedCell } = useTableContext();
+  const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor } = useTableContext();
 
   if (header.children) {
     const filteredChildren = header.children.filter((child) =>
@@ -119,7 +120,8 @@ const RecursiveRenderCells = ({
   }
 
   // Calculate selection state for this specific cell
-  const cellData = { rowIndex, colIndex, rowId: visibleRow.row.rowMeta.rowId };
+  const rowId = getRowId(visibleRow.row, rowIndex, rowIdAccessor);
+  const cellData = { rowIndex, colIndex, rowId };
   const borderClass = getBorderClass(cellData);
   const isHighlighted = isSelected(cellData);
   const isInitialFocused = isInitialFocusedCell(cellData);

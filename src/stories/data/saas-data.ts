@@ -30,22 +30,20 @@ export const generateSaaSData = (): Row[] => {
     const customerSatisfaction = parseFloat((Math.random() * 5).toFixed(1));
 
     return {
-      rowMeta: { rowId: rowId++, isExpanded: true },
-      rowData: {
-        tier,
-        segment,
-        monthlyRevenue,
-        activeUsers,
-        churnRate,
-        avgSessionTime,
-        renewalDate,
-        supportTickets,
-        signUpDate,
-        lastLogin,
-        featureUsage: features[Math.floor(Math.random() * features.length)],
-        customerSatisfaction,
-        paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
-      },
+      id: rowId++,
+      tier,
+      segment,
+      monthlyRevenue,
+      activeUsers,
+      churnRate,
+      avgSessionTime,
+      renewalDate,
+      supportTickets,
+      signUpDate,
+      lastLogin,
+      featureUsage: features[Math.floor(Math.random() * features.length)],
+      customerSatisfaction,
+      paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
     };
   });
 };
@@ -75,7 +73,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `$${(row.rowData.monthlyRevenue as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.monthlyRevenue as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "activeUsers",
@@ -92,7 +90,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${(row.rowData.churnRate as number).toFixed(1)}%`,
+    cellRenderer: ({ row }) => `${(row.churnRate as number).toFixed(1)}%`,
   },
   {
     accessor: "avgSessionTime",
@@ -101,7 +99,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.rowData.avgSessionTime}m`,
+    cellRenderer: ({ row }) => `${row.avgSessionTime}m`,
   },
   {
     accessor: "renewalDate",
@@ -111,7 +109,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "left",
     cellRenderer: ({ row }) => {
-      const date = new Date(row.rowData.renewalDate as string);
+      const date = new Date(row.renewalDate as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
         day: "numeric",
@@ -135,7 +133,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "left",
     cellRenderer: ({ row }) => {
-      const date = new Date(row.rowData.signUpDate as string);
+      const date = new Date(row.signUpDate as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
         day: "numeric",
@@ -151,7 +149,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "left",
     cellRenderer: ({ row }) => {
-      const date = new Date(row.rowData.lastLogin as string);
+      const date = new Date(row.lastLogin as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
         day: "numeric",
@@ -174,7 +172,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${(row.rowData.customerSatisfaction as number).toFixed(1)}/5`,
+    cellRenderer: ({ row }) => `${(row.customerSatisfaction as number).toFixed(1)}/5`,
   },
   {
     accessor: "paymentMethod",

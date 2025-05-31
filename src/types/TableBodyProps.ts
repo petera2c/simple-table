@@ -6,7 +6,7 @@ import VisibleRow from "./VisibleRow";
 import { Row } from "..";
 
 interface TableBodyProps {
-  flattenedRows: Row[];
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
   headerContainerRef: RefObject<HTMLDivElement | null>;
   isWidthDragging: boolean;
   mainTemplateColumns: string;
@@ -16,7 +16,6 @@ interface TableBodyProps {
   pinnedRightColumns: HeaderObject[];
   pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
-  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
   setScrollTop: Dispatch<SetStateAction<number>>;
   visibleRows: VisibleRow[];
 }

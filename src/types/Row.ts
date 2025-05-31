@@ -1,16 +1,7 @@
 import CellValue from "./CellValue";
-import { RowId } from "./RowId";
 
-type Row = {
-  // Row metadata
-  rowMeta: {
-    children?: Row[];
-    isExpanded?: boolean;
-    rowId: RowId;
-  };
-
-  // Actual cell values
-  rowData: { [key: string]: CellValue };
-};
+// Row is now just a record of data - users can put whatever they want in it
+// The table will use rowGrouping prop to understand how to group/expand rows
+type Row = Record<string, CellValue | Row[]>;
 
 export default Row;

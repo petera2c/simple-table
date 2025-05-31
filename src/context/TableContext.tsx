@@ -5,6 +5,7 @@ import Cell from "../types/Cell";
 import CellValue from "../types/CellValue";
 import { Theme } from "..";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
+import Row from "../types/Row";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -22,7 +23,9 @@ interface TableContextType {
   draggedHeaderRef: RefObject<HeaderObject | null>;
   editColumns?: boolean;
   expandIcon?: ReactNode;
+  expandedRows: Set<string>;
   filters: TableFilterState;
+  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;
@@ -44,10 +47,13 @@ interface TableContextType {
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   prevIcon: ReactNode;
+  rowGrouping?: string[];
   rowHeight: number;
+  rowIdAccessor: string;
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
+  setExpandedRows: Dispatch<SetStateAction<Set<string>>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   setMainBodyWidth: Dispatch<SetStateAction<number>>;

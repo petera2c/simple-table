@@ -38,6 +38,8 @@ const BillingExample = () => {
         columnReordering
         defaultHeaders={HEADERS}
         rows={billingData}
+        rowIdAccessor="id"
+        rowGrouping={["charges", "invoices"]}
         height="90dvh"
         theme={theme}
         selectableCells

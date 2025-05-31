@@ -3,6 +3,7 @@ import HeaderObject from "../types/HeaderObject";
 import Cell from "../types/Cell";
 import VisibleRow from "../types/VisibleRow";
 import { findLeafHeaders } from "../utils/headerWidthUtils";
+import { getRowId } from "../utils/rowUtils";
 
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
@@ -11,10 +12,12 @@ const useSelection = ({
   selectableCells,
   headers,
   visibleRows,
+  rowIdAccessor,
 }: {
   selectableCells: boolean;
   headers: HeaderObject[];
   visibleRows: VisibleRow[];
+  rowIdAccessor: string;
 }) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
@@ -51,10 +54,10 @@ const useSelection = ({
       // Example: for col=2, might get accessor="email"
       const accessor = colIndexToAccessor.get(col);
 
-      if (accessor) {
-        // Use the accessor to get the cell value
-        // Example: if accessor="name", get rowData.name
-        acc[row][col] = visibleRows[row].row.rowData[accessor];
+      if (accessor && visibleRows[row]?.row) {
+        // Use the accessor to get the cell value directly from the row
+        // Example: if accessor="name", get row.name
+        acc[row][col] = visibleRows[row].row[accessor];
       } else {
         // If no accessor found (shouldn't happen), use empty string
         acc[row][col] = "";
@@ -87,7 +90,7 @@ const useSelection = ({
         for (let col = minCol; col <= maxCol; col++) {
           // Check if the row exists in the visible rows
           if (row >= 0 && row < visibleRows.length) {
-            const rowId = visibleRows[row].row.rowMeta.rowId;
+            const rowId = getRowId(visibleRows[row].row, row, rowIdAccessor);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -99,7 +102,7 @@ const useSelection = ({
 
       setSelectedCells(newSelectedCells);
     },
-    [visibleRows, setSelectedColumns, setLastSelectedColumnIndex, setSelectedCells]
+    [visibleRows, rowIdAccessor, setSelectedColumns, setLastSelectedColumnIndex, setSelectedCells]
   );
 
   // Select a single cell
@@ -169,8 +172,11 @@ const useSelection = ({
       // Check if the visible rows have changed
       // If the rowId has changed, and we can't find the rowId in the visible rows, do nothing
       // If the rowId has changed, and we can find the rowId in the visible rows, update the rowIndex
-      if (visibleRows[rowIndex].row.rowMeta.rowId !== rowId) {
-        const currentRowIndex = visibleRows.findIndex((row) => row.row.rowMeta.rowId === rowId);
+      const currentRowId = getRowId(visibleRows[rowIndex]?.row, rowIndex, rowIdAccessor);
+      if (currentRowId !== rowId) {
+        const currentRowIndex = visibleRows.findIndex(
+          (visibleRow, index) => getRowId(visibleRow.row, index, rowIdAccessor) === rowId
+        );
         if (currentRowIndex !== -1) {
           rowIndex = currentRowIndex;
         } else return;
@@ -180,40 +186,44 @@ const useSelection = ({
       if (event.key === "ArrowUp") {
         event.preventDefault();
         if (rowIndex > 0) {
+          const newRowId = getRowId(visibleRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor);
           const newCell = {
             rowIndex: rowIndex - 1,
             colIndex,
-            rowId: visibleRows[rowIndex - 1].row.rowMeta.rowId,
+            rowId: newRowId,
           };
           selectSingleCell(newCell);
         }
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
         if (rowIndex < visibleRows.length - 1) {
+          const newRowId = getRowId(visibleRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor);
           const newCell = {
             rowIndex: rowIndex + 1,
             colIndex,
-            rowId: visibleRows[rowIndex + 1].row.rowMeta.rowId,
+            rowId: newRowId,
           };
           selectSingleCell(newCell);
         }
       } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
         event.preventDefault();
         if (colIndex > 0) {
+          const newRowId = getRowId(visibleRows[rowIndex].row, rowIndex, rowIdAccessor);
           const newCell = {
             rowIndex,
             colIndex: colIndex - 1,
-            rowId: visibleRows[rowIndex].row.rowMeta.rowId,
+            rowId: newRowId,
           };
           selectSingleCell(newCell);
         }
       } else if (event.key === "ArrowRight" || event.key === "Tab") {
         event.preventDefault();
         if (colIndex < headers.length - 1) {
+          const newRowId = getRowId(visibleRows[rowIndex].row, rowIndex, rowIdAccessor);
           const newCell = {
             rowIndex,
             colIndex: colIndex + 1,
-            rowId: visibleRows[rowIndex].row.rowMeta.rowId,
+            rowId: newRowId,
           };
           selectSingleCell(newCell);
         }
@@ -235,6 +245,7 @@ const useSelection = ({
     copyToClipboard,
     headers.length,
     initialFocusedCell,
+    rowIdAccessor,
     selectCellRange,
     selectSingleCell,
     selectableCells,
@@ -271,7 +282,7 @@ const useSelection = ({
         for (let col = startCol; col <= endCol; col++) {
           // Ensure the row exists
           if (row >= 0 && row < visibleRows.length) {
-            const rowId = visibleRows[row].row.rowMeta.rowId;
+            const rowId = getRowId(visibleRows[row].row, row, rowIdAccessor);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -304,18 +315,25 @@ const useSelection = ({
   const getBorderClass = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
       const classes = [];
-      const topRowId = visibleRows[rowIndex - 1]?.row?.rowMeta?.rowId;
-      const bottomRowId = visibleRows[rowIndex + 1]?.row?.rowMeta?.rowId;
+      const topRowId = visibleRows[rowIndex - 1]
+        ? getRowId(visibleRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor)
+        : null;
+      const bottomRowId = visibleRows[rowIndex + 1]
+        ? getRowId(visibleRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor)
+        : null;
 
-      const topCell = { colIndex, rowIndex: rowIndex - 1, rowId: topRowId };
-      const bottomCell = { colIndex, rowIndex: rowIndex + 1, rowId: bottomRowId };
+      const topCell =
+        topRowId !== null ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId } : null;
+      const bottomCell =
+        bottomRowId !== null ? { colIndex, rowIndex: rowIndex + 1, rowId: bottomRowId } : null;
       const leftCell = { colIndex: colIndex - 1, rowIndex, rowId };
       const rightCell = { colIndex: colIndex + 1, rowIndex, rowId };
 
       // Check if neighboring cells are selected
-      if (!isSelected(topCell) || (selectedColumns.has(colIndex) && rowIndex === 0))
+      if (!topCell || !isSelected(topCell) || (selectedColumns.has(colIndex) && rowIndex === 0))
         classes.push("st-selected-top-border");
       if (
+        !bottomCell ||
         !isSelected(bottomCell) ||
         (selectedColumns.has(colIndex) && rowIndex === visibleRows.length - 1)
       )
@@ -325,7 +343,7 @@ const useSelection = ({
 
       return classes.join(" ");
     },
-    [isSelected, visibleRows, selectedColumns]
+    [isSelected, visibleRows, selectedColumns, rowIdAccessor]
   );
 
   const isInitialFocusedCell = useMemo(() => {
