@@ -1,3 +1,4 @@
+import FlattenedRowWithGrouping from "../types/FlattenedRowWithGrouping";
 import Row from "../types/Row";
 import { RowId } from "../types/RowId";
 
@@ -47,23 +48,22 @@ export const setRowExpansion = (
 };
 
 /**
- * Check if a row is expanded (check our internal expansion state)
- */
-export const isRowExpanded = (row: Row): boolean => {
-  return Boolean((row as any).__isExpanded);
-};
-
-/**
  * Flatten rows recursively based on row grouping configuration
  */
-export const flattenRowsWithGrouping = (
-  rows: Row[],
-  rowGrouping: string[] = [],
-  rowIdAccessor?: string,
-  depth: number = 0,
-  expandedRows?: Set<string>
-): Array<{ row: Row; depth: number; groupingKey?: string }> => {
-  const result: Array<{ row: Row; depth: number; groupingKey?: string }> = [];
+export const flattenRowsWithGrouping = ({
+  depth = 0,
+  expandedRows,
+  rowGrouping = [],
+  rowIdAccessor,
+  rows,
+}: {
+  depth?: number;
+  expandedRows: Set<string>;
+  rowGrouping?: string[];
+  rowIdAccessor?: string;
+  rows: Row[];
+}): FlattenedRowWithGrouping[] => {
+  const result: FlattenedRowWithGrouping[] = [];
 
   rows.forEach((row, index) => {
     const rowId = getRowId(row, index, rowIdAccessor);
@@ -72,7 +72,7 @@ export const flattenRowsWithGrouping = (
     result.push({ row, depth, groupingKey: rowGrouping[depth] });
 
     // Check if row is expanded using either __isExpanded property or expandedRows set
-    const isExpanded = expandedRows ? expandedRows.has(String(rowId)) : isRowExpanded(row);
+    const isExpanded = expandedRows.has(String(rowId));
 
     // If row is expanded and has nested data for the current grouping level
     if (isExpanded && depth < rowGrouping.length) {
@@ -81,13 +81,13 @@ export const flattenRowsWithGrouping = (
 
       if (nestedRows.length > 0) {
         // Recursively flatten nested rows with the expandedRows set
-        const flattenedNested = flattenRowsWithGrouping(
-          nestedRows,
+        const flattenedNested = flattenRowsWithGrouping({
+          depth: depth + 1,
+          expandedRows,
           rowGrouping,
           rowIdAccessor,
-          depth + 1,
-          expandedRows
-        );
+          rows: nestedRows,
+        });
         result.push(...flattenedNested);
       }
     }

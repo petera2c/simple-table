@@ -6,7 +6,7 @@ import VisibleRow from "./VisibleRow";
 import { Row } from "..";
 
 interface TableBodyProps {
-  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
+  flattenedRowsData: FlattenedRowWithGrouping[];
   headerContainerRef: RefObject<HTMLDivElement | null>;
   isWidthDragging: boolean;
   mainTemplateColumns: string;

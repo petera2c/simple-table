@@ -25,7 +25,7 @@ interface TableContextType {
   expandIcon?: ReactNode;
   expandedRows: Set<string>;
   filters: TableFilterState;
-  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
+  flattenedRowsData: FlattenedRowWithGrouping[];
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;

@@ -3,15 +3,15 @@ import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import { useTableContext } from "../../context/TableContext";
-import Row from "../../types/Row";
 import SortConfig from "../../types/SortConfig";
 import VisibleRow from "../../types/VisibleRow";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableBodyProps from "../../types/TableBodyProps";
+import FlattenedRowWithGrouping from "../../types/FlattenedRowWithGrouping";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
-  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
+  flattenedRowsData: FlattenedRowWithGrouping[];
   isWidthDragging: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;

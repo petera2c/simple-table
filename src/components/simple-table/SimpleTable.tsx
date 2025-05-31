@@ -174,7 +174,12 @@ const SimpleTableComp = ({
     }
 
     // Use the expandedRows set directly instead of setting __isExpanded on rows
-    return flattenRowsWithGrouping(currentRows, rowGrouping, rowIdAccessor, 0, expandedRows);
+    return flattenRowsWithGrouping({
+      rows: currentRows,
+      rowGrouping,
+      rowIdAccessor,
+      expandedRows,
+    });
   }, [currentRows, rowGrouping, rowIdAccessor, expandedRows]);
 
   // Calculate content height using hook

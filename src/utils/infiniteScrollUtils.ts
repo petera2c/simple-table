@@ -5,9 +5,7 @@ import VisibleRow from "../types/VisibleRow";
 const SEPARATOR_HEIGHT = 1;
 
 // Calculate total row count for flat rows (since we now use flattened data)
-export const getTotalRowCount = (
-  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>
-): number => {
+export const getTotalRowCount = (flattenedRowsData: FlattenedRowWithGrouping[]): number => {
   return flattenedRowsData.length;
 };
 
@@ -21,7 +19,7 @@ export const getVisibleRows = ({
 }: {
   bufferRowCount: number;
   contentHeight: number;
-  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
+  flattenedRowsData: FlattenedRowWithGrouping[];
   rowHeight: number;
   scrollTop: number;
 }): VisibleRow[] => {
