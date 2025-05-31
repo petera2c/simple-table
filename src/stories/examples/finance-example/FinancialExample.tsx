@@ -16,8 +16,9 @@ export const FinancialExample = () => {
       if (tableRef.current) {
         // Update a random row
         const indexToUpdate = Math.floor(Math.random() * data.length);
-        // Get the current value
-        const currentValue = data[indexToUpdate].rowData.priceChangePercent;
+        // Get the current value - handle both old and new data formats
+        const row = data[indexToUpdate] as any;
+        const currentValue = row.priceChangePercent ?? row.rowData?.priceChangePercent ?? 0;
         // Add or subtract between 0 and 0.2
         const newValue = currentValue + (Math.random() * 0.2 - 0.1);
         tableRef.current.updateData({
@@ -60,6 +61,7 @@ export const FinancialExample = () => {
         columnReordering
         defaultHeaders={HEADERS}
         rows={data}
+        rowIdAccessor="id"
         height="90dvh"
         theme={theme}
         selectableCells

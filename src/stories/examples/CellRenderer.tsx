@@ -2,8 +2,8 @@ import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 const CellRendererExample = () => {
-  // Sample data for a quick start demo
-  const data = [
+  // Sample data for a quick start demo - using the new simplified structure
+  const rows = [
     {
       id: 1,
       name: "John Doe",
@@ -54,7 +54,7 @@ const CellRendererExample = () => {
       width: 80,
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
-        const value = row.rowData[accessor];
+        const value = row[accessor] as string | number;
         return (
           <div style={{ backgroundColor: "red", width: "100%", overflow: "hidden" }}>{value}</div>
         );
@@ -66,7 +66,7 @@ const CellRendererExample = () => {
       width: 100,
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
-        const value = row.rowData[accessor];
+        const value = row[accessor] as string | number;
         return (
           <div style={{ backgroundColor: "blue", width: "100%", overflow: "hidden" }}>{value}</div>
         );
@@ -78,7 +78,7 @@ const CellRendererExample = () => {
       width: 100,
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
-        const value = row.rowData[accessor];
+        const value = row[accessor] as string | number;
         return <div style={{ backgroundColor: "green", width: "100%" }}>{value}</div>;
       },
     },
@@ -88,17 +88,11 @@ const CellRendererExample = () => {
       width: 150,
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
-        const value = row.rowData[accessor];
+        const value = row[accessor] as string | number;
         return <div style={{ backgroundColor: "yellow" }}>{value}</div>;
       },
     },
   ];
-
-  // Map data to rows format expected by SimpleTable
-  const rows = data.map((item) => ({
-    rowMeta: { rowId: item.id, isExpanded: false },
-    rowData: item,
-  }));
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -107,6 +101,7 @@ const CellRendererExample = () => {
         columnResizing
         defaultHeaders={headers}
         rows={rows}
+        rowIdAccessor="id"
         selectableCells
       />
     </div>

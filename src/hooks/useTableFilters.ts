@@ -25,7 +25,7 @@ export const useTableFilters = ({ rows }: UseTableFiltersProps): UseTableFilters
     return rows.filter((row) => {
       return Object.values(filters).every((filter) => {
         try {
-          const cellValue = row.rowData[filter.accessor];
+          const cellValue = row[filter.accessor];
           return applyFilterToValue(cellValue, filter);
         } catch (error) {
           console.warn(`Filter error for accessor ${filter.accessor}:`, error);

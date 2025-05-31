@@ -39,6 +39,7 @@ import { useTableFilters } from "../../hooks/useTableFilters";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
+import { getRowId, setRowExpansion, flattenRowsWithGrouping } from "../../utils/rowUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -60,7 +61,9 @@ interface SimpleTableProps {
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onNextPage?: OnNextPage; // Custom handler for next page
   prevIcon?: ReactNode; // Previous icon
+  rowGrouping?: string[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
+  rowIdAccessor?: string; // Property name to use as row ID (defaults to index-based ID)
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
@@ -104,7 +107,9 @@ const SimpleTableComp = ({
   onGridReady,
   onNextPage,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
+  rowGrouping,
   rowHeight = 40,
+  rowIdAccessor,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
@@ -136,6 +141,7 @@ const SimpleTableComp = ({
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Use filter hook
   const { filters, filteredRows, handleApplyFilter, handleClearFilter, handleClearAllFilters } =
@@ -160,11 +166,30 @@ const SimpleTableComp = ({
     return rows;
   }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
-  const [flattenedRows, setFlattenedRows] = useState<Row[]>(currentRows);
+  // Flatten rows based on row grouping and expansion state
+  const flattenedRowsData = useMemo(() => {
+    if (!rowGrouping || rowGrouping.length === 0) {
+      // No grouping - just return flat structure with depth 0
+      return currentRows.map((row) => ({ row, depth: 0 }));
+    }
+
+    // Add expansion state to rows
+    const rowsWithExpansion = currentRows.map((row, index) => {
+      const rowId = getRowId(row, index, rowIdAccessor);
+      return {
+        ...row,
+        __isExpanded: expandedRows.has(String(rowId)),
+      };
+    });
+
+    return flattenRowsWithGrouping(rowsWithExpansion, rowGrouping, rowIdAccessor);
+  }, [currentRows, rowGrouping, rowIdAccessor, expandedRows]);
+
+  const [flattenedRows, setFlattenedRows] = useState(flattenedRowsData.map((item) => item.row));
 
   useEffect(() => {
-    setFlattenedRows(currentRows);
-  }, [currentRows]);
+    setFlattenedRows(flattenedRowsData.map((item) => item.row));
+  }, [flattenedRowsData]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
@@ -201,6 +226,7 @@ const SimpleTableComp = ({
     selectableCells,
     headers: headersRef.current,
     visibleRows,
+    rowIdAccessor,
   });
 
   // Memoize handlers
@@ -247,25 +273,27 @@ const SimpleTableComp = ({
     if (tableRef) {
       tableRef.current = {
         updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          // Direct cell update through registry if cell is visible/registered
-          const rowId = rows?.[rowIndex]?.rowMeta?.rowId;
-          if (rowId !== undefined) {
+          // Get the row ID using the new utility
+          const row = rows?.[rowIndex];
+          if (row) {
+            const rowId = getRowId(row, rowIndex, rowIdAccessor);
             const key = getCellKey({ rowId, accessor });
             const cell = cellRegistryRef.current.get(key);
+
             if (cell) {
               // If the cell is registered (visible), update it directly
               cell.updateContent(newValue);
             }
 
-            // Always update the data source
-            if (rows?.[rowIndex]?.rowData?.[accessor] !== undefined) {
-              rows[rowIndex].rowData[accessor] = newValue;
+            // Always update the data source - now directly on the row
+            if (row[accessor] !== undefined) {
+              row[accessor] = newValue;
             }
           }
         },
       };
     }
-  }, [tableRef, rows]);
+  }, [tableRef, rows, rowIdAccessor]);
 
   return (
     <TableProvider
@@ -279,7 +307,9 @@ const SimpleTableComp = ({
         draggedHeaderRef,
         editColumns,
         expandIcon,
+        expandedRows,
         filters,
+        flattenedRowsData,
         forceUpdate,
         getBorderClass,
         handleApplyFilter,
@@ -301,10 +331,13 @@ const SimpleTableComp = ({
         pinnedLeftRef,
         pinnedRightRef,
         prevIcon,
+        rowGrouping,
         rowHeight,
+        rowIdAccessor,
         scrollbarWidth,
         selectColumns,
         selectableColumns,
+        setExpandedRows,
         setInitialFocusedCell,
         setIsWidthDragging,
         setMainBodyWidth,

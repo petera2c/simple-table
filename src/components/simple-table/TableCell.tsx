@@ -9,6 +9,7 @@ import TableCellProps from "../../types/TableCellProps";
 import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
+import { getRowId, hasNestedRows } from "../../utils/rowUtils";
 
 interface CellProps {
   borderClass: string;
@@ -59,24 +60,34 @@ const TableCell = forwardRef(
       collapseIcon,
       draggedHeaderRef,
       expandIcon,
+      expandedRows,
+      flattenedRowsData,
       handleMouseDown,
       handleMouseOver,
       headersRef,
       hoveredHeaderRef,
       onCellEdit,
       onTableHeaderDragEnd,
+      rowGrouping,
+      rowIdAccessor,
+      setExpandedRows,
       theme,
       useOddColumnBackground,
     } = useTableContext();
 
     const { depth, row } = visibleRow;
+
     // Local state
-    const [localContent, setLocalContent] = useState<CellValue>(
-      row.rowData[header.accessor] as CellValue
-    );
+    const [localContent, setLocalContent] = useState<CellValue>(row[header.accessor] as CellValue);
     const [isEditing, setIsEditing] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const updateTimeout = useRef<NodeJS.Timeout | null>(null);
+
+    // Get row ID and check if row has children
+    const rowId = getRowId(row, rowIndex, rowIdAccessor);
+    const currentGroupingKey = rowGrouping && rowGrouping[depth];
+    const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
+    const isRowExpanded = expandedRows.has(String(rowId));
 
     // Hooks
     const { handleDragOver } = useDragHandler({
@@ -91,12 +102,12 @@ const TableCell = forwardRef(
     const cellId = `cell-${rowIndex}-${colIndex}`;
 
     // Generate a unique key that includes the content value to force re-render when it changes
-    const cellKey = getCellKey({ rowId: row.rowMeta.rowId, accessor: header.accessor });
+    const cellKey = getCellKey({ rowId, accessor: header.accessor });
 
     // Register this cell with the cell registry for direct updates
     useEffect(() => {
       if (cellRegistry) {
-        const key = `${row.rowMeta.rowId}-${header.accessor}`;
+        const key = `${rowId}-${header.accessor}`;
         cellRegistry.set(key, {
           updateContent: (newValue: CellValue) => {
             // If the value is different, trigger the update animation
@@ -129,7 +140,7 @@ const TableCell = forwardRef(
           }
         };
       }
-    }, [cellRegistry, cellUpdateFlash, row.rowMeta.rowId, header.accessor, localContent]);
+    }, [cellRegistry, cellUpdateFlash, rowId, header.accessor, localContent]);
 
     // Add another effect to ensure animation gets removed
     useEffect(() => {
@@ -144,8 +155,8 @@ const TableCell = forwardRef(
 
     // Update local content when row data changes
     useEffect(() => {
-      setLocalContent(row.rowData[header.accessor] as CellValue);
-    }, [row.rowData, header.accessor]);
+      setLocalContent(row[header.accessor] as CellValue);
+    }, [row, header.accessor]);
 
     // If the cell is not highlighted, stop editing
     useEffect(() => {
@@ -157,7 +168,6 @@ const TableCell = forwardRef(
     // Derived state
     const isEditInDropdown =
       header.type === "boolean" || header.type === "date" || header.type === "enum";
-    const cellHasChildren = Boolean(row.rowMeta?.children?.length);
     const clickable = Boolean(header?.isEditable);
 
     const cellClassName = `st-cell ${
@@ -175,7 +185,7 @@ const TableCell = forwardRef(
     const updateContent = useCallback(
       (newValue: CellValue) => {
         setLocalContent(newValue);
-        row.rowData[header.accessor] = newValue;
+        row[header.accessor] = newValue;
 
         onCellEdit?.({
           accessor: header.accessor,
@@ -186,6 +196,20 @@ const TableCell = forwardRef(
       },
       [header.accessor, onCellEdit, row, rowIndex]
     );
+
+    // Handle row expansion
+    const handleRowExpansion = useCallback(() => {
+      setExpandedRows((prev) => {
+        const newSet = new Set(prev);
+        const rowIdStr = String(rowId);
+        if (newSet.has(rowIdStr)) {
+          newSet.delete(rowIdStr);
+        } else {
+          newSet.add(rowIdStr);
+        }
+        return newSet;
+      });
+    }, [rowId, setExpandedRows]);
 
     // Handle keyboard events when cell is focused
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -219,8 +243,8 @@ const TableCell = forwardRef(
         className={cellClassName}
         id={cellId}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
-        onMouseDown={() => handleMouseDown({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
-        onMouseOver={() => handleMouseOver({ rowIndex, colIndex, rowId: row.rowMeta.rowId })}
+        onMouseDown={() => handleMouseDown({ rowIndex, colIndex, rowId })}
+        onMouseOver={() => handleMouseOver({ rowIndex, colIndex, rowId })}
         onDragOver={(event) =>
           throttle({
             callback: handleDragOver,
@@ -232,16 +256,16 @@ const TableCell = forwardRef(
         ref={ref}
         data-row-index={rowIndex}
         data-col-index={colIndex}
-        data-row-id={row.rowMeta.rowId}
+        data-row-id={rowId}
         data-accessor={header.accessor}
       >
         {header.expandable && cellHasChildren ? (
-          row.rowMeta.isExpanded ? (
-            <div className="st-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
+          isRowExpanded ? (
+            <div className="st-icon-container" onClick={handleRowExpansion}>
               {collapseIcon}
             </div>
           ) : (
-            <div className="st-icon-container" onClick={() => onExpandRowClick(row.rowMeta.rowId)}>
+            <div className="st-icon-container" onClick={handleRowExpansion}>
               {expandIcon}
             </div>
           )

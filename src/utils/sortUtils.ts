@@ -126,162 +126,25 @@ const compareValues = (
   return comparators.string(String(aValue), String(bValue), direction);
 };
 
-// Sort only top-level rows, preserving hierarchy
-const sortPreservingHierarchy = (
-  rows: Row[],
-  sortConfig: SortConfig,
-  headers: HeaderObject[]
-): Row[] => {
-  // Find the header object that matches the sort key
-  const type = sortConfig.key?.type || "string";
-  const { direction } = sortConfig;
-
-  // Group rows by sectors or other grouping criteria
-  const groupedRows: Map<string, Row[]> = new Map();
-  const groupHeaderRows: Map<string, Row> = new Map();
-  let currentGroup = "";
-
-  // First pass - identify and group rows by sector
-  rows.forEach((row) => {
-    // Check if this is a group header row (like "Sector 1", "Sector 2")
-    const isSectorHeader =
-      row.rowData &&
-      // Assuming sector headers have some indicator (e.g., no data in key columns)
-      row.rowMeta.isExpanded === true &&
-      sortConfig.key.expandable === true;
-
-    if (isSectorHeader) {
-      // Extract sector name from the row (assuming it's in a column like 'sector')
-      const sectorName = (row.rowData.sector || `group_${groupedRows.size}`).toString();
-      currentGroup = sectorName;
-      groupHeaderRows.set(currentGroup, row);
-
-      // Initialize the group if it doesn't exist
-      if (!groupedRows.has(currentGroup)) {
-        groupedRows.set(currentGroup, []);
-      }
-    } else if (currentGroup) {
-      // Add data row to current group
-      const groupRows = groupedRows.get(currentGroup) || [];
-      groupRows.push(row);
-      groupedRows.set(currentGroup, groupRows);
-    } else {
-      // If no group is defined yet, create a default group
-      const defaultGroup = "default";
-      if (!groupedRows.has(defaultGroup)) {
-        groupedRows.set(defaultGroup, []);
-      }
-      groupedRows.get(defaultGroup)?.push(row);
-    }
-  });
-  // Helper function to sort rows by the specified column
-  const sortRowsByColumn = (rowsToSort: Row[]): Row[] => {
-    return [...rowsToSort].sort((a, b) => {
-      // Skip sorting if either row doesn't have rowData
-      if (!a?.rowData || !b?.rowData) return 0;
-
-      const accessor = sortConfig.key.accessor;
-      const aValue = a.rowData[accessor];
-      const bValue = b.rowData[accessor];
-
-      return compareValues(aValue, bValue, type, direction);
-    });
-  };
-
-  // Process all rows to recursively sort their children
-  const processRowsWithChildren = (rowsToProcess: Row[]): Row[] => {
-    return rowsToProcess.map((row) => {
-      // Create a new row to avoid mutating the original
-      const newRow = { ...row };
-
-      // Process children if they exist
-      if (newRow.rowMeta.children && newRow.rowMeta.children.length > 0) {
-        // Sort the children
-        const sortedChildren = sortChildrenRecursively(
-          newRow.rowMeta.children,
-          sortConfig,
-          headers
-        );
-
-        // Update the row with sorted children
-        newRow.rowMeta = {
-          ...newRow.rowMeta,
-          children: sortedChildren,
-        };
-      }
-
-      return newRow;
-    });
-  };
-
-  // Now sort each group's rows independently and process their children
-  const result: Row[] = [];
-
-  groupedRows.forEach((groupRows, groupName) => {
-    // Add the header row first if it exists
-    if (groupHeaderRows.has(groupName)) {
-      const headerRow = groupHeaderRows.get(groupName)!;
-
-      // Process header row's children if they exist
-      if (headerRow.rowMeta.children && headerRow.rowMeta.children.length > 0) {
-        headerRow.rowMeta.children = sortChildrenRecursively(
-          headerRow.rowMeta.children,
-          sortConfig,
-          headers
-        );
-      }
-
-      result.push(headerRow);
-    }
-
-    // Sort the data rows and process their children
-    const sortedRows = sortRowsByColumn(groupRows);
-    result.push(...processRowsWithChildren(sortedRows));
-  });
-
-  return result;
-};
-
-// Recursively sort children and their children
-const sortChildrenRecursively = (
-  children: Row[],
-  sortConfig: SortConfig,
-  headers: HeaderObject[]
-): Row[] => {
+// Basic sort function for flat data (no grouping)
+const sortFlatRows = (rows: Row[], sortConfig: SortConfig, headers: HeaderObject[]): Row[] => {
   const headerObject = headers.find((header) => header.accessor === sortConfig.key.accessor);
   const type = headerObject?.type || "string";
   const { direction } = sortConfig;
 
-  // Sort the current level of children
-  const sortedChildren = [...children].sort((a, b) => {
-    // Skip sorting if either row doesn't have rowData
-    if (!a?.rowData || !b?.rowData) return 0;
-
+  return [...rows].sort((a, b) => {
     const accessor = sortConfig.key.accessor;
-    const aValue = a.rowData[accessor];
-    const bValue = b.rowData[accessor];
+    const aValue = a[accessor];
+    const bValue = b[accessor];
 
     return compareValues(aValue, bValue, type, direction);
-  });
-
-  // Recursively sort any nested children
-  return sortedChildren.map((child) => {
-    if (child.rowMeta.children && child.rowMeta.children.length > 0) {
-      return {
-        ...child,
-        rowMeta: {
-          ...child.rowMeta,
-          children: sortChildrenRecursively(child.rowMeta.children, sortConfig, headers),
-        },
-      };
-    }
-    return child;
   });
 };
 
 export const handleSort = (headers: HeaderObject[], rows: Row[], sortConfig: SortConfig) => {
-  // Apply sorting while preserving hierarchy
-  const sortedData = sortPreservingHierarchy(rows, sortConfig, headers);
+  // For now, use simple flat sorting since we've simplified the row structure
+  // Row grouping will be handled by the table internally using the rowGrouping prop
+  const sortedData = sortFlatRows(rows, sortConfig, headers);
 
   return { sortedData, newSortConfig: sortConfig };
 };

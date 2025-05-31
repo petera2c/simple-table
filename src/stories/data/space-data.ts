@@ -24,25 +24,23 @@ export const generateSpaceData = (): Row[] => {
     const duration = type === "Active" ? "Ongoing" : Math.floor(Math.random() * 10) + 1;
 
     return {
-      rowMeta: { rowId: rowId++, isExpanded: true },
-      rowData: {
-        q1: Math.floor(Math.random() * 100),
-        q2: Math.floor(Math.random() * 100),
-        q3: Math.floor(Math.random() * 100),
-        q4: Math.floor(Math.random() * 100),
-        agency,
-        missionName: `${agency} ${type} ${Math.floor(Math.random() * 1000)}`,
-        launchDate,
-        destination,
-        status: Math.random() > 0.2 ? "Completed" : "Active",
-        crewSize: type === "Crewed" ? Math.floor(Math.random() * 10) + 1 : 0,
-        duration,
-        payloadWeight,
-        launchSite: launchSites[Math.floor(Math.random() * launchSites.length)],
-        missionCostPerKg,
-        successRate,
-        scientificYield,
-      },
+      id: rowId++,
+      q1: Math.floor(Math.random() * 100),
+      q2: Math.floor(Math.random() * 100),
+      q3: Math.floor(Math.random() * 100),
+      q4: Math.floor(Math.random() * 100),
+      agency,
+      missionName: `${agency} ${type} ${Math.floor(Math.random() * 1000)}`,
+      launchDate,
+      destination,
+      status: Math.random() > 0.2 ? "Completed" : "Active",
+      crewSize: type === "Crewed" ? Math.floor(Math.random() * 10) + 1 : 0,
+      duration,
+      payloadWeight,
+      launchSite: launchSites[Math.floor(Math.random() * launchSites.length)],
+      missionCostPerKg,
+      successRate,
+      scientificYield,
     };
   });
 };
@@ -74,7 +72,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "left",
     cellRenderer: ({ row }) => {
-      const date = new Date(row.rowData.launchDate as string);
+      const date = new Date(row.launchDate as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
         day: "numeric",
@@ -161,8 +159,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "right",
     cellRenderer: ({ row }) => {
-      if (row.rowData.duration === "Ongoing") return "Ongoing";
-      return `${row.rowData.duration}y`;
+      if (row.duration === "Ongoing") return "Ongoing";
+      return `${row.duration}y`;
     },
   },
   {
@@ -172,7 +170,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.rowData.payloadWeight as number}kg`,
+    cellRenderer: ({ row }) => `${row.payloadWeight as number}kg`,
   },
   {
     accessor: "launchSite",
@@ -190,7 +188,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "right",
     cellRenderer: ({ row }) => {
-      return `$${(row.rowData.missionCostPerKg as number).toLocaleString("en-US", {
+      return `$${(row.missionCostPerKg as number).toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}/kg`;
@@ -203,7 +201,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.rowData.successRate}%`,
+    cellRenderer: ({ row }) => `${row.successRate}%`,
   },
   {
     accessor: "scientificYield",
@@ -212,6 +210,6 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.rowData.scientificYield}TB`,
+    cellRenderer: ({ row }) => `${row.scientificYield}TB`,
   },
 ];

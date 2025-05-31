@@ -2,8 +2,8 @@ import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 const BasicExampleComponent = () => {
-  // Sample data for a quick start demo
-  const data = [
+  // Sample data for a quick start demo - now using the new simplified structure
+  const rows = [
     {
       id: 1,
       name: "John Doe",
@@ -54,12 +54,6 @@ const BasicExampleComponent = () => {
     { accessor: "role", label: "Role", width: 150, isSortable: true },
   ];
 
-  // Map data to rows format expected by SimpleTable
-  const rows = data.map((item) => ({
-    rowMeta: { rowId: item.id, isExpanded: false },
-    rowData: item,
-  }));
-
   return (
     <div style={{ padding: "2rem" }}>
       <SimpleTable
@@ -67,6 +61,7 @@ const BasicExampleComponent = () => {
         defaultHeaders={headers}
         editColumns
         rows={rows}
+        rowIdAccessor="id"
         selectableCells
       />
     </div>

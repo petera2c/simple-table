@@ -24,8 +24,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
-          if (row.rowData.dealSize === "—") return "—";
-          return `$${(row.rowData.dealSize as number).toLocaleString("en-US", {
+          if (row.dealSize === "—") return "—";
+          return `$${(row.dealSize as number).toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}`;
@@ -41,8 +41,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
-          if (row.rowData.dealValue === "—") return "—";
-          const value = row.rowData.dealValue as number;
+          if (row.dealValue === "—") return "—";
+          const value = row.dealValue as number;
 
           // Color code based on value tiers
           let valueClass = "text-gray-700";
@@ -70,8 +70,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         align: "center",
         type: "boolean",
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.isWon === "—") return "—";
-          const isWon = row.rowData.isWon as boolean;
+          if (row.isWon === "—") return "—";
+          const isWon = row.isWon as boolean;
           return isWon ? "Won" : "Lost";
         },
       },
@@ -93,8 +93,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.commission === "—") return "—";
-          const value = row.rowData.commission as number;
+          if (row.commission === "—") return "—";
+          const value = row.commission as number;
           if (value === 0) return <span className="text-gray-400">$0.00</span>;
 
           return `$${value.toLocaleString("en-US", {
@@ -112,8 +112,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.profitMargin === "—") return "—";
-          const value = row.rowData.profitMargin as number;
+          if (row.profitMargin === "—") return "—";
+          const value = row.profitMargin as number;
 
           // Enhanced color coding based on profit margin tiers
           let colorClass = "";
@@ -139,8 +139,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.dealProfit === "—") return "—";
-          const value = row.rowData.dealProfit as number;
+          if (row.dealProfit === "—") return "—";
+          const value = row.dealProfit as number;
           if (value === 0) return <span className="text-gray-400">$0.00</span>;
 
           // Color code based on profit tiers

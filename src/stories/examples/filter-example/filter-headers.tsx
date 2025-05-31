@@ -91,8 +91,8 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         type: "number",
         filterable: true,
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.rating === "—") return "—";
-          const rating = row.rowData.rating as number;
+          if (row.rating === "—") return "—";
+          const rating = row.rating as number;
           const stars = "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
 
           // Color code based on rating
@@ -129,8 +129,8 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         type: "number",
         filterable: true,
         cellRenderer: ({ row }) => {
-          if (row.rowData.price === "—") return "—";
-          const price = row.rowData.price as number;
+          if (row.price === "—") return "—";
+          const price = row.price as number;
 
           // Color code based on price tiers
           let priceClass = "text-gray-700";
@@ -161,8 +161,8 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         type: "number",
         filterable: true,
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.stockLevel === "—") return "—";
-          const stock = row.rowData.stockLevel as number;
+          if (row.stockLevel === "—") return "—";
+          const stock = row.stockLevel as number;
 
           // Color code based on stock levels
           let stockClass = "";
@@ -195,8 +195,8 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         type: "boolean",
         filterable: true,
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.isActive === "—") return "—";
-          const isActive = row.rowData.isActive as boolean;
+          if (row.isActive === "—") return "—";
+          const isActive = row.isActive as boolean;
           return (
             <span
               className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -218,9 +218,9 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         type: "date",
         filterable: true,
         cellRenderer: ({ row }: { row: Row }) => {
-          if (row.rowData.releaseDate === "—") return "—";
+          if (row.releaseDate === "—") return "—";
           // Parse ISO date string directly to avoid timezone issues
-          const dateString = row.rowData.releaseDate as string;
+          const dateString = row.releaseDate as string;
           if (!dateString) return "—";
           const [year, month, day] = dateString.split("-").map(Number);
           const monthNames = [

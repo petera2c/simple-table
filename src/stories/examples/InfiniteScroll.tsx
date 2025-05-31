@@ -27,8 +27,12 @@ const InfiniteScrollExample = () => {
 
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
     setRows((prevRows) => {
-      const rowIndex = rows.findIndex((r) => r.rowMeta.rowId === row.rowMeta.rowId);
-      prevRows[rowIndex].rowData[accessor] = newValue;
+      const rowIndex = prevRows.findIndex((r) => r.id === row.id);
+      if (rowIndex !== -1) {
+        const updatedRows = [...prevRows];
+        updatedRows[rowIndex] = { ...updatedRows[rowIndex], [accessor]: newValue };
+        return updatedRows;
+      }
       return prevRows;
     });
   };
@@ -41,6 +45,7 @@ const InfiniteScrollExample = () => {
         columnReordering // Enable draggable columns
         onCellEdit={updateCell} // Handle cell changes
         rows={rows} // Set rows data
+        rowIdAccessor="id"
         selectableCells // Enable selectable cells
         height="calc(100dvh - 112px)" // Set a fixed height for scrolling
         shouldPaginate={false} // Disable pagination to enable infinite scrolling

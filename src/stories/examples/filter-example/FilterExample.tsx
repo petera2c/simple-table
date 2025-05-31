@@ -2,7 +2,7 @@
 
 import { PRODUCT_HEADERS } from "./filter-headers";
 import data from "./filter-data.json";
-import { Row, SimpleTable, Theme } from "../../..";
+import { SimpleTable, Theme } from "../../..";
 import { useState } from "react";
 
 const shouldPaginate = false;
@@ -42,7 +42,7 @@ export const FilterExampleComponent = () => {
         columnResizing
         columnReordering
         defaultHeaders={PRODUCT_HEADERS}
-        rows={data as Row[]}
+        rows={data}
         theme={theme}
         selectableCells
         {...(shouldPaginate

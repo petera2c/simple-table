@@ -32,74 +32,28 @@ const headers: HeaderObject[] = [
   },
 ];
 
-// Sample data with values to highlight
+// Sample data with values to highlight - using new simplified structure
 const data = [
-  {
-    rowMeta: { rowId: 1 },
-    rowData: { id: 1, product: "Laptop", sales: 1250, growth: 15, status: "In Stock", risk: "Low" },
-  },
-  {
-    rowMeta: { rowId: 2 },
-    rowData: {
-      id: 2,
-      product: "Smartphone",
-      sales: 2430,
-      growth: -5,
-      status: "Low Stock",
-      risk: "Medium",
-    },
-  },
-  {
-    rowMeta: { rowId: 3 },
-    rowData: { id: 3, product: "Tablet", sales: 890, growth: 23, status: "In Stock", risk: "Low" },
-  },
-  {
-    rowMeta: { rowId: 4 },
-    rowData: {
-      id: 4,
-      product: "Headphones",
-      sales: 560,
-      growth: -12,
-      status: "Out of Stock",
-      risk: "High",
-    },
-  },
-  {
-    rowMeta: { rowId: 5 },
-    rowData: { id: 5, product: "Monitor", sales: 1180, growth: 8, status: "In Stock", risk: "Low" },
-  },
-  {
-    rowMeta: { rowId: 6 },
-    rowData: {
-      id: 6,
-      product: "Keyboard",
-      sales: 350,
-      growth: -2,
-      status: "Low Stock",
-      risk: "Medium",
-    },
-  },
-  {
-    rowMeta: { rowId: 7 },
-    rowData: { id: 7, product: "Mouse", sales: 410, growth: 5, status: "In Stock", risk: "Low" },
-  },
-  {
-    rowMeta: { rowId: 8 },
-    rowData: {
-      id: 8,
-      product: "Speaker",
-      sales: 680,
-      growth: -8,
-      status: "Out of Stock",
-      risk: "High",
-    },
-  },
+  { id: 1, product: "Laptop", sales: 1250, growth: 15, status: "In Stock", risk: "Low" },
+  { id: 2, product: "Smartphone", sales: 2430, growth: -5, status: "Low Stock", risk: "Medium" },
+  { id: 3, product: "Tablet", sales: 890, growth: 23, status: "In Stock", risk: "Low" },
+  { id: 4, product: "Headphones", sales: 560, growth: -12, status: "Out of Stock", risk: "High" },
+  { id: 5, product: "Monitor", sales: 1180, growth: 8, status: "In Stock", risk: "Low" },
+  { id: 6, product: "Keyboard", sales: 350, growth: -2, status: "Low Stock", risk: "Medium" },
+  { id: 7, product: "Mouse", sales: 410, growth: 5, status: "In Stock", risk: "Low" },
+  { id: 8, product: "Speaker", sales: 680, growth: -8, status: "Out of Stock", risk: "High" },
 ];
 
 const CellHighlightingDemo = () => {
   return (
     <div style={{ padding: "2rem" }}>
-      <SimpleTable defaultHeaders={headers} selectableCells selectableColumns rows={data} />
+      <SimpleTable
+        defaultHeaders={headers}
+        selectableCells
+        selectableColumns
+        rows={data}
+        rowIdAccessor="id"
+      />
     </div>
   );
 };

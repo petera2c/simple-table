@@ -66,11 +66,9 @@ const TableSection = ({
       >
         {visibleRows.map((visibleRow, index) => {
           const lastRow = visibleRows[index - 1];
-          const isRowExpanded = Boolean(
-            lastRow?.depth !== visibleRow?.depth &&
-              visibleRow?.row.rowMeta?.children?.length &&
-              visibleRow.depth === 0
-          );
+          // For now, disable row expansion detection since we're using flat structure
+          // Row grouping will be implemented differently with the new rowGrouping prop
+          const isRowExpanded = false;
 
           return (
             <Fragment key={visibleRow.position}>

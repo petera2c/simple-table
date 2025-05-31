@@ -40,8 +40,8 @@ export const HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
-          if (row.rowData.price === "—") return "—";
-          return `$${(row.rowData.price as number).toLocaleString("en-US", {
+          if (row.price === "—") return "—";
+          return `$${(row.price as number).toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}`;
@@ -57,9 +57,8 @@ export const HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
-          if (row.rowData.priceChangePercent === "—" || row.rowData.priceChangePercent === null)
-            return "—";
-          const value = row.rowData.priceChangePercent as number;
+          if (row.priceChangePercent === "—" || row.priceChangePercent === null) return "—";
+          const value = row.priceChangePercent as number;
           const color = value < 0 ? "text-red-600" : value > 0 ? "text-green-600" : "text-gray-600";
           const prefix = value > 0 ? "+" : "";
           const bgColor = value < 0 ? "bg-red-50" : value > 0 ? "bg-green-50" : "";
@@ -100,8 +99,8 @@ export const HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
-          if (row.rowData.peRatio === "—" || row.rowData.peRatio === null) return "—";
-          return (row.rowData.peRatio as number).toFixed(1);
+          if (row.peRatio === "—" || row.peRatio === null) return "—";
+          return (row.peRatio as number).toFixed(1);
         },
       },
       {
@@ -114,8 +113,8 @@ export const HEADERS: HeaderObject[] = [
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
-          if (row.rowData.dividendYield === "—" || row.rowData.dividendYield === null) return "—";
-          return `${(row.rowData.dividendYield as number).toFixed(2)}%`;
+          if (row.dividendYield === "—" || row.dividendYield === null) return "—";
+          return `${(row.dividendYield as number).toFixed(2)}%`;
         },
       },
     ],
@@ -143,8 +142,8 @@ export const HEADERS: HeaderObject[] = [
           { label: "Strong Sell", value: "Strong Sell" },
         ],
         cellRenderer: ({ row }) => {
-          if (!row.rowData.analystRating) return "—";
-          const rating = row.rowData.analystRating as string;
+          if (!row.analystRating) return "—";
+          const rating = row.analystRating as string;
           const colorMap: Record<string, string> = {
             "Strong Buy": "text-green-600 bg-green-50",
             Buy: "text-green-500 bg-green-50",

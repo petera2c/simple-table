@@ -13,6 +13,8 @@ const SelectableCellsExample = () => {
         columnReordering
         rowHeight={20}
         rows={EXAMPLE_DATA}
+        rowGrouping={["stores"]}
+        rowIdAccessor="id"
         selectableCells
         selectableColumns
         height="80vh"

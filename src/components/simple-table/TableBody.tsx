@@ -9,6 +9,7 @@ import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
+import { getRowId } from "../../utils/rowUtils";
 
 const TableBody = ({
   flattenedRows,
@@ -31,6 +32,7 @@ const TableBody = ({
     hiddenColumns,
     mainBodyRef,
     rowHeight,
+    rowIdAccessor,
     scrollbarWidth,
     tableBodyContainerRef,
   } = useTableContext();
@@ -68,27 +70,18 @@ const TableBody = ({
 
     // Map each row's ID to its index in the visible rows array
     visibleRows.forEach((visibleRow, index) => {
-      const rowId = String(visibleRow.row.rowMeta.rowId);
+      const rowId = String(getRowId(visibleRow.row, index, rowIdAccessor));
       indices[rowId] = index;
     });
 
     return indices;
-  }, [visibleRows]);
+  }, [visibleRows, rowIdAccessor]);
 
+  // For now, row expansion is not supported with the new flat structure
+  // Row grouping will be handled differently using the rowGrouping prop
   const toggleRow = (rowId: RowId) => {
-    const updateRow = (row: Row): Row => {
-      if (row.rowMeta.rowId === rowId && row.rowMeta.children) {
-        return { ...row, rowMeta: { ...row.rowMeta, isExpanded: !row.rowMeta.isExpanded } };
-      }
-      if (row.rowMeta.children) {
-        return {
-          ...row,
-          rowMeta: { ...row.rowMeta, children: row.rowMeta.children.map(updateRow) },
-        };
-      }
-      return row;
-    };
-    setFlattenedRows((prevRows) => prevRows.map(updateRow));
+    // This will be implemented later when we add row grouping support
+    console.log("Row expansion not yet implemented for new structure:", rowId);
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
