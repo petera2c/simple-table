@@ -22,7 +22,6 @@ const TableBody = ({
   pinnedRightColumns,
   pinnedRightTemplateColumns,
   pinnedRightWidth,
-  setFlattenedRows,
   setScrollTop,
   visibleRows,
 }: TableBodyProps) => {

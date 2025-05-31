@@ -16,7 +16,6 @@ interface TableBodyProps {
   pinnedRightColumns: HeaderObject[];
   pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
-  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
   setScrollTop: Dispatch<SetStateAction<number>>;
   visibleRows: VisibleRow[];
 }

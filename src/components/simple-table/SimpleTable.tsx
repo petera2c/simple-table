@@ -63,7 +63,7 @@ interface SimpleTableProps {
   prevIcon?: ReactNode; // Previous icon
   rowGrouping?: string[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
-  rowIdAccessor?: string; // Property name to use as row ID (defaults to index-based ID)
+  rowIdAccessor: string; // Property name to use as row ID (defaults to index-based ID)
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
@@ -176,12 +176,6 @@ const SimpleTableComp = ({
     // Use the expandedRows set directly instead of setting __isExpanded on rows
     return flattenRowsWithGrouping(currentRows, rowGrouping, rowIdAccessor, 0, expandedRows);
   }, [currentRows, rowGrouping, rowIdAccessor, expandedRows]);
-
-  const [flattenedRows, setFlattenedRows] = useState(flattenedRowsData.map((item) => item.row));
-
-  useEffect(() => {
-    setFlattenedRows(flattenedRowsData.map((item) => item.row));
-  }, [flattenedRowsData]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
@@ -364,7 +358,6 @@ const SimpleTableComp = ({
                 isWidthDragging={isWidthDragging}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
-                setFlattenedRows={setFlattenedRows}
                 setScrollTop={setScrollTop}
                 sort={sort}
                 visibleRows={visibleRows}

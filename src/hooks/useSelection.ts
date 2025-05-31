@@ -17,7 +17,7 @@ const useSelection = ({
   selectableCells: boolean;
   headers: HeaderObject[];
   visibleRows: VisibleRow[];
-  rowIdAccessor?: string;
+  rowIdAccessor: string;
 }) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());

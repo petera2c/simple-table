@@ -15,7 +15,6 @@ interface TableContentLocalProps {
   isWidthDragging: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
-  setFlattenedRows: Dispatch<SetStateAction<Row[]>>;
   setScrollTop: Dispatch<SetStateAction<number>>;
   sort: SortConfig | null;
   visibleRows: VisibleRow[];
@@ -26,7 +25,6 @@ const TableContent = ({
   isWidthDragging,
   pinnedLeftWidth,
   pinnedRightWidth,
-  setFlattenedRows,
   setScrollTop,
   sort,
   visibleRows,
@@ -78,7 +76,6 @@ const TableContent = ({
     pinnedRightColumns,
     pinnedRightTemplateColumns,
     pinnedRightWidth,
-    setFlattenedRows,
     setScrollTop,
     visibleRows,
   };

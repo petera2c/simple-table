@@ -49,7 +49,7 @@ interface TableContextType {
   prevIcon: ReactNode;
   rowGrouping?: string[];
   rowHeight: number;
-  rowIdAccessor?: string;
+  rowIdAccessor: string;
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
