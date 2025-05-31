@@ -61,7 +61,6 @@ const TableCell = forwardRef(
       draggedHeaderRef,
       expandIcon,
       expandedRows,
-      flattenedRowsData,
       handleMouseDown,
       handleMouseOver,
       headersRef,

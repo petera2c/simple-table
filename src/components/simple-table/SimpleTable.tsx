@@ -39,7 +39,7 @@ import { useTableFilters } from "../../hooks/useTableFilters";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
-import { getRowId, setRowExpansion, flattenRowsWithGrouping } from "../../utils/rowUtils";
+import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations

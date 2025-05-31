@@ -1,6 +1,5 @@
 import { useRef, useMemo, useState } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
-import Row from "../../types/Row";
 import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";

@@ -5,7 +5,6 @@ import Cell from "../types/Cell";
 import CellValue from "../types/CellValue";
 import { Theme } from "..";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
-import Row from "../types/Row";
 import FlattenedRowWithGrouping from "../types/FlattenedRowWithGrouping";
 
 // Define the interface for cell registry entries

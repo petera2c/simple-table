@@ -30,24 +30,6 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
 };
 
 /**
- * Set the expansion state for a row (we'll need to track this separately now)
- */
-export const setRowExpansion = (
-  rows: Row[],
-  targetRowId: RowId,
-  isExpanded: boolean,
-  rowIdAccessor?: string
-): Row[] => {
-  return rows.map((row, index) => {
-    const rowId = getRowId(row, index, rowIdAccessor);
-    if (rowId === targetRowId) {
-      return { ...row, __isExpanded: isExpanded };
-    }
-    return row;
-  });
-};
-
-/**
  * Flatten rows recursively based on row grouping configuration
  */
 export const flattenRowsWithGrouping = ({
