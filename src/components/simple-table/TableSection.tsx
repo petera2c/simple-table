@@ -63,14 +63,12 @@ const TableSection = ({
         }}
       >
         {visibleRows.map((visibleRow, index) => {
-          const isRowExpanded = false;
-
           return (
             <Fragment key={visibleRow.position}>
               {index !== 0 && (
                 <TableRowSeparator
                   // Is last row group and it is open
-                  displayStrongBorder={isRowExpanded}
+                  displayStrongBorder={visibleRow.isLastGroupRow}
                   position={visibleRow.position}
                   rowHeight={rowHeight}
                   templateColumns={templateColumns}

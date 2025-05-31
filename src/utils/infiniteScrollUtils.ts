@@ -1,5 +1,5 @@
 import { ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
-import Row from "../types/Row";
+import FlattenedRowWithGrouping from "../types/FlattenedRowWithGrouping";
 import VisibleRow from "../types/VisibleRow";
 
 const SEPARATOR_HEIGHT = 1;
@@ -39,7 +39,8 @@ export const getVisibleRows = ({
         row,
         depth,
         position: i,
-        isLastGroupRow: false, // Will be determined by grouping logic elsewhere
+        isLastGroupRow:
+          depth === 0 && flattenedRowsData[i - 1] && flattenedRowsData[i - 1].depth !== depth,
       });
     }
   }
