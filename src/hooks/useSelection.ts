@@ -1,24 +1,26 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import HeaderObject from "../types/HeaderObject";
+import type TableRowType from "../types/TableRow";
 import Cell from "../types/Cell";
-import VisibleRow from "../types/VisibleRow";
 import { findLeafHeaders } from "../utils/headerWidthUtils";
 import { getRowId } from "../utils/rowUtils";
 
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
 
+interface UseSelectionProps {
+  selectableCells: boolean;
+  headers: HeaderObject[];
+  visibleRows: TableRowType[];
+  rowIdAccessor: string;
+}
+
 const useSelection = ({
   selectableCells,
   headers,
   visibleRows,
   rowIdAccessor,
-}: {
-  selectableCells: boolean;
-  headers: HeaderObject[];
-  visibleRows: VisibleRow[];
-  rowIdAccessor: string;
-}) => {
+}: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
   const [lastSelectedColumnIndex, setLastSelectedColumnIndex] = useState<number | null>(null);

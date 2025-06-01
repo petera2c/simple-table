@@ -167,14 +167,19 @@ const SimpleTableComp = ({
     return rows;
   }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
-  // Flatten rows based on row grouping and expansion state
-  const flattenedRowsData = useMemo(() => {
+  // Flatten rows based on row grouping and expansion state - now includes ALL properties
+  const tableRows = useMemo(() => {
     if (!rowGrouping || rowGrouping.length === 0) {
-      // No grouping - just return flat structure with depth 0
-      return currentRows.map((row) => ({ row, depth: 0 }));
+      // No grouping - just return flat structure with calculated positions
+      return currentRows.map((row, index) => ({
+        row,
+        depth: 0,
+        groupingKey: undefined,
+        position: index,
+        isLastGroupRow: index === currentRows.length - 1,
+      }));
     }
 
-    // Use the expandedRows set directly instead of setting __isExpanded on rows
     return flattenRowsWithGrouping({
       rows: currentRows,
       rowGrouping,
@@ -193,11 +198,11 @@ const SimpleTableComp = ({
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
         contentHeight,
-        flattenedRowsData,
+        tableRows,
         rowHeight,
         scrollTop,
       }),
-    [contentHeight, rowHeight, flattenedRowsData, scrollTop]
+    [contentHeight, rowHeight, tableRows, scrollTop]
   );
 
   // Hooks
@@ -302,7 +307,7 @@ const SimpleTableComp = ({
         expandIcon,
         expandedRows,
         filters,
-        flattenedRowsData,
+        tableRows,
         forceUpdate,
         getBorderClass,
         handleApplyFilter,
@@ -360,7 +365,7 @@ const SimpleTableComp = ({
               onMouseLeave={handleMouseUp}
             >
               <TableContent
-                flattenedRowsData={flattenedRowsData}
+                tableRows={tableRows}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}

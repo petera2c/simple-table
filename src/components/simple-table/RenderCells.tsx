@@ -3,7 +3,7 @@ import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
 import { RowId } from "../../types/RowId";
-import VisibleRow from "../../types/VisibleRow";
+import type TableRowType from "../../types/TableRow";
 import { Pinned } from "../../types/Pinned";
 import { useTableContext } from "../../context/TableContext";
 import RowIndices from "../../types/RowIndices";
@@ -19,7 +19,7 @@ interface RenderCellsProps {
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: VisibleRow;
+  visibleRow: TableRowType;
 }
 
 const RenderCells = ({
@@ -81,7 +81,7 @@ const RecursiveRenderCells = ({
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: VisibleRow;
+  visibleRow: TableRowType;
 }) => {
   // Get the column index for this header from our pre-calculated mapping
   const colIndex = columnIndices[header.accessor];

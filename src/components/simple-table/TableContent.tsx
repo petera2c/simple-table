@@ -4,27 +4,26 @@ import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import { useTableContext } from "../../context/TableContext";
 import SortConfig from "../../types/SortConfig";
-import VisibleRow from "../../types/VisibleRow";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableBodyProps from "../../types/TableBodyProps";
-import FlattenedRowWithGrouping from "../../types/FlattenedRowWithGrouping";
+import TableRow from "../../types/TableRow";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
-  flattenedRowsData: FlattenedRowWithGrouping[];
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: Dispatch<SetStateAction<number>>;
   sort: SortConfig | null;
-  visibleRows: VisibleRow[];
+  tableRows: TableRow[];
+  visibleRows: TableRow[];
 }
 
 const TableContent = ({
-  flattenedRowsData,
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
   sort,
+  tableRows,
   visibleRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
@@ -64,7 +63,7 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
-    flattenedRowsData,
+    tableRows,
     headerContainerRef,
     mainTemplateColumns,
     pinnedLeftColumns,

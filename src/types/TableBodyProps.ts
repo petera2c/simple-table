@@ -2,12 +2,10 @@ import { RefObject } from "react";
 import { HeaderObject } from "..";
 import { Dispatch } from "react";
 import { SetStateAction } from "react";
-import VisibleRow from "./VisibleRow";
-import { Row } from "..";
-import FlattenedRowWithGrouping from "./FlattenedRowWithGrouping";
+import TableRow from "./TableRow";
 
 interface TableBodyProps {
-  flattenedRowsData: FlattenedRowWithGrouping[];
+  tableRows: TableRow[];
   headerContainerRef: RefObject<HTMLDivElement | null>;
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
@@ -17,7 +15,7 @@ interface TableBodyProps {
   pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
   setScrollTop: Dispatch<SetStateAction<number>>;
-  visibleRows: VisibleRow[];
+  visibleRows: TableRow[];
 }
 
 export default TableBodyProps;

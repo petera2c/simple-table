@@ -11,7 +11,6 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { getRowId } from "../../utils/rowUtils";
 
 const TableBody = ({
-  flattenedRowsData,
   headerContainerRef,
   mainTemplateColumns,
   pinnedLeftColumns,
@@ -21,6 +20,7 @@ const TableBody = ({
   pinnedRightTemplateColumns,
   pinnedRightWidth,
   setScrollTop,
+  tableRows,
   visibleRows,
 }: TableBodyProps) => {
   // Get stable props from context
@@ -48,7 +48,7 @@ const TableBody = ({
   const scrollTimeoutRef = useRef<number | null>(null);
 
   // Derived state
-  const totalRowCount = getTotalRowCount(flattenedRowsData);
+  const totalRowCount = getTotalRowCount(tableRows);
   const totalHeight = totalRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 
   // Calculate column indices for all headers (including pinned) in one place

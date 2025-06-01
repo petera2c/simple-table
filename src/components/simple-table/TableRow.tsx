@@ -1,5 +1,4 @@
-import { RowId } from "../../types/RowId";
-import VisibleRow from "../../types/VisibleRow";
+import type TableRowType from "../../types/TableRow";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
 import { Pinned } from "../../types/Pinned";
@@ -17,12 +16,12 @@ interface TableRowProps {
   hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
   index: number;
-  onExpandRowClick: (rowId: RowId) => void;
+  onExpandRowClick: (rowId: any) => void;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
   setHoveredIndex: (index: number | null) => void;
-  visibleRow: VisibleRow;
+  visibleRow: TableRowType;
 }
 
 const TableRow = ({

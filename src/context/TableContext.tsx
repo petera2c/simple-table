@@ -1,15 +1,13 @@
-import { createContext, useContext, ReactNode, RefObject, Dispatch, SetStateAction } from "react";
+import { ReactNode, RefObject, createContext, useContext, Dispatch, SetStateAction } from "react";
+import { TableFilterState, FilterCondition } from "../types/FilterTypes";
+import TableRow from "../types/TableRow";
+import Cell from "../types/Cell";
 import HeaderObject from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
-import Cell from "../types/Cell";
-import CellValue from "../types/CellValue";
-import { Theme } from "..";
-import { TableFilterState, FilterCondition } from "../types/FilterTypes";
-import FlattenedRowWithGrouping from "../types/FlattenedRowWithGrouping";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
-  updateContent: (newValue: CellValue) => void;
+  updateContent: (newValue: any) => void;
 }
 
 interface TableContextType {
@@ -25,7 +23,7 @@ interface TableContextType {
   expandIcon?: ReactNode;
   expandedRows: Set<string>;
   filters: TableFilterState;
-  flattenedRowsData: FlattenedRowWithGrouping[];
+  tableRows: TableRow[];
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;
@@ -61,13 +59,13 @@ interface TableContextType {
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   shouldPaginate: boolean;
-  sortDownIcon?: ReactNode;
-  sortUpIcon?: ReactNode;
+  sortDownIcon: ReactNode;
+  sortUpIcon: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
-  theme: Theme;
-  useHoverRowBackground?: boolean;
-  useOddColumnBackground?: boolean;
-  useOddEvenRowBackground?: boolean;
+  theme: string;
+  useHoverRowBackground: boolean;
+  useOddColumnBackground: boolean;
+  useOddEvenRowBackground: boolean;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);

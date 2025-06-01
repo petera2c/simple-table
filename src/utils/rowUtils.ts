@@ -1,4 +1,4 @@
-import FlattenedRowWithGrouping from "../types/FlattenedRowWithGrouping";
+import TableRow from "../types/TableRow";
 import Row from "../types/Row";
 import { RowId } from "../types/RowId";
 
@@ -31,6 +31,7 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
 
 /**
  * Flatten rows recursively based on row grouping configuration
+ * Now calculates ALL properties including position and isLastGroupRow
  */
 export const flattenRowsWithGrouping = ({
   depth = 0,
@@ -46,40 +47,50 @@ export const flattenRowsWithGrouping = ({
   rowGrouping?: string[];
   rowIdAccessor?: string;
   rows: Row[];
-}): FlattenedRowWithGrouping[] => {
-  const result: FlattenedRowWithGrouping[] = [];
+}): TableRow[] => {
+  const result: TableRow[] = [];
 
-  rows.forEach((row, index) => {
-    const rowId = getRowId(row, index, rowIdAccessor);
+  const processRows = (currentRows: Row[], currentDepth: number, parentPosition = 0): number => {
+    let position = parentPosition;
 
-    // Add the main row
-    result.push({ row, depth, groupingKey: rowGrouping[depth] });
+    currentRows.forEach((row, index) => {
+      const rowId = getRowId(row, index, rowIdAccessor);
+      const currentGroupingKey = rowGrouping[currentDepth];
 
-    // Check if row is expanded - simple logic based on expandAll
-    const rowIdStr = String(rowId);
-    const isExpanded = expandAll
-      ? !expandedRows.has(rowIdStr) // If expandAll=true, expand unless explicitly collapsed
-      : expandedRows.has(rowIdStr); // If expandAll=false, only expand if explicitly expanded
+      // Determine if this is the last row in a group
+      const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
 
-    // If row is expanded and has nested data for the current grouping level
-    if (isExpanded && depth < rowGrouping.length) {
-      const currentGroupingKey = rowGrouping[depth];
-      const nestedRows = getNestedRows(row, currentGroupingKey);
+      // Add the main row with calculated position
+      result.push({
+        row,
+        depth: currentDepth,
+        groupingKey: currentGroupingKey,
+        position,
+        isLastGroupRow,
+      });
 
-      if (nestedRows.length > 0) {
-        // Recursively flatten nested rows with the expandedRows set
-        const flattenedNested = flattenRowsWithGrouping({
-          depth: depth + 1,
-          expandAll,
-          expandedRows,
-          rowGrouping,
-          rowIdAccessor,
-          rows: nestedRows,
-        });
-        result.push(...flattenedNested);
+      position++;
+
+      // Check if row should be expanded
+      const rowIdStr = String(rowId);
+      const isExpanded = expandAll
+        ? !expandedRows.has(rowIdStr) // If expandAll=true, expand unless explicitly collapsed
+        : expandedRows.has(rowIdStr); // If expandAll=false, only expand if explicitly expanded
+
+      // If row is expanded and has nested data for the current grouping level
+      if (isExpanded && currentDepth < rowGrouping.length) {
+        const nestedRows = getNestedRows(row, currentGroupingKey);
+
+        if (nestedRows.length > 0) {
+          // Recursively process nested rows and update position
+          position = processRows(nestedRows, currentDepth + 1, position);
+        }
       }
-    }
-  });
+    });
 
+    return position;
+  };
+
+  processRows(rows, depth);
   return result;
 };
