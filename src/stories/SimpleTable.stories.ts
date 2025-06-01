@@ -16,6 +16,7 @@ import ThemingExample from "./examples/Theming";
 import { FinancialExample } from "./examples/finance-example/FinancialExample";
 import { SalesExampleComponent } from "./examples/sales-example/SalesExample";
 import { FilterExampleComponent } from "./examples/filter-example/FilterExample";
+import LiveUpdatesExample from "./examples/LiveUpdates";
 
 const meta = {
   title: "Simple Table",
@@ -57,6 +58,9 @@ export const HiddenColumns: Story = {
 };
 export const InfiniteScroll: Story = {
   render: InfiniteScrollExample,
+};
+export const LiveUpdates: Story = {
+  render: LiveUpdatesExample,
 };
 export const Pagination: Story = {
   render: PaginationExample,

@@ -331,6 +331,7 @@
   --st-button-hover-background-color: var(--st-slate-100);
   --st-button-active-background-color: var(--st-blue-600);
   --st-cell-flash-color: var(--st-slate-200);
+  --st-copy-flash-color: var(--st-blue-500);
 }
 
 /* Dark Theme */
@@ -382,6 +383,7 @@
   --st-button-hover-background-color: var(--st-gray-700);
   --st-button-active-background-color: var(--st-blue-500);
   --st-cell-flash-color: var(--st-gray-600);
+  --st-copy-flash-color: var(--st-blue-500);
 }
 
 /* Neutral Theme */
@@ -433,6 +435,7 @@
   --st-button-hover-background-color: var(--st-neutral-200);
   --st-button-active-background-color: var(--st-neutral-600);
   --st-cell-flash-color: var(--st-neutral-400);
+  --st-copy-flash-color: var(--st-neutral-600);
 }
 
 /* Sky Theme */
@@ -484,6 +487,7 @@
   --st-button-hover-background-color: var(--st-blue-200);
   --st-button-active-background-color: var(--st-blue-600);
   --st-cell-flash-color: var(--st-blue-300);
+  --st-copy-flash-color: var(--st-blue-600);
 }
 
 /* Funky Theme */
@@ -536,6 +540,7 @@
   --st-button-hover-background-color: var(--st-violet-50);
   --st-button-active-background-color: var(--st-violet-600);
   --st-cell-flash-color: var(--st-violet-200);
+  --st-copy-flash-color: var(--st-violet-600);
 }
 
 .simple-table-root * {
@@ -928,7 +933,7 @@ input {
 
 /* Style for the first selected table cell */
 .st-cell-selected-first {
-  background-color: var(--st-selected-first-cell-background-color) !important;
+  background-color: var(--st-selected-first-cell-background-color);
   border: var(--st-border-width) solid var(--st-selected-border-color);
 }
 .st-cell-selected-first .st-cell-content {
@@ -1272,9 +1277,6 @@ input {
 /* Cell update animation */
 @keyframes cell-flash {
   0% {
-    background-color: transparent;
-  }
-  50% {
     background-color: var(--st-cell-flash-color);
   }
   100% {
@@ -1284,6 +1286,32 @@ input {
 
 .st-cell-updating {
   animation: cell-flash 0.6s ease-in-out;
+}
+
+@keyframes copy-flash {
+  0% {
+    background-color: var(--st-copy-flash-color);
+  }
+  100% {
+    background-color: var(--st-selected-cell-background-color);
+  }
+}
+
+@keyframes copy-flash-first {
+  0% {
+    background-color: var(--st-copy-flash-color);
+  }
+  100% {
+    background-color: var(--st-selected-first-cell-background-color);
+  }
+}
+
+.st-cell-copy-flash {
+  animation: copy-flash 0.8s ease-in-out;
+}
+
+.st-cell-copy-flash-first {
+  animation: copy-flash-first 0.8s ease-in-out;
 }
 
 /* Dropdown css */

@@ -35,6 +35,7 @@ interface TableContextType {
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
+  isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isSelected: (cell: Cell) => boolean;
   mainBodyRef: RefObject<HTMLDivElement | null>;

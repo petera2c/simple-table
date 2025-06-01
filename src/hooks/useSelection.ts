@@ -25,6 +25,7 @@ const useSelection = ({
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
   const [lastSelectedColumnIndex, setLastSelectedColumnIndex] = useState<number | null>(null);
   const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(null);
+  const [copyFlashCells, setCopyFlashCells] = useState<Set<string>>(new Set());
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
 
@@ -79,6 +80,14 @@ const useSelection = ({
 
     if (selectedCells.size > 0) {
       navigator.clipboard.writeText(text);
+
+      // Trigger copy flash effect for selected cells
+      setCopyFlashCells(new Set(selectedCells));
+
+      // Clear the flash effect after animation duration
+      setTimeout(() => {
+        setCopyFlashCells(new Set());
+      }, 800);
     }
   }, [leafHeaders, selectedCells, visibleRows]);
 
@@ -359,11 +368,21 @@ const useSelection = ({
       rowId === initialFocusedCell.rowId;
   }, [initialFocusedCell]);
 
+  // Helper function to check if a cell is currently flashing from copy
+  const isCopyFlashing = useCallback(
+    ({ colIndex, rowIndex, rowId }: Cell) => {
+      const cellId = createSetString({ colIndex, rowIndex, rowId });
+      return copyFlashCells.has(cellId);
+    },
+    [copyFlashCells]
+  );
+
   return {
     getBorderClass,
     handleMouseDown,
     handleMouseOver,
     handleMouseUp,
+    isCopyFlashing,
     isInitialFocusedCell,
     isSelected,
     lastSelectedColumnIndex,

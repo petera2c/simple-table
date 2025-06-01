@@ -62,6 +62,7 @@ const TableCell = forwardRef(
       handleMouseOver,
       headersRef,
       hoveredHeaderRef,
+      isCopyFlashing,
       onCellEdit,
       onTableHeaderDragEnd,
       rowGrouping,
@@ -84,6 +85,9 @@ const TableCell = forwardRef(
     const currentGroupingKey = rowGrouping && rowGrouping[depth];
     const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
     const isRowExpanded = expandedRows.has(String(rowId));
+
+    // Check if this cell is currently flashing from copy operation
+    const isCellCopyFlashing = isCopyFlashing({ rowIndex, colIndex, rowId });
 
     // Hooks
     const { handleDragOver } = useDragHandler({
@@ -167,9 +171,15 @@ const TableCell = forwardRef(
           ? `st-cell-selected-first ${borderClass}`
           : `st-cell-selected ${borderClass}`
         : ""
-    } ${clickable ? "clickable" : ""} ${isUpdating ? "st-cell-updating" : ""} ${
-      useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""
-    }`;
+    } ${clickable ? "clickable" : ""} ${
+      isUpdating ? (isInitialFocused ? "st-cell-updating-first" : "st-cell-updating") : ""
+    } ${
+      isCellCopyFlashing
+        ? isInitialFocused
+          ? "st-cell-copy-flash-first"
+          : "st-cell-copy-flash"
+        : ""
+    } ${useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""}`;
 
     const updateContent = useCallback(
       (newValue: CellValue) => {
