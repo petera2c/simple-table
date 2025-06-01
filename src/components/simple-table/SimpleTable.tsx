@@ -202,6 +202,9 @@ const SimpleTableComp = ({
     [contentHeight, rowHeight, tableRows, scrollTop]
   );
 
+  // Create a registry for cells to enable direct updates
+  const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
+
   // Hooks
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const {
@@ -212,6 +215,7 @@ const SimpleTableComp = ({
     isCopyFlashing,
     isInitialFocusedCell,
     isSelected,
+    isWarningFlashing,
     selectColumns,
     selectedCells,
     selectedColumns,
@@ -223,6 +227,8 @@ const SimpleTableComp = ({
     headers: headersRef.current,
     visibleRows,
     rowIdAccessor,
+    onCellEdit,
+    cellRegistry: cellRegistryRef.current,
   });
 
   // Memoize handlers
@@ -260,9 +266,6 @@ const SimpleTableComp = ({
     tableBodyContainerRef,
     setScrollbarWidth,
   });
-
-  // Create a registry for cells to enable direct updates
-  const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
 
   // Set up API methods on the ref if provided
   useEffect(() => {
@@ -318,6 +321,7 @@ const SimpleTableComp = ({
         isCopyFlashing,
         isInitialFocusedCell,
         isSelected,
+        isWarningFlashing,
         mainBodyRef,
         nextIcon,
         onCellEdit,

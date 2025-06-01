@@ -63,6 +63,7 @@ const TableCell = forwardRef(
       headersRef,
       hoveredHeaderRef,
       isCopyFlashing,
+      isWarningFlashing,
       onCellEdit,
       onTableHeaderDragEnd,
       rowGrouping,
@@ -88,6 +89,9 @@ const TableCell = forwardRef(
 
     // Check if this cell is currently flashing from copy operation
     const isCellCopyFlashing = isCopyFlashing({ rowIndex, colIndex, rowId });
+
+    // Check if this cell is currently showing warning flash
+    const isCellWarningFlashing = isWarningFlashing({ rowIndex, colIndex, rowId });
 
     // Hooks
     const { handleDragOver } = useDragHandler({
@@ -178,6 +182,12 @@ const TableCell = forwardRef(
         ? isInitialFocused
           ? "st-cell-copy-flash-first"
           : "st-cell-copy-flash"
+        : ""
+    } ${
+      isCellWarningFlashing
+        ? isInitialFocused
+          ? "st-cell-warning-flash-first"
+          : "st-cell-warning-flash"
         : ""
     } ${useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""}`;
 

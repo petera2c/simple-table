@@ -16,7 +16,7 @@ const generateMonthHeaders = () => {
       label: `${fullMonthName} ${year}`,
       width: 200,
       isSortable: true,
-      isEditable: false,
+      isEditable: true,
       align: "right",
       type: "number",
       children: [
@@ -26,7 +26,7 @@ const generateMonthHeaders = () => {
           accessor: `balance_${months[monthIndex]}_${year}`,
           width: 200,
           isSortable: true,
-          isEditable: false,
+          isEditable: true,
           align: "right",
           type: "number",
           cellRenderer: ({ row, accessor }) => {
@@ -45,7 +45,7 @@ const generateMonthHeaders = () => {
           accessor: `revenue_${months[monthIndex]}_${year}`,
           width: 200,
           isSortable: true,
-          isEditable: false,
+          isEditable: true,
           align: "right",
           type: "number",
           cellRenderer: ({ row, accessor }) => {
@@ -73,7 +73,7 @@ export const HEADERS: HeaderObject[] = [
     width: 250,
     expandable: true,
     isSortable: true,
-    isEditable: false,
+    isEditable: true,
     align: "left",
     pinned: "left",
     type: "string",
@@ -106,7 +106,7 @@ export const HEADERS: HeaderObject[] = [
     label: "Deferred Revenue",
     width: 180,
     isSortable: true,
-    isEditable: false,
+    isEditable: true,
     align: "right",
     type: "number",
     cellRenderer: ({ row }) => {

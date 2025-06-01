@@ -332,6 +332,7 @@
   --st-button-active-background-color: var(--st-blue-600);
   --st-cell-flash-color: var(--st-slate-200);
   --st-copy-flash-color: var(--st-blue-500);
+  --st-warning-flash-color: var(--st-red-300);
 }
 
 /* Dark Theme */
@@ -384,6 +385,7 @@
   --st-button-active-background-color: var(--st-blue-500);
   --st-cell-flash-color: var(--st-gray-600);
   --st-copy-flash-color: var(--st-blue-500);
+  --st-warning-flash-color: var(--st-red-400);
 }
 
 /* Neutral Theme */
@@ -436,6 +438,7 @@
   --st-button-active-background-color: var(--st-neutral-600);
   --st-cell-flash-color: var(--st-neutral-400);
   --st-copy-flash-color: var(--st-neutral-600);
+  --st-warning-flash-color: var(--st-red-400);
 }
 
 /* Sky Theme */
@@ -488,6 +491,7 @@
   --st-button-active-background-color: var(--st-blue-600);
   --st-cell-flash-color: var(--st-blue-300);
   --st-copy-flash-color: var(--st-blue-600);
+  --st-warning-flash-color: var(--st-orange-400);
 }
 
 /* Funky Theme */
@@ -541,6 +545,7 @@
   --st-button-active-background-color: var(--st-violet-600);
   --st-cell-flash-color: var(--st-violet-200);
   --st-copy-flash-color: var(--st-violet-600);
+  --st-warning-flash-color: var(--st-red-400);
 }
 
 .simple-table-root * {
@@ -1312,6 +1317,32 @@ input {
 
 .st-cell-copy-flash-first {
   animation: copy-flash-first 0.8s ease-in-out;
+}
+
+@keyframes warning-flash {
+  0% {
+    background-color: var(--st-warning-flash-color);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes warning-flash-first {
+  0% {
+    background-color: var(--st-warning-flash-color);
+  }
+  100% {
+    background-color: var(--st-selected-first-cell-background-color);
+  }
+}
+
+.st-cell-warning-flash {
+  animation: warning-flash 0.6s ease-in-out;
+}
+
+.st-cell-warning-flash-first {
+  animation: warning-flash-first 0.6s ease-in-out;
 }
 
 /* Dropdown css */
