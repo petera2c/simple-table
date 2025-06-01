@@ -211,6 +211,91 @@ const useSelection = ({
     }
   }, [initialFocusedCell, leafHeaders, visibleRows, rowIdAccessor, onCellEdit, cellRegistry]);
 
+  const deleteSelectedCells = useCallback(() => {
+    if (selectedCells.size === 0) return;
+
+    const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
+    const colIndexToAccessor = new Map<number, string>();
+    flattenedLeafHeaders.forEach((header, index) => {
+      colIndexToAccessor.set(index, header.accessor);
+    });
+
+    const deletedCells = new Set<string>();
+    const warningCells = new Set<string>();
+
+    Array.from(selectedCells).forEach((cellKey) => {
+      const [rowIndex, colIndex] = cellKey.split("-").map(Number);
+
+      // Check boundaries
+      if (rowIndex >= visibleRows.length || colIndex >= flattenedLeafHeaders.length) {
+        return;
+      }
+
+      const targetRow = visibleRows[rowIndex];
+      const targetHeader = flattenedLeafHeaders[colIndex];
+      const targetRowId = getRowId(targetRow.row, rowIndex, rowIdAccessor);
+
+      // Track warning flash for non-editable cells
+      if (!targetHeader?.isEditable) {
+        warningCells.add(cellKey);
+        return;
+      }
+
+      // Determine appropriate empty value based on type
+      let emptyValue: any = null;
+      if (targetHeader.type === "string") {
+        emptyValue = "";
+      } else if (targetHeader.type === "number") {
+        emptyValue = null;
+      } else if (targetHeader.type === "boolean") {
+        emptyValue = false;
+      } else if (targetHeader.type === "date") {
+        emptyValue = null;
+      } else {
+        emptyValue = "";
+      }
+
+      console.log("emptyValue", emptyValue);
+      // Update the data
+      targetRow.row[targetHeader.accessor] = emptyValue;
+
+      // Use cell registry for direct update if available
+      if (cellRegistry) {
+        const key = `${targetRowId}-${targetHeader.accessor}`;
+        const cell = cellRegistry.get(key);
+        if (cell) {
+          cell.updateContent(emptyValue);
+        }
+      }
+
+      // Call onCellEdit callback
+      onCellEdit?.({
+        accessor: targetHeader.accessor,
+        newValue: emptyValue,
+        row: targetRow.row,
+        rowIndex: rowIndex,
+      });
+
+      deletedCells.add(cellKey);
+    });
+
+    // Trigger flash effect for deleted cells
+    if (deletedCells.size > 0) {
+      setCopyFlashCells(deletedCells);
+      setTimeout(() => {
+        setCopyFlashCells(new Set());
+      }, 800);
+    }
+
+    // Trigger warning flash for non-editable cells
+    if (warningCells.size > 0) {
+      setWarningFlashCells(warningCells);
+      setTimeout(() => {
+        setWarningFlashCells(new Set());
+      }, 800);
+    }
+  }, [selectedCells, leafHeaders, visibleRows, rowIdAccessor, onCellEdit, cellRegistry]);
+
   // Select cells from start to end coordinates
   const selectCellRange = useCallback(
     (startCell: Cell, endCell: Cell) => {
@@ -310,6 +395,13 @@ const useSelection = ({
         return;
       }
 
+      // Delete functionality
+      if (event.key === "Delete" || event.key === "Backspace") {
+        event.preventDefault();
+        deleteSelectedCells();
+        return;
+      }
+
       // Check if the visible rows have changed
       // If the rowId has changed, and we can't find the rowId in the visible rows, do nothing
       // If the rowId has changed, and we can find the rowId in the visible rows, update the rowIndex
@@ -392,6 +484,7 @@ const useSelection = ({
     selectableCells,
     visibleRows,
     pasteFromClipboard,
+    deleteSelectedCells,
   ]);
 
   const handleMouseDown = ({ colIndex, rowIndex, rowId }: Cell) => {
@@ -531,6 +624,7 @@ const useSelection = ({
     setInitialFocusedCell,
     setSelectedCells,
     setSelectedColumns,
+    deleteSelectedCells,
   };
 };
 

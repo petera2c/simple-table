@@ -93,7 +93,7 @@ export const HEADERS: HeaderObject[] = [
     type: "number",
     cellRenderer: ({ row }) => {
       const amount = row.amount as number;
-      if (!amount) return "—";
+      if (amount === undefined || amount === null) return "—";
 
       return `$${amount.toLocaleString("en-US", {
         minimumFractionDigits: 2,
@@ -113,7 +113,8 @@ export const HEADERS: HeaderObject[] = [
       const amount = row.amount as number;
       const deferred = row.deferredRevenue as number;
 
-      if (deferred === undefined || amount === undefined) return "—";
+      if (deferred === undefined || amount === undefined || amount === null || deferred === null)
+        return "—";
 
       return `$${deferred.toLocaleString("en-US", {
         minimumFractionDigits: 2,
