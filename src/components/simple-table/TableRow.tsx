@@ -17,7 +17,6 @@ interface TableRowProps {
   hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
   index: number;
-  onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
@@ -33,7 +32,6 @@ const TableRow = ({
   hiddenColumns,
   hoveredIndex,
   index,
-  onExpandRowClick,
   pinned,
   rowHeight,
   rowIndices,
@@ -66,7 +64,6 @@ const TableRow = ({
         headers={headers}
         hiddenColumns={hiddenColumns}
         key={index}
-        onExpandRowClick={onExpandRowClick}
         pinned={pinned}
         rowIndex={index}
         rowIndices={rowIndices}

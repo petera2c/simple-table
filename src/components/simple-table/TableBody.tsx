@@ -74,13 +74,6 @@ const TableBody = ({
     return indices;
   }, [visibleRows, rowIdAccessor]);
 
-  // For now, row expansion is not supported with the new flat structure
-  // Row grouping will be handled differently using the rowGrouping prop
-  const toggleRow = (rowId: RowId) => {
-    // This will be implemented later when we add row grouping support
-    console.log("Row expansion not yet implemented for new structure:", rowId);
-  };
-
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const newScrollTop = e.currentTarget.scrollTop;
     if (scrollTimeoutRef.current) {
@@ -115,7 +108,6 @@ const TableBody = ({
       {pinnedLeftColumns.length > 0 && (
         <TableSection
           {...commonProps}
-          onExpandRowClick={toggleRow}
           pinned="left"
           templateColumns={pinnedLeftTemplateColumns}
           totalHeight={totalHeight}
@@ -125,7 +117,6 @@ const TableBody = ({
       <TableSection
         {...commonProps}
         columnIndexStart={pinnedLeftColumns.length}
-        onExpandRowClick={toggleRow}
         ref={mainBodyRef}
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
@@ -134,7 +125,6 @@ const TableBody = ({
         <TableSection
           {...commonProps}
           columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
-          onExpandRowClick={toggleRow}
           pinned="right"
           templateColumns={pinnedRightTemplateColumns}
           totalHeight={totalHeight}

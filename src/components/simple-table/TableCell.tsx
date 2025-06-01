@@ -18,7 +18,6 @@ interface CellProps {
   isHighlighted: boolean;
   isInitialFocused: boolean;
   nestedIndex: number;
-  onExpandRowClick: TableCellProps["onExpandRowClick"];
   rowIndex: number;
   visibleRow: TableCellProps["visibleRow"];
 }
@@ -47,7 +46,6 @@ const TableCell = forwardRef(
       isHighlighted,
       isInitialFocused,
       nestedIndex,
-      onExpandRowClick,
       rowIndex,
       visibleRow,
     }: CellProps,
@@ -160,6 +158,8 @@ const TableCell = forwardRef(
     const isEditInDropdown =
       header.type === "boolean" || header.type === "date" || header.type === "enum";
     const clickable = Boolean(header?.isEditable);
+
+    console.log(isHighlighted);
 
     const cellClassName = `st-cell ${
       depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""

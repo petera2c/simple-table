@@ -15,7 +15,6 @@ interface RenderCellsProps {
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
-  onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
@@ -27,7 +26,6 @@ const RenderCells = ({
   columnIndices,
   headers,
   hiddenColumns,
-  onExpandRowClick,
   pinned,
   rowIndex,
   rowIndices,
@@ -48,7 +46,6 @@ const RenderCells = ({
             hiddenColumns={hiddenColumns}
             key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
             nestedIndex={index + (columnIndexStart ?? 0)}
-            onExpandRowClick={onExpandRowClick}
             pinned={pinned}
             rowIndex={rowIndex}
             rowIndices={rowIndices}
@@ -66,7 +63,6 @@ const RecursiveRenderCells = ({
   headers,
   hiddenColumns,
   nestedIndex,
-  onExpandRowClick,
   pinned,
   rowIndex,
   rowIndices,
@@ -77,7 +73,6 @@ const RecursiveRenderCells = ({
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   nestedIndex: number;
-  onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
@@ -105,7 +100,6 @@ const RecursiveRenderCells = ({
               hiddenColumns={hiddenColumns}
               key={getCellId({ accessor: child.accessor, rowIndex: rowIndex + 1 })}
               nestedIndex={nestedIndex}
-              onExpandRowClick={onExpandRowClick}
               pinned={pinned}
               rowIndex={rowIndex}
               rowIndices={rowIndices}
@@ -133,7 +127,6 @@ const RecursiveRenderCells = ({
       isInitialFocused={isInitialFocused}
       key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
       nestedIndex={nestedIndex}
-      onExpandRowClick={onExpandRowClick}
       rowIndex={rowIndex}
       visibleRow={visibleRow}
     />

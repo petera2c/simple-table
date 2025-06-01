@@ -15,7 +15,6 @@ export interface TableCellProps {
   isSelected: boolean;
   isInitialFocusedCell: boolean;
   onCellEdit?: (props: CellChangeProps) => void;
-  onExpandRowClick: (rowId: RowId) => void;
   onMouseDown: (props: Cell) => void;
   onMouseOver: (props: Cell) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
