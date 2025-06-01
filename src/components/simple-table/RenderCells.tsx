@@ -3,7 +3,7 @@ import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
 import { RowId } from "../../types/RowId";
-import VisibleRow from "../../types/VisibleRow";
+import type TableRowType from "../../types/TableRow";
 import { Pinned } from "../../types/Pinned";
 import { useTableContext } from "../../context/TableContext";
 import RowIndices from "../../types/RowIndices";
@@ -15,12 +15,11 @@ interface RenderCellsProps {
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
-  isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: VisibleRow;
+  visibleRow: TableRowType;
 }
 
 const RenderCells = ({
@@ -28,7 +27,6 @@ const RenderCells = ({
   columnIndices,
   headers,
   hiddenColumns,
-  isWidthDragging,
   onExpandRowClick,
   pinned,
   rowIndex,
@@ -83,7 +81,7 @@ const RecursiveRenderCells = ({
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: VisibleRow;
+  visibleRow: TableRowType;
 }) => {
   // Get the column index for this header from our pre-calculated mapping
   const colIndex = columnIndices[header.accessor];

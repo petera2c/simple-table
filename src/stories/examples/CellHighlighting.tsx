@@ -49,10 +49,10 @@ const CellHighlightingDemo = () => {
     <div style={{ padding: "2rem" }}>
       <SimpleTable
         defaultHeaders={headers}
+        rowIdAccessor="id"
+        rows={data}
         selectableCells
         selectableColumns
-        rows={data}
-        rowIdAccessor="id"
       />
     </div>
   );

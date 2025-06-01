@@ -22,14 +22,8 @@ const ColumnEditorCheckbox = ({
   setHiddenColumns: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const {
-    expandIcon,
-    collapseIcon,
-    headersRef,
-    setMainBodyWidth,
-    setPinnedLeftWidth,
-    setPinnedRightWidth,
-  } = useTableContext();
+  const { expandIcon, headersRef, setMainBodyWidth, setPinnedLeftWidth, setPinnedRightWidth } =
+    useTableContext();
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
@@ -92,13 +86,15 @@ const ColumnEditorCheckbox = ({
         <div className="st-header-icon-container">
           {hasChildren ? (
             <div
-              className="st-collapsible-header-icon"
+              className={`st-collapsible-header-icon st-expand-icon-container ${
+                isExpanded ? "expanded" : "collapsed"
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
               }}
             >
-              {isExpanded ? collapseIcon : expandIcon}
+              {expandIcon}
             </div>
           ) : null}
         </div>

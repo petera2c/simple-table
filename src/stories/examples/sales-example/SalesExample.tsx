@@ -14,6 +14,7 @@ export const SalesExampleComponent = () => {
         columnResizing
         columnReordering
         defaultHeaders={SALES_HEADERS}
+        rowIdAccessor="id"
         rows={data}
         theme={"dark"}
         selectableCells

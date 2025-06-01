@@ -1,6 +1,5 @@
 import { useRef, useMemo, useState } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
-import Row from "../../types/Row";
 import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { RowId } from "../../types/RowId";
@@ -12,9 +11,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { getRowId } from "../../utils/rowUtils";
 
 const TableBody = ({
-  flattenedRowsData,
   headerContainerRef,
-  isWidthDragging,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -23,6 +20,7 @@ const TableBody = ({
   pinnedRightTemplateColumns,
   pinnedRightWidth,
   setScrollTop,
+  tableRows,
   visibleRows,
 }: TableBodyProps) => {
   // Get stable props from context
@@ -50,7 +48,7 @@ const TableBody = ({
   const scrollTimeoutRef = useRef<number | null>(null);
 
   // Derived state
-  const totalRowCount = getTotalRowCount(flattenedRowsData);
+  const totalRowCount = getTotalRowCount(tableRows);
   const totalHeight = totalRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 
   // Calculate column indices for all headers (including pinned) in one place
@@ -101,7 +99,6 @@ const TableBody = ({
     headers: headersRef.current,
     hiddenColumns,
     hoveredIndex,
-    isWidthDragging,
     rowHeight,
     rowIndices,
     setHoveredIndex,

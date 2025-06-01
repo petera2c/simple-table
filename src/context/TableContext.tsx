@@ -1,11 +1,11 @@
-import { createContext, useContext, ReactNode, RefObject, Dispatch, SetStateAction } from "react";
+import { ReactNode, RefObject, createContext, useContext, Dispatch, SetStateAction } from "react";
+import { TableFilterState, FilterCondition } from "../types/FilterTypes";
+import TableRow from "../types/TableRow";
+import Cell from "../types/Cell";
 import HeaderObject from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
-import Cell from "../types/Cell";
+import Theme from "../types/Theme";
 import CellValue from "../types/CellValue";
-import { Theme } from "..";
-import { TableFilterState, FilterCondition } from "../types/FilterTypes";
-import Row from "../types/Row";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -17,7 +17,6 @@ interface TableContextType {
   allowAnimations?: boolean;
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;
-  collapseIcon?: ReactNode;
   columnReordering: boolean;
   columnResizing: boolean;
   draggedHeaderRef: RefObject<HeaderObject | null>;
@@ -25,7 +24,7 @@ interface TableContextType {
   expandIcon?: ReactNode;
   expandedRows: Set<string>;
   filters: TableFilterState;
-  flattenedRowsData: Array<{ row: Row; depth: number; groupingKey?: string }>;
+  tableRows: TableRow[];
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;
@@ -55,20 +54,19 @@ interface TableContextType {
   selectableColumns: boolean;
   setExpandedRows: Dispatch<SetStateAction<Set<string>>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
-  setIsWidthDragging: Dispatch<SetStateAction<boolean>>;
   setMainBodyWidth: Dispatch<SetStateAction<number>>;
   setPinnedLeftWidth: Dispatch<SetStateAction<number>>;
   setPinnedRightWidth: Dispatch<SetStateAction<number>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   shouldPaginate: boolean;
-  sortDownIcon?: ReactNode;
-  sortUpIcon?: ReactNode;
+  sortDownIcon: ReactNode;
+  sortUpIcon: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
   theme: Theme;
-  useHoverRowBackground?: boolean;
-  useOddColumnBackground?: boolean;
-  useOddEvenRowBackground?: boolean;
+  useHoverRowBackground: boolean;
+  useOddColumnBackground: boolean;
+  useOddEvenRowBackground: boolean;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);

@@ -1,6 +1,6 @@
 import { Fragment, RefObject } from "react";
-import TableRow from "./TableRow";
-import VisibleRow from "../../types/VisibleRow";
+import TableRowComponent from "./TableRow";
+import TableRow from "../../types/TableRow";
 import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
 import { Pinned } from "../../types/Pinned";
@@ -16,7 +16,6 @@ interface TableSectionProps {
   headers: HeaderObject[];
   hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
-  isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   ref?: RefObject<HTMLDivElement | null>;
@@ -25,7 +24,7 @@ interface TableSectionProps {
   setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
-  visibleRows: VisibleRow[];
+  visibleRows: TableRow[];
   width?: number;
 }
 
@@ -35,7 +34,6 @@ const TableSection = ({
   headers,
   hiddenColumns,
   hoveredIndex,
-  isWidthDragging,
   onExpandRowClick,
   pinned,
   ref,
@@ -65,23 +63,18 @@ const TableSection = ({
         }}
       >
         {visibleRows.map((visibleRow, index) => {
-          const lastRow = visibleRows[index - 1];
-          // For now, disable row expansion detection since we're using flat structure
-          // Row grouping will be implemented differently with the new rowGrouping prop
-          const isRowExpanded = false;
-
           return (
             <Fragment key={visibleRow.position}>
               {index !== 0 && (
                 <TableRowSeparator
                   // Is last row group and it is open
-                  displayStrongBorder={isRowExpanded}
+                  displayStrongBorder={visibleRow.isLastGroupRow}
                   position={visibleRow.position}
                   rowHeight={rowHeight}
                   templateColumns={templateColumns}
                 />
               )}
-              <TableRow
+              <TableRowComponent
                 columnIndexStart={columnIndexStart}
                 columnIndices={columnIndices}
                 gridTemplateColumns={templateColumns}
@@ -89,7 +82,6 @@ const TableSection = ({
                 hiddenColumns={hiddenColumns}
                 hoveredIndex={hoveredIndex}
                 index={index}
-                isWidthDragging={isWidthDragging}
                 onExpandRowClick={onExpandRowClick}
                 pinned={pinned}
                 rowHeight={rowHeight}

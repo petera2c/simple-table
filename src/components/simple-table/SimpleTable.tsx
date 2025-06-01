@@ -15,7 +15,6 @@ import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
 import CellChangeProps from "../../types/CellChangeProps";
-import AngleDownIcon from "../../icons/AngleDownIcon";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
@@ -39,12 +38,11 @@ import { useTableFilters } from "../../hooks/useTableFilters";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
-import { getRowId, setRowExpansion, flattenRowsWithGrouping } from "../../utils/rowUtils";
+import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
-  collapseIcon?: ReactNode; // Collapse icon
   columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
@@ -52,7 +50,8 @@ interface SimpleTableProps {
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
-  expandIcon?: ReactNode; // Expand icon
+  expandAll?: boolean; // Flag for expanding all rows by default
+  expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -90,7 +89,6 @@ const SimpleTable = (props: SimpleTableProps) => {
 const SimpleTableComp = ({
   allowAnimations = false,
   cellUpdateFlash = false,
-  collapseIcon = <AngleDownIcon className="st-expand-icon" />,
   columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnReordering = false,
@@ -98,6 +96,7 @@ const SimpleTableComp = ({
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
+  expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   height,
   hideFooter = false,
@@ -135,7 +134,6 @@ const SimpleTableComp = ({
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
-  const [isWidthDragging, setIsWidthDragging] = useState(false);
   const [mainBodyWidth, setMainBodyWidth] = useState(0);
   const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
   const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
@@ -166,31 +164,42 @@ const SimpleTableComp = ({
     return rows;
   }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
-  // Flatten rows based on row grouping and expansion state
-  const flattenedRowsData = useMemo(() => {
+  // Flatten rows based on row grouping and expansion state - now includes ALL properties
+  const tableRows = useMemo(() => {
     if (!rowGrouping || rowGrouping.length === 0) {
-      // No grouping - just return flat structure with depth 0
-      return currentRows.map((row) => ({ row, depth: 0 }));
+      // No grouping - just return flat structure with calculated positions
+      return currentRows.map((row, index) => ({
+        row,
+        depth: 0,
+        groupingKey: undefined,
+        position: index,
+        isLastGroupRow: index === currentRows.length - 1,
+      }));
     }
 
-    // Use the expandedRows set directly instead of setting __isExpanded on rows
-    return flattenRowsWithGrouping(currentRows, rowGrouping, rowIdAccessor, 0, expandedRows);
-  }, [currentRows, rowGrouping, rowIdAccessor, expandedRows]);
+    return flattenRowsWithGrouping({
+      rows: currentRows,
+      rowGrouping,
+      rowIdAccessor,
+      expandedRows,
+      expandAll,
+    });
+  }, [currentRows, rowGrouping, rowIdAccessor, expandedRows, expandAll]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
 
-  // We could probably move this to the table body component
+  // Visible rows
   const visibleRows = useMemo(
     () =>
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
         contentHeight,
-        flattenedRowsData,
+        tableRows,
         rowHeight,
         scrollTop,
       }),
-    [contentHeight, rowHeight, flattenedRowsData, scrollTop]
+    [contentHeight, rowHeight, tableRows, scrollTop]
   );
 
   // Hooks
@@ -287,7 +296,6 @@ const SimpleTableComp = ({
         allowAnimations,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
-        collapseIcon,
         columnReordering,
         columnResizing,
         draggedHeaderRef,
@@ -295,7 +303,7 @@ const SimpleTableComp = ({
         expandIcon,
         expandedRows,
         filters,
-        flattenedRowsData,
+        tableRows,
         forceUpdate,
         getBorderClass,
         handleApplyFilter,
@@ -325,7 +333,6 @@ const SimpleTableComp = ({
         selectableColumns,
         setExpandedRows,
         setInitialFocusedCell,
-        setIsWidthDragging,
         setMainBodyWidth,
         setPinnedLeftWidth,
         setPinnedRightWidth,
@@ -354,8 +361,7 @@ const SimpleTableComp = ({
               onMouseLeave={handleMouseUp}
             >
               <TableContent
-                flattenedRowsData={flattenedRowsData}
-                isWidthDragging={isWidthDragging}
+                tableRows={tableRows}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}

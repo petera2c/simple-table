@@ -1,3 +1,4 @@
+import TableRow from "../types/TableRow";
 import Row from "../types/Row";
 import { RowId } from "../types/RowId";
 
@@ -29,69 +30,67 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
 };
 
 /**
- * Set the expansion state for a row (we'll need to track this separately now)
- */
-export const setRowExpansion = (
-  rows: Row[],
-  targetRowId: RowId,
-  isExpanded: boolean,
-  rowIdAccessor?: string
-): Row[] => {
-  return rows.map((row, index) => {
-    const rowId = getRowId(row, index, rowIdAccessor);
-    if (rowId === targetRowId) {
-      return { ...row, __isExpanded: isExpanded };
-    }
-    return row;
-  });
-};
-
-/**
- * Check if a row is expanded (check our internal expansion state)
- */
-export const isRowExpanded = (row: Row): boolean => {
-  return Boolean((row as any).__isExpanded);
-};
-
-/**
  * Flatten rows recursively based on row grouping configuration
+ * Now calculates ALL properties including position and isLastGroupRow
  */
-export const flattenRowsWithGrouping = (
-  rows: Row[],
-  rowGrouping: string[] = [],
-  rowIdAccessor?: string,
-  depth: number = 0,
-  expandedRows?: Set<string>
-): Array<{ row: Row; depth: number; groupingKey?: string }> => {
-  const result: Array<{ row: Row; depth: number; groupingKey?: string }> = [];
+export const flattenRowsWithGrouping = ({
+  depth = 0,
+  expandAll = false,
+  expandedRows,
+  rowGrouping = [],
+  rowIdAccessor,
+  rows,
+}: {
+  depth?: number;
+  expandAll?: boolean;
+  expandedRows: Set<string>;
+  rowGrouping?: string[];
+  rowIdAccessor?: string;
+  rows: Row[];
+}): TableRow[] => {
+  const result: TableRow[] = [];
 
-  rows.forEach((row, index) => {
-    const rowId = getRowId(row, index, rowIdAccessor);
+  const processRows = (currentRows: Row[], currentDepth: number, parentPosition = 0): number => {
+    let position = parentPosition;
 
-    // Add the main row
-    result.push({ row, depth, groupingKey: rowGrouping[depth] });
+    currentRows.forEach((row, index) => {
+      const rowId = getRowId(row, index, rowIdAccessor);
+      const currentGroupingKey = rowGrouping[currentDepth];
 
-    // Check if row is expanded using either __isExpanded property or expandedRows set
-    const isExpanded = expandedRows ? expandedRows.has(String(rowId)) : isRowExpanded(row);
+      // Determine if this is the last row in a group
+      const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
 
-    // If row is expanded and has nested data for the current grouping level
-    if (isExpanded && depth < rowGrouping.length) {
-      const currentGroupingKey = rowGrouping[depth];
-      const nestedRows = getNestedRows(row, currentGroupingKey);
+      // Add the main row with calculated position
+      result.push({
+        row,
+        depth: currentDepth,
+        groupingKey: currentGroupingKey,
+        position,
+        isLastGroupRow,
+      });
 
-      if (nestedRows.length > 0) {
-        // Recursively flatten nested rows with the expandedRows set
-        const flattenedNested = flattenRowsWithGrouping(
-          nestedRows,
-          rowGrouping,
-          rowIdAccessor,
-          depth + 1,
-          expandedRows
-        );
-        result.push(...flattenedNested);
+      position++;
+
+      // Check if row should be expanded
+      const rowIdStr = String(rowId);
+      const isExpanded = expandAll
+        ? !expandedRows.has(rowIdStr) // If expandAll=true, expand unless explicitly collapsed
+        : expandedRows.has(rowIdStr); // If expandAll=false, only expand if explicitly expanded
+
+      // If row is expanded and has nested data for the current grouping level
+      if (isExpanded && currentDepth < rowGrouping.length) {
+        const nestedRows = getNestedRows(row, currentGroupingKey);
+
+        if (nestedRows.length > 0) {
+          // Recursively process nested rows and update position
+          position = processRows(nestedRows, currentDepth + 1, position);
+        }
       }
-    }
-  });
+    });
 
+    return position;
+  };
+
+  processRows(rows, depth);
   return result;
 };

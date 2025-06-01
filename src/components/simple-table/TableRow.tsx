@@ -1,5 +1,4 @@
-import { RowId } from "../../types/RowId";
-import VisibleRow from "../../types/VisibleRow";
+import type TableRowType from "../../types/TableRow";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
 import { Pinned } from "../../types/Pinned";
@@ -7,6 +6,7 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
+import { RowId } from "../../types/RowId";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -17,13 +17,12 @@ interface TableRowProps {
   hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
   index: number;
-  isWidthDragging: boolean;
   onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
   setHoveredIndex: (index: number | null) => void;
-  visibleRow: VisibleRow;
+  visibleRow: TableRowType;
 }
 
 const TableRow = ({
@@ -34,7 +33,6 @@ const TableRow = ({
   hiddenColumns,
   hoveredIndex,
   index,
-  isWidthDragging,
   onExpandRowClick,
   pinned,
   rowHeight,
@@ -67,7 +65,6 @@ const TableRow = ({
         columnIndices={columnIndices}
         headers={headers}
         hiddenColumns={hiddenColumns}
-        isWidthDragging={isWidthDragging}
         key={index}
         onExpandRowClick={onExpandRowClick}
         pinned={pinned}

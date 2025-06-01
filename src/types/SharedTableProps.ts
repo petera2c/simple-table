@@ -9,7 +9,6 @@ interface SharedTableProps {
   headersRef: RefObject<HeaderObject[]>;
   hiddenColumns: Record<string, boolean>;
   hoveredHeaderRef: RefObject<HeaderObject | null>;
-  isWidthDragging: boolean;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   mainTemplateColumns: string;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;

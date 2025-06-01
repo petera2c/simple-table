@@ -2,7 +2,7 @@ import { RefObject } from "react";
 import HeaderObject from "./HeaderObject";
 import CellChangeProps from "./CellChangeProps";
 import { RowId } from "./RowId";
-import VisibleRow from "./VisibleRow";
+import TableRow from "./TableRow";
 import Cell from "./Cell";
 
 export interface TableCellProps {
@@ -20,7 +20,7 @@ export interface TableCellProps {
   onMouseOver: (props: Cell) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   rowIndex: number;
-  visibleRow: VisibleRow;
+  visibleRow: TableRow;
 }
 
 export default TableCellProps;

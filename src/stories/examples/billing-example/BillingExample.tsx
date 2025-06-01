@@ -7,6 +7,7 @@ import { useState } from "react";
 const THEME_OPTIONS: Theme[] = ["sky", "funky", "neutral", "light", "dark"];
 
 const BillingExample = () => {
+  const [expandAll, setExpandAll] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
   return (
     <div style={{ display: "flex", flexDirection: "column", padding: "2rem", gap: "1rem" }}>
@@ -31,19 +32,22 @@ const BillingExample = () => {
             </button>
           );
         })}
+        <button onClick={() => setExpandAll(!expandAll)}>
+          {expandAll ? "Close All" : "Open All"}
+        </button>
       </div>
       <SimpleTable
-        editColumns
-        columnResizing
         columnReordering
+        columnResizing
         defaultHeaders={HEADERS}
-        rows={billingData}
-        rowIdAccessor="id"
-        rowGrouping={["charges", "invoices"]}
+        editColumns
+        expandAll={expandAll}
         height="90dvh"
-        theme={theme}
+        rowGrouping={["charges", "invoices"]}
+        rowIdAccessor="id"
+        rows={billingData}
         selectableCells
-        // selectableColumns
+        theme={theme}
         useOddColumnBackground
         useHoverRowBackground={false}
       />
