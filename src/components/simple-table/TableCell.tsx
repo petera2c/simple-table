@@ -159,8 +159,6 @@ const TableCell = forwardRef(
       header.type === "boolean" || header.type === "date" || header.type === "enum";
     const clickable = Boolean(header?.isEditable);
 
-    console.log(isHighlighted);
-
     const cellClassName = `st-cell ${
       depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
     } ${

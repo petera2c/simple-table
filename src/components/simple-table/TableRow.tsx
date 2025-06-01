@@ -65,7 +65,7 @@ const TableRow = ({
         hiddenColumns={hiddenColumns}
         key={index}
         pinned={pinned}
-        rowIndex={index}
+        rowIndex={position}
         rowIndices={rowIndices}
         visibleRow={visibleRow}
       />
