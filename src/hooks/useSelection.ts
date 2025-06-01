@@ -13,6 +13,8 @@ interface UseSelectionProps {
   headers: HeaderObject[];
   visibleRows: TableRowType[];
   rowIdAccessor: string;
+  onCellEdit?: (props: any) => void;
+  cellRegistry?: Map<string, any>;
 }
 
 const useSelection = ({
@@ -20,12 +22,15 @@ const useSelection = ({
   headers,
   visibleRows,
   rowIdAccessor,
+  onCellEdit,
+  cellRegistry,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
   const [lastSelectedColumnIndex, setLastSelectedColumnIndex] = useState<number | null>(null);
   const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(null);
   const [copyFlashCells, setCopyFlashCells] = useState<Set<string>>(new Set());
+  const [warningFlashCells, setWarningFlashCells] = useState<Set<string>>(new Set());
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
 
@@ -90,6 +95,121 @@ const useSelection = ({
       }, 800);
     }
   }, [leafHeaders, selectedCells, visibleRows]);
+
+  const pasteFromClipboard = useCallback(async () => {
+    if (!initialFocusedCell) return;
+
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (!clipboardText) return;
+
+      // Parse clipboard data (tab-separated values, newline-separated rows)
+      const rows = clipboardText.split("\n").filter((row) => row.length > 0);
+      if (rows.length === 0) return;
+
+      const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
+      const updatedCells = new Set<string>();
+      const warningCells = new Set<string>();
+
+      // Starting position
+      const startRowIndex = initialFocusedCell.rowIndex;
+      const startColIndex = initialFocusedCell.colIndex;
+
+      rows.forEach((rowText, rowOffset) => {
+        const cellValues = rowText.split("\t");
+
+        cellValues.forEach((cellValue, colOffset) => {
+          const targetRowIndex = startRowIndex + rowOffset;
+          const targetColIndex = startColIndex + colOffset;
+
+          // Check boundaries
+          if (
+            targetRowIndex >= visibleRows.length ||
+            targetColIndex >= flattenedLeafHeaders.length
+          ) {
+            return;
+          }
+
+          const targetRow = visibleRows[targetRowIndex];
+          const targetHeader = flattenedLeafHeaders[targetColIndex];
+          const targetRowId = getRowId(targetRow.row, targetRowIndex, rowIdAccessor);
+
+          // Track warning flash for non-editable cells
+          if (!targetHeader?.isEditable) {
+            const cellId = createSetString({
+              colIndex: targetColIndex,
+              rowIndex: targetRowIndex,
+              rowId: targetRowId,
+            });
+            warningCells.add(cellId);
+            return;
+          }
+
+          // Convert value to appropriate type based on header type
+          let convertedValue: any = cellValue;
+          if (targetHeader.type === "number") {
+            const numValue = Number(cellValue);
+            if (!isNaN(numValue)) {
+              convertedValue = numValue;
+            }
+          } else if (targetHeader.type === "boolean") {
+            convertedValue = cellValue.toLowerCase() === "true" || cellValue === "1";
+          } else if (targetHeader.type === "date") {
+            const dateValue = new Date(cellValue);
+            if (!isNaN(dateValue.getTime())) {
+              convertedValue = dateValue;
+            }
+          }
+
+          // Update the data
+          targetRow.row[targetHeader.accessor] = convertedValue;
+
+          // Use cell registry for direct update if available
+          if (cellRegistry) {
+            const key = `${targetRowId}-${targetHeader.accessor}`;
+            const cell = cellRegistry.get(key);
+            if (cell) {
+              cell.updateContent(convertedValue);
+            }
+          }
+
+          // Call onCellEdit callback
+          onCellEdit?.({
+            accessor: targetHeader.accessor,
+            newValue: convertedValue,
+            row: targetRow.row,
+            rowIndex: targetRowIndex,
+          });
+
+          // Track updated cell for flash effect
+          const cellId = createSetString({
+            colIndex: targetColIndex,
+            rowIndex: targetRowIndex,
+            rowId: targetRowId,
+          });
+          updatedCells.add(cellId);
+        });
+      });
+
+      // Trigger flash effect for updated cells
+      if (updatedCells.size > 0) {
+        setCopyFlashCells(updatedCells);
+        setTimeout(() => {
+          setCopyFlashCells(new Set());
+        }, 800);
+      }
+
+      // Trigger warning flash for warning cells
+      if (warningCells.size > 0) {
+        setWarningFlashCells(warningCells);
+        setTimeout(() => {
+          setWarningFlashCells(new Set());
+        }, 800);
+      }
+    } catch (error) {
+      console.warn("Failed to paste from clipboard:", error);
+    }
+  }, [initialFocusedCell, leafHeaders, visibleRows, rowIdAccessor, onCellEdit, cellRegistry]);
 
   // Select cells from start to end coordinates
   const selectCellRange = useCallback(
@@ -183,6 +303,13 @@ const useSelection = ({
         return;
       }
 
+      // Paste functionality
+      if ((event.ctrlKey || event.metaKey) && event.key === "v") {
+        event.preventDefault();
+        pasteFromClipboard();
+        return;
+      }
+
       // Check if the visible rows have changed
       // If the rowId has changed, and we can't find the rowId in the visible rows, do nothing
       // If the rowId has changed, and we can find the rowId in the visible rows, update the rowIndex
@@ -264,6 +391,7 @@ const useSelection = ({
     selectSingleCell,
     selectableCells,
     visibleRows,
+    pasteFromClipboard,
   ]);
 
   const handleMouseDown = ({ colIndex, rowIndex, rowId }: Cell) => {
@@ -377,15 +505,26 @@ const useSelection = ({
     [copyFlashCells]
   );
 
+  // Helper function to check if a cell is currently showing warning flash
+  const isWarningFlashing = useCallback(
+    ({ colIndex, rowIndex, rowId }: Cell) => {
+      const cellId = createSetString({ colIndex, rowIndex, rowId });
+      return warningFlashCells.has(cellId);
+    },
+    [warningFlashCells]
+  );
+
   return {
     getBorderClass,
     handleMouseDown,
     handleMouseOver,
     handleMouseUp,
     isCopyFlashing,
+    isWarningFlashing,
     isInitialFocusedCell,
     isSelected,
     lastSelectedColumnIndex,
+    pasteFromClipboard,
     selectColumns,
     selectedCells,
     selectedColumns,

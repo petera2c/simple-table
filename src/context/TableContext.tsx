@@ -38,6 +38,7 @@ interface TableContextType {
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isSelected: (cell: Cell) => boolean;
+  isWarningFlashing: (cell: Cell) => boolean;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   nextIcon: ReactNode;
   onCellEdit?: (props: any) => void;
