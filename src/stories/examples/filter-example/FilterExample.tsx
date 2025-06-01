@@ -42,6 +42,7 @@ export const FilterExampleComponent = () => {
         columnResizing
         columnReordering
         defaultHeaders={PRODUCT_HEADERS}
+        rowIdAccessor="id"
         rows={data}
         theme={theme}
         selectableCells
