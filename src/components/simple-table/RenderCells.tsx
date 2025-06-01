@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
-import { RowId } from "../../types/RowId";
 import type TableRowType from "../../types/TableRow";
 import { Pinned } from "../../types/Pinned";
 import { useTableContext } from "../../context/TableContext";

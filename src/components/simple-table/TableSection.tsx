@@ -1,7 +1,6 @@
 import { Fragment, RefObject } from "react";
 import TableRow from "./TableRow";
 import TableRowType from "../../types/TableRow";
-import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";

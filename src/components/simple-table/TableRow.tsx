@@ -6,7 +6,6 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
-import { RowId } from "../../types/RowId";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
