@@ -28,11 +28,14 @@ const useSelection = ({
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
 
+  // Get flattened leaf headers (actual navigable columns) for proper boundary checking
+  const leafHeaders = useMemo(() => {
+    return headers.flatMap(findLeafHeaders);
+  }, [headers]);
+
   const copyToClipboard = useCallback(() => {
-    // Find all leaf headers (flattened) from the nested headers structure
-    // Example: converts [{label: "A"}, {label: "B", children: [{label: "B1"}, {label: "B2"}]}]
-    // into [header A, header B1, header B2]
-    const flattenedLeafHeaders = headers.flatMap(findLeafHeaders).filter((header) => !header.hide);
+    // Use the already flattened leaf headers
+    const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
 
     // Create a mapping of column indices to accessors for quick lookup
     // Example: {0: "name", 1: "age", 2: "email"}
@@ -77,7 +80,7 @@ const useSelection = ({
     if (selectedCells.size > 0) {
       navigator.clipboard.writeText(text);
     }
-  }, [headers, selectedCells, visibleRows]);
+  }, [leafHeaders, selectedCells, visibleRows]);
 
   // Select cells from start to end coordinates
   const selectCellRange = useCallback(
@@ -114,7 +117,7 @@ const useSelection = ({
         cell.rowIndex >= 0 &&
         cell.rowIndex < visibleRows.length &&
         cell.colIndex >= 0 &&
-        cell.colIndex < headers.length
+        cell.colIndex < leafHeaders.length
       ) {
         const cellId = createSetString(cell);
 
@@ -127,7 +130,7 @@ const useSelection = ({
       }
     },
     [
-      headers.length,
+      leafHeaders.length,
       visibleRows.length,
       setSelectedColumns,
       setLastSelectedColumnIndex,
@@ -220,7 +223,7 @@ const useSelection = ({
         }
       } else if (event.key === "ArrowRight" || event.key === "Tab") {
         event.preventDefault();
-        if (colIndex < headers.length - 1) {
+        if (colIndex < leafHeaders.length - 1) {
           const newRowId = getRowId(visibleRows[rowIndex].row, rowIndex, rowIdAccessor);
           const newCell = {
             rowIndex,
@@ -245,7 +248,7 @@ const useSelection = ({
     };
   }, [
     copyToClipboard,
-    headers.length,
+    leafHeaders.length,
     initialFocusedCell,
     rowIdAccessor,
     selectCellRange,
