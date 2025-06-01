@@ -1253,6 +1253,19 @@ input {
   transition: transform var(--st-transition-duration) var(--st-transition-ease);
 }
 
+/* Row expand icon animation */
+.st-expand-icon-container {
+  transition: transform var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-expand-icon-container.expanded {
+  transform: rotate(90deg);
+}
+
+.st-expand-icon-container.collapsed {
+  transform: rotate(0deg);
+}
+
 /* Cell update animation */
 @keyframes cell-flash {
   0% {

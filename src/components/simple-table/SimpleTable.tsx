@@ -15,7 +15,6 @@ import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
 import CellChangeProps from "../../types/CellChangeProps";
-import AngleDownIcon from "../../icons/AngleDownIcon";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
@@ -44,7 +43,6 @@ import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
-  collapseIcon?: ReactNode; // Collapse icon
   columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
@@ -53,7 +51,7 @@ interface SimpleTableProps {
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
   expandAll?: boolean; // Flag for expanding all rows by default
-  expandIcon?: ReactNode; // Expand icon
+  expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -91,7 +89,6 @@ const SimpleTable = (props: SimpleTableProps) => {
 const SimpleTableComp = ({
   allowAnimations = false,
   cellUpdateFlash = false,
-  collapseIcon = <AngleDownIcon className="st-expand-icon" />,
   columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnReordering = false,
@@ -192,7 +189,7 @@ const SimpleTableComp = ({
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
 
-  // We could probably move this to the table body component
+  // Visible rows
   const visibleRows = useMemo(
     () =>
       getVisibleRows({
@@ -299,7 +296,6 @@ const SimpleTableComp = ({
         allowAnimations,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
-        collapseIcon,
         columnReordering,
         columnResizing,
         draggedHeaderRef,

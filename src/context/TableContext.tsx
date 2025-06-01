@@ -16,7 +16,6 @@ interface TableContextType {
   allowAnimations?: boolean;
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;
-  collapseIcon?: ReactNode;
   columnReordering: boolean;
   columnResizing: boolean;
   draggedHeaderRef: RefObject<HeaderObject | null>;

@@ -57,7 +57,6 @@ const TableCell = forwardRef(
     const {
       cellRegistry,
       cellUpdateFlash,
-      collapseIcon,
       draggedHeaderRef,
       expandIcon,
       expandedRows,
@@ -259,15 +258,14 @@ const TableCell = forwardRef(
         data-accessor={header.accessor}
       >
         {header.expandable && cellHasChildren ? (
-          isRowExpanded ? (
-            <div className="st-icon-container" onClick={handleRowExpansion}>
-              {collapseIcon}
-            </div>
-          ) : (
-            <div className="st-icon-container" onClick={handleRowExpansion}>
-              {expandIcon}
-            </div>
-          )
+          <div
+            className={`st-icon-container st-expand-icon-container ${
+              isRowExpanded ? "expanded" : "collapsed"
+            }`}
+            onClick={handleRowExpansion}
+          >
+            {expandIcon}
+          </div>
         ) : null}
         <span
           className={`st-cell-content ${
