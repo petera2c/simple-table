@@ -173,7 +173,7 @@ const SimpleTableComp = ({
         depth: 0,
         groupingKey: undefined,
         position: index,
-        isLastGroupRow: index === currentRows.length - 1,
+        isLastGroupRow: false,
       }));
     }
 
