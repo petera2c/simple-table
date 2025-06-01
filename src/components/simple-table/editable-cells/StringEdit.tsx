@@ -14,6 +14,21 @@ const StringEdit = ({ defaultValue, onBlur, onChange }: TextInputProps) => {
     onChange(value);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Stop propagation to prevent table navigation
+    e.stopPropagation();
+
+    // Close on Enter or Escape
+    if (e.key === "Enter" || e.key === "Escape") {
+      onBlur();
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLInputElement>) => {
+    // Stop propagation to prevent cell deselection
+    e.stopPropagation();
+  };
+
   return (
     <input
       className="editable-cell-input"
@@ -23,6 +38,8 @@ const StringEdit = ({ defaultValue, onBlur, onChange }: TextInputProps) => {
       defaultValue={defaultValue ?? ""}
       onBlur={onBlur}
       onChange={handleChange}
+      onKeyDown={handleKeyDown}
+      onMouseDown={handleMouseDown}
     />
   );
 };

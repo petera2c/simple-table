@@ -156,13 +156,6 @@ const TableCell = forwardRef(
       setLocalContent(row[header.accessor] as CellValue);
     }, [row, header.accessor]);
 
-    // If the cell is not highlighted, stop editing
-    useEffect(() => {
-      if (!isHighlighted) {
-        setIsEditing(false);
-      }
-    }, [isHighlighted]);
-
     // Derived state
     const isEditInDropdown =
       header.type === "boolean" || header.type === "date" || header.type === "enum";
@@ -211,10 +204,29 @@ const TableCell = forwardRef(
 
     // Handle keyboard events when cell is focused
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+      // If we're editing, don't handle table navigation keys
+      if (isEditing) {
+        return;
+      }
+
       // Start editing on F2 or Enter if the cell is editable
       if ((e.key === "F2" || e.key === "Enter") && header.isEditable && !isEditing) {
         e.preventDefault();
         setIsEditing(true);
+      }
+    };
+
+    // Handle mouse down - only if not editing
+    const handleCellMouseDown = () => {
+      if (!isEditing) {
+        handleMouseDown({ rowIndex, colIndex, rowId });
+      }
+    };
+
+    // Handle mouse over - only if not editing
+    const handleCellMouseOver = () => {
+      if (!isEditing) {
+        handleMouseOver({ rowIndex, colIndex, rowId });
       }
     };
 
@@ -223,6 +235,8 @@ const TableCell = forwardRef(
         <div
           className="st-cell-editing"
           id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
+          onMouseDown={(e) => e.stopPropagation()} // Prevent cell selection when clicking in edit mode
+          onKeyDown={(e) => e.stopPropagation()} // Prevent table navigation when editing
         >
           <EditableCell
             enumOptions={header.enumOptions}
@@ -241,8 +255,8 @@ const TableCell = forwardRef(
         className={cellClassName}
         id={cellId}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
-        onMouseDown={() => handleMouseDown({ rowIndex, colIndex, rowId })}
-        onMouseOver={() => handleMouseOver({ rowIndex, colIndex, rowId })}
+        onMouseDown={handleCellMouseDown}
+        onMouseOver={handleCellMouseOver}
         onDragOver={(event) =>
           throttle({
             callback: handleDragOver,
