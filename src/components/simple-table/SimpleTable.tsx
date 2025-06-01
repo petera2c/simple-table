@@ -107,7 +107,7 @@ const SimpleTableComp = ({
   onNextPage,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowGrouping,
-  rowHeight = 40,
+  rowHeight = 32,
   rowIdAccessor,
   rows,
   rowsPerPage = 10,
