@@ -52,6 +52,7 @@ interface SimpleTableProps {
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
+  expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Expand icon
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
@@ -98,6 +99,7 @@ const SimpleTableComp = ({
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
+  expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   height,
   hideFooter = false,
@@ -178,8 +180,9 @@ const SimpleTableComp = ({
       rowGrouping,
       rowIdAccessor,
       expandedRows,
+      expandAll,
     });
-  }, [currentRows, rowGrouping, rowIdAccessor, expandedRows]);
+  }, [currentRows, rowGrouping, rowIdAccessor, expandedRows, expandAll]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
