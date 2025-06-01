@@ -901,6 +901,10 @@ input {
 }
 
 .st-row-separator {
+  position: absolute;
+  min-width: 100%;
+  display: grid;
+  cursor: pointer;
   height: 1px;
   background-color: var(--st-separator-border-color);
   grid-column: 1 / -1;

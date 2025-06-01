@@ -1,6 +1,6 @@
 import { Fragment, RefObject } from "react";
-import TableRowComponent from "./TableRow";
-import TableRow from "../../types/TableRow";
+import TableRow from "./TableRow";
+import TableRowType from "../../types/TableRow";
 import { RowId } from "../../types/RowId";
 import TableRowSeparator from "./TableRowSeparator";
 import { Pinned } from "../../types/Pinned";
@@ -24,7 +24,7 @@ interface TableSectionProps {
   setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
-  visibleRows: TableRow[];
+  visibleRows: TableRowType[];
   width?: number;
 }
 
@@ -72,9 +72,10 @@ const TableSection = ({
                   position={visibleRow.position}
                   rowHeight={rowHeight}
                   templateColumns={templateColumns}
+                  rowIndex={index - 1}
                 />
               )}
-              <TableRowComponent
+              <TableRow
                 columnIndexStart={columnIndexStart}
                 columnIndices={columnIndices}
                 gridTemplateColumns={templateColumns}
