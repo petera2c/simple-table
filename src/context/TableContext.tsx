@@ -5,10 +5,11 @@ import Cell from "../types/Cell";
 import HeaderObject from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Theme from "../types/Theme";
+import CellValue from "../types/CellValue";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
-  updateContent: (newValue: any) => void;
+  updateContent: (newValue: CellValue) => void;
 }
 
 interface TableContextType {

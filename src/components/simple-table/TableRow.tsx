@@ -6,6 +6,7 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
+import { RowId } from "../../types/RowId";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -16,7 +17,7 @@ interface TableRowProps {
   hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
   index: number;
-  onExpandRowClick: (rowId: any) => void;
+  onExpandRowClick: (rowId: RowId) => void;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
