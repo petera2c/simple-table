@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/simple-table-core.svg)](https://www.npmjs.com/package/simple-table-core)
 [![npm downloads](https://img.shields.io/npm/dm/simple-table-core.svg)](https://www.npmjs.com/package/simple-table-core)
-[![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table-marketing.svg)](https://github.com/petera2c/simple-table-marketing)
+[![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/simple-table-core.svg)](LICENSE)
 
 Simple Table is a **lightweight**, **high-performance** React data grid component for building modern, scalable applications. With a **simple API**, **completely free features**, and a focus on developer experience, Simple Table makes it easy to create powerful, responsive tables.
@@ -76,9 +76,7 @@ export default QuickStartDemo;
 ## Live Demo
 
 <div align="center">
-    <a href="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" target="_blank" rel="noopener noreferrer">
-        <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" width="600" />
-    </a>
+    <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" width="600" />
 </div>
 
 ## Examples
@@ -99,7 +97,7 @@ Check out our live examples with complete source code:
 Join our growing community to ask questions or share feedback:
 
 - **Discord**: [Join us on Discord](https://discord.gg/RvKHCfg3PC)
-- **GitHub**: [Report bugs or suggest features](https://github.com/petera2c/simple-table-marketing/issues)
+- **GitHub**: [Report bugs or suggest features](https://github.com/petera2c/simple-table/issues)
 
 ## License
 

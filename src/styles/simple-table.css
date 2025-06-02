@@ -554,6 +554,7 @@
   scrollbar-color: var(--st-scrollbar-thumb-color) var(--st-scrollbar-bg-color);
   scrollbar-width: thin;
   font-family: inherit;
+  min-width: 100%;
 }
 
 input {
