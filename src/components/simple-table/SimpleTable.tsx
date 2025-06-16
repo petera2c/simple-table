@@ -225,7 +225,7 @@ const SimpleTableComp = ({
   } = useSelection({
     selectableCells,
     headers: headersRef.current,
-    visibleRows,
+    tableRows,
     rowIdAccessor,
     onCellEdit,
     cellRegistry: cellRegistryRef.current,

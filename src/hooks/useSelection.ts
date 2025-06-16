@@ -11,7 +11,7 @@ export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
 interface UseSelectionProps {
   selectableCells: boolean;
   headers: HeaderObject[];
-  visibleRows: TableRowType[];
+  tableRows: TableRowType[];
   rowIdAccessor: string;
   onCellEdit?: (props: any) => void;
   cellRegistry?: Map<string, any>;
@@ -20,7 +20,7 @@ interface UseSelectionProps {
 const useSelection = ({
   selectableCells,
   headers,
-  visibleRows,
+  tableRows,
   rowIdAccessor,
   onCellEdit,
   cellRegistry,
@@ -65,10 +65,10 @@ const useSelection = ({
       // Example: for col=2, might get accessor="email"
       const accessor = colIndexToAccessor.get(col);
 
-      if (accessor && visibleRows[row]?.row) {
+      if (accessor && tableRows[row]?.row) {
         // Use the accessor to get the cell value directly from the row
         // Example: if accessor="name", get row.name
-        acc[row][col] = visibleRows[row].row[accessor];
+        acc[row][col] = tableRows[row].row[accessor];
       } else {
         // If no accessor found (shouldn't happen), use empty string
         acc[row][col] = "";
@@ -94,7 +94,7 @@ const useSelection = ({
         setCopyFlashCells(new Set());
       }, 800);
     }
-  }, [leafHeaders, selectedCells, visibleRows]);
+  }, [leafHeaders, selectedCells, tableRows]);
 
   const pasteFromClipboard = useCallback(async () => {
     if (!initialFocusedCell) return;
@@ -123,14 +123,11 @@ const useSelection = ({
           const targetColIndex = startColIndex + colOffset;
 
           // Check boundaries
-          if (
-            targetRowIndex >= visibleRows.length ||
-            targetColIndex >= flattenedLeafHeaders.length
-          ) {
+          if (targetRowIndex >= tableRows.length || targetColIndex >= flattenedLeafHeaders.length) {
             return;
           }
 
-          const targetRow = visibleRows[targetRowIndex];
+          const targetRow = tableRows[targetRowIndex];
           const targetHeader = flattenedLeafHeaders[targetColIndex];
           const targetRowId = getRowId(targetRow.row, targetRowIndex, rowIdAccessor);
 
@@ -209,7 +206,7 @@ const useSelection = ({
     } catch (error) {
       console.warn("Failed to paste from clipboard:", error);
     }
-  }, [initialFocusedCell, leafHeaders, visibleRows, rowIdAccessor, onCellEdit, cellRegistry]);
+  }, [initialFocusedCell, leafHeaders, tableRows, rowIdAccessor, onCellEdit, cellRegistry]);
 
   const deleteSelectedCells = useCallback(() => {
     if (selectedCells.size === 0) return;
@@ -227,11 +224,11 @@ const useSelection = ({
       const [rowIndex, colIndex] = cellKey.split("-").map(Number);
 
       // Check boundaries
-      if (rowIndex >= visibleRows.length || colIndex >= flattenedLeafHeaders.length) {
+      if (rowIndex >= tableRows.length || colIndex >= flattenedLeafHeaders.length) {
         return;
       }
 
-      const targetRow = visibleRows[rowIndex];
+      const targetRow = tableRows[rowIndex];
       const targetHeader = flattenedLeafHeaders[colIndex];
       const targetRowId = getRowId(targetRow.row, rowIndex, rowIdAccessor);
 
@@ -255,7 +252,6 @@ const useSelection = ({
         emptyValue = "";
       }
 
-      console.log("emptyValue", emptyValue);
       // Update the data
       targetRow.row[targetHeader.accessor] = emptyValue;
 
@@ -294,7 +290,7 @@ const useSelection = ({
         setWarningFlashCells(new Set());
       }, 800);
     }
-  }, [selectedCells, leafHeaders, visibleRows, rowIdAccessor, onCellEdit, cellRegistry]);
+  }, [selectedCells, leafHeaders, tableRows, rowIdAccessor, onCellEdit, cellRegistry]);
 
   // Select cells from start to end coordinates
   const selectCellRange = useCallback(
@@ -308,8 +304,8 @@ const useSelection = ({
       for (let row = minRow; row <= maxRow; row++) {
         for (let col = minCol; col <= maxCol; col++) {
           // Check if the row exists in the visible rows
-          if (row >= 0 && row < visibleRows.length) {
-            const rowId = getRowId(visibleRows[row].row, row, rowIdAccessor);
+          if (row >= 0 && row < tableRows.length) {
+            const rowId = getRowId(tableRows[row].row, row, rowIdAccessor);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -321,7 +317,7 @@ const useSelection = ({
 
       setSelectedCells(newSelectedCells);
     },
-    [visibleRows, rowIdAccessor, setSelectedColumns, setLastSelectedColumnIndex, setSelectedCells]
+    [tableRows, rowIdAccessor, setSelectedColumns, setLastSelectedColumnIndex, setSelectedCells]
   );
 
   // Select a single cell
@@ -329,7 +325,7 @@ const useSelection = ({
     (cell: Cell) => {
       if (
         cell.rowIndex >= 0 &&
-        cell.rowIndex < visibleRows.length &&
+        cell.rowIndex < tableRows.length &&
         cell.colIndex >= 0 &&
         cell.colIndex < leafHeaders.length
       ) {
@@ -345,7 +341,7 @@ const useSelection = ({
     },
     [
       leafHeaders.length,
-      visibleRows.length,
+      tableRows.length,
       setSelectedColumns,
       setLastSelectedColumnIndex,
       setSelectedCells,
@@ -405,9 +401,9 @@ const useSelection = ({
       // Check if the visible rows have changed
       // If the rowId has changed, and we can't find the rowId in the visible rows, do nothing
       // If the rowId has changed, and we can find the rowId in the visible rows, update the rowIndex
-      const currentRowId = getRowId(visibleRows[rowIndex]?.row, rowIndex, rowIdAccessor);
+      const currentRowId = getRowId(tableRows[rowIndex]?.row, rowIndex, rowIdAccessor);
       if (currentRowId !== rowId) {
-        const currentRowIndex = visibleRows.findIndex(
+        const currentRowIndex = tableRows.findIndex(
           (visibleRow, index) => getRowId(visibleRow.row, index, rowIdAccessor) === rowId
         );
         if (currentRowIndex !== -1) {
@@ -419,7 +415,7 @@ const useSelection = ({
       if (event.key === "ArrowUp") {
         event.preventDefault();
         if (rowIndex > 0) {
-          const newRowId = getRowId(visibleRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor);
+          const newRowId = getRowId(tableRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor);
           const newCell = {
             rowIndex: rowIndex - 1,
             colIndex,
@@ -429,8 +425,8 @@ const useSelection = ({
         }
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
-        if (rowIndex < visibleRows.length - 1) {
-          const newRowId = getRowId(visibleRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor);
+        if (rowIndex < tableRows.length - 1) {
+          const newRowId = getRowId(tableRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor);
           const newCell = {
             rowIndex: rowIndex + 1,
             colIndex,
@@ -441,7 +437,7 @@ const useSelection = ({
       } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
         event.preventDefault();
         if (colIndex > 0) {
-          const newRowId = getRowId(visibleRows[rowIndex].row, rowIndex, rowIdAccessor);
+          const newRowId = getRowId(tableRows[rowIndex].row, rowIndex, rowIdAccessor);
           const newCell = {
             rowIndex,
             colIndex: colIndex - 1,
@@ -452,7 +448,7 @@ const useSelection = ({
       } else if (event.key === "ArrowRight" || event.key === "Tab") {
         event.preventDefault();
         if (colIndex < leafHeaders.length - 1) {
-          const newRowId = getRowId(visibleRows[rowIndex].row, rowIndex, rowIdAccessor);
+          const newRowId = getRowId(tableRows[rowIndex].row, rowIndex, rowIdAccessor);
           const newCell = {
             rowIndex,
             colIndex: colIndex + 1,
@@ -482,7 +478,7 @@ const useSelection = ({
     selectCellRange,
     selectSingleCell,
     selectableCells,
-    visibleRows,
+    tableRows,
     pasteFromClipboard,
     deleteSelectedCells,
   ]);
@@ -516,15 +512,14 @@ const useSelection = ({
       for (let row = startRow; row <= endRow; row++) {
         for (let col = startCol; col <= endCol; col++) {
           // Ensure the row exists
-          if (row >= 0 && row < visibleRows.length) {
-            const rowId = getRowId(visibleRows[row].row, row, rowIdAccessor);
+          if (row >= 0 && row < tableRows.length) {
+            const rowId = getRowId(tableRows[row].row, row, rowIdAccessor);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
       }
 
       setSelectedCells(newSelectedCells);
-      // Initial focused cell remains the one where the drag started
     }
   };
 
@@ -550,11 +545,11 @@ const useSelection = ({
   const getBorderClass = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
       const classes = [];
-      const topRowId = visibleRows[rowIndex - 1]
-        ? getRowId(visibleRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor)
+      const topRowId = tableRows[rowIndex - 1]
+        ? getRowId(tableRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor)
         : null;
-      const bottomRowId = visibleRows[rowIndex + 1]
-        ? getRowId(visibleRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor)
+      const bottomRowId = tableRows[rowIndex + 1]
+        ? getRowId(tableRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor)
         : null;
 
       const topCell =
@@ -570,7 +565,7 @@ const useSelection = ({
       if (
         !bottomCell ||
         !isSelected(bottomCell) ||
-        (selectedColumns.has(colIndex) && rowIndex === visibleRows.length - 1)
+        (selectedColumns.has(colIndex) && rowIndex === tableRows.length - 1)
       )
         classes.push("st-selected-bottom-border");
       if (!isSelected(leftCell)) classes.push("st-selected-left-border");
@@ -578,7 +573,7 @@ const useSelection = ({
 
       return classes.join(" ");
     },
-    [isSelected, visibleRows, selectedColumns, rowIdAccessor]
+    [isSelected, tableRows, selectedColumns, rowIdAccessor]
   );
 
   const isInitialFocusedCell = useMemo(() => {
