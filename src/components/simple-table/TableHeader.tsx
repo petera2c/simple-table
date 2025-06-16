@@ -49,8 +49,14 @@ const TableHeader = ({
   }, [headersRef, hiddenColumns]);
 
   useLayoutEffect(() => {
-    setPinnedLeftWidth(calculatePinnedWidth(pinnedLeftRef.current?.clientWidth));
-    setPinnedRightWidth(calculatePinnedWidth(pinnedRightRef.current?.clientWidth));
+    const updatePinnedWidths = () => {
+      requestAnimationFrame(() => {
+        setPinnedLeftWidth(calculatePinnedWidth(pinnedLeftRef.current?.clientWidth));
+        setPinnedRightWidth(calculatePinnedWidth(pinnedRightRef.current?.clientWidth));
+      });
+    };
+
+    updatePinnedWidths();
   }, [pinnedLeftRef, pinnedRightRef, setPinnedLeftWidth, setPinnedRightWidth]);
 
   return (
