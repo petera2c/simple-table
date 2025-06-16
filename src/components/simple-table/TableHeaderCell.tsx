@@ -339,7 +339,9 @@ const TableHeaderCell = forwardRef(
                 : "left-aligned"
             }`}
           >
-            {header?.label}
+            {header.headerRenderer
+              ? header.headerRenderer({ accessor: header.accessor, colIndex, header })
+              : header?.label}
           </span>
         </div>
         {header.align !== "right" && SortIcon}

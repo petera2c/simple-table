@@ -22,6 +22,15 @@ type HeaderObject = {
   enumOptions?: EnumOption[];
   expandable?: boolean;
   filterable?: boolean;
+  headerRenderer?: ({
+    accessor,
+    colIndex,
+    header,
+  }: {
+    accessor: string;
+    colIndex: number;
+    header: HeaderObject;
+  }) => ReactNode | string;
   hide?: boolean;
   isEditable?: boolean;
   isSortable?: boolean;

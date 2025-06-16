@@ -59,6 +59,19 @@ const CellRendererExample = () => {
           <div style={{ backgroundColor: "red", width: "100%", overflow: "hidden" }}>{value}</div>
         );
       },
+      headerRenderer: ({ header }) => (
+        <div
+          style={{
+            backgroundColor: "darkred",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            fontWeight: "bold",
+          }}
+        >
+          🆔 {header.label}
+        </div>
+      ),
     },
     {
       accessor: "name",
@@ -71,6 +84,19 @@ const CellRendererExample = () => {
           <div style={{ backgroundColor: "blue", width: "100%", overflow: "hidden" }}>{value}</div>
         );
       },
+      headerRenderer: ({ header }) => (
+        <div
+          style={{
+            backgroundColor: "darkblue",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            fontStyle: "italic",
+          }}
+        >
+          👤 {header.label}
+        </div>
+      ),
     },
     {
       accessor: "age",
@@ -81,6 +107,19 @@ const CellRendererExample = () => {
         const value = row[accessor] as string | number;
         return <div style={{ backgroundColor: "green", width: "100%" }}>{value}</div>;
       },
+      headerRenderer: ({ header }) => (
+        <div
+          style={{
+            backgroundColor: "darkgreen",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            textTransform: "uppercase",
+          }}
+        >
+          🎂 {header.label}
+        </div>
+      ),
     },
     {
       accessor: "role",
@@ -91,6 +130,19 @@ const CellRendererExample = () => {
         const value = row[accessor] as string | number;
         return <div style={{ backgroundColor: "yellow" }}>{value}</div>;
       },
+      headerRenderer: ({ header }) => (
+        <div
+          style={{
+            backgroundColor: "orange",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            border: "2px solid darkorange",
+          }}
+        >
+          💼 {header.label}
+        </div>
+      ),
     },
   ];
 
