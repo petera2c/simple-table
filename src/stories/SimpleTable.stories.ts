@@ -5,6 +5,7 @@ import BasicExampleComponent from "./examples/BasicExample";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";
 import CellRendererExample from "./examples/CellRenderer";
+import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import EditableCellsExample from "./examples/EditableCells";
 import HiddenColumnsExample from "./examples/HiddenColumnsExample";
 import InfiniteScrollExample from "./examples/InfiniteScroll";
@@ -43,6 +44,9 @@ export const CellHighlighting: Story = {
 
 export const CellRenderer: Story = {
   render: CellRendererExample,
+};
+export const DynamicHeaders: Story = {
+  render: DynamicHeadersExample,
 };
 export const EditableCells: Story = {
   render: EditableCellsExample,

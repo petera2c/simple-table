@@ -128,10 +128,20 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
 }: SimpleTableProps) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
+
+  // Force update function - needed early for header updates
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const headersRef = useRef(defaultHeaders);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+
+  // Update headers when defaultHeaders prop changes
+  useEffect(() => {
+    headersRef.current = defaultHeaders;
+    forceUpdate(); // Trigger re-render to update all dependent components
+  }, [defaultHeaders]);
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
@@ -229,9 +239,6 @@ const SimpleTableComp = ({
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
-
-  // Hooks
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const {
     getBorderClass,
     handleMouseDown,
