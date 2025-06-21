@@ -1,5 +1,5 @@
 import { expect, within } from "@storybook/test";
-import { waitForTableRender, testThreeSectionLayout } from "./commonTestUtils";
+import { testThreeSectionLayout } from "./commonTestUtils";
 
 /**
  * Column Pinning Test Utilities

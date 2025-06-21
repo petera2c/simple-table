@@ -34,13 +34,11 @@ export const validateBasicTableStructure = async (canvasElement: HTMLElement) =>
 };
 
 /**
- * Wait for table to render and validate basic structure
+ * Simple wait for table to be ready for testing
  */
-export const waitForTableRender = async (
-  canvas: ReturnType<typeof within>,
-  canvasElement: HTMLElement
-) => {
-  await validateBasicTableStructure(canvasElement);
+export const waitForTable = async () => {
+  // Simple delay to ensure table is rendered
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 /**

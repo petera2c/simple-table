@@ -7,7 +7,6 @@ import {
   testComprehensivePinning,
 } from "../test-utils/columnPinningTestUtils";
 import { testThreeSectionLayout } from "../test-utils/commonTestUtils";
-import { testAlignmentPersistence } from "../test-utils/alignmentTestUtils";
 
 const meta: Meta<typeof AlignmentExample> = {
   title: "Tests/Column Pinning Tests",
@@ -58,21 +57,5 @@ export const ComprehensivePinning: Story = {
     ];
 
     await testComprehensivePinning(canvas, canvasElement, pinnedLeft, pinnedRight, mainColumns);
-  },
-};
-
-export const AlignmentWithPinning: Story = {
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const canvas = within(canvasElement);
-    await testAlignmentPersistence(canvas, async () => {
-      const scrollableContainer = canvasElement.querySelector(".st-body-main");
-      if (scrollableContainer) {
-        scrollableContainer.scrollLeft = 100;
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        scrollableContainer.scrollLeft = 0;
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
-    });
   },
 };

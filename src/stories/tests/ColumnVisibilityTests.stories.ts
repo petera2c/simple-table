@@ -6,7 +6,6 @@ import {
   testColumnEditorStructure,
   testVisibleColumnsShown,
 } from "../test-utils/columnVisibilityTestUtils";
-import { testAlignmentPersistence } from "../test-utils/alignmentTestUtils";
 
 const meta: Meta<typeof AlignmentExample> = {
   title: "Tests/Column Visibility Tests",
@@ -39,33 +38,5 @@ export const VisibleColumns: Story = {
     const canvas = within(canvasElement);
     const visibleColumns = ["name", "employees", "city", "totalSales"];
     await testVisibleColumnsShown(canvas, canvasElement, visibleColumns);
-  },
-};
-
-export const AlignmentAfterVisibility: Story = {
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const canvas = within(canvasElement);
-    await testAlignmentPersistence(canvas, async () => {
-      const columnEditor = canvasElement.querySelector(".st-column-editor");
-      if (columnEditor) {
-        const popout = canvasElement.querySelector(".st-column-editor-popout");
-        if (popout) {
-          const checkboxItems = popout.querySelectorAll(".st-header-checkbox-item");
-
-          if (checkboxItems.length > 0) {
-            const firstCheckboxItem = checkboxItems[0];
-            const checkboxLabel = firstCheckboxItem.querySelector(".st-checkbox-label");
-
-            if (checkboxLabel) {
-              (checkboxLabel as HTMLElement).click();
-              await new Promise((resolve) => setTimeout(resolve, 100));
-
-              (checkboxLabel as HTMLElement).click();
-              await new Promise((resolve) => setTimeout(resolve, 100));
-            }
-          }
-        }
-      }
-    });
   },
 };

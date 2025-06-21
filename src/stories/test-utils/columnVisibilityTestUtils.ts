@@ -1,5 +1,4 @@
 import { expect, within } from "@storybook/test";
-import { waitForTableRender } from "./commonTestUtils";
 
 /**
  * Column Visibility Test Utilities

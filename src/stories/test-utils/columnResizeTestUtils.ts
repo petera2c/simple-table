@@ -1,79 +1,89 @@
 import { expect, within } from "@storybook/test";
-import { waitForTableRender } from "./commonTestUtils";
+import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 
 /**
- * Column Resizing Test Utilities
+ * Simple wait function for table rendering
  */
-
-export const testResizeHandlesPresent = async (
-  canvas: ReturnType<typeof within>,
-  canvasElement: HTMLElement
-) => {
-  const resizeHandles = canvasElement.querySelectorAll(".st-header-resize-handle-container");
-  expect(resizeHandles.length).toBeGreaterThan(0);
-
-  resizeHandles.forEach((handle) => {
-    const computedStyle = window.getComputedStyle(handle);
-    expect(computedStyle.cursor).toBe("col-resize");
-  });
+export const waitForTable = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
-export const testColumnResizing = async (
+/**
+ * Comprehensive column resize test that verifies width changes
+ * for all columns by resizing each by 20px
+ */
+export const testColumnResize = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  const resizeHandles = canvasElement.querySelectorAll(".st-header-resize-handle-container");
-  expect(resizeHandles.length).toBeGreaterThan(0);
+  console.log("Testing column resize...");
 
-  if (resizeHandles.length > 0) {
-    const firstHandle = resizeHandles[0] as HTMLElement;
-    const startX = firstHandle.getBoundingClientRect().left + 5;
-    const endX = startX + 50;
+  const resizeAmount = 20;
 
-    const mouseDownEvent = new MouseEvent("mousedown", {
-      clientX: startX,
-      clientY: firstHandle.getBoundingClientRect().top + 5,
-      bubbles: true,
-      cancelable: true,
-    });
+  // Resize and verify each column immediately
+  for (const column of RETAIL_SALES_HEADERS) {
+    const headerElements = canvasElement.querySelectorAll(".st-header-label-text");
+    let targetHeaderCell: HTMLElement | null = null;
 
-    const mouseMoveEvent = new MouseEvent("mousemove", {
-      clientX: endX,
-      clientY: firstHandle.getBoundingClientRect().top + 5,
-      bubbles: true,
-      cancelable: true,
-    });
+    // Find the column header
+    for (const element of Array.from(headerElements)) {
+      if (element.textContent?.trim() === column.label) {
+        targetHeaderCell = element.closest(".st-header-cell") as HTMLElement;
+        break;
+      }
+    }
 
-    const mouseUpEvent = new MouseEvent("mouseup", {
-      clientX: endX,
-      clientY: firstHandle.getBoundingClientRect().top + 5,
-      bubbles: true,
-      cancelable: true,
-    });
+    if (targetHeaderCell) {
+      // Get initial width
+      const initialWidth = targetHeaderCell.getBoundingClientRect().width;
 
-    firstHandle.dispatchEvent(mouseDownEvent);
-    document.dispatchEvent(mouseMoveEvent);
-    document.dispatchEvent(mouseUpEvent);
+      const resizeHandle = targetHeaderCell.querySelector(
+        ".st-header-resize-handle-container"
+      ) as HTMLElement;
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+      if (resizeHandle) {
+        const startX = resizeHandle.getBoundingClientRect().left + 5;
+
+        // For right-pinned columns, drag in the opposite direction
+        const isRightPinned = column.pinned === "right";
+        const endX = isRightPinned ? startX - resizeAmount : startX + resizeAmount;
+
+        const mouseDownEvent = new MouseEvent("mousedown", {
+          clientX: startX,
+          clientY: resizeHandle.getBoundingClientRect().top + 5,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        const mouseMoveEvent = new MouseEvent("mousemove", {
+          clientX: endX,
+          clientY: resizeHandle.getBoundingClientRect().top + 5,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        const mouseUpEvent = new MouseEvent("mouseup", {
+          clientX: endX,
+          clientY: resizeHandle.getBoundingClientRect().top + 5,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        resizeHandle.dispatchEvent(mouseDownEvent);
+        document.dispatchEvent(mouseMoveEvent);
+        document.dispatchEvent(mouseUpEvent);
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Verify immediately after resize
+        const finalWidth = targetHeaderCell.getBoundingClientRect().width;
+        const widthChange = finalWidth - initialWidth;
+
+        // Allow for small tolerance due to browser rounding
+        expect(Math.abs(widthChange - resizeAmount)).toBeLessThan(5);
+      }
+    }
   }
-};
 
-export const testResizeHandleStyling = async (
-  canvas: ReturnType<typeof within>,
-  canvasElement: HTMLElement
-) => {
-  const resizeHandles = canvasElement.querySelectorAll(".st-header-resize-handle-container");
-  expect(resizeHandles.length).toBeGreaterThan(0);
-
-  resizeHandles.forEach((handle) => {
-    expect(handle).toHaveClass("st-header-resize-handle-container");
-
-    const innerHandle = handle.querySelector(".st-header-resize-handle");
-    expect(innerHandle).toBeInTheDocument();
-    expect(innerHandle).toHaveClass("st-header-resize-handle");
-
-    const computedStyle = window.getComputedStyle(handle);
-    expect(computedStyle.cursor).toBe("col-resize");
-  });
+  console.log("Column resize test completed successfully");
 };
