@@ -92,11 +92,5 @@ export const SelectableCells: Story = {
 export const Theming: Story = {
   render: ThemingExample,
 };
-// export const EditColumns: Story = {
-//   render: EditColumnsExample,
-// };
-// export const ColumnResizing: Story = {
-//   render: ColumnResizingExample,
-// };
 
 export default meta;
