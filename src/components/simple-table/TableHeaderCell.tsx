@@ -20,6 +20,7 @@ import { handleResizeStart } from "../../utils/resizeUtils";
 import FilterIcon from "../../icons/FilterIcon";
 import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
+import { FilterCondition } from "../../types/FilterTypes";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -117,7 +118,7 @@ const TableHeaderCell = forwardRef(
       setIsFilterDropdownOpen(!isFilterDropdownOpen);
     };
 
-    const handleApplyFilterWrapper = (filter: any) => {
+    const handleApplyFilterWrapper = (filter: FilterCondition) => {
       handleApplyFilter(filter);
       setIsFilterDropdownOpen(false);
     };

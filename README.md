@@ -14,7 +14,7 @@ Simple Table is a **lightweight**, **high-performance** React data grid componen
 - **Intuitive**: Minimal boilerplate with a clean, React-first API
 - **TypeScript-ready**: Full TypeScript support for type-safe development
 
-## Quick Start
+## 🚀 Quick Start
 
 Get started with Simple Table in just a few lines of code!
 
@@ -24,39 +24,9 @@ Get started with Simple Table in just a few lines of code!
 npm install simple-table-core
 ```
 
-### Example
+### 📖 Complete Guide
 
-```tsx
-import { SimpleTable, HeaderObject } from "simple-table-core";
-import "simple-table-core/styles.css";
-
-const QuickStartDemo = () => {
-  // Sample data for a quick start demo
-  const data = [
-    { id: 1, name: "John Doe", age: 28, role: "Developer" },
-    { id: 2, name: "Jane Smith", age: 32, role: "Designer" },
-    { id: 3, name: "Bob Johnson", age: 45, role: "Manager" },
-  ];
-
-  // Define headers
-  const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-    { accessor: "name", label: "Name", minWidth: 80, width: "1fr", type: "string" },
-    { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-    { accessor: "role", label: "Role", width: 150, isSortable: true, type: "string" },
-  ];
-
-  // Map data to rows format expected by SimpleTable
-  const rows = data.map((item) => ({
-    rowMeta: { rowId: item.id },
-    rowData: item,
-  }));
-
-  return <SimpleTable defaultHeaders={headers} rows={rows} selectableCells />;
-};
-
-export default QuickStartDemo;
-```
+**[👉 Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
 ## Features
 
@@ -79,18 +49,27 @@ export default QuickStartDemo;
     <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" width="600" />
 </div>
 
-## Examples
+## 🎯 Live Examples
 
-Check out our live examples with complete source code:
+Explore our interactive examples with complete source code:
 
-- [Finance Dashboard](https://www.simple-table.com/examples/finance?theme=light)
-- [Sales Dashboard](https://www.simple-table.com/examples/sales?theme=light)
+### 📊 **[Finance Dashboard](https://www.simple-table.com/examples/finance)**
 
-## Links
+Complete financial data table with advanced filtering and sorting
 
-- **Website**: [Simple Table](https://www.simple-table.com/)
-- **Documentation**: [Simple Table Documentation](https://www.simple-table.com/docs/installation)
-- **Quick Start**: [Quick Start Guide](https://www.simple-table.com/docs/quick-start)
+### 💰 **[Sales Dashboard](https://www.simple-table.com/examples/sales)**
+
+Sales analytics table with custom cell renderers and grouping
+
+### 📘 **[Documentation & More Examples](https://www.simple-table.com/docs/installation)**
+
+Browse all available examples and comprehensive documentation
+
+## 📚 Resources
+
+- **🌐 Website**: [Simple Table](https://www.simple-table.com/)
+- **📖 Documentation**: [Complete Documentation](https://www.simple-table.com/docs/installation)
+- **🚀 Quick Start**: [Get Started Now](https://www.simple-table.com/docs/quick-start)
 
 ## Community & Support
 

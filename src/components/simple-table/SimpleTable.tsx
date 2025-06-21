@@ -39,6 +39,7 @@ import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
+import { FilterCondition } from "../../types/FilterTypes";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -52,11 +53,13 @@ interface SimpleTableProps {
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
+  externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onFilterChange?: (filter: FilterCondition) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onNextPage?: OnNextPage; // Custom handler for next page
   prevIcon?: ReactNode; // Previous icon
@@ -98,11 +101,13 @@ const SimpleTableComp = ({
   editColumnsInitOpen = false,
   expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
+  externalFilterHandling = false,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
   onColumnOrderChange,
+  onFilterChange,
   onGridReady,
   onNextPage,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
@@ -142,8 +147,28 @@ const SimpleTableComp = ({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Use filter hook
-  const { filters, filteredRows, handleApplyFilter, handleClearFilter, handleClearAllFilters } =
-    useTableFilters({ rows });
+  const {
+    filters,
+    filteredRows,
+    handleApplyFilter: internalHandleApplyFilter,
+    handleClearFilter,
+    handleClearAllFilters,
+  } = useTableFilters({ rows });
+
+  // Custom filter handler that respects external filter handling flag
+  const handleApplyFilter = useCallback(
+    (filter: FilterCondition) => {
+      if (externalFilterHandling) {
+        // Only call external handler, don't update internal state
+        onFilterChange?.(filter);
+      } else {
+        // Update internal state and call external handler if provided
+        internalHandleApplyFilter(filter);
+        onFilterChange?.(filter);
+      }
+    },
+    [externalFilterHandling, onFilterChange, internalHandleApplyFilter]
+  );
 
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
