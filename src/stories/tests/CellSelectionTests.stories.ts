@@ -2,9 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import AlignmentExample from "../examples/AlignmentExample";
 import {
   testCellSelectionComprehensive,
-  testSingleCellSelection,
-  testMultiCellRangeSelection,
-  testCellSelectionPersistence,
   testCellsAreClickable,
   testColumnHeaderSelection,
   testCellSelectionAfterScroll,
@@ -15,7 +12,6 @@ import {
   getSelectedCellCount,
   validateCellRangeSelection,
   clearCellSelection,
-  logTableState,
   clickColumnHeader,
   isColumnSelected,
   scrollTableVertically,
@@ -40,31 +36,19 @@ type Story = StoryObj<typeof meta>;
  */
 export const ComprehensiveCellSelectionTests: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    console.log(`🚀 Starting Cell Selection Tests`);
-    console.log(`📋 Canvas element:`, canvasElement);
-
     try {
-      // Check initial table state
-      console.log(`🔍 Initial table inspection:`);
-      logTableState(canvasElement);
-
       // Run the comprehensive test suite
-      console.log(`🧪 Running comprehensive test suite...`);
       await testCellSelectionComprehensive(canvasElement);
 
       // Additional specific tests with multiple expect statements
 
       // Discover valid cell bounds for dynamic testing
-      console.log(`🔍 Discovering valid cell bounds for additional tests...`);
       const bounds = findValidCellBounds(canvasElement);
 
       // Test 1: Single cell selection with detailed validation
-      console.log(`🧪 Test 1: Single cell selection`);
       await clearCellSelection(canvasElement);
-      logTableState(canvasElement);
 
       await clickCell(canvasElement, bounds.minRow, bounds.minCol);
-      logTableState(canvasElement);
 
       expect(isCellSelected(canvasElement, bounds.minRow, bounds.minCol)).toBe(true);
       expect(getSelectedCellCount(canvasElement)).toBe(1);
@@ -152,23 +136,16 @@ export const ComprehensiveCellSelectionTests: Story = {
 export const ColumnHeaderSelectionTest: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
-      console.log(`🎯 Testing column header selection...`);
-      logTableState(canvasElement);
-
       // Test column header selection
       await testColumnHeaderSelection(canvasElement, 1);
 
       // Test clicking different column headers
-      console.log(`🧪 Testing different column selection...`);
       await clickColumnHeader(canvasElement, 2);
       expect(isColumnSelected(canvasElement, 2)).toBe(true);
 
       // Test header click on first column
-      console.log(`🧪 Testing first column selection...`);
       await clickColumnHeader(canvasElement, 0);
       expect(isColumnSelected(canvasElement, 0)).toBe(true);
-
-      console.log(`✅ Column header selection tests passed!`);
     } catch (error) {
       console.error("Column header selection test failed:", error);
       throw error;
@@ -182,9 +159,6 @@ export const ColumnHeaderSelectionTest: Story = {
 export const ScrollAndSelectionTest: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
-      console.log(`🎯 Testing selection after scrolling...`);
-      logTableState(canvasElement);
-
       // Test cell selection after scrolling
       await testCellSelectionAfterScroll(canvasElement, 300, 5, 1);
 
@@ -192,37 +166,24 @@ export const ScrollAndSelectionTest: Story = {
       await testRangeSelectionAfterScroll(canvasElement, 200, 3, 1, 4, 3);
 
       // Test scrolling to different positions
-      console.log(`🧪 Testing selection at different scroll positions...`);
 
       // Test 1: Scroll to 100px and find visible cells
       await scrollTableVertically(canvasElement, 100);
       const bounds100 = findValidCellBounds(canvasElement);
-      console.log(
-        `🎯 After scroll to 100px, testing cell [${bounds100.minRow}, ${bounds100.minCol}]`
-      );
       await clickCell(canvasElement, bounds100.minRow, bounds100.minCol);
       expect(isCellSelected(canvasElement, bounds100.minRow, bounds100.minCol)).toBe(true);
 
       // Test 2: Scroll to 500px and find visible cells
       await scrollTableVertically(canvasElement, 500);
       const bounds500 = findValidCellBounds(canvasElement);
-      console.log(
-        `🎯 After scroll to 500px, testing cell [${bounds500.minRow}, ${bounds500.minCol}]`
-      );
       await clickCell(canvasElement, bounds500.minRow, bounds500.minCol);
       expect(isCellSelected(canvasElement, bounds500.minRow, bounds500.minCol)).toBe(true);
 
       // Test 3: Scroll back to top and test selection
-      console.log(`🧪 Testing scroll back to top...`);
       await scrollTableVertically(canvasElement, 0);
       const scrollBounds = findValidCellBounds(canvasElement);
-      console.log(
-        `🎯 After scroll to top, testing cell [${scrollBounds.minRow}, ${scrollBounds.minCol}]`
-      );
       await clickCell(canvasElement, scrollBounds.minRow, scrollBounds.minCol);
       expect(isCellSelected(canvasElement, scrollBounds.minRow, scrollBounds.minCol)).toBe(true);
-
-      console.log(`✅ Scroll and selection tests passed!`);
     } catch (error) {
       console.error("Scroll and selection test failed:", error);
       throw error;
