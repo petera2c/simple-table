@@ -136,7 +136,6 @@ const verifyCrossSectionMove = (
 export const ColumnReorderingInteractions: Story = {
   name: "Column Reordering - All Interactions",
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const canvas = within(canvasElement);
     await waitForTable();
 
     const mainSection = canvasElement.querySelector(".st-header-main");
