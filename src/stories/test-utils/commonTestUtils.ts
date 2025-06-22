@@ -1,5 +1,6 @@
 import { expect, within } from "@storybook/test";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
+import { HEADERS as BILLING_HEADERS } from "../examples/billing-example/billing-headers";
 
 /**
  * Shared test utilities for SimpleTable components
@@ -70,26 +71,7 @@ export const testThreeSectionLayout = async (
 };
 
 /**
- * Test that multiple features can coexist without breaking basic structure
- */
-export const testFeatureIntegration = async (
-  canvas: ReturnType<typeof within>,
-  canvasElement: HTMLElement
-) => {
-  await validateBasicTableStructure(canvasElement);
-
-  // Check what features are present
-  const hasResizing =
-    canvasElement.querySelectorAll(".st-header-resize-handle-container").length > 0;
-  const hasReordering =
-    canvasElement.querySelectorAll(".st-header-label[draggable='true']").length > 0;
-  const hasColumnEditor = canvasElement.querySelector(".st-column-editor") !== null;
-
-  return { hasResizing, hasReordering, hasColumnEditor };
-};
-
-/**
- * Column utility functions
+ * Column utility functions - RETAIL DATA (legacy)
  */
 
 // Get column accessor by label from RETAIL_SALES_HEADERS
@@ -110,9 +92,92 @@ export const getPinnedLeftColumns = () => RETAIL_SALES_HEADERS.filter((h) => h.p
 export const getPinnedRightColumns = () => RETAIL_SALES_HEADERS.filter((h) => h.pinned === "right");
 
 // Get column labels by section
-export const getMainColumnLabels = () => getMainColumns().map((h) => h.label);
-export const getPinnedLeftColumnLabels = () => getPinnedLeftColumns().map((h) => h.label);
-export const getPinnedRightColumnLabels = () => getPinnedRightColumns().map((h) => h.label);
+export const getMainColumnLabels = (): string[] => {
+  return getMainColumns().map((col) => col.label);
+};
+
+export const getPinnedLeftColumnLabels = (): string[] => {
+  return getPinnedLeftColumns().map((col) => col.label);
+};
+
+export const getPinnedRightColumnLabels = (): string[] => {
+  return getPinnedRightColumns().map((col) => col.label);
+};
+
+/**
+ * Column utility functions - BILLING DATA
+ */
+
+// Flatten billing headers to get all columns (including nested children)
+const flattenBillingHeaders = (headers = BILLING_HEADERS): any[] => {
+  const flattened: any[] = [];
+
+  headers.forEach((header) => {
+    if (header.children && header.children.length > 0) {
+      // For parent headers with children, add the children instead
+      header.children.forEach((child) => {
+        flattened.push({
+          ...child,
+          parentLabel: header.label,
+          pinned: header.pinned,
+        });
+      });
+    } else {
+      // For headers without children, add the header itself
+      flattened.push(header);
+    }
+  });
+
+  return flattened;
+};
+
+// Get column accessor by label from BILLING_HEADERS
+export const getBillingColumnAccessorByLabel = (label: string): string => {
+  const flatHeaders = flattenBillingHeaders();
+  const header = flatHeaders.find((h) => h.label === label);
+  return header?.accessor || label.toLowerCase().replace(/\s+/g, "");
+};
+
+// Get billing columns by pinning status
+export const getBillingMainColumns = () => {
+  const flatHeaders = flattenBillingHeaders();
+  return flatHeaders.filter((h) => !h.pinned);
+};
+
+export const getBillingPinnedLeftColumns = () => {
+  const flatHeaders = flattenBillingHeaders();
+  return flatHeaders.filter((h) => h.pinned === "left");
+};
+
+export const getBillingPinnedRightColumns = () => {
+  const flatHeaders = flattenBillingHeaders();
+  return flatHeaders.filter((h) => h.pinned === "right");
+};
+
+// Get billing column labels by section
+export const getBillingMainColumnLabels = (): string[] => {
+  return getBillingMainColumns().map((col) => col.label);
+};
+
+export const getBillingPinnedLeftColumnLabels = (): string[] => {
+  return getBillingPinnedLeftColumns().map((col) => col.label);
+};
+
+export const getBillingPinnedRightColumnLabels = (): string[] => {
+  return getBillingPinnedRightColumns().map((col) => col.label);
+};
+
+// Get all billing column labels (useful for comprehensive tests)
+export const getAllBillingColumnLabels = (): string[] => {
+  const flatHeaders = flattenBillingHeaders();
+  return flatHeaders.map((col) => col.label);
+};
+
+// Get sortable billing column labels
+export const getSortableBillingColumnLabels = (): string[] => {
+  const flatHeaders = flattenBillingHeaders();
+  return flatHeaders.filter((col) => col.isSortable).map((col) => col.label);
+};
 
 /**
  * Column visibility utilities
@@ -135,6 +200,17 @@ export const isColumnVisible = (canvasElement: HTMLElement, columnAccessor: stri
   // Check if column appears in the visible labels (most reliable method)
   const visibleLabels = getVisibleColumnLabels(canvasElement);
   const header = RETAIL_SALES_HEADERS.find((h) => h.accessor === columnAccessor);
+  return header ? visibleLabels.includes(header.label) : false;
+};
+
+// Check if a billing column is currently visible in the table
+export const isBillingColumnVisible = (
+  canvasElement: HTMLElement,
+  columnAccessor: string
+): boolean => {
+  const visibleLabels = getVisibleColumnLabels(canvasElement);
+  const flatHeaders = flattenBillingHeaders();
+  const header = flatHeaders.find((h) => h.accessor === columnAccessor);
   return header ? visibleLabels.includes(header.label) : false;
 };
 
