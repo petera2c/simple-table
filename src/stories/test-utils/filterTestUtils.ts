@@ -1,8 +1,7 @@
-import { expect, within } from "@storybook/test";
+import { expect } from "@storybook/test";
 import { waitForTable } from "./commonTestUtils";
 import { PRODUCT_HEADERS } from "../examples/filter-example/filter-headers";
 import HeaderObject from "../../types/HeaderObject";
-import Row from "../../types/Row";
 
 /**
  * Filter Test Utilities for FilterExample
@@ -375,9 +374,6 @@ export const testColumnFilter = async (
   operator?: string,
   expectedRowCount?: number
 ): Promise<void> => {
-  const testDescription =
-    operator && operator !== "" ? `${operator} "${filterValue}"` : `"${filterValue}"`;
-
   // Get initial row count
   const initialRowCount = getVisibleRowCount(canvasElement);
   expect(initialRowCount).toBeGreaterThan(0);
@@ -418,9 +414,6 @@ export const testColumnFilter = async (
     if (operator && operator !== "") {
       await selectFilterOperator(canvasElement, operator);
     }
-
-    // Verify current operator
-    const currentOperator = getCurrentFilterOperator(canvasElement);
 
     // Type filter value
     await typeInFilterInput(canvasElement, filterValue);
@@ -1175,10 +1168,7 @@ export const typeInFilterInput = async (
   // Wait for React to process the state update
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  // Debug: Check if the apply button is enabled now
-  try {
-    const isEnabled = isApplyButtonEnabled(canvasElement);
-  } catch (error) {}
+  isApplyButtonEnabled(canvasElement);
 };
 
 /**
@@ -1380,9 +1370,6 @@ export const testBooleanFilter = async (
   // 1. Operator selector (Equals, Not Equals, etc.)
   // 2. Value selector (True, False)
 
-  // Verify default operator
-  const operator = getCurrentFilterOperator(canvasElement);
-
   // Map filter value to boolean dropdown value
   // For Status column: "Active" = isActive: true, "Inactive" = isActive: false
   const booleanValue = filterValue.toLowerCase() === "active" ? "True" : "False";
@@ -1460,9 +1447,6 @@ export const testDateFilter = async (
   // Date filters have:
   // 1. Operator selector (Equals, Greater than, etc.)
   // 2. Date input field that opens a calendar picker
-
-  // Verify default operator
-  const operator = getCurrentFilterOperator(canvasElement);
 
   // Click the date input to open the calendar
   await clickDateInput(canvasElement);

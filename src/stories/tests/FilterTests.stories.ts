@@ -1,11 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within } from "@storybook/test";
 import { FilterExampleComponent } from "../examples/filter-example/FilterExample";
-import {
-  testAllColumnFilters,
-  testBasicColumnFilters,
-  getFilterableColumnsFromHeaders,
-} from "../test-utils/filterTestUtils";
+import { testAllColumnFilters } from "../test-utils/filterTestUtils";
 
 const meta: Meta<typeof FilterExampleComponent> = {
   title: "Tests/Filter Tests",
