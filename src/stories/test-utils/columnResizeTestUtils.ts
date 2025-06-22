@@ -1,6 +1,5 @@
 import { expect, within } from "@storybook/test";
 import {
-  waitForTable,
   getMainColumns,
   getPinnedLeftColumns,
   getPinnedRightColumns,

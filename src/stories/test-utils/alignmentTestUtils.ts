@@ -1,10 +1,5 @@
 import { expect, within } from "@storybook/test";
-import {
-  waitForTable,
-  getMainColumns,
-  getPinnedLeftColumns,
-  getPinnedRightColumns,
-} from "./commonTestUtils";
+import { getMainColumns, getPinnedLeftColumns, getPinnedRightColumns } from "./commonTestUtils";
 
 /**
  * Comprehensive alignment test that verifies CSS text-align properties

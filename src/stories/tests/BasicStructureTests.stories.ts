@@ -16,14 +16,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicDOMStructure: Story = {
-  name: "Basic DOM Structure",
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await validateBasicTableStructure(canvasElement);
   },
 };
 
 export const FeatureCoexistence: Story = {
-  name: "Feature Coexistence",
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
     const features = await testFeatureIntegration(canvas, canvasElement);

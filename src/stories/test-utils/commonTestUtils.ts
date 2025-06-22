@@ -61,7 +61,6 @@ export const testThreeSectionLayout = async (
   await validateBasicTableStructure(canvasElement);
 
   // Additional pinning-specific checks
-  const headerContainer = canvasElement.querySelector(".st-header-container");
   const bodyContainer = canvasElement.querySelector(".st-body-container");
 
   // Check that both containers exist (already validated above)

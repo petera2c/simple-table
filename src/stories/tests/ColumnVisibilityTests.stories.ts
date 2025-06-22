@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { within } from "@storybook/test";
 import AlignmentExample from "../examples/AlignmentExample";
-import {
-  getMainColumnLabels,
-  getPinnedLeftColumnLabels,
-  getPinnedRightColumnLabels,
-} from "../test-utils/commonTestUtils";
+import { getMainColumnLabels, getPinnedLeftColumnLabels } from "../test-utils/commonTestUtils";
 import {
   testColumnEditorStructure,
   testHideMultipleColumns,
