@@ -11,88 +11,47 @@ export const waitForTable = async () => {
 /**
  * Get column order from a specific section
  */
-const getColumnOrderFromSection = (section: Element): string[] => {
+export const getColumnOrderFromSection = (section: Element): string[] => {
   return Array.from(section.querySelectorAll(".st-header-label-text")).map(
     (el) => el.textContent || ""
   );
 };
 
 /**
- * Strategy 5: Direct useDragHandler simulation
- * This tries to work around the limitations by bypassing the event system
+ * Generic drag and drop function using the successful Direct Simulation approach
  */
-export const testColumnReorderingDirectSimulation = async (
-  canvas: ReturnType<typeof within>,
-  canvasElement: HTMLElement
-) => {
-  console.log("Testing column reordering with direct simulation...");
-
-  const mainSection = canvasElement.querySelector(".st-header-main");
-  if (!mainSection) return false;
-
-  const initialOrder = getColumnOrderFromSection(mainSection);
-
-  const employeesCell = mainSection.querySelector("[id*='cell-employees']");
-  const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
-
-  if (!employeesCell || !squareFootageCell) return false;
-
-  const sourceLabel = employeesCell.querySelector(".st-header-label") as HTMLElement;
-  const targetLabel = squareFootageCell.querySelector(".st-header-label") as HTMLElement;
-
-  if (!sourceLabel || !targetLabel) return false;
-
+export const performDragAndDrop = async (
+  sourceElement: HTMLElement,
+  targetElement: HTMLElement,
+  description: string
+): Promise<boolean> => {
   try {
-    // Try to access the table context or drag handlers directly
-    // This is a bit hacky but might work if the handlers are exposed
-    const employeesHeader = {
-      accessor: "employees",
-      label: "Employees",
-    };
-
-    const squareFootageHeader = {
-      accessor: "squareFootage",
-      label: "Square Footage",
-    };
-
-    // Create a more realistic drag event with proper coordinates
-    const sourceRect = sourceLabel.getBoundingClientRect();
-    const targetRect = targetLabel.getBoundingClientRect();
+    const sourceRect = sourceElement.getBoundingClientRect();
+    const targetRect = targetElement.getBoundingClientRect();
 
     const startX = sourceRect.left + sourceRect.width / 2;
     const startY = sourceRect.top + sourceRect.height / 2;
     const endX = targetRect.left + targetRect.width / 2;
     const endY = targetRect.top + targetRect.height / 2;
 
-    // Ensure significant distance (> 10px as required by useDragHandler)
-    const distance = Math.abs(endX - startX);
-    console.log(`Distance between elements: ${distance}px`);
-
-    if (distance < 50) {
-      console.log("⚠️ Distance too small, adjusting coordinates");
-      // Adjust to ensure minimum distance
-    }
-
-    // Create a proper DataTransfer with required data
+    // Create proper DataTransfer
     const dataTransfer = new DataTransfer();
-    dataTransfer.setData("text/plain", "employees"); // Set some data
+    dataTransfer.setData("text/plain", "column-drag");
     dataTransfer.effectAllowed = "move";
 
-    // Sequence with longer delays to avoid throttling
+    // Drag start
     const dragStartEvent = new DragEvent("dragstart", {
       bubbles: true,
       cancelable: true,
       clientX: startX,
       clientY: startY,
-      screenX: startX + 100, // Add screen offset
+      screenX: startX + 100,
       screenY: startY + 100,
       dataTransfer: dataTransfer,
     });
 
-    sourceLabel.dispatchEvent(dragStartEvent);
-    console.log("Dispatched dragstart");
-
-    await new Promise((resolve) => setTimeout(resolve, 200)); // Longer delay
+    sourceElement.dispatchEvent(dragStartEvent);
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     // Multiple dragover events to simulate realistic dragging
     for (let i = 0; i < 3; i++) {
@@ -110,16 +69,14 @@ export const testColumnReorderingDirectSimulation = async (
         dataTransfer: dataTransfer,
       });
 
-      // Prevent default to allow drop
-      dragOverEvent.preventDefault = () => {};
-      squareFootageCell.dispatchEvent(dragOverEvent);
+      // Find the appropriate target container for dragover
+      const targetContainer = targetElement.closest(".st-header-cell") || targetElement;
+      targetContainer.dispatchEvent(dragOverEvent);
 
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    console.log("Dispatched dragover sequence");
-
-    // Final drop
+    // Drop
     const dropEvent = new DragEvent("drop", {
       bubbles: true,
       cancelable: true,
@@ -130,9 +87,8 @@ export const testColumnReorderingDirectSimulation = async (
       dataTransfer: dataTransfer,
     });
 
-    squareFootageCell.dispatchEvent(dropEvent);
-    console.log("Dispatched drop");
-
+    const targetContainer = targetElement.closest(".st-header-cell") || targetElement;
+    targetContainer.dispatchEvent(dropEvent);
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Drag end
@@ -146,31 +102,340 @@ export const testColumnReorderingDirectSimulation = async (
       dataTransfer: dataTransfer,
     });
 
-    sourceLabel.dispatchEvent(dragEndEvent);
-    console.log("Dispatched dragend");
-
+    sourceElement.dispatchEvent(dragEndEvent);
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    const finalOrder = getColumnOrderFromSection(mainSection);
-    const success = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
-
-    if (success) {
-      console.log("✅ Direct simulation strategy worked!");
-    } else {
-      console.log("❌ Direct simulation failed - checking for visual changes...");
-
-      // Check if any visual changes occurred (like dragging class)
-      const isDragging = sourceLabel.closest(".st-dragging") !== null;
-      const isHovered = targetLabel.closest(".st-hovered") !== null;
-
-      console.log(`Visual state - dragging: ${isDragging}, hovered: ${isHovered}`);
-    }
-
-    return success;
+    return true;
   } catch (error) {
-    console.log("❌ Direct simulation strategy failed:", error);
     return false;
   }
+};
+
+/**
+ * Test moving columns within the main section
+ */
+export const testMainSectionColumnReordering = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const mainSection = canvasElement.querySelector(".st-header-main");
+  if (!mainSection) {
+    return false;
+  }
+
+  const initialOrder = getColumnOrderFromSection(mainSection);
+
+  // Test: Move "Employees" to "Customer Rating" position
+  const employeesLabel = mainSection.querySelector(
+    "[id*='cell-employees'] .st-header-label"
+  ) as HTMLElement;
+  const customerRatingLabel = mainSection.querySelector(
+    "[id*='cell-customerRating'] .st-header-label"
+  ) as HTMLElement;
+
+  if (!employeesLabel || !customerRatingLabel) {
+    return false;
+  }
+
+  const success = await performDragAndDrop(
+    employeesLabel,
+    customerRatingLabel,
+    "Employees → Customer Rating (within main section)"
+  );
+
+  if (success) {
+    const finalOrder = getColumnOrderFromSection(mainSection);
+    const orderChanged = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
+    if (orderChanged) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Test moving columns within pinned left section
+ */
+export const testPinnedLeftColumnReordering = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const pinnedLeftSection = canvasElement.querySelector(".st-header-pinned-left");
+  if (!pinnedLeftSection) {
+    return false;
+  }
+
+  const initialOrder = getColumnOrderFromSection(pinnedLeftSection);
+
+  // Test: Move "Name" to "City" position (swap them)
+  const nameLabel = pinnedLeftSection.querySelector(
+    "[id*='cell-name'] .st-header-label"
+  ) as HTMLElement;
+  const cityLabel = pinnedLeftSection.querySelector(
+    "[id*='cell-city'] .st-header-label"
+  ) as HTMLElement;
+
+  if (!nameLabel || !cityLabel) {
+    return false;
+  }
+
+  const success = await performDragAndDrop(
+    nameLabel,
+    cityLabel,
+    "Name → City (within pinned left section)"
+  );
+
+  if (success) {
+    const finalOrder = getColumnOrderFromSection(pinnedLeftSection);
+    const orderChanged = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
+    if (orderChanged) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Test moving column from main section to pinned left section
+ */
+export const testMainToPinnedLeftMove = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const mainSection = canvasElement.querySelector(".st-header-main");
+  const pinnedLeftSection = canvasElement.querySelector(".st-header-pinned-left");
+
+  if (!mainSection || !pinnedLeftSection) {
+    return false;
+  }
+
+  const initialMainOrder = getColumnOrderFromSection(mainSection);
+  const initialPinnedOrder = getColumnOrderFromSection(pinnedLeftSection);
+
+  // Test: Move "Employees" from main to pinned left (target "City")
+  const employeesLabel = mainSection.querySelector(
+    "[id*='cell-employees'] .st-header-label"
+  ) as HTMLElement;
+  const cityLabel = pinnedLeftSection.querySelector(
+    "[id*='cell-city'] .st-header-label"
+  ) as HTMLElement;
+
+  if (!employeesLabel || !cityLabel) {
+    return false;
+  }
+
+  const success = await performDragAndDrop(
+    employeesLabel,
+    cityLabel,
+    "Employees (main) → City (pinned left)"
+  );
+
+  if (success) {
+    const finalMainOrder = getColumnOrderFromSection(mainSection);
+    const finalPinnedOrder = getColumnOrderFromSection(pinnedLeftSection);
+
+    const mainChanged = JSON.stringify(finalMainOrder) !== JSON.stringify(initialMainOrder);
+    const pinnedChanged = JSON.stringify(finalPinnedOrder) !== JSON.stringify(initialPinnedOrder);
+
+    if (mainChanged || pinnedChanged) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Test moving column from main section to pinned right section
+ */
+export const testMainToPinnedRightMove = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const mainSection = canvasElement.querySelector(".st-header-main");
+  const pinnedRightSection = canvasElement.querySelector(".st-header-pinned-right");
+
+  if (!mainSection || !pinnedRightSection) {
+    return false;
+  }
+
+  const initialMainOrder = getColumnOrderFromSection(mainSection);
+  const initialPinnedOrder = getColumnOrderFromSection(pinnedRightSection);
+
+  // Test: Move "Square Footage" from main to pinned right (target "Total Sales")
+  const squareFootageLabel = mainSection.querySelector(
+    "[id*='cell-squareFootage'] .st-header-label"
+  ) as HTMLElement;
+  const totalSalesLabel = pinnedRightSection.querySelector(
+    "[id*='cell-totalSales'] .st-header-label"
+  ) as HTMLElement;
+
+  if (!squareFootageLabel || !totalSalesLabel) {
+    return false;
+  }
+
+  const success = await performDragAndDrop(
+    squareFootageLabel,
+    totalSalesLabel,
+    "Square Footage (main) → Total Sales (pinned right)"
+  );
+
+  if (success) {
+    const finalMainOrder = getColumnOrderFromSection(mainSection);
+    const finalPinnedOrder = getColumnOrderFromSection(pinnedRightSection);
+
+    const mainChanged = JSON.stringify(finalMainOrder) !== JSON.stringify(initialMainOrder);
+    const pinnedChanged = JSON.stringify(finalPinnedOrder) !== JSON.stringify(initialPinnedOrder);
+
+    if (mainChanged || pinnedChanged) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Test moving column from pinned left to main section
+ */
+export const testPinnedLeftToMainMove = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const mainSection = canvasElement.querySelector(".st-header-main");
+  const pinnedLeftSection = canvasElement.querySelector(".st-header-pinned-left");
+
+  if (!mainSection || !pinnedLeftSection) {
+    return false;
+  }
+
+  const initialMainOrder = getColumnOrderFromSection(mainSection);
+  const initialPinnedOrder = getColumnOrderFromSection(pinnedLeftSection);
+
+  // Test: Move "City" from pinned left to main (target "Opening Date")
+  const cityLabel = pinnedLeftSection.querySelector(
+    "[id*='cell-city'] .st-header-label"
+  ) as HTMLElement;
+  const openingDateLabel = mainSection.querySelector(
+    "[id*='cell-openingDate'] .st-header-label"
+  ) as HTMLElement;
+
+  if (!cityLabel || !openingDateLabel) {
+    return false;
+  }
+
+  const success = await performDragAndDrop(
+    cityLabel,
+    openingDateLabel,
+    "City (pinned left) → Opening Date (main)"
+  );
+
+  if (success) {
+    const finalMainOrder = getColumnOrderFromSection(mainSection);
+    const finalPinnedOrder = getColumnOrderFromSection(pinnedLeftSection);
+
+    const mainChanged = JSON.stringify(finalMainOrder) !== JSON.stringify(initialMainOrder);
+    const pinnedChanged = JSON.stringify(finalPinnedOrder) !== JSON.stringify(initialPinnedOrder);
+
+    if (mainChanged || pinnedChanged) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Test moving column from pinned right to main section
+ */
+export const testPinnedRightToMainMove = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const mainSection = canvasElement.querySelector(".st-header-main");
+  const pinnedRightSection = canvasElement.querySelector(".st-header-pinned-right");
+
+  if (!mainSection || !pinnedRightSection) {
+    return false;
+  }
+
+  const initialMainOrder = getColumnOrderFromSection(mainSection);
+  const initialPinnedOrder = getColumnOrderFromSection(pinnedRightSection);
+
+  // Test: Move "Total Sales" from pinned right to main (target "Furniture Sales")
+  const totalSalesLabel = pinnedRightSection.querySelector(
+    "[id*='cell-totalSales'] .st-header-label"
+  ) as HTMLElement;
+  const furnitureSalesLabel = mainSection.querySelector(
+    "[id*='cell-furnitureSales'] .st-header-label"
+  ) as HTMLElement;
+
+  if (!totalSalesLabel || !furnitureSalesLabel) {
+    return false;
+  }
+
+  const success = await performDragAndDrop(
+    totalSalesLabel,
+    furnitureSalesLabel,
+    "Total Sales (pinned right) → Furniture Sales (main)"
+  );
+
+  if (success) {
+    const finalMainOrder = getColumnOrderFromSection(mainSection);
+    const finalPinnedOrder = getColumnOrderFromSection(pinnedRightSection);
+
+    const mainChanged = JSON.stringify(finalMainOrder) !== JSON.stringify(initialMainOrder);
+    const pinnedChanged = JSON.stringify(finalPinnedOrder) !== JSON.stringify(initialPinnedOrder);
+
+    if (mainChanged || pinnedChanged) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Strategy 5: Direct useDragHandler simulation
+ * This tries to work around the limitations by bypassing the event system
+ */
+export const testColumnReorderingDirectSimulation = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const mainSection = canvasElement.querySelector(".st-header-main");
+  if (!mainSection) return false;
+
+  const initialOrder = getColumnOrderFromSection(mainSection);
+
+  const employeesCell = mainSection.querySelector("[id*='cell-employees']");
+  const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
+
+  if (!employeesCell || !squareFootageCell) return false;
+
+  const sourceLabel = employeesCell.querySelector(".st-header-label") as HTMLElement;
+  const targetLabel = squareFootageCell.querySelector(".st-header-label") as HTMLElement;
+
+  if (!sourceLabel || !targetLabel) return false;
+
+  const success = await performDragAndDrop(
+    sourceLabel,
+    targetLabel,
+    "Employees → Square Footage (basic test)"
+  );
+
+  if (success) {
+    const finalOrder = getColumnOrderFromSection(mainSection);
+    const orderChanged = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
+
+    if (orderChanged) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 /**
@@ -181,8 +446,6 @@ export const testColumnReorderingManualState = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("Testing column reordering with manual state manipulation...");
-
   try {
     // This is a testing-specific approach where we try to directly
     // manipulate the component state if possible
@@ -197,15 +460,12 @@ export const testColumnReorderingManualState = async (
     );
 
     if (fiberKey) {
-      console.log("Found React fiber, attempting state manipulation...");
       // This would require more specific implementation based on your component structure
     }
 
     // For now, return false as this needs component-specific implementation
-    console.log("Manual state manipulation not implemented - would need component internals");
     return false;
   } catch (error) {
-    console.log("❌ Manual state manipulation failed:", error);
     return false;
   }
 };
@@ -217,8 +477,6 @@ export const testColumnReorderingMouseEvents = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("Testing column reordering with mouse events...");
-
   const mainSection = canvasElement.querySelector(".st-header-main");
   if (!mainSection) return false;
 
@@ -285,13 +543,8 @@ export const testColumnReorderingMouseEvents = async (
     const finalOrder = getColumnOrderFromSection(mainSection);
     const success = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
 
-    if (success) {
-      console.log("✅ Mouse events strategy worked!");
-    }
-
     return success;
   } catch (error) {
-    console.log("❌ Mouse events strategy failed:", error);
     return false;
   }
 };
@@ -303,8 +556,6 @@ export const testColumnReorderingDragEvents = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("Testing column reordering with drag events...");
-
   const mainSection = canvasElement.querySelector(".st-header-main");
   if (!mainSection) return false;
 
@@ -386,13 +637,8 @@ export const testColumnReorderingDragEvents = async (
     const finalOrder = getColumnOrderFromSection(mainSection);
     const success = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
 
-    if (success) {
-      console.log("✅ Drag events strategy worked!");
-    }
-
     return success;
   } catch (error) {
-    console.log("❌ Drag events strategy failed:", error);
     return false;
   }
 };
@@ -404,8 +650,6 @@ export const testColumnReorderingPointerEvents = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("Testing column reordering with pointer events...");
-
   const mainSection = canvasElement.querySelector(".st-header-main");
   if (!mainSection) return false;
 
@@ -475,13 +719,8 @@ export const testColumnReorderingPointerEvents = async (
     const finalOrder = getColumnOrderFromSection(mainSection);
     const success = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
 
-    if (success) {
-      console.log("✅ Pointer events strategy worked!");
-    }
-
     return success;
   } catch (error) {
-    console.log("❌ Pointer events strategy failed:", error);
     return false;
   }
 };
@@ -493,8 +732,6 @@ export const testColumnReorderingCombined = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("Testing column reordering with combined approach...");
-
   const mainSection = canvasElement.querySelector(".st-header-main");
   if (!mainSection) return false;
 
@@ -615,56 +852,56 @@ export const testColumnReorderingCombined = async (
     const finalOrder = getColumnOrderFromSection(mainSection);
     const success = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
 
-    if (success) {
-      console.log("✅ Combined strategy worked!");
-    }
-
     return success;
   } catch (error) {
-    console.log("❌ Combined strategy failed:", error);
     return false;
   }
 };
 
 /**
- * Main test function that tries all strategies
+ * Comprehensive column reordering test suite
+ */
+export const testAllColumnReorderingScenarios = async (
+  canvas: ReturnType<typeof within>,
+  canvasElement: HTMLElement
+) => {
+  const tests = [
+    { name: "Basic Main Section Reordering", test: testColumnReorderingDirectSimulation },
+    { name: "Main Section Column Reordering", test: testMainSectionColumnReordering },
+    { name: "Pinned Left Column Reordering", test: testPinnedLeftColumnReordering },
+    { name: "Main → Pinned Left Move", test: testMainToPinnedLeftMove },
+    { name: "Main → Pinned Right Move", test: testMainToPinnedRightMove },
+    { name: "Pinned Left → Main Move", test: testPinnedLeftToMainMove },
+    { name: "Pinned Right → Main Move", test: testPinnedRightToMainMove },
+  ];
+
+  let passedTests = 0;
+  let totalTests = tests.length;
+
+  for (const testCase of tests) {
+    try {
+      const result = await testCase.test(canvas, canvasElement);
+      if (result) {
+        passedTests++;
+      }
+    } catch (error) {
+      // Test failed
+    }
+
+    // Wait between tests to allow state to settle
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+
+  return passedTests === totalTests;
+};
+
+/**
+ * Main test function that tries all strategies (for backwards compatibility)
  */
 export const testColumnReordering = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("🚀 Testing column reordering with multiple strategies...");
-
-  const strategies = [
-    { name: "Direct Simulation", test: testColumnReorderingDirectSimulation },
-    { name: "Mouse Events", test: testColumnReorderingMouseEvents },
-    { name: "Drag Events", test: testColumnReorderingDragEvents },
-    { name: "Pointer Events", test: testColumnReorderingPointerEvents },
-    { name: "Combined Approach", test: testColumnReorderingCombined },
-    { name: "Manual State", test: testColumnReorderingManualState },
-  ];
-
-  for (const strategy of strategies) {
-    console.log(`\n--- Trying ${strategy.name} ---`);
-
-    try {
-      const success = await strategy.test(canvas, canvasElement);
-      if (success) {
-        console.log(`🎉 SUCCESS: ${strategy.name} worked!`);
-        return true;
-      }
-    } catch (error) {
-      console.log(`❌ ${strategy.name} threw error:`, error);
-    }
-
-    // Wait between attempts
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-
-  console.log("❌ All strategies failed to reorder columns");
-  console.log("\n💡 This is likely due to drag-and-drop limitations in test environments.");
-  console.log(
-    "Consider testing the drag functionality manually or using integration tests with real browser automation."
-  );
-  return false;
+  // Run the comprehensive test suite instead of individual strategy testing
+  return await testAllColumnReorderingScenarios(canvas, canvasElement);
 };

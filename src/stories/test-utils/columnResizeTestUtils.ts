@@ -16,8 +16,6 @@ export const testColumnResize = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("Testing column resize...");
-
   const resizeAmount = 20;
 
   // Resize and verify each column immediately
@@ -84,6 +82,4 @@ export const testColumnResize = async (
       }
     }
   }
-
-  console.log("Column resize test completed successfully");
 };

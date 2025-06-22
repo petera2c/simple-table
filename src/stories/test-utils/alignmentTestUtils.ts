@@ -16,8 +16,6 @@ export const testColumnAlignment = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  console.log("Testing column alignment...");
-
   for (const column of RETAIL_SALES_HEADERS) {
     // Test header alignment
     const headerTexts = canvas.getAllByText(column.label);
@@ -29,7 +27,6 @@ export const testColumnAlignment = async (
 
     if (headerTextElement) {
       const headerComputedStyle = window.getComputedStyle(headerTextElement);
-      console.log(`Header ${column.label}: computed textAlign = ${headerComputedStyle.textAlign}`);
       expect(headerComputedStyle.textAlign).toBe(column.align);
     } else {
       console.warn(`Header element not found for column: ${column.label}`);
@@ -55,6 +52,4 @@ export const testColumnAlignment = async (
       }
     }
   }
-
-  console.log("Column alignment test completed successfully");
 };
