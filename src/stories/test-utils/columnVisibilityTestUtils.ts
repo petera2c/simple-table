@@ -1,24 +1,16 @@
 import { expect, within } from "@storybook/test";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
+import {
+  waitForTable,
+  getColumnAccessorByLabel,
+  isColumnVisible,
+  countVisibleColumns,
+  getVisibleColumnLabels,
+} from "./commonTestUtils";
 
 /**
  * Column Visibility Test Utilities
  */
-
-// Wait for table to be rendered
-export const waitForTable = async (timeout = 5000) => {
-  const startTime = Date.now();
-  while (Date.now() - startTime < timeout) {
-    const table = document.querySelector(".simple-table-root");
-    if (table) {
-      // Wait a bit more for full render
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      return;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  throw new Error("Table did not render within timeout");
-};
 
 // Open the column editor panel by clicking "Columns" text
 export const openColumnEditor = async (canvasElement: HTMLElement) => {
@@ -57,39 +49,6 @@ export const getCheckboxInput = (checkboxItem: Element): HTMLInputElement => {
   return checkbox;
 };
 
-// Check if column is currently visible in the table
-export const isColumnVisible = (canvasElement: HTMLElement, columnAccessor: string): boolean => {
-  // Method 1: Check if header cell exists and is visible
-  const headerCell = canvasElement.querySelector(`[id*='cell-${columnAccessor}']`);
-  if (!headerCell) return false;
-
-  // Check if the element is actually visible (not hidden by CSS)
-  const computedStyle = window.getComputedStyle(headerCell as Element);
-  const element = headerCell as HTMLElement;
-
-  // Check various ways an element can be hidden
-  const isDisplayed = computedStyle.display !== "none";
-  const isVisible = computedStyle.visibility !== "hidden";
-  const hasSize = element.offsetWidth > 0 && element.offsetHeight > 0;
-  const isOpaque = parseFloat(computedStyle.opacity) > 0;
-
-  const headerVisible = isDisplayed && isVisible && hasSize && isOpaque;
-
-  // Method 2: Check if column appears in the visible labels (more reliable)
-  const visibleLabels = getVisibleColumnLabels(canvasElement);
-  const header = RETAIL_SALES_HEADERS.find((h) => h.accessor === columnAccessor);
-  const labelVisible = header ? visibleLabels.includes(header.label) : false;
-
-  // For now, let's use the label-based check as it's more reliable
-  return labelVisible;
-};
-
-// Get column accessor by label
-export const getColumnAccessorByLabel = (label: string): string => {
-  const header = RETAIL_SALES_HEADERS.find((h) => h.label === label);
-  return header?.accessor || label.toLowerCase().replace(/\s+/g, "");
-};
-
 // Toggle a column's visibility by clicking its checkbox
 export const toggleColumnVisibility = async (
   checkboxItem: Element,
@@ -104,18 +63,6 @@ export const toggleColumnVisibility = async (
 
   const nowChecked = checkbox.checked;
   return { wasChecked, nowChecked };
-};
-
-// Count visible columns in table
-export const countVisibleColumns = (canvasElement: HTMLElement): number => {
-  const headerLabels = canvasElement.querySelectorAll(".st-header-label-text");
-  return headerLabels.length;
-};
-
-// Get all currently visible column labels
-export const getVisibleColumnLabels = (canvasElement: HTMLElement): string[] => {
-  const headerLabels = canvasElement.querySelectorAll(".st-header-label-text");
-  return Array.from(headerLabels).map((label) => label.textContent?.trim() || "");
 };
 
 /**

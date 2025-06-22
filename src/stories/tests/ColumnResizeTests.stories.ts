@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { within } from "@storybook/test";
 import AlignmentExample from "../examples/AlignmentExample";
-import { testColumnResize, waitForTable } from "../test-utils/columnResizeTestUtils";
+import { testColumnResize } from "../test-utils/columnResizeTestUtils";
+import { waitForTable } from "../test-utils/commonTestUtils";
 
 const meta: Meta<typeof AlignmentExample> = {
   title: "Tests/Column Resize Tests",

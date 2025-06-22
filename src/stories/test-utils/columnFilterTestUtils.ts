@@ -1,4 +1,5 @@
 import { expect } from "@storybook/test";
+import { findHeaderCellByLabel, getColumnDataFromTable } from "./commonTestUtils";
 
 /**
  * Filter test configurations for different column types
@@ -49,16 +50,7 @@ export const clickFilterIcon = async (
 ): Promise<void> => {
   console.log(`🔄 Clicking filter icon for column: ${columnLabel}`);
 
-  // Find the header with the specified label
-  const headerElements = canvasElement.querySelectorAll(".st-header-label-text");
-  let targetHeaderCell: HTMLElement | null = null;
-
-  for (const element of Array.from(headerElements)) {
-    if (element.textContent?.trim() === columnLabel) {
-      targetHeaderCell = element.closest(".st-header-cell") as HTMLElement;
-      break;
-    }
-  }
+  const targetHeaderCell = findHeaderCellByLabel(canvasElement, columnLabel);
 
   if (!targetHeaderCell) {
     throw new Error(`Could not find header with label: ${columnLabel}`);
@@ -284,18 +276,10 @@ export const clearFilter = async (dropdown: HTMLElement): Promise<void> => {
 };
 
 /**
- * Get filtered table data
+ * Get filtered table data - using shared utility
  */
 export const getFilteredTableData = (canvasElement: HTMLElement, accessor: string): string[] => {
-  const values: string[] = [];
-  const cells = canvasElement.querySelectorAll(`[data-accessor="${accessor}"] .st-cell-content`);
-
-  Array.from(cells).forEach((cell) => {
-    const text = cell.textContent?.trim() || "";
-    values.push(text);
-  });
-
-  return values;
+  return getColumnDataFromTable(canvasElement, accessor).map((value) => value.toString());
 };
 
 /**

@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within } from "@storybook/test";
+import { expect } from "@storybook/test";
 import AlignmentExample from "../examples/AlignmentExample";
 import {
   performDragAndDrop,
-  waitForTable,
   getColumnOrderFromSection,
 } from "../test-utils/columnReorderingTestUtils";
+import { waitForTable } from "../test-utils/commonTestUtils";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 
 const meta: Meta<typeof AlignmentExample> = {

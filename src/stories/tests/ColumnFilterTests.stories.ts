@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within } from "@storybook/test";
+import { expect } from "@storybook/test";
 import { FilterExampleComponent } from "../examples/filter-example/FilterExample";
 import { waitForTable } from "../test-utils/commonTestUtils";
 import {

@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { within } from "@storybook/test";
 import AlignmentExample from "../examples/AlignmentExample";
-import { RETAIL_SALES_HEADERS } from "../data/retail-data";
+import {
+  getMainColumnLabels,
+  getPinnedLeftColumnLabels,
+  getPinnedRightColumnLabels,
+} from "../test-utils/commonTestUtils";
 import {
   testColumnEditorStructure,
   testHideMultipleColumns,
@@ -27,13 +31,6 @@ const meta: Meta<typeof AlignmentExample> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Helper functions to get columns dynamically
-const getMainColumns = () => RETAIL_SALES_HEADERS.filter((h) => !h.pinned).map((h) => h.label);
-const getPinnedLeftColumns = () =>
-  RETAIL_SALES_HEADERS.filter((h) => h.pinned === "left").map((h) => h.label);
-const getPinnedRightColumns = () =>
-  RETAIL_SALES_HEADERS.filter((h) => h.pinned === "right").map((h) => h.label);
-
 /**
  * Comprehensive column visibility test with multiple interactions
  */
@@ -43,9 +40,8 @@ export const ComprehensiveColumnVisibilityTest: Story = {
     const canvas = within(canvasElement);
 
     // Get column groups dynamically
-    const mainCols = getMainColumns();
-    const pinnedLeftCols = getPinnedLeftColumns();
-    const pinnedRightCols = getPinnedRightColumns();
+    const mainCols = getMainColumnLabels();
+    const pinnedLeftCols = getPinnedLeftColumnLabels();
 
     // Test 1: Verify editor structure
     await testColumnEditorStructure(canvas, canvasElement);

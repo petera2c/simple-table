@@ -1,12 +1,11 @@
 import { expect, within } from "@storybook/test";
-import { RETAIL_SALES_HEADERS } from "../data/retail-data";
-
-/**
- * Simple wait function for table rendering
- */
-export const waitForTable = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-};
+import {
+  waitForTable,
+  getMainColumns,
+  getPinnedLeftColumns,
+  getPinnedRightColumns,
+  findHeaderCellByLabel,
+} from "./commonTestUtils";
 
 /**
  * Comprehensive column resize test that verifies width changes
@@ -18,18 +17,12 @@ export const testColumnResize = async (
 ) => {
   const resizeAmount = 20;
 
-  // Resize and verify each column immediately
-  for (const column of RETAIL_SALES_HEADERS) {
-    const headerElements = canvasElement.querySelectorAll(".st-header-label-text");
-    let targetHeaderCell: HTMLElement | null = null;
+  // Get all columns from shared utilities
+  const allColumns = [...getPinnedLeftColumns(), ...getMainColumns(), ...getPinnedRightColumns()];
 
-    // Find the column header
-    for (const element of Array.from(headerElements)) {
-      if (element.textContent?.trim() === column.label) {
-        targetHeaderCell = element.closest(".st-header-cell") as HTMLElement;
-        break;
-      }
-    }
+  // Resize and verify each column immediately
+  for (const column of allColumns) {
+    const targetHeaderCell = findHeaderCellByLabel(canvasElement, column.label);
 
     if (targetHeaderCell) {
       // Get initial width

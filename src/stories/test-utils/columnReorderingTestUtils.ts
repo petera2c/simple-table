@@ -1,12 +1,4 @@
-import { expect, within } from "@storybook/test";
-import { RETAIL_SALES_HEADERS } from "../data/retail-data";
-
-/**
- * Simple wait function for table rendering
- */
-export const waitForTable = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-};
+import { within } from "@storybook/test";
 
 /**
  * Get column order from a specific section

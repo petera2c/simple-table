@@ -1,12 +1,10 @@
 import { expect, within } from "@storybook/test";
-import { RETAIL_SALES_HEADERS } from "../data/retail-data";
-
-/**
- * Simple wait function for table rendering
- */
-export const waitForTable = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-};
+import {
+  waitForTable,
+  getMainColumns,
+  getPinnedLeftColumns,
+  getPinnedRightColumns,
+} from "./commonTestUtils";
 
 /**
  * Comprehensive alignment test that verifies CSS text-align properties
@@ -16,7 +14,10 @@ export const testColumnAlignment = async (
   canvas: ReturnType<typeof within>,
   canvasElement: HTMLElement
 ) => {
-  for (const column of RETAIL_SALES_HEADERS) {
+  // Get all columns from shared utilities instead of importing RETAIL_SALES_HEADERS directly
+  const allColumns = [...getPinnedLeftColumns(), ...getMainColumns(), ...getPinnedRightColumns()];
+
+  for (const column of allColumns) {
     // Test header alignment
     const headerTexts = canvas.getAllByText(column.label);
     const headerTextElement = headerTexts.find(
