@@ -203,8 +203,6 @@ export const testColumnSorting = async (
     console.warn(
       `⚠️ Warning: Data doesn't appear to be sorted ascending and didn't change meaningfully`
     );
-    console.log(`Initial: ${JSON.stringify(initialData)}`);
-    console.log(`After sort: ${JSON.stringify(ascendingData)}`);
   }
 
   // At minimum, we should have data and the sort icon should be present
