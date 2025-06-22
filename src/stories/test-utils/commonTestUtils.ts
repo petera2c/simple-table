@@ -2,6 +2,8 @@ import { expect, within } from "@storybook/test";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { HEADERS as BILLING_HEADERS } from "../examples/billing-example/billing-headers";
 
+const EXPECTED_WIDTH_DELTA = 1;
+
 /**
  * Shared test utilities for SimpleTable components
  */
@@ -10,6 +12,8 @@ import { HEADERS as BILLING_HEADERS } from "../examples/billing-example/billing-
  * Basic table structure validation - checks all essential DOM elements
  */
 export const validateBasicTableStructure = async (canvasElement: HTMLElement) => {
+  await waitForTable();
+
   // Core table structure
   const tableRoot = canvasElement.querySelector(".simple-table-root");
   expect(tableRoot).toBeInTheDocument();
@@ -33,6 +37,33 @@ export const validateBasicTableStructure = async (canvasElement: HTMLElement) =>
 
   const bodyMain = bodyContainer?.querySelector(".st-body-main");
   expect(bodyMain).toBeInTheDocument();
+
+  // Horizontal scrollbar validation
+  const scrollbarMiddle = canvasElement.querySelector(".st-horizontal-scrollbar-middle");
+  expect(scrollbarMiddle).toBeInTheDocument();
+
+  // Check that scrollbar middle has a child div
+  const scrollbarChildDiv = scrollbarMiddle?.querySelector("div");
+  expect(scrollbarChildDiv).toBeInTheDocument();
+
+  // Validate that the child div width matches the main section width
+  if (headerMain && scrollbarChildDiv) {
+    const headerMainGridColumns = (headerMain as HTMLElement).style.gridTemplateColumns;
+    expect(headerMainGridColumns).toBeTruthy();
+
+    // Calculate main section width from grid columns
+    const mainSectionColumnWidths = extractGridColumnWidths(headerMainGridColumns);
+    const expectedMainSectionWidth = calculateTotalWidth(mainSectionColumnWidths);
+
+    // Get the scrollbar child div width
+    const scrollbarChildWidth = getElementWidth(scrollbarChildDiv);
+
+    expect(expectedMainSectionWidth).toBeGreaterThan(0);
+    expect(scrollbarChildWidth).toBe(expectedMainSectionWidth);
+  }
+
+  // Validate width consistency across all sections
+  await validateAllSectionWidthConsistency(canvasElement);
 };
 
 /**
@@ -297,4 +328,166 @@ export const getColumnDataFromTable = (
   });
 
   return values;
+};
+
+/**
+ * Width validation utilities for ensuring header and body sections match
+ */
+
+/**
+ * Extract grid column widths from grid-template-columns style
+ */
+export const extractGridColumnWidths = (gridTemplateColumns: string): number[] => {
+  if (!gridTemplateColumns || gridTemplateColumns === "none") {
+    return [];
+  }
+
+  // Extract pixel values from grid-template-columns (e.g., "250px 150px" -> [250, 150])
+  const matches = gridTemplateColumns.match(/(\d+(?:\.\d+)?)px/g);
+  return matches ? matches.map((match) => parseFloat(match.replace("px", ""))) : [];
+};
+
+/**
+ * Calculate total width from grid column widths
+ */
+export const calculateTotalWidth = (gridColumnWidths: number[]): number => {
+  return gridColumnWidths.reduce((sum, width) => sum + width, 0);
+};
+
+/**
+ * Get computed width of an element, trying multiple methods
+ */
+export const getElementWidth = (element: Element): number => {
+  // First try to get from style attribute width
+  const styleWidth = (element as HTMLElement).style.width;
+  if (styleWidth && styleWidth.includes("px")) {
+    return parseFloat(styleWidth.replace("px", ""));
+  }
+
+  // Then try grid-template-columns
+  const gridColumns = (element as HTMLElement).style.gridTemplateColumns;
+  if (gridColumns) {
+    const columnWidths = extractGridColumnWidths(gridColumns);
+    if (columnWidths.length > 0) {
+      return calculateTotalWidth(columnWidths);
+    }
+  }
+
+  // Fallback to computed style
+  const computedStyle = window.getComputedStyle(element);
+  const computedWidth = computedStyle.width;
+  if (computedWidth && computedWidth !== "auto") {
+    return parseFloat(computedWidth.replace("px", ""));
+  }
+
+  return 0;
+};
+
+/**
+ * Validate left pinned section width consistency
+ */
+export const validateLeftPinnedWidthConsistency = async (canvasElement: HTMLElement) => {
+  const headerPinnedLeft = canvasElement.querySelector(".st-header-pinned-left");
+  const bodyPinnedLeft = canvasElement.querySelector(".st-body-pinned-left");
+
+  if (!headerPinnedLeft || !bodyPinnedLeft) {
+    // If either section doesn't exist, there's nothing to validate
+    return;
+  }
+
+  const headerWidth = getElementWidth(headerPinnedLeft);
+  const bodyWidth = getElementWidth(bodyPinnedLeft);
+
+  expect(headerWidth).toBeGreaterThan(0);
+  expect(bodyWidth).toBeGreaterThan(0);
+  expect(headerWidth + EXPECTED_WIDTH_DELTA).toBe(bodyWidth);
+
+  // Also validate that individual rows match the header grid
+  const headerGridColumns = (headerPinnedLeft as HTMLElement).style.gridTemplateColumns;
+  const bodyRows = bodyPinnedLeft.querySelectorAll(".st-row");
+
+  if (bodyRows.length > 0) {
+    const firstRowGridColumns = (bodyRows[0] as HTMLElement).style.gridTemplateColumns;
+    expect(firstRowGridColumns).toBe(headerGridColumns);
+  }
+};
+
+/**
+ * Validate main section width consistency
+ */
+export const validateMainSectionWidthConsistency = async (canvasElement: HTMLElement) => {
+  const headerMain = canvasElement.querySelector(".st-header-main");
+  const bodyMain = canvasElement.querySelector(".st-body-main");
+
+  expect(headerMain).toBeInTheDocument();
+  expect(bodyMain).toBeInTheDocument();
+
+  const headerWidth = getElementWidth(headerMain!);
+
+  // For main section, we need to check the grid columns since body-main might not have explicit width
+  const headerGridColumns = (headerMain as HTMLElement).style.gridTemplateColumns;
+  expect(headerGridColumns).toBeTruthy();
+
+  // Validate that body rows match the header grid
+  const bodyRows = bodyMain!.querySelectorAll(".st-row");
+  expect(bodyRows.length).toBeGreaterThan(0);
+
+  const firstRowGridColumns = (bodyRows[0] as HTMLElement).style.gridTemplateColumns;
+
+  expect(firstRowGridColumns).toBe(headerGridColumns);
+
+  // Calculate expected width from grid columns
+  const headerColumnWidths = extractGridColumnWidths(headerGridColumns);
+  const expectedWidth = calculateTotalWidth(headerColumnWidths);
+  expect(expectedWidth).toBeGreaterThan(0);
+  expect(headerWidth).toBe(expectedWidth);
+};
+
+/**
+ * Validate right pinned section width consistency
+ */
+export const validateRightPinnedWidthConsistency = async (canvasElement: HTMLElement) => {
+  const headerPinnedRight = canvasElement.querySelector(".st-header-pinned-right");
+  const bodyPinnedRight = canvasElement.querySelector(".st-body-pinned-right");
+
+  if (!headerPinnedRight || !bodyPinnedRight) {
+    // If either section doesn't exist, there's nothing to validate
+    return;
+  }
+
+  const headerWidth = getElementWidth(headerPinnedRight);
+  const bodyWidth = getElementWidth(bodyPinnedRight);
+
+  expect(headerWidth).toBeGreaterThan(0);
+  expect(bodyWidth).toBeGreaterThan(0);
+  expect(headerWidth + EXPECTED_WIDTH_DELTA).toBe(bodyWidth);
+
+  // Also validate that individual rows match the header grid
+  const headerGridColumns = (headerPinnedRight as HTMLElement).style.gridTemplateColumns;
+  const bodyRows = bodyPinnedRight.querySelectorAll(".st-row");
+
+  if (bodyRows.length > 0) {
+    const firstRowGridColumns = (bodyRows[0] as HTMLElement).style.gridTemplateColumns;
+    expect(firstRowGridColumns).toBe(headerGridColumns);
+  }
+};
+
+/**
+ * Comprehensive width validation for all table sections
+ */
+export const validateAllSectionWidthConsistency = async (canvasElement: HTMLElement) => {
+  await validateLeftPinnedWidthConsistency(canvasElement);
+  await validateMainSectionWidthConsistency(canvasElement);
+  await validateRightPinnedWidthConsistency(canvasElement);
+};
+
+/**
+ * Enhanced basic table structure validation with width consistency
+ */
+export const validateEnhancedBasicTableStructure = async (canvasElement: HTMLElement) => {
+  // First validate the basic structure
+  await validateBasicTableStructure(canvasElement);
+
+  // Then validate width consistency across all sections
+  await validateAllSectionWidthConsistency(canvasElement);
 };
