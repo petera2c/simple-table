@@ -54,6 +54,40 @@ export const logTableState = (canvasElement: HTMLElement): void => {
   console.log(`🔍 === END TABLE STATE ===`);
 };
 
+/**
+ * Find valid cell range bounds in the table
+ */
+export const findValidCellBounds = (
+  canvasElement: HTMLElement
+): {
+  minRow: number;
+  maxRow: number;
+  minCol: number;
+  maxCol: number;
+} => {
+  const allCells = canvasElement.querySelectorAll('.st-cell[id^="cell-"]');
+  let minRow = Infinity,
+    maxRow = -1,
+    minCol = Infinity,
+    maxCol = -1;
+
+  allCells.forEach((cell) => {
+    const id = cell.id;
+    const match = id.match(/^cell-(\d+)-(\d+)$/);
+    if (match) {
+      const row = parseInt(match[1]);
+      const col = parseInt(match[2]);
+      minRow = Math.min(minRow, row);
+      maxRow = Math.max(maxRow, row);
+      minCol = Math.min(minCol, col);
+      maxCol = Math.max(maxCol, col);
+    }
+  });
+
+  console.log(`📐 Valid cell bounds: rows [${minRow}-${maxRow}], cols [${minCol}-${maxCol}]`);
+  return { minRow, maxRow, minCol, maxCol };
+};
+
 export interface CellPosition {
   rowIndex: number;
   colIndex: number;
@@ -161,6 +195,15 @@ export const selectCellRange = async (
 
   const startCell = getCellElement(canvasElement, startRowIndex, startColIndex);
   const endCell = getCellElement(canvasElement, endRowIndex, endColIndex);
+
+  if (!startCell) {
+    console.error(`❌ Start cell not found at position [${startRowIndex}, ${startColIndex}]`);
+    throw new Error(`Start cell not found at position [${startRowIndex}, ${startColIndex}]`);
+  }
+  if (!endCell) {
+    console.error(`❌ End cell not found at position [${endRowIndex}, ${endColIndex}]`);
+    throw new Error(`End cell not found at position [${endRowIndex}, ${endColIndex}]`);
+  }
 
   expect(startCell).toBeInTheDocument();
   expect(endCell).toBeInTheDocument();
@@ -364,6 +407,245 @@ export const clearCellSelection = async (canvasElement: HTMLElement): Promise<vo
 };
 
 /**
+ * Get a header cell element by column index
+ */
+export const getHeaderElement = (
+  canvasElement: HTMLElement,
+  colIndex: number
+): HTMLElement | null => {
+  console.log(`🔍 Looking for header at column index ${colIndex}`);
+
+  // Find all actual header cells (not data cells)
+  const headers = canvasElement.querySelectorAll(".st-header-cell");
+  console.log(`🔍 Found ${headers.length} header cells total`);
+
+  // Log header info for debugging
+  Array.from(headers).forEach((header, index) => {
+    const headerElement = header as HTMLElement;
+    console.log(`  Header ${index}: ID=${headerElement.id}, classes=${headerElement.className}`);
+  });
+
+  if (headers[colIndex]) {
+    const headerElement = headers[colIndex] as HTMLElement;
+    console.log(`🎯 Found header by index: ${headerElement.id || "no-id"}`);
+    return headerElement;
+  }
+
+  console.log(`❌ Header not found for column ${colIndex}`);
+  return null;
+};
+
+/**
+ * Click on a column header to select the entire column
+ */
+export const clickColumnHeader = async (
+  canvasElement: HTMLElement,
+  colIndex: number
+): Promise<void> => {
+  console.log(`👆 Attempting to click column header at index ${colIndex}`);
+
+  const header = getHeaderElement(canvasElement, colIndex);
+  if (!header) {
+    console.error(`❌ Header not found at index ${colIndex}`);
+    // Log available headers for debugging
+    const allHeaders = canvasElement.querySelectorAll(".st-header-cell");
+    console.log(
+      `📊 Available headers (${allHeaders.length}):`,
+      Array.from(allHeaders).map((h, i) => `${i}: ${h.id || h.textContent?.trim()}`)
+    );
+    return;
+  }
+
+  console.log(`🔍 Header classes:`, header.className);
+  console.log(`🎯 Has clickable class:`, header.classList.contains("clickable"));
+
+  // Find the header label within the header cell - this is what handles column selection
+  const headerLabel = header.querySelector(".st-header-label") as HTMLElement;
+  if (!headerLabel) {
+    console.error(`❌ Could not find .st-header-label within header`);
+    return;
+  }
+
+  console.log(`🔍 Found header label:`, headerLabel.className);
+  console.log(`🖱️ Dispatching click event on header label...`);
+
+  // Use click event since that's what the header label listens for
+  const clickEvent = new MouseEvent("click", {
+    bubbles: true,
+    cancelable: true,
+    clientX: 0,
+    clientY: 0,
+  });
+  headerLabel.dispatchEvent(clickEvent);
+
+  // Wait for selection to take effect
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  console.log(`✅ Header click completed, waited 150ms`);
+};
+
+/**
+ * Check if a column is selected by verifying cells in that column have selection classes
+ */
+export const isColumnSelected = (canvasElement: HTMLElement, colIndex: number): boolean => {
+  const cellsInColumn = canvasElement.querySelectorAll(`[data-col-index="${colIndex}"]`);
+  console.log(`🔍 Checking column ${colIndex} selection - found ${cellsInColumn.length} cells`);
+
+  if (cellsInColumn.length === 0) {
+    console.log(`❌ No cells found for column ${colIndex}`);
+    return false;
+  }
+
+  // Check if at least some cells in the column are selected
+  let selectedCellsInColumn = 0;
+  cellsInColumn.forEach((cell, index) => {
+    const hasSelected = cell.classList.contains("st-cell-selected");
+    const hasSelectedFirst = cell.classList.contains("st-cell-selected-first");
+    if (hasSelected || hasSelectedFirst) {
+      selectedCellsInColumn++;
+    }
+    if (index < 3) {
+      // Log first few for debugging
+      console.log(`  Cell ${index}: selected=${hasSelected}, selectedFirst=${hasSelectedFirst}`);
+    }
+  });
+
+  console.log(
+    `📊 Selected cells in column ${colIndex}: ${selectedCellsInColumn}/${cellsInColumn.length}`
+  );
+  return selectedCellsInColumn > 0;
+};
+
+/**
+ * Scroll the table body vertically
+ */
+export const scrollTableVertically = async (
+  canvasElement: HTMLElement,
+  scrollTop: number
+): Promise<void> => {
+  console.log(`📜 Scrolling table vertically to ${scrollTop}px`);
+
+  const bodyContainer = canvasElement.querySelector(".st-body-container");
+  if (!bodyContainer) {
+    console.error(`❌ Could not find .st-body-container`);
+    return;
+  }
+
+  console.log(`🔍 Found body container, current scrollTop: ${bodyContainer.scrollTop}`);
+
+  // Set scroll position
+  bodyContainer.scrollTop = scrollTop;
+
+  // Dispatch scroll event to trigger any scroll handlers
+  const scrollEvent = new Event("scroll", { bubbles: true });
+  bodyContainer.dispatchEvent(scrollEvent);
+
+  // Wait for scroll to settle and any virtualization to update
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
+  console.log(`✅ Scroll completed, new scrollTop: ${bodyContainer.scrollTop}`);
+};
+
+/**
+ * Test column header selection
+ */
+export const testColumnHeaderSelection = async (
+  canvasElement: HTMLElement,
+  colIndex: number = 1
+): Promise<void> => {
+  console.log(`🧪 Testing column header selection for column ${colIndex}`);
+
+  await waitForTable();
+
+  // Clear any existing selection
+  await clearCellSelection(canvasElement);
+
+  // Click on the column header
+  await clickColumnHeader(canvasElement, colIndex);
+
+  // Verify the column is selected
+  console.log(`🔍 Verifying column ${colIndex} is selected...`);
+  expect(isColumnSelected(canvasElement, colIndex)).toBe(true);
+
+  console.log(`✅ Column header selection test completed`);
+};
+
+/**
+ * Test cell selection after scrolling
+ */
+export const testCellSelectionAfterScroll = async (
+  canvasElement: HTMLElement,
+  scrollTop: number = 300,
+  testRowIndex: number = 5,
+  testColIndex: number = 2
+): Promise<void> => {
+  console.log(
+    `🧪 Testing cell selection after scrolling (scroll: ${scrollTop}px, cell: [${testRowIndex}, ${testColIndex}])`
+  );
+
+  await waitForTable();
+
+  // Clear any existing selection
+  await clearCellSelection(canvasElement);
+
+  // Scroll the table
+  await scrollTableVertically(canvasElement, scrollTop);
+
+  // Log current table state after scroll
+  logTableState(canvasElement);
+
+  // Try to select a cell after scrolling
+  console.log(`🎯 Attempting to select cell [${testRowIndex}, ${testColIndex}] after scroll...`);
+  await clickCell(canvasElement, testRowIndex, testColIndex);
+
+  // Verify the cell is selected
+  console.log(`🔍 Verifying cell [${testRowIndex}, ${testColIndex}] is selected after scroll...`);
+  expect(isCellSelected(canvasElement, testRowIndex, testColIndex)).toBe(true);
+
+  // Verify only one cell is selected
+  expect(getSelectedCellCount(canvasElement)).toBe(1);
+
+  console.log(`✅ Cell selection after scroll test completed`);
+};
+
+/**
+ * Test range selection after scrolling
+ */
+export const testRangeSelectionAfterScroll = async (
+  canvasElement: HTMLElement,
+  scrollTop: number = 200,
+  startRow: number = 3,
+  startCol: number = 1,
+  endRow: number = 5,
+  endCol: number = 3
+): Promise<void> => {
+  console.log(`🧪 Testing range selection after scrolling`);
+  console.log(
+    `  Scroll: ${scrollTop}px, Range: [${startRow},${startCol}] to [${endRow},${endCol}]`
+  );
+
+  await waitForTable();
+
+  // Clear any existing selection
+  await clearCellSelection(canvasElement);
+
+  // Scroll the table
+  await scrollTableVertically(canvasElement, scrollTop);
+
+  // Try range selection after scrolling
+  await selectCellRange(canvasElement, startRow, startCol, endRow, endCol);
+
+  // Verify the range is selected
+  const expectedCellCount = (endRow - startRow + 1) * (endCol - startCol + 1);
+  console.log(`🔍 Verifying ${expectedCellCount} cells are selected after scroll...`);
+  expect(getSelectedCellCount(canvasElement)).toBe(expectedCellCount);
+
+  // Verify specific cells in the range
+  await validateCellRangeSelection(canvasElement, startRow, startCol, endRow, endCol);
+
+  console.log(`✅ Range selection after scroll test completed`);
+};
+
+/**
  * Test single cell selection
  */
 export const testSingleCellSelection = async (
@@ -482,21 +764,58 @@ export const testCellsAreClickable = async (canvasElement: HTMLElement): Promise
  * Comprehensive cell selection test
  */
 export const testCellSelectionComprehensive = async (canvasElement: HTMLElement): Promise<void> => {
-  // Test single cell selection
-  await testSingleCellSelection(canvasElement, 1, 1);
+  console.log(`🧪 Running comprehensive cell selection tests...`);
 
-  // Test multi-cell range selection
-  await testMultiCellRangeSelection(canvasElement, 0, 0, 2, 2);
+  // First, discover valid cell bounds
+  const bounds = findValidCellBounds(canvasElement);
 
-  // Test different range selection
-  await testMultiCellRangeSelection(canvasElement, 1, 1, 3, 4);
+  // Test 1: Single cell selection
+  console.log(`🧪 Test 1: Single cell selection`);
+  await testSingleCellSelection(canvasElement, bounds.minRow, bounds.minCol);
 
-  // Test selection persistence
+  // Test 2: Multi-cell range selection (using valid bounds)
+  console.log(`🧪 Test 2: Multi-cell range selection`);
+  const rangeEndRow = Math.min(bounds.minRow + 2, bounds.maxRow);
+  const rangeEndCol = Math.min(bounds.minCol + 2, bounds.maxCol);
+  await testMultiCellRangeSelection(
+    canvasElement,
+    bounds.minRow,
+    bounds.minCol,
+    rangeEndRow,
+    rangeEndCol
+  );
+
+  // Test 3: Different range selection
+  console.log(`🧪 Test 3: Different range selection`);
+  const altStartRow = Math.min(bounds.minRow + 1, bounds.maxRow);
+  const altStartCol = Math.min(bounds.minCol + 1, bounds.maxCol);
+  const altEndRow = Math.min(bounds.minRow + 3, bounds.maxRow);
+  const altEndCol = Math.min(bounds.minCol + 3, bounds.maxCol);
+  await testMultiCellRangeSelection(canvasElement, altStartRow, altStartCol, altEndRow, altEndCol);
+
+  // Test 4: Column header selection
+  console.log(`🧪 Test 4: Column header selection`);
+  await testColumnHeaderSelection(canvasElement, 2);
+
+  // Test 5: Cell selection after scrolling
+  console.log(`🧪 Test 5: Cell selection after scrolling`);
+  await testCellSelectionAfterScroll(canvasElement, 300, 5, 1);
+
+  // Test 6: Range selection after scrolling
+  console.log(`🧪 Test 6: Range selection after scrolling`);
+  await testRangeSelectionAfterScroll(canvasElement, 200, 3, 1, 4, 3);
+
+  // Test 7: Selection persistence
+  console.log(`🧪 Test 7: Selection persistence`);
   await testCellSelectionPersistence(canvasElement);
 
-  // Test that cells are clickable
+  // Test 8: Ensure cells are clickable
+  console.log(`🧪 Test 8: Cells are clickable`);
   await testCellsAreClickable(canvasElement);
 
   // Final cleanup
+  console.log(`🧹 Final cleanup...`);
   await clearCellSelection(canvasElement);
+
+  console.log(`✅ All comprehensive cell selection tests completed successfully!`);
 };

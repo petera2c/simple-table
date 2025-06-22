@@ -6,6 +6,9 @@ import {
   testMultiCellRangeSelection,
   testCellSelectionPersistence,
   testCellsAreClickable,
+  testColumnHeaderSelection,
+  testCellSelectionAfterScroll,
+  testRangeSelectionAfterScroll,
   clickCell,
   selectCellRange,
   isCellSelected,
@@ -13,6 +16,10 @@ import {
   validateCellRangeSelection,
   clearCellSelection,
   logTableState,
+  clickColumnHeader,
+  isColumnSelected,
+  scrollTableVertically,
+  findValidCellBounds,
 } from "../test-utils/cellSelectionTestUtils";
 import { expect } from "@storybook/test";
 
@@ -47,56 +54,83 @@ export const ComprehensiveCellSelectionTests: Story = {
 
       // Additional specific tests with multiple expect statements
 
+      // Discover valid cell bounds for dynamic testing
+      console.log(`🔍 Discovering valid cell bounds for additional tests...`);
+      const bounds = findValidCellBounds(canvasElement);
+
       // Test 1: Single cell selection with detailed validation
       console.log(`🧪 Test 1: Single cell selection`);
       await clearCellSelection(canvasElement);
       logTableState(canvasElement);
 
-      await clickCell(canvasElement, 1, 1);
+      await clickCell(canvasElement, bounds.minRow, bounds.minCol);
       logTableState(canvasElement);
 
-      expect(isCellSelected(canvasElement, 1, 1)).toBe(true);
+      expect(isCellSelected(canvasElement, bounds.minRow, bounds.minCol)).toBe(true);
       expect(getSelectedCellCount(canvasElement)).toBe(1);
 
-      // Test 2: Multi-cell range selection (3x3 grid) with border validation
+      // Test 2: Multi-cell range selection with border validation
       await clearCellSelection(canvasElement);
-      await selectCellRange(canvasElement, 0, 0, 2, 2);
+      const testRangeEndRow = Math.min(bounds.minRow + 2, bounds.maxRow);
+      const testRangeEndCol = Math.min(bounds.minCol + 2, bounds.maxCol);
+      await selectCellRange(
+        canvasElement,
+        bounds.minRow,
+        bounds.minCol,
+        testRangeEndRow,
+        testRangeEndCol
+      );
 
-      // Validate all 9 cells are selected
-      expect(getSelectedCellCount(canvasElement)).toBe(9);
+      // Calculate expected cell count
+      const expectedCells =
+        (testRangeEndRow - bounds.minRow + 1) * (testRangeEndCol - bounds.minCol + 1);
+      expect(getSelectedCellCount(canvasElement)).toBe(expectedCells);
 
       // Validate specific cells in the range
-      expect(isCellSelected(canvasElement, 0, 0)).toBe(true);
-      expect(isCellSelected(canvasElement, 0, 1)).toBe(true);
-      expect(isCellSelected(canvasElement, 0, 2)).toBe(true);
-      expect(isCellSelected(canvasElement, 1, 0)).toBe(true);
-      expect(isCellSelected(canvasElement, 1, 1)).toBe(true);
-      expect(isCellSelected(canvasElement, 1, 2)).toBe(true);
-      expect(isCellSelected(canvasElement, 2, 0)).toBe(true);
-      expect(isCellSelected(canvasElement, 2, 1)).toBe(true);
-      expect(isCellSelected(canvasElement, 2, 2)).toBe(true);
+      for (let row = bounds.minRow; row <= testRangeEndRow; row++) {
+        for (let col = bounds.minCol; col <= testRangeEndCol; col++) {
+          expect(isCellSelected(canvasElement, row, col)).toBe(true);
+        }
+      }
 
-      // Test that cells outside the range are not selected
-      expect(isCellSelected(canvasElement, 3, 0)).toBe(false);
-      expect(isCellSelected(canvasElement, 0, 3)).toBe(false);
+      // Test that cells outside the range are not selected (if they exist)
+      if (testRangeEndRow + 1 <= bounds.maxRow) {
+        expect(isCellSelected(canvasElement, testRangeEndRow + 1, bounds.minCol)).toBe(false);
+      }
+      if (testRangeEndCol + 1 <= bounds.maxCol) {
+        expect(isCellSelected(canvasElement, bounds.minRow, testRangeEndCol + 1)).toBe(false);
+      }
 
-      // Test 3: Different range selection (2x4 rectangle)
+      // Test 3: Different range selection
       await clearCellSelection(canvasElement);
-      await selectCellRange(canvasElement, 1, 1, 2, 4);
+      const altStartRow = Math.min(bounds.minRow + 1, bounds.maxRow);
+      const altStartCol = Math.min(bounds.minCol + 1, bounds.maxCol);
+      const altEndRow = Math.min(bounds.minRow + 2, bounds.maxRow);
+      const altEndCol = Math.min(bounds.minCol + 3, bounds.maxCol);
+      await selectCellRange(canvasElement, altStartRow, altStartCol, altEndRow, altEndCol);
 
-      expect(getSelectedCellCount(canvasElement)).toBe(8); // 2 rows x 4 columns
-      await validateCellRangeSelection(canvasElement, 1, 1, 2, 4);
+      const altExpectedCells = (altEndRow - altStartRow + 1) * (altEndCol - altStartCol + 1);
+      expect(getSelectedCellCount(canvasElement)).toBe(altExpectedCells);
+      await validateCellRangeSelection(
+        canvasElement,
+        altStartRow,
+        altStartCol,
+        altEndRow,
+        altEndCol
+      );
 
       // Test 4: Selection replacement
       await clearCellSelection(canvasElement);
-      await clickCell(canvasElement, 1, 1);
-      expect(isCellSelected(canvasElement, 1, 1)).toBe(true);
+      await clickCell(canvasElement, bounds.minRow, bounds.minCol);
+      expect(isCellSelected(canvasElement, bounds.minRow, bounds.minCol)).toBe(true);
       expect(getSelectedCellCount(canvasElement)).toBe(1);
 
       // Select a different cell - should replace the previous selection
-      await clickCell(canvasElement, 3, 3);
-      expect(isCellSelected(canvasElement, 1, 1)).toBe(false);
-      expect(isCellSelected(canvasElement, 3, 3)).toBe(true);
+      const differentRow = Math.min(bounds.minRow + 2, bounds.maxRow);
+      const differentCol = Math.min(bounds.minCol + 2, bounds.maxCol);
+      await clickCell(canvasElement, differentRow, differentCol);
+      expect(isCellSelected(canvasElement, bounds.minRow, bounds.minCol)).toBe(false);
+      expect(isCellSelected(canvasElement, differentRow, differentCol)).toBe(true);
       expect(getSelectedCellCount(canvasElement)).toBe(1);
 
       // Test 5: Verify cells are clickable
@@ -107,6 +141,76 @@ export const ComprehensiveCellSelectionTests: Story = {
       expect(getSelectedCellCount(canvasElement)).toBe(0);
     } catch (error) {
       console.error("Cell selection test failed:", error);
+      throw error;
+    }
+  },
+};
+
+/**
+ * Test column header selection functionality
+ */
+export const ColumnHeaderSelectionTest: Story = {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    try {
+      console.log(`🎯 Testing column header selection...`);
+      logTableState(canvasElement);
+
+      // Test column header selection
+      await testColumnHeaderSelection(canvasElement, 1);
+
+      // Test clicking different column headers
+      console.log(`🧪 Testing different column selection...`);
+      await clickColumnHeader(canvasElement, 2);
+      expect(isColumnSelected(canvasElement, 2)).toBe(true);
+
+      // Test header click on first column
+      console.log(`🧪 Testing first column selection...`);
+      await clickColumnHeader(canvasElement, 0);
+      expect(isColumnSelected(canvasElement, 0)).toBe(true);
+
+      console.log(`✅ Column header selection tests passed!`);
+    } catch (error) {
+      console.error("Column header selection test failed:", error);
+      throw error;
+    }
+  },
+};
+
+/**
+ * Test cell selection functionality after scrolling
+ */
+export const ScrollAndSelectionTest: Story = {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    try {
+      console.log(`🎯 Testing selection after scrolling...`);
+      logTableState(canvasElement);
+
+      // Test cell selection after scrolling
+      await testCellSelectionAfterScroll(canvasElement, 300, 5, 1);
+
+      // Test range selection after scrolling
+      await testRangeSelectionAfterScroll(canvasElement, 200, 3, 1, 4, 3);
+
+      // Test scrolling to different positions
+      console.log(`🧪 Testing selection at different scroll positions...`);
+      await scrollTableVertically(canvasElement, 100);
+      await clickCell(canvasElement, 2, 2);
+      expect(isCellSelected(canvasElement, 2, 2)).toBe(true);
+
+      await scrollTableVertically(canvasElement, 500);
+      await clickCell(canvasElement, 7, 3);
+      expect(isCellSelected(canvasElement, 7, 3)).toBe(true);
+
+      // Test scroll back to top and select cells
+      console.log(`🧪 Testing scroll back to top...`);
+      await scrollTableVertically(canvasElement, 0);
+      const scrollBounds = findValidCellBounds(canvasElement);
+      await clickCell(canvasElement, scrollBounds.minRow, scrollBounds.minCol);
+      expect(isCellSelected(canvasElement, scrollBounds.minRow, scrollBounds.minCol)).toBe(true);
+
+      console.log(`✅ Scroll and selection tests passed!`);
+    } catch (error) {
+      console.error("Scroll and selection test failed:", error);
       throw error;
     }
   },
