@@ -28,24 +28,20 @@ export const testColumnAlignment = async (
       console.warn(`Header element not found for column: ${column.label}`);
     }
 
-    // Test body cell alignment (check first data row)
-    const tableRows = canvasElement.querySelectorAll(".st-row");
-    if (tableRows.length > 0) {
-      const firstDataRow = tableRows[0];
-      const cell = firstDataRow.querySelector(`[data-accessor="${column.accessor}"]`);
+    // Test body cell alignment (search across all sections for the accessor)
+    const cell = canvasElement.querySelector(`[data-accessor="${column.accessor}"]`);
 
-      if (cell) {
-        const cellContent = cell.querySelector(".st-cell-content");
-        if (cellContent) {
-          const cellComputedStyle = window.getComputedStyle(cellContent);
+    if (cell) {
+      const cellContent = cell.querySelector(".st-cell-content");
+      if (cellContent) {
+        const cellComputedStyle = window.getComputedStyle(cellContent);
 
-          expect(cellComputedStyle.textAlign).toBe(column.align);
-        } else {
-          console.warn(`Cell content not found for column: ${column.label}`);
-        }
+        expect(cellComputedStyle.textAlign).toBe(column.align);
       } else {
-        console.warn(`Cell not found for column: ${column.label}`);
+        console.warn(`Cell content not found for column: ${column.label}`);
       }
+    } else {
+      console.warn(`Cell not found for column: ${column.label} with accessor: ${column.accessor}`);
     }
   }
 };
