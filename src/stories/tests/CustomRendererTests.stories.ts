@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import CellRendererExample from "../examples/CellRenderer";
+import CellRendererExample, { CELL_RENDERER_STYLES } from "../examples/CellRenderer";
 import {
   testCustomRenderersComprehensive,
   testCustomHeaderRenderers,
@@ -7,7 +7,6 @@ import {
   testCustomRenderersDataIntegrity,
   testCustomRenderersStructure,
   testCustomRenderersWithTheme,
-  logCustomRendererState,
 } from "../test-utils/customRendererTestUtils";
 import { expect } from "@storybook/test";
 
@@ -28,59 +27,59 @@ type Story = StoryObj<typeof meta>;
  */
 export const ComprehensiveCustomRendererTests: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    console.log(`🚀 Starting Custom Renderer Tests`);
-    console.log(`📋 Canvas element:`, canvasElement);
-
     try {
-      // Check initial table state
-      console.log(`🔍 Initial custom renderer inspection:`);
-      logCustomRendererState(canvasElement);
-
       // Run the comprehensive test suite
-      console.log(`🧪 Running comprehensive custom renderer test suite...`);
       await testCustomRenderersComprehensive(canvasElement);
 
       // Additional specific tests with multiple expect statements
 
       // Test 1: Header renderers with detailed validation
-      console.log(`🧪 Test 1: Detailed header renderer validation`);
       await testCustomHeaderRenderers(canvasElement);
 
       // Verify specific header styles
       const idHeader = canvasElement.querySelector("#cell-id-0 .st-header-label-text div");
-      expect(idHeader).toHaveStyle("background-color: darkred");
-      expect(idHeader).toHaveStyle("color: white");
+      expect(idHeader).toHaveStyle(
+        `background-color: ${CELL_RENDERER_STYLES.header.id.backgroundColor}`
+      );
+      expect(idHeader).toHaveStyle(`color: ${CELL_RENDERER_STYLES.header.id.color}`);
       expect(idHeader).toHaveStyle("padding: 4px 8px");
       expect(idHeader).toHaveStyle("border-radius: 4px");
-      expect(idHeader).toHaveStyle("font-weight: bold");
+      expect(idHeader).toHaveStyle(`font-weight: ${CELL_RENDERER_STYLES.header.id.fontWeight}`);
       expect(idHeader?.textContent).toBe("🆔 ID");
 
       const nameHeader = canvasElement.querySelector("#cell-name-0 .st-header-label-text div");
-      expect(nameHeader).toHaveStyle("background-color: darkblue");
-      expect(nameHeader).toHaveStyle("color: white");
+      expect(nameHeader).toHaveStyle(
+        `background-color: ${CELL_RENDERER_STYLES.header.name.backgroundColor}`
+      );
+      expect(nameHeader).toHaveStyle(`color: ${CELL_RENDERER_STYLES.header.name.color}`);
       expect(nameHeader).toHaveStyle("padding: 4px 8px");
       expect(nameHeader).toHaveStyle("border-radius: 4px");
-      expect(nameHeader).toHaveStyle("font-style: italic");
+      expect(nameHeader).toHaveStyle(`font-style: ${CELL_RENDERER_STYLES.header.name.fontStyle}`);
       expect(nameHeader?.textContent).toBe("👤 Name");
 
       const ageHeader = canvasElement.querySelector("#cell-age-0 .st-header-label-text div");
-      expect(ageHeader).toHaveStyle("background-color: darkgreen");
-      expect(ageHeader).toHaveStyle("color: white");
+      expect(ageHeader).toHaveStyle(
+        `background-color: ${CELL_RENDERER_STYLES.header.age.backgroundColor}`
+      );
+      expect(ageHeader).toHaveStyle(`color: ${CELL_RENDERER_STYLES.header.age.color}`);
       expect(ageHeader).toHaveStyle("padding: 4px 8px");
       expect(ageHeader).toHaveStyle("border-radius: 4px");
-      expect(ageHeader).toHaveStyle("text-transform: uppercase");
-      expect(ageHeader?.textContent).toBe("🎂 AGE");
+      expect(ageHeader).toHaveStyle(
+        `text-transform: ${CELL_RENDERER_STYLES.header.age.textTransform}`
+      );
+      expect(ageHeader?.textContent).toBe("🎂 Age"); // Note: text-transform: uppercase is applied via CSS, not in textContent
 
       const roleHeader = canvasElement.querySelector("#cell-role-0 .st-header-label-text div");
-      expect(roleHeader).toHaveStyle("background-color: orange");
-      expect(roleHeader).toHaveStyle("color: white");
+      expect(roleHeader).toHaveStyle(
+        `background-color: ${CELL_RENDERER_STYLES.header.role.backgroundColor}`
+      );
+      expect(roleHeader).toHaveStyle(`color: ${CELL_RENDERER_STYLES.header.role.color}`);
       expect(roleHeader).toHaveStyle("padding: 4px 8px");
       expect(roleHeader).toHaveStyle("border-radius: 4px");
-      expect(roleHeader).toHaveStyle("border: 2px solid darkorange");
+      expect(roleHeader).toHaveStyle(`border: ${CELL_RENDERER_STYLES.header.role.border}`);
       expect(roleHeader?.textContent).toBe("💼 Role");
 
       // Test 2: Cell renderers with detailed validation
-      console.log(`🧪 Test 2: Detailed cell renderer validation`);
       await testCustomCellRenderers(canvasElement);
 
       // Verify specific cell styles for multiple rows
@@ -91,55 +90,63 @@ export const ComprehensiveCustomRendererTests: Story = {
       ];
 
       testRows.forEach(({ rowIndex, expectedData }) => {
-        console.log(`🔍 Testing row ${rowIndex} custom renderers...`);
-
         // ID cell tests
         const idCell = canvasElement.querySelector(
           `[data-row-index="${rowIndex}"][data-accessor="id"] .st-cell-content div`
         );
-        expect(idCell).toHaveStyle("background-color: red");
-        expect(idCell).toHaveStyle("width: 100%");
-        expect(idCell).toHaveStyle("overflow: hidden");
+        expect(idCell).toHaveStyle(
+          `background-color: ${CELL_RENDERER_STYLES.cell.id.backgroundColor}`
+        );
+        // Check inline style for width since computed style may differ
+        expect((idCell as HTMLElement)?.style.width).toBe(CELL_RENDERER_STYLES.cell.id.width);
+        expect(idCell).toHaveStyle(`overflow: ${CELL_RENDERER_STYLES.cell.id.overflow}`);
         expect(idCell?.textContent).toBe(expectedData.id);
 
         // Name cell tests
         const nameCell = canvasElement.querySelector(
           `[data-row-index="${rowIndex}"][data-accessor="name"] .st-cell-content div`
         );
-        expect(nameCell).toHaveStyle("background-color: blue");
-        expect(nameCell).toHaveStyle("width: 100%");
-        expect(nameCell).toHaveStyle("overflow: hidden");
+        expect(nameCell).toHaveStyle(
+          `background-color: ${CELL_RENDERER_STYLES.cell.name.backgroundColor}`
+        );
+        // Check inline style for width since computed style may differ
+        expect((nameCell as HTMLElement)?.style.width).toBe(CELL_RENDERER_STYLES.cell.name.width);
+        expect(nameCell).toHaveStyle(`overflow: ${CELL_RENDERER_STYLES.cell.name.overflow}`);
         expect(nameCell?.textContent).toBe(expectedData.name);
 
         // Age cell tests
         const ageCell = canvasElement.querySelector(
           `[data-row-index="${rowIndex}"][data-accessor="age"] .st-cell-content div`
         );
-        expect(ageCell).toHaveStyle("background-color: green");
-        expect(ageCell).toHaveStyle("width: 100%");
+        expect(ageCell).toHaveStyle(
+          `background-color: ${CELL_RENDERER_STYLES.cell.age.backgroundColor}`
+        );
+        // Check inline style for width since computed style may differ
+        expect((ageCell as HTMLElement)?.style.width).toBe(CELL_RENDERER_STYLES.cell.age.width);
         expect(ageCell?.textContent).toBe(expectedData.age);
 
         // Role cell tests
         const roleCell = canvasElement.querySelector(
           `[data-row-index="${rowIndex}"][data-accessor="role"] .st-cell-content div`
         );
-        expect(roleCell).toHaveStyle("background-color: yellow");
+        expect(roleCell).toHaveStyle(
+          `background-color: ${CELL_RENDERER_STYLES.cell.role.backgroundColor}`
+        );
         expect(roleCell?.textContent).toBe(expectedData.role);
       });
 
       // Test 3: Verify all cells have custom renderers
-      console.log(`🧪 Test 3: Verify all cells use custom renderers`);
       const allIdCells = canvasElement.querySelectorAll(
-        '[data-accessor="id"] .st-cell-content div[style*="red"]'
+        '[data-accessor="id"] .st-cell-content div[style*="rgb(255, 0, 0)"]'
       );
       const allNameCells = canvasElement.querySelectorAll(
-        '[data-accessor="name"] .st-cell-content div[style*="blue"]'
+        '[data-accessor="name"] .st-cell-content div[style*="rgb(0, 0, 255)"]'
       );
       const allAgeCells = canvasElement.querySelectorAll(
-        '[data-accessor="age"] .st-cell-content div[style*="green"]'
+        '[data-accessor="age"] .st-cell-content div[style*="rgb(0, 128, 0)"]'
       );
       const allRoleCells = canvasElement.querySelectorAll(
-        '[data-accessor="role"] .st-cell-content div[style*="yellow"]'
+        '[data-accessor="role"] .st-cell-content div[style*="rgb(255, 255, 0)"]'
       );
 
       expect(allIdCells.length).toBe(5); // 5 rows
@@ -148,11 +155,9 @@ export const ComprehensiveCustomRendererTests: Story = {
       expect(allRoleCells.length).toBe(5); // 5 rows
 
       // Test 4: Data integrity validation
-      console.log(`🧪 Test 4: Data integrity validation`);
       await testCustomRenderersDataIntegrity(canvasElement);
 
       // Test 5: Structure validation
-      console.log(`🧪 Test 5: Structure validation`);
       await testCustomRenderersStructure(canvasElement);
 
       // Additional structure tests
@@ -167,11 +172,9 @@ export const ComprehensiveCustomRendererTests: Story = {
       expect(bodyContainer).toBeInTheDocument();
 
       // Test 6: Theme compatibility
-      console.log(`🧪 Test 6: Theme compatibility`);
       await testCustomRenderersWithTheme(canvasElement);
 
       // Test 7: Verify no default content is shown
-      console.log(`🧪 Test 7: Verify custom renderers override default content`);
 
       // Check that raw text content is not visible outside custom divs
       const rawIdTexts = canvasElement.querySelectorAll(
@@ -186,7 +189,6 @@ export const ComprehensiveCustomRendererTests: Story = {
       expect(customCellDivs.length).toBe(20); // 4 columns × 5 rows = 20 cells
 
       // Test 8: Verify emoji content in headers
-      console.log(`🧪 Test 8: Emoji content validation`);
       const headerEmojis = [
         { selector: "#cell-id-0", emoji: "🆔" },
         { selector: "#cell-name-0", emoji: "👤" },
@@ -198,8 +200,6 @@ export const ComprehensiveCustomRendererTests: Story = {
         const header = canvasElement.querySelector(`${selector} .st-header-label-text div`);
         expect(header?.textContent).toContain(emoji);
       });
-
-      console.log(`✅ All custom renderer tests passed!`);
     } catch (error) {
       console.error("Custom renderer test failed:", error);
       throw error;
@@ -213,21 +213,29 @@ export const ComprehensiveCustomRendererTests: Story = {
 export const CustomHeaderRenderersTest: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
-      console.log(`🎯 Testing custom header renderers...`);
-      logCustomRendererState(canvasElement);
-
       // Test header renderers
       await testCustomHeaderRenderers(canvasElement);
 
       // Additional header-specific tests
-      console.log(`🧪 Testing header renderer specifics...`);
 
       // Test that each header has the expected structure
       const headers = [
-        { id: "cell-id-0", bgColor: "darkred", text: "🆔 ID" },
-        { id: "cell-name-0", bgColor: "darkblue", text: "👤 Name" },
-        { id: "cell-age-0", bgColor: "darkgreen", text: "🎂 AGE" },
-        { id: "cell-role-0", bgColor: "orange", text: "💼 Role" },
+        { id: "cell-id-0", bgColor: CELL_RENDERER_STYLES.header.id.backgroundColor, text: "🆔 ID" },
+        {
+          id: "cell-name-0",
+          bgColor: CELL_RENDERER_STYLES.header.name.backgroundColor,
+          text: "👤 Name",
+        },
+        {
+          id: "cell-age-0",
+          bgColor: CELL_RENDERER_STYLES.header.age.backgroundColor,
+          text: "🎂 Age", // Note: text-transform: uppercase is applied via CSS, not in textContent
+        },
+        {
+          id: "cell-role-0",
+          bgColor: CELL_RENDERER_STYLES.header.role.backgroundColor,
+          text: "💼 Role",
+        },
       ];
 
       headers.forEach(({ id, bgColor, text }) => {
@@ -241,8 +249,6 @@ export const CustomHeaderRenderersTest: Story = {
         expect(headerCell).toHaveClass("st-header-cell");
         expect(headerCell).toHaveClass("clickable");
       });
-
-      console.log(`✅ Custom header renderers tests passed!`);
     } catch (error) {
       console.error("Custom header renderers test failed:", error);
       throw error;
@@ -256,21 +262,17 @@ export const CustomHeaderRenderersTest: Story = {
 export const CustomCellRenderersTest: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
-      console.log(`🎯 Testing custom cell renderers...`);
-      logCustomRendererState(canvasElement);
-
       // Test cell renderers
       await testCustomCellRenderers(canvasElement);
 
       // Additional cell-specific tests
-      console.log(`🧪 Testing cell renderer specifics...`);
 
       // Test cell renderer consistency across all rows
       const expectedCellColors = {
-        id: "red",
-        name: "blue",
-        age: "green",
-        role: "yellow",
+        id: CELL_RENDERER_STYLES.cell.id.backgroundColor,
+        name: CELL_RENDERER_STYLES.cell.name.backgroundColor,
+        age: CELL_RENDERER_STYLES.cell.age.backgroundColor,
+        role: CELL_RENDERER_STYLES.cell.role.backgroundColor,
       };
 
       Object.entries(expectedCellColors).forEach(([accessor, color]) => {
@@ -296,8 +298,6 @@ export const CustomCellRenderersTest: Story = {
         const customDiv = cell.querySelector('.st-cell-content div[style*="background-color"]');
         expect(customDiv).toBeInTheDocument();
       });
-
-      console.log(`✅ Custom cell renderers tests passed!`);
     } catch (error) {
       console.error("Custom cell renderers test failed:", error);
       throw error;
