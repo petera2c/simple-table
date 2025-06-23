@@ -60,7 +60,7 @@ const TableCell = forwardRef(
       expandedRows,
       handleMouseDown,
       handleMouseOver,
-      headersRef,
+      headers,
       hoveredHeaderRef,
       isCopyFlashing,
       isWarningFlashing,
@@ -96,7 +96,7 @@ const TableCell = forwardRef(
     // Hooks
     const { handleDragOver } = useDragHandler({
       draggedHeaderRef,
-      headersRef,
+      headers,
       hoveredHeaderRef,
       onTableHeaderDragEnd,
     });

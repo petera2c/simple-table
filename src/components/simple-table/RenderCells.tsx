@@ -13,7 +13,6 @@ interface RenderCellsProps {
   columnIndexStart?: number;
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
-  hiddenColumns: Record<string, boolean>;
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
@@ -24,15 +23,12 @@ const RenderCells = ({
   columnIndexStart,
   columnIndices,
   headers,
-  hiddenColumns,
   pinned,
   rowIndex,
   rowIndices,
   visibleRow,
 }: RenderCellsProps) => {
-  const filteredHeaders = headers.filter((header) =>
-    displayCell({ hiddenColumns, header, pinned })
-  );
+  const filteredHeaders = headers.filter((header) => displayCell({ header, pinned }));
 
   return (
     <>
@@ -42,7 +38,6 @@ const RenderCells = ({
             columnIndices={columnIndices}
             header={header}
             headers={headers}
-            hiddenColumns={hiddenColumns}
             key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
             nestedIndex={index + (columnIndexStart ?? 0)}
             pinned={pinned}
@@ -60,7 +55,6 @@ const RecursiveRenderCells = ({
   columnIndices,
   header,
   headers,
-  hiddenColumns,
   nestedIndex,
   pinned,
   rowIndex,
@@ -70,7 +64,6 @@ const RecursiveRenderCells = ({
   columnIndices: ColumnIndices;
   header: HeaderObject;
   headers: HeaderObject[];
-  hiddenColumns: Record<string, boolean>;
   nestedIndex: number;
   pinned?: Pinned;
   rowIndex: number;
@@ -85,7 +78,7 @@ const RecursiveRenderCells = ({
 
   if (header.children) {
     const filteredChildren = header.children.filter((child) =>
-      displayCell({ hiddenColumns, header: child, pinned })
+      displayCell({ header: child, pinned })
     );
 
     return (
@@ -96,7 +89,6 @@ const RecursiveRenderCells = ({
               columnIndices={columnIndices}
               header={child}
               headers={headers}
-              hiddenColumns={hiddenColumns}
               key={getCellId({ accessor: child.accessor, rowIndex: rowIndex + 1 })}
               nestedIndex={nestedIndex}
               pinned={pinned}

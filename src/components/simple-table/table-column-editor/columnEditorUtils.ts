@@ -4,7 +4,6 @@ import HeaderObject from "../../../types/HeaderObject";
 export const findAndMarkParentsVisible = (
   headers: HeaderObject[],
   childAccessor: string,
-  updatedHiddenColumns: { [key: string]: boolean },
   visited: Set<string> = new Set()
 ) => {
   for (const header of headers) {
@@ -21,9 +20,9 @@ export const findAndMarkParentsVisible = (
       let hasNestedChild = false;
       if (!hasDirectChild) {
         for (const child of header.children) {
-          findAndMarkParentsVisible([child], childAccessor, updatedHiddenColumns, visited);
+          findAndMarkParentsVisible([child], childAccessor, visited);
           // If this child is now visible after recursion, it means it's in the path
-          if (updatedHiddenColumns[child.accessor] === false) {
+          if (child.hide === false) {
             hasNestedChild = true;
             break;
           }
@@ -32,37 +31,31 @@ export const findAndMarkParentsVisible = (
 
       // If this header is a parent (direct or indirect) of the target child, make it visible
       if (hasDirectChild || hasNestedChild) {
-        updatedHiddenColumns[header.accessor] = false;
+        header.hide = false;
       }
     }
   }
 };
 
-export const areAllChildrenHidden = (
-  children: HeaderObject[],
-  hiddenColumns: { [key: string]: boolean }
-) => {
-  return children.every((child) => hiddenColumns[child.accessor] === true);
+export const areAllChildrenHidden = (children: HeaderObject[]) => {
+  return children.every((child) => child.hide);
 };
 
 // Update parent headers based on children's state
-export const updateParentHeaders = (
-  headers: HeaderObject[],
-  updatedHiddenColumns: { [key: string]: boolean }
-) => {
+export const updateParentHeaders = (headers: HeaderObject[]) => {
   // Process each header
   headers.forEach((header) => {
     // If it has children, check if all children are hidden
     if (header.children && header.children.length > 0) {
       // First update any nested children
-      updateParentHeaders(header.children, updatedHiddenColumns);
+      updateParentHeaders(header.children);
 
       // Then check if all children are now hidden
-      const allChildrenHidden = areAllChildrenHidden(header.children, updatedHiddenColumns);
+      const allChildrenHidden = areAllChildrenHidden(header.children);
 
       // Update this parent if all children are hidden
       if (allChildrenHidden) {
-        updatedHiddenColumns[header.accessor] = true;
+        header.hide = true;
       }
     }
   });

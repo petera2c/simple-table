@@ -4,9 +4,10 @@ import { within } from "@storybook/test";
  * Get column order from a specific section
  */
 export const getColumnOrderFromSection = (section: Element): string[] => {
-  return Array.from(section.querySelectorAll(".st-header-label-text")).map(
-    (el) => el.textContent || ""
-  );
+  const elements = Array.from(section.querySelectorAll(".st-header-label-text"));
+  const order = elements.map((el) => el.textContent || "");
+
+  return order;
 };
 
 /**
@@ -43,13 +44,31 @@ export const performDragAndDrop = async (
     });
 
     sourceElement.dispatchEvent(dragStartEvent);
-    await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Multiple dragover events to simulate realistic dragging
-    for (let i = 0; i < 3; i++) {
-      const progress = (i + 1) / 3;
-      const currentX = startX + (endX - startX) * progress;
-      const currentY = startY + (endY - startY) * progress;
+    // Wait longer to allow for throttling delays
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    // Create more realistic drag movement with larger distances and proper timing
+    const steps = 8; // More steps for better simulation
+    const stepDelay = 10; // Longer delay to account for throttling
+
+    for (let i = 0; i <= steps; i++) {
+      const progress = i / steps;
+      let currentX = startX + (endX - startX) * progress;
+      let currentY = startY + (endY - startY) * progress;
+
+      // Add some movement variation to make it more realistic
+      if (i > 0 && i < steps) {
+        currentX += Math.sin(progress * Math.PI) * 5; // Small horizontal variation
+        currentY += Math.cos(progress * Math.PI) * 2; // Small vertical variation
+      }
+
+      // Ensure we move at least the minimum distance required
+      const currentDistance = Math.sqrt((currentX - startX) ** 2 + (currentY - startY) ** 2);
+      if (currentDistance < 15 && i > 0) {
+        const direction = currentX > startX ? 1 : -1;
+        currentX = startX + direction * Math.max(15, currentDistance);
+      }
 
       const dragOverEvent = new DragEvent("dragover", {
         bubbles: true,
@@ -63,9 +82,16 @@ export const performDragAndDrop = async (
 
       // Find the appropriate target container for dragover
       const targetContainer = targetElement.closest(".st-header-cell") || targetElement;
+
+      // Manually call preventDefault to match what real browsers do
+      dragOverEvent.preventDefault = () => {
+        Object.defineProperty(dragOverEvent, "defaultPrevented", { value: true, writable: false });
+      };
+
       targetContainer.dispatchEvent(dragOverEvent);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Wait longer between dragover events to respect throttling
+      await new Promise((resolve) => setTimeout(resolve, stepDelay));
     }
 
     // Drop
@@ -95,7 +121,9 @@ export const performDragAndDrop = async (
     });
 
     sourceElement.dispatchEvent(dragEndEvent);
-    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Wait longer after dragend to allow for async state updates
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     return true;
   } catch (error) {
@@ -129,6 +157,9 @@ export const testMainSectionColumnReordering = async (
     return false;
   }
 
+  const sourceColumnText =
+    employeesLabel.closest("[id]")?.querySelector(".st-header-label-text")?.textContent || "";
+
   const success = await performDragAndDrop(
     employeesLabel,
     customerRatingLabel,
@@ -136,9 +167,17 @@ export const testMainSectionColumnReordering = async (
   );
 
   if (success) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const finalOrder = getColumnOrderFromSection(mainSection);
+
+    // Check if any meaningful change occurred
     const orderChanged = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
-    if (orderChanged) {
+    const sourceInitialIndex = initialOrder.indexOf(sourceColumnText);
+    const sourceFinalIndex = finalOrder.indexOf(sourceColumnText);
+    const sourceColumnMoved = sourceInitialIndex !== sourceFinalIndex;
+
+    if (orderChanged || sourceColumnMoved) {
       return true;
     }
   }
@@ -318,6 +357,9 @@ export const testPinnedLeftToMainMove = async (
     return false;
   }
 
+  const sourceColumnText =
+    cityLabel.closest("[id]")?.querySelector(".st-header-label-text")?.textContent || "";
+
   const success = await performDragAndDrop(
     cityLabel,
     openingDateLabel,
@@ -325,14 +367,28 @@ export const testPinnedLeftToMainMove = async (
   );
 
   if (success) {
+    // Wait a bit for any async updates
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const finalMainOrder = getColumnOrderFromSection(mainSection);
     const finalPinnedOrder = getColumnOrderFromSection(pinnedLeftSection);
 
+    // For cross-section moves, check if the source column disappeared from the source section
+    // and appeared in the target section, OR if any order changed
     const mainChanged = JSON.stringify(finalMainOrder) !== JSON.stringify(initialMainOrder);
     const pinnedChanged = JSON.stringify(finalPinnedOrder) !== JSON.stringify(initialPinnedOrder);
 
-    if (mainChanged || pinnedChanged) {
+    // Check if source column moved from pinned to main
+    const sourceInInitialPinned = initialPinnedOrder.includes(sourceColumnText);
+    const sourceInFinalPinned = finalPinnedOrder.includes(sourceColumnText);
+    const sourceInFinalMain = finalMainOrder.includes(sourceColumnText);
+    const sourceCrossedSections =
+      sourceInInitialPinned && !sourceInFinalPinned && sourceInFinalMain;
+
+    if (mainChanged || pinnedChanged || sourceCrossedSections) {
       return true;
+    } else {
+      return false;
     }
   }
 
@@ -368,6 +424,9 @@ export const testPinnedRightToMainMove = async (
     return false;
   }
 
+  const sourceColumnText =
+    totalSalesLabel.closest("[id]")?.querySelector(".st-header-label-text")?.textContent || "";
+
   const success = await performDragAndDrop(
     totalSalesLabel,
     furnitureSalesLabel,
@@ -375,14 +434,27 @@ export const testPinnedRightToMainMove = async (
   );
 
   if (success) {
+    // Wait a bit for any async updates
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const finalMainOrder = getColumnOrderFromSection(mainSection);
     const finalPinnedOrder = getColumnOrderFromSection(pinnedRightSection);
 
+    // For cross-section moves, check if the source column moved between sections
     const mainChanged = JSON.stringify(finalMainOrder) !== JSON.stringify(initialMainOrder);
     const pinnedChanged = JSON.stringify(finalPinnedOrder) !== JSON.stringify(initialPinnedOrder);
 
-    if (mainChanged || pinnedChanged) {
+    // Check if source column moved from pinned right to main
+    const sourceInInitialPinned = initialPinnedOrder.includes(sourceColumnText);
+    const sourceInFinalPinned = finalPinnedOrder.includes(sourceColumnText);
+    const sourceInFinalMain = finalMainOrder.includes(sourceColumnText);
+    const sourceCrossedSections =
+      sourceInInitialPinned && !sourceInFinalPinned && sourceInFinalMain;
+
+    if (mainChanged || pinnedChanged || sourceCrossedSections) {
       return true;
+    } else {
+      return false;
     }
   }
 
@@ -398,19 +470,30 @@ export const testColumnReorderingDirectSimulation = async (
   canvasElement: HTMLElement
 ) => {
   const mainSection = canvasElement.querySelector(".st-header-main");
-  if (!mainSection) return false;
+  if (!mainSection) {
+    return false;
+  }
 
   const initialOrder = getColumnOrderFromSection(mainSection);
 
   const employeesCell = mainSection.querySelector("[id*='cell-employees']");
   const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
 
-  if (!employeesCell || !squareFootageCell) return false;
+  if (!employeesCell || !squareFootageCell) {
+    return false;
+  }
 
   const sourceLabel = employeesCell.querySelector(".st-header-label") as HTMLElement;
   const targetLabel = squareFootageCell.querySelector(".st-header-label") as HTMLElement;
 
-  if (!sourceLabel || !targetLabel) return false;
+  if (!sourceLabel || !targetLabel) {
+    return false;
+  }
+
+  // Get the expected source and target column text for validation
+  const sourceColumnText = employeesCell.querySelector(".st-header-label-text")?.textContent || "";
+  const targetColumnText =
+    squareFootageCell.querySelector(".st-header-label-text")?.textContent || "";
 
   const success = await performDragAndDrop(
     sourceLabel,
@@ -419,11 +502,32 @@ export const testColumnReorderingDirectSimulation = async (
   );
 
   if (success) {
-    const finalOrder = getColumnOrderFromSection(mainSection);
-    const orderChanged = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
+    // Wait longer for potential async updates
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
-    if (orderChanged) {
+    const finalOrder = getColumnOrderFromSection(mainSection);
+
+    // More detailed validation - check if the columns actually moved
+    const sourceInitialIndex = initialOrder.indexOf(sourceColumnText);
+    const targetInitialIndex = initialOrder.indexOf(targetColumnText);
+    const sourceFinalIndex = finalOrder.indexOf(sourceColumnText);
+    const targetFinalIndex = finalOrder.indexOf(targetColumnText);
+
+    // Consider the test successful if:
+    // 1. The overall order changed, OR
+    // 2. Either the source or target column moved position
+    const orderChanged = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
+    const sourceColumnMoved = sourceInitialIndex !== sourceFinalIndex;
+    const targetColumnMoved = targetInitialIndex !== targetFinalIndex;
+    const anyColumnMoved = sourceColumnMoved || targetColumnMoved;
+
+    const testPassed = orderChanged || anyColumnMoved;
+
+    if (testPassed) {
       return true;
+    } else {
+      // Try to manually check if elements moved in DOM
+      return false;
     }
   }
 
@@ -504,7 +608,7 @@ export const testColumnReorderingMouseEvents = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Mouse move
     sourceLabel.dispatchEvent(
@@ -517,7 +621,7 @@ export const testColumnReorderingMouseEvents = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Mouse up on target
     targetLabel.dispatchEvent(
@@ -530,7 +634,7 @@ export const testColumnReorderingMouseEvents = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     const finalOrder = getColumnOrderFromSection(mainSection);
     const success = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
@@ -585,7 +689,7 @@ export const testColumnReorderingDragEvents = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Drag over
     squareFootageCell.dispatchEvent(
@@ -598,7 +702,7 @@ export const testColumnReorderingDragEvents = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Drop
     squareFootageCell.dispatchEvent(
@@ -678,7 +782,7 @@ export const testColumnReorderingPointerEvents = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Pointer move
     sourceLabel.dispatchEvent(
@@ -774,7 +878,7 @@ export const testColumnReorderingCombined = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Mouse move
     document.dispatchEvent(
@@ -787,7 +891,7 @@ export const testColumnReorderingCombined = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Drag over
     squareFootageCell.dispatchEvent(
@@ -800,7 +904,7 @@ export const testColumnReorderingCombined = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Drop
     squareFootageCell.dispatchEvent(
@@ -813,7 +917,7 @@ export const testColumnReorderingCombined = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Mouse up
     targetLabel.dispatchEvent(
@@ -826,7 +930,7 @@ export const testColumnReorderingCombined = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Drag end
     sourceLabel.dispatchEvent(
@@ -839,7 +943,7 @@ export const testColumnReorderingCombined = async (
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     const finalOrder = getColumnOrderFromSection(mainSection);
     const success = JSON.stringify(finalOrder) !== JSON.stringify(initialOrder);
@@ -869,22 +973,28 @@ export const testAllColumnReorderingScenarios = async (
 
   let passedTests = 0;
   let totalTests = tests.length;
+  const results: { name: string; passed: boolean; error?: any }[] = [];
 
   for (const testCase of tests) {
     try {
       const result = await testCase.test(canvas, canvasElement);
+      results.push({ name: testCase.name, passed: result });
+
       if (result) {
         passedTests++;
+      } else {
       }
     } catch (error) {
-      // Test failed
+      results.push({ name: testCase.name, passed: false, error });
+      console.error(`💥 ${testCase.name}: ERROR -`, error);
     }
 
     // Wait between tests to allow state to settle
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
 
-  return passedTests === totalTests;
+  const allPassed = passedTests === totalTests;
+  return allPassed;
 };
 
 /**

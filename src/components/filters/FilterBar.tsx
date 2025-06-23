@@ -32,7 +32,7 @@ const getFilterDisplayText = (filter: FilterCondition, currentHeaders: HeaderObj
 };
 
 const FilterBar = () => {
-  const { filters, handleClearFilter, headersRef } = useTableContext();
+  const { filters, handleClearFilter, headers } = useTableContext();
 
   const activeFilters = Object.values(filters);
 
@@ -46,9 +46,7 @@ const FilterBar = () => {
         <div className="st-filter-chips">
           {activeFilters.map((filter) => (
             <div key={filter.accessor} className="st-filter-chip">
-              <span className="st-filter-chip-text">
-                {getFilterDisplayText(filter, headersRef.current)}
-              </span>
+              <span className="st-filter-chip-text">{getFilterDisplayText(filter, headers)}</span>
               <button
                 className="st-filter-chip-remove"
                 onClick={() => handleClearFilter(filter.accessor)}

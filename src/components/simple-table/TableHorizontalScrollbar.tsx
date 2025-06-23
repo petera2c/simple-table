@@ -1,4 +1,4 @@
-import { RefObject, useRef, useState, useEffect, SetStateAction, Dispatch } from "react";
+import { RefObject, useRef, useState, useEffect } from "react";
 import { useTableContext } from "../../context/TableContext";
 import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-consts";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
@@ -8,14 +8,12 @@ const TableHorizontalScrollbar = ({
   mainBodyRef,
   pinnedLeftWidth,
   pinnedRightWidth,
-  setMainBodyWidth,
   tableBodyContainerRef,
 }: {
   mainBodyRef: RefObject<HTMLDivElement | null>;
   mainBodyWidth: number;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
-  setMainBodyWidth: Dispatch<SetStateAction<number>>;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }) => {
   // Context
@@ -43,21 +41,6 @@ const TableHorizontalScrollbar = ({
     (editColumns ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
 
   useEffect(() => {
-    const updateMainBodyWidth = () => {
-      if (!mainBodyRef.current) return;
-
-      const newMainBodyWidth = mainBodyRef.current?.scrollWidth;
-
-      setMainBodyWidth(newMainBodyWidth || 0);
-    };
-
-    // This is a hack to ensure the scrollbar is rendered
-    setTimeout(() => {
-      updateMainBodyWidth();
-    }, 1);
-  }, [mainBodyRef, setMainBodyWidth]);
-
-  useEffect(() => {
     const updateIsScrollable = () => {
       if (!mainBodyRef.current) return;
 
@@ -70,7 +53,7 @@ const TableHorizontalScrollbar = ({
     setTimeout(() => {
       updateIsScrollable();
     }, 1);
-  }, [mainBodyRef, mainBodyWidth, setMainBodyWidth]);
+  }, [mainBodyRef, mainBodyWidth]);
 
   if (!isScrollable) {
     // If the table is not scrollable, don't render the scrollbar

@@ -6,16 +6,8 @@ export const getCellId = ({ accessor, rowIndex }: { accessor: string; rowIndex: 
   return `cell-${accessor}-${rowIndex}`;
 };
 
-export const displayCell = ({
-  hiddenColumns,
-  header,
-  pinned,
-}: {
-  hiddenColumns: Record<string, boolean>;
-  header: HeaderObject;
-  pinned?: Pinned;
-}) => {
-  if (hiddenColumns[header.accessor]) return null;
+export const displayCell = ({ header, pinned }: { header: HeaderObject; pinned?: Pinned }) => {
+  if (header.hide) return null;
   else if ((pinned || header.pinned) && header.pinned !== pinned) return null;
   return true;
 };

@@ -11,13 +11,11 @@ export type ColumnIndices = Record<string, number>;
  * the same column index, which is needed for proper alignment in the grid.
  */
 export function calculateColumnIndices({
-  headersRef,
-  hiddenColumns,
+  headers,
   pinnedLeftColumns,
   pinnedRightColumns,
 }: {
-  headersRef: { current: HeaderObject[] };
-  hiddenColumns: Record<string, boolean>;
+  headers: HeaderObject[];
   pinnedLeftColumns: HeaderObject[];
   pinnedRightColumns: HeaderObject[];
 }): ColumnIndices {
@@ -36,7 +34,7 @@ export function calculateColumnIndices({
     // Process children recursively, if any
     if (header.children && header.children.length > 0) {
       header.children
-        .filter((child) => displayCell({ hiddenColumns, header: child }))
+        .filter((child) => displayCell({ header: child }))
         .forEach((child, index) => {
           // The first child shares the column index with its parent
           processHeader(child, index === 0);
@@ -54,8 +52,8 @@ export function calculateColumnIndices({
   });
 
   // Process main headers
-  headersRef.current
-    .filter((header) => !header.pinned && displayCell({ hiddenColumns, header }))
+  headers
+    .filter((header) => !header.pinned && displayCell({ header }))
     .forEach((header, index) => {
       // If this is the first header and there are no pinned left columns,
       // don't increment counter

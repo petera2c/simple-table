@@ -13,7 +13,6 @@ interface TableRowProps {
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
   headers: HeaderObject[];
-  hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
   index: number;
   pinned?: Pinned;
@@ -28,7 +27,6 @@ const TableRow = ({
   columnIndexStart,
   gridTemplateColumns,
   headers,
-  hiddenColumns,
   hoveredIndex,
   index,
   pinned,
@@ -61,7 +59,6 @@ const TableRow = ({
         columnIndexStart={columnIndexStart}
         columnIndices={columnIndices}
         headers={headers}
-        hiddenColumns={hiddenColumns}
         key={index}
         pinned={pinned}
         rowIndex={position}

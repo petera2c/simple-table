@@ -8,19 +8,6 @@ import { handleSort } from "../utils/sortUtils";
 const useSortableData = ({ headers, tableRows }: { headers: HeaderObject[]; tableRows: Row[] }) => {
   const [sort, setSort] = useState<SortConfig | null>(null);
 
-  // Initialize hiddenColumns with headers that have hide:true
-  const initialHiddenColumns = useMemo(() => {
-    const hidden: Record<string, boolean> = {};
-    headers.forEach((header) => {
-      if (header.hide === true) {
-        hidden[header.accessor] = true;
-      }
-    });
-    return hidden;
-  }, [headers]);
-
-  const [hiddenColumns, setHiddenColumns] = useState<Record<string, boolean>>(initialHiddenColumns);
-
   // Simple sort handler
   const updateSort = (columnIndex: number, accessor: string) => {
     const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
@@ -63,8 +50,6 @@ const useSortableData = ({ headers, tableRows }: { headers: HeaderObject[]; tabl
   }, [tableRows, sort, headers]);
 
   return {
-    hiddenColumns,
-    setHiddenColumns,
     setSort,
     sort,
     sortedRows,

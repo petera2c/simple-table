@@ -1072,6 +1072,7 @@ input {
   border: var(--st-border-width) solid var(--st-editable-cell-focus-border-color);
 }
 .st-column-editor {
+  display: flex;
   position: relative;
   user-select: none;
   background: var(--st-column-editor-background-color);
@@ -1084,6 +1085,8 @@ input {
   padding: var(--st-spacing-medium) var(--st-spacing-small);
   writing-mode: vertical-rl;
   z-index: 2;
+  cursor: pointer;
+  flex-grow: 1;
 }
 
 .st-column-editor.open,

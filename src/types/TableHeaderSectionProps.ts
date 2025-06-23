@@ -9,8 +9,7 @@ interface TableHeaderSectionProps {
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
   handleScroll?: UIEventHandler<HTMLDivElement>;
-  headersRef: RefObject<HeaderObject[]>;
-  hiddenColumns: Record<string, boolean>;
+  headers: HeaderObject[];
   maxDepth: number;
   pinned?: Pinned;
   sectionRef: RefObject<HTMLDivElement | null>;

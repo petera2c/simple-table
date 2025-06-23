@@ -13,7 +13,7 @@ export const testRowHeight = async (
   expectedRowHeight: number
 ): Promise<void> => {
   // Wait for table to render
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Get all visible rows (excluding separators)
   const rows = canvasElement.querySelectorAll(".st-row:not(.st-row-separator)");
@@ -35,7 +35,7 @@ export const testRowSeparatorPositioning = async (
   expectedRowHeight: number
 ): Promise<void> => {
   // Wait for table to render
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Get all row separators
   const separators = canvasElement.querySelectorAll(".st-row-separator");
@@ -63,7 +63,7 @@ export const testTotalBodyHeight = async (
   rowCount: number
 ): Promise<void> => {
   // Wait for table to render
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Get the main body container
   const bodyMain = canvasElement.querySelector(".st-body-main");

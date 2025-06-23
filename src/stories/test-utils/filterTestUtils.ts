@@ -484,7 +484,7 @@ export const selectFilterOperator = async (
 
   // Click to open operator dropdown
   (operatorSelector as HTMLElement).click();
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Find and click the desired operator option
   const options = document.querySelectorAll(".st-custom-select-option, .st-dropdown-item");
@@ -492,7 +492,7 @@ export const selectFilterOperator = async (
   for (const option of Array.from(options)) {
     if (option.textContent?.trim() === operator) {
       (option as HTMLElement).click();
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return;
     }
   }
@@ -764,13 +764,13 @@ export const testEnumFilter = async (
   const selectAllCheckbox = getSelectAllCheckbox(canvasElement);
   if (selectAllCheckbox && !selectAllCheckbox.checked) {
     selectAllCheckbox.click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   // Now uncheck "Select All" to deselect all options
   if (selectAllCheckbox && selectAllCheckbox.checked) {
     selectAllCheckbox.click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   // Find and check the specific enum option
@@ -780,7 +780,7 @@ export const testEnumFilter = async (
   }
 
   enumOption.click();
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 /**
@@ -822,7 +822,7 @@ export const clearEnumFilter = async (canvasElement: HTMLElement): Promise<void>
 
   if (clearButton) {
     (clearButton as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   } else {
     // Fallback: If no clear button, we need to reset the enum state properly
     // This might happen if the filter wasn't actually applied
@@ -830,7 +830,7 @@ export const clearEnumFilter = async (canvasElement: HTMLElement): Promise<void>
     const selectAllCheckbox = getSelectAllCheckbox(canvasElement);
     if (selectAllCheckbox && !selectAllCheckbox.checked) {
       selectAllCheckbox.click();
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 };
@@ -848,7 +848,7 @@ export const clearBooleanFilter = async (canvasElement: HTMLElement): Promise<vo
 
   if (clearButton) {
     (clearButton as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 };
 
@@ -874,7 +874,7 @@ export const testAllColumnFilters = async (canvasElement: HTMLElement): Promise<
       }
 
       // Small delay between scenarios
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 };
@@ -898,7 +898,7 @@ export const testBasicColumnFilters = async (canvasElement: HTMLElement): Promis
     }
 
     // Small delay between tests
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 };
 
@@ -1025,7 +1025,7 @@ export const clickFilterIcon = async (
   }
 
   // Wait for dropdown to appear
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 /**
@@ -1185,7 +1185,7 @@ export const clickApplyFilter = async (canvasElement: HTMLElement): Promise<void
   button.click();
 
   // Wait for filter to be applied (longer wait for virtualization)
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 /**
@@ -1224,7 +1224,7 @@ export const closeFilterDropdown = async (canvasElement: HTMLElement): Promise<v
   const tableBody = canvasElement.querySelector(".st-body-container");
   if (tableBody) {
     (tableBody as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   } else {
     console.warn(`⚠️ No table body found to click for closing dropdown`);
   }
@@ -1266,7 +1266,7 @@ export const clearSpecificFilter = async (
       (clearButton as HTMLElement).click();
 
       // Wait for filter to be cleared
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     } else {
     }
   }
@@ -1385,7 +1385,7 @@ export const testBooleanFilter = async (
   await clickApplyFilter(canvasElement);
 
   // Wait longer for filter to take effect with virtualization
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 /**
@@ -1419,7 +1419,7 @@ export const selectBooleanValue = async (
 
   // Click to open the dropdown
   (trigger as HTMLElement).click();
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Find and click the desired option
   // Note: The actual dropdown options might appear in a different part of the DOM
@@ -1429,7 +1429,7 @@ export const selectBooleanValue = async (
   for (const option of Array.from(options)) {
     if (option.textContent?.trim() === booleanValue) {
       (option as HTMLElement).click();
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return;
     }
   }
@@ -1476,7 +1476,7 @@ export const clickDateInput = async (canvasElement: HTMLElement): Promise<void> 
   (dateInput as HTMLElement).click();
 
   // Wait for calendar to appear
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Verify calendar is open
   const calendar = dropdown.querySelector(".st-datepicker");
@@ -1524,14 +1524,14 @@ export const selectDateFromCalendar = async (
 
     if (todayButton) {
       (todayButton as HTMLElement).click();
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     } else {
       // Final fallback: click first available day
       const days = calendar.querySelectorAll(".st-datepicker-day:not(.other-month)");
       if (days.length > 0) {
         const firstDay = days[0];
         (firstDay as HTMLElement).click();
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       } else {
         throw new Error("No clickable days found in calendar");
       }
@@ -1609,7 +1609,7 @@ export const navigateToDateInCalendar = async (
     }
 
     (navButton as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     monthsToNavigate += monthsToNavigate > 0 ? -1 : 1;
     navigationSteps++;
@@ -1626,7 +1626,7 @@ export const navigateToDateInCalendar = async (
   for (const day of Array.from(days)) {
     if (day.textContent?.trim() === targetDay.toString()) {
       (day as HTMLElement).click();
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return;
     }
   }
@@ -1649,7 +1649,7 @@ export const clickFirstAvailableDay = async (canvasElement: HTMLElement): Promis
   if (days.length > 0) {
     const firstDay = days[0];
     (firstDay as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   } else {
     throw new Error("No clickable days found in calendar");
   }
@@ -1664,7 +1664,7 @@ export const clearDateFilter = async (canvasElement: HTMLElement): Promise<void>
 
   if (clearButton) {
     (clearButton as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   } else {
   }
 };
@@ -1679,7 +1679,7 @@ export const clearAllFilters = async (canvasElement: HTMLElement): Promise<void>
   for (const icon of Array.from(filterIcons)) {
     // Click the filter icon to open dropdown
     (icon as HTMLElement).click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Check if dropdown is open
     const dropdown = canvasElement.querySelector(".st-dropdown-content");
@@ -1688,7 +1688,7 @@ export const clearAllFilters = async (canvasElement: HTMLElement): Promise<void>
       const clearButton = dropdown.querySelector(".st-filter-button-clear");
       if (clearButton) {
         (clearButton as HTMLElement).click();
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       } else {
       }
 
@@ -1696,13 +1696,13 @@ export const clearAllFilters = async (canvasElement: HTMLElement): Promise<void>
       const tableBody = canvasElement.querySelector(".st-body-container");
       if (tableBody) {
         (tableBody as HTMLElement).click();
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
   }
 
   // Method 2: If no clear buttons found, try refreshing the story
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 /**

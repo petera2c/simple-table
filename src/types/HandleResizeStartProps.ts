@@ -7,12 +7,10 @@ export type HandleResizeStartProps = {
   gridColumnEnd: number;
   gridColumnStart: number;
   header: HeaderObject;
-  headersRef: RefObject<HeaderObject[]>;
+  headers: HeaderObject[];
+  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
-  setMainBodyWidth: Dispatch<SetStateAction<number>>;
-  setPinnedLeftWidth: Dispatch<SetStateAction<number>>;
-  setPinnedRightWidth: Dispatch<SetStateAction<number>>;
   startWidth: number;
 };

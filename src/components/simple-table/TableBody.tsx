@@ -23,15 +23,8 @@ const TableBody = ({
   visibleRows,
 }: TableBodyProps) => {
   // Get stable props from context
-  const {
-    headersRef,
-    hiddenColumns,
-    mainBodyRef,
-    rowHeight,
-    rowIdAccessor,
-    scrollbarWidth,
-    tableBodyContainerRef,
-  } = useTableContext();
+  const { headers, mainBodyRef, rowHeight, rowIdAccessor, scrollbarWidth, tableBodyContainerRef } =
+    useTableContext();
 
   // Local state
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -53,12 +46,11 @@ const TableBody = ({
   // Calculate column indices for all headers (including pinned) in one place
   const columnIndices = useMemo(() => {
     return calculateColumnIndices({
-      headersRef,
-      hiddenColumns,
+      headers,
       pinnedLeftColumns,
       pinnedRightColumns,
     });
-  }, [headersRef, hiddenColumns, pinnedLeftColumns, pinnedRightColumns]);
+  }, [headers, pinnedLeftColumns, pinnedRightColumns]);
 
   // Calculate row indices for all visible rows
   const rowIndices = useMemo(() => {
@@ -88,8 +80,7 @@ const TableBody = ({
   const commonProps = {
     columnIndices,
     headerContainerRef,
-    headers: headersRef.current,
-    hiddenColumns,
+    headers,
     hoveredIndex,
     rowHeight,
     rowIndices,
@@ -104,15 +95,13 @@ const TableBody = ({
       onScroll={handleScroll}
       ref={tableBodyContainerRef}
     >
-      {pinnedLeftColumns.length > 0 && (
-        <TableSection
-          {...commonProps}
-          pinned="left"
-          templateColumns={pinnedLeftTemplateColumns}
-          totalHeight={totalHeight}
-          width={pinnedLeftWidth}
-        />
-      )}
+      <TableSection
+        {...commonProps}
+        pinned="left"
+        templateColumns={pinnedLeftTemplateColumns}
+        totalHeight={totalHeight}
+        width={pinnedLeftWidth}
+      />
       <TableSection
         {...commonProps}
         columnIndexStart={pinnedLeftColumns.length}
@@ -120,16 +109,14 @@ const TableBody = ({
         templateColumns={mainTemplateColumns}
         totalHeight={totalHeight}
       />
-      {pinnedRightColumns.length > 0 && (
-        <TableSection
-          {...commonProps}
-          columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
-          pinned="right"
-          templateColumns={pinnedRightTemplateColumns}
-          totalHeight={totalHeight}
-          width={pinnedRightWidth}
-        />
-      )}
+      <TableSection
+        {...commonProps}
+        columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
+        pinned="right"
+        templateColumns={pinnedRightTemplateColumns}
+        totalHeight={totalHeight}
+        width={pinnedRightWidth}
+      />
     </div>
   );
 };

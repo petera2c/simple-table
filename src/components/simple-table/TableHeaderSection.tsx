@@ -1,4 +1,4 @@
-import { createRef, useMemo, useReducer } from "react";
+import { createRef, useMemo } from "react";
 import { displayCell } from "../../utils/cellUtils";
 import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
@@ -20,14 +20,12 @@ const TableHeaderSection = ({
   columnIndices,
   gridTemplateColumns,
   handleScroll,
-  headersRef,
-  hiddenColumns,
+  headers,
   maxDepth,
   pinned,
   sectionRef,
   sort,
 }: TableHeaderSectionProps) => {
-  const [, forceHeadersUpdate] = useReducer((x) => x + 1, 0);
   // First, flatten all headers into grid cells
   const gridCells = useMemo(() => {
     const cells: GridCell[] = [];
@@ -35,7 +33,7 @@ const TableHeaderSection = ({
 
     // Helper function to process a header and its children
     const processHeader = (header: HeaderObject, depth: number, isFirst = false) => {
-      if (!displayCell({ hiddenColumns, header, pinned })) return 0;
+      if (!displayCell({ header, pinned })) return 0;
 
       // Only increment for non-first siblings
       if (!isFirst) {
@@ -43,8 +41,7 @@ const TableHeaderSection = ({
       }
 
       const childrenLength =
-        header.children?.filter((child) => displayCell({ hiddenColumns, header: child, pinned }))
-          .length ?? 0;
+        header.children?.filter((child) => displayCell({ header: child, pinned })).length ?? 0;
 
       // Calculate grid position
       const gridColumnStart = columnCounter;
@@ -67,7 +64,7 @@ const TableHeaderSection = ({
       if (header.children) {
         let isFirstChild = true;
         header.children.forEach((child) => {
-          if (displayCell({ hiddenColumns, header: child, pinned })) {
+          if (displayCell({ header: child, pinned })) {
             processHeader(child, depth + 1, isFirstChild);
             isFirstChild = false;
           }
@@ -78,18 +75,16 @@ const TableHeaderSection = ({
     };
 
     // Process all top-level headers
-    const headers = headersRef.current.filter((header) =>
-      displayCell({ hiddenColumns, header, pinned })
-    );
+    const topLevelHeaders = headers.filter((header) => displayCell({ header, pinned }));
 
     let isFirstHeader = true;
-    headers.forEach((header) => {
+    topLevelHeaders.forEach((header) => {
       processHeader(header, 1, isFirstHeader);
       isFirstHeader = false;
     });
 
     return cells;
-  }, [headersRef, hiddenColumns, maxDepth, pinned, columnIndices]);
+  }, [headers, maxDepth, pinned, columnIndices]);
 
   return (
     <ConditionalWrapper
@@ -110,7 +105,6 @@ const TableHeaderSection = ({
           {gridCells.map((cell) => (
             <TableHeaderCell
               colIndex={cell.colIndex}
-              forceHeadersUpdate={forceHeadersUpdate}
               gridColumnEnd={cell.gridColumnEnd}
               gridColumnStart={cell.gridColumnStart}
               gridRowEnd={cell.gridRowEnd}

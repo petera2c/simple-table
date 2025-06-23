@@ -70,7 +70,7 @@ export const DynamicRowHeightTest: Story = {
       expectedHeight += 5;
 
       // Wait for re-render
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify the DOM reflects the new height
       await testRowHeight(canvasElement, expectedHeight);
