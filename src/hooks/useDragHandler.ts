@@ -276,10 +276,11 @@ const useDragHandler = ({
     hoveredHeaderRef.current = null;
 
     // Use setHeaders to trigger a re-render and properly clear the st-dragging class
-    setHeaders((prevHeaders) => [...prevHeaders]);
-
-    // Call the column order change callback
-    onColumnOrderChange?.(headers);
+    setTimeout(() => {
+      setHeaders((prevHeaders) => [...prevHeaders]);
+      // Call the column order change callback
+      onColumnOrderChange?.(headers);
+    }, 10);
   };
 
   return {
