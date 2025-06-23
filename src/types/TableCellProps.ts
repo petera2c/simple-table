@@ -10,7 +10,7 @@ export interface TableCellProps {
   colIndex: number;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   header: HeaderObject;
-  headersRef: RefObject<HeaderObject[]>;
+  headers: HeaderObject[];
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   isSelected: boolean;
   isInitialFocusedCell: boolean;

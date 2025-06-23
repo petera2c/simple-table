@@ -20,13 +20,7 @@ const getColumnWidth = (header: HeaderObject) => {
   return width;
 };
 
-export const createGridTemplateColumns = ({
-  headers,
-  hiddenColumns,
-}: {
-  headers: HeaderObject[];
-  hiddenColumns: Record<string, boolean>;
-}) => {
+export const createGridTemplateColumns = ({ headers }: { headers: HeaderObject[] }) => {
   // We only care about the most children headers to create the grid template columns
   const flattenHeaders = ({
     headers,
@@ -36,7 +30,7 @@ export const createGridTemplateColumns = ({
     flattenedHeaders: HeaderObject[];
   }): HeaderObject[] => {
     headers.forEach((header) => {
-      if (hiddenColumns[header.accessor] === true) return;
+      if (header.hide) return;
       if (header.children) {
         flattenHeaders({ headers: header.children, flattenedHeaders });
       } else {

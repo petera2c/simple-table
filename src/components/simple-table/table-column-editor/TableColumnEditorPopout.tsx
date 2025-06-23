@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { useMemo } from "react";
 import HeaderObject from "../../../types/HeaderObject";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
 
@@ -6,18 +6,17 @@ type TableColumnEditorPopoutProps = {
   headers: HeaderObject[];
   open: boolean;
   position: "left" | "right";
-  setHiddenColumns: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
-  hiddenColumns: { [key: string]: boolean };
 };
 
-const TableColumnEditorPopout = ({
-  headers,
-  open,
-  position,
-  setHiddenColumns,
-  hiddenColumns,
-}: TableColumnEditorPopoutProps) => {
+const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorPopoutProps) => {
   const positionClass = position === "left" ? "left" : "";
+  const doesAnyHeaderHaveChildren = useMemo(
+    () =>
+      headers
+        .filter((header) => !header.hide)
+        .some((header) => header.children && header.children.length > 0),
+    [headers]
+  );
 
   return (
     <div
@@ -27,10 +26,9 @@ const TableColumnEditorPopout = ({
       <div className="st-column-editor-popout-content">
         {headers.map((header, index) => (
           <ColumnEditorCheckbox
+            doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
             key={`${header.accessor}-${index}`}
             header={header}
-            hiddenColumns={hiddenColumns}
-            setHiddenColumns={setHiddenColumns}
             allHeaders={headers}
           />
         ))}

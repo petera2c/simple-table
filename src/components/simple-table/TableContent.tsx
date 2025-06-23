@@ -27,33 +27,32 @@ const TableContent = ({
   visibleRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
-  const { columnResizing, editColumns, headersRef, hiddenColumns } = useTableContext();
+  const { columnResizing, editColumns, headers } = useTableContext();
 
   // Refs
   const headerContainerRef = useRef<HTMLDivElement>(null);
   const centerHeaderRef = useRef<HTMLDivElement>(null);
 
   // Derived state
-  const currentHeaders = headersRef.current.filter((header) => !header.pinned);
+  const currentHeaders = headers.filter((header) => !header.pinned);
 
-  const pinnedLeftColumns = headersRef.current.filter((header) => header.pinned === "left");
-  const pinnedRightColumns = headersRef.current.filter((header) => header.pinned === "right");
+  const pinnedLeftColumns = headers.filter((header) => header.pinned === "left");
+  const pinnedRightColumns = headers.filter((header) => header.pinned === "right");
 
   const pinnedLeftTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: pinnedLeftColumns, hiddenColumns });
-  }, [pinnedLeftColumns, hiddenColumns]);
+    return createGridTemplateColumns({ headers: pinnedLeftColumns });
+  }, [pinnedLeftColumns]);
   const mainTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: currentHeaders, hiddenColumns });
-  }, [currentHeaders, hiddenColumns]);
+    return createGridTemplateColumns({ headers: currentHeaders });
+  }, [currentHeaders]);
   const pinnedRightTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: pinnedRightColumns, hiddenColumns });
-  }, [pinnedRightColumns, hiddenColumns]);
+    return createGridTemplateColumns({ headers: pinnedRightColumns });
+  }, [pinnedRightColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
     centerHeaderRef,
     headerContainerRef,
-    headersRef,
-    hiddenColumns,
+    headers,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,

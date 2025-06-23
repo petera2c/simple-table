@@ -5,8 +5,7 @@ import HeaderObject from "./HeaderObject";
 type TableHeaderProps = {
   centerHeaderRef: RefObject<HTMLDivElement | null>;
   headerContainerRef: RefObject<HTMLDivElement | null>;
-  headersRef: RefObject<HeaderObject[]>;
-  hiddenColumns: Record<string, boolean>;
+  headers: HeaderObject[];
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftTemplateColumns: string;

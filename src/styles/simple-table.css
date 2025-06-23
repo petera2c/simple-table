@@ -1084,6 +1084,8 @@ input {
   padding: var(--st-spacing-medium) var(--st-spacing-small);
   writing-mode: vertical-rl;
   z-index: 2;
+  height: 100%;
+  cursor: pointer;
 }
 
 .st-column-editor.open,

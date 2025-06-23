@@ -24,7 +24,6 @@ import { FilterCondition } from "../../types/FilterTypes";
 
 interface HeaderCellProps {
   colIndex: number;
-  forceHeadersUpdate: () => void;
   gridColumnEnd: number;
   gridColumnStart: number;
   gridRowEnd: number;
@@ -38,7 +37,6 @@ const TableHeaderCell = forwardRef(
   (
     {
       colIndex,
-      forceHeadersUpdate,
       gridColumnEnd,
       gridColumnStart,
       gridRowEnd,
@@ -58,10 +56,9 @@ const TableHeaderCell = forwardRef(
       columnResizing,
       draggedHeaderRef,
       filters,
-      forceUpdate,
       handleApplyFilter,
       handleClearFilter,
-      headersRef,
+      headers,
       hoveredHeaderRef,
       onColumnOrderChange,
       onSort,
@@ -69,10 +66,8 @@ const TableHeaderCell = forwardRef(
       rowHeight,
       selectColumns,
       selectableColumns,
+      setHeaders,
       setInitialFocusedCell,
-      setMainBodyWidth,
-      setPinnedLeftWidth,
-      setPinnedRightWidth,
       setSelectedCells,
       setSelectedColumns,
       sortDownIcon,
@@ -94,7 +89,7 @@ const TableHeaderCell = forwardRef(
     // Hooks
     const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
       draggedHeaderRef,
-      headersRef,
+      headers,
       hoveredHeaderRef,
       onColumnOrderChange,
       onTableHeaderDragEnd,
@@ -109,7 +104,6 @@ const TableHeaderCell = forwardRef(
     const handleDragEndWrapper = (event: DragEvent) => {
       event.preventDefault();
       handleDragEnd();
-      forceHeadersUpdate();
     };
 
     // Filter handlers
@@ -221,14 +215,11 @@ const TableHeaderCell = forwardRef(
             callback: handleResizeStart,
             callbackProps: {
               event: event.nativeEvent,
-              forceUpdate,
               gridColumnEnd,
               gridColumnStart,
               header,
-              headersRef,
-              setMainBodyWidth,
-              setPinnedLeftWidth,
-              setPinnedRightWidth,
+              headers,
+              setHeaders,
               startWidth:
                 typeof ref === "object" && ref !== null && "current" in ref
                   ? ref.current?.offsetWidth
@@ -242,14 +233,11 @@ const TableHeaderCell = forwardRef(
             callback: handleResizeStart,
             callbackProps: {
               event,
-              forceUpdate,
               gridColumnEnd,
               gridColumnStart,
               header,
-              headersRef,
-              setMainBodyWidth,
-              setPinnedLeftWidth,
-              setPinnedRightWidth,
+              headers,
+              setHeaders,
               startWidth:
                 typeof ref === "object" && ref !== null && "current" in ref
                   ? ref.current?.offsetWidth

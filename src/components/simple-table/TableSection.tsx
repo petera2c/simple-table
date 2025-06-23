@@ -1,4 +1,4 @@
-import { Fragment, RefObject } from "react";
+import { Fragment, RefObject, useMemo } from "react";
 import TableRow from "./TableRow";
 import TableRowType from "../../types/TableRow";
 import TableRowSeparator from "./TableRowSeparator";
@@ -8,12 +8,12 @@ import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import ConditionalWrapper from "../ConditionalWrapper";
+import { canDisplaySection } from "../../utils/generalUtils";
 
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
-  hiddenColumns: Record<string, boolean>;
   hoveredIndex: number | null;
   pinned?: Pinned;
   ref?: RefObject<HTMLDivElement | null>;
@@ -30,7 +30,6 @@ const TableSection = ({
   columnIndexStart,
   columnIndices,
   headers,
-  hiddenColumns,
   hoveredIndex,
   pinned,
   ref,
@@ -43,6 +42,9 @@ const TableSection = ({
   width,
 }: TableSectionProps) => {
   const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
+
+  const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
+  if (!canDisplay) return null;
 
   return (
     <ConditionalWrapper
@@ -77,7 +79,6 @@ const TableSection = ({
                 columnIndices={columnIndices}
                 gridTemplateColumns={templateColumns}
                 headers={headers}
-                hiddenColumns={hiddenColumns}
                 hoveredIndex={hoveredIndex}
                 index={index}
                 pinned={pinned}

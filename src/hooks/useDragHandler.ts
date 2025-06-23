@@ -75,12 +75,12 @@ function swapHeaders(
 
 const useDragHandler = ({
   draggedHeaderRef,
-  headersRef,
+  headers,
   hoveredHeaderRef,
   onColumnOrderChange,
   onTableHeaderDragEnd,
 }: DragHandlerProps) => {
-  const prevHeaders = usePrevious<HeaderObject[] | null>(headersRef.current);
+  const prevHeaders = usePrevious<HeaderObject[] | null>(headers);
 
   const handleDragStart = (header: HeaderObject) => {
     draggedHeaderRef.current = header;
@@ -98,7 +98,7 @@ const useDragHandler = ({
     event.preventDefault();
 
     // If the headers are not set, don't allow the drag
-    if (!headersRef.current) return;
+    if (!headers) return;
 
     // Get the animations on the header
     const animations = event.currentTarget.getAnimations();
@@ -115,7 +115,7 @@ const useDragHandler = ({
 
     // Function to get the index path to a header
 
-    const currentHeaders = headersRef.current;
+    const currentHeaders = headers;
 
     // Get the index paths of both headers
     const draggedHeaderIndexPath = getHeaderIndexPath(
@@ -159,7 +159,7 @@ const useDragHandler = ({
       draggedHeaderIndexPath.length === 0 ||
       targetHoveredIndexPath.length === 0 ||
       // If the new headers are the same as the previous headers, don't allow the drag
-      JSON.stringify(newHeaders) === JSON.stringify(headersRef.current) ||
+      JSON.stringify(newHeaders) === JSON.stringify(headers) ||
       emergencyBreak
     )
       return;
@@ -190,7 +190,7 @@ const useDragHandler = ({
   const handleDragEnd = () => {
     draggedHeaderRef.current = null;
     hoveredHeaderRef.current = null;
-    onColumnOrderChange?.(headersRef.current);
+    onColumnOrderChange?.(headers);
   };
 
   return {

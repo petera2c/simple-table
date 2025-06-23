@@ -6,8 +6,7 @@ interface SharedTableProps {
   centerHeaderRef: RefObject<HTMLDivElement | null>;
   draggedHeaderRef: RefObject<HeaderObject | null>;
   headerContainerRef: RefObject<HTMLDivElement | null>;
-  headersRef: RefObject<HeaderObject[]>;
-  hiddenColumns: Record<string, boolean>;
+  headers: HeaderObject[];
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   mainTemplateColumns: string;

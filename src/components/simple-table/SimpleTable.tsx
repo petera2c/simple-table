@@ -40,6 +40,7 @@ import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import { FilterCondition } from "../../types/FilterTypes";
+import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -134,14 +135,8 @@ const SimpleTableComp = ({
 
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
-  const headersRef = useRef(defaultHeaders);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
 
-  // Update headers when defaultHeaders prop changes
-  useEffect(() => {
-    headersRef.current = defaultHeaders;
-    forceUpdate(); // Trigger re-render to update all dependent components
-  }, [defaultHeaders]);
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
@@ -149,9 +144,13 @@ const SimpleTableComp = ({
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
-  const [mainBodyWidth, setMainBodyWidth] = useState(0);
-  const [pinnedLeftWidth, setPinnedLeftWidth] = useState(0);
-  const [pinnedRightWidth, setPinnedRightWidth] = useState(0);
+  const [headers, setHeaders] = useState(defaultHeaders);
+
+  // Update headers when defaultHeaders prop changes
+  useEffect(() => {
+    setHeaders(defaultHeaders);
+  }, [defaultHeaders]);
+
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -181,10 +180,18 @@ const SimpleTableComp = ({
   );
 
   // Use custom hook for sorting (now operates on filtered rows)
-  const { sort, sortedRows, hiddenColumns, setHiddenColumns, updateSort } = useSortableData({
-    headers: headersRef.current,
+  const { sort, sortedRows, updateSort } = useSortableData({
+    headers,
     tableRows: filteredRows,
   });
+
+  // Calculate the width of the sections
+  const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
+    const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
+      headers,
+    });
+    return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
+  }, [headers]);
 
   useEffect(() => {
     onGridReady?.();
@@ -256,7 +263,7 @@ const SimpleTableComp = ({
     setSelectedColumns,
   } = useSelection({
     selectableCells,
-    headers: headersRef.current,
+    headers,
     tableRows,
     rowIdAccessor,
     onCellEdit,
@@ -272,8 +279,7 @@ const SimpleTableComp = ({
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
-    headersRef.current = newHeaders;
-    forceUpdate();
+    setHeaders(newHeaders);
   }, []);
 
   // Handle outside click
@@ -347,8 +353,7 @@ const SimpleTableComp = ({
         handleClearAllFilters,
         handleMouseDown,
         handleMouseOver,
-        headersRef,
-        hiddenColumns,
+        headers,
         hoveredHeaderRef,
         isCopyFlashing,
         isInitialFocusedCell,
@@ -370,10 +375,8 @@ const SimpleTableComp = ({
         selectColumns,
         selectableColumns,
         setExpandedRows,
+        setHeaders,
         setInitialFocusedCell,
-        setMainBodyWidth,
-        setPinnedLeftWidth,
-        setPinnedRightWidth,
         setSelectedCells,
         setSelectedColumns,
         shouldPaginate,
@@ -410,10 +413,8 @@ const SimpleTableComp = ({
                 columnEditorText={columnEditorText}
                 editColumns={editColumns}
                 editColumnsInitOpen={editColumnsInitOpen}
-                headers={headersRef.current}
-                hiddenColumns={hiddenColumns}
+                headers={headers}
                 position={columnEditorPosition}
-                setHiddenColumns={setHiddenColumns}
               />
             </div>
             <TableHorizontalScrollbar
@@ -421,7 +422,6 @@ const SimpleTableComp = ({
               mainBodyWidth={mainBodyWidth}
               pinnedLeftWidth={pinnedLeftWidth}
               pinnedRightWidth={pinnedRightWidth}
-              setMainBodyWidth={setMainBodyWidth}
               tableBodyContainerRef={tableBodyContainerRef}
             />
             <TableFooter

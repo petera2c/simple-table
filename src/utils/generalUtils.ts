@@ -1,3 +1,6 @@
+import HeaderObject from "../types/HeaderObject";
+import { Pinned } from "../types/Pinned";
+
 // Deep clone function that preserves functions
 export const deepClone = <T>(obj: T): T => {
   if (obj === null || typeof obj !== "object") {
@@ -15,4 +18,8 @@ export const deepClone = <T>(obj: T): T => {
     }
   }
   return clonedObj;
+};
+
+export const canDisplaySection = (headers: HeaderObject[], pinned?: Pinned) => {
+  return headers.filter((header) => header.pinned === pinned).some((header) => !header.hide);
 };
