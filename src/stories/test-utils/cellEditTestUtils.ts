@@ -88,7 +88,7 @@ export const doubleClickCell = async (
   cell.dispatchEvent(doubleClickEvent);
 
   // Wait for edit mode to activate
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
 /**
@@ -107,7 +107,7 @@ export const testEnumCellEdit = async (
 
   // Double-click to enter edit mode
   await doubleClickCell(canvasElement, rowIndex, columnAccessor);
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Find the dropdown
   const dropdown = canvasElement.querySelector(".st-dropdown-content");
@@ -129,7 +129,7 @@ export const testEnumCellEdit = async (
 
   // Click the target option
   (targetOption as HTMLElement).click();
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Verify the cell value changed
   const updatedValue = cell?.querySelector(".st-cell-content")?.textContent?.trim() || "";
@@ -152,7 +152,7 @@ export const testBooleanCellEdit = async (
 
   // Double-click to enter edit mode
   await doubleClickCell(canvasElement, rowIndex, columnAccessor);
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Find the dropdown
   const dropdown =
@@ -188,7 +188,7 @@ export const testBooleanCellEdit = async (
 
   // Click the target option
   (targetOption as HTMLElement).click();
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Verify the cell value changed to expected display format
   const updatedDisplayValue = cell?.querySelector(".st-cell-content")?.textContent?.trim() || "";
@@ -217,7 +217,7 @@ export const testInputCellEdit = async (
   await doubleClickCell(canvasElement, rowIndex, columnAccessor);
 
   // Wait for input to appear
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Find the input field - try multiple selectors for different input types
   let input = canvasElement.querySelector(".editable-cell-input") as HTMLInputElement;
@@ -320,7 +320,7 @@ export const testInputCellEdit = async (
   input.blur();
 
   // Wait for React to update the cell display
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Get the updated cell value
   const updatedCell = canvasElement.querySelector(
@@ -376,7 +376,7 @@ export const testDateCellEdit = async (
   await doubleClickCell(canvasElement, rowIndex, columnAccessor);
 
   // Wait for date picker to appear
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Find the date picker
   const datePicker = canvasElement.querySelector(".st-datepicker");
@@ -441,7 +441,7 @@ export const testDateCellEdit = async (
   (selectedOption as HTMLElement).click();
 
   // Wait for edit to complete and dropdown to close
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Verify the cell value changed
   const updatedValue = cell?.querySelector(".st-cell-content")?.textContent?.trim() || "";
@@ -594,7 +594,7 @@ export const testAllCellEdits = async (canvasElement: HTMLElement): Promise<void
     }
 
     // Small delay between tests
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 };
 
@@ -657,5 +657,5 @@ export const exitEditMode = async (canvasElement: HTMLElement): Promise<void> =>
   target.dispatchEvent(escapeEvent);
 
   // Wait for edit mode to exit
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 };
