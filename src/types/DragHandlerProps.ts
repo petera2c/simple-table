@@ -1,4 +1,4 @@
-import { RefObject } from "react";
+import { RefObject, Dispatch, SetStateAction } from "react";
 import HeaderObject from "./HeaderObject";
 
 type useDragHandlerProps = {
