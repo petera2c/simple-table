@@ -1076,7 +1076,6 @@ input {
   user-select: none;
   background: var(--st-column-editor-background-color);
   border-left: var(--st-border-width) solid var(--st-border-color);
-  cursor: pointer;
   color: var(--st-slate-500);
   flex-shrink: 0;
 }

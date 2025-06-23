@@ -1,50 +1,117 @@
 import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
+// Export styling constants for testing
+export const CELL_RENDERER_STYLES = {
+  header: {
+    id: {
+      backgroundColor: "rgb(139, 0, 0)", // darkred
+      color: "rgb(255, 255, 255)", // white
+      padding: "4px 8px",
+      borderRadius: "4px",
+      fontWeight: 700, // bold
+    },
+    name: {
+      backgroundColor: "rgb(0, 0, 139)", // darkblue
+      color: "rgb(255, 255, 255)", // white
+      padding: "4px 8px",
+      borderRadius: "4px",
+      fontStyle: "italic",
+    },
+    age: {
+      backgroundColor: "rgb(0, 100, 0)", // darkgreen
+      color: "rgb(255, 255, 255)", // white
+      padding: "4px 8px",
+      borderRadius: "4px",
+      textTransform: "uppercase" as const,
+    },
+    role: {
+      backgroundColor: "rgb(255, 165, 0)", // orange
+      color: "rgb(255, 255, 255)", // white
+      padding: "4px 8px",
+      borderRadius: "4px",
+      border: "2px solid rgb(255, 140, 0)", // darkorange
+    },
+  },
+  cell: {
+    id: {
+      backgroundColor: "rgb(255, 0, 0)", // red
+      width: "100%",
+      overflow: "hidden",
+    },
+    name: {
+      backgroundColor: "rgb(0, 0, 255)", // blue
+      width: "100%",
+      overflow: "hidden",
+    },
+    age: {
+      backgroundColor: "rgb(0, 128, 0)", // green
+      width: "100%",
+    },
+    role: {
+      backgroundColor: "rgb(255, 255, 0)", // yellow
+    },
+  },
+  emojis: {
+    id: "🆔",
+    name: "👤",
+    age: "🎂",
+    role: "💼",
+  },
+  text: {
+    id: "ID",
+    name: "Name",
+    age: "Age",
+    role: "Role",
+  },
+};
+
+export const CELL_RENDERER_DATA = [
+  {
+    id: 1,
+    name: "John Doe",
+    age: 28,
+    role: "Developer",
+    department: "Engineering",
+    startDate: "2020-01-01",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    age: 32,
+    role: "Designer",
+    department: "Design",
+    startDate: "2020-01-01",
+  },
+  {
+    id: 3,
+    name: "Bob Johnson",
+    age: 45,
+    role: "Manager",
+    department: "Management",
+    startDate: "2020-01-01",
+  },
+  {
+    id: 4,
+    name: "Alice Williams",
+    age: 24,
+    role: "Intern",
+    department: "Internship",
+    startDate: "2020-01-01",
+  },
+  {
+    id: 5,
+    name: "Charlie Brown",
+    age: 37,
+    role: "DevOps",
+    department: "Engineering",
+    startDate: "2020-01-01",
+  },
+];
+
 const CellRendererExample = () => {
-  // Sample data for a quick start demo - using the new simplified structure
-  const rows = [
-    {
-      id: 1,
-      name: "John Doe",
-      age: 28,
-      role: "Developer",
-      department: "Engineering",
-      startDate: "2020-01-01",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      age: 32,
-      role: "Designer",
-      department: "Design",
-      startDate: "2020-01-01",
-    },
-    {
-      id: 3,
-      name: "Bob Johnson",
-      age: 45,
-      role: "Manager",
-      department: "Management",
-      startDate: "2020-01-01",
-    },
-    {
-      id: 4,
-      name: "Alice Williams",
-      age: 24,
-      role: "Intern",
-      department: "Internship",
-      startDate: "2020-01-01",
-    },
-    {
-      id: 5,
-      name: "Charlie Brown",
-      age: 37,
-      role: "DevOps",
-      department: "Engineering",
-      startDate: "2020-01-01",
-    },
-  ];
+  // Use the exported data
+  const rows = CELL_RENDERER_DATA;
 
   // Define headers
   const headers: HeaderObject[] = [
@@ -55,21 +122,11 @@ const CellRendererExample = () => {
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
         const value = row[accessor] as string | number;
-        return (
-          <div style={{ backgroundColor: "red", width: "100%", overflow: "hidden" }}>{value}</div>
-        );
+        return <div style={CELL_RENDERER_STYLES.cell.id}>{value}</div>;
       },
       headerRenderer: ({ header }) => (
-        <div
-          style={{
-            backgroundColor: "darkred",
-            color: "white",
-            padding: "4px 8px",
-            borderRadius: "4px",
-            fontWeight: "bold",
-          }}
-        >
-          🆔 {header.label}
+        <div style={CELL_RENDERER_STYLES.header.id}>
+          {CELL_RENDERER_STYLES.emojis.id} {CELL_RENDERER_STYLES.text.id}
         </div>
       ),
     },
@@ -80,21 +137,11 @@ const CellRendererExample = () => {
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
         const value = row[accessor] as string | number;
-        return (
-          <div style={{ backgroundColor: "blue", width: "100%", overflow: "hidden" }}>{value}</div>
-        );
+        return <div style={CELL_RENDERER_STYLES.cell.name}>{value}</div>;
       },
       headerRenderer: ({ header }) => (
-        <div
-          style={{
-            backgroundColor: "darkblue",
-            color: "white",
-            padding: "4px 8px",
-            borderRadius: "4px",
-            fontStyle: "italic",
-          }}
-        >
-          👤 {header.label}
+        <div style={CELL_RENDERER_STYLES.header.name}>
+          {CELL_RENDERER_STYLES.emojis.name} {CELL_RENDERER_STYLES.text.name}
         </div>
       ),
     },
@@ -105,19 +152,11 @@ const CellRendererExample = () => {
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
         const value = row[accessor] as string | number;
-        return <div style={{ backgroundColor: "green", width: "100%" }}>{value}</div>;
+        return <div style={CELL_RENDERER_STYLES.cell.age}>{value}</div>;
       },
       headerRenderer: ({ header }) => (
-        <div
-          style={{
-            backgroundColor: "darkgreen",
-            color: "white",
-            padding: "4px 8px",
-            borderRadius: "4px",
-            textTransform: "uppercase",
-          }}
-        >
-          🎂 {header.label}
+        <div style={CELL_RENDERER_STYLES.header.age}>
+          {CELL_RENDERER_STYLES.emojis.age} {CELL_RENDERER_STYLES.text.age}
         </div>
       ),
     },
@@ -128,19 +167,11 @@ const CellRendererExample = () => {
       isSortable: true,
       cellRenderer: ({ accessor, row }) => {
         const value = row[accessor] as string | number;
-        return <div style={{ backgroundColor: "yellow" }}>{value}</div>;
+        return <div style={CELL_RENDERER_STYLES.cell.role}>{value}</div>;
       },
       headerRenderer: ({ header }) => (
-        <div
-          style={{
-            backgroundColor: "orange",
-            color: "white",
-            padding: "4px 8px",
-            borderRadius: "4px",
-            border: "2px solid darkorange",
-          }}
-        >
-          💼 {header.label}
+        <div style={CELL_RENDERER_STYLES.header.role}>
+          {CELL_RENDERER_STYLES.emojis.role} {CELL_RENDERER_STYLES.text.role}
         </div>
       ),
     },

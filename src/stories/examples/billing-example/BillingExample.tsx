@@ -7,7 +7,7 @@ import { useState } from "react";
 const THEME_OPTIONS: Theme[] = ["sky", "funky", "neutral", "light", "dark"];
 
 const BillingExample = () => {
-  const [expandAll, setExpandAll] = useState(false);
+  const [expandAll, setExpandAll] = useState(true);
   const [theme, setTheme] = useState<Theme>("light");
   return (
     <div style={{ display: "flex", flexDirection: "column", padding: "2rem", gap: "1rem" }}>

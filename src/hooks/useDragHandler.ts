@@ -138,7 +138,6 @@ const useDragHandler = ({
         targetHoveredIndexPath = hoveredHeaderIndexPath.slice(0, -depthDifference);
       }
     }
-    console.log("targetHoveredIndexPath", targetHoveredIndexPath);
 
     // Create a copy of the headers
     const { newHeaders, emergencyBreak } = swapHeaders(

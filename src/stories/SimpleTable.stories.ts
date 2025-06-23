@@ -31,6 +31,14 @@ type Story = StoryObj<typeof meta>;
 
 export const Alignment: Story = {
   render: AlignmentExample,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates column alignment functionality with left, right, and center-aligned columns. This story is used as a base for comprehensive alignment testing.",
+      },
+    },
+  },
 };
 export const BasicExample: Story = {
   render: BasicExampleComponent,
@@ -84,11 +92,5 @@ export const SelectableCells: Story = {
 export const Theming: Story = {
   render: ThemingExample,
 };
-// export const EditColumns: Story = {
-//   render: EditColumnsExample,
-// };
-// export const ColumnResizing: Story = {
-//   render: ColumnResizingExample,
-// };
 
 export default meta;
