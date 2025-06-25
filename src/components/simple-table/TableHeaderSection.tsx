@@ -25,6 +25,7 @@ const TableHeaderSection = ({
   pinned,
   sectionRef,
   sort,
+  width,
 }: TableHeaderSectionProps) => {
   // First, flatten all headers into grid cells
   const gridCells = useMemo(() => {
@@ -86,6 +87,7 @@ const TableHeaderSection = ({
     return cells;
   }, [headers, maxDepth, pinned, columnIndices]);
 
+  console.log(width);
   return (
     <ConditionalWrapper
       condition={!pinned}
@@ -99,6 +101,7 @@ const TableHeaderSection = ({
           gridTemplateColumns,
           display: "grid",
           position: "relative",
+          width,
         }}
       >
         <>

@@ -21,6 +21,8 @@ const TableHeader = ({
   pinnedRightColumns,
   pinnedRightTemplateColumns,
   sort,
+  pinnedLeftWidth,
+  pinnedRightWidth,
 }: TableHeaderProps) => {
   const { pinnedLeftRef, pinnedRightRef } = useTableContext();
 
@@ -56,6 +58,7 @@ const TableHeader = ({
           pinned="left"
           sectionRef={pinnedLeftRef}
           sort={sort}
+          width={pinnedLeftWidth}
         />
       )}
 
@@ -79,6 +82,7 @@ const TableHeader = ({
           pinned="right"
           sectionRef={pinnedRightRef}
           sort={sort}
+          width={pinnedRightWidth}
         />
       )}
     </div>

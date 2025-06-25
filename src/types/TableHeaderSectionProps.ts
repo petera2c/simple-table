@@ -14,6 +14,7 @@ interface TableHeaderSectionProps {
   pinned?: Pinned;
   sectionRef: RefObject<HTMLDivElement | null>;
   sort: SortConfig | null;
+  width?: number;
 }
 
 export default TableHeaderSectionProps;

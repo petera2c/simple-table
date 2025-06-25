@@ -630,9 +630,13 @@ input {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-pinned-left {
+  flex-shrink: 0;
+
   border-right: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-pinned-right {
+  flex-shrink: 0;
+
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-main {

@@ -59,6 +59,8 @@ const TableContent = ({
     pinnedRightColumns,
     pinnedRightTemplateColumns,
     sort,
+    pinnedLeftWidth,
+    pinnedRightWidth,
   };
 
   const tableBodyProps: TableBodyProps = {

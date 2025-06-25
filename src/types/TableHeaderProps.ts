@@ -12,6 +12,8 @@ type TableHeaderProps = {
   pinnedRightColumns: HeaderObject[];
   pinnedRightTemplateColumns: string;
   sort: SortConfig | null;
+  pinnedLeftWidth: number;
+  pinnedRightWidth: number;
 };
 
 export default TableHeaderProps;
