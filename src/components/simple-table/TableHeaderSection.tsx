@@ -87,7 +87,6 @@ const TableHeaderSection = ({
     return cells;
   }, [headers, maxDepth, pinned, columnIndices]);
 
-  console.log(width);
   return (
     <ConditionalWrapper
       condition={!pinned}

@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { HeaderObject, SimpleTable, TableRefType, Theme } from "../..";
 
 // Define headers
-const headers: HeaderObject[] = [
+export const headers: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {

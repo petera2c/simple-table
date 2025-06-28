@@ -237,8 +237,6 @@ export const testColumnSorting = async (
     console.warn(
       `⚠️ Warning: Data doesn't appear to be sorted descending and didn't change from ascending`
     );
-    console.log(`Ascending: ${JSON.stringify(ascendingData)}`);
-    console.log(`Descending: ${JSON.stringify(descendingData)}`);
   }
 
   // At minimum, descending should have data
