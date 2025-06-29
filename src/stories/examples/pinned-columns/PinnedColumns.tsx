@@ -1,24 +1,25 @@
 import SimpleTable from "../../../components/simple-table/SimpleTable";
 import { generateRetailSalesData, RETAIL_SALES_HEADERS } from "../../data/retail-data";
+import { UniversalTableProps } from "../StoryWrapper";
 
 const EXAMPLE_DATA = generateRetailSalesData();
 const HEADERS = RETAIL_SALES_HEADERS;
 
-const PinnedColumnsExample = () => {
+const PinnedColumnsExample = (props: UniversalTableProps) => {
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        defaultHeaders={HEADERS} // Set the headers
-        columnReordering // Enable draggable columns
-        rows={EXAMPLE_DATA} // Set rows data
-        rowGrouping={["stores"]}
-        rowIdAccessor="id"
-        height="calc(100dvh - 112px)" // If not using pagination use a fixed height
-        selectableCells
-        selectableColumns
-        editColumns
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={HEADERS}
+      rows={EXAMPLE_DATA}
+      rowGrouping={["stores"]}
+      rowIdAccessor="id"
+      // Default settings for this example
+      columnReordering={props.columnReordering ?? true}
+      selectableCells={props.selectableCells ?? true}
+      selectableColumns={props.selectableColumns ?? true}
+      editColumns={props.editColumns ?? true}
+      height={props.height ?? "calc(100dvh - 112px)"}
+    />
   );
 };
 

@@ -1,4 +1,5 @@
 import { HeaderObject, SimpleTable } from "../..";
+import { UniversalTableProps } from "./StoryWrapper";
 
 // Define headers with conditional cell styling
 const headers: HeaderObject[] = [
@@ -44,17 +45,17 @@ const data = [
   { id: 8, product: "Speaker", sales: 680, growth: -8, status: "Out of Stock", risk: "High" },
 ];
 
-const CellHighlightingDemo = () => {
+const CellHighlightingDemo = (props: UniversalTableProps) => {
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        defaultHeaders={headers}
-        rowIdAccessor="id"
-        rows={data}
-        selectableCells
-        selectableColumns
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={headers}
+      rowIdAccessor="id"
+      rows={data}
+      // Default to selectable for this example
+      selectableCells={props.selectableCells ?? true}
+      selectableColumns={props.selectableColumns ?? true}
+    />
   );
 };
 

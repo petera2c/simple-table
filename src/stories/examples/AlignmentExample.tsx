@@ -1,26 +1,21 @@
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { generateRetailSalesData } from "../data/retail-data";
+import { UniversalTableProps } from "./StoryWrapper";
 
 const EXAMPLE_DATA = generateRetailSalesData();
 const HEADERS = RETAIL_SALES_HEADERS;
 
-const AlignmentExample = () => {
+const AlignmentExample = (props: UniversalTableProps) => {
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnResizing // Enable column resizing
-        defaultHeaders={HEADERS} // Set the headers
-        columnReordering // Enable draggable columns
-        rows={EXAMPLE_DATA} // Set rows data
-        rowGrouping={["stores"]}
-        rowIdAccessor="id"
-        height="calc(100dvh - 112px)" // If not using pagination use a fixed height
-        selectableCells
-        selectableColumns
-        editColumns
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={HEADERS}
+      rows={EXAMPLE_DATA}
+      rowGrouping={["stores"]}
+      rowIdAccessor="id"
+      height={props.height ?? "calc(100dvh - 112px)"}
+    />
   );
 };
 

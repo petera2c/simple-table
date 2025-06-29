@@ -5,11 +5,10 @@ import data from "./finance-data.json";
 import TableRefType from "../../../types/TableRefType";
 import SimpleTable from "../../../components/simple-table/SimpleTable";
 import Theme from "../../../types/Theme";
-const THEME_OPTIONS: Theme[] = ["sky", "funky", "neutral", "light", "dark"];
+import { UniversalTableProps } from "../StoryWrapper";
 
-export const FinancialExample = () => {
+export const FinancialExample = (props: UniversalTableProps) => {
   const tableRef = useRef<TableRefType | null>(null);
-  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,40 +32,17 @@ export const FinancialExample = () => {
   }, []);
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <div style={{ display: "flex", overflow: "auto" }}>
-        {THEME_OPTIONS.map((theme) => {
-          return (
-            <button
-              key={theme}
-              onClick={() => setTheme(theme)}
-              style={{
-                border: "none",
-                borderRadius: "4px",
-                padding: "0.25rem 0.5rem",
-                margin: "0.5rem",
-                cursor: "pointer",
-                transition: "background-color 0.3s ease",
-                whiteSpace: "nowrap",
-                fontFamily: "Nunito",
-              }}
-            >
-              {theme}
-            </button>
-          );
-        })}
-      </div>
-      <SimpleTable
-        columnResizing
-        columnReordering
-        defaultHeaders={HEADERS}
-        rows={data}
-        rowIdAccessor="id"
-        height="90dvh"
-        theme={theme}
-        selectableCells
-        tableRef={tableRef}
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={HEADERS}
+      rows={data}
+      rowIdAccessor="id"
+      tableRef={tableRef}
+      // Default settings for this example
+      columnResizing={props.columnResizing ?? true}
+      columnReordering={props.columnReordering ?? true}
+      selectableCells={props.selectableCells ?? true}
+      height={props.height ?? "90dvh"}
+    />
   );
 };

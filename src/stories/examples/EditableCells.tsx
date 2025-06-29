@@ -5,6 +5,7 @@ import Row from "../../types/Row";
 import { RowId } from "../../types/RowId";
 import CellValue from "../../types/CellValue";
 import HeaderObject from "../../types/HeaderObject";
+import { UniversalTableProps } from "./StoryWrapper";
 
 // Define headers with editable property and various types
 const HEADERS: HeaderObject[] = [
@@ -141,7 +142,7 @@ const ROWS = [
   },
 ];
 
-const EditableCellsExample = () => {
+const EditableCellsExample = (props: UniversalTableProps) => {
   const [rows, setRows] = useState<Row[]>(ROWS);
 
   const updateRowData = (
@@ -169,18 +170,18 @@ const EditableCellsExample = () => {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnResizing // Enable column resizing
-        defaultHeaders={HEADERS} // Set the headers
-        columnReordering // Enable draggable columns
-        onCellEdit={updateCell} // Handle cell changes
-        rows={rows} // Set rows data
-        rowIdAccessor="id"
-        selectableCells // Enable selectable cells
-        height="80vh"
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={HEADERS}
+      onCellEdit={updateCell}
+      rows={rows}
+      rowIdAccessor="id"
+      // Default settings for this example
+      columnResizing={props.columnResizing ?? true}
+      columnReordering={props.columnReordering ?? true}
+      selectableCells={props.selectableCells ?? true}
+      height={props.height ?? "80vh"}
+    />
   );
 };
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
+import { UniversalTableProps } from "./StoryWrapper";
 
 /**
  * # Infinite Scroll Example
@@ -22,7 +23,7 @@ import CellChangeProps from "../../types/CellChangeProps";
 const EXAMPLE_DATA = generateSaaSData();
 const HEADERS = SAAS_HEADERS;
 
-const InfiniteScrollExample = () => {
+const InfiniteScrollExample = (props: UniversalTableProps) => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
 
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
@@ -38,19 +39,19 @@ const InfiniteScrollExample = () => {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnResizing // Enable column resizing
-        defaultHeaders={HEADERS} // Set the headers
-        columnReordering // Enable draggable columns
-        onCellEdit={updateCell} // Handle cell changes
-        rows={rows} // Set rows data
-        rowIdAccessor="id"
-        selectableCells // Enable selectable cells
-        height="calc(100dvh - 112px)" // Set a fixed height for scrolling
-        shouldPaginate={false} // Disable pagination to enable infinite scrolling
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={HEADERS}
+      onCellEdit={updateCell}
+      rows={rows}
+      rowIdAccessor="id"
+      // Default settings for this example
+      columnResizing={props.columnResizing ?? true}
+      columnReordering={props.columnReordering ?? true}
+      selectableCells={props.selectableCells ?? true}
+      height={props.height ?? "calc(100dvh - 112px)"}
+      shouldPaginate={props.shouldPaginate ?? false} // Disable pagination for infinite scrolling
+    />
   );
 };
 

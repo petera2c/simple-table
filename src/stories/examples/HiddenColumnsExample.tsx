@@ -2,11 +2,12 @@ import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
 import CellChangeProps from "../../types/CellChangeProps";
+import { UniversalTableProps } from "./StoryWrapper";
 
 const EXAMPLE_DATA = generateSpaceData();
 const HEADERS = SPACE_HEADERS;
 
-const FilterColumnsExample = () => {
+const FilterColumnsExample = (props: UniversalTableProps) => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
 
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
@@ -22,19 +23,15 @@ const FilterColumnsExample = () => {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnResizing // Enable column resizing
-        defaultHeaders={HEADERS} // Set the headers
-        columnReordering // Enable draggable columns
-        editColumns // Enable column management
-        onCellEdit={updateCell} // Handle cell changes
-        rows={rows} // Set rows data
-        rowIdAccessor="id"
-        height="80vh"
-        editColumnsInitOpen
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={HEADERS}
+      onCellEdit={updateCell}
+      rows={rows}
+      rowIdAccessor="id"
+      // Default to editColumnsInitOpen for this example, but allow override
+      editColumnsInitOpen={props.editColumnsInitOpen ?? true}
+    />
   );
 };
 

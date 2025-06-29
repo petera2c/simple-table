@@ -1,6 +1,6 @@
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import HeaderObject from "../../types/HeaderObject";
-import Theme from "../../types/Theme";
+import { UniversalTableProps } from "./StoryWrapper";
 
 const headers: HeaderObject[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
@@ -415,22 +415,17 @@ const rows = [
   },
 ];
 
-const AggregateFunctionsDemo = ({
-  height = "400px",
-  theme,
-}: {
-  height?: string;
-  theme?: Theme;
-}) => {
+const AggregateFunctionsDemo = (props: UniversalTableProps) => {
   return (
     <SimpleTable
-      columnResizing
+      {...props}
       defaultHeaders={headers}
       rows={rows}
       rowGrouping={["categories", "creators"]}
       rowIdAccessor="id"
-      height={height}
-      theme={theme}
+      // Default settings for this example
+      columnResizing={props.columnResizing ?? true}
+      height={props.height ?? "400px"}
     />
   );
 };

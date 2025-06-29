@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { HeaderObject, SimpleTable, TableRefType, Theme } from "../..";
+import { UniversalTableProps } from "./StoryWrapper";
 
 // Define headers
 export const headers: HeaderObject[] = [
@@ -110,7 +111,7 @@ const initialData = [
   },
 ];
 
-const LiveUpdatesExample = ({ height = "400px", theme }: { height?: string; theme?: Theme }) => {
+const LiveUpdatesExample = (props: UniversalTableProps) => {
   // Keep a local copy of the data to update
   const tableRef = useRef<TableRefType | null>(null);
 
@@ -190,17 +191,16 @@ const LiveUpdatesExample = ({ height = "400px", theme }: { height?: string; them
   }, []);
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        defaultHeaders={headers}
-        rowIdAccessor="id"
-        rows={initialData}
-        tableRef={tableRef}
-        cellUpdateFlash={true}
-        height={height}
-        theme={theme}
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={headers}
+      rowIdAccessor="id"
+      rows={initialData}
+      tableRef={tableRef}
+      // Default settings for this example
+      cellUpdateFlash={props.cellUpdateFlash ?? true}
+      height={props.height ?? "400px"}
+    />
   );
 };
 

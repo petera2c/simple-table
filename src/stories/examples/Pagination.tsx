@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
+import { UniversalTableProps } from "./StoryWrapper";
 
 const ROWS_PER_PAGE = 10;
 
@@ -10,7 +11,7 @@ const HEADERS = SAAS_HEADERS;
 /**
  * Example showing pagination with "server-side" data fetching simulation
  */
-const PaginationExample = () => {
+const PaginationExample = (props: UniversalTableProps) => {
   // Only hold the current page data, not all data
   const [rows, setRows] = useState(EXAMPLE_DATA.slice(0, ROWS_PER_PAGE));
 
@@ -30,24 +31,26 @@ const PaginationExample = () => {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <div style={{ marginBottom: "1rem" }}>
+    <div>
+      <div style={{ marginBottom: "1rem", padding: "1rem" }}>
         <h2>Server-Side Pagination Example</h2>
         <p>This example simulates fetching data from a server. Check console for details.</p>
       </div>
 
       <SimpleTable
-        columnReordering
-        columnResizing
+        {...props}
         defaultHeaders={HEADERS}
         onNextPage={onNextPage}
         rows={rows}
         rowIdAccessor="id"
-        rowsPerPage={ROWS_PER_PAGE}
-        selectableCells
-        selectableColumns
-        shouldPaginate
-        theme="dark"
+        // Default settings for this example
+        shouldPaginate={props.shouldPaginate ?? true}
+        rowsPerPage={props.rowsPerPage ?? ROWS_PER_PAGE}
+        columnReordering={props.columnReordering ?? true}
+        columnResizing={props.columnResizing ?? true}
+        selectableCells={props.selectableCells ?? true}
+        selectableColumns={props.selectableColumns ?? true}
+        theme={props.theme ?? "dark"}
       />
     </div>
   );

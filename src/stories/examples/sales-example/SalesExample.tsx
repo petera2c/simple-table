@@ -3,27 +3,31 @@
 import { SALES_HEADERS } from "./sales-headers";
 import data from "./sales-data.json";
 import { SimpleTable } from "../../..";
+import { UniversalTableProps } from "../StoryWrapper";
 
 const shouldPaginate = false;
 const howManyRowsCanFit = 10;
 
-export const SalesExampleComponent = () => {
+export const SalesExampleComponent = (props: UniversalTableProps) => {
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnResizing
-        columnReordering
-        defaultHeaders={SALES_HEADERS}
-        rowIdAccessor="id"
-        rows={data}
-        theme={"dark"}
-        selectableCells
-        {...(shouldPaginate
-          ? { rowsPerPage: howManyRowsCanFit, shouldPaginate }
-          : {
-              height: "70dvh",
-            })}
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={SALES_HEADERS}
+      rowIdAccessor="id"
+      rows={data}
+      // Default settings for this example
+      columnResizing={props.columnResizing ?? true}
+      columnReordering={props.columnReordering ?? true}
+      selectableCells={props.selectableCells ?? true}
+      theme={props.theme ?? "dark"}
+      {...(shouldPaginate
+        ? {
+            rowsPerPage: props.rowsPerPage ?? howManyRowsCanFit,
+            shouldPaginate: props.shouldPaginate ?? shouldPaginate,
+          }
+        : {
+            height: props.height ?? "70dvh",
+          })}
+    />
   );
 };

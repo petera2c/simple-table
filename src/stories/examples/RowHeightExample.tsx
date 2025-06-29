@@ -1,11 +1,8 @@
 import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
+import { UniversalTableProps } from "./StoryWrapper";
 
-interface RowHeightExampleProps {
-  rowHeight?: number;
-}
-
-const RowHeightExampleComponent = ({ rowHeight = 32 }: RowHeightExampleProps) => {
+const RowHeightExampleComponent = (props: UniversalTableProps) => {
   // Sample data for testing row heights
   const rows = [
     {
@@ -37,9 +34,17 @@ const RowHeightExampleComponent = ({ rowHeight = 32 }: RowHeightExampleProps) =>
   ];
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <div data-testid="row-height-display">Current Row Height: {rowHeight}px</div>
-      <SimpleTable defaultHeaders={headers} rows={rows} rowIdAccessor="id" rowHeight={rowHeight} />
+    <div>
+      <div style={{ padding: "1rem" }}>
+        <div data-testid="row-height-display">Current Row Height: {props.rowHeight ?? 32}px</div>
+      </div>
+      <SimpleTable
+        {...props}
+        defaultHeaders={headers}
+        rows={rows}
+        rowIdAccessor="id"
+        rowHeight={props.rowHeight ?? 32}
+      />
     </div>
   );
 };

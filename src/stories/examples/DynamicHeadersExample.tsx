@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
+import { UniversalTableProps } from "./StoryWrapper";
 
-const DynamicHeadersExample = () => {
+const DynamicHeadersExample = (props: UniversalTableProps) => {
   // Sample data for testing dynamic headers
   const rows = [
     {
@@ -171,12 +172,14 @@ const DynamicHeadersExample = () => {
       </div>
 
       <SimpleTable
-        columnResizing
+        {...props}
         defaultHeaders={currentHeaders}
-        editColumns
         rows={rows}
         rowIdAccessor="id"
-        selectableCells
+        // Default settings for this example
+        columnResizing={props.columnResizing ?? true}
+        editColumns={props.editColumns ?? true}
+        selectableCells={props.selectableCells ?? true}
       />
     </div>
   );

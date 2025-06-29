@@ -1,7 +1,8 @@
 import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
+import { UniversalTableProps } from "./StoryWrapper";
 
-const BasicExampleComponent = () => {
+const BasicExampleComponent = (props: UniversalTableProps) => {
   // Sample data for a quick start demo - now using the new simplified structure
   const rows = [
     {
@@ -54,18 +55,7 @@ const BasicExampleComponent = () => {
     { accessor: "role", label: "Role", width: 150, isSortable: true },
   ];
 
-  return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnResizing
-        defaultHeaders={headers}
-        editColumns
-        rows={rows}
-        rowIdAccessor="id"
-        selectableCells
-      />
-    </div>
-  );
+  return <SimpleTable {...props} defaultHeaders={headers} rows={rows} rowIdAccessor="id" />;
 };
 
 export default BasicExampleComponent;

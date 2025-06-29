@@ -1,5 +1,6 @@
 import SimpleTable from "../../../components/simple-table/SimpleTable";
 import { HeaderObject } from "../../..";
+import { UniversalTableProps } from "../StoryWrapper";
 
 const headers: HeaderObject[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
@@ -696,18 +697,18 @@ const rows = [
   },
 ];
 
-const RowGroupingExample = () => {
+const RowGroupingExample = (props: UniversalTableProps) => {
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnResizing
-        defaultHeaders={headers}
-        rows={rows}
-        rowGrouping={["divisions", "teams"]}
-        rowIdAccessor="id"
-        height="calc(100dvh - 112px)"
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={headers}
+      rows={rows}
+      rowGrouping={["divisions", "teams"]}
+      rowIdAccessor="id"
+      // Default settings for this example
+      columnResizing={props.columnResizing ?? true}
+      height={props.height ?? "calc(100dvh - 112px)"}
+    />
   );
 };
 

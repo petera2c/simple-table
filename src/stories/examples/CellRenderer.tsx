@@ -1,5 +1,6 @@
 import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
+import { UniversalTableProps } from "./StoryWrapper";
 
 // Export styling constants for testing
 export const CELL_RENDERER_STYLES = {
@@ -109,7 +110,7 @@ export const CELL_RENDERER_DATA = [
   },
 ];
 
-const CellRendererExample = () => {
+const CellRendererExample = (props: UniversalTableProps) => {
   // Use the exported data
   const rows = CELL_RENDERER_DATA;
 
@@ -178,16 +179,16 @@ const CellRendererExample = () => {
   ];
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <SimpleTable
-        columnReordering
-        columnResizing
-        defaultHeaders={headers}
-        rows={rows}
-        rowIdAccessor="id"
-        selectableCells
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={headers}
+      rows={rows}
+      rowIdAccessor="id"
+      // Default settings for this example
+      columnReordering={props.columnReordering ?? true}
+      columnResizing={props.columnResizing ?? true}
+      selectableCells={props.selectableCells ?? true}
+    />
   );
 };
 

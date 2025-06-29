@@ -3,15 +3,16 @@ import SimpleTable from "../../components/simple-table/SimpleTable";
 import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
 import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
+import { UniversalTableProps } from "./StoryWrapper";
 
 const EXAMPLE_DATA = generateSpaceData();
 const HEADERS = SPACE_HEADERS;
 
 const THEME_OPTIONS: Theme[] = ["sky", "funky", "neutral", "light", "dark"];
 
-const ThemingExample = () => {
+const ThemingExample = (props: UniversalTableProps) => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>(props.theme ?? "light");
 
   const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
     setRows((prevRows) => {
@@ -26,28 +27,30 @@ const ThemingExample = () => {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div>
       <SimpleTable
-        columnResizing // Enable column resizing
-        defaultHeaders={HEADERS} // Set the headers
-        columnReordering // Enable draggable columns
-        editColumns // Enable editing columns
-        onCellEdit={updateCell} // Handle cell changes
-        rows={rows} // Set rows data
+        {...props}
+        defaultHeaders={HEADERS}
+        onCellEdit={updateCell}
+        rows={rows}
         rowIdAccessor="id"
-        selectableCells // Enable selectable cells
-        selectableColumns // Select column by clicking on the header. This will override sort on header click
-        theme={theme} // Set the theme
-        // If using pagination use an auto height
-        shouldPaginate
-        rowsPerPage={10}
+        // Use local theme state if user is interacting with theme buttons, otherwise use props
+        theme={theme}
+        // Default settings for this example
+        columnResizing={props.columnResizing ?? true}
+        columnReordering={props.columnReordering ?? true}
+        editColumns={props.editColumns ?? true}
+        selectableCells={props.selectableCells ?? true}
+        selectableColumns={props.selectableColumns ?? true}
+        shouldPaginate={props.shouldPaginate ?? true}
+        rowsPerPage={props.rowsPerPage ?? 10}
       />
-      <div style={{ display: "flex", overflow: "auto" }}>
-        {THEME_OPTIONS.map((theme) => {
+      <div style={{ display: "flex", overflow: "auto", padding: "1rem" }}>
+        {THEME_OPTIONS.map((themeOption) => {
           return (
             <button
-              key={theme}
-              onClick={() => setTheme(theme)}
+              key={themeOption}
+              onClick={() => setTheme(themeOption)}
               style={{
                 border: "none",
                 borderRadius: "4px",
@@ -57,9 +60,11 @@ const ThemingExample = () => {
                 transition: "background-color 0.3s ease",
                 whiteSpace: "nowrap",
                 fontFamily: "Nunito",
+                backgroundColor: theme === themeOption ? "#007acc" : "#f0f0f0",
+                color: theme === themeOption ? "white" : "black",
               }}
             >
-              {theme}
+              {themeOption}
             </button>
           );
         })}

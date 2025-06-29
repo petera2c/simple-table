@@ -2,56 +2,31 @@
 
 import { PRODUCT_HEADERS } from "./filter-headers";
 import data from "./filter-data.json";
-import { SimpleTable, Theme } from "../../..";
-import { useState } from "react";
+import { SimpleTable } from "../../..";
+import { UniversalTableProps } from "../StoryWrapper";
 
 const shouldPaginate = false;
 const howManyRowsCanFit = 12;
 
-const THEME_OPTIONS: Theme[] = ["sky", "funky", "neutral", "light", "dark"];
-
-export const FilterExampleComponent = () => {
-  const [theme, setTheme] = useState<Theme>("light");
-
+export const FilterExampleComponent = (props: UniversalTableProps) => {
   return (
-    <div style={{ padding: "2rem" }}>
-      {" "}
-      <div style={{ display: "flex", overflow: "auto" }}>
-        {THEME_OPTIONS.map((theme) => {
-          return (
-            <button
-              key={theme}
-              onClick={() => setTheme(theme)}
-              style={{
-                border: "none",
-                borderRadius: "4px",
-                padding: "0.25rem 0.5rem",
-                margin: "0.5rem",
-                cursor: "pointer",
-                transition: "background-color 0.3s ease",
-                whiteSpace: "nowrap",
-                fontFamily: "Nunito",
-              }}
-            >
-              {theme}
-            </button>
-          );
-        })}
-      </div>
-      <SimpleTable
-        columnResizing
-        columnReordering
-        defaultHeaders={PRODUCT_HEADERS}
-        rowIdAccessor="id"
-        rows={data}
-        theme={theme}
-        selectableCells
-        {...(shouldPaginate
-          ? { rowsPerPage: howManyRowsCanFit, shouldPaginate }
-          : {
-              height: "75dvh",
-            })}
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      defaultHeaders={PRODUCT_HEADERS}
+      rowIdAccessor="id"
+      rows={data}
+      // Default settings for this example
+      columnResizing={props.columnResizing ?? true}
+      columnReordering={props.columnReordering ?? true}
+      selectableCells={props.selectableCells ?? true}
+      {...(shouldPaginate
+        ? {
+            rowsPerPage: props.rowsPerPage ?? howManyRowsCanFit,
+            shouldPaginate: props.shouldPaginate ?? shouldPaginate,
+          }
+        : {
+            height: props.height ?? "75dvh",
+          })}
+    />
   );
 };
