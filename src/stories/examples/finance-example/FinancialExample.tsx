@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { HEADERS } from "./finance-headers";
 import data from "./finance-data.json";
 import TableRefType from "../../../types/TableRefType";
 import SimpleTable from "../../../components/simple-table/SimpleTable";
-import Theme from "../../../types/Theme";
 import { UniversalTableProps } from "../StoryWrapper";
 
 // Default args specific to FinanceExample - exported for reuse in stories and tests

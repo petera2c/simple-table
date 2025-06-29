@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { HeaderObject, SimpleTable, TableRefType, Theme } from "../..";
+import { HeaderObject, SimpleTable, TableRefType } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to LiveUpdates - exported for reuse in stories and tests

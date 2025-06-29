@@ -11,11 +11,13 @@ const ColumnEditorCheckbox = ({
   depth = 0,
   doesAnyHeaderHaveChildren,
   header,
+  isCheckedOverride,
 }: {
   allHeaders: HeaderObject[];
   depth?: number;
   doesAnyHeaderHaveChildren: boolean;
   header: HeaderObject;
+  isCheckedOverride?: boolean;
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const { expandIcon, headers, setHeaders } = useTableContext();
@@ -23,7 +25,8 @@ const ColumnEditorCheckbox = ({
   const hasChildren = header.children && header.children.length > 0;
 
   const isChecked =
-    header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children));
+    isCheckedOverride ??
+    (header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children)));
 
   // Handle checkbox change
   const handleCheckboxChange = (checked: boolean) => {
@@ -89,6 +92,7 @@ const ColumnEditorCheckbox = ({
               doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
               header={childHeader}
               key={`${childHeader.accessor}-${index}`}
+              isCheckedOverride={isChecked ? true : undefined}
             />
           ))}
         </div>
