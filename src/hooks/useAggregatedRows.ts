@@ -2,12 +2,20 @@ import { useMemo } from "react";
 import HeaderObject from "../types/HeaderObject";
 import { AggregationConfig } from "../types/AggregationTypes";
 import Row from "../types/Row";
+import { flattenAllHeaders } from "../utils/headerUtils";
 
 interface UseAggregatedRowsProps {
   rows: Row[];
   headers: HeaderObject[];
   rowGrouping?: string[];
 }
+
+/**
+ * Gets all headers that have aggregation configuration
+ */
+const getAllAggregationHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+  return flattenAllHeaders(headers).filter((header) => header.aggregation);
+};
 
 /**
  * Aggregates child row data into parent rows based on header configuration
@@ -19,8 +27,8 @@ export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedR
       return rows;
     }
 
-    // Get headers that have aggregation configured
-    const aggregationHeaders = headers.filter((header) => header.aggregation);
+    // Get all headers that have aggregation configured (including nested ones)
+    const aggregationHeaders = getAllAggregationHeaders(headers);
 
     // If no aggregation headers, return rows as-is
     if (aggregationHeaders.length === 0) {

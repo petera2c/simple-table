@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+import Theme from "../types/Theme";
 
 import AlignmentExample from "./examples/AlignmentExample";
 import BasicExampleComponent from "./examples/BasicExample";
@@ -43,8 +45,23 @@ export const Alignment: Story = {
 export const BasicExample: Story = {
   render: BasicExampleComponent,
 };
-export const BillingExample: Story = {
-  render: BillingExampleComponent,
+export const BillingExample: StoryObj<{ expandAll: boolean; theme: Theme }> = {
+  args: {
+    theme: "light",
+    expandAll: true,
+  },
+  argTypes: {
+    theme: {
+      control: { type: "select" },
+      options: ["sky", "funky", "neutral", "light", "dark"],
+      description: "Select the theme for the table",
+    },
+    expandAll: {
+      control: { type: "boolean" },
+      description: "Toggle to expand or collapse all row groups",
+    },
+  },
+  render: (args) => React.createElement(BillingExampleComponent, args),
 };
 export const CellHighlighting: Story = {
   render: CellHighlightingDemo,

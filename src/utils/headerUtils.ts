@@ -54,6 +54,21 @@ export const flattenHeaders = (headers: HeaderObject[]): HeaderObject[] => {
 };
 
 /**
+ * Flattens a nested header structure to get all headers (including parent headers)
+ * @param headers The headers array to flatten
+ * @returns Flattened array of all headers in the hierarchy
+ */
+export const flattenAllHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+  return headers.flatMap((header) => {
+    const result = [header];
+    if (header.children && header.children.length > 0) {
+      result.push(...flattenAllHeaders(header.children));
+    }
+    return result;
+  });
+};
+
+/**
  * Gets the range of column indices between two column indices
  * @param startColIndex Starting column index
  * @param endColIndex Ending column index
