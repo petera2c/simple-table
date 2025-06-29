@@ -5,7 +5,17 @@ import SortConfig from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 
 // Extract sort logic to custom hook
-const useSortableData = ({ headers, tableRows }: { headers: HeaderObject[]; tableRows: Row[] }) => {
+const useSortableData = ({
+  headers,
+  tableRows,
+  externalSortHandling = false,
+  onSortChange,
+}: {
+  headers: HeaderObject[];
+  tableRows: Row[];
+  externalSortHandling?: boolean;
+  onSortChange?: (sort: SortConfig | null) => void;
+}) => {
   const [sort, setSort] = useState<SortConfig | null>(null);
 
   // Simple sort handler
@@ -26,28 +36,35 @@ const useSortableData = ({ headers, tableRows }: { headers: HeaderObject[]; tabl
     const targetHeader = findHeaderRecursively(headers);
     if (!targetHeader) return;
 
-    setSort((prevSort) => {
-      if (!prevSort || prevSort.key.accessor !== accessor) {
-        return {
-          key: targetHeader,
-          direction: "ascending",
-        };
-      } else if (prevSort.direction === "ascending") {
-        return {
-          key: targetHeader,
-          direction: "descending",
-        };
-      }
-      // Third click removes the sort
-      return null;
-    });
+    // Calculate what the new sort will be
+    let newSort: SortConfig | null = null;
+    if (!sort || sort.key.accessor !== accessor) {
+      newSort = {
+        key: targetHeader,
+        direction: "ascending",
+      };
+    } else if (sort.direction === "ascending") {
+      newSort = {
+        key: targetHeader,
+        direction: "descending",
+      };
+    }
+    // Third click removes the sort (newSort stays null)
+
+    // Update internal state
+    setSort(newSort);
+
+    // Notify external handler
+    onSortChange?.(newSort);
   };
 
   const sortedRows = useMemo(() => {
+    // If external sort handling is enabled, don't sort internally
+    if (externalSortHandling) return tableRows;
     if (!sort) return tableRows;
     const { sortedData } = handleSort(headers, tableRows, sort);
     return sortedData;
-  }, [tableRows, sort, headers]);
+  }, [tableRows, sort, headers, externalSortHandling]);
 
   return {
     setSort,

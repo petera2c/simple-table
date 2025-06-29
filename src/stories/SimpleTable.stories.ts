@@ -9,6 +9,7 @@ import CellHighlightingDemo from "./examples/CellHighlighting";
 import CellRendererExample from "./examples/CellRenderer";
 import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import EditableCellsExample from "./examples/EditableCells";
+import ExternalSortExample from "./examples/ExternalSortExample";
 import HiddenColumnsExample from "./examples/HiddenColumnsExample";
 import InfiniteScrollExample from "./examples/InfiniteScroll";
 import LiveUpdatesExample from "./examples/LiveUpdates";
@@ -148,6 +149,19 @@ export const EditableCells: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: EditableCellsExample, ...args }),
 };
+
+export const ExternalSort = {
+  render: () => React.createElement(ExternalSortExample),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates external sort handling with the `externalSortHandling` and `onSortChange` props. The table provides the sorting UI, but all sorting logic is handled externally by the consumer.",
+      },
+    },
+  },
+};
+
 export const FilterExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,

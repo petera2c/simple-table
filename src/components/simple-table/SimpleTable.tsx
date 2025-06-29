@@ -42,6 +42,7 @@ import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import { FilterCondition } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
+import SortConfig from "../../types/SortConfig";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -56,6 +57,7 @@ interface SimpleTableProps {
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
+  externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -64,6 +66,7 @@ interface SimpleTableProps {
   onFilterChange?: (filter: FilterCondition) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onNextPage?: OnNextPage; // Custom handler for next page
+  onSortChange?: (sort: SortConfig | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
   rowGrouping?: string[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
@@ -104,6 +107,7 @@ const SimpleTableComp = ({
   expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   externalFilterHandling = false,
+  externalSortHandling = false,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
@@ -112,6 +116,7 @@ const SimpleTableComp = ({
   onFilterChange,
   onGridReady,
   onNextPage,
+  onSortChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowGrouping,
   rowHeight = 32,
@@ -184,6 +189,8 @@ const SimpleTableComp = ({
   const { sort, sortedRows, updateSort } = useSortableData({
     headers,
     tableRows: filteredRows,
+    externalSortHandling,
+    onSortChange,
   });
 
   // Calculate the width of the sections
@@ -438,7 +445,7 @@ const SimpleTableComp = ({
               onPageChange={setCurrentPage}
               onNextPage={onNextPage}
               shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil(filteredRows.length / rowsPerPage)}
+              totalPages={Math.ceil(sortedRows.length / rowsPerPage)}
             />
           </div>
         </ScrollSync>
