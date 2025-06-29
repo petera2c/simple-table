@@ -22,7 +22,7 @@ interface TableContextType {
   draggedHeaderRef: RefObject<HeaderObject | null>;
   editColumns?: boolean;
   expandIcon?: ReactNode;
-  expandedRows: Set<string>;
+  unexpandedRows: Set<string>;
   filters: TableFilterState;
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
@@ -52,7 +52,7 @@ interface TableContextType {
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
-  setExpandedRows: Dispatch<SetStateAction<Set<string>>>;
+  setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;

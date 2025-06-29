@@ -36,14 +36,14 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
 export const flattenRowsWithGrouping = ({
   depth = 0,
   expandAll = false,
-  expandedRows,
+  unexpandedRows,
   rowGrouping = [],
   rowIdAccessor,
   rows,
 }: {
   depth?: number;
   expandAll?: boolean;
-  expandedRows: Set<string>;
+  unexpandedRows: Set<string>;
   rowGrouping?: string[];
   rowIdAccessor?: string;
   rows: Row[];
@@ -74,8 +74,13 @@ export const flattenRowsWithGrouping = ({
       // Check if row should be expanded
       const rowIdStr = String(rowId);
       const isExpanded = expandAll
-        ? !expandedRows.has(rowIdStr) // If expandAll=true, expand unless explicitly collapsed
-        : expandedRows.has(rowIdStr); // If expandAll=false, only expand if explicitly expanded
+        ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expand unless explicitly collapsed
+        : unexpandedRows.has(rowIdStr); // If expandAll=false, only expand if explicitly expanded
+      console.log("\n\n");
+      console.log("expandAll", expandAll);
+      console.log("unexpandedRows", unexpandedRows);
+      console.log("rowIdStr", rowIdStr);
+      console.log("isExpanded", isExpanded);
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {

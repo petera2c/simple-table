@@ -57,7 +57,7 @@ const TableCell = forwardRef(
       cellUpdateFlash,
       draggedHeaderRef,
       expandIcon,
-      expandedRows,
+      unexpandedRows,
       handleMouseDown,
       handleMouseOver,
       headers,
@@ -68,7 +68,7 @@ const TableCell = forwardRef(
       onTableHeaderDragEnd,
       rowGrouping,
       rowIdAccessor,
-      setExpandedRows,
+      setUnexpandedRows,
       theme,
       useOddColumnBackground,
     } = useTableContext();
@@ -85,7 +85,7 @@ const TableCell = forwardRef(
     const rowId = getRowId(row, rowIndex, rowIdAccessor);
     const currentGroupingKey = rowGrouping && rowGrouping[depth];
     const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
-    const isRowExpanded = expandedRows.has(String(rowId));
+    const isRowExpanded = !unexpandedRows.has(String(rowId));
 
     // Check if this cell is currently flashing from copy operation
     const isCellCopyFlashing = isCopyFlashing({ rowIndex, colIndex, rowId });
@@ -208,9 +208,10 @@ const TableCell = forwardRef(
 
     // Handle row expansion
     const handleRowExpansion = useCallback(() => {
-      setExpandedRows((prev) => {
+      setUnexpandedRows((prev) => {
         const newSet = new Set(prev);
         const rowIdStr = String(rowId);
+        console.log("rowIdStr", rowIdStr);
         if (newSet.has(rowIdStr)) {
           newSet.delete(rowIdStr);
         } else {
@@ -218,7 +219,7 @@ const TableCell = forwardRef(
         }
         return newSet;
       });
-    }, [rowId, setExpandedRows]);
+    }, [rowId, setUnexpandedRows]);
 
     // Handle keyboard events when cell is focused
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {

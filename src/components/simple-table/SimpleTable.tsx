@@ -153,7 +153,7 @@ const SimpleTableComp = ({
 
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
   // Use filter hook
   const {
@@ -223,10 +223,10 @@ const SimpleTableComp = ({
       rows: currentRows,
       rowGrouping,
       rowIdAccessor,
-      expandedRows,
+      unexpandedRows,
       expandAll,
     });
-  }, [currentRows, rowGrouping, rowIdAccessor, expandedRows, expandAll]);
+  }, [currentRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
@@ -343,7 +343,7 @@ const SimpleTableComp = ({
         draggedHeaderRef,
         editColumns,
         expandIcon,
-        expandedRows,
+        unexpandedRows,
         filters,
         tableRows,
         forceUpdate,
@@ -374,7 +374,7 @@ const SimpleTableComp = ({
         scrollbarWidth,
         selectColumns,
         selectableColumns,
-        setExpandedRows,
+        setUnexpandedRows,
         setHeaders,
         setInitialFocusedCell,
         setSelectedCells,
