@@ -37,9 +37,10 @@ export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedR
         const nextGroupKey = rowGrouping[groupingLevel + 1];
 
         // If this row has children at the current grouping level
-        if (row[currentGroupKey] && Array.isArray(row[currentGroupKey])) {
+        const currentGroupValue = row[currentGroupKey];
+        if (currentGroupValue && Array.isArray(currentGroupValue)) {
           // Process children recursively first
-          const processedChildren = processRows(row[currentGroupKey], groupingLevel + 1);
+          const processedChildren = processRows(currentGroupValue, groupingLevel + 1);
 
           // Calculate aggregations for this parent row
           const aggregatedRow = { ...row };
@@ -85,8 +86,9 @@ const calculateAggregation = (
   const collectValues = (rows: Row[]) => {
     rows.forEach((row) => {
       // If this row has further children, collect from them too
-      if (nextGroupKey && row[nextGroupKey] && Array.isArray(row[nextGroupKey])) {
-        collectValues(row[nextGroupKey]);
+      const nextGroupValue = nextGroupKey ? row[nextGroupKey] : undefined;
+      if (nextGroupKey && nextGroupValue && Array.isArray(nextGroupValue)) {
+        collectValues(nextGroupValue);
       } else {
         // This is a leaf row, collect its value
         if (row[accessor] !== undefined && row[accessor] !== null) {
