@@ -8,6 +8,14 @@ import { UniversalTableProps } from "../StoryWrapper";
 const shouldPaginate = false;
 const howManyRowsCanFit = 12;
 
+// Default args specific to FilterExample - exported for reuse in stories and tests
+export const filterExampleDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  height: "75dvh",
+};
+
 export const FilterExampleComponent = (props: UniversalTableProps) => {
   return (
     <SimpleTable

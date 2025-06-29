@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import { within } from "@storybook/test";
-import AlignmentExample from "../examples/AlignmentExample";
+import AlignmentExample, { alignmentExampleDefaults } from "../examples/AlignmentExample";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import { getMainColumnLabels, getPinnedLeftColumnLabels } from "../test-utils/commonTestUtils";
 import {
   testColumnEditorStructure,
@@ -25,12 +31,18 @@ const meta: Meta<typeof AlignmentExample> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 /**
  * Comprehensive column visibility test with multiple interactions
  */
-export const ComprehensiveColumnVisibilityTest: Story = {
+export const ComprehensiveColumnVisibilityTest: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...alignmentExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
   name: "Column Visibility - Comprehensive Test",
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);

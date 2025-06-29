@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import RowGroupingExample from "../examples/row-grouping/RowGrouping";
+import React from "react";
+import RowGroupingExample, { rowGroupingDefaults } from "../examples/row-grouping/RowGrouping";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import { testAllAggregationFunctions } from "../test-utils/aggregationTestUtils";
 
 const meta: Meta<typeof RowGroupingExample> = {
@@ -7,17 +13,24 @@ const meta: Meta<typeof RowGroupingExample> = {
   component: RowGroupingExample,
   parameters: {
     layout: "fullscreen",
+    chromatic: { disableSnapshot: true },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 /**
  * Comprehensive aggregation tests for all aggregation functions
  * Includes basic table verification, hierarchical behavior, and collapsed row tests
  */
-export const ComprehensiveAggregationTests: Story = {
+export const ComprehensiveAggregationTests: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...rowGroupingDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: RowGroupingExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       await testAllAggregationFunctions(canvasElement);

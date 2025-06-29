@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import { within, expect, userEvent } from "@storybook/test";
 import { useState } from "react";
-import RowHeightExample from "../examples/RowHeightExample";
+import RowHeightExample, { rowHeightDefaults } from "../examples/RowHeightExample";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import {
   testRowHeight,
   waitForTableWithRowHeight,
@@ -18,14 +24,13 @@ const meta: Meta<typeof RowHeightExample> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 // Interactive component wrapper for testing
-const InteractiveRowHeightTest = () => {
+const InteractiveRowHeightTest = (args: UniversalTableProps) => {
   const [currentRowHeight, setCurrentRowHeight] = useState(30);
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div>
       <div data-testid="controls" style={{ marginBottom: "1rem" }}>
         <button
           data-testid="increase-height"
@@ -41,12 +46,17 @@ const InteractiveRowHeightTest = () => {
           Current: {currentRowHeight}px
         </span>
       </div>
-      <RowHeightExample rowHeight={currentRowHeight} />
+      <StoryWrapper ExampleComponent={RowHeightExample} {...args} rowHeight={currentRowHeight} />
     </div>
   );
 };
 
-export const DynamicRowHeightTest: Story = {
+export const DynamicRowHeightTest: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...rowHeightDefaults,
+  },
+  argTypes: universalArgTypes,
   render: InteractiveRowHeightTest,
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);

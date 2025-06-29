@@ -2,6 +2,12 @@ import { useRef, useEffect } from "react";
 import { HeaderObject, SimpleTable, TableRefType, Theme } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to LiveUpdates - exported for reuse in stories and tests
+export const liveUpdatesDefaults = {
+  cellUpdateFlash: true,
+  height: "400px",
+};
+
 // Define headers
 export const headers: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },

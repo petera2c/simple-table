@@ -3,6 +3,16 @@ import SimpleTable from "../../components/simple-table/SimpleTable";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to Pagination - exported for reuse in stories and tests
+export const paginationDefaults = {
+  shouldPaginate: true,
+  rowsPerPage: 10,
+  columnReordering: true,
+  columnResizing: true,
+  selectableCells: true,
+  selectableColumns: true,
+};
+
 const ROWS_PER_PAGE = 10;
 
 const EXAMPLE_DATA = generateSaaSData();

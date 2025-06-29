@@ -2,6 +2,13 @@ import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to BasicExample - exported for reuse in stories and tests
+export const basicExampleDefaults = {
+  columnResizing: true,
+  editColumns: true,
+  selectableCells: true,
+};
+
 const BasicExampleComponent = (props: UniversalTableProps) => {
   // Sample data for a quick start demo - now using the new simplified structure
   const rows = [

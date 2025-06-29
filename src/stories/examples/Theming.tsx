@@ -5,6 +5,17 @@ import Theme from "../../types/Theme";
 import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to Theming - exported for reuse in stories and tests
+export const themingDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  editColumns: true,
+  selectableCells: true,
+  selectableColumns: true,
+  shouldPaginate: true,
+  rowsPerPage: 10,
+};
+
 const EXAMPLE_DATA = generateSpaceData();
 const HEADERS = SPACE_HEADERS;
 

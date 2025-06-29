@@ -5,6 +5,15 @@ import data from "./sales-data.json";
 import { SimpleTable } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
+// Default args specific to SalesExample - exported for reuse in stories and tests
+export const salesExampleDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  theme: "dark" as const,
+  height: "70dvh",
+};
+
 const shouldPaginate = false;
 const howManyRowsCanFit = 10;
 

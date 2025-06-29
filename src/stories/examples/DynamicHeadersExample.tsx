@@ -3,6 +3,13 @@ import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to DynamicHeaders - exported for reuse in stories and tests
+export const dynamicHeadersDefaults = {
+  columnResizing: true,
+  editColumns: true,
+  selectableCells: true,
+};
+
 const DynamicHeadersExample = (props: UniversalTableProps) => {
   // Sample data for testing dynamic headers
   const rows = [

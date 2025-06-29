@@ -2,6 +2,16 @@ import SimpleTable from "../../components/simple-table/SimpleTable";
 import { generateRetailSalesData, RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to SelectableCells - exported for reuse in stories and tests
+export const selectableCellsDefaults = {
+  selectableCells: true,
+  selectableColumns: true,
+  columnResizing: true,
+  columnReordering: true,
+  rowHeight: 20,
+  height: "80vh",
+};
+
 const EXAMPLE_DATA = generateRetailSalesData();
 const HEADERS = RETAIL_SALES_HEADERS;
 

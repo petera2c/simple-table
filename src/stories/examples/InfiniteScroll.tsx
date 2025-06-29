@@ -4,6 +4,15 @@ import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to InfiniteScroll - exported for reuse in stories and tests
+export const infiniteScrollDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  height: "calc(100dvh - 112px)",
+  shouldPaginate: false,
+};
+
 /**
  * # Infinite Scroll Example
  *

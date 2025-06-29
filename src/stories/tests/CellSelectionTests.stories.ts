@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import AlignmentExample from "../examples/AlignmentExample";
+import React from "react";
+import AlignmentExample, { alignmentExampleDefaults } from "../examples/AlignmentExample";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import {
   testCellSelectionComprehensive,
   testCellsAreClickable,
@@ -24,17 +30,24 @@ const meta: Meta<typeof AlignmentExample> = {
   component: AlignmentExample,
   parameters: {
     layout: "fullscreen",
+    chromatic: { disableSnapshot: true },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 /**
  * Comprehensive cell selection tests covering single cell selection,
  * multi-cell range selection, selection persistence, and visual validation
  */
-export const ComprehensiveCellSelectionTests: Story = {
+export const ComprehensiveCellSelectionTests: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...alignmentExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       // Run the comprehensive test suite
@@ -133,7 +146,14 @@ export const ComprehensiveCellSelectionTests: Story = {
 /**
  * Test column header selection functionality
  */
-export const ColumnHeaderSelectionTest: Story = {
+export const ColumnHeaderSelectionTest: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...alignmentExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       // Test column header selection
@@ -156,7 +176,14 @@ export const ColumnHeaderSelectionTest: Story = {
 /**
  * Test cell selection functionality after scrolling
  */
-export const ScrollAndSelectionTest: Story = {
+export const ScrollAndSelectionTest: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...alignmentExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       // Test cell selection after scrolling

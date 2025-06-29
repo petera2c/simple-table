@@ -2,6 +2,12 @@ import SimpleTable from "../../../components/simple-table/SimpleTable";
 import { HeaderObject } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
+// Default args specific to RowGrouping - exported for reuse in stories and tests
+export const rowGroupingDefaults = {
+  columnResizing: true,
+  height: "calc(100dvh - 112px)",
+};
+
 const headers: HeaderObject[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   {

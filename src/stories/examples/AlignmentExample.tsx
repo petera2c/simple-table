@@ -6,6 +6,16 @@ import { UniversalTableProps } from "./StoryWrapper";
 const EXAMPLE_DATA = generateRetailSalesData();
 const HEADERS = RETAIL_SALES_HEADERS;
 
+// Default args specific to AlignmentExample - exported for reuse in stories and tests
+export const alignmentExampleDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  selectableColumns: true,
+  editColumns: true,
+  height: "calc(100dvh - 112px)",
+};
+
 const AlignmentExample = (props: UniversalTableProps) => {
   return (
     <SimpleTable

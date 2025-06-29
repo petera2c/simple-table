@@ -7,6 +7,14 @@ import CellValue from "../../types/CellValue";
 import HeaderObject from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to EditableCells - exported for reuse in stories and tests
+export const editableCellsDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  height: "80vh",
+};
+
 // Define headers with editable property and various types
 const HEADERS: HeaderObject[] = [
   {

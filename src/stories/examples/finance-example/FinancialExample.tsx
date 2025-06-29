@@ -7,6 +7,14 @@ import SimpleTable from "../../../components/simple-table/SimpleTable";
 import Theme from "../../../types/Theme";
 import { UniversalTableProps } from "../StoryWrapper";
 
+// Default args specific to FinanceExample - exported for reuse in stories and tests
+export const financeExampleDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  height: "90dvh",
+};
+
 export const FinancialExample = (props: UniversalTableProps) => {
   const tableRef = useRef<TableRefType | null>(null);
 

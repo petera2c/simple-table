@@ -2,6 +2,12 @@ import SimpleTable from "../../components/simple-table/SimpleTable";
 import HeaderObject from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to AggregateExample - exported for reuse in stories and tests
+export const aggregateExampleDefaults = {
+  columnResizing: true,
+  height: "400px",
+};
+
 const headers: HeaderObject[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {

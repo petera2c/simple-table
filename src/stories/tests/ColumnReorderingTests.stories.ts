@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import { expect } from "@storybook/test";
-import AlignmentExample from "../examples/AlignmentExample";
+import AlignmentExample, { alignmentExampleDefaults } from "../examples/AlignmentExample";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import {
   performDragAndDrop,
   getColumnOrderFromSection,
@@ -24,7 +30,6 @@ const meta: Meta<typeof AlignmentExample> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 // Helper function to get column label by accessor
 const getColumnLabel = (accessor: string): string => {
@@ -204,8 +209,15 @@ const verifyCrossSectionMove = (
 /**
  * Comprehensive column reordering test with multiple drag and drop interactions
  */
-export const ColumnReorderingInteractions: Story = {
+export const ColumnReorderingInteractions: StoryObj<UniversalTableProps> = {
   name: "Column Reordering - All Interactions",
+  args: {
+    ...defaultUniversalArgs,
+    ...alignmentExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 

@@ -4,6 +4,15 @@ import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to HiddenColumns - exported for reuse in stories and tests
+export const hiddenColumnsDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  editColumns: true,
+  editColumnsInitOpen: true,
+  height: "80vh",
+};
+
 const EXAMPLE_DATA = generateSpaceData();
 const HEADERS = SPACE_HEADERS;
 

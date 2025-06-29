@@ -20,12 +20,34 @@ import SelectableCellsExample from "./examples/SelectableCells";
 import ThemingExample from "./examples/Theming";
 import { FinancialExample } from "./examples/finance-example/FinancialExample";
 import { SalesExampleComponent } from "./examples/sales-example/SalesExample";
-import { FilterExampleComponent } from "./examples/filter-example/FilterExample";
+import {
+  FilterExampleComponent,
+  filterExampleDefaults,
+} from "./examples/filter-example/FilterExample";
 import StoryWrapper, {
   defaultUniversalArgs,
   universalArgTypes,
   UniversalTableProps,
 } from "./examples/StoryWrapper";
+import { alignmentExampleDefaults } from "./examples/AlignmentExample";
+import { aggregateExampleDefaults } from "./examples/AggregateExample";
+import { basicExampleDefaults } from "./examples/BasicExample";
+import { billingExampleDefaults } from "./examples/billing-example/BillingExample";
+import { cellHighlightingDefaults } from "./examples/CellHighlighting";
+import { editableCellsDefaults } from "./examples/EditableCells";
+import { hiddenColumnsDefaults } from "./examples/HiddenColumnsExample";
+import { infiniteScrollDefaults } from "./examples/InfiniteScroll";
+import { liveUpdatesDefaults } from "./examples/LiveUpdates";
+import { paginationDefaults } from "./examples/Pagination";
+import { pinnedColumnsDefaults } from "./examples/pinned-columns/PinnedColumns";
+import { rowGroupingDefaults } from "./examples/row-grouping/RowGrouping";
+import { rowHeightDefaults } from "./examples/RowHeightExample";
+import { selectableCellsDefaults } from "./examples/SelectableCells";
+import { themingDefaults } from "./examples/Theming";
+import { cellRendererDefaults } from "./examples/CellRenderer";
+import { dynamicHeadersDefaults } from "./examples/DynamicHeadersExample";
+import { financeExampleDefaults } from "./examples/finance-example/FinancialExample";
+import { salesExampleDefaults } from "./examples/sales-example/SalesExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -38,12 +60,7 @@ const meta = {
 export const Alignment: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    selectableColumns: true,
-    editColumns: true,
-    height: "calc(100dvh - 112px)",
+    ...alignmentExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -61,8 +78,7 @@ export const Alignment: StoryObj<UniversalTableProps> = {
 export const AggregateExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    height: "400px",
+    ...aggregateExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -80,9 +96,7 @@ export const AggregateExample: StoryObj<UniversalTableProps> = {
 export const BasicExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    editColumns: true,
-    selectableCells: true,
+    ...basicExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -91,14 +105,7 @@ export const BasicExample: StoryObj<UniversalTableProps> = {
 export const BillingExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    // Override defaults for this specific example
-    useOddColumnBackground: true,
-    useHoverRowBackground: false,
-    height: "90dvh",
-    editColumns: true,
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
+    ...billingExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -107,8 +114,7 @@ export const BillingExample: StoryObj<UniversalTableProps> = {
 export const CellHighlighting: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    selectableCells: true,
-    selectableColumns: true,
+    ...cellHighlightingDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -118,9 +124,7 @@ export const CellHighlighting: StoryObj<UniversalTableProps> = {
 export const CellRenderer: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnReordering: true,
-    columnResizing: true,
-    selectableCells: true,
+    ...cellRendererDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -129,9 +133,7 @@ export const CellRenderer: StoryObj<UniversalTableProps> = {
 export const DynamicHeaders: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    editColumns: true,
-    selectableCells: true,
+    ...dynamicHeadersDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -140,10 +142,7 @@ export const DynamicHeaders: StoryObj<UniversalTableProps> = {
 export const EditableCells: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    height: "80vh",
+    ...editableCellsDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -152,10 +151,7 @@ export const EditableCells: StoryObj<UniversalTableProps> = {
 export const FilterExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    height: "75dvh",
+    ...filterExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -164,10 +160,7 @@ export const FilterExample: StoryObj<UniversalTableProps> = {
 export const FinanceExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    height: "90dvh",
+    ...financeExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -176,11 +169,7 @@ export const FinanceExample: StoryObj<UniversalTableProps> = {
 export const HiddenColumns: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    editColumns: true,
-    editColumnsInitOpen: true,
-    height: "80vh",
+    ...hiddenColumnsDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -189,11 +178,7 @@ export const HiddenColumns: StoryObj<UniversalTableProps> = {
 export const InfiniteScroll: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    height: "calc(100dvh - 112px)",
-    shouldPaginate: false,
+    ...infiniteScrollDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -202,8 +187,7 @@ export const InfiniteScroll: StoryObj<UniversalTableProps> = {
 export const LiveUpdates: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    cellUpdateFlash: true,
-    height: "400px",
+    ...liveUpdatesDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -212,13 +196,7 @@ export const LiveUpdates: StoryObj<UniversalTableProps> = {
 export const Pagination: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    shouldPaginate: true,
-    rowsPerPage: 10,
-    columnReordering: true,
-    columnResizing: true,
-    selectableCells: true,
-    selectableColumns: true,
-    theme: "dark",
+    ...paginationDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -227,11 +205,7 @@ export const Pagination: StoryObj<UniversalTableProps> = {
 export const PinnedColumns: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnReordering: true,
-    selectableCells: true,
-    selectableColumns: true,
-    editColumns: true,
-    height: "calc(100dvh - 112px)",
+    ...pinnedColumnsDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -240,8 +214,7 @@ export const PinnedColumns: StoryObj<UniversalTableProps> = {
 export const RowGrouping: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    height: "calc(100dvh - 112px)",
+    ...rowGroupingDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -251,7 +224,7 @@ export const RowGrouping: StoryObj<UniversalTableProps> = {
 export const RowHeight: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    rowHeight: 24,
+    ...rowHeightDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -269,11 +242,7 @@ export const RowHeight: StoryObj<UniversalTableProps> = {
 export const SalesExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    theme: "dark",
-    height: "70dvh",
+    ...salesExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -282,12 +251,7 @@ export const SalesExample: StoryObj<UniversalTableProps> = {
 export const SelectableCells: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    selectableCells: true,
-    selectableColumns: true,
-    columnResizing: true,
-    columnReordering: true,
-    rowHeight: 20,
-    height: "80vh",
+    ...selectableCellsDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -296,13 +260,7 @@ export const SelectableCells: StoryObj<UniversalTableProps> = {
 export const Theming: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    columnResizing: true,
-    columnReordering: true,
-    editColumns: true,
-    selectableCells: true,
-    selectableColumns: true,
-    shouldPaginate: true,
-    rowsPerPage: 10,
+    ...themingDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>

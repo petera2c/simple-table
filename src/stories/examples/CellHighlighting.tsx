@@ -1,6 +1,12 @@
 import { HeaderObject, SimpleTable } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to CellHighlighting - exported for reuse in stories and tests
+export const cellHighlightingDefaults = {
+  selectableCells: true,
+  selectableColumns: true,
+};
+
 // Define headers with conditional cell styling
 const headers: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },

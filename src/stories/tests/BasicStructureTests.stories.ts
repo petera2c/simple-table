@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import AlignmentExample from "../examples/AlignmentExample";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
+import { alignmentExampleDefaults } from "../examples/AlignmentExample";
 import { validateBasicTableStructure } from "../test-utils/commonTestUtils";
 
 const meta: Meta<typeof AlignmentExample> = {
@@ -12,9 +19,15 @@ const meta: Meta<typeof AlignmentExample> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const BasicDOMStructure: Story = {
+export const BasicDOMStructure: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...alignmentExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await validateBasicTableStructure(canvasElement);
   },

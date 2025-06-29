@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import { within } from "@storybook/test";
-import BillingExample from "../examples/billing-example/BillingExample";
+import BillingExample, { billingExampleDefaults } from "../examples/billing-example/BillingExample";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import {
   getBillingMainColumnLabels,
   getBillingPinnedLeftColumnLabels,
@@ -29,12 +35,18 @@ const meta: Meta<typeof BillingExample> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 /**
  * Comprehensive column sorting test with multiple interactions
  */
-export const ComprehensiveColumnSortingTest: Story = {
+export const ComprehensiveColumnSortingTest: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...billingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: BillingExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
 

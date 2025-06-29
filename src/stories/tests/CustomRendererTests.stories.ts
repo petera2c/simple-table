@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import CellRendererExample, { CELL_RENDERER_STYLES } from "../examples/CellRenderer";
+import React from "react";
+import CellRendererExample, {
+  CELL_RENDERER_STYLES,
+  cellRendererDefaults,
+} from "../examples/CellRenderer";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import {
   testCustomRenderersComprehensive,
   testCustomHeaderRenderers,
@@ -15,17 +24,24 @@ const meta: Meta<typeof CellRendererExample> = {
   component: CellRendererExample,
   parameters: {
     layout: "fullscreen",
+    chromatic: { disableSnapshot: true },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 /**
  * Comprehensive custom renderer tests covering header renderers,
  * cell renderers, data integrity, structure validation, and theme compatibility
  */
-export const ComprehensiveCustomRendererTests: Story = {
+export const ComprehensiveCustomRendererTests: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...cellRendererDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CellRendererExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       // Run the comprehensive test suite
@@ -210,7 +226,14 @@ export const ComprehensiveCustomRendererTests: Story = {
 /**
  * Test custom header renderers functionality
  */
-export const CustomHeaderRenderersTest: Story = {
+export const CustomHeaderRenderersTest: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...cellRendererDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CellRendererExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       // Test header renderers
@@ -259,7 +282,14 @@ export const CustomHeaderRenderersTest: Story = {
 /**
  * Test custom cell renderers functionality
  */
-export const CustomCellRenderersTest: Story = {
+export const CustomCellRenderersTest: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...cellRendererDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CellRendererExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       // Test cell renderers

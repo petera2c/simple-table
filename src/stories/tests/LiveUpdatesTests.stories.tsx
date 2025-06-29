@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import LiveUpdatesExample from "../examples/LiveUpdates";
+import React from "react";
+import LiveUpdatesExample, { liveUpdatesDefaults } from "../examples/LiveUpdates";
+import StoryWrapper, {
+  defaultUniversalArgs,
+  universalArgTypes,
+  UniversalTableProps,
+} from "../examples/StoryWrapper";
 import { testLiveUpdates } from "../test-utils/liveUpdatesTestUtils";
 
 const meta: Meta<typeof LiveUpdatesExample> = {
@@ -7,20 +13,23 @@ const meta: Meta<typeof LiveUpdatesExample> = {
   component: LiveUpdatesExample,
   parameters: {
     layout: "fullscreen",
+    chromatic: { disableSnapshot: true },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 /**
  * Comprehensive live updates test with monitoring and assertions
  */
-export const ComprehensiveLiveUpdatesTest: Story = {
+export const ComprehensiveLiveUpdatesTest: StoryObj<UniversalTableProps> = {
   args: {
-    height: "400px",
-    theme: "light",
+    ...defaultUniversalArgs,
+    ...liveUpdatesDefaults,
   },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: LiveUpdatesExample, ...args }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     try {
       await testLiveUpdates(canvasElement);

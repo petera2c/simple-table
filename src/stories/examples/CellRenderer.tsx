@@ -2,6 +2,13 @@ import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
+// Default args specific to CellRenderer - exported for reuse in stories and tests
+export const cellRendererDefaults = {
+  columnReordering: true,
+  columnResizing: true,
+  selectableCells: true,
+};
+
 // Export styling constants for testing
 export const CELL_RENDERER_STYLES = {
   header: {
