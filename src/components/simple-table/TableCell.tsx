@@ -211,7 +211,6 @@ const TableCell = forwardRef(
       setUnexpandedRows((prev) => {
         const newSet = new Set(prev);
         const rowIdStr = String(rowId);
-        console.log("rowIdStr", rowIdStr);
         if (newSet.has(rowIdStr)) {
           newSet.delete(rowIdStr);
         } else {

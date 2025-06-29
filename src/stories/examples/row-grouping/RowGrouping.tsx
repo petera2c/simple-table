@@ -3,13 +3,102 @@ import { HeaderObject } from "../../..";
 
 const headers: HeaderObject[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
-  { accessor: "employees", label: "Employees", width: 100, type: "number" },
-  { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },
+  {
+    accessor: "employees",
+    label: "Employees",
+    width: 100,
+    type: "number",
+    aggregation: { type: "sum" },
+  },
+  {
+    accessor: "budget",
+    label: "Annual Budget",
+    width: 140,
+    type: "string",
+    aggregation: {
+      type: "sum",
+      parseValue: (value: string) => {
+        // Parse values like "$15.0M" to numbers
+        const numericValue = parseFloat(value.replace(/[$M]/g, ""));
+        return isNaN(numericValue) ? 0 : numericValue;
+      },
+    },
+    cellRenderer: ({ row }) => {
+      const value = row.budget;
+      if (typeof value === "number") {
+        // This is an aggregated value, format as currency
+        return `$${value.toFixed(1)}M`;
+      }
+      if (typeof value === "string") {
+        // This is original string value, return as-is
+        return value;
+      }
+      return "";
+    },
+  },
+  {
+    accessor: "rating",
+    label: "Team Rating",
+    width: 100,
+    type: "number",
+    aggregation: { type: "average" },
+    cellRenderer: ({ row }) => {
+      const value = row.rating;
+      if (typeof value === "number") {
+        return `${value.toFixed(1)} ⭐`;
+      }
+      if (typeof value === "string" || typeof value === "number") {
+        return `${value} ⭐`;
+      }
+      return "";
+    },
+  },
+  {
+    accessor: "projectCount",
+    label: "Projects",
+    width: 90,
+    type: "number",
+    aggregation: { type: "count" },
+  },
+  {
+    accessor: "minTeamSize",
+    label: "Min Team",
+    width: 90,
+    type: "number",
+    aggregation: { type: "min" },
+  },
+  {
+    accessor: "maxTeamSize",
+    label: "Max Team",
+    width: 90,
+    type: "number",
+    aggregation: { type: "max" },
+  },
+  {
+    accessor: "weightedScore",
+    label: "Score",
+    width: 100,
+    type: "number",
+    aggregation: {
+      type: "custom",
+      customFn: (values: any[]) => {
+        // Custom aggregation: calculate weighted score based on employees and performance
+        if (values.length === 0) return 0;
+        const sum = values.reduce((acc, val) => acc + (parseFloat(val) || 0), 0);
+        return Math.round((sum / values.length) * 10) / 10; // Round to 1 decimal
+      },
+    },
+    cellRenderer: ({ row }) => {
+      const value = row.weightedScore;
+      if (typeof value === "number" || typeof value === "string") {
+        return `${value}/100`;
+      }
+      return "";
+    },
+  },
   { accessor: "performance", label: "Performance", width: 120, type: "string" },
   { accessor: "location", label: "Location", width: 130, type: "string" },
-  { accessor: "growthRate", label: "Growth", width: 90, type: "string" },
   { accessor: "status", label: "Status", width: 110, type: "string" },
-  { accessor: "established", label: "Est. Date", width: 110, type: "date" },
 ];
 
 // In the new format, we have a flat array where grouping is defined by the 'divisions' and 'teams' properties
@@ -19,8 +108,7 @@ const rows = [
   {
     id: 1,
     organization: "TechSolutions Inc.",
-    employees: 137,
-    budget: "$15.0M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Exceeding",
     location: "San Francisco",
     growthRate: "+9%",
@@ -30,8 +118,7 @@ const rows = [
       {
         id: 101,
         organization: "Engineering",
-        employees: 97,
-        budget: "$10.6M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Exceeding",
         location: "Multiple",
         growthRate: "+11%",
@@ -43,52 +130,63 @@ const rows = [
             organization: "Frontend",
             employees: 28,
             budget: "$2.8M",
+            rating: 4.8,
+            projectCount: 12,
+            minTeamSize: 3,
+            maxTeamSize: 28,
+            weightedScore: 92.5,
             performance: "Exceeding",
             location: "San Francisco",
-            growthRate: "+12%",
             status: "Hiring",
-            established: "2019-05-16",
           },
           {
             id: 1002,
             organization: "Backend",
             employees: 32,
             budget: "$3.4M",
+            rating: 4.6,
+            projectCount: 8,
+            minTeamSize: 4,
+            maxTeamSize: 32,
+            weightedScore: 88.2,
             performance: "Meeting",
             location: "Seattle",
-            growthRate: "+8%",
             status: "Stable",
-            established: "2018-03-22",
           },
           {
             id: 1003,
             organization: "DevOps",
             employees: 15,
             budget: "$1.9M",
+            rating: 4.9,
+            projectCount: 15,
+            minTeamSize: 2,
+            maxTeamSize: 15,
+            weightedScore: 95.1,
             performance: "Exceeding",
             location: "Remote",
-            growthRate: "+15%",
             status: "Hiring",
-            established: "2020-11-05",
           },
           {
             id: 1004,
             organization: "Mobile",
             employees: 22,
             budget: "$2.5M",
+            rating: 4.3,
+            projectCount: 6,
+            minTeamSize: 3,
+            maxTeamSize: 22,
+            weightedScore: 82.7,
             performance: "Meeting",
             location: "Austin",
-            growthRate: "+10%",
             status: "Restructuring",
-            established: "2019-08-12",
           },
         ],
       },
       {
         id: 102,
         organization: "Product",
-        employees: 40,
-        budget: "$4.4M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
         location: "Multiple",
         growthRate: "+5%",
@@ -100,33 +198,42 @@ const rows = [
             organization: "Design",
             employees: 17,
             budget: "$1.8M",
+            rating: 4.4,
+            projectCount: 9,
+            minTeamSize: 2,
+            maxTeamSize: 17,
+            weightedScore: 87.3,
             performance: "Meeting",
             location: "Portland",
-            growthRate: "+6%",
             status: "Stable",
-            established: "2019-02-28",
           },
           {
             id: 1102,
             organization: "Research",
             employees: 9,
             budget: "$1.4M",
+            rating: 4.1,
+            projectCount: 4,
+            minTeamSize: 1,
+            maxTeamSize: 9,
+            weightedScore: 74.6,
             performance: "Below Target",
             location: "Boston",
-            growthRate: "+3%",
             status: "Reviewing",
-            established: "2020-07-15",
           },
           {
             id: 1103,
             organization: "QA Testing",
             employees: 14,
             budget: "$1.2M",
+            rating: 4.5,
+            projectCount: 11,
+            minTeamSize: 2,
+            maxTeamSize: 14,
+            weightedScore: 85.9,
             performance: "Meeting",
             location: "Chicago",
-            growthRate: "+5%",
             status: "Stable",
-            established: "2019-11-01",
           },
         ],
       },
@@ -136,8 +243,7 @@ const rows = [
   {
     id: 2,
     organization: "HealthFirst Group",
-    employees: 138,
-    budget: "$22.4M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Meeting",
     location: "Boston",
     growthRate: "+8%",
@@ -147,8 +253,7 @@ const rows = [
       {
         id: 201,
         organization: "Hospital Operations",
-        employees: 106,
-        budget: "$13.1M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
         location: "Multiple",
         growthRate: "+6%",
@@ -160,41 +265,49 @@ const rows = [
             organization: "Emergency",
             employees: 48,
             budget: "$5.2M",
+            rating: 4.7,
+            projectCount: 3,
+            minTeamSize: 8,
+            maxTeamSize: 48,
+            weightedScore: 91.4,
             performance: "Meeting",
             location: "New York",
-            growthRate: "+4%",
             status: "Critical",
-            established: "2010-06-14",
           },
           {
             id: 2002,
             organization: "Cardiology",
             employees: 32,
             budget: "$4.8M",
+            rating: 4.9,
+            projectCount: 5,
+            minTeamSize: 6,
+            maxTeamSize: 32,
+            weightedScore: 96.8,
             performance: "Exceeding",
             location: "Chicago",
-            growthRate: "+9%",
             status: "Expanding",
-            established: "2012-03-25",
           },
           {
             id: 2003,
             organization: "Pediatrics",
             employees: 26,
             budget: "$3.1M",
+            rating: 4.6,
+            projectCount: 4,
+            minTeamSize: 4,
+            maxTeamSize: 26,
+            weightedScore: 89.2,
             performance: "Meeting",
             location: "Boston",
-            growthRate: "+7%",
             status: "Stable",
-            established: "2014-08-30",
           },
         ],
       },
       {
         id: 202,
         organization: "Research & Development",
-        employees: 32,
-        budget: "$9.3M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Exceeding",
         location: "Multiple",
         growthRate: "+15%",
@@ -206,22 +319,28 @@ const rows = [
             organization: "Clinical Trials",
             employees: 18,
             budget: "$4.2M",
+            rating: 4.8,
+            projectCount: 7,
+            minTeamSize: 3,
+            maxTeamSize: 18,
+            weightedScore: 93.5,
             performance: "Exceeding",
             location: "San Diego",
-            growthRate: "+12%",
             status: "Expanding",
-            established: "2017-04-18",
           },
           {
             id: 2102,
             organization: "Genomics",
             employees: 14,
             budget: "$5.1M",
+            rating: 5.0,
+            projectCount: 8,
+            minTeamSize: 2,
+            maxTeamSize: 14,
+            weightedScore: 98.2,
             performance: "Exceeding",
             location: "Cambridge",
-            growthRate: "+18%",
             status: "Hiring",
-            established: "2019-02-21",
           },
         ],
       },
@@ -231,8 +350,7 @@ const rows = [
   {
     id: 3,
     organization: "Global Finance",
-    employees: 121,
-    budget: "$15.5M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Meeting",
     location: "New York",
     growthRate: "+3%",
@@ -242,8 +360,7 @@ const rows = [
       {
         id: 301,
         organization: "Banking Operations",
-        employees: 121,
-        budget: "$15.5M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
         location: "Multiple",
         growthRate: "+3%",
@@ -291,8 +408,7 @@ const rows = [
   {
     id: 4,
     organization: "Apex University",
-    employees: 115,
-    budget: "$13.4M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Meeting",
     location: "Cambridge",
     growthRate: "+6%",
@@ -302,8 +418,7 @@ const rows = [
       {
         id: 401,
         organization: "Academic Departments",
-        employees: 115,
-        budget: "$13.4M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
         location: "Multiple",
         growthRate: "+6%",
@@ -351,8 +466,7 @@ const rows = [
   {
     id: 5,
     organization: "Industrial Systems",
-    employees: 152,
-    budget: "$12.9M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Meeting",
     location: "Detroit",
     growthRate: "+3%",
@@ -362,8 +476,7 @@ const rows = [
       {
         id: 501,
         organization: "Production",
-        employees: 152,
-        budget: "$12.9M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
         location: "Multiple",
         growthRate: "+3%",
@@ -411,8 +524,7 @@ const rows = [
   {
     id: 6,
     organization: "Creative Media",
-    employees: 154,
-    budget: "$28.5M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Exceeding",
     location: "Los Angeles",
     growthRate: "+14%",
@@ -422,8 +534,7 @@ const rows = [
       {
         id: 601,
         organization: "Studio Operations",
-        employees: 154,
-        budget: "$28.5M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Exceeding",
         location: "Multiple",
         growthRate: "+14%",
@@ -471,8 +582,7 @@ const rows = [
   {
     id: 7,
     organization: "ShopSmart",
-    employees: 155,
-    budget: "$10.5M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Below Target",
     location: "Chicago",
     growthRate: "+2%",
@@ -482,8 +592,7 @@ const rows = [
       {
         id: 701,
         organization: "Store Operations",
-        employees: 155,
-        budget: "$10.5M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
         location: "Multiple",
         growthRate: "+7%",
@@ -531,8 +640,7 @@ const rows = [
   {
     id: 8,
     organization: "Green Harvest",
-    employees: 116,
-    budget: "$12.8M",
+    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Meeting",
     location: "Iowa",
     growthRate: "+4%",
@@ -542,8 +650,7 @@ const rows = [
       {
         id: 801,
         organization: "Farming Operations",
-        employees: 116,
-        budget: "$12.8M",
+        // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
         location: "Multiple",
         growthRate: "+4%",

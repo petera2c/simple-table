@@ -41,6 +41,7 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import { FilterCondition } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
+import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -206,11 +207,18 @@ const SimpleTableComp = ({
     return rows;
   }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
+  // Apply aggregation to current rows
+  const aggregatedRows = useAggregatedRows({
+    rows: currentRows,
+    headers,
+    rowGrouping,
+  });
+
   // Flatten rows based on row grouping and expansion state - now includes ALL properties
   const tableRows = useMemo(() => {
     if (!rowGrouping || rowGrouping.length === 0) {
       // No grouping - just return flat structure with calculated positions
-      return currentRows.map((row, index) => ({
+      return aggregatedRows.map((row, index) => ({
         row,
         depth: 0,
         groupingKey: undefined,
@@ -220,13 +228,13 @@ const SimpleTableComp = ({
     }
 
     return flattenRowsWithGrouping({
-      rows: currentRows,
+      rows: aggregatedRows,
       rowGrouping,
       rowIdAccessor,
       unexpandedRows,
       expandAll,
     });
-  }, [currentRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
+  }, [aggregatedRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });

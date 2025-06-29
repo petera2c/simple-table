@@ -3,9 +3,11 @@ import Row from "./Row";
 import { Pinned } from "./Pinned";
 import Theme from "./Theme";
 import EnumOption from "./EnumOption";
+import { AggregationConfig } from "./AggregationTypes";
 
 type HeaderObject = {
   accessor: string;
+  aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
   cellRenderer?: ({
     accessor,

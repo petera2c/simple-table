@@ -7,6 +7,7 @@ import type ColumnEditorPosition from "./types/ColumnEditorPosition";
 import type DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
 import type HeaderObject from "./types/HeaderObject";
+import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import type OnSortProps from "./types/OnSortProps";
 import type Row from "./types/Row";
 import type SharedTableProps from "./types/SharedTableProps";
@@ -21,6 +22,8 @@ import { FilterCondition } from "./types/FilterTypes";
 
 export { SimpleTable };
 export type {
+  AggregationConfig,
+  AggregationType,
   BoundingBox,
   Cell,
   CellChangeProps,

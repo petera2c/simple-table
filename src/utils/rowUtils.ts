@@ -76,11 +76,6 @@ export const flattenRowsWithGrouping = ({
       const isExpanded = expandAll
         ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expand unless explicitly collapsed
         : unexpandedRows.has(rowIdStr); // If expandAll=false, only expand if explicitly expanded
-      console.log("\n\n");
-      console.log("expandAll", expandAll);
-      console.log("unexpandedRows", unexpandedRows);
-      console.log("rowIdStr", rowIdStr);
-      console.log("isExpanded", isExpanded);
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {
