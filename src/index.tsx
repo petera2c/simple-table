@@ -18,7 +18,7 @@ import TableRefType from "./types/TableRefType";
 import type TableRowProps from "./types/TableRowProps";
 import type Theme from "./types/Theme";
 import type UpdateDataProps from "./types/UpdateCellProps";
-import { FilterCondition } from "./types/FilterTypes";
+import { FilterCondition, TableFilterState } from "./types/FilterTypes";
 
 export { SimpleTable };
 export type {
@@ -38,6 +38,7 @@ export type {
   SharedTableProps,
   SortConfig,
   TableCellProps,
+  TableFilterState,
   TableHeaderProps,
   TableRefType,
   TableRowProps,

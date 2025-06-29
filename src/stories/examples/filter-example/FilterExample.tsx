@@ -1,5 +1,3 @@
-"use client";
-
 import { PRODUCT_HEADERS } from "./filter-headers";
 import data from "./filter-data.json";
 import { SimpleTable } from "../../..";

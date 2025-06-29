@@ -4,6 +4,7 @@ import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
 
 interface UseTableFiltersProps {
+  externalFilterHandling: boolean;
   rows: Row[];
 }
 
@@ -15,11 +16,15 @@ interface UseTableFiltersReturn {
   handleClearAllFilters: () => void;
 }
 
-export const useTableFilters = ({ rows }: UseTableFiltersProps): UseTableFiltersReturn => {
+export const useTableFilters = ({
+  externalFilterHandling,
+  rows,
+}: UseTableFiltersProps): UseTableFiltersReturn => {
   const [filters, setFilters] = useState<TableFilterState>({});
 
   // Apply filters to rows
   const filteredRows = useMemo(() => {
+    if (externalFilterHandling) return rows;
     if (Object.keys(filters).length === 0) return rows;
 
     return rows.filter((row) => {
@@ -33,7 +38,7 @@ export const useTableFilters = ({ rows }: UseTableFiltersProps): UseTableFilters
         }
       });
     });
-  }, [rows, filters]);
+  }, [externalFilterHandling, filters, rows]);
 
   // Filter handlers
   const handleApplyFilter = useCallback((filter: FilterCondition) => {

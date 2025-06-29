@@ -25,6 +25,10 @@ export interface UniversalTableProps {
   shouldPaginate?: boolean;
   hideFooter?: boolean;
 
+  // External Handling Props
+  externalSortHandling?: boolean;
+  externalFilterHandling?: boolean;
+
   // Configuration Props
   rowsPerPage?: number;
   columnEditorText?: string;
@@ -69,6 +73,8 @@ export const defaultUniversalArgs: UniversalTableProps = {
   selectableColumns: false,
   shouldPaginate: false,
   hideFooter: false,
+  externalSortHandling: false,
+  externalFilterHandling: false,
   rowsPerPage: 10,
   columnEditorText: "Columns",
   columnEditorPosition: "right",
@@ -144,6 +150,14 @@ export const universalArgTypes = {
   hideFooter: {
     control: { type: "boolean" as const },
     description: "Hide the table footer",
+  },
+  externalSortHandling: {
+    control: { type: "boolean" as const },
+    description: "Handle sorting externally (table provides UI only)",
+  },
+  externalFilterHandling: {
+    control: { type: "boolean" as const },
+    description: "Handle filtering externally (table provides UI only)",
   },
   rowsPerPage: {
     control: { type: "number" as const, min: 5, max: 100, step: 5 },

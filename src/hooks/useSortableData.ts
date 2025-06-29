@@ -8,12 +8,12 @@ import { handleSort } from "../utils/sortUtils";
 const useSortableData = ({
   headers,
   tableRows,
-  externalSortHandling = false,
+  externalSortHandling,
   onSortChange,
 }: {
   headers: HeaderObject[];
   tableRows: Row[];
-  externalSortHandling?: boolean;
+  externalSortHandling: boolean;
   onSortChange?: (sort: SortConfig | null) => void;
 }) => {
   const [sort, setSort] = useState<SortConfig | null>(null);

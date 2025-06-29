@@ -39,7 +39,7 @@ import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
-import { FilterCondition } from "../../types/FilterTypes";
+import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import SortConfig from "../../types/SortConfig";
@@ -63,7 +63,7 @@ interface SimpleTableProps {
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onFilterChange?: (filter: FilterCondition) => void; // Callback when filter is applied
+  onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onNextPage?: OnNextPage; // Custom handler for next page
   onSortChange?: (sort: SortConfig | null) => void; // Callback when sort is applied
@@ -168,21 +168,15 @@ const SimpleTableComp = ({
     handleApplyFilter: internalHandleApplyFilter,
     handleClearFilter,
     handleClearAllFilters,
-  } = useTableFilters({ rows });
+  } = useTableFilters({ externalFilterHandling, rows });
 
   // Custom filter handler that respects external filter handling flag
   const handleApplyFilter = useCallback(
     (filter: FilterCondition) => {
-      if (externalFilterHandling) {
-        // Only call external handler, don't update internal state
-        onFilterChange?.(filter);
-      } else {
-        // Update internal state and call external handler if provided
-        internalHandleApplyFilter(filter);
-        onFilterChange?.(filter);
-      }
+      // Update internal state and call external handler if provided
+      internalHandleApplyFilter(filter);
     },
-    [externalFilterHandling, onFilterChange, internalHandleApplyFilter]
+    [internalHandleApplyFilter]
   );
 
   // Use custom hook for sorting (now operates on filtered rows)
@@ -192,6 +186,14 @@ const SimpleTableComp = ({
     externalSortHandling,
     onSortChange,
   });
+
+  useEffect(() => {
+    onFilterChange?.(filters);
+  }, [filters, onFilterChange]);
+
+  useEffect(() => {
+    onSortChange?.(sort);
+  }, [sort, onSortChange]);
 
   // Calculate the width of the sections
   const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
