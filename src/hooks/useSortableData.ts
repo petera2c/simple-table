@@ -28,12 +28,6 @@ const useSortableData = ({
       headers: HeaderObject[],
       groupingKeys: string[]
     ): Row[] => {
-      console.log("🔍 sortNestedRows called with:", {
-        rowsCount: rows.length,
-        sortConfig,
-        groupingKeys,
-      });
-
       // First sort the current level
       const { sortedData } = handleSort(headers, rows, sortConfig);
 
@@ -87,7 +81,6 @@ const useSortableData = ({
     const targetHeader = findHeaderRecursively(headers);
 
     if (!targetHeader) {
-      console.warn("❌ No header found for accessor:", accessor);
       return;
     }
 
