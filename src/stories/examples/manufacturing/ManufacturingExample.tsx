@@ -7,19 +7,12 @@ export const manufacturingExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,
+  rowGrouping: ["stations"],
   height: "70dvh",
 };
 
 export default function ManufacturingExampleComponent(props: UniversalTableProps) {
   return (
-    <SimpleTable
-      columnResizing
-      columnReordering
-      defaultHeaders={HEADERS}
-      rows={MANUFACTURING_DATA}
-      rowGrouping={["stations"]}
-      rowIdAccessor="id"
-      selectableCells
-    />
+    <SimpleTable defaultHeaders={HEADERS} rows={MANUFACTURING_DATA} rowIdAccessor="id" {...props} />
   );
 }

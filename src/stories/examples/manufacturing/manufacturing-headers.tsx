@@ -123,8 +123,8 @@ export const HEADERS: HeaderObject[] = [
     align: "left",
     type: "string",
     cellRenderer: ({ row }) => {
-      const isLineRow = row.station?.toString().includes("Summary") || false;
-      return isLineRow ? (
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      return hasChildren ? (
         <span className="font-bold">{row.productLine as string}</span>
       ) : (
         (row.productLine as string)
@@ -140,8 +140,8 @@ export const HEADERS: HeaderObject[] = [
     align: "left",
     type: "string",
     cellRenderer: ({ row }) => {
-      const isLineRow = row.station?.toString().includes("Summary") || false;
-      if (isLineRow) {
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) {
         return <span className="text-gray-500">{row.id as string}</span>;
       }
       return (
@@ -172,7 +172,8 @@ export const HEADERS: HeaderObject[] = [
     align: "center",
     type: "string",
     cellRenderer: ({ row }) => {
-      if (row.status === "—") return "—";
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) return "—";
 
       const status = row.status as string;
       const colorMap: Record<string, string> = {
@@ -200,13 +201,11 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "right",
     type: "number",
+    aggregation: { type: "sum" },
     cellRenderer: ({ row }) => {
-      const isLineRow = row.station?.toString().includes("Summary") || false;
-      return (
-        <div className={isLineRow ? "font-bold" : ""}>
-          {(row.outputRate as number).toLocaleString()}
-        </div>
-      );
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      const value = row.outputRate as number;
+      return <div className={hasChildren ? "font-bold" : ""}>{value.toLocaleString()}</div>;
     },
   },
   {
@@ -217,6 +216,15 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "right",
     type: "number",
+    aggregation: { type: "average" },
+    cellRenderer: ({ row }) => {
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) {
+        const value = row.cycletime as number;
+        return <span className="font-bold">{value?.toFixed(1)}</span>;
+      }
+      return <span>{row.cycletime as string}</span>;
+    },
   },
   {
     accessor: "efficiency",
@@ -226,8 +234,29 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "center",
     type: "number",
+    aggregation: { type: "average" },
     cellRenderer: ({ row }) => {
-      if (row.efficiency === "—") return "—";
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) {
+        const efficiency = row.efficiency as number;
+        const getColorByEfficiency = (value: number): "success" | "normal" | "exception" => {
+          if (value >= 90) return "success";
+          if (value >= 75) return "normal";
+          return "exception";
+        };
+
+        return (
+          <div className="w-full flex flex-col">
+            <Progress
+              percent={efficiency}
+              size="small"
+              showInfo={false}
+              status={getColorByEfficiency(efficiency)}
+            />
+            <div className="text-xs text-center mt-1 font-bold">{efficiency?.toFixed(0)}%</div>
+          </div>
+        );
+      }
 
       const efficiency = row.efficiency as number;
       const getColorByEfficiency = (value: number): "success" | "normal" | "exception" => {
@@ -257,11 +286,16 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "right",
     type: "number",
+    aggregation: { type: "average" },
     cellRenderer: ({ row }) => {
-      if (row.defectRate === "—") return "—";
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) {
+        const rate = row.defectRate as number;
+        const color = rate < 1 ? "text-green-600" : rate < 3 ? "text-orange-500" : "text-red-600";
+        return <span className={`${color} font-bold`}>{rate?.toFixed(2)}%</span>;
+      }
       const rate = parseFloat(row.defectRate as string);
       const color = rate < 1 ? "text-green-600" : rate < 3 ? "text-orange-500" : "text-red-600";
-
       return <span className={color}>{rate}%</span>;
     },
   },
@@ -273,6 +307,12 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "right",
     type: "number",
+    aggregation: { type: "sum" },
+    cellRenderer: ({ row }) => {
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      const value = row.defectCount as number;
+      return <div className={hasChildren ? "font-bold" : ""}>{value.toLocaleString()}</div>;
+    },
   },
   {
     accessor: "downtime",
@@ -282,12 +322,16 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "right",
     type: "number",
+    aggregation: { type: "sum" },
     cellRenderer: ({ row }) => {
-      if (row.downtime === "—") return "—";
-
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) {
+        const hours = row.downtime as number;
+        const color = hours < 1 ? "text-green-600" : hours < 2 ? "text-orange-500" : "text-red-600";
+        return <span className={`${color} font-bold`}>{hours?.toFixed(2)}</span>;
+      }
       const hours = parseFloat(row.downtime as string);
       const color = hours < 1 ? "text-green-600" : hours < 2 ? "text-orange-500" : "text-red-600";
-
       return <span className={color}>{hours}</span>;
     },
   },
@@ -299,8 +343,13 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "right",
     type: "number",
+    aggregation: { type: "average" },
     cellRenderer: ({ row }) => {
-      if (row.utilization === "—") return "—";
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) {
+        const value = row.utilization as number;
+        return <span className="font-bold">{value?.toFixed(0)}%</span>;
+      }
       return `${row.utilization}%`;
     },
   },
@@ -312,8 +361,11 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "right",
     type: "number",
+    aggregation: { type: "sum" },
     cellRenderer: ({ row }) => {
-      return (row.energy as number).toLocaleString();
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      const value = row.energy as number;
+      return <div className={hasChildren ? "font-bold" : ""}>{value.toLocaleString()}</div>;
     },
   },
   {
@@ -325,7 +377,8 @@ export const HEADERS: HeaderObject[] = [
     align: "center",
     type: "date",
     cellRenderer: ({ row }) => {
-      if (row.maintenanceDate === "—") return "—";
+      const hasChildren = row.stations && Array.isArray(row.stations);
+      if (hasChildren) return "—";
 
       const date = new Date(row.maintenanceDate as string);
       const today = new Date();

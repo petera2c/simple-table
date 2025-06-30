@@ -117,10 +117,16 @@ const calculateAggregation = (
     return config.customFn(allValues);
   }
 
-  // Parse values if parseValue function is provided
+  // Parse values if parseValue function is provided, otherwise try to parse as numbers
   const numericValues = config.parseValue
     ? allValues.map(config.parseValue).filter((val) => !isNaN(val))
-    : allValues.filter((val) => typeof val === "number" && !isNaN(val));
+    : allValues
+        .map((val) => {
+          if (typeof val === "number") return val;
+          if (typeof val === "string") return parseFloat(val);
+          return NaN;
+        })
+        .filter((val) => !isNaN(val));
 
   if (numericValues.length === 0) {
     return config.type === "count" ? allValues.length : undefined;
