@@ -52,6 +52,9 @@ import { cellRendererDefaults } from "./examples/CellRenderer";
 import { dynamicHeadersDefaults } from "./examples/DynamicHeadersExample";
 import { financeExampleDefaults } from "./examples/finance-example/FinancialExample";
 import { salesExampleDefaults } from "./examples/sales-example/SalesExample";
+import ManufacturingExampleComponent, {
+  manufacturingExampleDefaults,
+} from "./examples/manufacturing/ManufacturingExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -224,6 +227,17 @@ export const LiveUpdates: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: LiveUpdatesExample, ...args }),
 };
+
+export const ManufacturingExample: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...manufacturingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: ManufacturingExampleComponent, ...args }),
+};
+
 export const Pagination: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,

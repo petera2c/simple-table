@@ -185,6 +185,7 @@ const SimpleTableComp = ({
     tableRows: filteredRows,
     externalSortHandling,
     onSortChange,
+    rowGrouping,
   });
 
   useEffect(() => {
