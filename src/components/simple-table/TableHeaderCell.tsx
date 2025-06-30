@@ -78,6 +78,7 @@ const TableHeaderCell = forwardRef(
     const clickable = Boolean(header?.isSortable);
     const filterable = Boolean(header?.filterable);
     const currentFilter = filters[header.accessor];
+
     const className = `st-header-cell ${
       header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
     } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${

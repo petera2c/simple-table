@@ -128,7 +128,24 @@ const compareValues = (
 
 // Basic sort function for flat data (no grouping)
 const sortFlatRows = (rows: Row[], sortConfig: SortConfig, headers: HeaderObject[]): Row[] => {
-  const headerObject = headers.find((header) => header.accessor === sortConfig.key.accessor);
+  // Recursively search for the header in nested structure
+  const findHeaderRecursively = (
+    headers: HeaderObject[],
+    accessor: string
+  ): HeaderObject | undefined => {
+    for (const header of headers) {
+      if (header.accessor === accessor) {
+        return header;
+      }
+      if (header.children && header.children.length > 0) {
+        const found = findHeaderRecursively(header.children, accessor);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
+
+  const headerObject = findHeaderRecursively(headers, sortConfig.key.accessor);
   const type = headerObject?.type || "string";
   const { direction } = sortConfig;
 
