@@ -161,6 +161,13 @@ const SimpleTableComp = ({
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
+  // Apply aggregation to current rows
+  const aggregatedRows = useAggregatedRows({
+    rows,
+    headers,
+    rowGrouping,
+  });
+
   // Use filter hook
   const {
     filters,
@@ -168,7 +175,7 @@ const SimpleTableComp = ({
     handleApplyFilter: internalHandleApplyFilter,
     handleClearFilter,
     handleClearAllFilters,
-  } = useTableFilters({ externalFilterHandling, rows });
+  } = useTableFilters({ externalFilterHandling, rows: aggregatedRows });
 
   // Custom filter handler that respects external filter handling flag
   const handleApplyFilter = useCallback(
@@ -217,18 +224,11 @@ const SimpleTableComp = ({
     return rows;
   }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
 
-  // Apply aggregation to current rows
-  const aggregatedRows = useAggregatedRows({
-    rows: currentRows,
-    headers,
-    rowGrouping,
-  });
-
   // Flatten rows based on row grouping and expansion state - now includes ALL properties
   const tableRows = useMemo(() => {
     if (!rowGrouping || rowGrouping.length === 0) {
       // No grouping - just return flat structure with calculated positions
-      return aggregatedRows.map((row, index) => ({
+      return currentRows.map((row, index) => ({
         row,
         depth: 0,
         groupingKey: undefined,
@@ -238,13 +238,13 @@ const SimpleTableComp = ({
     }
 
     return flattenRowsWithGrouping({
-      rows: aggregatedRows,
+      rows: currentRows,
       rowGrouping,
       rowIdAccessor,
       unexpandedRows,
       expandAll,
     });
-  }, [aggregatedRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
+  }, [currentRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });

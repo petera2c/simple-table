@@ -205,7 +205,7 @@ export const HEADERS: HeaderObject[] = [
     cellRenderer: ({ row }) => {
       const hasChildren = row.stations && Array.isArray(row.stations);
       const value = row.outputRate as number;
-      return <div className={hasChildren ? "font-bold" : ""}>{value.toLocaleString()}</div>;
+      return <div className={hasChildren ? "font-bold" : ""}>{value}</div>;
     },
   },
   {

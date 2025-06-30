@@ -13,6 +13,12 @@ export const manufacturingExampleDefaults = {
 
 export default function ManufacturingExampleComponent(props: UniversalTableProps) {
   return (
-    <SimpleTable defaultHeaders={HEADERS} rows={MANUFACTURING_DATA} rowIdAccessor="id" {...props} />
+    <SimpleTable
+      defaultHeaders={HEADERS}
+      rows={MANUFACTURING_DATA}
+      rowIdAccessor="id"
+      {...props}
+      expandAll={false}
+    />
   );
 }
