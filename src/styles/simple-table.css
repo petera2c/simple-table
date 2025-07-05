@@ -333,6 +333,31 @@
   --st-cell-flash-color: var(--st-slate-200);
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-300);
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: var(--st-slate-600);
+  --st-next-prev-btn-disabled-color: var(--st-slate-400);
+
+  /* Page button colors */
+  --st-page-btn-color: var(--st-slate-600);
+  --st-page-btn-hover-background-color: var(--st-slate-100);
+
+  /* Column editor colors */
+  --st-column-editor-text-color: var(--st-slate-500);
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: var(--st-slate-300);
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: var(--st-slate-500);
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: var(--st-slate-500);
+  --st-datepicker-other-month-color: var(--st-slate-400);
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: var(--st-slate-300);
+  --st-filter-button-disabled-text-color: var(--st-slate-500);
 }
 
 /* Dark Theme */
@@ -386,6 +411,31 @@
   --st-cell-flash-color: var(--st-gray-600);
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-400);
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: var(--st-gray-400);
+  --st-next-prev-btn-disabled-color: var(--st-gray-600);
+
+  /* Page button colors */
+  --st-page-btn-color: var(--st-gray-400);
+  --st-page-btn-hover-background-color: var(--st-gray-700);
+
+  /* Column editor colors */
+  --st-column-editor-text-color: var(--st-gray-400);
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: var(--st-gray-600);
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: var(--st-gray-400);
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: var(--st-gray-400);
+  --st-datepicker-other-month-color: var(--st-gray-600);
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: var(--st-gray-600);
+  --st-filter-button-disabled-text-color: var(--st-gray-400);
 }
 
 /* Neutral Theme */
@@ -439,6 +489,31 @@
   --st-cell-flash-color: var(--st-neutral-400);
   --st-copy-flash-color: var(--st-neutral-600);
   --st-warning-flash-color: var(--st-red-400);
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: var(--st-neutral-600);
+  --st-next-prev-btn-disabled-color: var(--st-neutral-400);
+
+  /* Page button colors */
+  --st-page-btn-color: var(--st-neutral-600);
+  --st-page-btn-hover-background-color: var(--st-neutral-200);
+
+  /* Column editor colors */
+  --st-column-editor-text-color: var(--st-neutral-500);
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: var(--st-neutral-300);
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: var(--st-neutral-500);
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: var(--st-neutral-500);
+  --st-datepicker-other-month-color: var(--st-neutral-400);
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: var(--st-neutral-300);
+  --st-filter-button-disabled-text-color: var(--st-neutral-500);
 }
 
 /* Sky Theme */
@@ -492,6 +567,31 @@
   --st-cell-flash-color: var(--st-blue-300);
   --st-copy-flash-color: var(--st-blue-600);
   --st-warning-flash-color: var(--st-orange-400);
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: var(--st-blue-600);
+  --st-next-prev-btn-disabled-color: var(--st-blue-400);
+
+  /* Page button colors */
+  --st-page-btn-color: var(--st-blue-600);
+  --st-page-btn-hover-background-color: var(--st-blue-200);
+
+  /* Column editor colors */
+  --st-column-editor-text-color: var(--st-blue-600);
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: var(--st-blue-300);
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: var(--st-blue-600);
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: var(--st-blue-600);
+  --st-datepicker-other-month-color: var(--st-blue-400);
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: var(--st-blue-300);
+  --st-filter-button-disabled-text-color: var(--st-blue-500);
 }
 
 /* Funky Theme */
@@ -546,6 +646,31 @@
   --st-cell-flash-color: var(--st-violet-200);
   --st-copy-flash-color: var(--st-violet-600);
   --st-warning-flash-color: var(--st-red-400);
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: var(--st-violet-600);
+  --st-next-prev-btn-disabled-color: var(--st-violet-400);
+
+  /* Page button colors */
+  --st-page-btn-color: var(--st-violet-600);
+  --st-page-btn-hover-background-color: var(--st-violet-50);
+
+  /* Column editor colors */
+  --st-column-editor-text-color: var(--st-violet-600);
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: var(--st-stone-200);
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: var(--st-violet-600);
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: var(--st-violet-600);
+  --st-datepicker-other-month-color: var(--st-violet-400);
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: var(--st-stone-200);
+  --st-filter-button-disabled-text-color: var(--st-stone-500);
 }
 
 .simple-table-root * {
@@ -741,7 +866,7 @@ input {
   position: relative;
   display: flex;
   align-items: center;
-  color: var(--st-slate-800);
+  color: var(--st-cell-color);
   gap: var(--st-spacing-small);
   overflow: hidden;
 }
@@ -1017,15 +1142,15 @@ input {
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 .st-next-prev-btn {
-  fill: var(--st-slate-600);
+  fill: var(--st-next-prev-btn-color);
 }
 .disabled > .st-next-prev-icon {
   cursor: not-allowed;
-  fill: var(--st-slate-400);
+  fill: var(--st-next-prev-btn-disabled-color);
 }
 
 .st-next-prev-btn:not(.disabled):hover {
-  background-color: var(--st-slate-100);
+  background-color: var(--st-page-btn-hover-background-color);
 }
 
 .st-page-btn {
@@ -1033,7 +1158,7 @@ input {
   padding: var(--st-spacing-small);
   cursor: pointer;
   background-color: transparent;
-  color: var(--st-slate-600);
+  color: var(--st-page-btn-color);
   border: none;
   border-radius: var(--st-border-radius);
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
@@ -1081,7 +1206,7 @@ input {
   user-select: none;
   background: var(--st-column-editor-background-color);
   border-left: var(--st-border-width) solid var(--st-border-color);
-  color: var(--st-slate-500);
+  color: var(--st-column-editor-text-color);
   flex-shrink: 0;
 }
 
@@ -1185,7 +1310,7 @@ input {
   justify-content: center;
   width: 16px;
   height: 16px;
-  border: var(--st-border-width) solid var(--st-slate-300);
+  border: var(--st-border-width) solid var(--st-checkbox-border-color);
   border-radius: var(--st-border-radius);
   background-color: white;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease),
@@ -1410,7 +1535,7 @@ input {
 .st-dropdown-group-label {
   padding: 6px 12px;
   font-size: 0.8em;
-  color: var(--st-slate-500);
+  color: var(--st-dropdown-group-label-color);
   font-weight: 600;
 }
 
@@ -1490,7 +1615,7 @@ input {
   font-size: 0.8em;
   font-weight: 600;
   padding: 6px 0;
-  color: var(--st-slate-500);
+  color: var(--st-datepicker-weekday-color);
 }
 
 .st-datepicker-day {
@@ -1523,7 +1648,7 @@ input {
 }
 
 .st-datepicker-day.other-month {
-  color: var(--st-slate-400);
+  color: var(--st-datepicker-other-month-color);
 }
 
 .st-datepicker-month,
@@ -1673,8 +1798,8 @@ input {
 
 /* Disabled Apply Button */
 .st-filter-button-disabled {
-  background-color: var(--st-slate-300);
-  color: var(--st-slate-500);
+  background-color: var(--st-filter-button-disabled-background-color);
+  color: var(--st-filter-button-disabled-text-color);
   cursor: not-allowed;
 }
 
