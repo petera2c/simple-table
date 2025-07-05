@@ -41,6 +41,7 @@ interface TableContextType {
   nextIcon: ReactNode;
   onCellEdit?: (props: any) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onLoadMore?: () => void;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;

@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useState, useCallback } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
@@ -23,11 +23,20 @@ const TableBody = ({
   visibleRows,
 }: TableBodyProps) => {
   // Get stable props from context
-  const { headers, mainBodyRef, rowHeight, rowIdAccessor, scrollbarWidth, tableBodyContainerRef } =
-    useTableContext();
+  const {
+    headers,
+    mainBodyRef,
+    onLoadMore,
+    rowHeight,
+    rowIdAccessor,
+    scrollbarWidth,
+    shouldPaginate,
+    tableBodyContainerRef,
+  } = useTableContext();
 
   // Local state
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Add state for section widths
   useScrollbarVisibility({
@@ -38,6 +47,7 @@ const TableBody = ({
 
   // Refs
   const scrollTimeoutRef = useRef<number | null>(null);
+  const lastScrollTopRef = useRef<number>(0);
 
   // Derived state
   const totalRowCount = getTotalRowCount(tableRows);
@@ -65,14 +75,46 @@ const TableBody = ({
     return indices;
   }, [visibleRows, rowIdAccessor]);
 
+  // Check if we should load more data
+  const checkForLoadMore = useCallback(
+    (element: HTMLDivElement, scrollTop: number) => {
+      // Only check if we have onLoadMore callback, not paginated, and not already loading
+      if (!onLoadMore || shouldPaginate || isLoadingMore) return;
+
+      const { scrollHeight, clientHeight } = element;
+      const scrollThreshold = 200; // Load more when within 200px of bottom
+      const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
+
+      // Only trigger if scrolling down and near the bottom
+      if (distanceFromBottom <= scrollThreshold && scrollTop > lastScrollTopRef.current) {
+        setIsLoadingMore(true);
+        onLoadMore();
+
+        // Reset loading state after a short delay to prevent immediate re-triggering
+        setTimeout(() => {
+          setIsLoadingMore(false);
+        }, 1000);
+      }
+    },
+    [onLoadMore, shouldPaginate, isLoadingMore]
+  );
+
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const newScrollTop = e.currentTarget.scrollTop;
+    const element = e.currentTarget;
+    const newScrollTop = element.scrollTop;
+
     if (scrollTimeoutRef.current) {
       cancelAnimationFrame(scrollTimeoutRef.current);
     }
 
     scrollTimeoutRef.current = requestAnimationFrame(() => {
       setScrollTop(newScrollTop);
+
+      // Check if we should load more data
+      checkForLoadMore(element, newScrollTop);
+
+      // Update last scroll position for direction detection
+      lastScrollTopRef.current = newScrollTop;
     });
   };
 

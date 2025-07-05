@@ -65,6 +65,7 @@ interface SimpleTableProps {
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
+  onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
   onSortChange?: (sort: SortConfig | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
@@ -115,6 +116,7 @@ const SimpleTableComp = ({
   onColumnOrderChange,
   onFilterChange,
   onGridReady,
+  onLoadMore,
   onNextPage,
   onSortChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
@@ -381,6 +383,7 @@ const SimpleTableComp = ({
         nextIcon,
         onCellEdit,
         onColumnOrderChange,
+        onLoadMore,
         onSort,
         onTableHeaderDragEnd,
         pinnedLeftRef,
