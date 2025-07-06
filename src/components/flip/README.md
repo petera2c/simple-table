@@ -6,12 +6,16 @@ A clean, simple React component system for creating smooth list animations using
 
 - 🎬 **FLIP Animation**: Smooth position-based animations using JavaScript (not CSS)
 - 📋 **SortList Component**: Clean list component with a simple sort button
+- 🧩 **Sectioned Animation**: Advanced component for items with multiple sections
+- 🔀 **Multiple Shuffle Modes**: Shuffle entire items or just sections within items
 - 🎨 **Customizable**: Flexible styling and animation configurations
 - 🪝 **React Hooks**: Custom hooks for advanced use cases
 - 📱 **Responsive**: Works well on mobile and desktop
 - ⚡ **Performance**: Optimized for smooth animations
 
 ## Quick Start
+
+### Basic List Animation
 
 ```tsx
 import { SortList, ListViewItem } from "@/components/flip";
@@ -23,11 +27,41 @@ const items: ListViewItem[] = [
 ];
 
 function App() {
+  return <SortList items={items} animationConfig={{ duration: 300, easing: "easeOutQuad" }} />;
+}
+```
+
+### Sectioned List Animation
+
+For complex layouts with multiple sections per item:
+
+```tsx
+import { SectionedSortList, SectionedListViewItem } from "@/components/flip";
+
+const sectionedItems: SectionedListViewItem[] = [
+  {
+    id: 1,
+    sections: [
+      { id: "name", content: <strong>John Doe</strong> },
+      { id: "role", content: <span>Senior Developer</span> },
+      { id: "status", content: <span>Active</span> },
+    ],
+  },
+  {
+    id: 2,
+    sections: [
+      { id: "name", content: <strong>Jane Smith</strong> },
+      { id: "role", content: <span>UX Designer</span> },
+      { id: "status", content: <span>Away</span> },
+    ],
+  },
+];
+
+function App() {
   return (
-    <SortList
-      items={items}
-      onItemClick={(item) => console.log("Clicked:", item)}
-      animationConfig={{ duration: 300, easing: "easeOutQuad" }}
+    <SectionedSortList
+      items={sectionedItems}
+      animationConfig={{ duration: 350, easing: "easeOutQuad" }}
     />
   );
 }
@@ -42,7 +76,6 @@ The main component that provides a list with a sort button and FLIP animations.
 ```tsx
 interface SortListProps {
   items: ListViewItem[];
-  onItemClick?: (item: ListViewItem) => void;
   animationConfig?: {
     duration?: number;
     easing?: string;
@@ -55,8 +88,37 @@ interface SortListProps {
 
 #### Built-in Controls
 
-- **Sort Button**: Toggles between ascending and descending order
-- **Visual Indicator**: Arrow shows current sort direction
+- **Shuffle Button**: Randomly reorders items with smooth animations
+
+### SectionedSortList
+
+Advanced component for items with multiple sections that can be animated independently.
+
+```tsx
+interface SectionedSortListProps {
+  items: SectionedListViewItem[];
+  animationConfig?: {
+    duration?: number;
+    easing?: string;
+    delay?: number;
+  };
+  className?: string;
+  itemClassName?: string;
+  sectionClassName?: string;
+}
+```
+
+#### Built-in Controls
+
+- **Shuffle Items 🔀**: Randomly reorders entire items
+- **Shuffle Sections 🎯**: Randomly reorders sections within each item
+
+#### Key Features
+
+- **Section-level animations**: Each section animates independently
+- **Flexible layout**: Sections display horizontally (stacks on mobile)
+- **Section interaction**: Click handlers for individual sections
+- **Responsive design**: Automatic mobile-friendly layout
 
 ### BasicExample
 
@@ -205,6 +267,20 @@ interface ListViewItem {
   data?: any;
 }
 
+interface ListViewSection {
+  id: string | number;
+  content: React.ReactNode;
+  className?: string;
+  data?: any;
+}
+
+interface SectionedListViewItem {
+  id: string | number;
+  sections: ListViewSection[];
+  className?: string;
+  data?: any;
+}
+
 interface FlipAnimationOptions {
   duration?: number;
   easing?: string;
@@ -252,11 +328,21 @@ The components come with default CSS that can be customized:
 
 ## Examples
 
-Check out the `BasicExample` component for a simple example including:
+Check out the example components:
 
-- Basic list with sort functionality
+### `BasicExample`
+
+- Basic list with shuffle functionality
+- Sectioned list with dual shuffle modes
 - Interactive animation controls
 - Clean, minimal implementation
+
+### `SectionedExample`
+
+- Advanced employee directory example
+- Complex sectioned layout
+- Demonstrates both item and section shuffling
+- Responsive design patterns
 
 ---
 
@@ -264,8 +350,10 @@ Check out the `BasicExample` component for a simple example including:
 
 ### Components
 
-- `SortList` - Main animated list component with sort button
-- `BasicExample` - Simple example component
+- `SortList` - Main animated list component with shuffle button
+- `SectionedSortList` - Advanced component for sectioned items with dual shuffle modes
+- `BasicExample` - Simple example component showing both basic and sectioned usage
+- `SectionedExample` - Advanced example with employee directory layout
 
 ### Hooks
 
@@ -279,7 +367,10 @@ Check out the `BasicExample` component for a simple example including:
 
 ### Types
 
-- `ListViewItem` - Interface for list items
+- `ListViewItem` - Interface for basic list items
+- `ListViewSection` - Interface for individual sections within items
+- `SectionedListViewItem` - Interface for items with multiple sections
 - `SortListProps` - Props for SortList component
+- `SectionedSortListProps` - Props for SectionedSortList component
 - `AnimationConfig` - Animation configuration interface
 - `FlipAnimationOptions` - Options for FLIP animations

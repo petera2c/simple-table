@@ -1,4 +1,4 @@
-import { SortList, ListViewItem } from "./index";
+import { SectionedSortList, ListViewItem, SectionedListViewItem } from "./index";
 
 // Simple example data
 const createSimpleItems = (): ListViewItem[] => [
@@ -44,46 +44,81 @@ const createSimpleItems = (): ListViewItem[] => [
   },
 ];
 
+// Create sectioned example data
+const createSectionedItems = (): SectionedListViewItem[] => [
+  {
+    id: 1,
+    sections: [
+      {
+        id: "title",
+        content: <strong>Task 1</strong>,
+      },
+      {
+        id: "priority",
+        content: <span style={{ color: "#dc3545" }}>High</span>,
+      },
+      {
+        id: "status",
+        content: <span style={{ color: "#28a745" }}>Complete</span>,
+      },
+    ],
+  },
+  {
+    id: 2,
+    sections: [
+      {
+        id: "title",
+        content: <strong>Task 2</strong>,
+      },
+      {
+        id: "priority",
+        content: <span style={{ color: "#ffc107" }}>Medium</span>,
+      },
+      {
+        id: "status",
+        content: <span style={{ color: "#17a2b8" }}>In Progress</span>,
+      },
+    ],
+  },
+  {
+    id: 3,
+    sections: [
+      {
+        id: "title",
+        content: <strong>Task 3</strong>,
+      },
+      {
+        id: "priority",
+        content: <span style={{ color: "#6c757d" }}>Low</span>,
+      },
+      {
+        id: "status",
+        content: <span style={{ color: "#dc3545" }}>Blocked</span>,
+      },
+    ],
+  },
+];
+
 export const BasicExample = () => {
   const items = createSimpleItems();
+  const sectionedItems = createSectionedItems();
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <h2>Basic Sort Animation Example</h2>
-      <p>
-        Click the sort button to reorder the items. Items will smoothly animate to their new
-        positions using JavaScript and FLIP animation.
-      </p>
-
-      <SortList
-        items={items}
-        onItemClick={(item: ListViewItem) => console.log("Clicked item:", item.id)}
-        animationConfig={{
-          duration: 300,
-          easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-        }}
-      />
-
-      <div
-        style={{
-          marginTop: "20px",
-          padding: "15px",
-          backgroundColor: "#f5f5f5",
-          borderRadius: "8px",
-        }}
-      >
-        <h4>How it works:</h4>
-        <ul>
-          <li>Click the "Sort" button to toggle between ascending and descending order</li>
-          <li>Items will smoothly animate to their new positions</li>
-          <li>Click on items to interact with them</li>
-          <li>The arrow indicates the current sort direction</li>
-        </ul>
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+      <div style={{ marginBottom: "40px" }}>
+        <h3>Sectioned Animation</h3>
         <p>
-          <strong>Note:</strong> All animations are done with JavaScript using the FLIP technique
-          (First, Last, Invert, Play) for smooth, performant transitions. No external libraries
-          required!
+          This example shows items with multiple sections. You can shuffle entire items or just the
+          sections within each item. Each section animates independently.
         </p>
+
+        <SectionedSortList
+          items={sectionedItems}
+          animationConfig={{
+            duration: 350,
+            easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          }}
+        />
       </div>
     </div>
   );

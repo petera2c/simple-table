@@ -19,6 +19,21 @@ export interface FlipAnimationState {
   };
 }
 
+// New section-based interfaces
+export interface ListViewSection {
+  id: string | number;
+  content: React.ReactNode;
+  className?: string;
+  data?: any;
+}
+
+export interface SectionedListViewItem {
+  id: string | number;
+  sections: ListViewSection[];
+  className?: string;
+  data?: any;
+}
+
 export interface ListViewItem {
   id: string | number;
   content: React.ReactNode;
@@ -27,10 +42,17 @@ export interface ListViewItem {
 
 export interface SortListProps {
   items: ListViewItem[];
-  onItemClick?: (item: ListViewItem) => void;
   animationConfig?: Partial<AnimationConfig>;
   className?: string;
   itemClassName?: string;
+}
+
+export interface SectionedSortListProps {
+  items: SectionedListViewItem[];
+  animationConfig?: Partial<AnimationConfig>;
+  className?: string;
+  itemClassName?: string;
+  sectionClassName?: string;
 }
 
 export interface FlipAnimationOptions {

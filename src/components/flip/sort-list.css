@@ -9,6 +9,7 @@
 .sort-controls {
   display: flex;
   justify-content: center;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
@@ -62,19 +63,8 @@
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 8px;
-  cursor: pointer;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
   position: relative;
   z-index: 1;
-}
-
-.sort-list-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #4a90e2;
-}
-
-.sort-list-item:active {
-  transform: scale(0.98);
 }
 
 /* Animation states */
@@ -97,6 +87,56 @@
   .sort-list-item {
     padding: 12px;
     margin-bottom: 6px;
+  }
+}
+
+/* Sectioned item styles */
+.sort-list-item.sectioned-item {
+  padding: 8px;
+}
+
+.item-sections {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.item-section {
+  flex: 1;
+  padding: 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.item-section:hover {
+  background: #e9ecef;
+  border-color: #4a90e2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.item-section:active {
+  transform: translateY(0);
+}
+
+/* Animation states for sections */
+.item-section[data-flip-animating="true"] {
+  z-index: 10;
+}
+
+/* Responsive design for sections */
+@media (max-width: 768px) {
+  .item-sections {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .item-section {
+    padding: 10px;
   }
 }
 

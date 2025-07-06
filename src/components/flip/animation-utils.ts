@@ -1,4 +1,4 @@
-import { FlipItem, FlipAnimationState, AnimationConfig, FlipAnimationOptions } from "./types";
+import { AnimationConfig, FlipAnimationOptions } from "./types";
 
 /**
  * Default animation configuration

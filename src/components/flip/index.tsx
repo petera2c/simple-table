@@ -2,7 +2,7 @@
 import "./sort-list.css";
 
 // Main Components
-export { SortList } from "./SortList";
+export { SectionedSortList } from "./SectionedSortList";
 export { BasicExample } from "./BasicExample";
 
 // Hooks
@@ -27,9 +27,9 @@ export type {
   AnimationConfig,
   FlipAnimationState,
   ListViewItem,
+  ListViewSection,
+  SectionedListViewItem,
   SortListProps,
+  SectionedSortListProps,
   FlipAnimationOptions,
 } from "./types";
-
-// Default export
-export { SortList as default } from "./SortList";
