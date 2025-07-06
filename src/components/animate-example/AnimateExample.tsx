@@ -1,5 +1,5 @@
-import React from "react";
-import { SectionedSortList, SectionedListViewItem } from "./index";
+import { SectionedListViewItem } from "../animate/types";
+import SectionedSortList from "./SectionedSortList";
 
 // Create sectioned example data
 const createSectionedItems = (): SectionedListViewItem[] => [
@@ -56,29 +56,18 @@ const createSectionedItems = (): SectionedListViewItem[] => [
   },
 ];
 
-export const BasicExample = () => {
+export const AnimateExample = () => {
   const sectionedItems = createSectionedItems();
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "40px" }}>
-        <h3>Sectioned Animation</h3>
-        <p>
-          This example shows items with multiple sections. You can shuffle entire items or just the
-          sections within each item. Each section animates independently using the Animate
-          component.
-        </p>
-
-        <SectionedSortList
-          items={sectionedItems}
-          animationConfig={{
-            duration: 350,
-            easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-          }}
-        />
-      </div>
-    </div>
+    <SectionedSortList
+      items={sectionedItems}
+      animationConfig={{
+        duration: 350,
+        easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      }}
+    />
   );
 };
 
-export default BasicExample;
+export default AnimateExample;

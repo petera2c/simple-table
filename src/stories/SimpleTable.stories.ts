@@ -55,7 +55,7 @@ import { salesExampleDefaults } from "./examples/sales-example/SalesExample";
 import ManufacturingExampleComponent, {
   manufacturingExampleDefaults,
 } from "./examples/manufacturing/ManufacturingExample";
-import { BasicExample as FlipBasicExample } from "../components/flip";
+import AnimateExample from "../components/animate-example/AnimateExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -66,7 +66,7 @@ const meta = {
 } satisfies Meta<typeof ThemingExample>;
 
 export const Test: StoryObj = {
-  render: FlipBasicExample,
+  render: AnimateExample,
 };
 
 export const Alignment: StoryObj<UniversalTableProps> = {

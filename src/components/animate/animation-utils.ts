@@ -30,7 +30,7 @@ export const applyInitialTransform = (element: HTMLElement, invert: { x: number;
 /**
  * Animates element to its final position
  */
-export const animateToFinalPosition = (
+const animateToFinalPosition = (
   element: HTMLElement,
   options: FlipAnimationOptions = {}
 ): Promise<void> => {

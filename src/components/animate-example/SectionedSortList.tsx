@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
-import { SectionedListViewItem, SectionedSortListProps } from "./types";
-import { Animate } from "./Animate";
 import "./sort-list.css";
+import { SectionedListViewItem, SectionedSortListProps } from "../animate/types";
+import Animate from "../animate/Animate";
 
 export const SectionedSortList: React.FC<SectionedSortListProps> = ({
   items,
@@ -86,9 +86,10 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
                   key={section.id}
                   id={`${item.id}-${section.id}`}
                   animationConfig={animationConfig}
-                  className={`item-section ${sectionClassName} ${section.className || ""}`}
                 >
-                  {section.content}
+                  <div className={`item-section ${sectionClassName} ${section.className || ""}`}>
+                    {section.content}
+                  </div>
                 </Animate>
               ))}
             </div>

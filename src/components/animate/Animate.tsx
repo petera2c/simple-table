@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, ReactNode } from "react";
+import React, { useRef, useLayoutEffect, ReactNode, isValidElement, cloneElement } from "react";
 import { FlipAnimationOptions } from "./types";
 import { flipElement, DEFAULT_ANIMATION_CONFIG } from "./animation-utils";
 
@@ -7,33 +7,26 @@ interface AnimateProps {
   children: ReactNode;
   animationConfig?: FlipAnimationOptions;
   disabled?: boolean;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /**
  * Animate component that automatically detects position changes and performs FLIP animations
  *
- * This component wraps any element and automatically animates it when its position changes.
- * Perfect for list items, table cells, or any element that needs to smoothly animate
- * when reordering or repositioning.
+ * This component directly enhances the child element with animation capabilities without
+ * adding wrapper elements. The child element will automatically animate when its position changes.
  *
  * @param id - Unique identifier for the element
- * @param children - React node to wrap and animate
+ * @param children - Single React element to animate (must be a valid React element)
  * @param animationConfig - Animation configuration (duration, easing, delay, etc.)
  * @param disabled - Whether to disable animations
- * @param className - CSS class name to apply to the wrapper
- * @param style - Inline styles to apply to the wrapper
  */
 export const Animate: React.FC<AnimateProps> = ({
   id,
   children,
   animationConfig = {},
   disabled = false,
-  className,
-  style,
 }) => {
-  const elementRef = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<HTMLElement>(null);
   const previousBoundsRef = useRef<DOMRect | null>(null);
   const isAnimatingRef = useRef(false);
   const mountedRef = useRef(false);
@@ -81,10 +74,19 @@ export const Animate: React.FC<AnimateProps> = ({
     previousBoundsRef.current = currentBounds;
   });
 
-  return (
-    <div ref={elementRef} data-animate-id={id} className={className} style={style}>
-      {children}
-    </div>
+  // Ensure we have a valid React element as a child
+  if (!isValidElement(children)) {
+    console.warn("Animate component requires a valid React element as a child");
+    return <>{children}</>;
+  }
+
+  // Clone the child element and add our ref and data attribute
+  return cloneElement(
+    children as React.ReactElement<any>,
+    {
+      ref: elementRef,
+      "data-animate-id": id,
+    } as any
   );
 };
 
