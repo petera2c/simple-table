@@ -55,6 +55,7 @@ import { salesExampleDefaults } from "./examples/sales-example/SalesExample";
 import ManufacturingExampleComponent, {
   manufacturingExampleDefaults,
 } from "./examples/manufacturing/ManufacturingExample";
+import { BasicExample as FlipBasicExample } from "../components/flip";
 
 const meta = {
   title: "Docs & Examples",
@@ -63,6 +64,10 @@ const meta = {
     layout: "fullscreen",
   },
 } satisfies Meta<typeof ThemingExample>;
+
+export const Test: StoryObj = {
+  render: FlipBasicExample,
+};
 
 export const Alignment: StoryObj<UniversalTableProps> = {
   args: {
@@ -242,7 +247,7 @@ export const Pagination: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
     ...paginationDefaults,
-    theme: "dark"
+    theme: "dark",
   },
   argTypes: universalArgTypes,
   render: (args) =>

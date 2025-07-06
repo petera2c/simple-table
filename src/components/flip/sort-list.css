@@ -1,0 +1,125 @@
+.sort-list {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+.sort-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.sort-button {
+  padding: 10px 20px;
+  border: 2px solid #4a90e2;
+  background: white;
+  color: #4a90e2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sort-button:hover:not(:disabled) {
+  background: #4a90e2;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+}
+
+.sort-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(74, 144, 226, 0.2);
+}
+
+.sort-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f5f5;
+  color: #999;
+  border-color: #ddd;
+  transform: none;
+  box-shadow: none;
+}
+
+.sort-list-container {
+  position: relative;
+  min-height: 200px;
+}
+
+.sort-list-item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sort-list-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #4a90e2;
+}
+
+.sort-list-item:active {
+  transform: scale(0.98);
+}
+
+/* Animation states */
+.sort-list-item[data-flip-animating="true"] {
+  z-index: 10;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .sort-list {
+    padding: 10px;
+  }
+
+  .sort-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    min-width: 100px;
+  }
+
+  .sort-list-item {
+    padding: 12px;
+    margin-bottom: 6px;
+  }
+}
+
+/* Custom styles for different item types */
+.sort-list-item.card-style {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.sort-list-item.card-style:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.sort-list-item.minimal-style {
+  background: transparent;
+  border: none;
+  border-left: 4px solid #4a90e2;
+  border-radius: 0;
+  padding: 12px 16px;
+}
+
+.sort-list-item.minimal-style:hover {
+  background: rgba(74, 144, 226, 0.05);
+  border-left-color: #2c5aa0;
+}
