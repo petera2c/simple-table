@@ -1,7 +1,8 @@
-import { SectionedSortList, ListViewItem, SectionedListViewItem } from "./index";
+import React, { useState, useCallback } from "react";
+import { SectionedSortList, SectionedListViewItem, Animate } from "./index";
 
 // Simple example data
-const createSimpleItems = (): ListViewItem[] => [
+const createSimpleItems = (): Array<{ id: number; content: React.ReactNode }> => [
   {
     id: 1,
     content: (
@@ -100,8 +101,27 @@ const createSectionedItems = (): SectionedListViewItem[] => [
 ];
 
 export const BasicExample = () => {
-  const items = createSimpleItems();
-  const sectionedItems = createSectionedItems();
+  const [simpleItems, setSimpleItems] = useState(createSimpleItems());
+  const [sectionedItems, setSectionedItems] = useState(createSectionedItems());
+  const [isShuffling, setIsShuffling] = useState(false);
+
+  const handleShuffleSimple = useCallback(() => {
+    if (isShuffling) return;
+
+    setIsShuffling(true);
+
+    // Fisher-Yates shuffle algorithm
+    const shuffled = [...simpleItems];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    setSimpleItems(shuffled);
+
+    // Reset shuffling state after animation completes
+    setTimeout(() => setIsShuffling(false), 350);
+  }, [simpleItems, isShuffling]);
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
@@ -109,7 +129,8 @@ export const BasicExample = () => {
         <h3>Sectioned Animation</h3>
         <p>
           This example shows items with multiple sections. You can shuffle entire items or just the
-          sections within each item. Each section animates independently.
+          sections within each item. Each section animates independently using the Animate
+          component.
         </p>
 
         <SectionedSortList

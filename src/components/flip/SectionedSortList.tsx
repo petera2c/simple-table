@@ -1,7 +1,6 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { SectionedListViewItem, SectionedSortListProps } from "./types";
-import { useFlipAnimation } from "./use-flip-animation";
-import { easingFunctions } from "./animation-utils";
+import { Animate } from "./Animate";
 import "./sort-list.css";
 
 export const SectionedSortList: React.FC<SectionedSortListProps> = ({
@@ -12,35 +11,7 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
   sectionClassName = "",
 }) => {
   const [currentItems, setCurrentItems] = useState<SectionedListViewItem[]>(items);
-
-  // Default animation configuration
-  const defaultAnimationConfig = useMemo(
-    () => ({
-      duration: 300,
-      easing: easingFunctions.easeOutQuad,
-      delay: 0,
-      ...animationConfig,
-    }),
-    [animationConfig]
-  );
-
-  // Setup FLIP animation hook - we'll use a flattened structure for animation
-  const flattenedItems = useMemo(() => {
-    return currentItems.flatMap((item) =>
-      item.sections.map((section) => ({
-        id: `${item.id}-${section.id}`,
-        content: section.content,
-        data: { itemId: item.id, sectionId: section.id },
-      }))
-    );
-  }, [currentItems]);
-
-  const { containerRef, captureFirst, isAnimating, triggerFlipAnimation } = useFlipAnimation(
-    flattenedItems,
-    {
-      animationOptions: defaultAnimationConfig,
-    }
-  );
+  const [isShuffling, setIsShuffling] = useState(false);
 
   // Update items when props change
   React.useEffect(() => {
@@ -49,7 +20,9 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
 
   // Shuffle items function
   const handleShuffleItems = useCallback(() => {
-    if (isAnimating) return;
+    if (isShuffling) return;
+
+    setIsShuffling(true);
 
     // Fisher-Yates shuffle algorithm for items
     const shuffled = [...currentItems];
@@ -58,15 +31,17 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    // Manually trigger the FLIP animation sequence
-    captureFirst();
     setCurrentItems(shuffled);
-    triggerFlipAnimation();
-  }, [currentItems, captureFirst, isAnimating, triggerFlipAnimation]);
+
+    // Reset shuffling state after animation completes
+    setTimeout(() => setIsShuffling(false), (animationConfig.duration || 300) + 50);
+  }, [currentItems, isShuffling, animationConfig.duration]);
 
   // Shuffle sections within items function
   const handleShuffleSections = useCallback(() => {
-    if (isAnimating) return;
+    if (isShuffling) return;
+
+    setIsShuffling(true);
 
     const shuffledItems = currentItems.map((item) => {
       // Fisher-Yates shuffle for sections within each item
@@ -82,24 +57,24 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
       };
     });
 
-    // Manually trigger the FLIP animation sequence
-    captureFirst();
     setCurrentItems(shuffledItems);
-    triggerFlipAnimation();
-  }, [currentItems, captureFirst, isAnimating, triggerFlipAnimation]);
+
+    // Reset shuffling state after animation completes
+    setTimeout(() => setIsShuffling(false), (animationConfig.duration || 300) + 50);
+  }, [currentItems, isShuffling, animationConfig.duration]);
 
   return (
     <div className={`sort-list ${className}`}>
       <div className="sort-controls">
-        <button onClick={handleShuffleItems} disabled={isAnimating} className="sort-button">
+        <button onClick={handleShuffleItems} disabled={isShuffling} className="sort-button">
           Shuffle Items 🔀
         </button>
-        <button onClick={handleShuffleSections} disabled={isAnimating} className="sort-button">
+        <button onClick={handleShuffleSections} disabled={isShuffling} className="sort-button">
           Shuffle Sections 🎯
         </button>
       </div>
 
-      <div ref={containerRef} className="sort-list-container">
+      <div className="sort-list-container">
         {currentItems.map((item) => (
           <div
             key={item.id}
@@ -107,13 +82,14 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
           >
             <div className="item-sections">
               {item.sections.map((section) => (
-                <div
+                <Animate
                   key={section.id}
-                  data-flip-id={`${item.id}-${section.id}`}
+                  id={`${item.id}-${section.id}`}
+                  animationConfig={animationConfig}
                   className={`item-section ${sectionClassName} ${section.className || ""}`}
                 >
                   {section.content}
-                </div>
+                </Animate>
               ))}
             </div>
           </div>

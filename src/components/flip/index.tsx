@@ -2,11 +2,12 @@
 import "./sort-list.css";
 
 // Main Components
-export { SectionedSortList } from "./SectionedSortList";
-export { BasicExample } from "./BasicExample";
+export { default as SectionedSortList } from "./SectionedSortList";
+export { default as BasicExample } from "./BasicExample";
+export { default as Animate } from "./Animate";
 
 // Hooks
-export { useFlipAnimation } from "./use-flip-animation";
+export { default as useFlipAnimation } from "./use-flip-animation";
 
 // Utilities
 export {
@@ -23,13 +24,15 @@ export {
 
 // Types
 export type {
-  FlipItem,
-  AnimationConfig,
-  FlipAnimationState,
   ListViewItem,
-  ListViewSection,
   SectionedListViewItem,
+  ListViewSection,
   SortListProps,
   SectionedSortListProps,
   FlipAnimationOptions,
+  AnimationConfig,
+  AnimateProps,
 } from "./types";
+
+// Export sort utilities
+export { sortBy } from "./list-utils";

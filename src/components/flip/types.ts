@@ -61,3 +61,13 @@ export interface FlipAnimationOptions {
   delay?: number;
   onComplete?: () => void;
 }
+
+// Animate component props
+export interface AnimateProps {
+  id: string | number;
+  children: React.ReactNode;
+  animationConfig?: FlipAnimationOptions;
+  disabled?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+}
