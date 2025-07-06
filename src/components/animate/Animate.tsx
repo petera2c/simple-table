@@ -14,6 +14,7 @@ interface AnimateProps {
  *
  * This component directly enhances the child element with animation capabilities without
  * adding wrapper elements. The child element will automatically animate when its position changes.
+ * Animations can be interrupted and new ones can start at any time.
  *
  * @param id - Unique identifier for the element
  * @param children - Single React element to animate (must be a valid React element)
@@ -28,7 +29,6 @@ export const Animate: React.FC<AnimateProps> = ({
 }) => {
   const elementRef = useRef<HTMLElement>(null);
   const previousBoundsRef = useRef<DOMRect | null>(null);
-  const isAnimatingRef = useRef(false);
   const mountedRef = useRef(false);
 
   useLayoutEffect(() => {
@@ -50,23 +50,16 @@ export const Animate: React.FC<AnimateProps> = ({
       (Math.abs(currentBounds.left - previousBounds.left) > 1 ||
         Math.abs(currentBounds.top - previousBounds.top) > 1);
 
-    if (hasPositionChanged && !isAnimatingRef.current) {
-      isAnimatingRef.current = true;
-
+    if (hasPositionChanged) {
       // Merge animation config with defaults
       const finalConfig = {
         ...DEFAULT_ANIMATION_CONFIG,
         ...animationConfig,
-        onComplete: () => {
-          isAnimatingRef.current = false;
-          animationConfig.onComplete?.();
-        },
       };
 
-      // Perform FLIP animation
+      // Start new animation (this will interrupt any ongoing animation)
       flipElement(elementRef.current, previousBounds, finalConfig).catch(() => {
         // Handle animation errors gracefully
-        isAnimatingRef.current = false;
       });
     }
 

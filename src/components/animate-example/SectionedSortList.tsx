@@ -11,7 +11,6 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
   sectionClassName = "",
 }) => {
   const [currentItems, setCurrentItems] = useState<SectionedListViewItem[]>(items);
-  const [isShuffling, setIsShuffling] = useState(false);
 
   // Update items when props change
   React.useEffect(() => {
@@ -20,10 +19,6 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
 
   // Shuffle items function
   const handleShuffleItems = useCallback(() => {
-    if (isShuffling) return;
-
-    setIsShuffling(true);
-
     // Fisher-Yates shuffle algorithm for items
     const shuffled = [...currentItems];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -32,17 +27,10 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
     }
 
     setCurrentItems(shuffled);
-
-    // Reset shuffling state after animation completes
-    setTimeout(() => setIsShuffling(false), (animationConfig.duration || 300) + 50);
-  }, [currentItems, isShuffling, animationConfig.duration]);
+  }, [currentItems]);
 
   // Shuffle sections within items function
   const handleShuffleSections = useCallback(() => {
-    if (isShuffling) return;
-
-    setIsShuffling(true);
-
     const shuffledItems = currentItems.map((item) => {
       // Fisher-Yates shuffle for sections within each item
       const shuffledSections = [...item.sections];
@@ -58,18 +46,15 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
     });
 
     setCurrentItems(shuffledItems);
-
-    // Reset shuffling state after animation completes
-    setTimeout(() => setIsShuffling(false), (animationConfig.duration || 300) + 50);
-  }, [currentItems, isShuffling, animationConfig.duration]);
+  }, [currentItems]);
 
   return (
     <div className={`sort-list ${className}`}>
       <div className="sort-controls">
-        <button onClick={handleShuffleItems} disabled={isShuffling} className="sort-button">
+        <button onClick={handleShuffleItems} className="sort-button">
           Shuffle Items 🔀
         </button>
-        <button onClick={handleShuffleSections} disabled={isShuffling} className="sort-button">
+        <button onClick={handleShuffleSections} className="sort-button">
           Shuffle Sections 🎯
         </button>
       </div>

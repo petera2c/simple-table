@@ -28,6 +28,15 @@ export const applyInitialTransform = (element: HTMLElement, invert: { x: number;
 };
 
 /**
+ * Cleans up animation styles from element
+ */
+const cleanupAnimation = (element: HTMLElement) => {
+  element.style.transition = "";
+  element.style.transitionDelay = "";
+  element.style.transform = "";
+};
+
+/**
  * Animates element to its final position
  */
 const animateToFinalPosition = (
@@ -54,9 +63,7 @@ const animateToFinalPosition = (
 
     // Clean up after animation
     const cleanup = () => {
-      element.style.transition = "";
-      element.style.transitionDelay = "";
-      element.style.transform = "";
+      cleanupAnimation(element);
       element.removeEventListener("transitionend", cleanup);
       if (options.onComplete) {
         options.onComplete();
@@ -73,6 +80,8 @@ const animateToFinalPosition = (
 
 /**
  * Performs FLIP animation on a single element
+ * This function can be called multiple times on the same element - it will automatically
+ * interrupt any ongoing animation and start a new one.
  */
 export const flipElement = async (
   element: HTMLElement,
