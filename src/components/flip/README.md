@@ -5,11 +5,10 @@ A clean, simple React component system for creating smooth list animations using
 ## Features
 
 - 🎬 **FLIP Animation**: Smooth position-based animations using JavaScript (not CSS)
-- 📋 **SortList Component**: Clean list component with a simple sort button
-- 🧩 **Sectioned Animation**: Advanced component for items with multiple sections
+- 🧩 **Animate Component**: Declarative wrapper that automatically animates position changes
+- 🔄 **Sectioned Animation**: Advanced component for items with multiple sections
 - 🔀 **Multiple Shuffle Modes**: Shuffle entire items or just sections within items
 - 🎨 **Customizable**: Flexible styling and animation configurations
-- 🪝 **React Hooks**: Custom hooks for advanced use cases
 - 📱 **Responsive**: Works well on mobile and desktop
 - ⚡ **Performance**: Optimized for smooth animations
 
@@ -18,16 +17,24 @@ A clean, simple React component system for creating smooth list animations using
 ### Basic List Animation
 
 ```tsx
-import { SortList, ListViewItem } from "@/components/flip";
+import { Animate } from "@/components/flip";
 
-const items: ListViewItem[] = [
-  { id: 1, content: <div>Item 1</div> },
-  { id: 2, content: <div>Item 2</div> },
-  { id: 3, content: <div>Item 3</div> },
+const items = [
+  { id: 1, content: "Item 1" },
+  { id: 2, content: "Item 2" },
+  { id: 3, content: "Item 3" },
 ];
 
 function App() {
-  return <SortList items={items} animationConfig={{ duration: 300, easing: "easeOutQuad" }} />;
+  return (
+    <div>
+      {items.map((item) => (
+        <Animate key={item.id} id={item.id} animationConfig={{ duration: 300 }}>
+          <div>{item.content}</div>
+        </Animate>
+      ))}
+    </div>
+  );
 }
 ```
 
@@ -69,26 +76,27 @@ function App() {
 
 ## Components
 
-### SortList
+### Animate
 
-The main component that provides a list with a sort button and FLIP animations.
+The declarative component that automatically animates position changes.
 
 ```tsx
-interface SortListProps {
-  items: ListViewItem[];
-  animationConfig?: {
-    duration?: number;
-    easing?: string;
-    delay?: number;
-  };
+interface AnimateProps {
+  id: string | number;
+  children: React.ReactNode;
+  animationConfig?: FlipAnimationOptions;
+  disabled?: boolean;
   className?: string;
-  itemClassName?: string;
+  style?: React.CSSProperties;
 }
 ```
 
-#### Built-in Controls
+#### Key Features
 
-- **Shuffle Button**: Randomly reorders items with smooth animations
+- **Automatic Detection**: Detects when wrapped element changes position
+- **No Manual Triggers**: No need to call capture/animate functions
+- **Configurable**: Customize duration, easing, and delay
+- **Performance**: Only animates when position actually changes (>1px threshold)
 
 ### SectionedSortList
 
@@ -115,14 +123,13 @@ interface SectionedSortListProps {
 
 #### Key Features
 
-- **Section-level animations**: Each section animates independently
+- **Section-level animations**: Each section animates independently using Animate component
 - **Flexible layout**: Sections display horizontally (stacks on mobile)
-- **Section interaction**: Click handlers for individual sections
 - **Responsive design**: Automatic mobile-friendly layout
 
 ### BasicExample
 
-A simple example component showing basic usage.
+A comprehensive example component showing both simple and sectioned usage.
 
 ```tsx
 import { BasicExample } from "@/components/flip";
@@ -132,138 +139,51 @@ function App() {
 }
 ```
 
-## Hooks
-
-### useFlipAnimation
-
-Custom hook for implementing FLIP animations in your own components.
-
-```tsx
-import { useFlipAnimation } from "@/components/flip";
-
-function MyAnimatedList({ items }) {
-  const { containerRef, captureFirst, isAnimating } = useFlipAnimation(items, {
-    animationOptions: { duration: 300 },
-  });
-
-  const handleSort = () => {
-    captureFirst();
-    setItems(sortBy(items, "id", "asc"));
-  };
-
-  return (
-    <div ref={containerRef}>
-      {items.map((item) => (
-        <div key={item.id} data-flip-id={item.id}>
-          {item.content}
-        </div>
-      ))}
-    </div>
-  );
-}
-```
-
-## Utility Functions
-
-### Sort Operations
-
-```tsx
-import { sortBy } from "@/components/flip";
-
-// Sort by property
-const sorted = sortBy(items, "id", "asc");
-```
-
-### Animation Utilities
-
-```tsx
-import {
-  flipElement,
-  flipElements,
-  easingFunctions,
-  calculateStaggerDelay,
-} from "@/components/flip";
-
-// Animate single element
-await flipElement(element, firstBounds, {
-  duration: 300,
-  easing: easingFunctions.easeOutQuad,
-});
-
-// Animate multiple elements
-await flipElements(elements, firstBoundsMap, {
-  duration: 300,
-  easing: easingFunctions.easeOutCubic,
-});
-```
-
 ## Animation Configuration
 
-### Easing Functions
+### Animation Options
 
 ```tsx
-import { easingFunctions } from "@/components/flip";
-
-// Available easing functions
-const easings = {
-  easeOutQuad: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-  easeInOutQuad: "cubic-bezier(0.455, 0.03, 0.515, 0.955)",
-  easeOutCubic: "cubic-bezier(0.215, 0.61, 0.355, 1)",
-  easeInOutCubic: "cubic-bezier(0.645, 0.045, 0.355, 1)",
-  easeOutQuart: "cubic-bezier(0.165, 0.84, 0.44, 1)",
-  easeInOutQuart: "cubic-bezier(0.77, 0, 0.175, 1)",
-};
-```
-
-### Animation Config
-
-```tsx
-interface AnimationConfig {
-  duration: number; // Animation duration in milliseconds
-  easing: string; // CSS easing function
-  delay?: number; // Animation delay in milliseconds
+interface FlipAnimationOptions {
+  duration?: number; // Animation duration in milliseconds (default: 300)
+  easing?: string; // CSS easing function (default: cubic-bezier(0.25, 0.46, 0.45, 0.94))
+  delay?: number; // Animation delay in milliseconds (default: 0)
+  onComplete?: () => void; // Callback when animation completes
 }
 ```
 
-## Advanced Usage
-
-### Custom Components with FLIP
+### Example Configurations
 
 ```tsx
-import { useFlipAnimation } from "@/components/flip";
+// Fast animation
+<Animate animationConfig={{ duration: 200 }}>
+  <div>Fast animating content</div>
+</Animate>
 
-function CustomFlipList({ items }) {
-  const { containerRef, captureFirst } = useFlipAnimation(items);
+// Custom easing
+<Animate animationConfig={{
+  duration: 400,
+  easing: "cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+}}>
+  <div>Bouncy animation</div>
+</Animate>
 
-  const handleCustomAction = async () => {
-    // Capture current positions
-    captureFirst();
-
-    // Perform your data manipulation
-    const newItems = customDataTransform(items);
-    setItems(newItems);
-
-    // Animation will be handled automatically by the hook
-  };
-
-  return (
-    <div ref={containerRef}>
-      {items.map((item) => (
-        <div key={item.id} data-flip-id={item.id}>
-          {item.content}
-        </div>
-      ))}
-    </div>
-  );
-}
+// With callback
+<Animate animationConfig={{
+  duration: 300,
+  onComplete: () => console.log('Animation done!')
+}}>
+  <div>Content with callback</div>
+</Animate>
 ```
 
 ## Types
 
 ```tsx
-interface ListViewItem {
+interface SectionedListViewItem {
   id: string | number;
-  content: React.ReactNode;
+  sections: ListViewSection[];
+  className?: string;
   data?: any;
 }
 
@@ -274,11 +194,13 @@ interface ListViewSection {
   data?: any;
 }
 
-interface SectionedListViewItem {
+interface AnimateProps {
   id: string | number;
-  sections: ListViewSection[];
+  children: React.ReactNode;
+  animationConfig?: FlipAnimationOptions;
+  disabled?: boolean;
   className?: string;
-  data?: any;
+  style?: React.CSSProperties;
 }
 
 interface FlipAnimationOptions {
@@ -289,35 +211,12 @@ interface FlipAnimationOptions {
 }
 ```
 
-## Styling
-
-The components come with default CSS that can be customized:
-
-```css
-/* Override default styles */
-.sort-list {
-  /* Your custom styles */
-}
-
-.sort-list-item {
-  /* Your custom item styles */
-}
-
-.sort-list-item.card-style {
-  /* Custom card styling */
-}
-
-.sort-list-item.minimal-style {
-  /* Minimal styling */
-}
-```
-
 ## Performance Tips
 
-1. **Use stable IDs**: Ensure each item has a unique, stable ID
-2. **Limit item count**: Best performance with < 100 items
-3. **Avoid complex content**: Keep item content simple for better performance
-4. **Use data-flip-id**: Always include this attribute for proper animation tracking
+1. **Use stable IDs**: Ensure each animated element has a unique, stable ID
+2. **Limit animations**: Best performance with < 100 animated elements
+3. **Avoid complex content**: Keep animated content simple for better performance
+4. **Use appropriate thresholds**: The component only animates changes > 1px
 
 ## Browser Support
 
@@ -332,17 +231,10 @@ Check out the example components:
 
 ### `BasicExample`
 
-- Basic list with shuffle functionality
+- Simple list with Animate component
 - Sectioned list with dual shuffle modes
 - Interactive animation controls
 - Clean, minimal implementation
-
-### `SectionedExample`
-
-- Advanced employee directory example
-- Complex sectioned layout
-- Demonstrates both item and section shuffling
-- Responsive design patterns
 
 ---
 
@@ -350,27 +242,18 @@ Check out the example components:
 
 ### Components
 
-- `SortList` - Main animated list component with shuffle button
+- `Animate` - Declarative component that automatically animates position changes
 - `SectionedSortList` - Advanced component for sectioned items with dual shuffle modes
-- `BasicExample` - Simple example component showing both basic and sectioned usage
-- `SectionedExample` - Advanced example with employee directory layout
-
-### Hooks
-
-- `useFlipAnimation` - Custom hook for FLIP animations
+- `BasicExample` - Comprehensive example showing both simple and sectioned usage
 
 ### Utilities
 
-- `sortBy` - Function for sorting arrays by property
-- `easingFunctions` - Predefined easing functions
-- Animation utilities for manual control
+- Animation utilities for manual control (`flipElement`, `calculateInvert`, etc.)
 
 ### Types
 
-- `ListViewItem` - Interface for basic list items
-- `ListViewSection` - Interface for individual sections within items
 - `SectionedListViewItem` - Interface for items with multiple sections
-- `SortListProps` - Props for SortList component
+- `ListViewSection` - Interface for individual sections within items
 - `SectionedSortListProps` - Props for SectionedSortList component
-- `AnimationConfig` - Animation configuration interface
 - `FlipAnimationOptions` - Options for FLIP animations
+- `AnimationConfig` - Animation configuration interface

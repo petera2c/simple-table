@@ -10,22 +10,6 @@ export const DEFAULT_ANIMATION_CONFIG: AnimationConfig = {
 };
 
 /**
- * Captures the current position and dimensions of elements
- */
-export const captureElementBounds = (elements: HTMLElement[]): Map<string | number, DOMRect> => {
-  const bounds = new Map<string | number, DOMRect>();
-
-  elements.forEach((element) => {
-    const id = element.getAttribute("data-flip-id");
-    if (id) {
-      bounds.set(id, element.getBoundingClientRect());
-    }
-  });
-
-  return bounds;
-};
-
-/**
  * Calculates the invert values for FLIP animation
  */
 export const calculateInvert = (first: DOMRect, last: DOMRect) => {
@@ -108,42 +92,4 @@ export const flipElement = async (
 
   // Animate to final position
   await animateToFinalPosition(element, options);
-};
-
-/**
- * Performs FLIP animation on multiple elements
- */
-export const flipElements = async (
-  elements: HTMLElement[],
-  firstBounds: Map<string | number, DOMRect>,
-  options: FlipAnimationOptions = {}
-): Promise<void> => {
-  const animations = elements.map(async (element) => {
-    const id = element.getAttribute("data-flip-id");
-    if (id && firstBounds.has(id)) {
-      const first = firstBounds.get(id)!;
-      await flipElement(element, first, options);
-    }
-  });
-
-  await Promise.all(animations);
-};
-
-/**
- * Easing functions for custom animations
- */
-export const easingFunctions = {
-  easeOutQuad: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-  easeInOutQuad: "cubic-bezier(0.455, 0.03, 0.515, 0.955)",
-  easeOutCubic: "cubic-bezier(0.215, 0.61, 0.355, 1)",
-  easeInOutCubic: "cubic-bezier(0.645, 0.045, 0.355, 1)",
-  easeOutQuart: "cubic-bezier(0.165, 0.84, 0.44, 1)",
-  easeInOutQuart: "cubic-bezier(0.77, 0, 0.175, 1)",
-};
-
-/**
- * Stagger animation delays for multiple elements
- */
-export const calculateStaggerDelay = (index: number, stagger: number = 50): number => {
-  return index * stagger;
 };
