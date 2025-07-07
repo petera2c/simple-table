@@ -9,6 +9,8 @@ import RowIndices from "../../types/RowIndices";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import ConditionalWrapper from "../ConditionalWrapper";
 import { canDisplaySection } from "../../utils/generalUtils";
+import { getRowId } from "../../utils/rowUtils";
+import { useTableContext } from "../../context/TableContext";
 
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
@@ -42,6 +44,7 @@ const TableSection = ({
   width,
 }: TableSectionProps) => {
   const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
+  const { rowIdAccessor } = useTableContext();
 
   const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
   if (!canDisplay) return null;
@@ -62,8 +65,9 @@ const TableSection = ({
         }}
       >
         {visibleRows.map((visibleRow, index) => {
+          const rowId = getRowId(visibleRow.row, visibleRow.position, rowIdAccessor);
           return (
-            <Fragment key={visibleRow.position}>
+            <Fragment key={rowId}>
               {index !== 0 && (
                 <TableRowSeparator
                   // Is last row group and it is open
@@ -81,6 +85,7 @@ const TableSection = ({
                 headers={headers}
                 hoveredIndex={hoveredIndex}
                 index={index}
+                key={rowId}
                 pinned={pinned}
                 rowHeight={rowHeight}
                 rowIndices={rowIndices}

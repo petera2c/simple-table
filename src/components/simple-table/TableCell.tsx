@@ -10,6 +10,7 @@ import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
+import Animate from "../animate/Animate";
 
 interface CellProps {
   borderClass: string;
@@ -53,6 +54,7 @@ const TableCell = forwardRef(
   ) => {
     // Get shared props from context
     const {
+      allowAnimations,
       cellRegistry,
       cellUpdateFlash,
       draggedHeaderRef,
@@ -82,7 +84,7 @@ const TableCell = forwardRef(
     const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
     // Get row ID and check if row has children
-    const rowId = getRowId(row, rowIndex, rowIdAccessor);
+    const rowId = getRowId(row, visibleRow.position, rowIdAccessor);
     const currentGroupingKey = rowGrouping && rowGrouping[depth];
     const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
     const isRowExpanded = !unexpandedRows.has(String(rowId));
@@ -103,10 +105,18 @@ const TableCell = forwardRef(
     const throttle = useThrottle();
 
     // Cell focus id (used for keyboard navigation)
-    const cellId = `cell-${rowIndex}-${colIndex}`;
+    const cellId = getCellId({ accessor: header.accessor, rowId });
 
     // Generate a unique key that includes the content value to force re-render when it changes
     const cellKey = getCellKey({ rowId, accessor: header.accessor });
+
+    // Debug: Track component lifecycle
+    useEffect(() => {
+      console.log(`[TableCell ${cellId}] 🟢 MOUNTED`);
+      return () => {
+        console.log(`[TableCell ${cellId}] 🔴 UNMOUNTED`);
+      };
+    }, [cellId]);
 
     // Register this cell with the cell registry for direct updates
     useEffect(() => {
@@ -252,7 +262,7 @@ const TableCell = forwardRef(
       return (
         <div
           className="st-cell-editing"
-          id={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
+          id={getCellId({ accessor: header.accessor, rowId })}
           onMouseDown={(e) => e.stopPropagation()} // Prevent cell selection when clicking in edit mode
           onKeyDown={(e) => e.stopPropagation()} // Prevent table navigation when editing
         >
@@ -268,10 +278,11 @@ const TableCell = forwardRef(
     }
 
     return (
-      <div
-        key={cellKey}
-        className={cellClassName}
+      <Animate
         id={cellId}
+        className={cellClassName}
+        disabled={!allowAnimations}
+        logicalPosition={visibleRow.position}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
         onMouseDown={handleCellMouseDown}
         onMouseOver={handleCellMouseOver}
@@ -323,7 +334,7 @@ const TableCell = forwardRef(
             value={localContent}
           />
         )}
-      </div>
+      </Animate>
     );
   }
 );

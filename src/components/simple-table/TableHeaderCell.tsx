@@ -292,7 +292,7 @@ const TableHeaderCell = forwardRef(
     return (
       <div
         className={className}
-        id={getCellId({ accessor: header.accessor, rowIndex: 0 })}
+        id={getCellId({ accessor: header.accessor, rowId: "header" })}
         onDragOver={(event) => {
           throttle({
             callback: handleDragOver,

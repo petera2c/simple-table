@@ -6,6 +6,8 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
+import { getRowId } from "../../utils/rowUtils";
+import { useEffect } from "react";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -35,11 +37,22 @@ const TableRow = ({
   setHoveredIndex,
   visibleRow,
 }: TableRowProps) => {
-  const { useHoverRowBackground } = useTableContext();
+  const { useHoverRowBackground, rowIdAccessor } = useTableContext();
   const { position } = visibleRow;
   // Get row index from rowIndices using the row's ID
 
   const isOdd = position % 2 === 0;
+
+  // Get stable row ID for key
+  const rowId = getRowId(visibleRow.row, visibleRow.position, rowIdAccessor);
+
+  // Debug: Track component lifecycle
+  useEffect(() => {
+    console.log(`[TableRow ${rowId}] 🟢 MOUNTED (position: ${position})`);
+    return () => {
+      console.log(`[TableRow ${rowId}] 🔴 UNMOUNTED`);
+    };
+  }, [rowId, position]);
 
   return (
     <div
@@ -59,7 +72,7 @@ const TableRow = ({
         columnIndexStart={columnIndexStart}
         columnIndices={columnIndices}
         headers={headers}
-        key={index}
+        key={rowId}
         pinned={pinned}
         rowIndex={position}
         rowIndices={rowIndices}
