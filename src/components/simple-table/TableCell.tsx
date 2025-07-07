@@ -110,13 +110,8 @@ const TableCell = forwardRef(
     // Generate a unique key that includes the content value to force re-render when it changes
     const cellKey = getCellKey({ rowId, accessor: header.accessor });
 
-    // Debug: Track component lifecycle
-    useEffect(() => {
-      console.log(`[TableCell ${cellId}] 🟢 MOUNTED`);
-      return () => {
-        console.log(`[TableCell ${cellId}] 🔴 UNMOUNTED`);
-      };
-    }, [cellId]);
+    // Create composite logical position for both row and column tracking
+    const logicalPosition = `${visibleRow.position}-${colIndex}`;
 
     // Register this cell with the cell registry for direct updates
     useEffect(() => {
@@ -282,7 +277,7 @@ const TableCell = forwardRef(
         id={cellId}
         className={cellClassName}
         disabled={!allowAnimations}
-        logicalPosition={visibleRow.position}
+        logicalPosition={logicalPosition}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
         onMouseDown={handleCellMouseDown}
         onMouseOver={handleCellMouseOver}

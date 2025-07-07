@@ -6,7 +6,7 @@ interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> 
   id: string | number;
   animationConfig?: FlipAnimationOptions;
   disabled?: boolean;
-  logicalPosition?: number; // For virtualized tables - track logical position instead of DOM position
+  logicalPosition?: number | string; // For virtualized tables - track logical position instead of DOM position
   children: ReactNode;
 }
 
@@ -31,7 +31,7 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
   ) => {
     const internalRef = useRef<HTMLDivElement>(null);
     const previousBoundsRef = useRef<DOMRect | null>(null);
-    const previousLogicalPositionRef = useRef<number | undefined>(logicalPosition);
+    const previousLogicalPositionRef = useRef<number | string | undefined>(logicalPosition);
     const mountedRef = useRef(false);
 
     // Use internal ref for animation tracking

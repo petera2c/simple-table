@@ -7,7 +7,6 @@ import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
 import { getRowId } from "../../utils/rowUtils";
-import { useEffect } from "react";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -45,14 +44,6 @@ const TableRow = ({
 
   // Get stable row ID for key
   const rowId = getRowId(visibleRow.row, visibleRow.position, rowIdAccessor);
-
-  // Debug: Track component lifecycle
-  useEffect(() => {
-    console.log(`[TableRow ${rowId}] 🟢 MOUNTED (position: ${position})`);
-    return () => {
-      console.log(`[TableRow ${rowId}] 🔴 UNMOUNTED`);
-    };
-  }, [rowId, position]);
 
   return (
     <div

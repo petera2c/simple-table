@@ -7,6 +7,7 @@ export const basicExampleDefaults = {
   columnResizing: true,
   editColumns: true,
   selectableCells: true,
+  columnReordering: true,
 };
 
 const BasicExampleComponent = (props: UniversalTableProps) => {
