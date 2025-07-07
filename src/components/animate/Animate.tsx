@@ -38,12 +38,7 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
     const elementRef = internalRef;
 
     useLayoutEffect(() => {
-      console.log(`[Animate ${id}] useLayoutEffect triggered`);
-
       if (!elementRef.current || disabled) {
-        console.log(
-          `[Animate ${id}] Skipping - element: ${!!elementRef.current}, disabled: ${disabled}`
-        );
         return;
       }
 
@@ -51,19 +46,8 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       const previousBounds = previousBoundsRef.current;
       const previousLogicalPosition = previousLogicalPositionRef.current;
 
-      console.log(`[Animate ${id}] Position check:`, {
-        logicalPosition: logicalPosition,
-        previousLogicalPosition: previousLogicalPosition,
-        currentBounds: { left: Math.round(currentBounds.left), top: Math.round(currentBounds.top) },
-        previousBounds: previousBounds
-          ? { left: Math.round(previousBounds.left), top: Math.round(previousBounds.top) }
-          : null,
-        mounted: mountedRef.current,
-      });
-
       // Don't animate on first mount
       if (!mountedRef.current) {
-        console.log(`[Animate ${id}] First mount - storing initial state`);
         mountedRef.current = true;
         previousBoundsRef.current = currentBounds;
         previousLogicalPositionRef.current = logicalPosition;
@@ -79,19 +63,11 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
           Math.abs(currentBounds.top - previousBounds.top) > 1)
       );
 
-      console.log(`[Animate ${id}] DOM position changed: ${hasDOMPositionChanged}`, {
-        deltaX: previousBounds ? Math.round(currentBounds.left - previousBounds.left) : 0,
-        deltaY: previousBounds ? Math.round(currentBounds.top - previousBounds.top) : 0,
-      });
-
       // For virtualized tables, only animate if logical position changed (prevents scroll animations)
       if (logicalPosition !== undefined && previousLogicalPosition !== undefined) {
         const hasLogicalPositionChanged = logicalPosition !== previousLogicalPosition;
 
         if (hasLogicalPositionChanged) {
-          console.log(
-            `[Animate ${id}] Logical position changed: ${previousLogicalPosition} → ${logicalPosition}`
-          );
         }
 
         // Only animate if BOTH logical position changed AND DOM position changed significantly
@@ -103,12 +79,6 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       }
 
       if (hasPositionChanged && previousBounds) {
-        console.log(
-          `[Animate ${id}] 🎬 Starting animation! Delta: ${Math.round(
-            currentBounds.left - previousBounds.left
-          )}px, ${Math.round(currentBounds.top - previousBounds.top)}px`
-        );
-
         // Merge animation config with defaults
         const finalConfig = {
           ...DEFAULT_ANIMATION_CONFIG,
@@ -118,12 +88,7 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
         // Start new animation (this will interrupt any ongoing animation)
         flipElement(elementRef.current, previousBounds, finalConfig).catch(() => {
           // Handle animation errors gracefully
-          console.log(`[Animate ${id}] ❌ Animation error`);
         });
-      } else {
-        console.log(
-          `[Animate ${id}] 🚫 No animation - hasPositionChanged: ${hasPositionChanged}, previousBounds: ${!!previousBounds}`
-        );
       }
 
       // Store current bounds and logical position for next comparison
