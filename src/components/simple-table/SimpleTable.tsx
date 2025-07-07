@@ -137,7 +137,6 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
 }: SimpleTableProps) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
-  allowAnimations = true;
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
