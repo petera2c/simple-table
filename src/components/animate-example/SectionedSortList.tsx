@@ -71,10 +71,9 @@ export const SectionedSortList: React.FC<SectionedSortListProps> = ({
                   key={section.id}
                   id={`${item.id}-${section.id}`}
                   animationConfig={animationConfig}
+                  className={`item-section ${sectionClassName} ${section.className || ""}`}
                 >
-                  <div className={`item-section ${sectionClassName} ${section.className || ""}`}>
-                    {section.content}
-                  </div>
+                  {section.content}
                 </Animate>
               ))}
             </div>
