@@ -136,6 +136,23 @@ export const applyFilterToValue = (cellValue: any, filter: FilterCondition): boo
     }
   }
 
+  // Array operations (filtering on array values)
+  if (Array.isArray(cellValue)) {
+    // Convert array to string for filtering
+    const arrayString = cellValue
+      .map((item) => {
+        if (typeof item === "object" && item !== null) {
+          return JSON.stringify(item);
+        }
+        return String(item);
+      })
+      .join(", ");
+
+    // For arrays, we'll use the string representation for filtering
+    // and let it fall through to the string comparison logic below
+    cellValue = arrayString;
+  }
+
   // Enum operations (array-based filtering)
   if (operator === "in" || operator === "notIn") {
     if (values && Array.isArray(values)) {

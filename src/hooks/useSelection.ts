@@ -248,6 +248,9 @@ const useSelection = ({
         emptyValue = false;
       } else if (targetHeader.type === "date") {
         emptyValue = null;
+      } else if (Array.isArray(targetRow.row[targetHeader.accessor])) {
+        // If the current value is an array, set it to an empty array
+        emptyValue = [];
       } else {
         emptyValue = "";
       }
