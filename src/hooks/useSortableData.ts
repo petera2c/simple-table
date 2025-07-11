@@ -3,6 +3,7 @@ import Row from "../types/Row";
 import { useCallback, useMemo, useState } from "react";
 import SortConfig from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
+import { isRowArray } from "../utils/rowUtils";
 
 // Extract sort logic to custom hook
 const useSortableData = ({
@@ -41,7 +42,7 @@ const useSortableData = ({
         const currentGroupingKey = groupingKeys[0];
         const nestedData = row[currentGroupingKey];
 
-        if (Array.isArray(nestedData) && nestedData.length > 0) {
+        if (isRowArray(nestedData)) {
           // Recursively sort the nested data with remaining grouping keys
           const sortedNestedData = sortNestedRows(
             nestedData,

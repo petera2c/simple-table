@@ -3,6 +3,13 @@ import Row from "../types/Row";
 import { RowId } from "../types/RowId";
 
 /**
+ * Check if an array contains Row objects (vs primitive arrays like string[] or number[])
+ */
+export const isRowArray = (data: any): data is Row[] => {
+  return Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && data[0] !== null;
+};
+
+/**
  * Get the row ID from a row using the specified accessor or fall back to index
  */
 export const getRowId = (row: Row, index: number, rowIdAccessor?: string): RowId => {
@@ -17,7 +24,11 @@ export const getRowId = (row: Row, index: number, rowIdAccessor?: string): RowId
  */
 export const getNestedRows = (row: Row, groupingKey: string): Row[] => {
   const nestedData = row[groupingKey];
-  return Array.isArray(nestedData) ? nestedData : [];
+  // Only return as Row[] if it's an array of objects (potential rows)
+  if (isRowArray(nestedData)) {
+    return nestedData;
+  }
+  return [];
 };
 
 /**
@@ -26,7 +37,7 @@ export const getNestedRows = (row: Row, groupingKey: string): Row[] => {
 export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
   if (!groupingKey) return false;
   const nestedData = row[groupingKey];
-  return Array.isArray(nestedData) && nestedData.length > 0;
+  return isRowArray(nestedData);
 };
 
 /**
