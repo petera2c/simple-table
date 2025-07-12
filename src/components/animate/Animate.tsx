@@ -50,7 +50,7 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
     forwardedRef
   ) => {
     const elementRef = useRef<HTMLDivElement>(null);
-    const { headers, previousHeaders } = useTableContext();
+    const { previousHeaders } = useTableContext();
 
     useLayoutEffect(() => {
       if (!elementRef.current || disabled) {
@@ -85,9 +85,6 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       const viewportTop = containerBounds?.y ?? 0;
       const viewportBottom = viewportTop + containerHeight;
 
-      // Store original position for logging
-      const originalPreviousTopPosition = calculatedPreviousTopPosition;
-
       // If previous position was way above viewport, start animation from just above
       if (calculatedPreviousTopPosition < viewportTop - rowHeight * 2) {
         calculatedPreviousTopPosition = viewportTop - rowHeight;
@@ -114,17 +111,10 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       if (previousHeaders && previousHeaders.length > 0) {
         // Flatten both current and previous headers to get all leaf columns
         const flattenedPreviousHeaders = flattenHeaders(previousHeaders);
-        const flattenedCurrentHeaders = flattenHeaders(headers);
 
         const previousHeaderIndex = flattenedPreviousHeaders.findIndex(
           (h) => h.accessor === header.accessor
         );
-        const currentHeaderIndex = flattenedCurrentHeaders.findIndex(
-          (h) => h.accessor === header.accessor
-        );
-
-        // Only log if column position actually changed
-        const columnOrderChanged = previousHeaderIndex !== currentHeaderIndex;
 
         if (previousHeaderIndex !== -1) {
           // Calculate X position based on previous headers order and their actual DOM widths
@@ -149,18 +139,6 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
                   : parseFloat(String(prevHeader.width)) || 150; // Default fallback width
               calculatedPreviousX += numericWidth;
             }
-          }
-
-          // Only log for columns that actually changed order
-          if (columnOrderChanged) {
-            console.log(
-              `🎬 Column Reorder: ${header.accessor} moved from position ${previousHeaderIndex} to ${currentHeaderIndex}`,
-              JSON.stringify({
-                previousX: calculatedPreviousX,
-                currentX: headerBounds?.x,
-                deltaX: (headerBounds?.x ?? 0) - calculatedPreviousX,
-              })
-            );
           }
 
           previousX = calculatedPreviousX;
@@ -189,43 +167,11 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       hasPositionChanged = hasDOMPositionChanged;
 
       if (hasPositionChanged) {
-        // Log animation trigger with focus on horizontal movement
-        const hasHorizontalMovement = Math.abs(deltaX) > 1;
-
-        if (hasHorizontalMovement) {
-          console.log(
-            `🎬 HORIZONTAL ANIMATION: ${header.accessor}`,
-            JSON.stringify({
-              deltaX: deltaX,
-              deltaY: deltaY,
-              previousX: previousCalculatedBounds.x,
-              currentX: calculatedBounds.x,
-            })
-          );
-        }
-
         // Merge animation config with defaults
         const finalConfig = {
           ...DEFAULT_ANIMATION_CONFIG,
           ...animationConfig,
         };
-
-        // Debug the flipElement call for horizontal animations
-        if (hasHorizontalMovement) {
-          console.log(
-            `🎬 CALLING FLIP ELEMENT: ${header.accessor}`,
-            JSON.stringify({
-              elementId: String(id),
-              firstRect: {
-                x: previousCalculatedBounds.x,
-                y: previousCalculatedBounds.y,
-                width: previousCalculatedBounds.width,
-                height: previousCalculatedBounds.height,
-              },
-              elementExists: !!elementRef.current,
-            })
-          );
-        }
 
         // Start new animation (this will interrupt any ongoing animation)
         flipElement(elementRef.current, previousCalculatedBounds, finalConfig).catch(() => {

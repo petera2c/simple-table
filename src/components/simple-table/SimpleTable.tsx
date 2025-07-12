@@ -265,7 +265,6 @@ const SimpleTableComp = ({
   const tableRowsWithPreviousPosition = useMemo(() => {
     if (!previousTableRows) {
       // First render - set previousPosition to current position
-      console.log("🎬 SimpleTable: First render - no animations");
       return tableRows.map((row) => ({ ...row, previousPosition: row.position }));
     }
 
@@ -286,23 +285,6 @@ const SimpleTableComp = ({
       };
     });
 
-    // Log position changes
-    const positionChanges = rowsWithPositions.filter(
-      (row) => row.position !== row.previousPosition
-    );
-    if (positionChanges.length > 0) {
-      console.log(
-        `🎬 SimpleTable: ${positionChanges.length} rows changed position:`,
-        JSON.stringify(
-          positionChanges.map((row) => ({
-            id: String(getRowId(row.row, row.position, rowIdAccessor)),
-            from: row.previousPosition,
-            to: row.position,
-          }))
-        )
-      );
-    }
-
     return rowsWithPositions;
   }, [tableRows, previousTableRows, rowIdAccessor]);
 
@@ -318,24 +300,6 @@ const SimpleTableComp = ({
       }),
     [contentHeight, rowHeight, tableRowsWithPreviousPosition, scrollTop]
   );
-  const previousVisibleRows = usePrevious(visibleRows);
-
-  // Use visibleRows directly - they already contain previousPosition for animations
-  const rowsToRender = useMemo(() => {
-    console.log(
-      `🎬 SimpleTable: rowsToRender using visibleRows`,
-      JSON.stringify({
-        count: visibleRows.length,
-        positions: visibleRows.map((row) => ({
-          id: String(getRowId(row.row, row.position, rowIdAccessor)),
-          pos: row.position,
-          prevPos: row.previousPosition,
-        })),
-      })
-    );
-
-    return visibleRows;
-  }, [visibleRows, rowIdAccessor]);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -502,7 +466,7 @@ const SimpleTableComp = ({
                 setScrollTop={setScrollTop}
                 sort={sort}
                 tableRows={tableRows}
-                visibleRows={rowsToRender}
+                visibleRows={visibleRows}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

@@ -180,21 +180,6 @@ const TableCell = forwardRef(
       setLocalContent(row[header.accessor] as CellValue);
     }, [row, header.accessor]);
 
-    // Log when cell renders with animation data
-    useEffect(() => {
-      if (visibleRow.position !== visibleRow.previousPosition) {
-        console.log(
-          `🎬 TableCell: Cell with position change ${header.accessor}`,
-          JSON.stringify({
-            rowId: String(rowId),
-            position: visibleRow.position,
-            previousPosition: visibleRow.previousPosition,
-            accessor: header.accessor,
-          })
-        );
-      }
-    }, [visibleRow.position, visibleRow.previousPosition, header.accessor, rowId]);
-
     // Derived state
     const isEditInDropdown =
       header.type === "boolean" || header.type === "date" || header.type === "enum";

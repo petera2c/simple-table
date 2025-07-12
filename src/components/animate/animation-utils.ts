@@ -72,17 +72,6 @@ const animateToFinalPosition = (
       cleanupAnimation(element);
       element.removeEventListener("transitionend", cleanup);
 
-      // Log completion for horizontal animations
-      if (element.dataset.animateId) {
-        console.log(
-          `🎬 ANIMATION COMPLETE: ${element.dataset.animateId}`,
-          JSON.stringify({
-            finalTransform: element.style.transform,
-            cleanedUp: true,
-          })
-        );
-      }
-
       if (options.onComplete) {
         options.onComplete();
       }
@@ -106,45 +95,12 @@ export const flipElement = async (
   first: DOMRect | { x: number; y: number; width: number; height: number },
   options: FlipAnimationOptions = {}
 ): Promise<void> => {
-  // Log when flipElement is called for horizontal animations
-  if (element.dataset.animateId) {
-    console.log(`🎬 FLIP ELEMENT CALLED: ${element.dataset.animateId}`);
-  }
-
   const last = element.getBoundingClientRect();
   const invert = calculateInvert(first, last);
 
-  // Always log for debugging - remove the horizontal check for now
-  console.log(
-    `🎬 FLIP CALCULATION: ${element.dataset.animateId}`,
-    JSON.stringify({
-      elementId: element.dataset.animateId,
-      firstRect: { x: first.x, y: first.y, width: first.width, height: first.height },
-      lastRect: { x: last.x, y: last.y, width: last.width, height: last.height },
-      invertX: invert.x,
-      invertY: invert.y,
-      willSkip: invert.x === 0 && invert.y === 0,
-    })
-  );
-
   // Skip animation if element hasn't moved
   if (invert.x === 0 && invert.y === 0) {
-    console.log(`🎬 SKIPPING ANIMATION: No movement detected for ${element.dataset.animateId}`);
     return;
-  }
-
-  // Log horizontal animation details for debugging
-  const hasHorizontalMovement = Math.abs(invert.x) > 1;
-  if (hasHorizontalMovement) {
-    console.log(
-      `🎬 APPLYING TRANSFORM:`,
-      JSON.stringify({
-        elementId: element.dataset.animateId,
-        invertX: invert.x,
-        invertY: invert.y,
-        transform: `translate3d(${invert.x}px, ${invert.y}px, 0)`,
-      })
-    );
   }
 
   // Apply initial transform
