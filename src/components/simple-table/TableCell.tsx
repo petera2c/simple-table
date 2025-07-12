@@ -26,6 +26,20 @@ interface CellProps {
 const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
     return content ? "True" : "False";
+  } else if (Array.isArray(content)) {
+    // Handle arrays by joining elements with commas
+    if (content.length === 0) {
+      return "[]";
+    }
+    return content
+      .map((item) => {
+        if (typeof item === "object" && item !== null) {
+          // For objects, show a JSON representation or customize as needed
+          return JSON.stringify(item);
+        }
+        return String(item);
+      })
+      .join(", ");
   } else if (
     header.type === "date" &&
     content !== null &&

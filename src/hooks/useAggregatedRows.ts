@@ -3,6 +3,7 @@ import HeaderObject from "../types/HeaderObject";
 import { AggregationConfig } from "../types/AggregationTypes";
 import Row from "../types/Row";
 import { flattenAllHeaders } from "../utils/headerUtils";
+import { isRowArray } from "../utils/rowUtils";
 
 interface UseAggregatedRowsProps {
   rows: Row[];
@@ -46,7 +47,7 @@ export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedR
 
         // If this row has children at the current grouping level
         const currentGroupValue = row[currentGroupKey];
-        if (currentGroupValue && Array.isArray(currentGroupValue)) {
+        if (currentGroupValue && isRowArray(currentGroupValue)) {
           // Process children recursively first
           const processedChildren = processRows(currentGroupValue, groupingLevel + 1);
 
@@ -95,7 +96,7 @@ const calculateAggregation = (
     rows.forEach((row) => {
       // If this row has further children, collect from them too
       const nextGroupValue = nextGroupKey ? row[nextGroupKey] : undefined;
-      if (nextGroupKey && nextGroupValue && Array.isArray(nextGroupValue)) {
+      if (nextGroupKey && nextGroupValue && isRowArray(nextGroupValue)) {
         collectValues(nextGroupValue);
       } else {
         // This is a leaf row, collect its value
