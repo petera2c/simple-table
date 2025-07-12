@@ -33,6 +33,7 @@ interface TableContextType {
   handleMouseOver: (cell: Cell) => void;
   headers: HeaderObject[];
   hoveredHeaderRef: RefObject<HeaderObject | null>;
+  previousHeaders?: HeaderObject[];
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isSelected: (cell: Cell) => boolean;

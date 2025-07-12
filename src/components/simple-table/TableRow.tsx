@@ -37,13 +37,26 @@ const TableRow = ({
   visibleRow,
 }: TableRowProps) => {
   const { useHoverRowBackground, rowIdAccessor } = useTableContext();
-  const { position } = visibleRow;
+  const { position, previousPosition } = visibleRow;
   // Get row index from rowIndices using the row's ID
 
   const isOdd = position % 2 === 0;
 
   // Get stable row ID for key
   const rowId = getRowId(visibleRow.row, visibleRow.position, rowIdAccessor);
+
+  // Log position changes for debugging
+  if (position !== previousPosition) {
+    console.log(
+      `🎬 TableRow: Row position changed`,
+      JSON.stringify({
+        rowId: String(rowId),
+        from: previousPosition,
+        to: position,
+        pinned: pinned || "main",
+      })
+    );
+  }
 
   return (
     <div

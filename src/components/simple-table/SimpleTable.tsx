@@ -258,10 +258,14 @@ const SimpleTableComp = ({
   // Track previous tableRows to get previous positions for all rows
   const previousTableRows = usePrevious(tableRows);
 
+  // Track previous headers to get previous positions for column animations
+  const previousHeaders = usePrevious(headers);
+
   // Add previousPosition to all tableRows
   const tableRowsWithPreviousPosition = useMemo(() => {
     if (!previousTableRows) {
       // First render - set previousPosition to current position
+      console.log("🎬 SimpleTable: First render - no animations");
       return tableRows.map((row) => ({ ...row, previousPosition: row.position }));
     }
 
@@ -273,7 +277,7 @@ const SimpleTableComp = ({
     });
 
     // Add previousPosition to all current rows
-    return tableRows.map((row, index) => {
+    const rowsWithPositions = tableRows.map((row, index) => {
       const rowId = String(getRowId(row.row, index, rowIdAccessor));
       const previousPosition = previousRowsMap.get(rowId);
       return {
@@ -281,6 +285,25 @@ const SimpleTableComp = ({
         previousPosition: previousPosition ?? row.position, // Fall back to current position if no previous position found
       };
     });
+
+    // Log position changes
+    const positionChanges = rowsWithPositions.filter(
+      (row) => row.position !== row.previousPosition
+    );
+    if (positionChanges.length > 0) {
+      console.log(
+        `🎬 SimpleTable: ${positionChanges.length} rows changed position:`,
+        JSON.stringify(
+          positionChanges.map((row) => ({
+            id: String(getRowId(row.row, row.position, rowIdAccessor)),
+            from: row.previousPosition,
+            to: row.position,
+          }))
+        )
+      );
+    }
+
+    return rowsWithPositions;
   }, [tableRows, previousTableRows, rowIdAccessor]);
 
   // Visible rows
@@ -297,32 +320,22 @@ const SimpleTableComp = ({
   );
   const previousVisibleRows = usePrevious(visibleRows);
 
-  // Create rows to render by combining current and previous visible rows
+  // Use visibleRows directly - they already contain previousPosition for animations
   const rowsToRender = useMemo(() => {
-    if (!previousVisibleRows) {
-      return visibleRows;
-    }
+    console.log(
+      `🎬 SimpleTable: rowsToRender using visibleRows`,
+      JSON.stringify({
+        count: visibleRows.length,
+        positions: visibleRows.map((row) => ({
+          id: String(getRowId(row.row, row.position, rowIdAccessor)),
+          pos: row.position,
+          prevPos: row.previousPosition,
+        })),
+      })
+    );
 
-    // Create a map to track which rows we've already added to avoid duplicates
-    const addedRows = new Map<string, TableRow>();
-
-    // Add current visible rows
-    visibleRows.forEach((row, index) => {
-      const rowId = String(getRowId(row.row, index, rowIdAccessor));
-      addedRows.set(rowId, row);
-    });
-
-    // Add any previous visible rows that aren't in current visible rows
-    previousVisibleRows.forEach((row, index) => {
-      const rowId = String(getRowId(row.row, index, rowIdAccessor));
-      if (!addedRows.has(rowId)) {
-        addedRows.set(rowId, row);
-      }
-    });
-
-    return Array.from(addedRows.values());
-  }, [visibleRows, previousVisibleRows, rowIdAccessor]);
-  console.log(rowsToRender);
+    return visibleRows;
+  }, [visibleRows, rowIdAccessor]);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -435,6 +448,7 @@ const SimpleTableComp = ({
         handleMouseOver,
         headers,
         hoveredHeaderRef,
+        previousHeaders,
         isCopyFlashing,
         isInitialFocusedCell,
         isSelected,

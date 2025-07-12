@@ -72,8 +72,23 @@ const TableBody = ({
       indices[rowId] = index;
     });
 
+    console.log(
+      `🎬 TableBody: Rendering ${visibleRows.length} visible rows`,
+      JSON.stringify({
+        visibleRowIds: visibleRows.map((row) =>
+          String(getRowId(row.row, row.position, rowIdAccessor))
+        ),
+        positions: visibleRows.map((row) => ({
+          id: String(getRowId(row.row, row.position, rowIdAccessor)),
+          pos: row.position,
+          prevPos: row.previousPosition,
+        })),
+        totalRows: tableRows.length,
+      })
+    );
+
     return indices;
-  }, [visibleRows, rowIdAccessor]);
+  }, [visibleRows, rowIdAccessor, tableRows.length]);
 
   // Check if we should load more data
   const checkForLoadMore = useCallback(
