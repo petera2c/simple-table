@@ -77,6 +77,7 @@ export const flattenRowsWithGrouping = ({
         depth: currentDepth,
         groupingKey: currentGroupingKey,
         position,
+        previousPosition: position, // Default to current position, will be updated in SimpleTable
         isLastGroupRow,
       });
 

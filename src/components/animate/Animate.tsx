@@ -1,84 +1,105 @@
-import React, { useRef, useLayoutEffect, ReactNode, forwardRef } from "react";
+import React, { useRef, useLayoutEffect, ReactNode, forwardRef, RefObject } from "react";
 import { FlipAnimationOptions } from "./types";
 import { flipElement, DEFAULT_ANIMATION_CONFIG } from "./animation-utils";
+import TableRow from "../../types/TableRow";
+import { getCellId } from "../../utils/cellUtils";
+import HeaderObject from "../../types/HeaderObject";
+import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
+import { useTableContext } from "../../context/TableContext";
 
 interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
-  id: string | number;
   animationConfig?: FlipAnimationOptions;
-  disabled?: boolean;
-  logicalPosition?: number | string; // For virtualized tables - track logical position instead of DOM position
   children: ReactNode;
+  containerRef: RefObject<HTMLDivElement | null>;
+  disabled?: boolean;
+  header: HeaderObject;
+  id: string | number;
+  rowHeight: number;
+  tableRow: TableRow;
 }
-
-/**
- * Animate component that renders as a div and automatically detects position changes
- * and performs FLIP animations.
- *
- * This component renders as a div element and automatically animates when its position changes.
- * Animations can be interrupted and new ones can start at any time.
- *
- * @param id - Unique identifier for the element
- * @param animationConfig - Animation configuration (duration, easing, delay, etc.)
- * @param disabled - Whether to disable animations
- * @param logicalPosition - For virtualized tables, track logical position instead of DOM position
- * @param children - Content to render inside the animated div
- * @param ...props - All other standard div props (className, onClick, style, etc.)
- */
 export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
   (
-    { id, animationConfig = {}, disabled = false, logicalPosition, children, ...props },
+    {
+      id,
+      animationConfig = {},
+      disabled = false,
+      children,
+      tableRow,
+      header,
+      rowHeight,
+      containerRef,
+      ...props
+    },
     forwardedRef
   ) => {
-    const internalRef = useRef<HTMLDivElement>(null);
-    const previousBoundsRef = useRef<DOMRect | null>(null);
-    const previousLogicalPositionRef = useRef<number | string | undefined>(logicalPosition);
-    const mountedRef = useRef(false);
-
-    // Use internal ref for animation tracking
-    const elementRef = internalRef;
+    const elementRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
       if (!elementRef.current || disabled) {
         return;
       }
 
-      const currentBounds = elementRef.current.getBoundingClientRect();
-      const previousBounds = previousBoundsRef.current;
-      const previousLogicalPosition = previousLogicalPositionRef.current;
+      const headerBounds = document
+        .getElementById(getCellId({ accessor: header.accessor, rowId: "header" }))
+        ?.getBoundingClientRect();
+      const containerBounds = containerRef.current?.getBoundingClientRect();
 
-      // Don't animate on first mount
-      if (!mountedRef.current) {
-        mountedRef.current = true;
-        previousBoundsRef.current = currentBounds;
-        previousLogicalPositionRef.current = logicalPosition;
-        return;
-      }
+      const calculatedTopPosition =
+        // Calculate the top position of the row
+        calculateRowTopPosition({
+          position: tableRow.position,
+          rowHeight,
+        }) +
+        // Subtract the container's y position to get the correct position relative to the container
+        (containerBounds?.y ?? 0) -
+        // Subtract the container's scrollTop to get the correct position relative to the container
+        (containerRef.current?.scrollTop ?? 0);
+
+      const calculatedPreviousTopPosition =
+        // Calculate the top position of the row
+        calculateRowTopPosition({
+          position: tableRow.previousPosition,
+          rowHeight,
+        }) +
+        // Subtract the container's y position to get the correct position relative to the container
+        (containerBounds?.y ?? 0) -
+        // Subtract the container's scrollTop to get the correct position relative to the container
+        (containerRef.current?.scrollTop ?? 0);
+
+      const calculatedBounds: DOMRect = {
+        y: calculatedTopPosition,
+        x: headerBounds?.x ?? 0,
+        width: headerBounds?.width ?? 0,
+        height: headerBounds?.height ?? 0,
+        bottom: headerBounds?.bottom ?? 0,
+        left: headerBounds?.left ?? 0,
+        right: headerBounds?.right ?? 0,
+        top: calculatedTopPosition,
+        toJSON: () => calculatedBounds,
+      };
+      let previousCalculatedBounds = {
+        y: calculatedPreviousTopPosition,
+        x: headerBounds?.x ?? 0,
+        width: headerBounds?.width ?? 0,
+        height: headerBounds?.height ?? 0,
+        bottom: headerBounds?.bottom ?? 0,
+        left: headerBounds?.left ?? 0,
+        right: headerBounds?.right ?? 0,
+        top: calculatedPreviousTopPosition,
+        toJSON: () => calculatedBounds,
+      };
 
       let hasPositionChanged = false;
 
       // Check DOM position changes
       const hasDOMPositionChanged = !!(
-        previousBounds &&
-        (Math.abs(currentBounds.left - previousBounds.left) > 1 ||
-          Math.abs(currentBounds.top - previousBounds.top) > 1)
+        Math.abs(calculatedBounds.x - previousCalculatedBounds.x) > 1 ||
+        Math.abs(calculatedBounds.y - previousCalculatedBounds.y) > 1
       );
 
-      // For virtualized tables, only animate if logical position changed (prevents scroll animations)
-      if (logicalPosition !== undefined && previousLogicalPosition !== undefined) {
-        const hasLogicalPositionChanged = logicalPosition !== previousLogicalPosition;
+      hasPositionChanged = hasDOMPositionChanged;
 
-        if (hasLogicalPositionChanged) {
-        }
-
-        // Only animate if BOTH logical position changed AND DOM position changed significantly
-        hasPositionChanged = hasLogicalPositionChanged && hasDOMPositionChanged;
-      }
-      // For non-virtualized content, track DOM position changes only
-      else {
-        hasPositionChanged = hasDOMPositionChanged;
-      }
-
-      if (hasPositionChanged && previousBounds) {
+      if (hasPositionChanged) {
         // Merge animation config with defaults
         const finalConfig = {
           ...DEFAULT_ANIMATION_CONFIG,
@@ -86,20 +107,16 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
         };
 
         // Start new animation (this will interrupt any ongoing animation)
-        flipElement(elementRef.current, previousBounds, finalConfig).catch(() => {
+        flipElement(elementRef.current, previousCalculatedBounds, finalConfig).catch(() => {
           // Handle animation errors gracefully
         });
       }
-
-      // Store current bounds and logical position for next comparison
-      previousBoundsRef.current = currentBounds;
-      previousLogicalPositionRef.current = logicalPosition;
     });
 
     // Combine internal ref with forwarded ref
     const combinedRef = (node: HTMLDivElement | null) => {
       // Set internal ref
-      internalRef.current = node;
+      elementRef.current = node;
 
       // Forward ref to parent if provided
       if (forwardedRef) {

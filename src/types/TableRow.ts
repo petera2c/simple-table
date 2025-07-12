@@ -1,11 +1,12 @@
 import Row from "./Row";
 
 type TableRow = {
-  row: Row;
   depth: number;
   groupingKey?: string;
-  position: number;
   isLastGroupRow: boolean;
+  position: number;
+  previousPosition: number;
+  row: Row;
 };
 
 export default TableRow;

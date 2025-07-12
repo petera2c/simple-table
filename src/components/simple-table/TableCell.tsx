@@ -73,7 +73,6 @@ const TableCell = forwardRef(
       cellUpdateFlash,
       draggedHeaderRef,
       expandIcon,
-      unexpandedRows,
       handleMouseDown,
       handleMouseOver,
       headers,
@@ -83,10 +82,13 @@ const TableCell = forwardRef(
       onCellEdit,
       onTableHeaderDragEnd,
       rowGrouping,
+      rowHeight,
       rowIdAccessor,
       setUnexpandedRows,
       theme,
+      unexpandedRows,
       useOddColumnBackground,
+      tableBodyContainerRef,
     } = useTableContext();
 
     const { depth, row } = visibleRow;
@@ -123,9 +125,6 @@ const TableCell = forwardRef(
 
     // Generate a unique key that includes the content value to force re-render when it changes
     const cellKey = getCellKey({ rowId, accessor: header.accessor });
-
-    // Create composite logical position for both row and column tracking
-    const logicalPosition = `${visibleRow.position}-${colIndex}`;
 
     // Register this cell with the cell registry for direct updates
     useEffect(() => {
@@ -288,13 +287,15 @@ const TableCell = forwardRef(
 
     return (
       <Animate
-        id={cellId}
         className={cellClassName}
+        data-accessor={header.accessor}
+        data-col-index={colIndex}
+        data-row-id={rowId}
+        data-row-index={rowIndex}
         disabled={!allowAnimations}
-        logicalPosition={logicalPosition}
+        id={cellId}
+        key={cellKey}
         onDoubleClick={() => header.isEditable && setIsEditing(true)}
-        onMouseDown={handleCellMouseDown}
-        onMouseOver={handleCellMouseOver}
         onDragOver={(event) =>
           throttle({
             callback: handleDragOver,
@@ -303,11 +304,13 @@ const TableCell = forwardRef(
           })
         }
         onKeyDown={handleKeyDown}
+        onMouseDown={handleCellMouseDown}
+        onMouseOver={handleCellMouseOver}
         ref={ref}
-        data-row-index={rowIndex}
-        data-col-index={colIndex}
-        data-row-id={rowId}
-        data-accessor={header.accessor}
+        tableRow={visibleRow}
+        header={header}
+        rowHeight={rowHeight}
+        containerRef={tableBodyContainerRef}
       >
         {header.expandable && cellHasChildren ? (
           <div

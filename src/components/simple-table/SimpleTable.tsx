@@ -43,6 +43,8 @@ import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import SortConfig from "../../types/SortConfig";
+import usePrevious from "../../hooks/usePrevious";
+import TableRow from "../../types/TableRow";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -230,13 +232,15 @@ const SimpleTableComp = ({
   const tableRows = useMemo(() => {
     if (!rowGrouping || rowGrouping.length === 0) {
       // No grouping - just return flat structure with calculated positions
-      return currentRows.map((row, index) => ({
+      const rows: TableRow[] = currentRows.map((row, index) => ({
         row,
         depth: 0,
         groupingKey: undefined,
         position: index,
+        previousPosition: index, // Default to current position, will be updated later
         isLastGroupRow: false,
       }));
+      return rows;
     }
 
     return flattenRowsWithGrouping({
@@ -251,18 +255,74 @@ const SimpleTableComp = ({
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
 
+  // Track previous tableRows to get previous positions for all rows
+  const previousTableRows = usePrevious(tableRows);
+
+  // Add previousPosition to all tableRows
+  const tableRowsWithPreviousPosition = useMemo(() => {
+    if (!previousTableRows) {
+      // First render - set previousPosition to current position
+      return tableRows.map((row) => ({ ...row, previousPosition: row.position }));
+    }
+
+    // Create a map of previous rows by ID to their positions
+    const previousRowsMap = new Map<string, number>();
+    previousTableRows.forEach((row, index) => {
+      const rowId = String(getRowId(row.row, index, rowIdAccessor));
+      previousRowsMap.set(rowId, row.position);
+    });
+
+    // Add previousPosition to all current rows
+    return tableRows.map((row, index) => {
+      const rowId = String(getRowId(row.row, index, rowIdAccessor));
+      const previousPosition = previousRowsMap.get(rowId);
+      return {
+        ...row,
+        previousPosition: previousPosition ?? row.position, // Fall back to current position if no previous position found
+      };
+    });
+  }, [tableRows, previousTableRows, rowIdAccessor]);
+
   // Visible rows
   const visibleRows = useMemo(
     () =>
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
         contentHeight,
-        tableRows,
+        tableRows: tableRowsWithPreviousPosition,
         rowHeight,
         scrollTop,
       }),
-    [contentHeight, rowHeight, tableRows, scrollTop]
+    [contentHeight, rowHeight, tableRowsWithPreviousPosition, scrollTop]
   );
+  const previousVisibleRows = usePrevious(visibleRows);
+
+  // Create rows to render by combining current and previous visible rows
+  const rowsToRender = useMemo(() => {
+    if (!previousVisibleRows) {
+      return visibleRows;
+    }
+
+    // Create a map to track which rows we've already added to avoid duplicates
+    const addedRows = new Map<string, TableRow>();
+
+    // Add current visible rows
+    visibleRows.forEach((row, index) => {
+      const rowId = String(getRowId(row.row, index, rowIdAccessor));
+      addedRows.set(rowId, row);
+    });
+
+    // Add any previous visible rows that aren't in current visible rows
+    previousVisibleRows.forEach((row, index) => {
+      const rowId = String(getRowId(row.row, index, rowIdAccessor));
+      if (!addedRows.has(rowId)) {
+        addedRows.set(rowId, row);
+      }
+    });
+
+    return Array.from(addedRows.values());
+  }, [visibleRows, previousVisibleRows, rowIdAccessor]);
+  console.log(rowsToRender);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -423,12 +483,12 @@ const SimpleTableComp = ({
               onMouseLeave={handleMouseUp}
             >
               <TableContent
-                tableRows={tableRows}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}
                 sort={sort}
-                visibleRows={visibleRows}
+                tableRows={tableRows}
+                visibleRows={rowsToRender}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}
