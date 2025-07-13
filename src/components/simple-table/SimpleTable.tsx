@@ -6,7 +6,6 @@ import {
   ReactNode,
   useMemo,
   useCallback,
-  useLayoutEffect,
   RefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";

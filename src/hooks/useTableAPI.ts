@@ -40,7 +40,7 @@ const useTableAPI = ({
         },
       };
     }
-  }, [tableRef, rows, rowIdAccessor]);
+  }, [cellRegistryRef, rows, rowIdAccessor, tableRef]);
 };
 
 export default useTableAPI;

@@ -1,5 +1,5 @@
 import HeaderObject from "../types/HeaderObject";
-import SortConfig, { SortColumn } from "../types/SortConfig";
+import { SortColumn } from "../types/SortConfig";
 import Row from "../types/Row";
 
 // Type-specific comparators for different data types

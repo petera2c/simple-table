@@ -15,9 +15,9 @@ const useScrollbarWidth = ({
       tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
 
     setScrollbarWidth(newScrollbarWidth);
-  }, []);
+  }, [tableBodyContainerRef]);
 
-  return { setScrollbarWidth, scrollbarWidth };
+  return { setScrollbarWidth, scrollbarWidth, tableBodyContainerRef };
 };
 
 export default useScrollbarWidth;
