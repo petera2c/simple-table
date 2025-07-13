@@ -120,9 +120,29 @@ const useSortableData = ({
     []
   );
 
-  // Compute next sorted rows (the target state after animation)
-  const nextSortedRows = useMemo(() => {
-    return computeSortedRows({
+  // Optimized computation based on allowAnimations flag
+  const sortedRowsData = useMemo(() => {
+    if (!allowAnimations) {
+      // When animations are disabled, only compute one set of sorted rows
+      const sortedRows = computeSortedRows({
+        externalSortHandling,
+        tableRows,
+        sortColumn: sort.next,
+        rowGrouping,
+        headers,
+        sortNestedRows,
+      });
+
+      // Return the same sorted rows for all three states to maintain API compatibility
+      return {
+        currentSortedRows: sortedRows,
+        nextSortedRows: sortedRows,
+        pastSortedRows: sortedRows,
+      };
+    }
+
+    // When animations are enabled, compute all three states as before
+    const nextSortedRows = computeSortedRows({
       externalSortHandling,
       tableRows,
       sortColumn: sort.next,
@@ -130,46 +150,38 @@ const useSortableData = ({
       headers,
       sortNestedRows,
     });
-  }, [tableRows, sort, headers, externalSortHandling, rowGrouping, sortNestedRows]);
 
-  // Compute current sorted rows - reuse nextSortedRows if sort configs are the same
-  const currentSortedRows = useMemo(() => {
-    // If current and next sort configs are the same, use the same computed values
-    if (areSortConfigsEqual(sort.current, sort.next)) {
-      return nextSortedRows;
-    }
+    const currentSortedRows = areSortConfigsEqual(sort.current, sort.next)
+      ? nextSortedRows
+      : computeSortedRows({
+          externalSortHandling,
+          tableRows,
+          sortColumn: sort.current,
+          rowGrouping,
+          headers,
+          sortNestedRows,
+        });
 
-    // Otherwise, compute based on current sort
-    return computeSortedRows({
-      externalSortHandling,
-      tableRows,
-      sortColumn: sort.current,
-      rowGrouping,
-      headers,
-      sortNestedRows,
-    });
-  }, [tableRows, sort, nextSortedRows, headers, externalSortHandling, rowGrouping, sortNestedRows]);
+    const pastSortedRows = areSortConfigsEqual(sort.current, sort.previous)
+      ? currentSortedRows
+      : computeSortedRows({
+          externalSortHandling,
+          tableRows,
+          sortColumn: sort.previous,
+          rowGrouping,
+          headers,
+          sortNestedRows,
+        });
 
-  // Compute past sorted rows - reuse currentSortedRows if sort configs are the same
-  const pastSortedRows = useMemo(() => {
-    // If current and previous sort configs are the same, use the same computed values
-    if (areSortConfigsEqual(sort.current, sort.previous)) {
-      return currentSortedRows;
-    }
-
-    // Otherwise, compute based on previous sort
-    return computeSortedRows({
-      externalSortHandling,
-      tableRows,
-      sortColumn: sort.previous,
-      rowGrouping,
-      headers,
-      sortNestedRows,
-    });
+    return {
+      currentSortedRows,
+      nextSortedRows,
+      pastSortedRows,
+    };
   }, [
+    allowAnimations,
     tableRows,
     sort,
-    currentSortedRows,
     headers,
     externalSortHandling,
     rowGrouping,
@@ -177,66 +189,96 @@ const useSortableData = ({
   ]);
 
   // Simple sort handler
-  const updateSort = (accessor: string) => {
-    const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
-      for (const header of headers) {
-        if (header.accessor === accessor) {
-          return header;
+  const updateSort = useCallback(
+    (accessor: string) => {
+      const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+        for (const header of headers) {
+          if (header.accessor === accessor) {
+            return header;
+          }
+          if (header.children && header.children.length > 0) {
+            const found = findHeaderRecursively(header.children);
+            if (found) return found;
+          }
         }
-        if (header.children && header.children.length > 0) {
-          const found = findHeaderRecursively(header.children);
-          if (found) return found;
-        }
+        return undefined;
+      };
+
+      const targetHeader = findHeaderRecursively(headers);
+
+      if (!targetHeader) {
+        return;
       }
-      return undefined;
-    };
 
-    const targetHeader = findHeaderRecursively(headers);
+      if (!allowAnimations) {
+        // Simplified sort logic when animations are disabled
+        let newSortColumn: SortColumn | null = null;
 
-    if (!targetHeader) {
-      return;
-    }
+        if (!sort.next || sort.next.key.accessor !== accessor) {
+          newSortColumn = {
+            key: targetHeader,
+            direction: "ascending",
+          };
+        } else if (sort.next.direction === "ascending") {
+          newSortColumn = {
+            key: targetHeader,
+            direction: "descending",
+          };
+        }
+        // Third click removes the sort (stays null)
 
-    // Calculate what the new sort will be
-    let newSort: SortConfig = {
-      previous: null,
-      current: null,
-      next: null,
-    };
-    if (!sort || sort.previous?.key.accessor !== accessor) {
-      newSort = {
-        previous: sort.current,
-        current: sort.next,
-        next: {
-          key: targetHeader,
-          direction: "ascending",
-        },
+        const newSort: SortConfig = {
+          previous: null,
+          current: newSortColumn,
+          next: newSortColumn,
+        };
+
+        setSort(newSort);
+        onSortChange?.(newSort);
+        return;
+      }
+
+      // Original animation-enabled sort logic
+      let newSort: SortConfig = {
+        previous: null,
+        current: null,
+        next: null,
       };
-    } else if (sort.previous?.direction === "ascending") {
-      newSort = {
-        previous: sort.current,
-        current: sort.next,
-        next: {
-          key: targetHeader,
-          direction: "descending",
-        },
-      };
-    }
-    // Third click removes the sort (newSort stays null)
+      if (!sort || sort.next?.key.accessor !== accessor) {
+        newSort = {
+          previous: sort.current,
+          current: sort.next,
+          next: {
+            key: targetHeader,
+            direction: "ascending",
+          },
+        };
+      } else if (sort.next?.direction === "ascending") {
+        newSort = {
+          previous: sort.current,
+          current: sort.next,
+          next: {
+            key: targetHeader,
+            direction: "descending",
+          },
+        };
+      }
+      // Third click removes the sort (newSort stays null)
 
-    // Update internal state
-    setSort(newSort);
+      setSort(newSort);
+      onSortChange?.(newSort);
+    },
+    [allowAnimations, sort, headers, onSortChange]
+  );
 
-    // Notify external handler
-    onSortChange?.(newSort);
-  };
-
+  // Animation-related useLayoutEffect hooks - only run when animations are enabled
   useLayoutEffect(() => {
-    // If animations are not allowed, or the current and future sort are the same, return
+    if (!allowAnimations) return;
+
+    // If the current and future sort are the same, return
     if (
-      !allowAnimations ||
-      (sort.current?.key.accessor === sort.next?.key.accessor &&
-        sort.current?.direction === sort.next?.direction)
+      sort.current?.key.accessor === sort.next?.key.accessor &&
+      sort.current?.direction === sort.next?.direction
     )
       return;
 
@@ -248,31 +290,34 @@ const useSortableData = ({
   }, [sort, allowAnimations]);
 
   useLayoutEffect(() => {
-    // If animations are not allowed, or the current and future sort are the same, return
+    if (!allowAnimations) return;
+
+    // If the current and future sort are the same, return
     if (
-      !allowAnimations ||
       (sort.current?.key.accessor === sort.previous?.key.accessor &&
         sort.current?.direction === sort.previous?.direction) ||
-      (sort.current?.key.accessor !== sort.next?.key.accessor &&
-        sort.current?.direction !== sort.next?.direction)
+      sort.current?.key.accessor !== sort.next?.key.accessor ||
+      sort.current?.direction !== sort.next?.direction
     )
       return;
 
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setSort({
         previous: sort.current,
         current: sort.current,
         next: sort.next,
       });
     }, DEFAULT_ANIMATION_CONFIG.duration);
+
+    return () => clearTimeout(timeoutId);
   }, [sort, allowAnimations]);
 
   return {
     setSort,
     sort,
-    currentSortedRows,
-    nextSortedRows,
-    pastSortedRows,
+    currentSortedRows: sortedRowsData.currentSortedRows,
+    nextSortedRows: sortedRowsData.nextSortedRows,
+    pastSortedRows: sortedRowsData.pastSortedRows,
     updateSort,
   };
 };
