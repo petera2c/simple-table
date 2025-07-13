@@ -1,39 +1,13 @@
-import React from "react";
 import { HeaderObject } from "..";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
-import { calculatePinnedWidth } from "./headerUtils";
+import { calculatePinnedWidth, updatePreviousHeaderBounds } from "./headerUtils";
 import {
   findLeafHeaders,
   getHeaderWidthInPixels,
   removeAllFractionalWidths,
   getHeaderMinWidth,
 } from "./headerWidthUtils";
-import { flattenHeaders } from "./headerUtils";
-import { getCellId } from "./cellUtils";
 import { RefObject } from "react";
-
-/**
- * Helper function to update previous header bounds after resize completes
- */
-const updatePreviousHeaderBounds = (
-  headers: HeaderObject[],
-  previousHeadersRectBounds: RefObject<Map<string, DOMRect>>
-): void => {
-  if (!previousHeadersRectBounds?.current) return;
-
-  const flattenedHeaders = flattenHeaders(headers);
-  flattenedHeaders.forEach((header) => {
-    const headerElement = document.getElementById(
-      getCellId({ accessor: header.accessor, rowId: "header" })
-    );
-    if (headerElement) {
-      previousHeadersRectBounds.current!.set(
-        header.accessor,
-        headerElement.getBoundingClientRect()
-      );
-    }
-  });
-};
 
 /**
  * Handler for when resize dragging starts

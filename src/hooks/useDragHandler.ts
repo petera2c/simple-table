@@ -3,6 +3,7 @@ import HeaderObject from "../types/HeaderObject";
 import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
 import { deepClone } from "../utils/generalUtils";
+import { updatePreviousHeaderBounds } from "../utils/headerUtils";
 import { useTableContext } from "../context/TableContext";
 
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
@@ -156,7 +157,7 @@ const useDragHandler = ({
   onColumnOrderChange,
   onTableHeaderDragEnd,
 }: DragHandlerProps) => {
-  const { setHeaders } = useTableContext();
+  const { setHeaders, previousHeadersRectBounds } = useTableContext();
   const prevHeaders = usePrevious<HeaderObject[] | null>(headers);
 
   const handleDragStart = (header: HeaderObject) => {
@@ -274,12 +275,16 @@ const useDragHandler = ({
     // Clear the refs first to remove dragging state
     draggedHeaderRef.current = null;
     hoveredHeaderRef.current = null;
+    updatePreviousHeaderBounds(headers, previousHeadersRectBounds);
 
     // Use setHeaders to trigger a re-render and properly clear the st-dragging class
     setTimeout(() => {
       setHeaders((prevHeaders) => [...prevHeaders]);
       // Call the column order change callback
       onColumnOrderChange?.(headers);
+
+      // Update previous bounds to current positions to prevent unwanted animations
+      // Add a small delay to ensure DOM has been updated after the re-render
     }, 10);
   };
 

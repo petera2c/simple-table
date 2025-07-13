@@ -869,7 +869,6 @@ input {
   color: var(--st-cell-color);
   gap: var(--st-spacing-small);
   overflow: hidden;
-  mix-blend-mode: multiply;
 }
 
 .st-header-cell.left-aligned,
