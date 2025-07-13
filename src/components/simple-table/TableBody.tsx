@@ -68,7 +68,7 @@ const TableBody = ({
 
     // Map each row's ID to its index in the visible rows array
     rowsToRender.forEach((rowsToRender, index) => {
-      const rowId = String(getRowId(rowsToRender.row, index, rowIdAccessor));
+      const rowId = String(getRowId({ row: rowsToRender.row, rowIdAccessor }));
       indices[rowId] = index;
     });
 

@@ -82,7 +82,7 @@ const TableCell = ({
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get row ID and check if row has children
-  const rowId = getRowId(row, tableRow.position, rowIdAccessor);
+  const rowId = getRowId({ row, rowIdAccessor });
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   const isRowExpanded = !unexpandedRows.has(String(rowId));

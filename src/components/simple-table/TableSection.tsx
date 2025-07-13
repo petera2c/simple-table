@@ -65,7 +65,7 @@ const TableSection = ({
         }}
       >
         {rowsToRender.map((tableRow, index) => {
-          const rowId = getRowId(tableRow.row, tableRow.position, rowIdAccessor);
+          const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
           return (
             <Fragment key={rowId}>
               {index !== 0 && (

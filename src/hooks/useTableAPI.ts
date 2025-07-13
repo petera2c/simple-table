@@ -23,7 +23,7 @@ const useTableAPI = ({
           // Get the row ID using the new utility
           const row = rows?.[rowIndex];
           if (row) {
-            const rowId = getRowId(row, rowIndex, rowIdAccessor);
+            const rowId = getRowId({ row, rowIdAccessor });
             const key = getCellKey({ rowId, accessor });
             const cell = cellRegistryRef.current.get(key);
 

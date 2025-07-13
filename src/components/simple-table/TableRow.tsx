@@ -43,7 +43,7 @@ const TableRow = ({
   const isOdd = position % 2 === 0;
 
   // Get stable row ID for key
-  const rowId = getRowId(tableRow.row, tableRow.position, rowIdAccessor);
+  const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
 
   return (
     <div

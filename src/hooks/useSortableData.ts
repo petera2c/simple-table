@@ -22,7 +22,7 @@ const useSortableData = ({
   rowGrouping?: string[];
 }) => {
   const [sort, setSort] = useState<SortConfig>({
-    past: null,
+    previous: null,
     current: null,
     future: null,
   });
@@ -98,22 +98,22 @@ const useSortableData = ({
 
     // Calculate what the new sort will be
     let newSort: SortConfig = {
-      past: null,
+      previous: null,
       current: null,
       future: null,
     };
-    if (!sort || sort.past?.key.accessor !== accessor) {
+    if (!sort || sort.previous?.key.accessor !== accessor) {
       newSort = {
-        past: sort.current,
+        previous: sort.current,
         current: sort.future,
         future: {
           key: targetHeader,
           direction: "ascending",
         },
       };
-    } else if (sort.past?.direction === "ascending") {
+    } else if (sort.previous?.direction === "ascending") {
       newSort = {
-        past: sort.current,
+        previous: sort.current,
         current: sort.future,
         future: {
           key: targetHeader,

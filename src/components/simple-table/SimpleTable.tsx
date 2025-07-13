@@ -47,6 +47,7 @@ import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
 import useOnGridReady from "../../hooks/useOnGridReady";
 import useTableAPI from "../../hooks/useTableAPI";
+import { handleSort } from "../../utils/sortUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -185,15 +186,6 @@ const SimpleTableComp = ({
     handleClearAllFilters,
   } = useTableFilters({ externalFilterHandling, rows: aggregatedRows });
 
-  // Custom filter handler that respects external filter handling flag
-  const handleApplyFilter = useCallback(
-    (filter: FilterCondition) => {
-      // Update internal state and call external handler if provided
-      internalHandleApplyFilter(filter);
-    },
-    [internalHandleApplyFilter]
-  );
-
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, updateSort } = useSortableData({
     allowAnimations,
@@ -230,7 +222,6 @@ const SimpleTableComp = ({
         depth: 0,
         groupingKey: undefined,
         position: index,
-        previousPosition: index, // Default to current position, will be updated later
         isLastGroupRow: false,
       }));
       return rows;
@@ -248,48 +239,37 @@ const SimpleTableComp = ({
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
 
-  // Track previous tableRows to get previous positions for all rows
-  const previousTableRows = usePrevious(tableRows);
-
-  // Add previousPosition to all tableRows
-  const tableRowsWithPreviousPosition = useMemo(() => {
-    if (!previousTableRows) {
-      // First render - set previousPosition to current position
-      return tableRows.map((row) => ({ ...row, previousPosition: row.position }));
-    }
-
-    // Create a map of previous rows by ID to their positions
-    const previousRowsMap = new Map<string, number>();
-    previousTableRows.forEach((row, index) => {
-      const rowId = String(getRowId(row.row, index, rowIdAccessor));
-      previousRowsMap.set(rowId, row.position);
-    });
-
-    // Add previousPosition to all current rows
-    const rowsWithPositions = tableRows.map((row, index) => {
-      const rowId = String(getRowId(row.row, index, rowIdAccessor));
-      const previousPosition = previousRowsMap.get(rowId);
-      return {
-        ...row,
-        previousPosition: previousPosition ?? row.position, // Fall back to current position if no previous position found
-      };
-    });
-
-    return rowsWithPositions;
-  }, [tableRows, previousTableRows, rowIdAccessor]);
-
   // Visible rows
   const visibleRows = useMemo(
     () =>
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
         contentHeight,
-        tableRows: tableRowsWithPreviousPosition,
+        tableRows,
         rowHeight,
         scrollTop,
       }),
-    [contentHeight, rowHeight, tableRowsWithPreviousPosition, scrollTop]
+    [contentHeight, rowHeight, scrollTop, tableRows]
   );
+
+  const pastSortRowIds = useMemo(() => {
+    if (
+      (sort.previous &&
+        sort.current &&
+        sort.current.direction !== sort.previous.direction &&
+        sort.current.key.accessor !== sort.previous.key.accessor) ||
+      !allowAnimations
+    ) {
+      return [];
+    }
+
+    if (!sort.previous) {
+      return;
+    }
+
+    const sortedData = handleSort({ headers, rows: filteredRows, sortColumn: sort.previous });
+    return sortedData.map((row) => getRowId({ row, rowIdAccessor }));
+  }, [tableRows, sort, filteredRows, rowIdAccessor, headers, allowAnimations]);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -346,6 +326,15 @@ const SimpleTableComp = ({
   useTableAPI({ cellRegistryRef, rowIdAccessor, rows, tableRef });
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
+
+  // Custom filter handler that respects external filter handling flag
+  const handleApplyFilter = useCallback(
+    (filter: FilterCondition) => {
+      // Update internal state and call external handler if provided
+      internalHandleApplyFilter(filter);
+    },
+    [internalHandleApplyFilter]
+  );
 
   return (
     <TableProvider

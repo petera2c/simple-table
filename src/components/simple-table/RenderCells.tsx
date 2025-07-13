@@ -34,7 +34,7 @@ const RenderCells = ({
   return (
     <>
       {filteredHeaders.map((header, index) => {
-        const rowId = getRowId(tableRow.row, tableRow.position, rowIdAccessor);
+        const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
         const cellKey = getCellId({ accessor: header.accessor, rowId });
 
         return (
@@ -81,7 +81,7 @@ const RecursiveRenderCells = ({
   const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor } = useTableContext();
 
   // Calculate rowId once at the beginning
-  const rowId = getRowId(tableRow.row, tableRow.position, rowIdAccessor);
+  const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
 
   if (header.children) {
     const filteredChildren = header.children.filter((child) =>

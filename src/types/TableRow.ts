@@ -5,7 +5,6 @@ type TableRow = {
   groupingKey?: string;
   isLastGroupRow: boolean;
   position: number;
-  previousPosition: number;
   row: Row;
 };
 

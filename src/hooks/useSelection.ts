@@ -129,7 +129,7 @@ const useSelection = ({
 
           const targetRow = tableRows[targetRowIndex];
           const targetHeader = flattenedLeafHeaders[targetColIndex];
-          const targetRowId = getRowId(targetRow.row, targetRowIndex, rowIdAccessor);
+          const targetRowId = getRowId({ row: targetRow.row, rowIdAccessor });
 
           // Track warning flash for non-editable cells
           if (!targetHeader?.isEditable) {
@@ -230,7 +230,7 @@ const useSelection = ({
 
       const targetRow = tableRows[rowIndex];
       const targetHeader = flattenedLeafHeaders[colIndex];
-      const targetRowId = getRowId(targetRow.row, rowIndex, rowIdAccessor);
+      const targetRowId = getRowId({ row: targetRow.row, rowIdAccessor });
 
       // Track warning flash for non-editable cells
       if (!targetHeader?.isEditable) {
@@ -308,7 +308,7 @@ const useSelection = ({
         for (let col = minCol; col <= maxCol; col++) {
           // Check if the row exists in the visible rows
           if (row >= 0 && row < tableRows.length) {
-            const rowId = getRowId(tableRows[row].row, row, rowIdAccessor);
+            const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -404,10 +404,10 @@ const useSelection = ({
       // Check if the visible rows have changed
       // If the rowId has changed, and we can't find the rowId in the visible rows, do nothing
       // If the rowId has changed, and we can find the rowId in the visible rows, update the rowIndex
-      const currentRowId = getRowId(tableRows[rowIndex]?.row, rowIndex, rowIdAccessor);
+      const currentRowId = getRowId({ row: tableRows[rowIndex]?.row, rowIdAccessor });
       if (currentRowId !== rowId) {
         const currentRowIndex = tableRows.findIndex(
-          (visibleRow, index) => getRowId(visibleRow.row, index, rowIdAccessor) === rowId
+          (visibleRow, index) => getRowId({ row: visibleRow.row, rowIdAccessor }) === rowId
         );
         if (currentRowIndex !== -1) {
           rowIndex = currentRowIndex;
@@ -418,7 +418,7 @@ const useSelection = ({
       if (event.key === "ArrowUp") {
         event.preventDefault();
         if (rowIndex > 0) {
-          const newRowId = getRowId(tableRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor);
+          const newRowId = getRowId({ row: tableRows[rowIndex - 1].row, rowIdAccessor });
           const newCell = {
             rowIndex: rowIndex - 1,
             colIndex,
@@ -429,7 +429,7 @@ const useSelection = ({
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
         if (rowIndex < tableRows.length - 1) {
-          const newRowId = getRowId(tableRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor);
+          const newRowId = getRowId({ row: tableRows[rowIndex + 1].row, rowIdAccessor });
           const newCell = {
             rowIndex: rowIndex + 1,
             colIndex,
@@ -440,7 +440,7 @@ const useSelection = ({
       } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
         event.preventDefault();
         if (colIndex > 0) {
-          const newRowId = getRowId(tableRows[rowIndex].row, rowIndex, rowIdAccessor);
+          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
           const newCell = {
             rowIndex,
             colIndex: colIndex - 1,
@@ -451,7 +451,7 @@ const useSelection = ({
       } else if (event.key === "ArrowRight" || event.key === "Tab") {
         event.preventDefault();
         if (colIndex < leafHeaders.length - 1) {
-          const newRowId = getRowId(tableRows[rowIndex].row, rowIndex, rowIdAccessor);
+          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
           const newCell = {
             rowIndex,
             colIndex: colIndex + 1,
@@ -516,7 +516,7 @@ const useSelection = ({
         for (let col = startCol; col <= endCol; col++) {
           // Ensure the row exists
           if (row >= 0 && row < tableRows.length) {
-            const rowId = getRowId(tableRows[row].row, row, rowIdAccessor);
+            const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -549,10 +549,10 @@ const useSelection = ({
     ({ colIndex, rowIndex, rowId }: Cell) => {
       const classes = [];
       const topRowId = tableRows[rowIndex - 1]
-        ? getRowId(tableRows[rowIndex - 1].row, rowIndex - 1, rowIdAccessor)
+        ? getRowId({ row: tableRows[rowIndex - 1].row, rowIdAccessor })
         : null;
       const bottomRowId = tableRows[rowIndex + 1]
-        ? getRowId(tableRows[rowIndex + 1].row, rowIndex + 1, rowIdAccessor)
+        ? getRowId({ row: tableRows[rowIndex + 1].row, rowIdAccessor })
         : null;
 
       const topCell =

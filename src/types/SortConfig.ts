@@ -8,7 +8,7 @@ export type SortColumn = {
 
 // Main sort configuration type
 type SortConfig = {
-  past: SortColumn | null;
+  previous: SortColumn | null;
   current: SortColumn | null;
   future: SortColumn | null;
 };
