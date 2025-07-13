@@ -12,17 +12,6 @@ import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
 import Animate from "../animate/Animate";
 
-interface CellProps {
-  borderClass: string;
-  colIndex: number;
-  header: TableCellProps["header"];
-  isHighlighted: boolean;
-  isInitialFocused: boolean;
-  nestedIndex: number;
-  rowIndex: number;
-  visibleRow: TableCellProps["visibleRow"];
-}
-
 const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
     return content ? "True" : "False";
@@ -60,8 +49,8 @@ const TableCell = ({
   isInitialFocused,
   nestedIndex,
   rowIndex,
-  visibleRow,
-}: CellProps) => {
+  tableRow,
+}: TableCellProps) => {
   // Get shared props from context
   const {
     cellRegistry,
@@ -84,7 +73,7 @@ const TableCell = ({
     useOddColumnBackground,
   } = useTableContext();
 
-  const { depth, row } = visibleRow;
+  const { depth, row } = tableRow;
 
   // Local state
   const [localContent, setLocalContent] = useState<CellValue>(row[header.accessor] as CellValue);
@@ -93,7 +82,7 @@ const TableCell = ({
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get row ID and check if row has children
-  const rowId = getRowId(row, visibleRow.position, rowIdAccessor);
+  const rowId = getRowId(row, tableRow.position, rowIdAccessor);
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   const isRowExpanded = !unexpandedRows.has(String(rowId));
@@ -294,7 +283,7 @@ const TableCell = ({
       onKeyDown={handleKeyDown}
       onMouseDown={handleCellMouseDown}
       onMouseOver={handleCellMouseOver}
-      tableRow={visibleRow}
+      tableRow={tableRow}
     >
       {header.expandable && cellHasChildren ? (
         <div

@@ -21,10 +21,10 @@ interface TableSectionProps {
   ref?: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   rowIndices: RowIndices;
+  rowsToRender: TableRowType[];
   setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
-  visibleRows: TableRowType[];
   width?: number;
 }
 
@@ -40,7 +40,7 @@ const TableSection = ({
   setHoveredIndex,
   templateColumns,
   totalHeight,
-  visibleRows,
+  rowsToRender,
   width,
 }: TableSectionProps) => {
   const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
@@ -64,15 +64,15 @@ const TableSection = ({
           ...(!pinned && { flexGrow: 1 }),
         }}
       >
-        {visibleRows.map((visibleRow, index) => {
-          const rowId = getRowId(visibleRow.row, visibleRow.position, rowIdAccessor);
+        {rowsToRender.map((tableRow, index) => {
+          const rowId = getRowId(tableRow.row, tableRow.position, rowIdAccessor);
           return (
             <Fragment key={rowId}>
               {index !== 0 && (
                 <TableRowSeparator
                   // Is last row group and it is open
-                  displayStrongBorder={visibleRow.isLastGroupRow}
-                  position={visibleRow.position}
+                  displayStrongBorder={tableRow.isLastGroupRow}
+                  position={tableRow.position}
                   rowHeight={rowHeight}
                   templateColumns={templateColumns}
                   rowIndex={index - 1}
@@ -90,7 +90,7 @@ const TableSection = ({
                 rowHeight={rowHeight}
                 rowIndices={rowIndices}
                 setHoveredIndex={setHoveredIndex}
-                visibleRow={visibleRow}
+                tableRow={tableRow}
               />
             </Fragment>
           );

@@ -426,7 +426,7 @@ const SimpleTableComp = ({
                 setScrollTop={setScrollTop}
                 sort={sort}
                 tableRows={tableRows}
-                visibleRows={visibleRows}
+                rowsToRender={rowsToRender}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

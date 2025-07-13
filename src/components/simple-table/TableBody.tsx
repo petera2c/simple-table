@@ -17,9 +17,9 @@ const TableBody = ({
   pinnedRightColumns,
   pinnedRightTemplateColumns,
   pinnedRightWidth,
+  rowsToRender,
   setScrollTop,
   tableRows,
-  visibleRows,
 }: TableBodyProps) => {
   // Get stable props from context
   const {
@@ -67,13 +67,13 @@ const TableBody = ({
     const indices: RowIndices = {};
 
     // Map each row's ID to its index in the visible rows array
-    visibleRows.forEach((visibleRow, index) => {
-      const rowId = String(getRowId(visibleRow.row, index, rowIdAccessor));
+    rowsToRender.forEach((rowsToRender, index) => {
+      const rowId = String(getRowId(rowsToRender.row, index, rowIdAccessor));
       indices[rowId] = index;
     });
 
     return indices;
-  }, [visibleRows, rowIdAccessor]);
+  }, [rowsToRender, rowIdAccessor]);
 
   // Check if we should load more data
   const checkForLoadMore = useCallback(
@@ -126,8 +126,8 @@ const TableBody = ({
     hoveredIndex,
     rowHeight,
     rowIndices,
+    rowsToRender,
     setHoveredIndex,
-    visibleRows,
   };
 
   return (

@@ -16,7 +16,7 @@ interface RenderCellsProps {
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: TableRowType;
+  tableRow: TableRowType;
 }
 
 const RenderCells = ({
@@ -26,7 +26,7 @@ const RenderCells = ({
   pinned,
   rowIndex,
   rowIndices,
-  visibleRow,
+  tableRow,
 }: RenderCellsProps) => {
   const { rowIdAccessor } = useTableContext();
   const filteredHeaders = headers.filter((header) => displayCell({ header, pinned }));
@@ -34,7 +34,7 @@ const RenderCells = ({
   return (
     <>
       {filteredHeaders.map((header, index) => {
-        const rowId = getRowId(visibleRow.row, visibleRow.position, rowIdAccessor);
+        const rowId = getRowId(tableRow.row, tableRow.position, rowIdAccessor);
         const cellKey = getCellId({ accessor: header.accessor, rowId });
 
         return (
@@ -47,7 +47,7 @@ const RenderCells = ({
             pinned={pinned}
             rowIndex={rowIndex}
             rowIndices={rowIndices}
-            visibleRow={visibleRow}
+            tableRow={tableRow}
           />
         );
       })}
@@ -63,7 +63,7 @@ const RecursiveRenderCells = ({
   pinned,
   rowIndex,
   rowIndices,
-  visibleRow,
+  tableRow,
 }: {
   columnIndices: ColumnIndices;
   header: HeaderObject;
@@ -72,7 +72,7 @@ const RecursiveRenderCells = ({
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: TableRowType;
+  tableRow: TableRowType;
 }) => {
   // Get the column index for this header from our pre-calculated mapping
   const colIndex = columnIndices[header.accessor];
@@ -81,7 +81,7 @@ const RecursiveRenderCells = ({
   const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor } = useTableContext();
 
   // Calculate rowId once at the beginning
-  const rowId = getRowId(visibleRow.row, visibleRow.position, rowIdAccessor);
+  const rowId = getRowId(tableRow.row, tableRow.position, rowIdAccessor);
 
   if (header.children) {
     const filteredChildren = header.children.filter((child) =>
@@ -102,7 +102,7 @@ const RecursiveRenderCells = ({
               pinned={pinned}
               rowIndex={rowIndex}
               rowIndices={rowIndices}
-              visibleRow={visibleRow}
+              tableRow={tableRow}
             />
           );
         })}
@@ -128,7 +128,7 @@ const RecursiveRenderCells = ({
       key={tableCellKey}
       nestedIndex={nestedIndex}
       rowIndex={rowIndex}
-      visibleRow={visibleRow}
+      tableRow={tableRow}
     />
   );
 };
