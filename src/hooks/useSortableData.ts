@@ -1,6 +1,6 @@
 import HeaderObject from "../types/HeaderObject";
 import Row from "../types/Row";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import SortConfig, { SortColumn } from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
@@ -24,7 +24,7 @@ const useSortableData = ({
   const [sort, setSort] = useState<SortConfig>({
     previous: null,
     current: null,
-    future: null,
+    next: null,
   });
 
   // Recursive sort function for nested data
@@ -100,13 +100,13 @@ const useSortableData = ({
     let newSort: SortConfig = {
       previous: null,
       current: null,
-      future: null,
+      next: null,
     };
     if (!sort || sort.previous?.key.accessor !== accessor) {
       newSort = {
         previous: sort.current,
-        current: sort.future,
-        future: {
+        current: sort.next,
+        next: {
           key: targetHeader,
           direction: "ascending",
         },
@@ -114,8 +114,8 @@ const useSortableData = ({
     } else if (sort.previous?.direction === "ascending") {
       newSort = {
         previous: sort.current,
-        current: sort.future,
-        future: {
+        current: sort.next,
+        next: {
           key: targetHeader,
           direction: "descending",
         },
@@ -130,35 +130,101 @@ const useSortableData = ({
     onSortChange?.(newSort);
   };
 
-  const sortedRows = useMemo(() => {
+  const { currentSortedRows, nextSortedRows, pastSortedRows } = useMemo(() => {
     // If external sort handling is enabled, don't sort internally
-    if (externalSortHandling) return tableRows;
-    if (!sort.current) return tableRows;
+    if (externalSortHandling)
+      return { currentSortedRows: tableRows, nextSortedRows: tableRows, pastSortedRows: tableRows };
 
     // If rowGrouping is provided, use recursive sorting
     if (rowGrouping && rowGrouping.length > 0) {
-      return sortNestedRows({
-        groupingKeys: rowGrouping,
-        headers,
-        rows: tableRows,
-        sortColumn: sort.current,
-      });
+      const currentSortedData = sort.current
+        ? sortNestedRows({
+            groupingKeys: rowGrouping,
+            headers,
+            rows: tableRows,
+            sortColumn: sort.current,
+          })
+        : tableRows;
+      const nextSortedData = sort.next
+        ? sortNestedRows({
+            groupingKeys: rowGrouping,
+            headers,
+            rows: tableRows,
+            sortColumn: sort.next,
+          })
+        : tableRows;
+      const pastSortedData = sort.previous
+        ? sortNestedRows({
+            groupingKeys: rowGrouping,
+            headers,
+            rows: tableRows,
+            sortColumn: sort.previous,
+          })
+        : tableRows;
+      return {
+        currentSortedRows: currentSortedData,
+        nextSortedRows: nextSortedData,
+        pastSortedRows: pastSortedData,
+      };
+    } else {
+      // Otherwise use flat sorting
+      const currentSortedData = sort.current
+        ? handleSort({ headers, rows: tableRows, sortColumn: sort.current })
+        : tableRows;
+      const nextSortedData = sort.next
+        ? handleSort({ headers, rows: tableRows, sortColumn: sort.next })
+        : tableRows;
+      const pastSortedData = sort.previous
+        ? handleSort({ headers, rows: tableRows, sortColumn: sort.previous })
+        : tableRows;
+      return {
+        currentSortedRows: currentSortedData,
+        nextSortedRows: nextSortedData,
+        pastSortedRows: pastSortedData,
+      };
     }
-
-    // Otherwise use flat sorting
-    const sortedData = handleSort({ headers, rows: tableRows, sortColumn: sort.current });
-    return sortedData;
   }, [tableRows, sort, headers, externalSortHandling, rowGrouping, sortNestedRows]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // If animations are not allowed, or the current and future sort are the same, return
-    if (!allowAnimations || sort.current?.key.accessor === sort.future?.key.accessor) return;
+    if (
+      !allowAnimations ||
+      (sort.current?.key.accessor === sort.next?.key.accessor &&
+        sort.current?.direction === sort.next?.direction)
+    )
+      return;
+
+    setSort({
+      previous: sort.previous,
+      current: sort.next,
+      next: sort.next,
+    });
+  }, [sort, allowAnimations]);
+
+  useLayoutEffect(() => {
+    // If animations are not allowed, or the current and future sort are the same, return
+    if (
+      !allowAnimations ||
+      (sort.current?.key.accessor === sort.previous?.key.accessor &&
+        sort.current?.direction === sort.previous?.direction) ||
+      (sort.current?.key.accessor !== sort.next?.key.accessor &&
+        sort.current?.direction !== sort.next?.direction)
+    )
+      return;
+
+    setSort({
+      previous: sort.current,
+      current: sort.current,
+      next: sort.next,
+    });
   }, [sort, allowAnimations]);
 
   return {
     setSort,
     sort,
-    sortedRows,
+    currentSortedRows,
+    nextSortedRows,
+    pastSortedRows,
     updateSort,
   };
 };

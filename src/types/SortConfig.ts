@@ -10,7 +10,7 @@ export type SortColumn = {
 type SortConfig = {
   previous: SortColumn | null;
   current: SortColumn | null;
-  future: SortColumn | null;
+  next: SortColumn | null;
 };
 
 export default SortConfig;

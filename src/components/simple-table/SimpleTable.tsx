@@ -40,14 +40,12 @@ import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import SortConfig from "../../types/SortConfig";
-import usePrevious from "../../hooks/usePrevious";
 import TableRow from "../../types/TableRow";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
 import useOnGridReady from "../../hooks/useOnGridReady";
 import useTableAPI from "../../hooks/useTableAPI";
-import { handleSort } from "../../utils/sortUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -187,7 +185,7 @@ const SimpleTableComp = ({
   } = useTableFilters({ externalFilterHandling, rows: aggregatedRows });
 
   // Use custom hook for sorting (now operates on filtered rows)
-  const { sort, sortedRows, updateSort } = useSortableData({
+  const { sort, currentSortedRows, nextSortedRows, pastSortedRows, updateSort } = useSortableData({
     allowAnimations,
     headers,
     tableRows: filteredRows,
@@ -206,15 +204,31 @@ const SimpleTableComp = ({
 
   // Memoize currentRows calculation
   const currentRows = useMemo(() => {
-    if (!shouldPaginate) return sortedRows;
+    if (!shouldPaginate) return currentSortedRows;
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    const rows = sortedRows.slice(startIndex, endIndex);
+    const rows = currentSortedRows.slice(startIndex, endIndex);
     return rows;
-  }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
+  }, [currentPage, rowsPerPage, shouldPaginate, currentSortedRows]);
+
+  const nextRows = useMemo(() => {
+    if (!shouldPaginate) return nextSortedRows;
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const rows = nextSortedRows.slice(startIndex, endIndex);
+    return rows;
+  }, [currentPage, rowsPerPage, shouldPaginate, nextSortedRows]);
+
+  const pastRows = useMemo(() => {
+    if (!shouldPaginate) return pastSortedRows;
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const rows = pastSortedRows.slice(startIndex, endIndex);
+    return rows;
+  }, [currentPage, rowsPerPage, shouldPaginate, pastSortedRows]);
 
   // Flatten rows based on row grouping and expansion state - now includes ALL properties
-  const tableRows = useMemo(() => {
+  const currentTableRows = useMemo(() => {
     if (!rowGrouping || rowGrouping.length === 0) {
       // No grouping - just return flat structure with calculated positions
       const rows: TableRow[] = currentRows.map((row, index) => ({
@@ -236,40 +250,117 @@ const SimpleTableComp = ({
     });
   }, [currentRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
 
+  const nextTableRows = useMemo(() => {
+    if (!rowGrouping || rowGrouping.length === 0) {
+      // No grouping - just return flat structure with calculated positions
+      const rows: TableRow[] = nextRows.map((row, index) => ({
+        row,
+        depth: 0,
+        groupingKey: undefined,
+        position: index,
+        isLastGroupRow: false,
+      }));
+      return rows;
+    }
+
+    return flattenRowsWithGrouping({
+      rows: nextRows,
+      rowGrouping,
+      rowIdAccessor,
+      unexpandedRows,
+      expandAll,
+    });
+  }, [nextRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
+
+  const pastTableRows = useMemo(() => {
+    if (!rowGrouping || rowGrouping.length === 0) {
+      // No grouping - just return flat structure with calculated positions
+      const rows: TableRow[] = pastRows.map((row, index) => ({
+        row,
+        depth: 0,
+        groupingKey: undefined,
+        position: index,
+        isLastGroupRow: false,
+      }));
+      return rows;
+    }
+
+    return flattenRowsWithGrouping({
+      rows: pastRows,
+      rowGrouping,
+      rowIdAccessor,
+      unexpandedRows,
+      expandAll,
+    });
+  }, [pastRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
+
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
 
   // Visible rows
-  const visibleRows = useMemo(
+  const currentVisibleRows = useMemo(
     () =>
       getVisibleRows({
         bufferRowCount: BUFFER_ROW_COUNT,
         contentHeight,
-        tableRows,
+        tableRows: currentTableRows,
         rowHeight,
         scrollTop,
       }),
-    [contentHeight, rowHeight, scrollTop, tableRows]
+    [contentHeight, rowHeight, scrollTop, currentTableRows]
   );
 
-  const pastSortRowIds = useMemo(() => {
-    if (
-      (sort.previous &&
-        sort.current &&
-        sort.current.direction !== sort.previous.direction &&
-        sort.current.key.accessor !== sort.previous.key.accessor) ||
-      !allowAnimations
-    ) {
-      return [];
+  const nextVisibleRowIds = useMemo(
+    () =>
+      getVisibleRows({
+        bufferRowCount: BUFFER_ROW_COUNT,
+        contentHeight,
+        tableRows: nextTableRows,
+        rowHeight,
+        scrollTop,
+      }).map((row) => getRowId({ row: row.row, rowIdAccessor })),
+    [contentHeight, rowHeight, scrollTop, nextTableRows, rowIdAccessor]
+  );
+
+  const pastVisibleRowIds = useMemo(
+    () =>
+      getVisibleRows({
+        bufferRowCount: BUFFER_ROW_COUNT,
+        contentHeight,
+        tableRows: pastTableRows,
+        rowHeight,
+        scrollTop,
+      }).map((row) => getRowId({ row: row.row, rowIdAccessor })),
+    [contentHeight, rowHeight, scrollTop, pastTableRows, rowIdAccessor]
+  );
+
+  const rowsToRender = useMemo(() => {
+    if (shouldPaginate) {
+      return currentVisibleRows;
     }
 
-    if (!sort.previous) {
-      return;
-    }
+    // Find all the rows that are in the pastVisibleRowIds and the nextVisibleRowIds that are not in the currentVisibleRows
+    const newSet = new Set([...pastVisibleRowIds, ...nextVisibleRowIds]);
+    const uniqueIds = Array.from(newSet).filter((id) => {
+      const foundRow = currentVisibleRows.find(
+        (row) => getRowId({ row: row.row, rowIdAccessor }) === id
+      );
+      return !foundRow;
+    });
 
-    const sortedData = handleSort({ headers, rows: filteredRows, sortColumn: sort.previous });
-    return sortedData.map((row) => getRowId({ row, rowIdAccessor }));
-  }, [tableRows, sort, filteredRows, rowIdAccessor, headers, allowAnimations]);
+    const foundRows = currentTableRows.filter((row) =>
+      uniqueIds.includes(getRowId({ row: row.row, rowIdAccessor }))
+    );
+
+    return [...currentVisibleRows, ...foundRows];
+  }, [
+    currentTableRows,
+    currentVisibleRows,
+    nextVisibleRowIds,
+    pastVisibleRowIds,
+    rowIdAccessor,
+    shouldPaginate,
+  ]);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -291,7 +382,7 @@ const SimpleTableComp = ({
   } = useSelection({
     selectableCells,
     headers,
-    tableRows,
+    tableRows: currentTableRows,
     rowIdAccessor,
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
@@ -389,7 +480,7 @@ const SimpleTableComp = ({
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
-        tableRows,
+        tableRows: currentTableRows,
         theme,
         unexpandedRows,
         useHoverRowBackground,
@@ -414,7 +505,7 @@ const SimpleTableComp = ({
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}
                 sort={sort}
-                tableRows={tableRows}
+                tableRows={currentTableRows}
                 rowsToRender={rowsToRender}
               />
               <TableColumnEditor
@@ -438,7 +529,7 @@ const SimpleTableComp = ({
               onPageChange={setCurrentPage}
               onNextPage={onNextPage}
               shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil(sortedRows.length / rowsPerPage)}
+              totalPages={Math.ceil(currentSortedRows.length / rowsPerPage)}
             />
           </div>
         </ScrollSync>

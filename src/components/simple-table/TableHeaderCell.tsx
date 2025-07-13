@@ -246,13 +246,13 @@ const TableHeaderCell = ({
     </div>
   );
 
-  const SortIcon = sort && sort.future?.key.accessor === header.accessor && (
+  const SortIcon = sort && sort.next?.key.accessor === header.accessor && (
     <div
       className="st-icon-container"
       onClick={(event) => handleColumnHeaderClick({ event, header })}
     >
-      {sort.future?.direction === "ascending" && sortUpIcon && sortUpIcon}
-      {sort.future?.direction === "descending" && sortDownIcon && sortDownIcon}
+      {sort.next?.direction === "ascending" && sortUpIcon && sortUpIcon}
+      {sort.next?.direction === "descending" && sortDownIcon && sortDownIcon}
     </div>
   );
 
