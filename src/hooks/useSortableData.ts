@@ -5,6 +5,7 @@ import SortConfig, { SortColumn } from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
 import { DEFAULT_ANIMATION_CONFIG } from "../components/animate/animation-utils";
+import usePrevious from "./usePrevious";
 
 // Extract sort logic to custom hook
 const useSortableData = ({
@@ -22,6 +23,7 @@ const useSortableData = ({
   onSortChange?: (sort: SortConfig | null) => void;
   rowGrouping?: string[];
 }) => {
+  // Simplified sort state - just track current and next
   const [sort, setSort] = useState<SortConfig>({
     previous: null,
     current: null,
@@ -75,6 +77,45 @@ const useSortableData = ({
     },
     []
   );
+
+  // Compute sorted rows based on current sort state
+  const currentSortedRows = useMemo(() => {
+    if (externalSortHandling) return tableRows;
+
+    if (!sort.current) return tableRows;
+
+    if (rowGrouping && rowGrouping.length > 0) {
+      return sortNestedRows({
+        groupingKeys: rowGrouping,
+        headers,
+        rows: tableRows,
+        sortColumn: sort.current,
+      });
+    } else {
+      return handleSort({ headers, rows: tableRows, sortColumn: sort.current });
+    }
+  }, [tableRows, sort.current, headers, externalSortHandling, rowGrouping, sortNestedRows]);
+
+  // Compute next sorted rows for animation
+  const nextSortedRows = useMemo(() => {
+    if (externalSortHandling) return tableRows;
+
+    if (!sort.next) return tableRows;
+
+    if (rowGrouping && rowGrouping.length > 0) {
+      return sortNestedRows({
+        groupingKeys: rowGrouping,
+        headers,
+        rows: tableRows,
+        sortColumn: sort.next,
+      });
+    } else {
+      return handleSort({ headers, rows: tableRows, sortColumn: sort.next });
+    }
+  }, [tableRows, sort.next, headers, externalSortHandling, rowGrouping, sortNestedRows]);
+
+  // Use usePrevious to get the previous sorted rows
+  const pastSortedRows = usePrevious(currentSortedRows);
 
   // Simple sort handler
   const updateSort = (accessor: string) => {
@@ -130,61 +171,6 @@ const useSortableData = ({
     // Notify external handler
     onSortChange?.(newSort);
   };
-
-  const { currentSortedRows, nextSortedRows, pastSortedRows } = useMemo(() => {
-    // If external sort handling is enabled, don't sort internally
-    if (externalSortHandling)
-      return { currentSortedRows: tableRows, nextSortedRows: tableRows, pastSortedRows: tableRows };
-
-    // If rowGrouping is provided, use recursive sorting
-    if (rowGrouping && rowGrouping.length > 0) {
-      const currentSortedData = sort.current
-        ? sortNestedRows({
-            groupingKeys: rowGrouping,
-            headers,
-            rows: tableRows,
-            sortColumn: sort.current,
-          })
-        : tableRows;
-      const nextSortedData = sort.next
-        ? sortNestedRows({
-            groupingKeys: rowGrouping,
-            headers,
-            rows: tableRows,
-            sortColumn: sort.next,
-          })
-        : tableRows;
-      const pastSortedData = sort.previous
-        ? sortNestedRows({
-            groupingKeys: rowGrouping,
-            headers,
-            rows: tableRows,
-            sortColumn: sort.previous,
-          })
-        : tableRows;
-      return {
-        currentSortedRows: currentSortedData,
-        nextSortedRows: nextSortedData,
-        pastSortedRows: pastSortedData,
-      };
-    } else {
-      // Otherwise use flat sorting
-      const currentSortedData = sort.current
-        ? handleSort({ headers, rows: tableRows, sortColumn: sort.current })
-        : tableRows;
-      const nextSortedData = sort.next
-        ? handleSort({ headers, rows: tableRows, sortColumn: sort.next })
-        : tableRows;
-      const pastSortedData = sort.previous
-        ? handleSort({ headers, rows: tableRows, sortColumn: sort.previous })
-        : tableRows;
-      return {
-        currentSortedRows: currentSortedData,
-        nextSortedRows: nextSortedData,
-        pastSortedRows: pastSortedData,
-      };
-    }
-  }, [tableRows, sort, headers, externalSortHandling, rowGrouping, sortNestedRows]);
 
   useLayoutEffect(() => {
     // If animations are not allowed, or the current and future sort are the same, return

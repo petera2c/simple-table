@@ -20,8 +20,6 @@ import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
-import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
-import { getVisibleRows } from "../../utils/infiniteScrollUtils";
 import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import TableRefType from "../../types/TableRefType";
@@ -35,17 +33,16 @@ import { useTableFilters } from "../../hooks/useTableFilters";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
-import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import SortConfig from "../../types/SortConfig";
-import TableRow from "../../types/TableRow";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
 import useOnGridReady from "../../hooks/useOnGridReady";
 import useTableAPI from "../../hooks/useTableAPI";
+import useTableRowProcessing from "../../hooks/useTableRowProcessing";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -202,165 +199,25 @@ const SimpleTableComp = ({
     return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
   }, [headers]);
 
-  // Memoize currentRows calculation
-  const currentRows = useMemo(() => {
-    if (!shouldPaginate) return currentSortedRows;
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const rows = currentSortedRows.slice(startIndex, endIndex);
-    return rows;
-  }, [currentPage, rowsPerPage, shouldPaginate, currentSortedRows]);
-
-  const nextRows = useMemo(() => {
-    if (!shouldPaginate) return nextSortedRows;
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const rows = nextSortedRows.slice(startIndex, endIndex);
-    return rows;
-  }, [currentPage, rowsPerPage, shouldPaginate, nextSortedRows]);
-
-  const pastRows = useMemo(() => {
-    if (!shouldPaginate) return pastSortedRows;
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const rows = pastSortedRows.slice(startIndex, endIndex);
-    return rows;
-  }, [currentPage, rowsPerPage, shouldPaginate, pastSortedRows]);
-
-  // Flatten rows based on row grouping and expansion state - now includes ALL properties
-  const currentTableRows = useMemo(() => {
-    if (!rowGrouping || rowGrouping.length === 0) {
-      // No grouping - just return flat structure with calculated positions
-      const rows: TableRow[] = currentRows.map((row, index) => ({
-        row,
-        depth: 0,
-        groupingKey: undefined,
-        position: index,
-        isLastGroupRow: false,
-      }));
-      return rows;
-    }
-
-    return flattenRowsWithGrouping({
-      rows: currentRows,
-      rowGrouping,
-      rowIdAccessor,
-      unexpandedRows,
-      expandAll,
-    });
-  }, [currentRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
-
-  const nextTableRows = useMemo(() => {
-    if (!rowGrouping || rowGrouping.length === 0) {
-      // No grouping - just return flat structure with calculated positions
-      const rows: TableRow[] = nextRows.map((row, index) => ({
-        row,
-        depth: 0,
-        groupingKey: undefined,
-        position: index,
-        isLastGroupRow: false,
-      }));
-      return rows;
-    }
-
-    return flattenRowsWithGrouping({
-      rows: nextRows,
-      rowGrouping,
-      rowIdAccessor,
-      unexpandedRows,
-      expandAll,
-    });
-  }, [nextRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
-
-  const pastTableRows = useMemo(() => {
-    if (!rowGrouping || rowGrouping.length === 0) {
-      // No grouping - just return flat structure with calculated positions
-      const rows: TableRow[] = pastRows.map((row, index) => ({
-        row,
-        depth: 0,
-        groupingKey: undefined,
-        position: index,
-        isLastGroupRow: false,
-      }));
-      return rows;
-    }
-
-    return flattenRowsWithGrouping({
-      rows: pastRows,
-      rowGrouping,
-      rowIdAccessor,
-      unexpandedRows,
-      expandAll,
-    });
-  }, [pastRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
-
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
 
-  // Visible rows
-  const currentVisibleRows = useMemo(
-    () =>
-      getVisibleRows({
-        bufferRowCount: BUFFER_ROW_COUNT,
-        contentHeight,
-        tableRows: currentTableRows,
-        rowHeight,
-        scrollTop,
-      }),
-    [contentHeight, rowHeight, scrollTop, currentTableRows]
-  );
-
-  const nextVisibleRowIds = useMemo(
-    () =>
-      getVisibleRows({
-        bufferRowCount: BUFFER_ROW_COUNT,
-        contentHeight,
-        tableRows: nextTableRows,
-        rowHeight,
-        scrollTop,
-      }).map((row) => getRowId({ row: row.row, rowIdAccessor })),
-    [contentHeight, rowHeight, scrollTop, nextTableRows, rowIdAccessor]
-  );
-
-  const pastVisibleRowIds = useMemo(
-    () =>
-      getVisibleRows({
-        bufferRowCount: BUFFER_ROW_COUNT,
-        contentHeight,
-        tableRows: pastTableRows,
-        rowHeight,
-        scrollTop,
-      }).map((row) => getRowId({ row: row.row, rowIdAccessor })),
-    [contentHeight, rowHeight, scrollTop, pastTableRows, rowIdAccessor]
-  );
-
-  const rowsToRender = useMemo(() => {
-    if (shouldPaginate) {
-      return currentVisibleRows;
-    }
-
-    // Find all the rows that are in the pastVisibleRowIds and the nextVisibleRowIds that are not in the currentVisibleRows
-    const newSet = new Set([...pastVisibleRowIds, ...nextVisibleRowIds]);
-    const uniqueIds = Array.from(newSet).filter((id) => {
-      const foundRow = currentVisibleRows.find(
-        (row) => getRowId({ row: row.row, rowIdAccessor }) === id
-      );
-      return !foundRow;
-    });
-
-    const foundRows = currentTableRows.filter((row) =>
-      uniqueIds.includes(getRowId({ row: row.row, rowIdAccessor }))
-    );
-
-    return [...currentVisibleRows, ...foundRows];
-  }, [
-    currentTableRows,
-    currentVisibleRows,
-    nextVisibleRowIds,
-    pastVisibleRowIds,
-    rowIdAccessor,
+  // Process rows through pagination, grouping, and virtualization
+  const { currentTableRows, currentVisibleRows, rowsToRender } = useTableRowProcessing({
+    currentSortedRows,
+    nextSortedRows,
+    pastSortedRows,
+    currentPage,
+    rowsPerPage,
     shouldPaginate,
-  ]);
+    rowGrouping,
+    rowIdAccessor,
+    unexpandedRows,
+    expandAll,
+    contentHeight,
+    rowHeight,
+    scrollTop,
+  });
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -425,6 +282,32 @@ const SimpleTableComp = ({
       internalHandleApplyFilter(filter);
     },
     [internalHandleApplyFilter]
+  );
+
+  console.log("\n");
+  console.log(
+    "currentSortedRows",
+    currentSortedRows.map((row) => row.id)
+  );
+  console.log(
+    "nextSortedRows",
+    nextSortedRows.map((row) => row.id)
+  );
+  console.log(
+    "pastSortedRows",
+    pastSortedRows.map((row) => row.id)
+  );
+  console.log(
+    "currentTableRows",
+    currentTableRows.map((row) => row.row.id)
+  );
+  console.log(
+    "currentVisibleRows",
+    currentVisibleRows.map((row) => row.row.id)
+  );
+  console.log(
+    "rowsToRender",
+    rowsToRender.map((row) => row.row.id)
   );
 
   return (
