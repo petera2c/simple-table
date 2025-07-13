@@ -194,6 +194,7 @@ const SimpleTableComp = ({
 
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, updateSort } = useSortableData({
+    allowAnimations,
     headers,
     tableRows: filteredRows,
     externalSortHandling,
@@ -201,10 +202,12 @@ const SimpleTableComp = ({
     rowGrouping,
   });
 
+  // On filter change, if there is an external filter handling, call the onFilterChange prop
   useEffect(() => {
     onFilterChange?.(filters);
   }, [filters, onFilterChange]);
 
+  // On sort change, if there is an external sort handling, call the onSortChange prop
   useEffect(() => {
     onSortChange?.(sort);
   }, [sort, onSortChange]);
@@ -330,8 +333,8 @@ const SimpleTableComp = ({
 
   // Memoize handlers
   const onSort = useCallback(
-    (columnIndex: number, accessor: string) => {
-      updateSort(columnIndex, accessor);
+    (accessor: string) => {
+      updateSort(accessor);
     },
     [updateSort]
   );

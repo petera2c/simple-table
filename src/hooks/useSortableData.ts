@@ -1,36 +1,47 @@
 import HeaderObject from "../types/HeaderObject";
 import Row from "../types/Row";
-import { useCallback, useMemo, useState } from "react";
-import SortConfig from "../types/SortConfig";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import SortConfig, { SortColumn } from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
 
 // Extract sort logic to custom hook
 const useSortableData = ({
+  allowAnimations,
   headers,
   tableRows,
   externalSortHandling,
   onSortChange,
   rowGrouping,
 }: {
+  allowAnimations: boolean;
   headers: HeaderObject[];
   tableRows: Row[];
   externalSortHandling: boolean;
   onSortChange?: (sort: SortConfig | null) => void;
   rowGrouping?: string[];
 }) => {
-  const [sort, setSort] = useState<SortConfig | null>(null);
+  const [sort, setSort] = useState<SortConfig>({
+    past: null,
+    current: null,
+    future: null,
+  });
 
   // Recursive sort function for nested data
   const sortNestedRows = useCallback(
-    (
-      rows: Row[],
-      sortConfig: SortConfig,
-      headers: HeaderObject[],
-      groupingKeys: string[]
-    ): Row[] => {
+    ({
+      groupingKeys,
+      headers,
+      rows,
+      sortColumn,
+    }: {
+      groupingKeys: string[];
+      headers: HeaderObject[];
+      rows: Row[];
+      sortColumn: SortColumn;
+    }): Row[] => {
       // First sort the current level
-      const { sortedData } = handleSort(headers, rows, sortConfig);
+      const sortedData = handleSort({ headers, rows, sortColumn });
 
       // If no grouping keys, just return the sorted data
       if (!groupingKeys || groupingKeys.length === 0) {
@@ -44,12 +55,12 @@ const useSortableData = ({
 
         if (isRowArray(nestedData)) {
           // Recursively sort the nested data with remaining grouping keys
-          const sortedNestedData = sortNestedRows(
-            nestedData,
-            sortConfig,
+          const sortedNestedData = sortNestedRows({
+            rows: nestedData,
+            sortColumn,
             headers,
-            groupingKeys.slice(1)
-          );
+            groupingKeys: groupingKeys.slice(1),
+          });
 
           // Return a new row object with sorted nested data
           return {
@@ -65,7 +76,7 @@ const useSortableData = ({
   );
 
   // Simple sort handler
-  const updateSort = (columnIndex: number, accessor: string) => {
+  const updateSort = (accessor: string) => {
     const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
       for (const header of headers) {
         if (header.accessor === accessor) {
@@ -86,16 +97,28 @@ const useSortableData = ({
     }
 
     // Calculate what the new sort will be
-    let newSort: SortConfig | null = null;
-    if (!sort || sort.key.accessor !== accessor) {
+    let newSort: SortConfig = {
+      past: null,
+      current: null,
+      future: null,
+    };
+    if (!sort || sort.past?.key.accessor !== accessor) {
       newSort = {
-        key: targetHeader,
-        direction: "ascending",
+        past: sort.current,
+        current: sort.future,
+        future: {
+          key: targetHeader,
+          direction: "ascending",
+        },
       };
-    } else if (sort.direction === "ascending") {
+    } else if (sort.past?.direction === "ascending") {
       newSort = {
-        key: targetHeader,
-        direction: "descending",
+        past: sort.current,
+        current: sort.future,
+        future: {
+          key: targetHeader,
+          direction: "descending",
+        },
       };
     }
     // Third click removes the sort (newSort stays null)
@@ -110,17 +133,27 @@ const useSortableData = ({
   const sortedRows = useMemo(() => {
     // If external sort handling is enabled, don't sort internally
     if (externalSortHandling) return tableRows;
-    if (!sort) return tableRows;
+    if (!sort.current) return tableRows;
 
     // If rowGrouping is provided, use recursive sorting
     if (rowGrouping && rowGrouping.length > 0) {
-      return sortNestedRows(tableRows, sort, headers, rowGrouping);
+      return sortNestedRows({
+        groupingKeys: rowGrouping,
+        headers,
+        rows: tableRows,
+        sortColumn: sort.current,
+      });
     }
 
     // Otherwise use flat sorting
-    const { sortedData } = handleSort(headers, tableRows, sort);
+    const sortedData = handleSort({ headers, rows: tableRows, sortColumn: sort.current });
     return sortedData;
   }, [tableRows, sort, headers, externalSortHandling, rowGrouping, sortNestedRows]);
+
+  useEffect(() => {
+    // If animations are not allowed, or the current and future sort are the same, return
+    if (!allowAnimations || sort.current?.key.accessor === sort.future?.key.accessor) return;
+  }, [sort, allowAnimations]);
 
   return {
     setSort,

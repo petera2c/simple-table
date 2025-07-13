@@ -1,5 +1,5 @@
 import HeaderObject from "../types/HeaderObject";
-import SortConfig from "../types/SortConfig";
+import SortConfig, { SortColumn } from "../types/SortConfig";
 import Row from "../types/Row";
 
 // Type-specific comparators for different data types
@@ -127,7 +127,15 @@ const compareValues = (
 };
 
 // Basic sort function for flat data (no grouping)
-const sortFlatRows = (rows: Row[], sortConfig: SortConfig, headers: HeaderObject[]): Row[] => {
+const sortFlatRows = ({
+  rows,
+  sortColumn,
+  headers,
+}: {
+  rows: Row[];
+  sortColumn: SortColumn;
+  headers: HeaderObject[];
+}): Row[] => {
   // Recursively search for the header in nested structure
   const findHeaderRecursively = (
     headers: HeaderObject[],
@@ -145,12 +153,12 @@ const sortFlatRows = (rows: Row[], sortConfig: SortConfig, headers: HeaderObject
     return undefined;
   };
 
-  const headerObject = findHeaderRecursively(headers, sortConfig.key.accessor);
+  const headerObject = findHeaderRecursively(headers, sortColumn.key.accessor);
   const type = headerObject?.type || "string";
-  const { direction } = sortConfig;
+  const direction = sortColumn.direction;
 
   return [...rows].sort((a, b) => {
-    const accessor = sortConfig.key.accessor;
+    const accessor = sortColumn.key.accessor;
     const aValue = a[accessor];
     const bValue = b[accessor];
 
@@ -158,10 +166,18 @@ const sortFlatRows = (rows: Row[], sortConfig: SortConfig, headers: HeaderObject
   });
 };
 
-export const handleSort = (headers: HeaderObject[], rows: Row[], sortConfig: SortConfig) => {
+export const handleSort = ({
+  headers,
+  rows,
+  sortColumn,
+}: {
+  headers: HeaderObject[];
+  rows: Row[];
+  sortColumn: SortColumn;
+}) => {
   // For now, use simple flat sorting since we've simplified the row structure
   // Row grouping will be handled by the table internally using the rowGrouping prop
-  const sortedData = sortFlatRows(rows, sortConfig, headers);
+  const sortedData = sortFlatRows({ rows, sortColumn, headers });
 
-  return { sortedData, newSortConfig: sortConfig };
+  return sortedData;
 };

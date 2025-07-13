@@ -169,7 +169,7 @@ const TableHeaderCell = ({
     }
 
     if (!header.isSortable) return;
-    onSort(colIndex, header.accessor);
+    onSort(header.accessor);
   };
   // Drag handler
   const onDragStart = (event: DragEvent) => {
@@ -246,13 +246,13 @@ const TableHeaderCell = ({
     </div>
   );
 
-  const SortIcon = sort && sort.key.accessor === header.accessor && (
+  const SortIcon = sort && sort.future?.key.accessor === header.accessor && (
     <div
       className="st-icon-container"
       onClick={(event) => handleColumnHeaderClick({ event, header })}
     >
-      {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
-      {sort.direction === "descending" && sortDownIcon && sortDownIcon}
+      {sort.future?.direction === "ascending" && sortUpIcon && sortUpIcon}
+      {sort.future?.direction === "descending" && sortDownIcon && sortDownIcon}
     </div>
   );
 

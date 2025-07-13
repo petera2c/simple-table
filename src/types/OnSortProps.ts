@@ -1,3 +1,3 @@
-type OnSortProps = (columnIndex: number, accessor: string) => void;
+type OnSortProps = (accessor: string) => void;
 
 export default OnSortProps;

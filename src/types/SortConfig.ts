@@ -8,8 +8,9 @@ export type SortColumn = {
 
 // Main sort configuration type
 type SortConfig = {
-  key: HeaderObject;
-  direction: "ascending" | "descending";
+  past: SortColumn | null;
+  current: SortColumn | null;
+  future: SortColumn | null;
 };
 
 export default SortConfig;

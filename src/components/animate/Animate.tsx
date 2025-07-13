@@ -58,23 +58,6 @@ export const Animate = ({
     hasPositionChanged = hasDOMPositionChanged;
 
     if (hasPositionChanged) {
-      if (tableRow?.row.id === 1) {
-        console.log("\n\n");
-        console.log("timestamp", new Date().toISOString());
-        console.log("tableRow", JSON.stringify(tableRow, null, 2));
-        console.log("currentBounds", JSON.stringify(currentBounds, null, 2));
-        console.log("previousBounds", JSON.stringify(previousBounds, null, 2));
-        console.log("RAW VALUES:");
-        console.log("  currentBounds.x:", currentBounds.x);
-        console.log("  currentBounds.y:", currentBounds.y);
-        console.log("  previousBounds.x:", previousBounds.x);
-        console.log("  previousBounds.y:", previousBounds.y);
-        console.log("  positionDelta:", positionDelta);
-        console.log("deltaX", deltaX);
-        console.log("deltaY", deltaY);
-        console.log("hasDOMPositionChanged", hasDOMPositionChanged);
-        console.log("hasPositionChanged", hasPositionChanged);
-      }
       // Merge animation config with defaults
       const finalConfig = {
         ...DEFAULT_ANIMATION_CONFIG,
