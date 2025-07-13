@@ -5,7 +5,49 @@ import SortConfig, { SortColumn } from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
 import { DEFAULT_ANIMATION_CONFIG } from "../components/animate/animation-utils";
-import usePrevious from "./usePrevious";
+
+// Helper function to compare sort configs
+const areSortConfigsEqual = (a: SortColumn | null, b: SortColumn | null) => {
+  if (a === null && b === null) return true;
+  if (a === null || b === null) return false;
+  return a.key.accessor === b.key.accessor && a.direction === b.direction;
+};
+
+// Helper function to compute sorted rows for a given sort column
+const computeSortedRows = ({
+  externalSortHandling,
+  tableRows,
+  sortColumn,
+  rowGrouping,
+  headers,
+  sortNestedRows,
+}: {
+  externalSortHandling: boolean;
+  tableRows: Row[];
+  sortColumn: SortColumn | null;
+  rowGrouping?: string[];
+  headers: HeaderObject[];
+  sortNestedRows: (params: {
+    groupingKeys: string[];
+    headers: HeaderObject[];
+    rows: Row[];
+    sortColumn: SortColumn;
+  }) => Row[];
+}): Row[] => {
+  if (externalSortHandling) return tableRows;
+  if (!sortColumn) return tableRows;
+
+  if (rowGrouping && rowGrouping.length > 0) {
+    return sortNestedRows({
+      groupingKeys: rowGrouping,
+      headers,
+      rows: tableRows,
+      sortColumn,
+    });
+  } else {
+    return handleSort({ headers, rows: tableRows, sortColumn });
+  }
+};
 
 // Extract sort logic to custom hook
 const useSortableData = ({
@@ -23,7 +65,7 @@ const useSortableData = ({
   onSortChange?: (sort: SortConfig | null) => void;
   rowGrouping?: string[];
 }) => {
-  // Simplified sort state - just track current and next
+  // Restore the original sort state management for animations
   const [sort, setSort] = useState<SortConfig>({
     previous: null,
     current: null,
@@ -78,44 +120,61 @@ const useSortableData = ({
     []
   );
 
-  // Compute sorted rows based on current sort state
-  const currentSortedRows = useMemo(() => {
-    if (externalSortHandling) return tableRows;
-
-    if (!sort.current) return tableRows;
-
-    if (rowGrouping && rowGrouping.length > 0) {
-      return sortNestedRows({
-        groupingKeys: rowGrouping,
-        headers,
-        rows: tableRows,
-        sortColumn: sort.current,
-      });
-    } else {
-      return handleSort({ headers, rows: tableRows, sortColumn: sort.current });
-    }
-  }, [tableRows, sort.current, headers, externalSortHandling, rowGrouping, sortNestedRows]);
-
-  // Compute next sorted rows for animation
+  // Compute next sorted rows (the target state after animation)
   const nextSortedRows = useMemo(() => {
-    if (externalSortHandling) return tableRows;
+    return computeSortedRows({
+      externalSortHandling,
+      tableRows,
+      sortColumn: sort.next,
+      rowGrouping,
+      headers,
+      sortNestedRows,
+    });
+  }, [tableRows, sort, headers, externalSortHandling, rowGrouping, sortNestedRows]);
 
-    if (!sort.next) return tableRows;
-
-    if (rowGrouping && rowGrouping.length > 0) {
-      return sortNestedRows({
-        groupingKeys: rowGrouping,
-        headers,
-        rows: tableRows,
-        sortColumn: sort.next,
-      });
-    } else {
-      return handleSort({ headers, rows: tableRows, sortColumn: sort.next });
+  // Compute current sorted rows - reuse nextSortedRows if sort configs are the same
+  const currentSortedRows = useMemo(() => {
+    // If current and next sort configs are the same, use the same computed values
+    if (areSortConfigsEqual(sort.current, sort.next)) {
+      return nextSortedRows;
     }
-  }, [tableRows, sort.next, headers, externalSortHandling, rowGrouping, sortNestedRows]);
 
-  // Use usePrevious to get the previous sorted rows
-  const pastSortedRows = usePrevious(currentSortedRows);
+    // Otherwise, compute based on current sort
+    return computeSortedRows({
+      externalSortHandling,
+      tableRows,
+      sortColumn: sort.current,
+      rowGrouping,
+      headers,
+      sortNestedRows,
+    });
+  }, [tableRows, sort, nextSortedRows, headers, externalSortHandling, rowGrouping, sortNestedRows]);
+
+  // Compute past sorted rows - reuse currentSortedRows if sort configs are the same
+  const pastSortedRows = useMemo(() => {
+    // If current and previous sort configs are the same, use the same computed values
+    if (areSortConfigsEqual(sort.current, sort.previous)) {
+      return currentSortedRows;
+    }
+
+    // Otherwise, compute based on previous sort
+    return computeSortedRows({
+      externalSortHandling,
+      tableRows,
+      sortColumn: sort.previous,
+      rowGrouping,
+      headers,
+      sortNestedRows,
+    });
+  }, [
+    tableRows,
+    sort,
+    currentSortedRows,
+    headers,
+    externalSortHandling,
+    rowGrouping,
+    sortNestedRows,
+  ]);
 
   // Simple sort handler
   const updateSort = (accessor: string) => {

@@ -203,7 +203,7 @@ const SimpleTableComp = ({
   const contentHeight = useContentHeight({ height, rowHeight });
 
   // Process rows through pagination, grouping, and virtualization
-  const { currentTableRows, currentVisibleRows, rowsToRender } = useTableRowProcessing({
+  const { currentTableRows, rowsToRender } = useTableRowProcessing({
     currentSortedRows,
     nextSortedRows,
     pastSortedRows,
@@ -282,32 +282,6 @@ const SimpleTableComp = ({
       internalHandleApplyFilter(filter);
     },
     [internalHandleApplyFilter]
-  );
-
-  console.log("\n");
-  console.log(
-    "currentSortedRows",
-    currentSortedRows.map((row) => row.id)
-  );
-  console.log(
-    "nextSortedRows",
-    nextSortedRows.map((row) => row.id)
-  );
-  console.log(
-    "pastSortedRows",
-    pastSortedRows.map((row) => row.id)
-  );
-  console.log(
-    "currentTableRows",
-    currentTableRows.map((row) => row.row.id)
-  );
-  console.log(
-    "currentVisibleRows",
-    currentVisibleRows.map((row) => row.row.id)
-  );
-  console.log(
-    "rowsToRender",
-    rowsToRender.map((row) => row.row.id)
   );
 
   return (
