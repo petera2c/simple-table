@@ -25,9 +25,7 @@ import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
 import { getVisibleRows } from "../../utils/infiniteScrollUtils";
 import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
-import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
-import { getCellKey } from "../../utils/cellUtils";
 import OnNextPage from "../../types/OnNextPage";
 import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
@@ -45,6 +43,11 @@ import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import SortConfig from "../../types/SortConfig";
 import usePrevious from "../../hooks/usePrevious";
 import TableRow from "../../types/TableRow";
+import useExternalFilters from "../../hooks/useExternalFilters";
+import useExternalSort from "../../hooks/useExternalSort";
+import useScrollbarWidth from "../../hooks/useScrollbarWidth";
+import useOnGridReady from "../../hooks/useOnGridReady";
+import useTableAPI from "../../hooks/useTableAPI";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -164,10 +167,10 @@ const SimpleTableComp = ({
   }, [defaultHeaders]);
 
   const [scrollTop, setScrollTop] = useState<number>(0);
-  const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
   // Apply aggregation to current rows
+  const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
   const aggregatedRows = useAggregatedRows({
     rows,
     headers,
@@ -202,16 +205,6 @@ const SimpleTableComp = ({
     rowGrouping,
   });
 
-  // On filter change, if there is an external filter handling, call the onFilterChange prop
-  useEffect(() => {
-    onFilterChange?.(filters);
-  }, [filters, onFilterChange]);
-
-  // On sort change, if there is an external sort handling, call the onSortChange prop
-  useEffect(() => {
-    onSortChange?.(sort);
-  }, [sort, onSortChange]);
-
   // Calculate the width of the sections
   const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
     const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
@@ -219,10 +212,6 @@ const SimpleTableComp = ({
     });
     return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
   }, [headers]);
-
-  useEffect(() => {
-    onGridReady?.();
-  }, [onGridReady]);
 
   // Memoize currentRows calculation
   const currentRows = useMemo(() => {
@@ -262,8 +251,6 @@ const SimpleTableComp = ({
 
   // Track previous tableRows to get previous positions for all rows
   const previousTableRows = usePrevious(tableRows);
-
-  // Track previous headers to get previous positions for column animations
 
   // Add previousPosition to all tableRows
   const tableRowsWithPreviousPosition = useMemo(() => {
@@ -351,47 +338,15 @@ const SimpleTableComp = ({
     setSelectedCells,
     setSelectedColumns,
   });
-  // Calculate the width of the scrollbar
-  useLayoutEffect(() => {
-    if (!tableBodyContainerRef.current) return;
-
-    const newScrollbarWidth =
-      tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
-
-    setScrollbarWidth(newScrollbarWidth);
-  }, []);
   useWindowResize({
     forceUpdate,
     tableBodyContainerRef,
     setScrollbarWidth,
   });
-
-  // Set up API methods on the ref if provided
-  useEffect(() => {
-    if (tableRef) {
-      tableRef.current = {
-        updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          // Get the row ID using the new utility
-          const row = rows?.[rowIndex];
-          if (row) {
-            const rowId = getRowId(row, rowIndex, rowIdAccessor);
-            const key = getCellKey({ rowId, accessor });
-            const cell = cellRegistryRef.current.get(key);
-
-            if (cell) {
-              // If the cell is registered (visible), update it directly
-              cell.updateContent(newValue);
-            }
-
-            // Always update the data source - now directly on the row
-            if (row[accessor] !== undefined) {
-              row[accessor] = newValue;
-            }
-          }
-        },
-      };
-    }
-  }, [tableRef, rows, rowIdAccessor]);
+  useOnGridReady({ onGridReady });
+  useTableAPI({ cellRegistryRef, rowIdAccessor, rows, tableRef });
+  useExternalFilters({ filters, onFilterChange });
+  useExternalSort({ sort, onSortChange });
 
   return (
     <TableProvider
