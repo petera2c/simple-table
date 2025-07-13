@@ -27,7 +27,7 @@ import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
-import { getCellKey } from "../../utils/cellUtils";
+import { getCellId, getCellKey } from "../../utils/cellUtils";
 import OnNextPage from "../../types/OnNextPage";
 import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
@@ -45,6 +45,7 @@ import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import SortConfig from "../../types/SortConfig";
 import usePrevious from "../../hooks/usePrevious";
 import TableRow from "../../types/TableRow";
+import { flattenHeaders } from "../../utils/headerUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -156,6 +157,26 @@ const SimpleTableComp = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
 
+  const previousHeadersRectBounds = useRef<Map<string, DOMRect>>(new Map());
+  const previousHeaders = usePrevious(headers);
+
+  useEffect(() => {
+    if (previousHeaders && previousHeaders.length > 0) {
+      const flattenedHeaders = flattenHeaders(previousHeaders);
+      flattenedHeaders.forEach((header) => {
+        const headerElement = document.getElementById(
+          getCellId({ accessor: header.accessor, rowId: "header" })
+        );
+        if (headerElement) {
+          previousHeadersRectBounds.current.set(
+            header.accessor,
+            headerElement.getBoundingClientRect()
+          );
+        }
+      });
+    }
+  }, [previousHeaders]);
+
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
     setHeaders(defaultHeaders);
@@ -259,7 +280,6 @@ const SimpleTableComp = ({
   const previousTableRows = usePrevious(tableRows);
 
   // Track previous headers to get previous positions for column animations
-  const previousHeaders = usePrevious(headers);
 
   // Add previousPosition to all tableRows
   const tableRowsWithPreviousPosition = useMemo(() => {
@@ -400,19 +420,16 @@ const SimpleTableComp = ({
         draggedHeaderRef,
         editColumns,
         expandIcon,
-        unexpandedRows,
         filters,
-        tableRows,
         forceUpdate,
         getBorderClass,
         handleApplyFilter,
-        handleClearFilter,
         handleClearAllFilters,
+        handleClearFilter,
         handleMouseDown,
         handleMouseOver,
         headers,
         hoveredHeaderRef,
-        previousHeaders,
         isCopyFlashing,
         isInitialFocusedCell,
         isSelected,
@@ -427,22 +444,25 @@ const SimpleTableComp = ({
         pinnedLeftRef,
         pinnedRightRef,
         prevIcon,
+        previousHeadersRectBounds,
         rowGrouping,
         rowHeight,
         rowIdAccessor,
         scrollbarWidth,
         selectColumns,
         selectableColumns,
-        setUnexpandedRows,
         setHeaders,
         setInitialFocusedCell,
         setSelectedCells,
         setSelectedColumns,
+        setUnexpandedRows,
         shouldPaginate,
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
+        tableRows,
         theme,
+        unexpandedRows,
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,

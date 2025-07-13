@@ -7,23 +7,6 @@ import HeaderObject from "../../types/HeaderObject";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import { useTableContext } from "../../context/TableContext";
 
-// Utility function to flatten nested headers to get all leaf columns
-const flattenHeaders = (headers: HeaderObject[]): HeaderObject[] => {
-  const flattened: HeaderObject[] = [];
-
-  for (const header of headers) {
-    if (header.children && header.children.length > 0) {
-      // If header has children, recursively flatten them
-      flattened.push(...flattenHeaders(header.children));
-    } else {
-      // If no children, this is a leaf node (actual column)
-      flattened.push(header);
-    }
-  }
-
-  return flattened;
-};
-
 interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
   animationConfig?: FlipAnimationOptions;
   children: ReactNode;
@@ -49,8 +32,8 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
     },
     forwardedRef
   ) => {
+    const { previousHeadersRectBounds } = useTableContext();
     const elementRef = useRef<HTMLDivElement>(null);
-    const { previousHeaders } = useTableContext();
 
     useLayoutEffect(() => {
       if (!elementRef.current || disabled) {
@@ -105,45 +88,9 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
         top: calculatedTopPosition,
         toJSON: () => calculatedBounds,
       };
-      // Calculate previous X position using flattened previousHeaders
-      let previousX = headerBounds?.x ?? 0; // Default to current X if no previous headers
+      const previousHeadersBounds = previousHeadersRectBounds.current;
 
-      if (previousHeaders && previousHeaders.length > 0) {
-        // Flatten both current and previous headers to get all leaf columns
-        const flattenedPreviousHeaders = flattenHeaders(previousHeaders);
-
-        const previousHeaderIndex = flattenedPreviousHeaders.findIndex(
-          (h) => h.accessor === header.accessor
-        );
-
-        if (previousHeaderIndex !== -1) {
-          // Calculate X position based on previous headers order and their actual DOM widths
-          const headerPadding = 16; // Assuming standard padding
-          let calculatedPreviousX = headerPadding;
-
-          // Get the actual computed widths from the DOM for all previous headers
-          for (let i = 0; i < previousHeaderIndex; i++) {
-            const prevHeader = flattenedPreviousHeaders[i];
-            const headerElement = document.getElementById(
-              getCellId({ accessor: prevHeader.accessor, rowId: "header" })
-            );
-
-            if (headerElement) {
-              const computedWidth = headerElement.getBoundingClientRect().width;
-              calculatedPreviousX += computedWidth;
-            } else {
-              // Fallback: try to parse width as number, or use a default
-              const numericWidth =
-                typeof prevHeader.width === "number"
-                  ? prevHeader.width
-                  : parseFloat(String(prevHeader.width)) || 150; // Default fallback width
-              calculatedPreviousX += numericWidth;
-            }
-          }
-
-          previousX = calculatedPreviousX;
-        }
-      }
+      let previousX = previousHeadersBounds.get(header.accessor)?.x ?? 0;
 
       let previousCalculatedBounds = {
         y: calculatedPreviousTopPosition,
