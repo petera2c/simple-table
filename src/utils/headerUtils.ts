@@ -1,7 +1,5 @@
-import React from "react";
 import { PINNED_BORDER_WIDTH } from "../consts/general-consts";
 import HeaderObject from "../types/HeaderObject";
-import { getCellId } from "./cellUtils";
 
 /**
  * Gets all leaf column indices (bottom-level columns) for a given header and its descendants
@@ -84,28 +82,4 @@ export const getColumnRange = (startColIndex: number, endColIndex: number): numb
 
 export const calculatePinnedWidth = (width = 0): number => {
   return width ? width + PINNED_BORDER_WIDTH : 0;
-};
-
-/**
- * Helper function to update previous header bounds after structural changes
- * This prevents unwanted animations by syncing the previous positions to current positions
- */
-export const updatePreviousHeaderBounds = (
-  headers: HeaderObject[],
-  previousHeadersRectBounds?: React.RefObject<Map<string, DOMRect>>
-): void => {
-  if (!previousHeadersRectBounds?.current) return;
-
-  const flattenedHeaders = flattenHeaders(headers);
-  flattenedHeaders.forEach((header) => {
-    const headerElement = document.getElementById(
-      getCellId({ accessor: header.accessor, rowId: "header" })
-    );
-    if (headerElement) {
-      previousHeadersRectBounds.current!.set(
-        header.accessor,
-        headerElement.getBoundingClientRect()
-      );
-    }
-  });
 };

@@ -27,7 +27,7 @@ import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
-import { getCellId, getCellKey } from "../../utils/cellUtils";
+import { getCellKey } from "../../utils/cellUtils";
 import OnNextPage from "../../types/OnNextPage";
 import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
@@ -45,7 +45,6 @@ import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import SortConfig from "../../types/SortConfig";
 import usePrevious from "../../hooks/usePrevious";
 import TableRow from "../../types/TableRow";
-import { flattenHeaders } from "../../utils/headerUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -158,26 +157,6 @@ const SimpleTableComp = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
   const [isResizing, setIsResizing] = useState(false);
-
-  const previousHeadersRectBounds = useRef<Map<string, DOMRect>>(new Map());
-  const previousHeaders = usePrevious(headers);
-
-  useLayoutEffect(() => {
-    if (previousHeaders && previousHeaders.length > 0) {
-      const flattenedHeaders = flattenHeaders(previousHeaders);
-      flattenedHeaders.forEach((header) => {
-        const headerElement = document.getElementById(
-          getCellId({ accessor: header.accessor, rowId: "header" })
-        );
-        if (headerElement) {
-          previousHeadersRectBounds.current.set(
-            header.accessor,
-            headerElement.getBoundingClientRect()
-          );
-        }
-      });
-    }
-  }, [previousHeaders]);
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
@@ -448,7 +427,6 @@ const SimpleTableComp = ({
         pinnedLeftRef,
         pinnedRightRef,
         prevIcon,
-        previousHeadersRectBounds,
         rowGrouping,
         rowHeight,
         rowIdAccessor,

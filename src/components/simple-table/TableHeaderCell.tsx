@@ -52,7 +52,6 @@ const TableHeaderCell = ({
     onColumnOrderChange,
     onSort,
     onTableHeaderDragEnd,
-    previousHeadersRectBounds,
     rowHeight,
     selectColumns,
     selectableColumns,
@@ -63,7 +62,6 @@ const TableHeaderCell = ({
     setSelectedColumns,
     sortDownIcon,
     sortUpIcon,
-    headerContainerRef,
   } = useTableContext();
 
   // Derived state
@@ -217,7 +215,6 @@ const TableHeaderCell = ({
             headers,
             setHeaders,
             setIsResizing,
-            previousHeadersRectBounds,
             startWidth,
           } as HandleResizeStartProps,
           limit: 10,
@@ -239,7 +236,6 @@ const TableHeaderCell = ({
             headers,
             setHeaders,
             setIsResizing,
-            previousHeadersRectBounds,
             startWidth,
           } as HandleResizeStartProps,
           limit: 10,
@@ -289,10 +285,6 @@ const TableHeaderCell = ({
 
   return (
     <Animate
-      containerRef={headerContainerRef}
-      header={header}
-      position={1}
-      previousPosition={1}
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
       onDragOver={(event) => {

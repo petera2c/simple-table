@@ -82,7 +82,6 @@ const TableCell = ({
     theme,
     unexpandedRows,
     useOddColumnBackground,
-    tableBodyContainerRef,
   } = useTableContext();
 
   const { depth, row } = visibleRow;
@@ -278,12 +277,10 @@ const TableCell = ({
   return (
     <Animate
       className={cellClassName}
-      containerRef={tableBodyContainerRef}
       data-accessor={header.accessor}
       data-col-index={colIndex}
       data-row-id={rowId}
       data-row-index={rowIndex}
-      header={header}
       id={cellId}
       key={cellKey}
       onDoubleClick={() => header.isEditable && setIsEditing(true)}
@@ -297,8 +294,6 @@ const TableCell = ({
       onKeyDown={handleKeyDown}
       onMouseDown={handleCellMouseDown}
       onMouseOver={handleCellMouseOver}
-      position={visibleRow.position}
-      previousPosition={visibleRow.previousPosition}
       tableRow={visibleRow}
     >
       {header.expandable && cellHasChildren ? (

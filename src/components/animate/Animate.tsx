@@ -1,35 +1,25 @@
-import React, { useRef, useLayoutEffect, ReactNode, RefObject } from "react";
+import React, { useRef, useLayoutEffect, ReactNode } from "react";
 import { FlipAnimationOptions } from "./types";
 import { flipElement, DEFAULT_ANIMATION_CONFIG } from "./animation-utils";
 import TableRow from "../../types/TableRow";
-import { getCellId } from "../../utils/cellUtils";
-import HeaderObject from "../../types/HeaderObject";
-import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import { useTableContext } from "../../context/TableContext";
 
 interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
   animationConfig?: FlipAnimationOptions;
   children: ReactNode;
-  containerRef: RefObject<HTMLDivElement | null>;
-  header: HeaderObject;
   id: string;
-  position: number;
-  previousPosition: number;
   tableRow?: TableRow;
 }
 export const Animate = ({
   animationConfig = {},
   children,
-  containerRef,
-  header,
   id,
-  position,
-  previousPosition,
   tableRow,
   ...props
 }: AnimateProps) => {
-  const { allowAnimations, previousHeadersRectBounds, rowHeight, isResizing } = useTableContext();
+  const { allowAnimations, isResizing } = useTableContext();
   const elementRef = useRef<HTMLDivElement>(null);
+  const previousBoundsRef = useRef<DOMRect | null>(null);
 
   useLayoutEffect(() => {
     // Don't animate while animations are disabled
@@ -38,103 +28,31 @@ export const Animate = ({
       return;
     }
 
-    const headerBounds = document
-      .getElementById(getCellId({ accessor: header.accessor, rowId: "header" }))
-      ?.getBoundingClientRect();
-    const containerBounds = containerRef.current?.getBoundingClientRect();
+    const currentBounds = elementRef.current.getBoundingClientRect();
+    const previousBounds = previousBoundsRef.current;
 
-    // Calculate current position
-    const calculatedTopPosition =
-      calculateRowTopPosition({
-        position: position ?? 0,
-        rowHeight,
-      }) +
-      (containerBounds?.y ?? 0) -
-      (containerRef.current?.scrollTop ?? 0);
-
-    // Calculate previous position, but clamp to viewport edges for off-screen rows
-    let calculatedPreviousTopPosition =
-      calculateRowTopPosition({
-        position: previousPosition ?? 0,
-        rowHeight,
-      }) +
-      (containerBounds?.y ?? 0) -
-      (containerRef.current?.scrollTop ?? 0);
-
-    // For virtualized table animations: clamp previous position to viewport edges
-    const containerHeight = containerRef.current?.clientHeight ?? 0;
-    const viewportTop = containerBounds?.y ?? 0;
-    const viewportBottom = viewportTop + containerHeight;
-
-    // If previous position was way above viewport, start animation from just above
-    if (calculatedPreviousTopPosition < viewportTop - rowHeight * 2) {
-      calculatedPreviousTopPosition = viewportTop - rowHeight;
-    }
-    // If previous position was way below viewport, start animation from just below
-    else if (calculatedPreviousTopPosition > viewportBottom + rowHeight * 2) {
-      calculatedPreviousTopPosition = viewportBottom;
-    }
-
-    const calculatedBounds: DOMRect = {
-      y: calculatedTopPosition,
-      x: headerBounds?.x ?? 0,
-      width: headerBounds?.width ?? 0,
-      height: headerBounds?.height ?? 0,
-      bottom: headerBounds?.bottom ?? 0,
-      left: headerBounds?.left ?? 0,
-      right: headerBounds?.right ?? 0,
-      top: calculatedTopPosition,
-      toJSON: () => calculatedBounds,
-    };
-    const previousHeadersBounds = previousHeadersRectBounds.current;
+    // Store current bounds for next render
+    previousBoundsRef.current = currentBounds;
 
     // If there's no previous bound data, don't animate (prevents first render animations)
-    const previousBound = previousHeadersBounds.get(header.accessor);
-    if (!previousBound) {
+    if (!previousBounds) {
       return;
     }
 
-    let previousX = previousBound.x;
+    // Check if this is a significant position change
+    const deltaX = currentBounds.x - previousBounds.x;
+    const deltaY = currentBounds.y - previousBounds.y;
+    const positionDelta = Math.abs(deltaX);
 
-    // Check if this is likely a structural change vs scroll noise
-    // If row position hasn't changed but there's a horizontal delta, it's likely scroll noise
-    const isRowPositionChange = position !== previousPosition;
-    const headerPositionDelta = Math.abs((headerBounds?.x ?? 0) - previousX);
-
-    // Only animate if:
-    // 1. Row position has changed (indicates structural change), OR
-    // 2. Header position change is significant (>30px indicates column reordering)
-
-    if (!isRowPositionChange && headerPositionDelta < 30) {
+    // Only animate if position change is significant (>30px indicates column reordering)
+    // or if there's a vertical change (>1px indicates row reordering)
+    if (positionDelta < 30 && Math.abs(deltaY) <= 1) {
       return;
     }
-
-    let previousCalculatedBounds = {
-      y: calculatedPreviousTopPosition,
-      x: previousX,
-      width: headerBounds?.width ?? 0,
-      height: headerBounds?.height ?? 0,
-      bottom: headerBounds?.bottom ?? 0,
-      left: headerBounds?.left ?? 0,
-      right: headerBounds?.right ?? 0,
-      top: calculatedPreviousTopPosition,
-      toJSON: () => ({
-        y: calculatedPreviousTopPosition,
-        x: previousX,
-        width: headerBounds?.width ?? 0,
-        height: headerBounds?.height ?? 0,
-        bottom: headerBounds?.bottom ?? 0,
-        left: headerBounds?.left ?? 0,
-        right: headerBounds?.right ?? 0,
-        top: calculatedPreviousTopPosition,
-      }),
-    };
 
     let hasPositionChanged = false;
 
     // Check DOM position changes
-    const deltaY = calculatedBounds.y - previousCalculatedBounds.y;
-    const deltaX = calculatedBounds.x - previousCalculatedBounds.x;
     const hasDOMPositionChanged = Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1;
 
     hasPositionChanged = hasDOMPositionChanged;
@@ -144,15 +62,14 @@ export const Animate = ({
         console.log("\n\n");
         console.log("timestamp", new Date().toISOString());
         console.log("tableRow", JSON.stringify(tableRow, null, 2));
-        console.log("calculatedBounds", JSON.stringify(calculatedBounds, null, 2));
-        console.log("previousCalculatedBounds", JSON.stringify(previousCalculatedBounds, null, 2));
+        console.log("currentBounds", JSON.stringify(currentBounds, null, 2));
+        console.log("previousBounds", JSON.stringify(previousBounds, null, 2));
         console.log("RAW VALUES:");
-        console.log("  calculatedBounds.x:", calculatedBounds.x);
-        console.log("  previousCalculatedBounds.x:", previousCalculatedBounds.x);
-        console.log("  headerBounds?.x:", headerBounds?.x);
-        console.log("  previousX:", previousX);
-        console.log("  isRowPositionChange:", isRowPositionChange);
-        console.log("  headerPositionDelta:", headerPositionDelta);
+        console.log("  currentBounds.x:", currentBounds.x);
+        console.log("  currentBounds.y:", currentBounds.y);
+        console.log("  previousBounds.x:", previousBounds.x);
+        console.log("  previousBounds.y:", previousBounds.y);
+        console.log("  positionDelta:", positionDelta);
         console.log("deltaX", deltaX);
         console.log("deltaY", deltaY);
         console.log("hasDOMPositionChanged", hasDOMPositionChanged);
@@ -165,7 +82,7 @@ export const Animate = ({
       };
 
       // Start new animation (this will interrupt any ongoing animation)
-      flipElement(elementRef.current, previousCalculatedBounds, finalConfig);
+      flipElement(elementRef.current, previousBounds, finalConfig);
     }
   });
 

@@ -10,7 +10,6 @@ export type HandleResizeStartProps = {
   headers: HeaderObject[];
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;
-  previousHeadersRectBounds: RefObject<Map<string, DOMRect>>;
   mainBodyRef: RefObject<HTMLDivElement | null>;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;

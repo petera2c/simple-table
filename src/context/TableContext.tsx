@@ -48,7 +48,6 @@ interface TableContextType {
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   prevIcon: ReactNode;
-  previousHeadersRectBounds: RefObject<Map<string, DOMRect>>;
   rowGrouping?: string[];
   rowHeight: number;
   rowIdAccessor: string;

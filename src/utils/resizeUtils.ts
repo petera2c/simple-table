@@ -1,6 +1,6 @@
 import { HeaderObject } from "..";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
-import { calculatePinnedWidth, updatePreviousHeaderBounds } from "./headerUtils";
+import { calculatePinnedWidth } from "./headerUtils";
 import {
   findLeafHeaders,
   getHeaderWidthInPixels,
@@ -19,7 +19,6 @@ export const handleResizeStart = ({
   headers,
   setHeaders,
   setIsResizing,
-  previousHeadersRectBounds,
   startWidth,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
@@ -73,8 +72,6 @@ export const handleResizeStart = ({
     const handleTouchEnd = () => {
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
-      // Update previous bounds to current positions to prevent unwanted animations
-      updatePreviousHeaderBounds(headers, previousHeadersRectBounds);
       setIsResizing(false);
     };
 
@@ -88,8 +85,6 @@ export const handleResizeStart = ({
     const handleMouseUp = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      // Update previous bounds to current positions to prevent unwanted animations
-      updatePreviousHeaderBounds(headers, previousHeadersRectBounds);
       setIsResizing(false);
     };
 
