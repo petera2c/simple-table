@@ -4,6 +4,7 @@ import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import SortConfig, { SortColumn } from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
+import { DEFAULT_ANIMATION_CONFIG } from "../components/animate/animation-utils";
 
 // Extract sort logic to custom hook
 const useSortableData = ({
@@ -212,11 +213,13 @@ const useSortableData = ({
     )
       return;
 
-    setSort({
-      previous: sort.current,
-      current: sort.current,
-      next: sort.next,
-    });
+    setTimeout(() => {
+      setSort({
+        previous: sort.current,
+        current: sort.current,
+        next: sort.next,
+      });
+    }, DEFAULT_ANIMATION_CONFIG.duration);
   }, [sort, allowAnimations]);
 
   return {

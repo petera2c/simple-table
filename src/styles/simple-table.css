@@ -869,6 +869,8 @@ input {
   color: var(--st-cell-color);
   gap: var(--st-spacing-small);
   overflow: hidden;
+  /* mix-blend-mode: multiply; */
+  background-color: transparent;
 }
 
 .st-header-cell.left-aligned,
@@ -1422,6 +1424,12 @@ input {
 
 .st-cell-updating {
   animation: cell-flash 0.6s ease-in-out;
+}
+
+/* Animation z-index handling */
+.st-animating {
+  z-index: 10 !important;
+  position: relative;
 }
 
 @keyframes copy-flash {

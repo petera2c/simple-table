@@ -4,7 +4,7 @@ import { AnimationConfig, FlipAnimationOptions } from "./types";
  * Default animation configuration
  */
 export const DEFAULT_ANIMATION_CONFIG: AnimationConfig = {
-  duration: 3000,
+  duration: 300,
   easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", // ease-out-quad
   delay: 0,
 };
@@ -31,6 +31,8 @@ export const calculateInvert = (first: DOMRect | { x: number; y: number }, last:
 export const applyInitialTransform = (element: HTMLElement, invert: { x: number; y: number }) => {
   element.style.transform = `translate3d(${invert.x}px, ${invert.y}px, 0)`;
   element.style.transition = "none";
+  // Add animating class to ensure proper z-index during animation
+  element.classList.add("st-animating");
 };
 
 /**
@@ -40,6 +42,8 @@ const cleanupAnimation = (element: HTMLElement) => {
   element.style.transition = "";
   element.style.transitionDelay = "";
   element.style.transform = "";
+  // Remove animating class to restore normal z-index
+  element.classList.remove("st-animating");
 };
 
 /**
@@ -102,6 +106,9 @@ export const flipElement = async (
   if (invert.x === 0 && invert.y === 0) {
     return;
   }
+
+  // Clean up any existing animation before starting a new one
+  cleanupAnimation(element);
 
   // Apply initial transform
   applyInitialTransform(element, invert);
