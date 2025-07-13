@@ -63,11 +63,13 @@ const TableHeaderCell = forwardRef(
       onColumnOrderChange,
       onSort,
       onTableHeaderDragEnd,
+      previousHeadersRectBounds,
       rowHeight,
       selectColumns,
       selectableColumns,
       setHeaders,
       setInitialFocusedCell,
+      setIsResizing,
       setSelectedCells,
       setSelectedColumns,
       sortDownIcon,
@@ -221,6 +223,8 @@ const TableHeaderCell = forwardRef(
               header,
               headers,
               setHeaders,
+              setIsResizing,
+              previousHeadersRectBounds,
               startWidth:
                 typeof ref === "object" && ref !== null && "current" in ref
                   ? ref.current?.offsetWidth
@@ -239,6 +243,8 @@ const TableHeaderCell = forwardRef(
               header,
               headers,
               setHeaders,
+              setIsResizing,
+              previousHeadersRectBounds,
               startWidth:
                 typeof ref === "object" && ref !== null && "current" in ref
                   ? ref.current?.offsetWidth

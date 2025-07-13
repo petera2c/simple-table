@@ -35,6 +35,7 @@ interface TableContextType {
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
+  isResizing: boolean;
   isSelected: (cell: Cell) => boolean;
   isWarningFlashing: (cell: Cell) => boolean;
   mainBodyRef: RefObject<HTMLDivElement | null>;
@@ -57,6 +58,7 @@ interface TableContextType {
   setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
+  setIsResizing: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   shouldPaginate: boolean;

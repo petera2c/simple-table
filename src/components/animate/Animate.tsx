@@ -14,7 +14,6 @@ interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> 
   disabled?: boolean;
   header: HeaderObject;
   id: string | number;
-  rowHeight: number;
   tableRow: TableRow;
 }
 export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
@@ -26,17 +25,18 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       children,
       tableRow,
       header,
-      rowHeight,
       containerRef,
       ...props
     },
     forwardedRef
   ) => {
-    const { previousHeadersRectBounds } = useTableContext();
+    const { previousHeadersRectBounds, rowHeight, isResizing } = useTableContext();
     const elementRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
-      if (!elementRef.current || disabled) {
+      // Don't animate while animations are disabled
+      // Don't animate while headers are being resized
+      if (!elementRef.current || disabled || isResizing) {
         return;
       }
 
@@ -90,7 +90,25 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       };
       const previousHeadersBounds = previousHeadersRectBounds.current;
 
-      let previousX = previousHeadersBounds.get(header.accessor)?.x ?? 0;
+      // If there's no previous bound data, don't animate (prevents first render animations)
+      const previousBound = previousHeadersBounds.get(header.accessor);
+      if (!previousBound) {
+        return;
+      }
+
+      let previousX = previousBound.x;
+
+      // Check if this is likely a structural change vs scroll noise
+      // If row position hasn't changed but there's a horizontal delta, it's likely scroll noise
+      const isRowPositionChange = tableRow.position !== tableRow.previousPosition;
+      const headerPositionDelta = Math.abs((headerBounds?.x ?? 0) - previousX);
+
+      // Only animate if:
+      // 1. Row position has changed (indicates structural change), OR
+      // 2. Header position change is significant (>30px indicates column reordering)
+      if (!isRowPositionChange && headerPositionDelta < 30) {
+        return;
+      }
 
       let previousCalculatedBounds = {
         y: calculatedPreviousTopPosition,
@@ -101,7 +119,16 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
         left: headerBounds?.left ?? 0,
         right: headerBounds?.right ?? 0,
         top: calculatedPreviousTopPosition,
-        toJSON: () => calculatedBounds,
+        toJSON: () => ({
+          y: calculatedPreviousTopPosition,
+          x: previousX,
+          width: headerBounds?.width ?? 0,
+          height: headerBounds?.height ?? 0,
+          bottom: headerBounds?.bottom ?? 0,
+          left: headerBounds?.left ?? 0,
+          right: headerBounds?.right ?? 0,
+          top: calculatedPreviousTopPosition,
+        }),
       };
 
       let hasPositionChanged = false;
@@ -114,6 +141,27 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
       hasPositionChanged = hasDOMPositionChanged;
 
       if (hasPositionChanged) {
+        if (tableRow.row.id === 1) {
+          console.log("\n\n");
+          console.log("timestamp", new Date().toISOString());
+          console.log("tableRow", JSON.stringify(tableRow, null, 2));
+          console.log("calculatedBounds", JSON.stringify(calculatedBounds, null, 2));
+          console.log(
+            "previousCalculatedBounds",
+            JSON.stringify(previousCalculatedBounds, null, 2)
+          );
+          console.log("RAW VALUES:");
+          console.log("  calculatedBounds.x:", calculatedBounds.x);
+          console.log("  previousCalculatedBounds.x:", previousCalculatedBounds.x);
+          console.log("  headerBounds?.x:", headerBounds?.x);
+          console.log("  previousX:", previousX);
+          console.log("  isRowPositionChange:", isRowPositionChange);
+          console.log("  headerPositionDelta:", headerPositionDelta);
+          console.log("deltaX", deltaX);
+          console.log("deltaY", deltaY);
+          console.log("hasDOMPositionChanged", hasDOMPositionChanged);
+          console.log("hasPositionChanged", hasPositionChanged);
+        }
         // Merge animation config with defaults
         const finalConfig = {
           ...DEFAULT_ANIMATION_CONFIG,
@@ -121,9 +169,7 @@ export const Animate = forwardRef<HTMLDivElement, AnimateProps>(
         };
 
         // Start new animation (this will interrupt any ongoing animation)
-        flipElement(elementRef.current, previousCalculatedBounds, finalConfig).catch(() => {
-          // Handle animation errors gracefully
-        });
+        flipElement(elementRef.current, previousCalculatedBounds, finalConfig);
       }
     });
 

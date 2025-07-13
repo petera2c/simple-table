@@ -156,6 +156,7 @@ const SimpleTableComp = ({
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
+  const [isResizing, setIsResizing] = useState(false);
 
   const previousHeadersRectBounds = useRef<Map<string, DOMRect>>(new Map());
   const previousHeaders = usePrevious(headers);
@@ -432,6 +433,7 @@ const SimpleTableComp = ({
         hoveredHeaderRef,
         isCopyFlashing,
         isInitialFocusedCell,
+        isResizing,
         isSelected,
         isWarningFlashing,
         mainBodyRef,
@@ -453,6 +455,7 @@ const SimpleTableComp = ({
         selectableColumns,
         setHeaders,
         setInitialFocusedCell,
+        setIsResizing,
         setSelectedCells,
         setSelectedColumns,
         setUnexpandedRows,

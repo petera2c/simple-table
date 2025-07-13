@@ -82,7 +82,6 @@ const TableCell = forwardRef(
       onCellEdit,
       onTableHeaderDragEnd,
       rowGrouping,
-      rowHeight,
       rowIdAccessor,
       setUnexpandedRows,
       theme,
@@ -309,7 +308,6 @@ const TableCell = forwardRef(
         ref={ref}
         tableRow={visibleRow}
         header={header}
-        rowHeight={rowHeight}
         containerRef={tableBodyContainerRef}
       >
         {header.expandable && cellHasChildren ? (

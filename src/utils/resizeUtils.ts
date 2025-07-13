@@ -1,3 +1,4 @@
+import React from "react";
 import { HeaderObject } from "..";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
 import { calculatePinnedWidth } from "./headerUtils";
@@ -7,6 +8,32 @@ import {
   removeAllFractionalWidths,
   getHeaderMinWidth,
 } from "./headerWidthUtils";
+import { flattenHeaders } from "./headerUtils";
+import { getCellId } from "./cellUtils";
+import { RefObject } from "react";
+
+/**
+ * Helper function to update previous header bounds after resize completes
+ */
+const updatePreviousHeaderBounds = (
+  headers: HeaderObject[],
+  previousHeadersRectBounds: RefObject<Map<string, DOMRect>>
+): void => {
+  if (!previousHeadersRectBounds?.current) return;
+
+  const flattenedHeaders = flattenHeaders(headers);
+  flattenedHeaders.forEach((header) => {
+    const headerElement = document.getElementById(
+      getCellId({ accessor: header.accessor, rowId: "header" })
+    );
+    if (headerElement) {
+      previousHeadersRectBounds.current!.set(
+        header.accessor,
+        headerElement.getBoundingClientRect()
+      );
+    }
+  });
+};
 
 /**
  * Handler for when resize dragging starts
@@ -18,6 +45,8 @@ export const handleResizeStart = ({
   header,
   headers,
   setHeaders,
+  setIsResizing,
+  previousHeadersRectBounds,
   startWidth,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
@@ -25,6 +54,9 @@ export const handleResizeStart = ({
   const isTouchEvent = "touches" in event;
 
   if (!header || header.hide) return;
+
+  // Set resizing state to true
+  setIsResizing(true);
 
   // Get the minimum width for this header
   const minWidth = getHeaderMinWidth(header);
@@ -68,6 +100,9 @@ export const handleResizeStart = ({
     const handleTouchEnd = () => {
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
+      // Update previous bounds to current positions to prevent unwanted animations
+      updatePreviousHeaderBounds(headers, previousHeadersRectBounds);
+      setIsResizing(false);
     };
 
     document.addEventListener("touchmove", handleTouchMove);
@@ -80,6 +115,9 @@ export const handleResizeStart = ({
     const handleMouseUp = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      // Update previous bounds to current positions to prevent unwanted animations
+      updatePreviousHeaderBounds(headers, previousHeadersRectBounds);
+      setIsResizing(false);
     };
 
     document.addEventListener("mousemove", handleMouseMove);
