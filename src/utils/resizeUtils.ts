@@ -7,7 +7,6 @@ import {
   removeAllFractionalWidths,
   getHeaderMinWidth,
 } from "./headerWidthUtils";
-import { RefObject } from "react";
 
 /**
  * Handler for when resize dragging starts

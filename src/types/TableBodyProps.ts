@@ -6,7 +6,6 @@ import TableRow from "./TableRow";
 
 interface TableBodyProps {
   tableRows: TableRow[];
-  headerContainerRef: RefObject<HTMLDivElement | null>;
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftTemplateColumns: string;

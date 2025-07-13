@@ -10,7 +10,6 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { getRowId } from "../../utils/rowUtils";
 
 const TableBody = ({
-  headerContainerRef,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -24,6 +23,7 @@ const TableBody = ({
 }: TableBodyProps) => {
   // Get stable props from context
   const {
+    headerContainerRef,
     headers,
     mainBodyRef,
     onLoadMore,

@@ -30,7 +30,6 @@ const TableContent = ({
   const { columnResizing, editColumns, headers } = useTableContext();
 
   // Refs
-  const headerContainerRef = useRef<HTMLDivElement>(null);
   const centerHeaderRef = useRef<HTMLDivElement>(null);
 
   // Derived state
@@ -51,7 +50,6 @@ const TableContent = ({
 
   const tableHeaderProps: TableHeaderProps = {
     centerHeaderRef,
-    headerContainerRef,
     headers,
     mainTemplateColumns,
     pinnedLeftColumns,
@@ -65,7 +63,6 @@ const TableContent = ({
 
   const tableBodyProps: TableBodyProps = {
     tableRows,
-    headerContainerRef,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,

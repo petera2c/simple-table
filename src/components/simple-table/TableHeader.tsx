@@ -13,7 +13,6 @@ const getHeaderDepth = (header: HeaderObject): number => {
 
 const TableHeader = ({
   centerHeaderRef,
-  headerContainerRef,
   headers,
   mainTemplateColumns,
   pinnedLeftColumns,
@@ -24,7 +23,7 @@ const TableHeader = ({
   pinnedLeftWidth,
   pinnedRightWidth,
 }: TableHeaderProps) => {
-  const { pinnedLeftRef, pinnedRightRef } = useTableContext();
+  const { headerContainerRef, pinnedLeftRef, pinnedRightRef } = useTableContext();
 
   // Calculate column indices for all headers to ensure consistent colIndex values
   const columnIndices = useMemo(() => {

@@ -4,7 +4,7 @@ import { AnimationConfig, FlipAnimationOptions } from "./types";
  * Default animation configuration
  */
 export const DEFAULT_ANIMATION_CONFIG: AnimationConfig = {
-  duration: 300,
+  duration: 30000,
   easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", // ease-out-quad
   delay: 0,
 };

@@ -152,6 +152,7 @@ const SimpleTableComp = ({
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
@@ -161,7 +162,7 @@ const SimpleTableComp = ({
   const previousHeadersRectBounds = useRef<Map<string, DOMRect>>(new Map());
   const previousHeaders = usePrevious(headers);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (previousHeaders && previousHeaders.length > 0) {
       const flattenedHeaders = flattenHeaders(previousHeaders);
       flattenedHeaders.forEach((header) => {
@@ -429,6 +430,7 @@ const SimpleTableComp = ({
         handleClearFilter,
         handleMouseDown,
         handleMouseOver,
+        headerContainerRef,
         headers,
         hoveredHeaderRef,
         isCopyFlashing,

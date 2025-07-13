@@ -22,7 +22,6 @@ interface TableContextType {
   draggedHeaderRef: RefObject<HeaderObject | null>;
   editColumns?: boolean;
   expandIcon?: ReactNode;
-  unexpandedRows: Set<string>;
   filters: TableFilterState;
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
@@ -31,6 +30,7 @@ interface TableContextType {
   handleClearFilter: (accessor: string) => void;
   handleMouseDown: (cell: Cell) => void;
   handleMouseOver: (cell: Cell) => void;
+  headerContainerRef: RefObject<HTMLDivElement | null>;
   headers: HeaderObject[];
   hoveredHeaderRef: RefObject<HeaderObject | null>;
   isCopyFlashing: (cell: Cell) => boolean;
@@ -55,18 +55,19 @@ interface TableContextType {
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
-  setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
+  setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;
   shouldPaginate: boolean;
   sortDownIcon: ReactNode;
   sortUpIcon: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
   tableRows: TableRow[];
   theme: Theme;
+  unexpandedRows: Set<string>;
   useHoverRowBackground: boolean;
   useOddColumnBackground: boolean;
   useOddEvenRowBackground: boolean;

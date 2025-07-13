@@ -282,9 +282,6 @@ const useDragHandler = ({
       setHeaders((prevHeaders) => [...prevHeaders]);
       // Call the column order change callback
       onColumnOrderChange?.(headers);
-
-      // Update previous bounds to current positions to prevent unwanted animations
-      // Add a small delay to ensure DOM has been updated after the re-render
     }, 10);
   };
 
