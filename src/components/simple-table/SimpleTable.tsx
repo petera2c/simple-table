@@ -213,6 +213,7 @@ const SimpleTableComp = ({
 
   // Process rows through pagination, grouping, and virtualization
   const { currentTableRows, rowsToRender } = useTableRowProcessing({
+    allowAnimations,
     currentSortedRows,
     nextSortedRows,
     pastSortedRows,
@@ -230,8 +231,6 @@ const SimpleTableComp = ({
     rowHeight,
     scrollTop,
   });
-
-  console.log("rowsToRender", rowsToRender);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());

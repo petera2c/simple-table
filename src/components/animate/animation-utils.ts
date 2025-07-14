@@ -7,6 +7,8 @@ export const DEFAULT_ANIMATION_CONFIG: AnimationConfig = {
   duration: 300,
   easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", // ease-out-quad
   delay: 0,
+  maxX: 500, // Maximum horizontal translation in pixels
+  maxY: 300, // Maximum vertical translation in pixels
 };
 
 /**
@@ -22,6 +24,19 @@ export const calculateInvert = (first: DOMRect | { x: number; y: number }, last:
   return {
     x: firstX - lastX,
     y: firstY - lastY,
+  };
+};
+
+/**
+ * Applies max limits to invert values
+ */
+export const applyMaxLimits = (invert: { x: number; y: number }, maxX?: number, maxY?: number) => {
+  const limitedX = maxX ? Math.max(-maxX, Math.min(maxX, invert.x)) : invert.x;
+  const limitedY = maxY ? Math.max(-maxY, Math.min(maxY, invert.y)) : invert.y;
+
+  return {
+    x: limitedX,
+    y: limitedY,
   };
 };
 
@@ -107,11 +122,15 @@ export const flipElement = async (
     return;
   }
 
+  // Apply max limits to prevent excessive animations
+  const config = { ...DEFAULT_ANIMATION_CONFIG, ...options };
+  const limitedInvert = applyMaxLimits(invert, config.maxX, config.maxY);
+
   // Clean up any existing animation before starting a new one
   cleanupAnimation(element);
 
-  // Apply initial transform
-  applyInitialTransform(element, invert);
+  // Apply initial transform with limited values
+  applyInitialTransform(element, limitedInvert);
 
   // Animate to final position
   await animateToFinalPosition(element, options);

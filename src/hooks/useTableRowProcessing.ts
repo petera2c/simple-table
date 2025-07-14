@@ -5,6 +5,7 @@ import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
 import Row from "../types/Row";
 
 interface UseTableRowProcessingProps {
+  allowAnimations: boolean;
   currentSortedRows: Row[];
   nextSortedRows: Row[];
   pastSortedRows: Row[];
@@ -24,6 +25,7 @@ interface UseTableRowProcessingProps {
 }
 
 const useTableRowProcessing = ({
+  allowAnimations,
   currentSortedRows,
   nextSortedRows,
   pastSortedRows,
@@ -103,72 +105,73 @@ const useTableRowProcessing = ({
       scrollTop,
     });
 
-    const nextVisibleRowIds = getVisibleRows({
+    // If animations are disabled or pagination is enabled, just return current visible rows
+    if (!allowAnimations || shouldPaginate) {
+      return {
+        currentVisibleRows,
+        rowsToRender: currentVisibleRows,
+      };
+    }
+
+    // When animations are enabled and pagination is disabled, we need to calculate
+    // all visible rows across different states for smooth transitions
+    const visibilityParams = {
       bufferRowCount: BUFFER_ROW_COUNT,
       contentHeight,
-      tableRows: processedRows.nextTableRows,
       rowHeight,
       scrollTop,
-    }).map((row) => getRowId({ row: row.row, rowIdAccessor }));
+    };
 
-    const pastVisibleRowIds = getVisibleRows({
-      bufferRowCount: BUFFER_ROW_COUNT,
-      contentHeight,
-      tableRows: processedRows.pastTableRows,
-      rowHeight,
-      scrollTop,
-    }).map((row) => getRowId({ row: row.row, rowIdAccessor }));
+    // Calculate visible rows for all states and extract IDs in one pass
+    const allVisibleRowIds = new Set<string>();
 
-    // Calculate visible rows for filter states
-    const nextFilterVisibleRowIds = getVisibleRows({
-      bufferRowCount: BUFFER_ROW_COUNT,
-      contentHeight,
-      tableRows: processedRows.nextFilterTableRows,
-      rowHeight,
-      scrollTop,
-    }).map((row) => getRowId({ row: row.row, rowIdAccessor }));
+    // Helper function to process visible rows and collect IDs
+    const processVisibleRows = (tableRows: any[]) => {
+      return getVisibleRows({
+        ...visibilityParams,
+        tableRows,
+      }).map((row) => {
+        const id = String(getRowId({ row: row.row, rowIdAccessor }));
+        allVisibleRowIds.add(id);
+        return id;
+      });
+    };
 
-    const pastFilterVisibleRowIds = getVisibleRows({
-      bufferRowCount: BUFFER_ROW_COUNT,
-      contentHeight,
-      tableRows: processedRows.pastFilterTableRows,
-      rowHeight,
-      scrollTop,
-    }).map((row) => getRowId({ row: row.row, rowIdAccessor }));
+    // Process all states
+    processVisibleRows(processedRows.nextTableRows);
+    processVisibleRows(processedRows.pastTableRows);
+    processVisibleRows(processedRows.nextFilterTableRows);
+    processVisibleRows(processedRows.pastFilterTableRows);
 
-    // Calculate rows to render (for animation) - includes both sort and filter transitions
-    const rowsToRender = shouldPaginate
-      ? currentVisibleRows
-      : (() => {
-          const newSet = new Set([
-            ...pastVisibleRowIds,
-            ...nextVisibleRowIds,
-            ...pastFilterVisibleRowIds,
-            ...nextFilterVisibleRowIds,
-          ]);
-          const uniqueIds = Array.from(newSet).filter((id) => {
-            const foundRow = currentVisibleRows.find(
-              (row) => getRowId({ row: row.row, rowIdAccessor }) === id
-            );
-            return !foundRow;
-          });
+    // Find additional rows that need to be rendered (visible in other states but not current)
+    const currentVisibleRowIds = new Set(
+      currentVisibleRows.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
+    );
 
-          const foundRows = processedRows.currentTableRows.filter((row) =>
-            uniqueIds.includes(getRowId({ row: row.row, rowIdAccessor }))
-          );
+    const additionalRowIds = Array.from(allVisibleRowIds).filter(
+      (id) => !currentVisibleRowIds.has(id)
+    );
 
-          return [...currentVisibleRows, ...foundRows];
-        })();
+    // Find the actual row objects for additional IDs
+    const additionalRows = processedRows.currentTableRows.filter((row) =>
+      additionalRowIds.includes(String(getRowId({ row: row.row, rowIdAccessor })))
+    );
+
+    const rowsToRender = [...currentVisibleRows, ...additionalRows];
 
     return {
       currentVisibleRows,
-      nextVisibleRowIds,
-      pastVisibleRowIds,
-      nextFilterVisibleRowIds,
-      pastFilterVisibleRowIds,
       rowsToRender,
     };
-  }, [processedRows, contentHeight, rowHeight, scrollTop, rowIdAccessor, shouldPaginate]);
+  }, [
+    processedRows,
+    contentHeight,
+    rowHeight,
+    scrollTop,
+    rowIdAccessor,
+    shouldPaginate,
+    allowAnimations,
+  ]);
 
   return {
     currentTableRows: processedRows.currentTableRows,

@@ -64,16 +64,16 @@ export const Animate = ({
     const deltaY = currentBounds.y - previousBounds.y;
     const positionDelta = Math.abs(deltaX);
 
-    // Only animate if position change is significant (>30px indicates column reordering)
-    // or if there's a vertical change (>1px indicates row reordering)
-    if (positionDelta < 30 && Math.abs(deltaY) <= 1) {
+    // Only animate if position change is significant (>50px indicates column reordering)
+    // or if there's a vertical change (>5px indicates row reordering)
+    if (positionDelta < 50 && Math.abs(deltaY) <= 5) {
       return;
     }
 
     let hasPositionChanged = false;
 
     // Check DOM position changes
-    const hasDOMPositionChanged = Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1;
+    const hasDOMPositionChanged = Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5;
 
     hasPositionChanged = hasDOMPositionChanged;
 
