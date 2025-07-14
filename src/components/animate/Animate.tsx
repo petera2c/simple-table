@@ -22,6 +22,7 @@ export const Animate = ({
   const elementRef = useRef<HTMLDivElement>(null);
   const previousBoundsRef = useRef<DOMRect | null>(null);
   const previousScrollingState = usePrevious(isScrolling);
+  const previousResizingState = usePrevious(isResizing);
 
   useLayoutEffect(() => {
     // Don't animate while animations are disabled
@@ -40,6 +41,12 @@ export const Animate = ({
 
     // If scrolling just ended, update the previous bounds without animating
     if (previousScrollingState && !isScrolling) {
+      previousBoundsRef.current = currentBounds;
+      return;
+    }
+
+    // If resizing just ended, update the previous bounds without animating
+    if (previousResizingState && !isResizing) {
       previousBoundsRef.current = currentBounds;
       return;
     }
