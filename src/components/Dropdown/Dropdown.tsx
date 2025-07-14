@@ -171,8 +171,12 @@ const Dropdown: React.FC<DropdownProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpen(false);
-        onClose?.();
+        // Also check if the click is within the parent element (which contains the trigger)
+        const parentElement = dropdownRef.current.parentElement;
+        if (parentElement && !parentElement.contains(event.target as Node)) {
+          setOpen(false);
+          onClose?.();
+        }
       }
     };
 
