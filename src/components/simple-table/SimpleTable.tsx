@@ -96,7 +96,7 @@ const SimpleTable = (props: SimpleTableProps) => {
 };
 
 const SimpleTableComp = ({
-  allowAnimations = true,
+  allowAnimations = false,
   cellUpdateFlash = false,
   columnEditorPosition = "right",
   columnEditorText = "Columns",

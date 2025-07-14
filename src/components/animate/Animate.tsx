@@ -12,7 +12,7 @@ interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> 
   tableRow?: TableRow;
 }
 export const Animate = ({
-  animationConfig = {},
+  animationConfig = DEFAULT_ANIMATION_CONFIG,
   children,
   id,
   tableRow,
@@ -25,6 +25,7 @@ export const Animate = ({
   const previousResizingState = usePrevious(isResizing);
 
   useLayoutEffect(() => {
+    console.log("rerendering");
     // Don't animate while animations are disabled
     // Don't animate while headers are being resized
     if (!elementRef.current || !allowAnimations || isResizing) {
@@ -87,7 +88,15 @@ export const Animate = ({
       // Start new animation (this will interrupt any ongoing animation)
       flipElement(elementRef.current, previousBounds, finalConfig);
     }
-  });
+  }, [
+    allowAnimations,
+    isResizing,
+    isScrolling,
+    previousScrollingState,
+    previousResizingState,
+    tableRow,
+    animationConfig,
+  ]);
 
   return (
     <div ref={elementRef} data-animate-id={id} id={String(id)} {...props}>
