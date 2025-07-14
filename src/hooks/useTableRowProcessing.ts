@@ -71,6 +71,20 @@ const useTableRowProcessing = ({
       });
     };
 
+    // When animations are disabled, only process current sorted rows
+    if (!allowAnimations) {
+      const currentTableRows = processRowSet(currentSortedRows);
+      return {
+        currentTableRows,
+        nextTableRows: currentTableRows,
+        pastTableRows: currentTableRows,
+        currentFilterTableRows: currentTableRows,
+        nextFilterTableRows: currentTableRows,
+        pastFilterTableRows: currentTableRows,
+      };
+    }
+
+    // When animations are enabled, process all states
     return {
       currentTableRows: processRowSet(currentSortedRows),
       nextTableRows: processRowSet(nextSortedRows),
@@ -80,6 +94,7 @@ const useTableRowProcessing = ({
       pastFilterTableRows: processRowSet(pastFilteredRows),
     };
   }, [
+    allowAnimations,
     currentSortedRows,
     nextSortedRows,
     pastSortedRows,

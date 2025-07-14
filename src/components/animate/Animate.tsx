@@ -1,23 +1,15 @@
 import React, { useRef, useLayoutEffect, ReactNode } from "react";
 import usePrevious from "../../hooks/usePrevious";
-import { FlipAnimationOptions } from "./types";
-import { flipElement, DEFAULT_ANIMATION_CONFIG } from "./animation-utils";
+import { flipElement, ANIMATION_CONFIGS } from "./animation-utils";
 import TableRow from "../../types/TableRow";
 import { useTableContext } from "../../context/TableContext";
 
 interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
-  animationConfig?: FlipAnimationOptions;
   children: ReactNode;
   id: string;
   tableRow?: TableRow;
 }
-export const Animate = ({
-  animationConfig = DEFAULT_ANIMATION_CONFIG,
-  children,
-  id,
-  tableRow,
-  ...props
-}: AnimateProps) => {
+export const Animate = ({ children, id, tableRow, ...props }: AnimateProps) => {
   const { allowAnimations, isResizing, isScrolling } = useTableContext();
   const elementRef = useRef<HTMLDivElement>(null);
   const previousBoundsRef = useRef<DOMRect | null>(null);
@@ -25,10 +17,13 @@ export const Animate = ({
   const previousResizingState = usePrevious(isResizing);
 
   useLayoutEffect(() => {
-    console.log("rerendering");
-    // Don't animate while animations are disabled
+    // Early exit if animations are disabled - don't do any work at all
+    if (!allowAnimations) {
+      return;
+    }
+
     // Don't animate while headers are being resized
-    if (!elementRef.current || !allowAnimations || isResizing) {
+    if (!elementRef.current || isResizing) {
       return;
     }
 
@@ -81,8 +76,7 @@ export const Animate = ({
     if (hasPositionChanged) {
       // Merge animation config with defaults
       const finalConfig = {
-        ...DEFAULT_ANIMATION_CONFIG,
-        ...animationConfig,
+        ...ANIMATION_CONFIGS.ROW_REORDER,
       };
 
       // Start new animation (this will interrupt any ongoing animation)
@@ -95,7 +89,6 @@ export const Animate = ({
     previousScrollingState,
     previousResizingState,
     tableRow,
-    animationConfig,
   ]);
 
   return (

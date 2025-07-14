@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useLayoutEffect } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
-import { DEFAULT_ANIMATION_CONFIG } from "../components/animate/animation-utils";
+import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 
 // Filter configuration interface similar to SortConfig
 export interface FilterConfig {
@@ -87,6 +87,7 @@ const useFilterableData = ({
   onFilterChange,
 }: UseFilterableDataProps): UseFilterableDataReturn => {
   // Filter state management similar to sort state
+  // When animations are disabled, the logic below will skip animation transitions
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({
     previous: null,
     current: null,
@@ -269,7 +270,7 @@ const useFilterableData = ({
         current: filterConfig.current,
         next: filterConfig.next,
       });
-    }, DEFAULT_ANIMATION_CONFIG.duration);
+    }, ANIMATION_CONFIGS.ROW_REORDER.duration);
 
     return () => clearTimeout(timeoutId);
   }, [filterConfig, allowAnimations]);

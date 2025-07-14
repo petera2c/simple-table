@@ -13,4 +13,5 @@ export interface FlipAnimationOptions {
   maxX?: number;
   maxY?: number;
   onComplete?: () => void;
+  respectReducedMotion?: boolean; // Whether to respect user's reduced motion preference (default: true)
 }

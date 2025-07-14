@@ -4,7 +4,7 @@ import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import SortConfig, { SortColumn } from "../types/SortConfig";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
-import { DEFAULT_ANIMATION_CONFIG } from "../components/animate/animation-utils";
+import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 
 // Helper function to compare sort configs
 const areSortConfigsEqual = (a: SortColumn | null, b: SortColumn | null) => {
@@ -305,7 +305,7 @@ const useSortableData = ({
         current: sort.current,
         next: sort.next,
       });
-    }, DEFAULT_ANIMATION_CONFIG.duration);
+    }, ANIMATION_CONFIGS.ROW_REORDER.duration);
 
     return () => clearTimeout(timeoutId);
   }, [sort, allowAnimations]);
