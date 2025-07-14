@@ -36,6 +36,7 @@ interface TableContextType {
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isResizing: boolean;
+  isScrolling: boolean;
   isSelected: (cell: Cell) => boolean;
   isWarningFlashing: (cell: Cell) => boolean;
   mainBodyRef: RefObject<HTMLDivElement | null>;
@@ -57,6 +58,7 @@ interface TableContextType {
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;
+  setIsScrolling: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;

@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState, useCallback } from "react";
+import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
@@ -30,6 +30,7 @@ const TableBody = ({
     rowHeight,
     rowIdAccessor,
     scrollbarWidth,
+    setIsScrolling,
     shouldPaginate,
     tableBodyContainerRef,
   } = useTableContext();
@@ -45,8 +46,18 @@ const TableBody = ({
     scrollbarWidth,
   });
 
+  // Clean up scroll timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollEndTimeoutRef.current) {
+        clearTimeout(scrollEndTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Refs
   const scrollTimeoutRef = useRef<number | null>(null);
+  const scrollEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollTopRef = useRef<number>(0);
 
   // Derived state
@@ -102,6 +113,19 @@ const TableBody = ({
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const element = e.currentTarget;
     const newScrollTop = element.scrollTop;
+
+    // Set scrolling state to true when scrolling starts
+    setIsScrolling(true);
+
+    // Clear the previous scroll end timeout
+    if (scrollEndTimeoutRef.current) {
+      clearTimeout(scrollEndTimeoutRef.current);
+    }
+
+    // Set up timeout to detect when scrolling ends
+    scrollEndTimeoutRef.current = setTimeout(() => {
+      setIsScrolling(false);
+    }, 150);
 
     if (scrollTimeoutRef.current) {
       cancelAnimationFrame(scrollTimeoutRef.current);

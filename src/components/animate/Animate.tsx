@@ -1,4 +1,5 @@
 import React, { useRef, useLayoutEffect, ReactNode } from "react";
+import usePrevious from "../../hooks/usePrevious";
 import { FlipAnimationOptions } from "./types";
 import { flipElement, DEFAULT_ANIMATION_CONFIG } from "./animation-utils";
 import TableRow from "../../types/TableRow";
@@ -17,9 +18,10 @@ export const Animate = ({
   tableRow,
   ...props
 }: AnimateProps) => {
-  const { allowAnimations, isResizing } = useTableContext();
+  const { allowAnimations, isResizing, isScrolling } = useTableContext();
   const elementRef = useRef<HTMLDivElement>(null);
   const previousBoundsRef = useRef<DOMRect | null>(null);
+  const previousScrollingState = usePrevious(isScrolling);
 
   useLayoutEffect(() => {
     // Don't animate while animations are disabled
@@ -30,6 +32,17 @@ export const Animate = ({
 
     const currentBounds = elementRef.current.getBoundingClientRect();
     const previousBounds = previousBoundsRef.current;
+
+    // If we're currently scrolling, don't animate and don't update bounds
+    if (isScrolling) {
+      return;
+    }
+
+    // If scrolling just ended, update the previous bounds without animating
+    if (previousScrollingState && !isScrolling) {
+      previousBoundsRef.current = currentBounds;
+      return;
+    }
 
     // Store current bounds for next render
     previousBoundsRef.current = currentBounds;

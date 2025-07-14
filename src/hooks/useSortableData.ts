@@ -62,7 +62,7 @@ const useSortableData = ({
   headers: HeaderObject[];
   tableRows: Row[];
   externalSortHandling: boolean;
-  onSortChange?: (sort: SortConfig | null) => void;
+  onSortChange?: (sort: SortColumn | null) => void;
   rowGrouping?: string[];
 }) => {
   // Restore the original sort state management for animations
@@ -225,7 +225,6 @@ const useSortableData = ({
             direction: "descending",
           };
         }
-        // Third click removes the sort (stays null)
 
         const newSort: SortConfig = {
           previous: null,
@@ -234,7 +233,7 @@ const useSortableData = ({
         };
 
         setSort(newSort);
-        onSortChange?.(newSort);
+        onSortChange?.(newSort.current);
         return;
       }
 
@@ -263,10 +262,9 @@ const useSortableData = ({
           },
         };
       }
-      // Third click removes the sort (newSort stays null)
 
       setSort(newSort);
-      onSortChange?.(newSort);
+      onSortChange?.(newSort.current);
     },
     [allowAnimations, sort, headers, onSortChange]
   );

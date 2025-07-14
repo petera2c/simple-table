@@ -36,7 +36,7 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
-import SortConfig from "../../types/SortConfig";
+import { SortColumn } from "../../types/SortConfig";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
@@ -67,7 +67,7 @@ interface SimpleTableProps {
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
-  onSortChange?: (sort: SortConfig | null) => void; // Callback when sort is applied
+  onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
   rowGrouping?: string[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
@@ -155,6 +155,7 @@ const SimpleTableComp = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
   const [isResizing, setIsResizing] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
@@ -309,6 +310,7 @@ const SimpleTableComp = ({
         isCopyFlashing,
         isInitialFocusedCell,
         isResizing,
+        isScrolling,
         isSelected,
         isWarningFlashing,
         mainBodyRef,
@@ -330,6 +332,7 @@ const SimpleTableComp = ({
         setHeaders,
         setInitialFocusedCell,
         setIsResizing,
+        setIsScrolling,
         setSelectedCells,
         setSelectedColumns,
         setUnexpandedRows,
