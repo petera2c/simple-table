@@ -8,6 +8,9 @@ interface UseTableRowProcessingProps {
   currentSortedRows: Row[];
   nextSortedRows: Row[];
   pastSortedRows: Row[];
+  currentFilteredRows: Row[];
+  nextFilteredRows: Row[];
+  pastFilteredRows: Row[];
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
@@ -24,6 +27,9 @@ const useTableRowProcessing = ({
   currentSortedRows,
   nextSortedRows,
   pastSortedRows,
+  currentFilteredRows,
+  nextFilteredRows,
+  pastFilteredRows,
   currentPage,
   rowsPerPage,
   shouldPaginate,
@@ -67,11 +73,17 @@ const useTableRowProcessing = ({
       currentTableRows: processRowSet(currentSortedRows),
       nextTableRows: processRowSet(nextSortedRows),
       pastTableRows: processRowSet(pastSortedRows),
+      currentFilterTableRows: processRowSet(currentFilteredRows),
+      nextFilterTableRows: processRowSet(nextFilteredRows),
+      pastFilterTableRows: processRowSet(pastFilteredRows),
     };
   }, [
     currentSortedRows,
     nextSortedRows,
     pastSortedRows,
+    currentFilteredRows,
+    nextFilteredRows,
+    pastFilteredRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
@@ -107,11 +119,33 @@ const useTableRowProcessing = ({
       scrollTop,
     }).map((row) => getRowId({ row: row.row, rowIdAccessor }));
 
-    // Calculate rows to render (for animation)
+    // Calculate visible rows for filter states
+    const nextFilterVisibleRowIds = getVisibleRows({
+      bufferRowCount: BUFFER_ROW_COUNT,
+      contentHeight,
+      tableRows: processedRows.nextFilterTableRows,
+      rowHeight,
+      scrollTop,
+    }).map((row) => getRowId({ row: row.row, rowIdAccessor }));
+
+    const pastFilterVisibleRowIds = getVisibleRows({
+      bufferRowCount: BUFFER_ROW_COUNT,
+      contentHeight,
+      tableRows: processedRows.pastFilterTableRows,
+      rowHeight,
+      scrollTop,
+    }).map((row) => getRowId({ row: row.row, rowIdAccessor }));
+
+    // Calculate rows to render (for animation) - includes both sort and filter transitions
     const rowsToRender = shouldPaginate
       ? currentVisibleRows
       : (() => {
-          const newSet = new Set([...pastVisibleRowIds, ...nextVisibleRowIds]);
+          const newSet = new Set([
+            ...pastVisibleRowIds,
+            ...nextVisibleRowIds,
+            ...pastFilterVisibleRowIds,
+            ...nextFilterVisibleRowIds,
+          ]);
           const uniqueIds = Array.from(newSet).filter((id) => {
             const foundRow = currentVisibleRows.find(
               (row) => getRowId({ row: row.row, rowIdAccessor }) === id
@@ -130,6 +164,8 @@ const useTableRowProcessing = ({
       currentVisibleRows,
       nextVisibleRowIds,
       pastVisibleRowIds,
+      nextFilterVisibleRowIds,
+      pastFilterVisibleRowIds,
       rowsToRender,
     };
   }, [processedRows, contentHeight, rowHeight, scrollTop, rowIdAccessor, shouldPaginate]);

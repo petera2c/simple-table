@@ -72,6 +72,7 @@ const StringFilter: React.FC<StringFilterProps> = ({
             onChange={setFilterValue}
             placeholder="Filter..."
             autoFocus
+            onEnterPress={handleApplyFilter}
           />
         </FilterSection>
       )}

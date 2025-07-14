@@ -29,7 +29,7 @@ import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import FilterBar from "../filters/FilterBar";
-import { useTableFilters } from "../../hooks/useTableFilters";
+import useFilterableData from "../../hooks/useFilterableData";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
@@ -167,30 +167,6 @@ const SimpleTableComp = ({
 
   // Apply aggregation to current rows
   const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
-  const aggregatedRows = useAggregatedRows({
-    rows,
-    headers,
-    rowGrouping,
-  });
-
-  // Use filter hook
-  const {
-    filters,
-    filteredRows,
-    handleApplyFilter: internalHandleApplyFilter,
-    handleClearFilter,
-    handleClearAllFilters,
-  } = useTableFilters({ externalFilterHandling, rows: aggregatedRows });
-
-  // Use custom hook for sorting (now operates on filtered rows)
-  const { sort, currentSortedRows, nextSortedRows, pastSortedRows, updateSort } = useSortableData({
-    allowAnimations,
-    headers,
-    tableRows: filteredRows,
-    externalSortHandling,
-    onSortChange,
-    rowGrouping,
-  });
 
   // Calculate the width of the sections
   const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
@@ -203,11 +179,46 @@ const SimpleTableComp = ({
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
 
+  const aggregatedRows = useAggregatedRows({
+    rows,
+    headers,
+    rowGrouping,
+  });
+
+  // Use filter hook
+  const {
+    filters,
+    pastFilteredRows,
+    currentFilteredRows,
+    nextFilteredRows,
+    updateFilter: internalHandleApplyFilter,
+    clearFilter: handleClearFilter,
+    clearAllFilters: handleClearAllFilters,
+  } = useFilterableData({
+    allowAnimations,
+    rows: aggregatedRows,
+    externalFilterHandling,
+    onFilterChange,
+  });
+
+  // Use custom hook for sorting (now operates on filtered rows)
+  const { sort, currentSortedRows, nextSortedRows, pastSortedRows, updateSort } = useSortableData({
+    allowAnimations,
+    headers,
+    tableRows: currentFilteredRows,
+    externalSortHandling,
+    onSortChange,
+    rowGrouping,
+  });
+
   // Process rows through pagination, grouping, and virtualization
   const { currentTableRows, rowsToRender } = useTableRowProcessing({
     currentSortedRows,
     nextSortedRows,
     pastSortedRows,
+    currentFilteredRows,
+    nextFilteredRows,
+    pastFilteredRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
@@ -219,6 +230,8 @@ const SimpleTableComp = ({
     rowHeight,
     scrollTop,
   });
+
+  console.log("rowsToRender", rowsToRender);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());

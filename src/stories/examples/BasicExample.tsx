@@ -178,10 +178,17 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
 
   // Define headers
   const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 80, isSortable: true },
-    { accessor: "name", label: "Name", minWidth: 80, width: "1fr", isSortable: true },
-    { accessor: "age", label: "Age", width: 100, isSortable: true },
-    { accessor: "role", label: "Role", width: 150, isSortable: true },
+    { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true },
+    {
+      accessor: "name",
+      label: "Name",
+      minWidth: 80,
+      width: "1fr",
+      isSortable: true,
+      filterable: true,
+    },
+    { accessor: "age", label: "Age", width: 100, isSortable: true, filterable: true },
+    { accessor: "role", label: "Role", width: 150, isSortable: true, filterable: true },
   ];
 
   return <SimpleTable {...props} defaultHeaders={headers} rows={rows} rowIdAccessor="id" />;
