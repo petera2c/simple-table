@@ -5,8 +5,6 @@ import { SetStateAction } from "react";
 import TableRow from "./TableRow";
 
 interface TableBodyProps {
-  tableRows: TableRow[];
-  headerContainerRef: RefObject<HTMLDivElement | null>;
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftTemplateColumns: string;
@@ -14,8 +12,9 @@ interface TableBodyProps {
   pinnedRightColumns: HeaderObject[];
   pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
+  rowsToRender: TableRow[];
   setScrollTop: Dispatch<SetStateAction<number>>;
-  visibleRows: TableRow[];
+  tableRows: TableRow[];
 }
 
 export default TableBodyProps;

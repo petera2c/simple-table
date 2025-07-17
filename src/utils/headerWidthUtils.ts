@@ -38,7 +38,7 @@ export const getHeaderWidthInPixels = (header: HeaderObject): number => {
   // For fr, %, or any other format, get the actual DOM element width
   else {
     const cellElement = document.getElementById(
-      getCellId({ accessor: header.accessor, rowIndex: 0 })
+      getCellId({ accessor: header.accessor, rowId: "header" })
     );
     return cellElement?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
@@ -51,8 +51,8 @@ export const removeAllFractionalWidths = (header: HeaderObject): void => {
   const headerWidth = header.width;
   if (typeof headerWidth === "string" && headerWidth.includes("fr")) {
     header.width =
-      document.getElementById(getCellId({ accessor: header.accessor, rowIndex: 0 }))?.offsetWidth ||
-      TABLE_HEADER_CELL_WIDTH_DEFAULT;
+      document.getElementById(getCellId({ accessor: header.accessor, rowId: "header" }))
+        ?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
   if (header.children) {
     header.children.forEach((child) => {

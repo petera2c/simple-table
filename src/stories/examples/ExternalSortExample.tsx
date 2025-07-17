@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
-import SortConfig from "../../types/SortConfig";
+import { SortColumn } from "../../types/SortConfig";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Sample data
@@ -122,31 +122,31 @@ export const externalSortExampleDefaults = {
 };
 
 const ExternalSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
-  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
 
   // Sort data externally based on sortConfig
   const sortedData = useMemo(() => {
-    if (!sortConfig) return sampleData;
+    if (!sortColumn) return sampleData;
 
     const sorted = [...sampleData].sort((a, b) => {
-      const accessor = sortConfig.key.accessor;
+      const accessor = sortColumn.key.accessor;
       const aValue = a[accessor];
       const bValue = b[accessor];
 
       if (aValue === bValue) return 0;
 
       let comparison = 0;
-      if (sortConfig.key.type === "number") {
+      if (sortColumn.key.type === "number") {
         comparison = (aValue as number) - (bValue as number);
       } else {
         comparison = String(aValue).localeCompare(String(bValue));
       }
 
-      return sortConfig.direction === "ascending" ? comparison : -comparison;
+      return sortColumn.direction === "ascending" ? comparison : -comparison;
     });
 
     return sorted;
-  }, [sortConfig]);
+  }, [sortColumn]);
 
   return (
     <SimpleTable
@@ -154,7 +154,7 @@ const ExternalSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
       defaultHeaders={headers}
       rows={sortedData} // We provide the pre-sorted data
       rowIdAccessor="id"
-      onSortChange={setSortConfig} // Handle sort changes externally
+      onSortChange={setSortColumn} // Handle sort changes externally
       // Default settings for this example
       externalSortHandling={props.externalSortHandling ?? true}
       columnResizing={props.columnResizing ?? true}

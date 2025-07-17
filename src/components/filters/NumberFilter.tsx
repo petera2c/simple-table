@@ -96,6 +96,7 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
             onChange={setFilterValue}
             placeholder="Enter number..."
             autoFocus
+            onEnterPress={handleApplyFilter}
           />
         </FilterSection>
       )}
@@ -109,12 +110,14 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
             placeholder="From..."
             autoFocus
             className="st-filter-input-range-from"
+            onEnterPress={handleApplyFilter}
           />
           <FilterInput
             type="number"
             value={filterValueTo}
             onChange={setFilterValueTo}
             placeholder="To..."
+            onEnterPress={handleApplyFilter}
           />
         </FilterSection>
       )}

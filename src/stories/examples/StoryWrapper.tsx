@@ -60,7 +60,7 @@ export const defaultUniversalArgs: UniversalTableProps = {
   useOddColumnBackground: false,
   useHoverRowBackground: true,
   useOddEvenRowBackground: true,
-  allowAnimations: false,
+  allowAnimations: true,
   cellUpdateFlash: false,
   height: undefined,
   rowHeight: 32,

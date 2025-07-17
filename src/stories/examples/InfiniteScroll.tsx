@@ -117,10 +117,6 @@ const InfiniteScrollExample = (props: UniversalTableProps) => {
       // Append new rows to existing data
       setRows((prevRows) => [...prevRows, ...newRows]);
       setTotalLoadedRows((prev) => prev + LOAD_MORE_COUNT);
-
-      console.log(
-        `Loaded ${LOAD_MORE_COUNT} more rows. Total: ${totalLoadedRows + LOAD_MORE_COUNT}`
-      );
     } catch (error) {
       console.error("Error loading more data:", error);
     } finally {

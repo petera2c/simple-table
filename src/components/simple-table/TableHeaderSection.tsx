@@ -1,4 +1,4 @@
-import { createRef, useMemo } from "react";
+import { useMemo } from "react";
 import { displayCell } from "../../utils/cellUtils";
 import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
@@ -113,7 +113,6 @@ const TableHeaderSection = ({
               gridRowStart={cell.gridRowStart}
               header={cell.header}
               key={cell.header.accessor}
-              ref={createRef()}
               reverse={pinned === "right"}
               sort={sort}
             />

@@ -15,7 +15,7 @@ interface TableContentLocalProps {
   setScrollTop: Dispatch<SetStateAction<number>>;
   sort: SortConfig | null;
   tableRows: TableRow[];
-  visibleRows: TableRow[];
+  rowsToRender: TableRow[];
 }
 
 const TableContent = ({
@@ -24,13 +24,12 @@ const TableContent = ({
   setScrollTop,
   sort,
   tableRows,
-  visibleRows,
+  rowsToRender,
 }: TableContentLocalProps) => {
   // Get stable props from context
   const { columnResizing, editColumns, headers } = useTableContext();
 
   // Refs
-  const headerContainerRef = useRef<HTMLDivElement>(null);
   const centerHeaderRef = useRef<HTMLDivElement>(null);
 
   // Derived state
@@ -51,7 +50,6 @@ const TableContent = ({
 
   const tableHeaderProps: TableHeaderProps = {
     centerHeaderRef,
-    headerContainerRef,
     headers,
     mainTemplateColumns,
     pinnedLeftColumns,
@@ -65,7 +63,6 @@ const TableContent = ({
 
   const tableBodyProps: TableBodyProps = {
     tableRows,
-    headerContainerRef,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,
@@ -74,7 +71,7 @@ const TableContent = ({
     pinnedRightTemplateColumns,
     pinnedRightWidth,
     setScrollTop,
-    visibleRows,
+    rowsToRender,
   };
 
   return (

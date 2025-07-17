@@ -18,6 +18,7 @@ export const handleResizeStart = ({
   header,
   headers,
   setHeaders,
+  setIsResizing,
   startWidth,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
@@ -25,6 +26,9 @@ export const handleResizeStart = ({
   const isTouchEvent = "touches" in event;
 
   if (!header || header.hide) return;
+
+  // Set resizing state to true
+  setIsResizing(true);
 
   // Get the minimum width for this header
   const minWidth = getHeaderMinWidth(header);
@@ -68,6 +72,7 @@ export const handleResizeStart = ({
     const handleTouchEnd = () => {
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
+      setIsResizing(false);
     };
 
     document.addEventListener("touchmove", handleTouchMove);
@@ -80,6 +85,7 @@ export const handleResizeStart = ({
     const handleMouseUp = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      setIsResizing(false);
     };
 
     document.addEventListener("mousemove", handleMouseMove);

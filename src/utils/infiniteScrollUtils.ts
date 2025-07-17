@@ -12,15 +12,15 @@ export const getTotalRowCount = (tableRows: TableRow[]): number => {
 export const getVisibleRows = ({
   bufferRowCount,
   contentHeight,
-  tableRows,
   rowHeight,
   scrollTop,
+  tableRows,
 }: {
   bufferRowCount: number;
   contentHeight: number;
-  tableRows: TableRow[];
   rowHeight: number;
   scrollTop: number;
+  tableRows: TableRow[];
 }): TableRow[] => {
   const rowHeightWithSeparator = rowHeight + SEPARATOR_HEIGHT;
 
@@ -32,7 +32,9 @@ export const getVisibleRows = ({
   const endIndex = Math.min(tableRows.length, Math.ceil(endOffset / rowHeightWithSeparator));
 
   // Simple slice - all the complex logic is now in flattenRowsWithGrouping
-  return tableRows.slice(startIndex, endIndex);
+  const inViewRows = tableRows.slice(startIndex, endIndex);
+
+  return inViewRows;
 };
 
 export const calculateSeparatorTopPosition = ({
