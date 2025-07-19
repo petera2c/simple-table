@@ -188,49 +188,46 @@ const SimpleTableComp = ({
   // Use filter hook
   const {
     filters,
-    pastFilteredRows,
-    currentFilteredRows,
-    nextFilteredRows,
+    filteredRows,
     updateFilter: internalHandleApplyFilter,
     clearFilter: handleClearFilter,
     clearAllFilters: handleClearAllFilters,
+    computeFilteredRowsPreview,
   } = useFilterableData({
-    allowAnimations,
     rows: aggregatedRows,
     externalFilterHandling,
     onFilterChange,
   });
 
   // Use custom hook for sorting (now operates on filtered rows)
-  const { sort, currentSortedRows, nextSortedRows, pastSortedRows, updateSort } = useSortableData({
-    allowAnimations,
+  const { sort, sortedRows, updateSort, computeSortedRowsPreview } = useSortableData({
     headers,
-    tableRows: currentFilteredRows,
+    tableRows: filteredRows,
     externalSortHandling,
     onSortChange,
     rowGrouping,
   });
 
   // Process rows through pagination, grouping, and virtualization
-  const { currentTableRows, rowsToRender } = useTableRowProcessing({
-    allowAnimations,
-    currentSortedRows,
-    nextSortedRows,
-    pastSortedRows,
-    currentFilteredRows,
-    nextFilteredRows,
-    pastFilteredRows,
-    currentPage,
-    rowsPerPage,
-    shouldPaginate,
-    rowGrouping,
-    rowIdAccessor,
-    unexpandedRows,
-    expandAll,
-    contentHeight,
-    rowHeight,
-    scrollTop,
-  });
+  const { currentTableRows, rowsToRender, prepareForFilterChange, prepareForSortChange } =
+    useTableRowProcessing({
+      allowAnimations,
+      filteredRows,
+      sortedRows,
+      originalRows: aggregatedRows,
+      currentPage,
+      rowsPerPage,
+      shouldPaginate,
+      rowGrouping,
+      rowIdAccessor,
+      unexpandedRows,
+      expandAll,
+      contentHeight,
+      rowHeight,
+      scrollTop,
+      computeFilteredRowsPreview,
+      computeSortedRowsPreview,
+    });
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -261,9 +258,16 @@ const SimpleTableComp = ({
   // Memoize handlers
   const onSort = useCallback(
     (accessor: string) => {
-      updateSort(accessor);
+      // STAGE 1: Prepare animation by adding entering rows before applying sort
+      prepareForSortChange(accessor);
+
+      // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
+      setTimeout(() => {
+        console.log("🎯 STAGE 2: Applying sort after Stage 1 rendered");
+        updateSort(accessor);
+      }, 0);
     },
-    [updateSort]
+    [prepareForSortChange, updateSort]
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
@@ -291,11 +295,28 @@ const SimpleTableComp = ({
   // Custom filter handler that respects external filter handling flag
   const handleApplyFilter = useCallback(
     (filter: FilterCondition) => {
-      // Update internal state and call external handler if provided
-      internalHandleApplyFilter(filter);
+      // STAGE 1: Prepare animation by adding entering rows before applying filter
+      prepareForFilterChange(filter);
+
+      // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
+      setTimeout(() => {
+        console.log("🎯 STAGE 2: Applying filter after Stage 1 rendered");
+        // Update internal state and call external handler if provided
+        internalHandleApplyFilter(filter);
+      }, 0);
     },
-    [internalHandleApplyFilter]
+    [prepareForFilterChange, internalHandleApplyFilter]
   );
+  console.log("sort", sort);
+  console.log(
+    "rowsToRender",
+    JSON.stringify(
+      rowsToRender.map((row) => {
+        return { id: row.row.id, name: row.row.name, position: row.position };
+      })
+    )
+  );
+  console.log("rowsToRender.length", rowsToRender.length);
 
   return (
     <TableProvider
@@ -401,7 +422,7 @@ const SimpleTableComp = ({
               onPageChange={setCurrentPage}
               onNextPage={onNextPage}
               shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil(currentSortedRows.length / rowsPerPage)}
+              totalPages={Math.ceil(sortedRows.length / rowsPerPage)}
             />
           </div>
         </ScrollSync>

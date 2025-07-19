@@ -2,7 +2,7 @@ import { DragEvent, useEffect, MouseEvent, TouchEvent, useState } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
-import SortConfig from "../../types/SortConfig";
+import { SortColumn } from "../../types/SortConfig";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
@@ -23,7 +23,7 @@ interface HeaderCellProps {
   gridRowStart: number;
   header: HeaderObject;
   reverse?: boolean;
-  sort: SortConfig | null;
+  sort: SortColumn | null;
 }
 
 const TableHeaderCell = ({
@@ -246,13 +246,13 @@ const TableHeaderCell = ({
     </div>
   );
 
-  const SortIcon = sort && sort.next?.key.accessor === header.accessor && (
+  const SortIcon = sort && sort.key.accessor === header.accessor && (
     <div
       className="st-icon-container"
       onClick={(event) => handleColumnHeaderClick({ event, header })}
     >
-      {sort.next?.direction === "ascending" && sortUpIcon && sortUpIcon}
-      {sort.next?.direction === "descending" && sortDownIcon && sortDownIcon}
+      {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
+      {sort.direction === "descending" && sortDownIcon && sortDownIcon}
     </div>
   );
 

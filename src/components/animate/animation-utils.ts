@@ -14,7 +14,8 @@ export const prefersReducedMotion = (): boolean => {
 export const ANIMATION_CONFIGS = {
   // For column reordering (horizontal movement)
   COLUMN_REORDER: {
-    duration: 180,
+    duration: 3000,
+    // duration: 180,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
     maxX: 200,
@@ -22,7 +23,8 @@ export const ANIMATION_CONFIGS = {
   },
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    duration: 200,
+    duration: 3000,
+    // duration: 200,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
     maxX: 50, // Less horizontal movement for row reorders
@@ -30,7 +32,8 @@ export const ANIMATION_CONFIGS = {
   },
   // For reduced motion users
   REDUCED_MOTION: {
-    duration: 150, // Even faster for reduced motion
+    duration: 3000,
+    // duration: 150, // Even faster for reduced motion
     easing: "ease-out",
     delay: 0,
     maxX: 100,

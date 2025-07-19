@@ -3,7 +3,7 @@ import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import { useTableContext } from "../../context/TableContext";
-import SortConfig from "../../types/SortConfig";
+import { SortColumn } from "../../types/SortConfig";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "../../types/TableRow";
@@ -13,7 +13,7 @@ interface TableContentLocalProps {
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: Dispatch<SetStateAction<number>>;
-  sort: SortConfig | null;
+  sort: SortColumn | null;
   tableRows: TableRow[];
   rowsToRender: TableRow[];
 }

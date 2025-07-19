@@ -1,6 +1,6 @@
 import { UIEventHandler } from "react";
 import { Pinned } from "./Pinned";
-import { SortConfig } from "..";
+import { SortColumn } from "./SortConfig";
 import { HeaderObject } from "..";
 import { RefObject } from "react";
 import { ColumnIndices } from "../utils/columnIndicesUtils";
@@ -13,7 +13,7 @@ interface TableHeaderSectionProps {
   maxDepth: number;
   pinned?: Pinned;
   sectionRef: RefObject<HTMLDivElement | null>;
-  sort: SortConfig | null;
+  sort: SortColumn | null;
   width?: number;
 }
 
