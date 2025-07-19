@@ -6,6 +6,7 @@ import HeaderObject from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Theme from "../types/Theme";
 import CellValue from "../types/CellValue";
+import { TransformState } from "../hooks/useTransformAnimations";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -72,6 +73,9 @@ interface TableContextType {
   useHoverRowBackground: boolean;
   useOddColumnBackground: boolean;
   useOddEvenRowBackground: boolean;
+  // New animation state properties
+  isAnimating?: boolean;
+  transformStates?: Map<string, TransformState>;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);

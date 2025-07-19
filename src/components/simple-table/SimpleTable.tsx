@@ -188,9 +188,7 @@ const SimpleTableComp = ({
   // Use filter hook
   const {
     filters,
-    pastFilteredRows,
     currentFilteredRows,
-    nextFilteredRows,
     updateFilter: internalHandleApplyFilter,
     clearFilter: handleClearFilter,
     clearAllFilters: handleClearAllFilters,
@@ -202,8 +200,7 @@ const SimpleTableComp = ({
   });
 
   // Use custom hook for sorting (now operates on filtered rows)
-  const { sort, currentSortedRows, nextSortedRows, pastSortedRows, updateSort } = useSortableData({
-    allowAnimations,
+  const { sort, currentSortedRows, updateSort } = useSortableData({
     headers,
     tableRows: currentFilteredRows,
     externalSortHandling,
@@ -212,14 +209,10 @@ const SimpleTableComp = ({
   });
 
   // Process rows through pagination, grouping, and virtualization
-  const { currentTableRows, rowsToRender } = useTableRowProcessing({
+  const { currentTableRows, rowsToRender, isAnimating, transformStates } = useTableRowProcessing({
     allowAnimations,
     currentSortedRows,
-    nextSortedRows,
-    pastSortedRows,
     currentFilteredRows,
-    nextFilteredRows,
-    pastFilteredRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
@@ -231,6 +224,7 @@ const SimpleTableComp = ({
     rowHeight,
     scrollTop,
   });
+  console.log("rowsToRender", rowsToRender);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -358,6 +352,9 @@ const SimpleTableComp = ({
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,
+        // New animation states
+        isAnimating,
+        transformStates,
       }}
     >
       <div

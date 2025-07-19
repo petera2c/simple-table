@@ -11,6 +11,7 @@
   --st-transition-duration: 0.2s;
   --st-transition-ease: ease;
   --st-opacity-disabled: 0.5;
+  --st-transform-animation-duration: 3000ms;
 
   /* Tailwind Colors - renamed to avoid conflicts */
   --st-white: #fff;
@@ -1436,9 +1437,52 @@ input {
   isolation: isolate; /* Create new stacking context */
 }
 
+/* Transform-based animation states */
+.st-row-entering {
+  z-index: 15 !important;
+  position: relative;
+  opacity: 0;
+  animation: fade-in var(--st-transform-animation-duration, 3000ms) cubic-bezier(0.2, 0, 0.2, 1)
+    forwards;
+}
+
+.st-row-leaving {
+  z-index: 5 !important;
+  position: relative;
+  animation: fade-out var(--st-transform-animation-duration, 3000ms) cubic-bezier(0.2, 0, 0.2, 1)
+    forwards;
+}
+
+.st-row-repositioning {
+  z-index: 10 !important;
+  position: relative;
+}
+
+/* Fade animations for entering/leaving rows */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .st-animating {
+  .st-animating,
+  .st-row-entering,
+  .st-row-leaving,
+  .st-row-repositioning {
     /* For users who prefer reduced motion, keep animations short and simple */
     transition-duration: 0.15s !important;
     animation-duration: 0.15s !important;
@@ -1453,7 +1497,10 @@ input {
 
 /* Enhanced animation easing for modern browsers */
 @supports (transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1)) {
-  .st-animating {
+  .st-animating,
+  .st-row-entering,
+  .st-row-leaving,
+  .st-row-repositioning {
     transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
   }
 }

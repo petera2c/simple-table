@@ -1,4 +1,4 @@
-import { calculateSeparatorTopPosition } from "../../utils/infiniteScrollUtils";
+import { calculateSeparatorTopPosition } from "../../utils/virtualizationUtils";
 import { useRef } from "react";
 
 const TableRowSeparator = ({

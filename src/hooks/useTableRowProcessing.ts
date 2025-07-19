@@ -1,17 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useLayoutEffect } from "react";
 import { BUFFER_ROW_COUNT } from "../consts/general-consts";
-import { getVisibleRows } from "../utils/infiniteScrollUtils";
+import { getVisibleRows } from "../utils/virtualizationUtils";
 import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
 import Row from "../types/Row";
+import useTransformAnimations from "./useTransformAnimations";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
   currentSortedRows: Row[];
-  nextSortedRows: Row[];
-  pastSortedRows: Row[];
   currentFilteredRows: Row[];
-  nextFilteredRows: Row[];
-  pastFilteredRows: Row[];
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
@@ -27,11 +24,7 @@ interface UseTableRowProcessingProps {
 const useTableRowProcessing = ({
   allowAnimations,
   currentSortedRows,
-  nextSortedRows,
-  pastSortedRows,
   currentFilteredRows,
-  nextFilteredRows,
-  pastFilteredRows,
   currentPage,
   rowsPerPage,
   shouldPaginate,
@@ -43,8 +36,10 @@ const useTableRowProcessing = ({
   rowHeight,
   scrollTop,
 }: UseTableRowProcessingProps) => {
-  // Process all three states through pagination and grouping
-  const processedRows = useMemo(() => {
+  const previousVisibleRowsRef = useRef<any[]>([]);
+
+  // Simplified single-state processing - eliminates the expensive 6x computation
+  const currentTableRows = useMemo(() => {
     const processRowSet = (rows: Row[]) => {
       // Apply pagination
       const paginatedRows = shouldPaginate
@@ -71,36 +66,12 @@ const useTableRowProcessing = ({
       });
     };
 
-    // When animations are disabled, only process current sorted rows
-    if (!allowAnimations) {
-      const currentTableRows = processRowSet(currentSortedRows);
-      return {
-        currentTableRows,
-        nextTableRows: currentTableRows,
-        pastTableRows: currentTableRows,
-        currentFilterTableRows: currentTableRows,
-        nextFilterTableRows: currentTableRows,
-        pastFilterTableRows: currentTableRows,
-      };
-    }
+    // Process only the current state - massive performance improvement
+    const currentTableRows = processRowSet(currentSortedRows);
 
-    // When animations are enabled, process all states
-    return {
-      currentTableRows: processRowSet(currentSortedRows),
-      nextTableRows: processRowSet(nextSortedRows),
-      pastTableRows: processRowSet(pastSortedRows),
-      currentFilterTableRows: processRowSet(currentFilteredRows),
-      nextFilterTableRows: processRowSet(nextFilteredRows),
-      pastFilterTableRows: processRowSet(pastFilteredRows),
-    };
+    return currentTableRows;
   }, [
-    allowAnimations,
     currentSortedRows,
-    nextSortedRows,
-    pastSortedRows,
-    currentFilteredRows,
-    nextFilteredRows,
-    pastFilteredRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
@@ -110,88 +81,82 @@ const useTableRowProcessing = ({
     expandAll,
   ]);
 
-  // Calculate visible rows and rows to render
-  const visibilityData = useMemo(() => {
-    const currentVisibleRows = getVisibleRows({
+  // Calculate what rows SHOULD be visible (before animation considerations)
+  const targetVisibleRows = useMemo(() => {
+    return getVisibleRows({
       bufferRowCount: BUFFER_ROW_COUNT,
       contentHeight,
-      tableRows: processedRows.currentTableRows,
+      tableRows: currentTableRows,
       rowHeight,
       scrollTop,
     });
+  }, [currentTableRows, contentHeight, rowHeight, scrollTop]);
 
-    // If animations are disabled or pagination is enabled, just return current visible rows
-    if (!allowAnimations || shouldPaginate) {
-      return {
-        currentVisibleRows,
-        rowsToRender: currentVisibleRows,
-      };
+  // Use transform animations on the visible rows level
+  const { extendedRows, isAnimating, transformStates } = useTransformAnimations({
+    tableRows: targetVisibleRows,
+    previousTableRows: previousVisibleRowsRef.current,
+    rowIdAccessor,
+    rowHeight,
+    allowAnimations: allowAnimations && !shouldPaginate, // Disable animations for pagination
+    contentHeight,
+  });
+
+  // Store current visible rows for next comparison
+  useLayoutEffect(() => {
+    if (!isAnimating) {
+      previousVisibleRowsRef.current = targetVisibleRows;
+    }
+  }, [targetVisibleRows, isAnimating]);
+
+  // Check if there are row changes that would trigger animation
+  const hasRowChanges = useMemo(() => {
+    if (previousVisibleRowsRef.current.length === 0) {
+      return false;
     }
 
-    // When animations are enabled and pagination is disabled, we need to calculate
-    // all visible rows across different states for smooth transitions
-    const visibilityParams = {
-      bufferRowCount: BUFFER_ROW_COUNT,
-      contentHeight,
-      rowHeight,
-      scrollTop,
-    };
-
-    // Calculate visible rows for all states and extract IDs in one pass
-    const allVisibleRowIds = new Set<string>();
-
-    // Helper function to process visible rows and collect IDs
-    const processVisibleRows = (tableRows: any[]) => {
-      return getVisibleRows({
-        ...visibilityParams,
-        tableRows,
-      }).map((row) => {
-        const id = String(getRowId({ row: row.row, rowIdAccessor }));
-        allVisibleRowIds.add(id);
-        return id;
-      });
-    };
-
-    // Process all states
-    processVisibleRows(processedRows.nextTableRows);
-    processVisibleRows(processedRows.pastTableRows);
-    processVisibleRows(processedRows.nextFilterTableRows);
-    processVisibleRows(processedRows.pastFilterTableRows);
-
-    // Find additional rows that need to be rendered (visible in other states but not current)
-    const currentVisibleRowIds = new Set(
-      currentVisibleRows.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
+    const currentIds = targetVisibleRows.map((row) =>
+      String(getRowId({ row: row.row, rowIdAccessor }))
+    );
+    const previousIds = previousVisibleRowsRef.current.map((row) =>
+      String(getRowId({ row: row.row, rowIdAccessor }))
     );
 
-    const additionalRowIds = Array.from(allVisibleRowIds).filter(
-      (id) => !currentVisibleRowIds.has(id)
-    );
+    const hasChanges =
+      currentIds.length !== previousIds.length ||
+      !currentIds.every((id, index) => id === previousIds[index]);
 
-    // Find the actual row objects for additional IDs
-    const additionalRows = processedRows.currentTableRows.filter((row) =>
-      additionalRowIds.includes(String(getRowId({ row: row.row, rowIdAccessor })))
-    );
+    return hasChanges;
+  }, [targetVisibleRows, rowIdAccessor]);
 
-    const rowsToRender = [...currentVisibleRows, ...additionalRows];
+  // Final rows to render (either target or extended during animation)
+  const rowsToRender = useMemo(() => {
+    // If animations are disabled or not animating, use normal virtualization
+    if (!allowAnimations || shouldPaginate || (!isAnimating && !hasRowChanges)) {
+      return targetVisibleRows;
+    }
 
-    return {
-      currentVisibleRows,
-      rowsToRender,
-    };
+    // During animations, use the extended set which includes leaving rows
+    if (isAnimating) {
+      return extendedRows;
+    }
+
+    return targetVisibleRows;
   }, [
-    processedRows,
-    contentHeight,
-    rowHeight,
-    scrollTop,
-    rowIdAccessor,
-    shouldPaginate,
+    targetVisibleRows,
+    extendedRows,
     allowAnimations,
+    shouldPaginate,
+    isAnimating,
+    hasRowChanges,
   ]);
 
   return {
-    currentTableRows: processedRows.currentTableRows,
-    currentVisibleRows: visibilityData.currentVisibleRows,
-    rowsToRender: visibilityData.rowsToRender,
+    currentTableRows,
+    currentVisibleRows: targetVisibleRows,
+    rowsToRender,
+    isAnimating,
+    transformStates,
   };
 };
 

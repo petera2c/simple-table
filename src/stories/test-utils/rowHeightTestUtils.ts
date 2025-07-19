@@ -74,7 +74,7 @@ export const testTotalBodyHeight = async (
     const heightStyle = (bodyMain as HTMLElement).style.height;
 
     // Calculate expected total height: (rowHeight + separator) * rowCount - 1 separator
-    // Based on the utils/infiniteScrollUtils.ts calculation
+    // Based on the utils/virtualizationUtils.ts calculation
     const expectedTotalHeight =
       rowCount * (expectedRowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 

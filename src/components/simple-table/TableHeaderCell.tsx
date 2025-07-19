@@ -13,7 +13,6 @@ import FilterIcon from "../../icons/FilterIcon";
 import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
-import Animate from "../animate/Animate";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -284,10 +283,10 @@ const TableHeaderCell = ({
   );
 
   return (
-    <Animate
+    <div
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
-      onDragOver={(event) => {
+      onDragOver={(event: DragEvent<HTMLDivElement>) => {
         throttle({
           callback: handleDragOver,
           callbackProps: { event, hoveredHeader: header },
@@ -331,7 +330,7 @@ const TableHeaderCell = ({
       {header.align !== "right" && FilterIconComponent}
 
       {!reverse && ResizeHandle}
-    </Animate>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import type TableRowType from "../../types/TableRow";
-import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
+import { calculateRowTopPosition } from "../../utils/virtualizationUtils";
 import RenderCells from "./RenderCells";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
@@ -50,6 +50,9 @@ const TableRow = ({
       className={`st-row ${isOdd ? "even" : "odd"} ${
         hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
       }`}
+      data-table-row-id={rowId}
+      id={`row-${rowId}`}
+      key={`row-${rowId}`}
       onMouseEnter={() => {
         setHoveredIndex(index);
       }}
