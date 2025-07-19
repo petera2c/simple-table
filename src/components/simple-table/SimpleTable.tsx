@@ -307,16 +307,6 @@ const SimpleTableComp = ({
     },
     [prepareForFilterChange, internalHandleApplyFilter]
   );
-  console.log("sort", sort);
-  console.log(
-    "rowsToRender",
-    JSON.stringify(
-      rowsToRender.map((row) => {
-        return { id: row.row.id, name: row.row.name, position: row.position };
-      })
-    )
-  );
-  console.log("rowsToRender.length", rowsToRender.length);
 
   return (
     <TableProvider

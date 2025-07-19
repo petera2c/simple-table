@@ -228,21 +228,19 @@ const useTableRowProcessing = ({
     setIsAnimating(true);
 
     // STAGE 3: After animation completes, remove leaving rows
-    const timeout = setTimeout(() => {
+    setTimeout(() => {
       setIsAnimating(false);
       setExtendedRows([]); // Clear extended rows to use normal virtualization
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
     }, ANIMATION_CONFIGS.ROW_REORDER.duration + 100);
-
-    return () => clearTimeout(timeout);
   }, [
-    targetVisibleRows,
-    currentTableRows,
     allowAnimations,
-    shouldPaginate,
+    currentTableRows,
     hasRowChanges,
     isAnimating,
+    shouldPaginate,
+    targetVisibleRows,
   ]);
 
   // Final rows to render - handles 3-stage animation
