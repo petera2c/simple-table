@@ -209,20 +209,20 @@ const SimpleTableComp = ({
   });
 
   // Process rows through pagination, grouping, and virtualization
-  const { currentTableRows, rowsToRender, isAnimating, transformStates } = useTableRowProcessing({
+  const { currentTableRows, rowsToRender, isAnimating } = useTableRowProcessing({
     allowAnimations,
-    currentSortedRows,
+    contentHeight,
     currentFilteredRows,
     currentPage,
-    rowsPerPage,
-    shouldPaginate,
-    rowGrouping,
-    rowIdAccessor,
-    unexpandedRows,
+    currentSortedRows,
     expandAll,
-    contentHeight,
+    rowGrouping,
     rowHeight,
+    rowIdAccessor,
+    rowsPerPage,
     scrollTop,
+    shouldPaginate,
+    unexpandedRows,
   });
   console.log("rowsToRender", rowsToRender);
 
@@ -354,7 +354,6 @@ const SimpleTableComp = ({
         useOddEvenRowBackground,
         // New animation states
         isAnimating,
-        transformStates,
       }}
     >
       <div

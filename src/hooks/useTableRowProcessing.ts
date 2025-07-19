@@ -4,6 +4,7 @@ import { getVisibleRows } from "../utils/virtualizationUtils";
 import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
 import Row from "../types/Row";
 import useTransformAnimations from "./useTransformAnimations";
+import usePrevious from "./usePrevious";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
@@ -93,7 +94,7 @@ const useTableRowProcessing = ({
   }, [currentTableRows, contentHeight, rowHeight, scrollTop]);
 
   // Use transform animations on the visible rows level
-  const { extendedRows, isAnimating, transformStates } = useTransformAnimations({
+  const { extendedRows, isAnimating } = useTransformAnimations({
     tableRows: targetVisibleRows,
     previousTableRows: previousVisibleRowsRef.current,
     rowIdAccessor,
@@ -156,7 +157,6 @@ const useTableRowProcessing = ({
     currentVisibleRows: targetVisibleRows,
     rowsToRender,
     isAnimating,
-    transformStates,
   };
 };
 

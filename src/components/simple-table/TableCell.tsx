@@ -1,4 +1,4 @@
-import { useEffect, useState, KeyboardEvent, useCallback, useRef, DragEvent } from "react";
+import { useEffect, useState, KeyboardEvent, useCallback, useRef } from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -10,6 +10,7 @@ import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
+import Animate from "../animate/Animate";
 
 const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
@@ -263,7 +264,7 @@ const TableCell = ({
   }
 
   return (
-    <div
+    <Animate
       className={cellClassName}
       data-accessor={header.accessor}
       data-col-index={colIndex}
@@ -272,7 +273,7 @@ const TableCell = ({
       id={cellId}
       key={cellKey}
       onDoubleClick={() => header.isEditable && setIsEditing(true)}
-      onDragOver={(event: DragEvent<HTMLDivElement>) =>
+      onDragOver={(event) =>
         throttle({
           callback: handleDragOver,
           callbackProps: { event, hoveredHeader: header },
@@ -282,6 +283,7 @@ const TableCell = ({
       onKeyDown={handleKeyDown}
       onMouseDown={handleCellMouseDown}
       onMouseOver={handleCellMouseOver}
+      tableRow={tableRow}
     >
       {header.expandable && cellHasChildren ? (
         <div
@@ -317,7 +319,7 @@ const TableCell = ({
           value={localContent}
         />
       )}
-    </div>
+    </Animate>
   );
 };
 

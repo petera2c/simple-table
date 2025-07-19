@@ -50,9 +50,6 @@ const TableRow = ({
       className={`st-row ${isOdd ? "even" : "odd"} ${
         hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
       }`}
-      data-table-row-id={rowId}
-      id={`row-${rowId}`}
-      key={`row-${rowId}`}
       onMouseEnter={() => {
         setHoveredIndex(index);
       }}
