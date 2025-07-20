@@ -52,6 +52,8 @@ const useTableRowProcessing = ({
   // Track original positions of all rows (before any sort/filter applied)
   const originalPositionsRef = useRef<Map<string, number>>(new Map());
 
+  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Process rows through pagination and grouping
   const processRowSet = useCallback(
     (rows: Row[]) => {
@@ -228,19 +230,25 @@ const useTableRowProcessing = ({
     setIsAnimating(true);
 
     // STAGE 3: After animation completes, remove leaving rows
-    setTimeout(() => {
+    animationTimeoutRef.current = setTimeout(() => {
       setIsAnimating(false);
       setExtendedRows([]); // Clear extended rows to use normal virtualization
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
     }, ANIMATION_CONFIGS.ROW_REORDER.duration + 100);
+
+    return () => {
+      if (animationTimeoutRef.current) {
+        clearTimeout(animationTimeoutRef.current);
+      }
+    };
   }, [
-    allowAnimations,
+    targetVisibleRows,
     currentTableRows,
+    allowAnimations,
+    shouldPaginate,
     hasRowChanges,
     isAnimating,
-    shouldPaginate,
-    targetVisibleRows,
   ]);
 
   // Final rows to render - handles 3-stage animation
