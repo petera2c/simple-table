@@ -212,7 +212,6 @@ const SimpleTableComp = ({
   const { currentTableRows, rowsToRender, prepareForFilterChange, prepareForSortChange } =
     useTableRowProcessing({
       allowAnimations,
-      filteredRows,
       sortedRows,
       originalRows: aggregatedRows,
       currentPage,
@@ -263,7 +262,6 @@ const SimpleTableComp = ({
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
       setTimeout(() => {
-        console.log("🎯 STAGE 2: Applying sort after Stage 1 rendered");
         updateSort(accessor);
       }, 0);
     },
@@ -300,7 +298,6 @@ const SimpleTableComp = ({
 
       // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
       setTimeout(() => {
-        console.log("🎯 STAGE 2: Applying filter after Stage 1 rendered");
         // Update internal state and call external handler if provided
         internalHandleApplyFilter(filter);
       }, 0);

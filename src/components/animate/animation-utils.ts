@@ -14,30 +14,24 @@ export const prefersReducedMotion = (): boolean => {
 export const ANIMATION_CONFIGS = {
   // For column reordering (horizontal movement)
   COLUMN_REORDER: {
-    duration: 500,
-    // duration: 180,
+    // duration: 3000,
+    duration: 180,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
-    maxX: 200,
-    maxY: 50, // Less vertical movement for column reorders
   },
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    duration: 500,
-    // duration: 200,
+    // duration: 3000,
+    duration: 10000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
-    maxX: 200,
-    maxY: 150,
   },
   // For reduced motion users
   REDUCED_MOTION: {
-    duration: 500,
-    // duration: 150, // Even faster for reduced motion
+    // duration: 3000,
+    duration: 150, // Even faster for reduced motion
     easing: "ease-out",
     delay: 0,
-    maxX: 100,
-    maxY: 75,
   },
 } as const;
 
@@ -67,19 +61,6 @@ export const calculateInvert = (first: DOMRect | { x: number; y: number }, last:
   return {
     x: firstX - lastX,
     y: firstY - lastY,
-  };
-};
-
-/**
- * Applies max limits to invert values
- */
-export const applyMaxLimits = (invert: { x: number; y: number }, maxX?: number, maxY?: number) => {
-  const limitedX = maxX ? Math.max(-maxX, Math.min(maxX, invert.x)) : invert.x;
-  const limitedY = maxY ? Math.max(-maxY, Math.min(maxY, invert.y)) : invert.y;
-
-  return {
-    x: limitedX,
-    y: limitedY,
   };
 };
 
@@ -205,13 +186,12 @@ export const flipElement = async (
 
   // Get appropriate config based on movement type and user preferences
   const config = getAnimationConfig(options, movementType);
-  const limitedInvert = applyMaxLimits(invert, config.maxX, config.maxY);
 
   // Clean up any existing animation before starting a new one
   cleanupAnimation(element);
 
   // Apply initial transform with limited values
-  applyInitialTransform(element, limitedInvert);
+  applyInitialTransform(element, invert);
 
   // Animate to final position
   await animateToFinalPosition(element, config, options);

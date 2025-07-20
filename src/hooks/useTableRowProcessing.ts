@@ -7,7 +7,6 @@ import Row from "../types/Row";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
-  filteredRows: Row[];
   sortedRows: Row[];
   // Original unfiltered rows for establishing baseline positions
   originalRows: Row[];
@@ -28,7 +27,6 @@ interface UseTableRowProcessingProps {
 
 const useTableRowProcessing = ({
   allowAnimations,
-  filteredRows,
   sortedRows,
   originalRows,
   currentPage,

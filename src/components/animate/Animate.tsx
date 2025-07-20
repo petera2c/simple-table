@@ -74,21 +74,12 @@ export const Animate = ({ children, id, tableRow, ...props }: AnimateProps) => {
     hasPositionChanged = hasDOMPositionChanged;
 
     if (hasPositionChanged) {
-      // For leaving elements (moving far off-screen), boost z-index to keep them visible
-      const isLeavingElement = Math.abs(deltaY) > 200; // Large movement indicates leaving
-      if (isLeavingElement) {
-        elementRef.current.style.zIndex = "1000";
-        elementRef.current.style.position = "relative";
-      }
-
       // Merge animation config with defaults
       const finalConfig = {
         ...ANIMATION_CONFIGS.ROW_REORDER,
-        // Remove maxY constraint for leaving elements so they can animate their full distance
-        maxY: isLeavingElement ? undefined : ANIMATION_CONFIGS.ROW_REORDER.maxY,
         onComplete: () => {
           // Reset z-index after animation completes
-          if (isLeavingElement && elementRef.current) {
+          if (elementRef.current) {
             elementRef.current.style.zIndex = "";
             elementRef.current.style.position = "";
           }
