@@ -1,5 +1,5 @@
 import CellValue from "../../types/CellValue";
-import { AnimationConfig, FlipAnimationOptions } from "./types";
+import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from "./types";
 
 /**
  * Check if user prefers reduced motion
@@ -23,7 +23,7 @@ export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
     // duration: 3000,
-    duration: 80000,
+    duration: 8000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
@@ -217,4 +217,104 @@ export const flipElement = async ({
 
   // Animate to final position
   await animateToFinalPosition(element, config, finalConfig, id);
+};
+
+/**
+ * Performs custom coordinate animation with absolute position control
+ * This allows you to animate an element from one Y coordinate to another,
+ * completely independent of the element's actual DOM position.
+ */
+export const animateWithCustomCoordinates = async ({
+  element,
+  options,
+}: {
+  element: HTMLElement;
+  options: CustomAnimationOptions;
+}): Promise<void> => {
+  const {
+    startY,
+    endY,
+    finalY,
+    duration = 300,
+    easing = "cubic-bezier(0.2, 0.0, 0.2, 1)",
+    delay = 0,
+    onComplete,
+    respectReducedMotion = true,
+  } = options;
+
+  // Skip animation entirely if user prefers reduced motion and no explicit override
+  if (prefersReducedMotion() && respectReducedMotion) {
+    // Jump directly to final position if specified
+    if (finalY !== undefined) {
+      element.style.transform = "";
+      element.style.top = `${finalY}px`;
+    }
+    if (onComplete) onComplete();
+    return;
+  }
+
+  // Get element's current position
+  const rect = element.getBoundingClientRect();
+  const currentY = rect.top;
+
+  // Calculate the transforms needed
+  const startTransformY = startY - currentY;
+  const endTransformY = endY - currentY;
+
+  return new Promise((resolve) => {
+    // Clean up any existing animation
+    element.style.transition = "";
+    element.style.transitionDelay = "";
+    element.style.transform = "";
+    element.style.willChange = "";
+    element.style.backfaceVisibility = "";
+    element.classList.remove("st-animating");
+
+    // Set initial position (startY)
+    element.style.transform = `translate3d(0, ${startTransformY}px, 0)`;
+    element.style.transition = "none";
+    element.style.willChange = "transform";
+    element.style.backfaceVisibility = "hidden";
+    element.classList.add("st-animating");
+
+    // Force reflow
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    element.offsetHeight;
+
+    // Apply transition and animate to end position
+    element.style.transition = `transform ${duration}ms ${easing}`;
+    if (delay) {
+      element.style.transitionDelay = `${delay}ms`;
+    }
+
+    // Animate to end position
+    element.style.transform = `translate3d(0, ${endTransformY}px, 0)`;
+
+    const cleanup = () => {
+      // Clean up animation styles
+      element.style.transition = "";
+      element.style.transitionDelay = "";
+      element.style.transform = "";
+      element.style.willChange = "";
+      element.style.backfaceVisibility = "";
+      element.classList.remove("st-animating");
+
+      // Move to final position if specified (invisible jump)
+      if (finalY !== undefined) {
+        element.style.top = `${finalY}px`;
+      }
+
+      element.removeEventListener("transitionend", cleanup);
+
+      if (onComplete) {
+        onComplete();
+      }
+      resolve();
+    };
+
+    element.addEventListener("transitionend", cleanup);
+
+    // Fallback timeout in case transitionend doesn't fire
+    setTimeout(cleanup, duration + (delay || 0) + 50);
+  });
 };

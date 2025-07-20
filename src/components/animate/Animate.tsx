@@ -1,6 +1,6 @@
 import React, { useRef, useLayoutEffect, ReactNode, RefObject } from "react";
 import usePrevious from "../../hooks/usePrevious";
-import { flipElement, ANIMATION_CONFIGS } from "./animation-utils";
+import { flipElement, ANIMATION_CONFIGS, animateWithCustomCoordinates } from "./animation-utils";
 import TableRow from "../../types/TableRow";
 import { useTableContext } from "../../context/TableContext";
 
@@ -105,7 +105,43 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         const isMovingBelowViewport = toBounds.y > parentScrollTop + clientHeight;
 
         if (isCurrentlyInViewport && !isMovingIntoViewport && isMovingBelowViewport) {
-          // toBounds.y = parentScrollTop + clientHeight + 100;
+          // Element is moving from viewport to far below - use custom animation
+          const animationEndY = parentScrollTop + clientHeight + 100; // Just below viewport
+
+          animateWithCustomCoordinates({
+            element: elementRef.current,
+            options: {
+              startY: fromBounds.y,
+              endY: animationEndY,
+              finalY: toBounds.y, // Where element actually belongs
+              duration: finalConfig.duration,
+              easing: finalConfig.easing,
+              onComplete: finalConfig.onComplete,
+            },
+          });
+
+          // Skip the normal FLIP animation since we're using custom animation
+          return;
+        }
+
+        if (isCurrentlyInViewport && !isMovingIntoViewport && isMovingAboveViewport) {
+          // Element is moving from viewport to far above - use custom animation
+          const animationEndY = parentScrollTop - 100; // Just above viewport
+
+          animateWithCustomCoordinates({
+            element: elementRef.current,
+            options: {
+              startY: fromBounds.y,
+              endY: animationEndY,
+              finalY: toBounds.y, // Where element actually belongs
+              duration: finalConfig.duration,
+              easing: finalConfig.easing,
+              onComplete: finalConfig.onComplete,
+            },
+          });
+
+          // Skip the normal FLIP animation since we're using custom animation
+          return;
         }
 
         if (tableRow?.row.id === 1) {
