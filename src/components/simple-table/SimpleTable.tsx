@@ -209,24 +209,29 @@ const SimpleTableComp = ({
   });
 
   // Process rows through pagination, grouping, and virtualization
-  const { currentTableRows, rowsToRender, prepareForFilterChange, prepareForSortChange } =
-    useTableRowProcessing({
-      allowAnimations,
-      sortedRows,
-      originalRows: aggregatedRows,
-      currentPage,
-      rowsPerPage,
-      shouldPaginate,
-      rowGrouping,
-      rowIdAccessor,
-      unexpandedRows,
-      expandAll,
-      contentHeight,
-      rowHeight,
-      scrollTop,
-      computeFilteredRowsPreview,
-      computeSortedRowsPreview,
-    });
+  const {
+    currentTableRows,
+    rowsToRender,
+    prepareForFilterChange,
+    prepareForSortChange,
+    isAnimating,
+  } = useTableRowProcessing({
+    allowAnimations,
+    sortedRows,
+    originalRows: aggregatedRows,
+    currentPage,
+    rowsPerPage,
+    shouldPaginate,
+    rowGrouping,
+    rowIdAccessor,
+    unexpandedRows,
+    expandAll,
+    contentHeight,
+    rowHeight,
+    scrollTop,
+    computeFilteredRowsPreview,
+    computeSortedRowsPreview,
+  });
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -327,6 +332,7 @@ const SimpleTableComp = ({
         headerContainerRef,
         headers,
         hoveredHeaderRef,
+        isAnimating,
         isCopyFlashing,
         isInitialFocusedCell,
         isResizing,

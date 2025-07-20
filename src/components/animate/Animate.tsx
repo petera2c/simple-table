@@ -3,6 +3,7 @@ import usePrevious from "../../hooks/usePrevious";
 import { flipElement, ANIMATION_CONFIGS, animateWithCustomCoordinates } from "./animation-utils";
 import TableRow from "../../types/TableRow";
 import { useTableContext } from "../../context/TableContext";
+import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
 
 // Animation thresholds
 const COLUMN_REORDER_THRESHOLD = 50; // px - minimum horizontal movement to trigger column reorder animation
@@ -103,6 +104,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           if (elementRef.current) {
             elementRef.current.style.zIndex = "";
             elementRef.current.style.position = "";
+            elementRef.current.style.top = "";
           }
         },
       };
@@ -117,10 +119,15 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         clientHeight !== undefined &&
         parentScrollHeight !== undefined
       ) {
+        // Calculate buffered viewport to include rows slightly outside the actual viewport
+        const bufferHeight = BUFFER_ROW_COUNT * rowHeight;
+        const calculatedViewportTop = parentScrollTop - bufferHeight;
+        const calculatedViewportBottom = parentScrollTop + clientHeight + bufferHeight;
+
         const isCurrentlyInViewport =
-          fromBounds.y > parentScrollTop && fromBounds.y < parentScrollTop + clientHeight;
+          fromBounds.y > calculatedViewportTop && fromBounds.y < calculatedViewportBottom;
         const isMovingIntoViewport =
-          toBounds.y > parentScrollTop && toBounds.y < parentScrollTop + clientHeight;
+          toBounds.y > calculatedViewportTop && toBounds.y < calculatedViewportBottom;
         const isMovingAboveViewport = toBounds.y < parentScrollTop;
         const isMovingBelowViewport = toBounds.y > parentScrollTop + clientHeight;
 

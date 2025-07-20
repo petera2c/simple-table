@@ -33,6 +33,7 @@ interface TableContextType {
   headerContainerRef: RefObject<HTMLDivElement | null>;
   headers: HeaderObject[];
   hoveredHeaderRef: RefObject<HeaderObject | null>;
+  isAnimating: boolean;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isResizing: boolean;

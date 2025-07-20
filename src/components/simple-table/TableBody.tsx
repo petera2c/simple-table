@@ -25,6 +25,7 @@ const TableBody = ({
   const {
     headerContainerRef,
     headers,
+    isAnimating,
     mainBodyRef,
     onLoadMore,
     rowHeight,
@@ -38,6 +39,13 @@ const TableBody = ({
   // Local state
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // Clear hover state when animations start
+  useEffect(() => {
+    if (isAnimating && hoveredIndex !== null) {
+      setHoveredIndex(null);
+    }
+  }, [isAnimating, hoveredIndex]);
 
   // Add state for section widths
   useScrollbarVisibility({

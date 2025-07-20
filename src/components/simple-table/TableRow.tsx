@@ -36,7 +36,7 @@ const TableRow = ({
   setHoveredIndex,
   tableRow,
 }: TableRowProps) => {
-  const { useHoverRowBackground, rowIdAccessor } = useTableContext();
+  const { useHoverRowBackground, rowIdAccessor, isAnimating } = useTableContext();
   const { position } = tableRow;
   // Get row index from rowIndices using the row's ID
 
@@ -51,7 +51,10 @@ const TableRow = ({
         hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
       }`}
       onMouseEnter={() => {
-        setHoveredIndex(index);
+        // Don't apply hover effects during animations
+        if (!isAnimating) {
+          setHoveredIndex(index);
+        }
       }}
       style={{
         gridTemplateColumns,
