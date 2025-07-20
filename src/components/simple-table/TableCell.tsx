@@ -68,6 +68,7 @@ const TableCell = ({
     rowGrouping,
     rowIdAccessor,
     setUnexpandedRows,
+    tableBodyContainerRef,
     theme,
     unexpandedRows,
     useOddColumnBackground,
@@ -283,6 +284,7 @@ const TableCell = ({
       onKeyDown={handleKeyDown}
       onMouseDown={handleCellMouseDown}
       onMouseOver={handleCellMouseOver}
+      parentRef={tableBodyContainerRef}
       tableRow={tableRow}
     >
       {header.expandable && cellHasChildren ? (

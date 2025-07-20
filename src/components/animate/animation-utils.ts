@@ -1,3 +1,4 @@
+import CellValue from "../../types/CellValue";
 import { AnimationConfig, FlipAnimationOptions } from "./types";
 
 /**
@@ -22,7 +23,7 @@ export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
     // duration: 3000,
-    duration: 10000,
+    duration: 80000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
@@ -51,23 +52,33 @@ export const createAnimationConfig = (
 /**
  * Calculates the invert values for FLIP animation
  */
-export const calculateInvert = (first: DOMRect | { x: number; y: number }, last: DOMRect) => {
+export const calculateInvert = (
+  fromBounds: DOMRect | { x: number; y: number },
+  toBounds: DOMRect
+) => {
   // Handle both DOMRect and plain objects with x/y properties
-  const firstX = "x" in first ? first.x : (first as DOMRect).left;
-  const firstY = "y" in first ? first.y : (first as DOMRect).top;
-  const lastX = last.x;
-  const lastY = last.y;
+  const fromX = "x" in fromBounds ? fromBounds.x : (fromBounds as DOMRect).left;
+  const fromY = "y" in fromBounds ? fromBounds.y : (fromBounds as DOMRect).top;
+  const toX = toBounds.x;
+  const toY = toBounds.y;
 
   return {
-    x: firstX - lastX,
-    y: firstY - lastY,
+    x: fromX - toX,
+    y: fromY - toY,
   };
 };
 
 /**
  * Applies initial transform to element for FLIP animation
  */
-export const applyInitialTransform = (element: HTMLElement, invert: { x: number; y: number }) => {
+export const applyInitialTransform = (
+  element: HTMLElement,
+  invert: { x: number; y: number },
+  id?: CellValue
+) => {
+  if (id === 1) {
+    console.log(`translate3d(${invert.x}px, ${invert.y}px, 0)`);
+  }
   element.style.transform = `translate3d(${invert.x}px, ${invert.y}px, 0)`;
   element.style.transition = "none";
   // Performance optimizations for smoother animations
@@ -97,7 +108,8 @@ const cleanupAnimation = (element: HTMLElement) => {
 const animateToFinalPosition = (
   element: HTMLElement,
   config: AnimationConfig,
-  options: FlipAnimationOptions = {}
+  options: FlipAnimationOptions = {},
+  id?: CellValue
 ): Promise<void> => {
   return new Promise((resolve) => {
     // Force a reflow to ensure the initial transform is applied
@@ -162,13 +174,20 @@ export const getAnimationConfig = (
  * This function can be called multiple times on the same element - it will automatically
  * interrupt any ongoing animation and start a new one.
  */
-export const flipElement = async (
-  element: HTMLElement,
-  first: DOMRect | { x: number; y: number; width: number; height: number },
-  options: FlipAnimationOptions = {}
-): Promise<void> => {
-  const last = element.getBoundingClientRect();
-  const invert = calculateInvert(first, last);
+export const flipElement = async ({
+  element,
+  finalConfig,
+  fromBounds,
+  id,
+  toBounds,
+}: {
+  element: HTMLElement;
+  finalConfig: FlipAnimationOptions;
+  fromBounds: DOMRect;
+  id?: CellValue;
+  toBounds: DOMRect;
+}): Promise<void> => {
+  const invert = calculateInvert(fromBounds, toBounds);
 
   // Skip animation if element hasn't moved
   if (invert.x === 0 && invert.y === 0) {
@@ -176,7 +195,7 @@ export const flipElement = async (
   }
 
   // Skip animation entirely if user prefers reduced motion and no explicit override
-  if (prefersReducedMotion() && options.respectReducedMotion !== false) {
+  if (prefersReducedMotion() && finalConfig.respectReducedMotion !== false) {
     return;
   }
 
@@ -185,14 +204,17 @@ export const flipElement = async (
   const movementType = isColumnMovement ? "column" : "row";
 
   // Get appropriate config based on movement type and user preferences
-  const config = getAnimationConfig(options, movementType);
+  const config = getAnimationConfig(finalConfig, movementType);
 
+  if (id === 1) {
+    console.log("invert", invert);
+  }
   // Clean up any existing animation before starting a new one
   cleanupAnimation(element);
 
   // Apply initial transform with limited values
-  applyInitialTransform(element, invert);
+  applyInitialTransform(element, invert, id);
 
   // Animate to final position
-  await animateToFinalPosition(element, config, options);
+  await animateToFinalPosition(element, config, finalConfig, id);
 };

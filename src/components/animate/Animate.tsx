@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, ReactNode } from "react";
+import React, { useRef, useLayoutEffect, ReactNode, RefObject } from "react";
 import usePrevious from "../../hooks/usePrevious";
 import { flipElement, ANIMATION_CONFIGS } from "./animation-utils";
 import TableRow from "../../types/TableRow";
@@ -7,12 +7,13 @@ import { useTableContext } from "../../context/TableContext";
 interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
   children: ReactNode;
   id: string;
+  parentRef?: RefObject<HTMLDivElement | null>;
   tableRow?: TableRow;
 }
-export const Animate = ({ children, id, tableRow, ...props }: AnimateProps) => {
+export const Animate = ({ children, id, parentRef, tableRow, ...props }: AnimateProps) => {
   const { allowAnimations, isResizing, isScrolling } = useTableContext();
   const elementRef = useRef<HTMLDivElement>(null);
-  const previousBoundsRef = useRef<DOMRect | null>(null);
+  const fromBoundsRef = useRef<DOMRect | null>(null);
   const previousScrollingState = usePrevious(isScrolling);
   const previousResizingState = usePrevious(isResizing);
 
@@ -27,8 +28,8 @@ export const Animate = ({ children, id, tableRow, ...props }: AnimateProps) => {
       return;
     }
 
-    const currentBounds = elementRef.current.getBoundingClientRect();
-    const previousBounds = previousBoundsRef.current;
+    const toBounds = elementRef.current.getBoundingClientRect();
+    const fromBounds = fromBoundsRef.current;
 
     // If we're currently scrolling, don't animate and don't update bounds
     if (isScrolling) {
@@ -37,27 +38,27 @@ export const Animate = ({ children, id, tableRow, ...props }: AnimateProps) => {
 
     // If scrolling just ended, update the previous bounds without animating
     if (previousScrollingState && !isScrolling) {
-      previousBoundsRef.current = currentBounds;
+      fromBoundsRef.current = toBounds;
       return;
     }
 
     // If resizing just ended, update the previous bounds without animating
     if (previousResizingState && !isResizing) {
-      previousBoundsRef.current = currentBounds;
+      fromBoundsRef.current = toBounds;
       return;
     }
 
     // Store current bounds for next render
-    previousBoundsRef.current = currentBounds;
+    fromBoundsRef.current = toBounds;
 
     // If there's no previous bound data, don't animate (prevents first render animations)
-    if (!previousBounds) {
+    if (!fromBounds) {
       return;
     }
 
     // Check if this is a significant position change
-    const deltaX = currentBounds.x - previousBounds.x;
-    const deltaY = currentBounds.y - previousBounds.y;
+    const deltaX = toBounds.x - fromBounds.x;
+    const deltaY = toBounds.y - fromBounds.y;
     const positionDelta = Math.abs(deltaX);
 
     // Only animate if position change is significant (>50px indicates column reordering)
@@ -86,14 +87,62 @@ export const Animate = ({ children, id, tableRow, ...props }: AnimateProps) => {
         },
       };
 
-      // Start new animation (this will interrupt any ongoing animation)
-      flipElement(elementRef.current, previousBounds, finalConfig);
+      // Where is the user scrolled to
+      const parentScrollTop = parentRef?.current?.scrollTop;
+      const clientHeight = parentRef?.current?.clientHeight;
+      const parentScrollHeight = parentRef?.current?.scrollHeight;
+
+      if (
+        parentScrollTop !== undefined &&
+        clientHeight !== undefined &&
+        parentScrollHeight !== undefined
+      ) {
+        const isCurrentlyInViewport =
+          fromBounds.y > parentScrollTop && fromBounds.y < parentScrollTop + clientHeight;
+        const isMovingIntoViewport =
+          toBounds.y > parentScrollTop && toBounds.y < parentScrollTop + clientHeight;
+        const isMovingAboveViewport = toBounds.y < parentScrollTop;
+        const isMovingBelowViewport = toBounds.y > parentScrollTop + clientHeight;
+
+        if (isCurrentlyInViewport && !isMovingIntoViewport && isMovingBelowViewport) {
+          // toBounds.y = parentScrollTop + clientHeight + 100;
+        }
+
+        if (tableRow?.row.id === 1) {
+          console.log("\n");
+          console.log("tableRow", {
+            id: tableRow?.row.id,
+            position: tableRow?.position,
+            name: tableRow?.row.repName,
+            dealSize: tableRow?.row.dealSize,
+          });
+          console.log("fromBounds.y", fromBounds.y);
+          console.log("toBounds.y", toBounds.y);
+          console.log("deltaY", deltaY);
+          console.log("isCurrentlyInViewport", isCurrentlyInViewport);
+          console.log("isMovingIntoViewport", isMovingIntoViewport);
+          console.log("parentScrollTop", parentScrollTop);
+          console.log("clientHeight", clientHeight);
+          console.log("parentScrollHeight", parentScrollHeight);
+          console.log("isMovingAboveViewport", isMovingAboveViewport);
+          console.log("isMovingBelowViewport", isMovingBelowViewport);
+        }
+      }
+
+      flipElement({
+        element: elementRef.current,
+        fromBounds,
+        toBounds,
+        finalConfig,
+        id: tableRow?.row.id,
+      });
     } else {
     }
   }, [
     allowAnimations,
     isResizing,
     isScrolling,
+    parentRef,
     previousScrollingState,
     previousResizingState,
     tableRow?.position, // Include position so animation triggers when it changes
