@@ -3,7 +3,7 @@ import { useTableContext } from "../../context/TableContext";
 
 export interface DropdownProps {
   children: ReactNode;
-  containerRef?: React.RefObject<HTMLElement>;
+  containerRef?: React.MutableRefObject<HTMLElement>;
   onClose: () => void;
   open?: boolean;
   overflow?: "auto" | "visible";

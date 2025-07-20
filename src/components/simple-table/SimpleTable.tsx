@@ -6,7 +6,7 @@ import {
   ReactNode,
   useMemo,
   useCallback,
-  RefObject,
+  MutableRefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
 import HeaderObject from "../../types/HeaderObject";
@@ -79,7 +79,7 @@ interface SimpleTableProps {
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
-  tableRef?: RefObject<TableRefType | null>;
+  tableRef?: MutableRefObject<TableRefType | null>;
   theme?: Theme; // Theme
   useOddColumnBackground?: boolean; // Flag for using column background
   useHoverRowBackground?: boolean; // Flag for using hover row background

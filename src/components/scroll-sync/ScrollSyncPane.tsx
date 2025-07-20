@@ -1,11 +1,11 @@
-import { cloneElement, FC, ReactElement, RefObject, useEffect } from "react";
+import { cloneElement, FC, ReactElement, MutableRefObject, useEffect } from "react";
 
 import { useScrollSyncContext } from "../../context/useScrollSyncContext";
 
 const GROUPS = ["default"];
 
 interface ScrollSyncPaneProps {
-  childRef: RefObject<HTMLElement | null>;
+  childRef: MutableRefObject<HTMLElement | null>;
   children: ReactElement<any>;
 }
 

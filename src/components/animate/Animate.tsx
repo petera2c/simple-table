@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, ReactNode, RefObject } from "react";
+import React, { useRef, useLayoutEffect, ReactNode, MutableRefObject } from "react";
 import usePrevious from "../../hooks/usePrevious";
 import { flipElement, ANIMATION_CONFIGS, animateWithCustomCoordinates } from "./animation-utils";
 import TableRow from "../../types/TableRow";
@@ -27,7 +27,7 @@ const DISTANCE_SCALING_FACTOR = 80; // Factor for logarithmic scaling of dynamic
 interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
   children: ReactNode;
   id: string;
-  parentRef?: RefObject<HTMLDivElement | null>;
+  parentRef?: MutableRefObject<HTMLDivElement | null>;
   tableRow?: TableRow;
 }
 export const Animate = ({ children, id, parentRef, tableRow, ...props }: AnimateProps) => {

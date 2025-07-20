@@ -1,4 +1,12 @@
-import { Fragment, RefObject, useMemo } from "react";
+import {
+  Fragment,
+  RefObject,
+  MutableRefObject,
+  useMemo,
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+} from "react";
 import TableRow from "./TableRow";
 import TableRowType from "../../types/TableRow";
 import TableRowSeparator from "./TableRowSeparator";
@@ -18,7 +26,6 @@ interface TableSectionProps {
   headers: HeaderObject[];
   hoveredIndex: number | null;
   pinned?: Pinned;
-  ref?: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   rowIndices: RowIndices;
   rowsToRender: TableRowType[];
@@ -28,76 +35,89 @@ interface TableSectionProps {
   width?: number;
 }
 
-const TableSection = ({
-  columnIndexStart,
-  columnIndices,
-  headers,
-  hoveredIndex,
-  pinned,
-  ref,
-  rowHeight,
-  rowIndices,
-  setHoveredIndex,
-  templateColumns,
-  totalHeight,
-  rowsToRender,
-  width,
-}: TableSectionProps) => {
-  const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
-  const { rowIdAccessor } = useTableContext();
+const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
+  (
+    {
+      columnIndexStart,
+      columnIndices,
+      headers,
+      hoveredIndex,
+      pinned,
+      rowHeight,
+      rowIndices,
+      setHoveredIndex,
+      templateColumns,
+      totalHeight,
+      rowsToRender,
+      width,
+    },
+    ref
+  ) => {
+    const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
+    const { rowIdAccessor } = useTableContext();
+    const internalRef = useRef<HTMLDivElement | null>(null);
 
-  const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
-  if (!canDisplay) return null;
+    useImperativeHandle(ref, () => internalRef.current!, []);
 
-  return (
-    <ConditionalWrapper
-      condition={!pinned}
-      wrapper={(children) => <ScrollSyncPane childRef={ref!}>{children}</ScrollSyncPane>}
-    >
-      <div
-        className={className}
-        ref={ref}
-        style={{
-          position: "relative",
-          height: `${totalHeight}px`,
-          width,
-          ...(!pinned && { flexGrow: 1 }),
-        }}
+    const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
+    if (!canDisplay) return null;
+
+    return (
+      <ConditionalWrapper
+        condition={!pinned}
+        wrapper={(children) => (
+          <ScrollSyncPane childRef={internalRef as MutableRefObject<HTMLElement | null>}>
+            {children}
+          </ScrollSyncPane>
+        )}
       >
-        {rowsToRender.map((tableRow, index) => {
-          const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
-          return (
-            <Fragment key={rowId}>
-              {index !== 0 && (
-                <TableRowSeparator
-                  // Is last row group and it is open
-                  displayStrongBorder={tableRow.isLastGroupRow}
-                  position={tableRow.position}
+        <div
+          className={className}
+          ref={internalRef}
+          style={{
+            position: "relative",
+            height: `${totalHeight}px`,
+            width,
+            ...(!pinned && { flexGrow: 1 }),
+          }}
+        >
+          {rowsToRender.map((tableRow, index) => {
+            const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+            return (
+              <Fragment key={rowId}>
+                {index !== 0 && (
+                  <TableRowSeparator
+                    // Is last row group and it is open
+                    displayStrongBorder={tableRow.isLastGroupRow}
+                    position={tableRow.position}
+                    rowHeight={rowHeight}
+                    templateColumns={templateColumns}
+                    rowIndex={index - 1}
+                  />
+                )}
+                <TableRow
+                  columnIndexStart={columnIndexStart}
+                  columnIndices={columnIndices}
+                  gridTemplateColumns={templateColumns}
+                  headers={headers}
+                  hoveredIndex={hoveredIndex}
+                  index={index}
+                  key={rowId}
+                  pinned={pinned}
                   rowHeight={rowHeight}
-                  templateColumns={templateColumns}
-                  rowIndex={index - 1}
+                  rowIndices={rowIndices}
+                  setHoveredIndex={setHoveredIndex}
+                  tableRow={tableRow}
                 />
-              )}
-              <TableRow
-                columnIndexStart={columnIndexStart}
-                columnIndices={columnIndices}
-                gridTemplateColumns={templateColumns}
-                headers={headers}
-                hoveredIndex={hoveredIndex}
-                index={index}
-                key={rowId}
-                pinned={pinned}
-                rowHeight={rowHeight}
-                rowIndices={rowIndices}
-                setHoveredIndex={setHoveredIndex}
-                tableRow={tableRow}
-              />
-            </Fragment>
-          );
-        })}
-      </div>
-    </ConditionalWrapper>
-  );
-};
+              </Fragment>
+            );
+          })}
+        </div>
+      </ConditionalWrapper>
+    );
+  }
+);
+
+TableSection.displayName = "TableSection";
 
 export default TableSection;

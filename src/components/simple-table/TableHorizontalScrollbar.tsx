@@ -10,11 +10,11 @@ const TableHorizontalScrollbar = ({
   pinnedRightWidth,
   tableBodyContainerRef,
 }: {
-  mainBodyRef: RefObject<HTMLDivElement | null>;
+  mainBodyRef: RefObject<HTMLDivElement>;
   mainBodyWidth: number;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
-  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
+  tableBodyContainerRef: RefObject<HTMLDivElement>;
 }) => {
   // Context
   const { editColumns } = useTableContext();

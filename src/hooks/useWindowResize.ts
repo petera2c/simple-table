@@ -6,7 +6,7 @@ const useWindowResize = ({
   setScrollbarWidth,
 }: {
   forceUpdate: () => void;
-  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
+  tableBodyContainerRef: RefObject<HTMLDivElement>;
   setScrollbarWidth: (width: number) => void;
 }) => {
   // On window risize completely re-render the table

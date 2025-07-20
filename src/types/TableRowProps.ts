@@ -1,4 +1,4 @@
-import { RefObject } from "react";
+import { MutableRefObject } from "react";
 import CellChangeProps from "./CellChangeProps";
 import HeaderObject from "./HeaderObject";
 import Row from "./Row";
@@ -7,12 +7,12 @@ import Cell from "./Cell";
 type TableRowProps = {
   allowAnimations: boolean;
   currentRows: { [key: string]: any }[];
-  draggedHeaderRef: RefObject<HeaderObject | null>;
+  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (props: Cell) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
   headers: HeaderObject[];
-  hoveredHeaderRef: RefObject<HeaderObject | null>;
+  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isInitialFocusedCell: (rowIndex: number, columnIndex: number) => boolean;
   onCellEdit?: (props: CellChangeProps) => void;
@@ -21,7 +21,7 @@ type TableRowProps = {
   row: Row;
   rowIndex: number;
   shouldPaginate: boolean;
-  tableRef: RefObject<HTMLDivElement | null>;
+  tableRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 export default TableRowProps;

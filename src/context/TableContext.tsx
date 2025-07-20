@@ -1,4 +1,12 @@
-import { ReactNode, RefObject, createContext, useContext, Dispatch, SetStateAction } from "react";
+import {
+  ReactNode,
+  RefObject,
+  MutableRefObject,
+  createContext,
+  useContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import TableRow from "../types/TableRow";
 import Cell from "../types/Cell";
@@ -19,7 +27,7 @@ interface TableContextType {
   cellUpdateFlash?: boolean;
   columnReordering: boolean;
   columnResizing: boolean;
-  draggedHeaderRef: RefObject<HeaderObject | null>;
+  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   editColumns?: boolean;
   expandIcon?: ReactNode;
   filters: TableFilterState;
@@ -30,9 +38,9 @@ interface TableContextType {
   handleClearFilter: (accessor: string) => void;
   handleMouseDown: (cell: Cell) => void;
   handleMouseOver: (cell: Cell) => void;
-  headerContainerRef: RefObject<HTMLDivElement | null>;
+  headerContainerRef: RefObject<HTMLDivElement>;
   headers: HeaderObject[];
-  hoveredHeaderRef: RefObject<HeaderObject | null>;
+  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   isAnimating: boolean;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
@@ -40,15 +48,15 @@ interface TableContextType {
   isScrolling: boolean;
   isSelected: (cell: Cell) => boolean;
   isWarningFlashing: (cell: Cell) => boolean;
-  mainBodyRef: RefObject<HTMLDivElement | null>;
+  mainBodyRef: RefObject<HTMLDivElement>;
   nextIcon: ReactNode;
   onCellEdit?: (props: any) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onLoadMore?: () => void;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  pinnedLeftRef: RefObject<HTMLDivElement | null>;
-  pinnedRightRef: RefObject<HTMLDivElement | null>;
+  pinnedLeftRef: RefObject<HTMLDivElement>;
+  pinnedRightRef: RefObject<HTMLDivElement>;
   prevIcon: ReactNode;
   rowGrouping?: string[];
   rowHeight: number;
@@ -66,7 +74,7 @@ interface TableContextType {
   shouldPaginate: boolean;
   sortDownIcon: ReactNode;
   sortUpIcon: ReactNode;
-  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
+  tableBodyContainerRef: RefObject<HTMLDivElement>;
   tableRows: TableRow[];
   theme: Theme;
   unexpandedRows: Set<string>;

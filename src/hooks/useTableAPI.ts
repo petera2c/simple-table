@@ -1,4 +1,4 @@
-import { RefObject, useEffect } from "react";
+import { MutableRefObject, useEffect } from "react";
 import { Row, TableRefType, UpdateDataProps } from "..";
 import { getRowId } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
@@ -10,10 +10,10 @@ const useTableAPI = ({
   rowIdAccessor,
   cellRegistryRef,
 }: {
-  tableRef?: RefObject<TableRefType | null>;
+  tableRef?: MutableRefObject<TableRefType | null>;
   rows: Row[];
   rowIdAccessor: string;
-  cellRegistryRef: RefObject<Map<string, CellRegistryEntry>>;
+  cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
 }) => {
   // Set up API methods on the ref if provided
   useEffect(() => {

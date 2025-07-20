@@ -3,7 +3,7 @@ import { SortColumn } from "./SortConfig";
 import HeaderObject from "./HeaderObject";
 
 type TableHeaderProps = {
-  centerHeaderRef: RefObject<HTMLDivElement | null>;
+  centerHeaderRef: RefObject<HTMLDivElement>;
   headers: HeaderObject[];
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
