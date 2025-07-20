@@ -52,7 +52,11 @@ const useTableRowProcessing = ({
   // Track original positions of all rows (before any sort/filter applied)
   const originalPositionsRef = useRef<Map<string, number>>(new Map());
 
-  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Capture values when animation starts to avoid dependency issues in timeout effect
+  const animationCaptureRef = useRef<{
+    tableRows: any[];
+    visibleRows: any[];
+  } | null>(null);
 
   // Process rows through pagination and grouping
   const processRowSet = useCallback(
@@ -154,23 +158,6 @@ const useTableRowProcessing = ({
     [rowIdAccessor]
   );
 
-  // Helper function to apply original positions to entering rows
-  const applyOriginalPositions = useCallback(
-    (rows: any[]) => {
-      return rows.map((row) => {
-        const id = String(getRowId({ row: row.row, rowIdAccessor }));
-        const originalPosition = originalPositionsRef.current.get(id);
-
-        // If we have an original position, use it; otherwise keep the current position
-        if (originalPosition !== undefined) {
-          return { ...row, position: originalPosition };
-        }
-        return row;
-      });
-    },
-    [rowIdAccessor]
-  );
-
   // Check if there are actual row changes (comparing all rows, not just visible)
   const hasRowChanges = useMemo(() => {
     if (previousTableRowsRef.current.length === 0) {
@@ -226,30 +213,39 @@ const useTableRowProcessing = ({
     // extendedRows already contains current + entering rows (from STAGE 1)
     // Now the positions will update automatically when the component re-renders
 
+    // Capture current values before starting animation
+    animationCaptureRef.current = {
+      tableRows: currentTableRows,
+      visibleRows: targetVisibleRows,
+    };
+
     // Start animation
     setIsAnimating(true);
-
-    // STAGE 3: After animation completes, remove leaving rows
-    animationTimeoutRef.current = setTimeout(() => {
-      setIsAnimating(false);
-      setExtendedRows([]); // Clear extended rows to use normal virtualization
-      previousTableRowsRef.current = currentTableRows;
-      previousVisibleRowsRef.current = targetVisibleRows;
-    }, ANIMATION_CONFIGS.ROW_REORDER.duration + 100);
-
-    return () => {
-      if (animationTimeoutRef.current) {
-        clearTimeout(animationTimeoutRef.current);
-      }
-    };
   }, [
-    targetVisibleRows,
-    currentTableRows,
     allowAnimations,
-    shouldPaginate,
+    currentTableRows,
     hasRowChanges,
     isAnimating,
+    shouldPaginate,
+    targetVisibleRows,
   ]);
+
+  // Separate effect to handle animation timeout - only runs when we have extended rows to animate
+  useLayoutEffect(() => {
+    if (isAnimating && animationCaptureRef.current && extendedRows.length > 0) {
+      // STAGE 3: After animation completes, remove leaving rows
+      const timeout = setTimeout(() => {
+        const captured = animationCaptureRef.current!;
+        setIsAnimating(false);
+        setExtendedRows([]); // Clear extended rows to use normal virtualization
+        previousTableRowsRef.current = captured.tableRows;
+        previousVisibleRowsRef.current = captured.visibleRows;
+        animationCaptureRef.current = null; // Clean up
+      }, ANIMATION_CONFIGS.ROW_REORDER.duration + 100);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [isAnimating, extendedRows.length]); // Depend on isAnimating AND extendedRows length
 
   // Final rows to render - handles 3-stage animation
   const rowsToRender = useMemo(() => {
