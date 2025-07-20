@@ -1,6 +1,7 @@
 import TableRow from "../types/TableRow";
 import Row from "../types/Row";
 import { RowId } from "../types/RowId";
+import { Accessor } from "../types/HeaderObject";
 
 /**
  * Check if an array contains Row objects (vs primitive arrays like string[] or number[])
@@ -12,7 +13,7 @@ export const isRowArray = (data: any): data is Row[] => {
 /**
  * Get the row ID from a row using the specified accessor or fall back to index
  */
-export const getRowId = ({ row, rowIdAccessor }: { row: Row; rowIdAccessor: string }): RowId => {
+export const getRowId = ({ row, rowIdAccessor }: { row: Row; rowIdAccessor: Accessor }): RowId => {
   return row[rowIdAccessor] as RowId;
 };
 
@@ -52,8 +53,8 @@ export const flattenRowsWithGrouping = ({
   depth?: number;
   expandAll?: boolean;
   unexpandedRows: Set<string>;
-  rowGrouping?: string[];
-  rowIdAccessor: string;
+  rowGrouping?: Accessor[];
+  rowIdAccessor: Accessor;
   rows: Row[];
 }): TableRow[] => {
   const result: TableRow[] = [];

@@ -1,7 +1,8 @@
 import { CellValue } from "..";
+import { Accessor } from "./HeaderObject";
 
 type UpdateDataProps = {
-  accessor: string;
+  accessor: Accessor;
   rowIndex: number;
   newValue: CellValue;
 };

@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
+import { Accessor } from "../types/HeaderObject";
 
 // Helper function to compute filtered rows for a given filter state
 const computeFilteredRows = ({
@@ -38,7 +39,7 @@ interface UseFilterableDataProps {
 interface UseFilterableDataReturn {
   filteredRows: Row[];
   updateFilter: (filter: FilterCondition) => void;
-  clearFilter: (accessor: string) => void;
+  clearFilter: (accessor: Accessor) => void;
   clearAllFilters: () => void;
   filters: TableFilterState;
   // Function to compute what rows would be after applying a filter (for pre-animation calculation)
@@ -78,7 +79,7 @@ const useFilterableData = ({
 
   // Clear single filter
   const clearFilter = useCallback(
-    (accessor: string) => {
+    (accessor: Accessor) => {
       const newFilterState = { ...filters };
       delete newFilterState[accessor];
 

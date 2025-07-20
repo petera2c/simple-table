@@ -1,7 +1,7 @@
 import { expect } from "@storybook/test";
 import { waitForTable } from "./commonTestUtils";
 import { PRODUCT_HEADERS } from "../examples/filter-example/filter-headers";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
 
 /**
  * Filter Test Utilities for FilterExample
@@ -12,10 +12,10 @@ import HeaderObject from "../../types/HeaderObject";
  */
 export const getFilterableColumnsFromHeaders = (): Array<{
   label: string;
-  accessor: string;
+  accessor: Accessor;
   type: string;
 }> => {
-  const filterableColumns: Array<{ label: string; accessor: string; type: string }> = [];
+  const filterableColumns: Array<{ label: string; accessor: Accessor; type: string }> = [];
 
   const extractFilterableColumns = (headers: HeaderObject[]): void => {
     for (const header of headers) {
@@ -79,7 +79,7 @@ export const getPriceDisplayText = (price: number): string => {
  */
 export const extractNumericValueFromDisplay = (
   displayText: string,
-  columnAccessor: string
+  columnAccessor: Accessor
 ): number | null => {
   switch (columnAccessor) {
     case "stockLevel":
@@ -125,7 +125,7 @@ export const doesDisplayValueMatchNumericCondition = (
   displayText: string,
   operator: string,
   targetValue: number,
-  columnAccessor: string
+  columnAccessor: Accessor
 ): boolean => {
   const actualValue = extractNumericValueFromDisplay(displayText, columnAccessor);
 
@@ -1210,7 +1210,7 @@ export const getVisibleRowCount = (canvasElement: HTMLElement): number => {
 /**
  * Get visible row data for a specific column
  */
-export const getVisibleColumnData = (canvasElement: HTMLElement, accessor: string): string[] => {
+export const getVisibleColumnData = (canvasElement: HTMLElement, accessor: Accessor): string[] => {
   const cells = canvasElement.querySelectorAll(`[data-accessor="${accessor}"] .st-cell-content`);
   const data = Array.from(cells).map((cell) => cell.textContent?.trim() || "");
   return data;

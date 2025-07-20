@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { AggregationConfig } from "../types/AggregationTypes";
 import Row from "../types/Row";
 import { flattenAllHeaders } from "../utils/headerUtils";
@@ -85,7 +85,7 @@ export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedR
  */
 const calculateAggregation = (
   childRows: Row[],
-  accessor: string,
+  accessor: Accessor,
   config: AggregationConfig,
   nextGroupKey?: string
 ): any => {

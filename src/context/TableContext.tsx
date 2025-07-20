@@ -10,7 +10,7 @@ import {
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import TableRow from "../types/TableRow";
 import Cell from "../types/Cell";
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Theme from "../types/Theme";
 import CellValue from "../types/CellValue";
@@ -35,7 +35,7 @@ interface TableContextType {
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearAllFilters: () => void;
-  handleClearFilter: (accessor: string) => void;
+  handleClearFilter: (accessor: Accessor) => void;
   handleMouseDown: (cell: Cell) => void;
   handleMouseOver: (cell: Cell) => void;
   headerContainerRef: RefObject<HTMLDivElement>;
@@ -58,9 +58,9 @@ interface TableContextType {
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   prevIcon: ReactNode;
-  rowGrouping?: string[];
+  rowGrouping?: Accessor[];
   rowHeight: number;
-  rowIdAccessor: string;
+  rowIdAccessor: Accessor;
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;

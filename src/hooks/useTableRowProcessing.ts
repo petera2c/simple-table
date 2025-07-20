@@ -4,6 +4,8 @@ import { getVisibleRows } from "../utils/infiniteScrollUtils";
 import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import Row from "../types/Row";
+import { Accessor } from "../types/HeaderObject";
+import { FilterCondition } from "../types/FilterTypes";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
@@ -13,16 +15,16 @@ interface UseTableRowProcessingProps {
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
-  rowGrouping?: string[];
-  rowIdAccessor: string;
+  rowGrouping?: Accessor[];
+  rowIdAccessor: Accessor;
   unexpandedRows: Set<string>;
   expandAll: boolean;
   contentHeight: number;
   rowHeight: number;
   scrollTop: number;
   // Functions to preview what rows would be after changes
-  computeFilteredRowsPreview: (filter: any) => Row[];
-  computeSortedRowsPreview: (accessor: string) => Row[];
+  computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
+  computeSortedRowsPreview: (accessor: Accessor) => Row[];
 }
 
 const useTableRowProcessing = ({
@@ -342,7 +344,7 @@ const useTableRowProcessing = ({
   );
 
   const prepareForSortChange = useCallback(
-    (accessor: string) => {
+    (accessor: Accessor) => {
       if (!allowAnimations || shouldPaginate) return;
 
       // Calculate what rows would be after sort

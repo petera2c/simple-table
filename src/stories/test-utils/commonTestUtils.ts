@@ -1,6 +1,7 @@
 import { expect, within } from "@storybook/test";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { HEADERS as BILLING_HEADERS } from "../examples/billing-example/billing-headers";
+import { Accessor } from "../../types/HeaderObject";
 
 const EXPECTED_WIDTH_DELTA = 1;
 
@@ -106,13 +107,13 @@ export const testThreeSectionLayout = async (
  */
 
 // Get column accessor by label from RETAIL_SALES_HEADERS
-export const getColumnAccessorByLabel = (label: string): string => {
+export const getColumnAccessorByLabel = (label: string): Accessor => {
   const header = RETAIL_SALES_HEADERS.find((h) => h.label === label);
   return header?.accessor || label.toLowerCase().replace(/\s+/g, "");
 };
 
 // Get column label by accessor from RETAIL_SALES_HEADERS
-export const getColumnLabelByAccessor = (accessor: string): string => {
+export const getColumnLabelByAccessor = (accessor: Accessor): string => {
   const header = RETAIL_SALES_HEADERS.find((h) => h.accessor === accessor);
   return header?.label || accessor;
 };
@@ -163,7 +164,7 @@ const flattenBillingHeaders = (headers = BILLING_HEADERS): any[] => {
 };
 
 // Get column accessor by label from BILLING_HEADERS
-export const getBillingColumnAccessorByLabel = (label: string): string => {
+export const getBillingColumnAccessorByLabel = (label: string): Accessor => {
   const flatHeaders = flattenBillingHeaders();
   const header = flatHeaders.find((h) => h.label === label);
   return header?.accessor || label.toLowerCase().replace(/\s+/g, "");
@@ -227,7 +228,7 @@ export const getVisibleColumnLabels = (canvasElement: HTMLElement): string[] => 
 };
 
 // Check if a column is currently visible in the table
-export const isColumnVisible = (canvasElement: HTMLElement, columnAccessor: string): boolean => {
+export const isColumnVisible = (canvasElement: HTMLElement, columnAccessor: Accessor): boolean => {
   // Check if column appears in the visible labels (most reliable method)
   const visibleLabels = getVisibleColumnLabels(canvasElement);
   const header = RETAIL_SALES_HEADERS.find((h) => h.accessor === columnAccessor);
@@ -237,7 +238,7 @@ export const isColumnVisible = (canvasElement: HTMLElement, columnAccessor: stri
 // Check if a billing column is currently visible in the table
 export const isBillingColumnVisible = (
   canvasElement: HTMLElement,
-  columnAccessor: string
+  columnAccessor: Accessor
 ): boolean => {
   const visibleLabels = getVisibleColumnLabels(canvasElement);
   const flatHeaders = flattenBillingHeaders();
@@ -315,7 +316,7 @@ export const findClickableHeaderByLabel = (
  */
 export const getColumnDataFromTable = (
   canvasElement: HTMLElement,
-  accessor: string
+  accessor: Accessor
 ): (string | number)[] => {
   const values: (string | number)[] = [];
   const cells = canvasElement.querySelectorAll(`[data-accessor="${accessor}"] .st-cell-content`);

@@ -1,5 +1,6 @@
 import { expect } from "@storybook/test";
 import { waitForTable } from "./commonTestUtils";
+import { Accessor } from "../../types/HeaderObject";
 
 /**
  * Aggregation Test Utilities for RowGrouping Example
@@ -72,7 +73,7 @@ export const ensureRowExpanded = async (
 export const getAggregatedValue = (
   canvasElement: HTMLElement,
   rowText: string,
-  columnAccessor: string
+  columnAccessor: Accessor
 ): string | null => {
   // Find the row that contains the specified text
   const rows = canvasElement.querySelectorAll(".st-row");
@@ -91,23 +92,6 @@ export const getAggregatedValue = (
   }
 
   return null;
-};
-
-/**
- * Get all child values for a parent row to verify aggregation calculation
- */
-export const getChildValues = (
-  canvasElement: HTMLElement,
-  parentRowText: string,
-  columnAccessor: string
-): number[] => {
-  const values: number[] = [];
-
-  // This is a simplified approach - in a real test we'd need to understand
-  // the hierarchical structure better, but for now we can manually verify
-  // known child values from our test data
-
-  return values;
 };
 
 /**

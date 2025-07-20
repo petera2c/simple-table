@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
 import Cell from "../types/Cell";
 import { findLeafHeaders } from "../utils/headerWidthUtils";
@@ -12,7 +12,7 @@ interface UseSelectionProps {
   selectableCells: boolean;
   headers: HeaderObject[];
   tableRows: TableRowType[];
-  rowIdAccessor: string;
+  rowIdAccessor: Accessor;
   onCellEdit?: (props: any) => void;
   cellRegistry?: Map<string, any>;
 }

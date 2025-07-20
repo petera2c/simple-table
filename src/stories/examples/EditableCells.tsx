@@ -4,7 +4,7 @@ import CellChangeProps from "../../types/CellChangeProps";
 import Row from "../../types/Row";
 import { RowId } from "../../types/RowId";
 import CellValue from "../../types/CellValue";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to EditableCells - exported for reuse in stories and tests
@@ -156,7 +156,7 @@ const EditableCellsExample = (props: UniversalTableProps) => {
   const updateRowData = (
     rows: Row[],
     targetRowId: RowId,
-    accessor: string,
+    accessor: Accessor,
     newValue: CellValue
   ): Row[] => {
     return rows.map((row) => {

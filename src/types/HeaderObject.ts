@@ -5,8 +5,10 @@ import Theme from "./Theme";
 import EnumOption from "./EnumOption";
 import { AggregationConfig } from "./AggregationTypes";
 
+export type Accessor = keyof Row;
+
 type HeaderObject = {
-  accessor: string;
+  accessor: Accessor;
   aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
   cellRenderer?: ({
@@ -14,7 +16,7 @@ type HeaderObject = {
     colIndex,
     row,
   }: {
-    accessor: string;
+    accessor: Accessor;
     colIndex: number;
     row: Row;
     theme: Theme;
@@ -29,7 +31,7 @@ type HeaderObject = {
     colIndex,
     header,
   }: {
-    accessor: string;
+    accessor: Accessor;
     colIndex: number;
     header: HeaderObject;
   }) => ReactNode | string;

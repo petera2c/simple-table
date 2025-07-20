@@ -1,5 +1,6 @@
 import { expect } from "@storybook/test";
 import { waitForTable } from "./commonTestUtils";
+import { Accessor } from "../../types/HeaderObject";
 
 /**
  * Cell Selection Test Utilities
@@ -44,7 +45,7 @@ export const findValidCellBounds = (
 export interface CellPosition {
   rowIndex: number;
   colIndex: number;
-  accessor: string;
+  accessor: Accessor;
   rowId: string;
 }
 
@@ -73,7 +74,7 @@ export const getCellElement = (
 export const getCellByRowIdAndAccessor = (
   canvasElement: HTMLElement,
   rowId: string,
-  accessor: string
+  accessor: Accessor
 ): HTMLElement | null => {
   return canvasElement.querySelector(
     `[data-row-id="${rowId}"][data-accessor="${accessor}"]`

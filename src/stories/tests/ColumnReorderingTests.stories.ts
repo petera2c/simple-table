@@ -13,6 +13,7 @@ import {
 } from "../test-utils/columnReorderingTestUtils";
 import { waitForTable } from "../test-utils/commonTestUtils";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
+import { Accessor } from "../../types/HeaderObject";
 
 const meta: Meta<typeof AlignmentExample> = {
   title: "Tests/Column Reordering Tests",
@@ -32,20 +33,20 @@ const meta: Meta<typeof AlignmentExample> = {
 export default meta;
 
 // Helper function to get column label by accessor
-const getColumnLabel = (accessor: string): string => {
+const getColumnLabel = (accessor: Accessor): string => {
   const header = RETAIL_SALES_HEADERS.find((h) => h.accessor === accessor);
   return header?.label || accessor;
 };
 
 // Helper function to get header element by accessor (searches all sections)
-const getHeaderElement = (section: Element, accessor: string): HTMLElement | null => {
+const getHeaderElement = (section: Element, accessor: Accessor): HTMLElement | null => {
   return section.querySelector(`[id*='header-${accessor}'] .st-header-label`) as HTMLElement;
 };
 
 // Dynamic element finder that searches across all sections
 const findHeaderElementAnywhere = (
   canvasElement: HTMLElement,
-  accessor: string
+  accessor: Accessor
 ): { element: HTMLElement | null; section: string } => {
   const mainSection = canvasElement.querySelector(".st-header-main");
   const pinnedLeftSection = canvasElement.querySelector(".st-header-pinned-left");

@@ -1,4 +1,5 @@
 import CellValue from "./CellValue";
+import { Accessor } from "./HeaderObject";
 
 // Filter operators for different data types
 export type StringFilterOperator =
@@ -47,7 +48,7 @@ export type FilterOperator =
 
 // Filter condition interface
 export interface FilterCondition {
-  accessor: string;
+  accessor: Accessor;
   operator: FilterOperator;
   value?: CellValue;
   values?: CellValue[]; // For operators like 'between', 'in', etc.
@@ -55,7 +56,7 @@ export interface FilterCondition {
 
 // Filter state for the entire table
 export interface TableFilterState {
-  [accessor: string]: FilterCondition;
+  [accessor: Accessor]: FilterCondition;
 }
 
 // Human-readable labels for filter operators

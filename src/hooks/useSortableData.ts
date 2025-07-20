@@ -1,4 +1,4 @@
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
 import { useCallback, useMemo, useState } from "react";
 import SortColumn from "../types/SortColumn";
@@ -120,7 +120,7 @@ const useSortableData = ({
 
   // Simple sort handler
   const updateSort = useCallback(
-    (accessor: string) => {
+    (accessor: Accessor) => {
       const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
         for (const header of headers) {
           if (header.accessor === accessor) {
@@ -163,7 +163,7 @@ const useSortableData = ({
   // Function to preview what rows would be after applying a sort
   // This is used for pre-animation calculation
   const computeSortedRowsPreview = useCallback(
-    (accessor: string) => {
+    (accessor: Accessor) => {
       const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
         for (const header of headers) {
           if (header.accessor === accessor) {

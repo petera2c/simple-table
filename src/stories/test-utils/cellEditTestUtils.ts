@@ -1,7 +1,7 @@
 import { expect } from "@storybook/test";
 import { waitForTable } from "./commonTestUtils";
 import { PRODUCT_HEADERS } from "../examples/filter-example/filter-headers";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
 
 /**
  * Cell Edit Test Utilities for FilterExample
@@ -12,13 +12,13 @@ import HeaderObject from "../../types/HeaderObject";
  */
 export const getEditableColumnsFromHeaders = (): Array<{
   label: string;
-  accessor: string;
+  accessor: Accessor;
   type: string;
   enumOptions?: Array<{ label: string; value: string }>;
 }> => {
   const editableColumns: Array<{
     label: string;
-    accessor: string;
+    accessor: Accessor;
     type: string;
     enumOptions?: Array<{ label: string; value: string }>;
   }> = [];
@@ -51,7 +51,7 @@ export const getEditableColumnsFromHeaders = (): Array<{
 export const doubleClickCell = async (
   canvasElement: HTMLElement,
   rowIndex: number,
-  columnAccessor: string
+  columnAccessor: Accessor
 ): Promise<void> => {
   await waitForTable();
 
@@ -97,7 +97,7 @@ export const doubleClickCell = async (
 export const testEnumCellEdit = async (
   canvasElement: HTMLElement,
   rowIndex: number,
-  columnAccessor: string,
+  columnAccessor: Accessor,
   newValue: string
 ): Promise<void> => {
   // Get original cell value
@@ -142,7 +142,7 @@ export const testEnumCellEdit = async (
 export const testBooleanCellEdit = async (
   canvasElement: HTMLElement,
   rowIndex: number,
-  columnAccessor: string,
+  columnAccessor: Accessor,
   newValue: boolean
 ): Promise<void> => {
   // Get original cell value
@@ -203,7 +203,7 @@ export const testBooleanCellEdit = async (
 export const testInputCellEdit = async (
   canvasElement: HTMLElement,
   rowIndex: number,
-  columnAccessor: string,
+  columnAccessor: Accessor,
   newValue: string,
   cellType: "string" | "number"
 ): Promise<void> => {
@@ -363,7 +363,7 @@ export const testInputCellEdit = async (
 export const testDateCellEdit = async (
   canvasElement: HTMLElement,
   rowIndex: number,
-  columnAccessor: string,
+  columnAccessor: Accessor,
   newDateString: string
 ): Promise<void> => {
   // Get original cell value

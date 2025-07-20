@@ -3,6 +3,7 @@ import { Row, TableRefType, UpdateDataProps } from "..";
 import { getRowId } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry } from "../context/TableContext";
+import { Accessor } from "../types/HeaderObject";
 
 const useTableAPI = ({
   tableRef,
@@ -12,7 +13,7 @@ const useTableAPI = ({
 }: {
   tableRef?: MutableRefObject<TableRefType | null>;
   rows: Row[];
-  rowIdAccessor: string;
+  rowIdAccessor: Accessor;
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
 }) => {
   // Set up API methods on the ref if provided

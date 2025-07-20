@@ -5,6 +5,7 @@ import {
   findHeaderCellByLabel,
   getBillingColumnAccessorByLabel,
 } from "./commonTestUtils";
+import { Accessor } from "../../types/HeaderObject";
 
 /**
  * Column Sorting Test Utilities
@@ -88,7 +89,7 @@ const hasSignificantData = (data: (string | number)[]): boolean => {
  */
 export const getDataRowsColumnData = (
   canvasElement: HTMLElement,
-  accessor: string
+  accessor: Accessor
 ): (string | number)[] => {
   const values: (string | number)[] = [];
 

@@ -1,8 +1,9 @@
 import CellValue from "./CellValue";
+import { Accessor } from "./HeaderObject";
 import Row from "./Row";
 
 type CellChangeProps = {
-  accessor: string;
+  accessor: Accessor;
   newValue: CellValue;
   row: Row;
 };

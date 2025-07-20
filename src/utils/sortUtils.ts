@@ -1,4 +1,4 @@
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
 import SortColumn from "../types/SortColumn";
 
@@ -139,7 +139,7 @@ const sortFlatRows = ({
   // Recursively search for the header in nested structure
   const findHeaderRecursively = (
     headers: HeaderObject[],
-    accessor: string
+    accessor: Accessor
   ): HeaderObject | undefined => {
     for (const header of headers) {
       if (header.accessor === accessor) {

@@ -1,9 +1,9 @@
-import HeaderObject from "../../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../../types/HeaderObject";
 
 // Find all parents for a given header to ensure they're visible
 export const findAndMarkParentsVisible = (
   headers: HeaderObject[],
-  childAccessor: string,
+  childAccessor: Accessor,
   visited: Set<string> = new Set()
 ) => {
   for (const header of headers) {

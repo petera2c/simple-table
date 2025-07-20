@@ -9,7 +9,7 @@ import {
   MutableRefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
@@ -69,9 +69,9 @@ interface SimpleTableProps {
   onNextPage?: OnNextPage; // Custom handler for next page
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
-  rowGrouping?: string[]; // Array of property names that define row grouping hierarchy
+  rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
-  rowIdAccessor: string; // Property name to use as row ID (defaults to index-based ID)
+  rowIdAccessor: Accessor; // Property name to use as row ID (defaults to index-based ID)
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
@@ -261,7 +261,7 @@ const SimpleTableComp = ({
 
   // Memoize handlers
   const onSort = useCallback(
-    (accessor: string) => {
+    (accessor: Accessor) => {
       // STAGE 1: Prepare animation by adding entering rows before applying sort
       prepareForSortChange(accessor);
 

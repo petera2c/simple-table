@@ -1,5 +1,5 @@
 import { DragEvent } from "react";
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
 import { deepClone } from "../utils/generalUtils";
@@ -11,7 +11,7 @@ let prevDraggingPosition = { screenX: 0, screenY: 0 };
 
 const getHeaderIndexPath = (
   headers: HeaderObject[],
-  targetAccessor: string,
+  targetAccessor: Accessor,
   currentPath: number[] = []
 ): number[] | null => {
   for (let i = 0; i < headers.length; i++) {
