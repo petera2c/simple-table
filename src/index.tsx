@@ -1,27 +1,28 @@
 import SimpleTable from "./components/simple-table/SimpleTable";
-import type BoundingBox from "./types/BoundingBox";
-import type Cell from "./types/Cell";
-import type CellChangeProps from "./types/CellChangeProps";
-import type CellValue from "./types/CellValue";
-import type ColumnEditorPosition from "./types/ColumnEditorPosition";
-import type DragHandlerProps from "./types/DragHandlerProps";
+import BoundingBox from "./types/BoundingBox";
+import Cell from "./types/Cell";
+import CellChangeProps from "./types/CellChangeProps";
+import CellValue from "./types/CellValue";
+import ColumnEditorPosition from "./types/ColumnEditorPosition";
+import DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
-import type HeaderObject from "./types/HeaderObject";
-import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
-import type OnSortProps from "./types/OnSortProps";
-import type Row from "./types/Row";
-import type SharedTableProps from "./types/SharedTableProps";
-import type SortColumn from "./types/SortColumn";
-import type TableCellProps from "./types/TableCellProps";
-import type TableHeaderProps from "./types/TableHeaderProps";
+import HeaderObject, { Accessor } from "./types/HeaderObject";
+import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
+import OnSortProps from "./types/OnSortProps";
+import Row from "./types/Row";
+import SharedTableProps from "./types/SharedTableProps";
+import SortColumn from "./types/SortColumn";
+import TableCellProps from "./types/TableCellProps";
+import TableHeaderProps from "./types/TableHeaderProps";
 import TableRefType from "./types/TableRefType";
-import type TableRowProps from "./types/TableRowProps";
-import type Theme from "./types/Theme";
-import type UpdateDataProps from "./types/UpdateCellProps";
+import TableRowProps from "./types/TableRowProps";
+import Theme from "./types/Theme";
+import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
 
 export { SimpleTable };
 export type {
+  Accessor,
   AggregationConfig,
   AggregationType,
   BoundingBox,
