@@ -1,6 +1,5 @@
 import {
   Fragment,
-  RefObject,
   MutableRefObject,
   useMemo,
   forwardRef,
