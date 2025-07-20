@@ -2,8 +2,8 @@ import HeaderObject from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
 import { RowId } from "../types/RowId";
 
-export const getCellId = ({ accessor, rowIndex }: { accessor: string; rowIndex: number }) => {
-  return `cell-${accessor}-${rowIndex}`;
+export const getCellId = ({ accessor, rowId }: { accessor: string; rowId: RowId }) => {
+  return `${rowId}-${accessor}`;
 };
 
 export const displayCell = ({ header, pinned }: { header: HeaderObject; pinned?: Pinned }) => {

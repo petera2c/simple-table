@@ -19,14 +19,6 @@ export const hasCellUpdatingClass = (rowIndex: number, accessor: string): boolea
 };
 
 /**
- * Debug logging utility
- */
-export const debugLog = (message: string) => {
-  const timestamp = new Date().toISOString();
-  console.log(`[LiveUpdatesTest] ${timestamp}: ${message}`);
-};
-
-/**
  * Wait for LiveUpdatesExample component to mount
  */
 export const waitForLiveUpdatesComponent = async (): Promise<void> => {
@@ -73,9 +65,7 @@ export const waitForPriceChanges = async (
     for (let i = 0; i < Math.min(initialPrices.length, currentPrices.length); i++) {
       if (initialPrices[i] !== currentPrices[i]) {
         changeDetected = true;
-        console.log(
-          `Price change detected: Row ${i} changed from ${initialPrices[i]} to ${currentPrices[i]}`
-        );
+
         break;
       }
     }
@@ -132,7 +122,6 @@ export const testFlashAnimations = async (): Promise<void> => {
     for (let row = 0; row < 3; row++) {
       if (hasCellUpdatingClass(row, "price")) {
         flashDetected = true;
-        console.log(`Flash animation detected on row ${row} price cell`);
         break;
       }
     }
@@ -169,7 +158,6 @@ export const testStockDecrease = async (): Promise<void> => {
   // If initial stock was > 0, final should be lower
   if (initialStockNum > 0) {
     expect(finalStockNum).toBeLessThan(initialStockNum);
-    console.log(`Stock decreased from ${initialStockNum} to ${finalStockNum}`);
   }
 };
 
@@ -192,7 +180,6 @@ export const testSalesIncrease = async (): Promise<void> => {
 
   // Sales should have increased
   expect(finalSalesNum).toBeGreaterThan(initialSalesNum);
-  console.log(`Sales increased from ${initialSalesNum} to ${finalSalesNum}`);
 };
 
 /**
@@ -203,25 +190,18 @@ export const testLiveUpdates = async (canvasElement: HTMLElement): Promise<void>
   await waitForLiveUpdatesComponent();
 
   // Test 1: Capture initial prices and wait for changes
-  console.log("Testing initial price changes...");
   const initialPrices = capturePriceValues();
   await waitForPriceChanges(initialPrices);
 
   // Test 2: Test multiple price changes over time
-  console.log("Testing multiple price changes...");
   await testMultiplePriceChanges();
 
   // Test 3: Test flash animations
-  console.log("Testing flash animations...");
   await testFlashAnimations();
 
   // Test 4: Test stock decrease
-  console.log("Testing stock decrease...");
   await testStockDecrease();
 
   // Test 5: Test sales increase
-  console.log("Testing sales increase...");
   await testSalesIncrease();
-
-  console.log("All live updates tests passed!");
 };

@@ -7,6 +7,7 @@ interface FilterInputProps {
   placeholder?: string;
   autoFocus?: boolean;
   className?: string;
+  onEnterPress?: () => void;
 }
 
 const FilterInput: React.FC<FilterInputProps> = ({
@@ -16,12 +17,20 @@ const FilterInput: React.FC<FilterInputProps> = ({
   placeholder,
   autoFocus = false,
   className = "",
+  onEnterPress,
 }) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && onEnterPress) {
+      onEnterPress();
+    }
+  };
+
   return (
     <input
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onKeyDown={handleKeyDown}
       placeholder={placeholder}
       autoFocus={autoFocus}
       className={`st-filter-input ${className}`.trim()}

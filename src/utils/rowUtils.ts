@@ -12,11 +12,8 @@ export const isRowArray = (data: any): data is Row[] => {
 /**
  * Get the row ID from a row using the specified accessor or fall back to index
  */
-export const getRowId = (row: Row, index: number, rowIdAccessor?: string): RowId => {
-  if (rowIdAccessor && row[rowIdAccessor] !== undefined) {
-    return row[rowIdAccessor] as RowId;
-  }
-  return index;
+export const getRowId = ({ row, rowIdAccessor }: { row: Row; rowIdAccessor: string }): RowId => {
+  return row[rowIdAccessor] as RowId;
 };
 
 /**
@@ -56,7 +53,7 @@ export const flattenRowsWithGrouping = ({
   expandAll?: boolean;
   unexpandedRows: Set<string>;
   rowGrouping?: string[];
-  rowIdAccessor?: string;
+  rowIdAccessor: string;
   rows: Row[];
 }): TableRow[] => {
   const result: TableRow[] = [];
@@ -65,7 +62,7 @@ export const flattenRowsWithGrouping = ({
     let position = parentPosition;
 
     currentRows.forEach((row, index) => {
-      const rowId = getRowId(row, index, rowIdAccessor);
+      const rowId = getRowId({ row, rowIdAccessor });
       const currentGroupingKey = rowGrouping[currentDepth];
 
       // Determine if this is the last row in a group

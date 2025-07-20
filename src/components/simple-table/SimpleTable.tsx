@@ -6,7 +6,6 @@ import {
   ReactNode,
   useMemo,
   useCallback,
-  useLayoutEffect,
   RefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
@@ -21,28 +20,29 @@ import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
-import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
-import { getVisibleRows } from "../../utils/infiniteScrollUtils";
 import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
-import UpdateDataProps from "../../types/UpdateCellProps";
 import TableRefType from "../../types/TableRefType";
-import { getCellKey } from "../../utils/cellUtils";
 import OnNextPage from "../../types/OnNextPage";
 import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import FilterBar from "../filters/FilterBar";
-import { useTableFilters } from "../../hooks/useTableFilters";
+import useFilterableData from "../../hooks/useFilterableData";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
-import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
-import SortConfig from "../../types/SortConfig";
+import { SortColumn } from "../../types/SortConfig";
+import useExternalFilters from "../../hooks/useExternalFilters";
+import useExternalSort from "../../hooks/useExternalSort";
+import useScrollbarWidth from "../../hooks/useScrollbarWidth";
+import useOnGridReady from "../../hooks/useOnGridReady";
+import useTableAPI from "../../hooks/useTableAPI";
+import useTableRowProcessing from "../../hooks/useTableRowProcessing";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -67,7 +67,7 @@ interface SimpleTableProps {
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
-  onSortChange?: (sort: SortConfig | null) => void; // Callback when sort is applied
+  onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
   rowGrouping?: string[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
@@ -149,10 +149,13 @@ const SimpleTableComp = ({
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
@@ -160,10 +163,22 @@ const SimpleTableComp = ({
   }, [defaultHeaders]);
 
   const [scrollTop, setScrollTop] = useState<number>(0);
-  const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
   // Apply aggregation to current rows
+  const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
+
+  // Calculate the width of the sections
+  const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
+    const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
+      headers,
+    });
+    return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
+  }, [headers]);
+
+  // Calculate content height using hook
+  const contentHeight = useContentHeight({ height, rowHeight });
+
   const aggregatedRows = useAggregatedRows({
     rows,
     headers,
@@ -174,22 +189,18 @@ const SimpleTableComp = ({
   const {
     filters,
     filteredRows,
-    handleApplyFilter: internalHandleApplyFilter,
-    handleClearFilter,
-    handleClearAllFilters,
-  } = useTableFilters({ externalFilterHandling, rows: aggregatedRows });
-
-  // Custom filter handler that respects external filter handling flag
-  const handleApplyFilter = useCallback(
-    (filter: FilterCondition) => {
-      // Update internal state and call external handler if provided
-      internalHandleApplyFilter(filter);
-    },
-    [internalHandleApplyFilter]
-  );
+    updateFilter: internalHandleApplyFilter,
+    clearFilter: handleClearFilter,
+    clearAllFilters: handleClearAllFilters,
+    computeFilteredRowsPreview,
+  } = useFilterableData({
+    rows: aggregatedRows,
+    externalFilterHandling,
+    onFilterChange,
+  });
 
   // Use custom hook for sorting (now operates on filtered rows)
-  const { sort, sortedRows, updateSort } = useSortableData({
+  const { sort, sortedRows, updateSort, computeSortedRowsPreview } = useSortableData({
     headers,
     tableRows: filteredRows,
     externalSortHandling,
@@ -197,72 +208,30 @@ const SimpleTableComp = ({
     rowGrouping,
   });
 
-  useEffect(() => {
-    onFilterChange?.(filters);
-  }, [filters, onFilterChange]);
-
-  useEffect(() => {
-    onSortChange?.(sort);
-  }, [sort, onSortChange]);
-
-  // Calculate the width of the sections
-  const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
-    const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
-      headers,
-    });
-    return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
-  }, [headers]);
-
-  useEffect(() => {
-    onGridReady?.();
-  }, [onGridReady]);
-
-  // Memoize currentRows calculation
-  const currentRows = useMemo(() => {
-    if (!shouldPaginate) return sortedRows;
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const rows = sortedRows.slice(startIndex, endIndex);
-    return rows;
-  }, [currentPage, rowsPerPage, shouldPaginate, sortedRows]);
-
-  // Flatten rows based on row grouping and expansion state - now includes ALL properties
-  const tableRows = useMemo(() => {
-    if (!rowGrouping || rowGrouping.length === 0) {
-      // No grouping - just return flat structure with calculated positions
-      return currentRows.map((row, index) => ({
-        row,
-        depth: 0,
-        groupingKey: undefined,
-        position: index,
-        isLastGroupRow: false,
-      }));
-    }
-
-    return flattenRowsWithGrouping({
-      rows: currentRows,
-      rowGrouping,
-      rowIdAccessor,
-      unexpandedRows,
-      expandAll,
-    });
-  }, [currentRows, rowGrouping, rowIdAccessor, unexpandedRows, expandAll]);
-
-  // Calculate content height using hook
-  const contentHeight = useContentHeight({ height, rowHeight });
-
-  // Visible rows
-  const visibleRows = useMemo(
-    () =>
-      getVisibleRows({
-        bufferRowCount: BUFFER_ROW_COUNT,
-        contentHeight,
-        tableRows,
-        rowHeight,
-        scrollTop,
-      }),
-    [contentHeight, rowHeight, tableRows, scrollTop]
-  );
+  // Process rows through pagination, grouping, and virtualization
+  const {
+    currentTableRows,
+    rowsToRender,
+    prepareForFilterChange,
+    prepareForSortChange,
+    isAnimating,
+  } = useTableRowProcessing({
+    allowAnimations,
+    sortedRows,
+    originalRows: aggregatedRows,
+    currentPage,
+    rowsPerPage,
+    shouldPaginate,
+    rowGrouping,
+    rowIdAccessor,
+    unexpandedRows,
+    expandAll,
+    contentHeight,
+    rowHeight,
+    scrollTop,
+    computeFilteredRowsPreview,
+    computeSortedRowsPreview,
+  });
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -284,7 +253,7 @@ const SimpleTableComp = ({
   } = useSelection({
     selectableCells,
     headers,
-    tableRows,
+    tableRows: currentTableRows,
     rowIdAccessor,
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
@@ -292,10 +261,16 @@ const SimpleTableComp = ({
 
   // Memoize handlers
   const onSort = useCallback(
-    (columnIndex: number, accessor: string) => {
-      updateSort(columnIndex, accessor);
+    (accessor: string) => {
+      // STAGE 1: Prepare animation by adding entering rows before applying sort
+      prepareForSortChange(accessor);
+
+      // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
+      setTimeout(() => {
+        updateSort(accessor);
+      }, 0);
     },
-    [updateSort]
+    [prepareForSortChange, updateSort]
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
@@ -310,47 +285,30 @@ const SimpleTableComp = ({
     setSelectedCells,
     setSelectedColumns,
   });
-  // Calculate the width of the scrollbar
-  useLayoutEffect(() => {
-    if (!tableBodyContainerRef.current) return;
-
-    const newScrollbarWidth =
-      tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
-
-    setScrollbarWidth(newScrollbarWidth);
-  }, []);
   useWindowResize({
     forceUpdate,
     tableBodyContainerRef,
     setScrollbarWidth,
   });
+  useOnGridReady({ onGridReady });
+  useTableAPI({ cellRegistryRef, rowIdAccessor, rows, tableRef });
+  useExternalFilters({ filters, onFilterChange });
+  useExternalSort({ sort, onSortChange });
 
-  // Set up API methods on the ref if provided
-  useEffect(() => {
-    if (tableRef) {
-      tableRef.current = {
-        updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          // Get the row ID using the new utility
-          const row = rows?.[rowIndex];
-          if (row) {
-            const rowId = getRowId(row, rowIndex, rowIdAccessor);
-            const key = getCellKey({ rowId, accessor });
-            const cell = cellRegistryRef.current.get(key);
+  // Custom filter handler that respects external filter handling flag
+  const handleApplyFilter = useCallback(
+    (filter: FilterCondition) => {
+      // STAGE 1: Prepare animation by adding entering rows before applying filter
+      prepareForFilterChange(filter);
 
-            if (cell) {
-              // If the cell is registered (visible), update it directly
-              cell.updateContent(newValue);
-            }
-
-            // Always update the data source - now directly on the row
-            if (row[accessor] !== undefined) {
-              row[accessor] = newValue;
-            }
-          }
-        },
-      };
-    }
-  }, [tableRef, rows, rowIdAccessor]);
+      // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
+      setTimeout(() => {
+        // Update internal state and call external handler if provided
+        internalHandleApplyFilter(filter);
+      }, 0);
+    },
+    [prepareForFilterChange, internalHandleApplyFilter]
+  );
 
   return (
     <TableProvider
@@ -363,20 +321,22 @@ const SimpleTableComp = ({
         draggedHeaderRef,
         editColumns,
         expandIcon,
-        unexpandedRows,
         filters,
-        tableRows,
         forceUpdate,
         getBorderClass,
         handleApplyFilter,
-        handleClearFilter,
         handleClearAllFilters,
+        handleClearFilter,
         handleMouseDown,
         handleMouseOver,
+        headerContainerRef,
         headers,
         hoveredHeaderRef,
+        isAnimating,
         isCopyFlashing,
         isInitialFocusedCell,
+        isResizing,
+        isScrolling,
         isSelected,
         isWarningFlashing,
         mainBodyRef,
@@ -395,16 +355,20 @@ const SimpleTableComp = ({
         scrollbarWidth,
         selectColumns,
         selectableColumns,
-        setUnexpandedRows,
         setHeaders,
         setInitialFocusedCell,
+        setIsResizing,
+        setIsScrolling,
         setSelectedCells,
         setSelectedColumns,
+        setUnexpandedRows,
         shouldPaginate,
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
+        tableRows: currentTableRows,
         theme,
+        unexpandedRows,
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,
@@ -423,12 +387,12 @@ const SimpleTableComp = ({
               onMouseLeave={handleMouseUp}
             >
               <TableContent
-                tableRows={tableRows}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}
                 sort={sort}
-                visibleRows={visibleRows}
+                tableRows={currentTableRows}
+                rowsToRender={rowsToRender}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

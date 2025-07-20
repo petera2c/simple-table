@@ -6,6 +6,7 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
+import { getRowId } from "../../utils/rowUtils";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -19,7 +20,7 @@ interface TableRowProps {
   rowHeight: number;
   rowIndices: RowIndices;
   setHoveredIndex: (index: number | null) => void;
-  visibleRow: TableRowType;
+  tableRow: TableRowType;
 }
 
 const TableRow = ({
@@ -33,13 +34,16 @@ const TableRow = ({
   rowHeight,
   rowIndices,
   setHoveredIndex,
-  visibleRow,
+  tableRow,
 }: TableRowProps) => {
-  const { useHoverRowBackground } = useTableContext();
-  const { position } = visibleRow;
+  const { useHoverRowBackground, rowIdAccessor, isAnimating } = useTableContext();
+  const { position } = tableRow;
   // Get row index from rowIndices using the row's ID
 
   const isOdd = position % 2 === 0;
+
+  // Get stable row ID for key
+  const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
 
   return (
     <div
@@ -47,7 +51,10 @@ const TableRow = ({
         hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
       }`}
       onMouseEnter={() => {
-        setHoveredIndex(index);
+        // Don't apply hover effects during animations
+        if (!isAnimating) {
+          setHoveredIndex(index);
+        }
       }}
       style={{
         gridTemplateColumns,
@@ -59,11 +66,11 @@ const TableRow = ({
         columnIndexStart={columnIndexStart}
         columnIndices={columnIndices}
         headers={headers}
-        key={index}
+        key={rowId}
         pinned={pinned}
         rowIndex={position}
         rowIndices={rowIndices}
-        visibleRow={visibleRow}
+        tableRow={tableRow}
       />
     </div>
   );

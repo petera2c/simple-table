@@ -242,7 +242,7 @@ export const Pagination: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
     ...paginationDefaults,
-    theme: "dark"
+    theme: "dark",
   },
   argTypes: universalArgTypes,
   render: (args) =>

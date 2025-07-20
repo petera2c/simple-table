@@ -9,6 +9,8 @@ import RowIndices from "../../types/RowIndices";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import ConditionalWrapper from "../ConditionalWrapper";
 import { canDisplaySection } from "../../utils/generalUtils";
+import { getRowId } from "../../utils/rowUtils";
+import { useTableContext } from "../../context/TableContext";
 
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
@@ -19,10 +21,10 @@ interface TableSectionProps {
   ref?: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   rowIndices: RowIndices;
+  rowsToRender: TableRowType[];
   setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
-  visibleRows: TableRowType[];
   width?: number;
 }
 
@@ -38,10 +40,11 @@ const TableSection = ({
   setHoveredIndex,
   templateColumns,
   totalHeight,
-  visibleRows,
+  rowsToRender,
   width,
 }: TableSectionProps) => {
   const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
+  const { rowIdAccessor } = useTableContext();
 
   const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
   if (!canDisplay) return null;
@@ -61,14 +64,15 @@ const TableSection = ({
           ...(!pinned && { flexGrow: 1 }),
         }}
       >
-        {visibleRows.map((visibleRow, index) => {
+        {rowsToRender.map((tableRow, index) => {
+          const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
           return (
-            <Fragment key={visibleRow.position}>
+            <Fragment key={rowId}>
               {index !== 0 && (
                 <TableRowSeparator
                   // Is last row group and it is open
-                  displayStrongBorder={visibleRow.isLastGroupRow}
-                  position={visibleRow.position}
+                  displayStrongBorder={tableRow.isLastGroupRow}
+                  position={tableRow.position}
                   rowHeight={rowHeight}
                   templateColumns={templateColumns}
                   rowIndex={index - 1}
@@ -81,11 +85,12 @@ const TableSection = ({
                 headers={headers}
                 hoveredIndex={hoveredIndex}
                 index={index}
+                key={rowId}
                 pinned={pinned}
                 rowHeight={rowHeight}
                 rowIndices={rowIndices}
                 setHoveredIndex={setHoveredIndex}
-                visibleRow={visibleRow}
+                tableRow={tableRow}
               />
             </Fragment>
           );

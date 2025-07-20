@@ -16,7 +16,7 @@ interface RenderCellsProps {
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: TableRowType;
+  tableRow: TableRowType;
 }
 
 const RenderCells = ({
@@ -26,24 +26,28 @@ const RenderCells = ({
   pinned,
   rowIndex,
   rowIndices,
-  visibleRow,
+  tableRow,
 }: RenderCellsProps) => {
+  const { rowIdAccessor } = useTableContext();
   const filteredHeaders = headers.filter((header) => displayCell({ header, pinned }));
 
   return (
     <>
       {filteredHeaders.map((header, index) => {
+        const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+        const cellKey = getCellId({ accessor: header.accessor, rowId });
+
         return (
           <RecursiveRenderCells
             columnIndices={columnIndices}
             header={header}
             headers={headers}
-            key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
+            key={cellKey}
             nestedIndex={index + (columnIndexStart ?? 0)}
             pinned={pinned}
             rowIndex={rowIndex}
             rowIndices={rowIndices}
-            visibleRow={visibleRow}
+            tableRow={tableRow}
           />
         );
       })}
@@ -59,7 +63,7 @@ const RecursiveRenderCells = ({
   pinned,
   rowIndex,
   rowIndices,
-  visibleRow,
+  tableRow,
 }: {
   columnIndices: ColumnIndices;
   header: HeaderObject;
@@ -68,13 +72,16 @@ const RecursiveRenderCells = ({
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  visibleRow: TableRowType;
+  tableRow: TableRowType;
 }) => {
   // Get the column index for this header from our pre-calculated mapping
   const colIndex = columnIndices[header.accessor];
 
   // Get selection state for this cell
   const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor } = useTableContext();
+
+  // Calculate rowId once at the beginning
+  const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
 
   if (header.children) {
     const filteredChildren = header.children.filter((child) =>
@@ -84,17 +91,18 @@ const RecursiveRenderCells = ({
     return (
       <Fragment>
         {filteredChildren.map((child) => {
+          const childCellKey = getCellId({ accessor: child.accessor, rowId });
           return (
             <RecursiveRenderCells
               columnIndices={columnIndices}
               header={child}
               headers={headers}
-              key={getCellId({ accessor: child.accessor, rowIndex: rowIndex + 1 })}
+              key={childCellKey}
               nestedIndex={nestedIndex}
               pinned={pinned}
               rowIndex={rowIndex}
               rowIndices={rowIndices}
-              visibleRow={visibleRow}
+              tableRow={tableRow}
             />
           );
         })}
@@ -103,11 +111,12 @@ const RecursiveRenderCells = ({
   }
 
   // Calculate selection state for this specific cell
-  const rowId = getRowId(visibleRow.row, rowIndex, rowIdAccessor);
   const cellData = { rowIndex, colIndex, rowId };
   const borderClass = getBorderClass(cellData);
   const isHighlighted = isSelected(cellData);
   const isInitialFocused = isInitialFocusedCell(cellData);
+
+  const tableCellKey = getCellId({ accessor: header.accessor, rowId });
 
   return (
     <TableCell
@@ -116,10 +125,10 @@ const RecursiveRenderCells = ({
       header={header}
       isHighlighted={isHighlighted}
       isInitialFocused={isInitialFocused}
-      key={getCellId({ accessor: header.accessor, rowIndex: rowIndex + 1 })}
+      key={tableCellKey}
       nestedIndex={nestedIndex}
       rowIndex={rowIndex}
-      visibleRow={visibleRow}
+      tableRow={tableRow}
     />
   );
 };

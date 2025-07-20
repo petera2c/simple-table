@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState, useCallback } from "react";
+import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
@@ -10,7 +10,6 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { getRowId } from "../../utils/rowUtils";
 
 const TableBody = ({
-  headerContainerRef,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -18,18 +17,21 @@ const TableBody = ({
   pinnedRightColumns,
   pinnedRightTemplateColumns,
   pinnedRightWidth,
+  rowsToRender,
   setScrollTop,
   tableRows,
-  visibleRows,
 }: TableBodyProps) => {
   // Get stable props from context
   const {
+    headerContainerRef,
     headers,
+    isAnimating,
     mainBodyRef,
     onLoadMore,
     rowHeight,
     rowIdAccessor,
     scrollbarWidth,
+    setIsScrolling,
     shouldPaginate,
     tableBodyContainerRef,
   } = useTableContext();
@@ -38,6 +40,13 @@ const TableBody = ({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
+  // Clear hover state when animations start
+  useEffect(() => {
+    if (isAnimating && hoveredIndex !== null) {
+      setHoveredIndex(null);
+    }
+  }, [isAnimating, hoveredIndex]);
+
   // Add state for section widths
   useScrollbarVisibility({
     headerContainerRef,
@@ -45,8 +54,18 @@ const TableBody = ({
     scrollbarWidth,
   });
 
+  // Clean up scroll timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollEndTimeoutRef.current) {
+        clearTimeout(scrollEndTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Refs
   const scrollTimeoutRef = useRef<number | null>(null);
+  const scrollEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollTopRef = useRef<number>(0);
 
   // Derived state
@@ -67,13 +86,13 @@ const TableBody = ({
     const indices: RowIndices = {};
 
     // Map each row's ID to its index in the visible rows array
-    visibleRows.forEach((visibleRow, index) => {
-      const rowId = String(getRowId(visibleRow.row, index, rowIdAccessor));
+    rowsToRender.forEach((rowsToRender, index) => {
+      const rowId = String(getRowId({ row: rowsToRender.row, rowIdAccessor }));
       indices[rowId] = index;
     });
 
     return indices;
-  }, [visibleRows, rowIdAccessor]);
+  }, [rowsToRender, rowIdAccessor]);
 
   // Check if we should load more data
   const checkForLoadMore = useCallback(
@@ -103,6 +122,19 @@ const TableBody = ({
     const element = e.currentTarget;
     const newScrollTop = element.scrollTop;
 
+    // Set scrolling state to true when scrolling starts
+    setIsScrolling(true);
+
+    // Clear the previous scroll end timeout
+    if (scrollEndTimeoutRef.current) {
+      clearTimeout(scrollEndTimeoutRef.current);
+    }
+
+    // Set up timeout to detect when scrolling ends
+    scrollEndTimeoutRef.current = setTimeout(() => {
+      setIsScrolling(false);
+    }, 150);
+
     if (scrollTimeoutRef.current) {
       cancelAnimationFrame(scrollTimeoutRef.current);
     }
@@ -126,8 +158,8 @@ const TableBody = ({
     hoveredIndex,
     rowHeight,
     rowIndices,
+    rowsToRender,
     setHoveredIndex,
-    visibleRows,
   };
 
   return (

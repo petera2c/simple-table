@@ -39,7 +39,7 @@ const getColumnLabel = (accessor: string): string => {
 
 // Helper function to get header element by accessor (searches all sections)
 const getHeaderElement = (section: Element, accessor: string): HTMLElement | null => {
-  return section.querySelector(`[id*='cell-${accessor}'] .st-header-label`) as HTMLElement;
+  return section.querySelector(`[id*='header-${accessor}'] .st-header-label`) as HTMLElement;
 };
 
 // Dynamic element finder that searches across all sections
@@ -238,8 +238,10 @@ export const ColumnReorderingInteractions: StoryObj<UniversalTableProps> = {
     const initialMainOrder1 = getColumnOrderFromSection(mainSection!);
     const col1Source = mainCols[0]; // employees
     const col1Target = mainCols[1]; // squareFootage
+
     const col1SourceEl = getHeaderElement(mainSection!, col1Source);
     const col1TargetEl = getHeaderElement(mainSection!, col1Target);
+
     expect(col1SourceEl).toBeTruthy();
     expect(col1TargetEl).toBeTruthy();
     await performDragAndDrop(
