@@ -3,7 +3,7 @@ import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import { useTableContext } from "../../context/TableContext";
-import { SortColumn } from "../../types/SortConfig";
+import SortColumn from "../../types/SortColumn";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "../../types/TableRow";

@@ -1,6 +1,6 @@
 import HeaderObject from "../types/HeaderObject";
-import { SortColumn } from "../types/SortConfig";
 import Row from "../types/Row";
+import SortColumn from "../types/SortColumn";
 
 // Type-specific comparators for different data types
 const comparators = {

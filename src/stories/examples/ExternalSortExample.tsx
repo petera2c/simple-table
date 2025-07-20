@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
-import { SortColumn } from "../../types/SortConfig";
+import SortColumn from "../../types/SortColumn";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Sample data

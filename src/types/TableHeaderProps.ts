@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import { SortColumn } from "./SortConfig";
+import SortColumn from "./SortColumn";
 import HeaderObject from "./HeaderObject";
 
 type TableHeaderProps = {

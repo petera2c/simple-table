@@ -1,7 +1,7 @@
 import HeaderObject from "../types/HeaderObject";
 import Row from "../types/Row";
 import { useCallback, useMemo, useState } from "react";
-import { SortColumn } from "../types/SortConfig";
+import SortColumn from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
 

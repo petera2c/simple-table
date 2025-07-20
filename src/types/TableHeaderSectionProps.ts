@@ -1,6 +1,6 @@
 import { UIEventHandler } from "react";
 import { Pinned } from "./Pinned";
-import { SortColumn } from "./SortConfig";
+import SortColumn from "./SortColumn";
 import { HeaderObject } from "..";
 import { RefObject } from "react";
 import { ColumnIndices } from "../utils/columnIndicesUtils";

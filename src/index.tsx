@@ -11,7 +11,7 @@ import type { AggregationConfig, AggregationType } from "./types/AggregationType
 import type OnSortProps from "./types/OnSortProps";
 import type Row from "./types/Row";
 import type SharedTableProps from "./types/SharedTableProps";
-import type SortConfig from "./types/SortConfig";
+import type SortColumn from "./types/SortColumn";
 import type TableCellProps from "./types/TableCellProps";
 import type TableHeaderProps from "./types/TableHeaderProps";
 import TableRefType from "./types/TableRefType";
@@ -36,7 +36,7 @@ export type {
   OnSortProps,
   Row,
   SharedTableProps,
-  SortConfig,
+  SortColumn,
   TableCellProps,
   TableFilterState,
   TableHeaderProps,

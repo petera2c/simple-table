@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { SortColumn } from "../types/SortConfig";
+import SortColumn from "../types/SortColumn";
 import usePrevious from "./usePrevious";
 
 const useExternalSort = ({

@@ -2,7 +2,7 @@ import { DragEvent, useEffect, MouseEvent, TouchEvent, useState } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
-import { SortColumn } from "../../types/SortConfig";
+import SortColumn from "../../types/SortColumn";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
 import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";

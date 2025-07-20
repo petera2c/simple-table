@@ -36,7 +36,7 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
-import { SortColumn } from "../../types/SortConfig";
+import SortColumn from "../../types/SortColumn";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
