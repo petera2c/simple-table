@@ -147,10 +147,10 @@ export const testMainSectionColumnReordering = async (
 
   // Test: Move "Employees" to "Customer Rating" position
   const employeesLabel = mainSection.querySelector(
-    "[id*='cell-employees'] .st-header-label"
+    "[id*='header-employees'] .st-header-label"
   ) as HTMLElement;
   const customerRatingLabel = mainSection.querySelector(
-    "[id*='cell-customerRating'] .st-header-label"
+    "[id*='header-customerRating'] .st-header-label"
   ) as HTMLElement;
 
   if (!employeesLabel || !customerRatingLabel) {
@@ -201,10 +201,10 @@ export const testPinnedLeftColumnReordering = async (
 
   // Test: Move "Name" to "City" position (swap them)
   const nameLabel = pinnedLeftSection.querySelector(
-    "[id*='cell-name'] .st-header-label"
+    "[id*='header-name'] .st-header-label"
   ) as HTMLElement;
   const cityLabel = pinnedLeftSection.querySelector(
-    "[id*='cell-city'] .st-header-label"
+    "[id*='header-city'] .st-header-label"
   ) as HTMLElement;
 
   if (!nameLabel || !cityLabel) {
@@ -247,10 +247,10 @@ export const testMainToPinnedLeftMove = async (
 
   // Test: Move "Employees" from main to pinned left (target "City")
   const employeesLabel = mainSection.querySelector(
-    "[id*='cell-employees'] .st-header-label"
+    "[id*='header-employees'] .st-header-label"
   ) as HTMLElement;
   const cityLabel = pinnedLeftSection.querySelector(
-    "[id*='cell-city'] .st-header-label"
+    "[id*='header-city'] .st-header-label"
   ) as HTMLElement;
 
   if (!employeesLabel || !cityLabel) {
@@ -297,10 +297,10 @@ export const testMainToPinnedRightMove = async (
 
   // Test: Move "Square Footage" from main to pinned right (target "Total Sales")
   const squareFootageLabel = mainSection.querySelector(
-    "[id*='cell-squareFootage'] .st-header-label"
+    "[id*='header-squareFootage'] .st-header-label"
   ) as HTMLElement;
   const totalSalesLabel = pinnedRightSection.querySelector(
-    "[id*='cell-totalSales'] .st-header-label"
+    "[id*='header-totalSales'] .st-header-label"
   ) as HTMLElement;
 
   if (!squareFootageLabel || !totalSalesLabel) {
@@ -347,10 +347,10 @@ export const testPinnedLeftToMainMove = async (
 
   // Test: Move "City" from pinned left to main (target "Opening Date")
   const cityLabel = pinnedLeftSection.querySelector(
-    "[id*='cell-city'] .st-header-label"
+    "[id*='header-city'] .st-header-label"
   ) as HTMLElement;
   const openingDateLabel = mainSection.querySelector(
-    "[id*='cell-openingDate'] .st-header-label"
+    "[id*='header-openingDate'] .st-header-label"
   ) as HTMLElement;
 
   if (!cityLabel || !openingDateLabel) {
@@ -414,10 +414,10 @@ export const testPinnedRightToMainMove = async (
 
   // Test: Move "Total Sales" from pinned right to main (target "Furniture Sales")
   const totalSalesLabel = pinnedRightSection.querySelector(
-    "[id*='cell-totalSales'] .st-header-label"
+    "[id*='header-totalSales'] .st-header-label"
   ) as HTMLElement;
   const furnitureSalesLabel = mainSection.querySelector(
-    "[id*='cell-furnitureSales'] .st-header-label"
+    "[id*='header-furnitureSales'] .st-header-label"
   ) as HTMLElement;
 
   if (!totalSalesLabel || !furnitureSalesLabel) {
@@ -476,8 +476,8 @@ export const testColumnReorderingDirectSimulation = async (
 
   const initialOrder = getColumnOrderFromSection(mainSection);
 
-  const employeesCell = mainSection.querySelector("[id*='cell-employees']");
-  const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
+  const employeesCell = mainSection.querySelector("[id*='header-employees']");
+  const squareFootageCell = mainSection.querySelector("[id*='header-squareFootage']");
 
   if (!employeesCell || !squareFootageCell) {
     return false;
@@ -578,8 +578,8 @@ export const testColumnReorderingMouseEvents = async (
 
   const initialOrder = getColumnOrderFromSection(mainSection);
 
-  const employeesCell = mainSection.querySelector("[id*='cell-employees']");
-  const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
+  const employeesCell = mainSection.querySelector("[id*='header-employees']");
+  const squareFootageCell = mainSection.querySelector("[id*='header-squareFootage']");
 
   if (!employeesCell || !squareFootageCell) return false;
 
@@ -657,8 +657,8 @@ export const testColumnReorderingDragEvents = async (
 
   const initialOrder = getColumnOrderFromSection(mainSection);
 
-  const employeesCell = mainSection.querySelector("[id*='cell-employees']");
-  const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
+  const employeesCell = mainSection.querySelector("[id*='header-employees']");
+  const squareFootageCell = mainSection.querySelector("[id*='header-squareFootage']");
 
   if (!employeesCell || !squareFootageCell) return false;
 
@@ -751,8 +751,8 @@ export const testColumnReorderingPointerEvents = async (
 
   const initialOrder = getColumnOrderFromSection(mainSection);
 
-  const employeesCell = mainSection.querySelector("[id*='cell-employees']");
-  const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
+  const employeesCell = mainSection.querySelector("[id*='header-employees']");
+  const squareFootageCell = mainSection.querySelector("[id*='header-squareFootage']");
 
   if (!employeesCell || !squareFootageCell) return false;
 
@@ -833,8 +833,8 @@ export const testColumnReorderingCombined = async (
 
   const initialOrder = getColumnOrderFromSection(mainSection);
 
-  const employeesCell = mainSection.querySelector("[id*='cell-employees']");
-  const squareFootageCell = mainSection.querySelector("[id*='cell-squareFootage']");
+  const employeesCell = mainSection.querySelector("[id*='header-employees']");
+  const squareFootageCell = mainSection.querySelector("[id*='header-squareFootage']");
 
   if (!employeesCell || !squareFootageCell) return false;
 
@@ -982,11 +982,9 @@ export const testAllColumnReorderingScenarios = async (
 
       if (result) {
         passedTests++;
-      } else {
       }
     } catch (error) {
       results.push({ name: testCase.name, passed: false, error });
-      console.error(`💥 ${testCase.name}: ERROR -`, error);
     }
 
     // Wait between tests to allow state to settle

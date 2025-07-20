@@ -22,23 +22,20 @@ export const findValidCellBounds = (
   minCol: number;
   maxCol: number;
 } => {
-  const allCells = canvasElement.querySelectorAll('.st-cell[id^="cell-"]');
+  const allCells = canvasElement.querySelectorAll(".st-cell[data-row-index][data-col-index]");
   let minRow = Infinity,
     maxRow = -1,
     minCol = Infinity,
     maxCol = -1;
 
   allCells.forEach((cell) => {
-    const id = cell.id;
-    const match = id.match(/^cell-(\d+)-(\d+)$/);
-    if (match) {
-      const row = parseInt(match[1]);
-      const col = parseInt(match[2]);
-      minRow = Math.min(minRow, row);
-      maxRow = Math.max(maxRow, row);
-      minCol = Math.min(minCol, col);
-      maxCol = Math.max(maxCol, col);
-    }
+    const rowIndex = parseInt(cell.getAttribute("data-row-index") || "0");
+    const colIndex = parseInt(cell.getAttribute("data-col-index") || "0");
+
+    minRow = Math.min(minRow, rowIndex);
+    maxRow = Math.max(maxRow, rowIndex);
+    minCol = Math.min(minCol, colIndex);
+    maxCol = Math.max(maxCol, colIndex);
   });
 
   return { minRow, maxRow, minCol, maxCol };
@@ -64,8 +61,9 @@ export const getCellElement = (
   rowIndex: number,
   colIndex: number
 ): HTMLElement | null => {
-  const cellId = `cell-${rowIndex}-${colIndex}`;
-  const cell = canvasElement.querySelector(`#${cellId}`) as HTMLElement;
+  const cell = canvasElement.querySelector(
+    `[data-row-index="${rowIndex}"][data-col-index="${colIndex}"]`
+  ) as HTMLElement;
   return cell;
 };
 
