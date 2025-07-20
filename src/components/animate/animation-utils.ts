@@ -23,7 +23,7 @@ export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
     // duration: 3000,
-    duration: 8000,
+    duration: 3000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
@@ -71,14 +71,7 @@ export const calculateInvert = (
 /**
  * Applies initial transform to element for FLIP animation
  */
-export const applyInitialTransform = (
-  element: HTMLElement,
-  invert: { x: number; y: number },
-  id?: CellValue
-) => {
-  if (id === 1) {
-    console.log(`translate3d(${invert.x}px, ${invert.y}px, 0)`);
-  }
+export const applyInitialTransform = (element: HTMLElement, invert: { x: number; y: number }) => {
   element.style.transform = `translate3d(${invert.x}px, ${invert.y}px, 0)`;
   element.style.transition = "none";
   // Performance optimizations for smoother animations
@@ -178,13 +171,11 @@ export const flipElement = async ({
   element,
   finalConfig,
   fromBounds,
-  id,
   toBounds,
 }: {
   element: HTMLElement;
   finalConfig: FlipAnimationOptions;
   fromBounds: DOMRect;
-  id?: CellValue;
   toBounds: DOMRect;
 }): Promise<void> => {
   const invert = calculateInvert(fromBounds, toBounds);
@@ -206,17 +197,14 @@ export const flipElement = async ({
   // Get appropriate config based on movement type and user preferences
   const config = getAnimationConfig(finalConfig, movementType);
 
-  if (id === 1) {
-    console.log("invert", invert);
-  }
   // Clean up any existing animation before starting a new one
   cleanupAnimation(element);
 
   // Apply initial transform with limited values
-  applyInitialTransform(element, invert, id);
+  applyInitialTransform(element, invert);
 
   // Animate to final position
-  await animateToFinalPosition(element, config, finalConfig, id);
+  await animateToFinalPosition(element, config, finalConfig);
 };
 
 /**
