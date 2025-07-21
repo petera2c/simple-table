@@ -19,7 +19,7 @@ import TableRowProps from "./types/TableRowProps";
 import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
-import RowClickProps from "./types/RowClickProps";
+import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 
 export { SimpleTable };
 export type {
@@ -38,7 +38,7 @@ export type {
   HeaderObject,
   OnSortProps,
   Row,
-  RowClickProps,
+  RowSelectionChangeProps,
   SharedTableProps,
   SortColumn,
   TableCellProps,
