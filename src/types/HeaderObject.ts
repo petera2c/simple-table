@@ -6,6 +6,7 @@ import EnumOption from "./EnumOption";
 import { AggregationConfig } from "./AggregationTypes";
 
 export type Accessor = keyof Row;
+export type ColumnType = "string" | "number" | "boolean" | "date" | "enum" | "other";
 
 type HeaderObject = {
   accessor: Accessor;
@@ -41,7 +42,7 @@ type HeaderObject = {
   label: string;
   minWidth?: number | string;
   pinned?: Pinned;
-  type?: "string" | "number" | "boolean" | "date" | "enum";
+  type?: ColumnType;
   width: number | string;
 };
 

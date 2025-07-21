@@ -6,7 +6,7 @@ import CellValue from "./types/CellValue";
 import ColumnEditorPosition from "./types/ColumnEditorPosition";
 import DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
-import HeaderObject, { Accessor } from "./types/HeaderObject";
+import HeaderObject, { Accessor, ColumnType } from "./types/HeaderObject";
 import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import OnSortProps from "./types/OnSortProps";
 import Row from "./types/Row";
@@ -30,6 +30,7 @@ export type {
   CellChangeProps,
   CellValue,
   ColumnEditorPosition,
+  ColumnType,
   DragHandlerProps,
   EnumOption,
   FilterCondition,
