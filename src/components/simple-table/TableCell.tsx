@@ -11,6 +11,7 @@ import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
 import Animate from "../animate/Animate";
+import Checkbox from "../Checkbox";
 
 const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
@@ -56,12 +57,15 @@ const TableCell = ({
     cellRegistry,
     cellUpdateFlash,
     draggedHeaderRef,
+    enableRowSelection,
     expandIcon,
     handleMouseDown,
     handleMouseOver,
+    handleRowSelect,
     headers,
     hoveredHeaderRef,
     isCopyFlashing,
+    isRowSelected,
     isWarningFlashing,
     onCellEdit,
     onTableHeaderDragEnd,
@@ -108,6 +112,9 @@ const TableCell = ({
 
   // Generate a unique key that includes the content value to force re-render when it changes
   const cellKey = getCellKey({ rowId, accessor: header.accessor });
+
+  // Check if this is the selection column
+  const isSelectionColumn = header.isSelectionColumn && enableRowSelection;
 
   // Register this cell with the cell registry for direct updates
   useEffect(() => {
@@ -186,7 +193,9 @@ const TableCell = ({
         ? "st-cell-warning-flash-first"
         : "st-cell-warning-flash"
       : ""
-  } ${useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""}`;
+  } ${useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""} ${
+    isSelectionColumn ? "st-selection-cell" : ""
+  }`;
 
   const updateContent = useCallback(
     (newValue: CellValue) => {
@@ -219,8 +228,8 @@ const TableCell = ({
 
   // Handle keyboard events when cell is focused
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    // If we're editing, don't handle table navigation keys
-    if (isEditing) {
+    // If we're editing or this is a selection column, don't handle table navigation keys
+    if (isEditing || isSelectionColumn) {
       return;
     }
 
@@ -231,21 +240,29 @@ const TableCell = ({
     }
   };
 
-  // Handle mouse down - only if not editing
+  // Handle mouse down - only if not editing and not selection column
   const handleCellMouseDown = () => {
-    if (!isEditing) {
+    if (!isEditing && !isSelectionColumn) {
       handleMouseDown({ rowIndex, colIndex, rowId });
     }
   };
 
-  // Handle mouse over - only if not editing
+  // Handle mouse over - only if not editing and not selection column
   const handleCellMouseOver = () => {
-    if (!isEditing) {
+    if (!isEditing && !isSelectionColumn) {
       handleMouseOver({ rowIndex, colIndex, rowId });
     }
   };
 
-  if (isEditing && !isEditInDropdown) {
+  // Handle row selection checkbox change
+  const handleRowCheckboxChange = (checked: boolean) => {
+    if (handleRowSelect) {
+      handleRowSelect(String(rowId), checked);
+    }
+  };
+
+  // Don't handle cell editing for selection column
+  if (isEditing && !isEditInDropdown && !isSelectionColumn) {
     return (
       <div
         className="st-cell-editing"
@@ -273,14 +290,16 @@ const TableCell = ({
       data-row-index={rowIndex}
       id={cellId}
       key={cellKey}
-      onDoubleClick={() => header.isEditable && setIsEditing(true)}
-      onDragOver={(event) =>
-        throttle({
-          callback: handleDragOver,
-          callbackProps: { event, hoveredHeader: header },
-          limit: DRAG_THROTTLE_LIMIT,
-        })
-      }
+      onDoubleClick={() => header.isEditable && !isSelectionColumn && setIsEditing(true)}
+      onDragOver={(event) => {
+        if (!isSelectionColumn) {
+          throttle({
+            callback: handleDragOver,
+            callbackProps: { event, hoveredHeader: header },
+            limit: DRAG_THROTTLE_LIMIT,
+          });
+        }
+      }}
       onKeyDown={handleKeyDown}
       onMouseDown={handleCellMouseDown}
       onMouseOver={handleCellMouseOver}
@@ -297,6 +316,7 @@ const TableCell = ({
           {expandIcon}
         </div>
       ) : null}
+
       <span
         className={`st-cell-content ${
           header.align === "right"
@@ -307,12 +327,20 @@ const TableCell = ({
         }`}
       >
         <span>
-          {header.cellRenderer
-            ? header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
-            : displayContent({ content: localContent, header })}
+          {isSelectionColumn ? (
+            <Checkbox
+              checked={isRowSelected ? isRowSelected(String(rowId)) : false}
+              onChange={handleRowCheckboxChange}
+            />
+          ) : header.cellRenderer ? (
+            header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
+          ) : (
+            displayContent({ content: localContent, header })
+          )}
         </span>
       </span>
-      {isEditing && isEditInDropdown && (
+
+      {isEditing && isEditInDropdown && !isSelectionColumn && (
         <EditableCell
           enumOptions={header.enumOptions}
           onChange={updateContent}

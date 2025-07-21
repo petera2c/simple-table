@@ -14,6 +14,7 @@ import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
 import Animate from "../animate/Animate";
+import Checkbox from "../Checkbox";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -41,12 +42,15 @@ const TableHeaderCell = ({
 
   // Get shared props from context
   const {
+    areAllRowsSelected,
     columnReordering,
     columnResizing,
     draggedHeaderRef,
+    enableRowSelection,
     filters,
     handleApplyFilter,
     handleClearFilter,
+    handleSelectAll,
     headers,
     hoveredHeaderRef,
     onColumnOrderChange,
@@ -119,6 +123,11 @@ const TableHeaderCell = ({
     event: MouseEvent;
     header: HeaderObject;
   }) => {
+    // If this is the selection column, don't handle column selection
+    if (header.isSelectionColumn) {
+      return;
+    }
+
     if (selectableColumns) {
       // Get all column indices that should be selected (including children)
       const columnsToSelect = getHeaderLeafIndices(header, colIndex);
@@ -192,11 +201,14 @@ const TableHeaderCell = ({
     };
   }, []);
 
+  // Check if this is the selection column
+  const isSelectionColumn = header.isSelectionColumn && enableRowSelection;
+
   if (!header) {
     return null;
   }
 
-  const ResizeHandle = columnResizing && (
+  const ResizeHandle = columnResizing && !isSelectionColumn && (
     <div
       className="st-header-resize-handle-container"
       onMouseDown={(event: MouseEvent) => {
@@ -283,16 +295,25 @@ const TableHeaderCell = ({
     </div>
   );
 
+  // Handle select all checkbox change
+  const handleSelectAllChange = (checked: boolean) => {
+    if (handleSelectAll) {
+      handleSelectAll(checked);
+    }
+  };
+
   return (
     <Animate
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
       onDragOver={(event) => {
-        throttle({
-          callback: handleDragOver,
-          callbackProps: { event, hoveredHeader: header },
-          limit: DRAG_THROTTLE_LIMIT,
-        });
+        if (!isSelectionColumn) {
+          throttle({
+            callback: handleDragOver,
+            callbackProps: { event, hoveredHeader: header },
+            limit: DRAG_THROTTLE_LIMIT,
+          });
+        }
       }}
       style={{
         gridRowStart,
@@ -308,10 +329,14 @@ const TableHeaderCell = ({
       {header.align === "right" && SortIcon}
       <div
         className="st-header-label"
-        draggable={columnReordering && !header.disableReorder}
-        onClick={(event) => handleColumnHeaderClick({ event, header })}
-        onDragEnd={handleDragEndWrapper}
-        onDragStart={onDragStart}
+        draggable={columnReordering && !header.disableReorder && !isSelectionColumn}
+        onClick={(event) => {
+          if (!isSelectionColumn) {
+            handleColumnHeaderClick({ event, header });
+          }
+        }}
+        onDragEnd={!isSelectionColumn ? handleDragEndWrapper : undefined}
+        onDragStart={!isSelectionColumn ? onDragStart : undefined}
       >
         <span
           className={`st-header-label-text ${
@@ -322,9 +347,16 @@ const TableHeaderCell = ({
               : "left-aligned"
           }`}
         >
-          {header.headerRenderer
-            ? header.headerRenderer({ accessor: header.accessor, colIndex, header })
-            : header?.label}
+          {isSelectionColumn ? (
+            <Checkbox
+              checked={areAllRowsSelected ? areAllRowsSelected() : false}
+              onChange={handleSelectAllChange}
+            />
+          ) : header.headerRenderer ? (
+            header.headerRenderer({ accessor: header.accessor, colIndex, header })
+          ) : (
+            header?.label
+          )}
         </span>
       </div>
       {header.align !== "right" && SortIcon}

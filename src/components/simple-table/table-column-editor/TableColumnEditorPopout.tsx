@@ -21,14 +21,19 @@ const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorP
       onClick={(e) => e.stopPropagation()}
     >
       <div className="st-column-editor-popout-content">
-        {headers.map((header, index) => (
-          <ColumnEditorCheckbox
-            doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
-            key={`${header.accessor}-${index}`}
-            header={header}
-            allHeaders={headers}
-          />
-        ))}
+        {headers.map((header, index) => {
+          if (header.isSelectionColumn) {
+            return null;
+          }
+          return (
+            <ColumnEditorCheckbox
+              doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
+              key={`${header.accessor}-${index}`}
+              header={header}
+              allHeaders={headers}
+            />
+          );
+        })}
       </div>
     </div>
   );

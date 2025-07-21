@@ -38,12 +38,14 @@ type HeaderObject = {
   }) => ReactNode | string;
   hide?: boolean;
   isEditable?: boolean;
+  isSelectionColumn?: boolean;
   isSortable?: boolean;
   label: string;
   minWidth?: number | string;
   pinned?: Pinned;
   type?: ColumnType;
   width: number | string;
+  maxWidth?: number | string;
 };
 
 export default HeaderObject;

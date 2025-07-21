@@ -55,6 +55,7 @@ import { salesExampleDefaults } from "./examples/sales-example/SalesExample";
 import ManufacturingExampleComponent, {
   manufacturingExampleDefaults,
 } from "./examples/manufacturing/ManufacturingExample";
+import RowSelectionExample, { rowSelectionExampleDefaults } from "./examples/RowSelectionExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -266,7 +267,15 @@ export const RowGrouping: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: RowGroupingExample, ...args }),
 };
-
+export const RowSelection: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...rowSelectionExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: RowSelectionExample, ...args }),
+};
 export const RowHeight: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,

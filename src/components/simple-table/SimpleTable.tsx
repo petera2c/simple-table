@@ -43,6 +43,9 @@ import useScrollbarWidth from "../../hooks/useScrollbarWidth";
 import useOnGridReady from "../../hooks/useOnGridReady";
 import useTableAPI from "../../hooks/useTableAPI";
 import useTableRowProcessing from "../../hooks/useTableRowProcessing";
+import { useRowSelection } from "../../hooks/useRowSelection";
+import { createSelectionHeader } from "../../utils/rowSelectionUtils";
+import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -54,6 +57,7 @@ interface SimpleTableProps {
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
+  enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
@@ -67,6 +71,7 @@ interface SimpleTableProps {
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
+  onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
@@ -105,6 +110,7 @@ const SimpleTableComp = ({
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
+  enableRowSelection = false,
   expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   externalFilterHandling = false,
@@ -118,6 +124,7 @@ const SimpleTableComp = ({
   onGridReady,
   onLoadMore,
   onNextPage,
+  onRowSelectionChange,
   onSortChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowGrouping,
@@ -162,6 +169,33 @@ const SimpleTableComp = ({
     setHeaders(defaultHeaders);
   }, [defaultHeaders]);
 
+  // Row selection hook
+  const {
+    selectedRows,
+    setSelectedRows,
+    isRowSelected,
+    areAllRowsSelected,
+    selectedRowCount,
+    selectedRowsData,
+    handleRowSelect,
+    handleSelectAll,
+    handleToggleRow,
+    clearSelection,
+  } = useRowSelection({
+    rows,
+    rowIdAccessor,
+    onRowSelectionChange,
+    enableRowSelection,
+  });
+
+  // Create headers with selection column if enabled
+  const effectiveHeaders = useMemo(() => {
+    if (!enableRowSelection || headers?.[0]?.isSelectionColumn) return headers;
+
+    const selectionHeader = createSelectionHeader();
+    return [selectionHeader, ...headers];
+  }, [enableRowSelection, headers]);
+
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
@@ -171,10 +205,10 @@ const SimpleTableComp = ({
   // Calculate the width of the sections
   const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
     const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
-      headers,
+      headers: effectiveHeaders,
     });
     return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
-  }, [headers]);
+  }, [effectiveHeaders]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
@@ -314,12 +348,15 @@ const SimpleTableComp = ({
     <TableProvider
       value={{
         allowAnimations,
+        areAllRowsSelected,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
+        clearSelection,
         columnReordering,
         columnResizing,
         draggedHeaderRef,
         editColumns,
+        enableRowSelection,
         expandIcon,
         filters,
         forceUpdate,
@@ -329,13 +366,17 @@ const SimpleTableComp = ({
         handleClearFilter,
         handleMouseDown,
         handleMouseOver,
+        handleRowSelect,
+        handleSelectAll,
+        handleToggleRow,
         headerContainerRef,
-        headers,
+        headers: effectiveHeaders,
         hoveredHeaderRef,
         isAnimating,
         isCopyFlashing,
         isInitialFocusedCell,
         isResizing,
+        isRowSelected,
         isScrolling,
         isSelected,
         isWarningFlashing,
@@ -355,12 +396,16 @@ const SimpleTableComp = ({
         scrollbarWidth,
         selectColumns,
         selectableColumns,
+        selectedRows,
+        selectedRowCount,
+        selectedRowsData,
         setHeaders,
         setInitialFocusedCell,
         setIsResizing,
         setIsScrolling,
         setSelectedCells,
         setSelectedColumns,
+        setSelectedRows,
         setUnexpandedRows,
         shouldPaginate,
         sortDownIcon,

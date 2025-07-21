@@ -19,6 +19,7 @@ export const SalesExampleComponent = (props: UniversalTableProps) => {
   return (
     <SimpleTable
       {...props}
+      enableRowSelection
       defaultHeaders={SALES_HEADERS}
       rowIdAccessor="id"
       rows={data}

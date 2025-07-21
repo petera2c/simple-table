@@ -303,6 +303,7 @@
   --st-odd-column-background-color: var(--st-slate-50);
   --st-even-column-background-color: var(--st-white);
   --st-hover-row-background-color: var(--st-slate-100);
+  --st-selected-row-background-color: var(--st-blue-50);
   --st-header-background-color: var(--st-slate-100);
   --st-header-label-color: var(--st-slate-900);
   --st-header-icon-color: var(--st-slate-500);
@@ -381,6 +382,7 @@
   --st-odd-column-background-color: var(--st-gray-800);
   --st-even-column-background-color: var(--st-gray-900);
   --st-hover-row-background-color: var(--st-gray-700);
+  --st-selected-row-background-color: var(--st-blue-950);
   --st-header-background-color: var(--st-gray-800);
   --st-header-label-color: var(--st-gray-100);
   --st-header-icon-color: var(--st-gray-400);
@@ -459,6 +461,7 @@
   --st-odd-column-background-color: var(--st-neutral-50);
   --st-even-column-background-color: var(--st-neutral-100);
   --st-hover-row-background-color: var(--st-neutral-200);
+  --st-selected-row-background-color: var(--st-neutral-200);
   --st-header-background-color: var(--st-neutral-200);
   --st-header-label-color: var(--st-neutral-900);
   --st-header-icon-color: var(--st-neutral-500);
@@ -537,6 +540,7 @@
   --st-odd-column-background-color: var(--st-blue-50);
   --st-even-column-background-color: var(--st-blue-100);
   --st-hover-row-background-color: var(--st-blue-200);
+  --st-selected-row-background-color: var(--st-sky-100);
   --st-header-background-color: var(--st-blue-200);
   --st-header-label-color: var(--st-blue-900);
   --st-header-icon-color: var(--st-blue-600);
@@ -615,6 +619,7 @@
   --st-odd-column-background-color: var(--st-violet-50);
   --st-even-column-background-color: var(--st-amber-50);
   --st-hover-row-background-color: var(--st-amber-200);
+  --st-selected-row-background-color: var(--st-violet-100);
   --st-header-background-color: var(--st-violet-600);
   --st-header-label-color: var(--st-white);
   --st-header-icon-color: var(--st-violet-200);
@@ -831,6 +836,17 @@ input {
   background-color: var(--st-odd-row-background-color);
 }
 
+/* Selected row styling - higher specificity to override even/odd */
+.st-row.selected {
+  background-color: var(--st-selected-row-background-color);
+}
+
+/* Selected row hover state - should override selected background when hovering */
+.st-row.selected.hovered .st-cell-editing,
+.st-row.selected.hovered .st-cell:not(.st-cell-selected) {
+  background-color: var(--st-hover-row-background-color);
+}
+
 .st-row.odd .st-cell-content {
   color: var(--st-cell-odd-row-color);
 }
@@ -882,14 +898,11 @@ input {
 .st-cell.center-aligned {
   text-align: center;
 }
-.st-cell.center-aligned {
-  padding-right: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
-  );
-}
+
 .st-cell.center-aligned > .st-cell-content {
   text-align: center;
 }
+
 .st-header-cell.center-aligned > .st-header-label-text {
   text-align: center;
 }
@@ -969,6 +982,12 @@ input {
   padding-right: calc(
     var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
+}
+
+/* Override resize handle padding for selection cells */
+.st-resizeable .st-selection-cell .st-cell-content {
+  padding-left: var(--st-cell-padding);
+  padding-right: var(--st-cell-padding);
 }
 
 .st-cell {
@@ -1292,9 +1311,9 @@ input {
 
 /* Checkbox styles */
 .st-checkbox-label {
-  flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
   text-overflow: ellipsis;
@@ -1310,8 +1329,8 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
   border: var(--st-border-width) solid var(--st-checkbox-border-color);
   border-radius: var(--st-border-radius);
   background-color: white;

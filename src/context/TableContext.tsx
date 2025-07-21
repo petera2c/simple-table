@@ -23,12 +23,15 @@ export interface CellRegistryEntry {
 interface TableContextType {
   // Stable values that don't change frequently
   allowAnimations?: boolean;
+  areAllRowsSelected?: () => boolean;
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;
+  clearSelection?: () => void;
   columnReordering: boolean;
   columnResizing: boolean;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   editColumns?: boolean;
+  enableRowSelection?: boolean;
   expandIcon?: ReactNode;
   filters: TableFilterState;
   forceUpdate: () => void;
@@ -38,6 +41,9 @@ interface TableContextType {
   handleClearFilter: (accessor: Accessor) => void;
   handleMouseDown: (cell: Cell) => void;
   handleMouseOver: (cell: Cell) => void;
+  handleRowSelect?: (rowId: string, isSelected: boolean) => void;
+  handleSelectAll?: (isSelected: boolean) => void;
+  handleToggleRow?: (rowId: string) => void;
   headerContainerRef: RefObject<HTMLDivElement>;
   headers: HeaderObject[];
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
@@ -45,6 +51,7 @@ interface TableContextType {
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isResizing: boolean;
+  isRowSelected?: (rowId: string) => boolean;
   isScrolling: boolean;
   isSelected: (cell: Cell) => boolean;
   isWarningFlashing: (cell: Cell) => boolean;
@@ -64,12 +71,16 @@ interface TableContextType {
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
+  selectedRows?: Set<string>;
+  selectedRowCount?: number;
+  selectedRowsData?: any[];
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;
   setIsScrolling: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
+  setSelectedRows?: Dispatch<SetStateAction<Set<string>>>;
   setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;
   shouldPaginate: boolean;
   sortDownIcon: ReactNode;

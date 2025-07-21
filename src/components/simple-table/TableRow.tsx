@@ -36,7 +36,7 @@ const TableRow = ({
   setHoveredIndex,
   tableRow,
 }: TableRowProps) => {
-  const { useHoverRowBackground, rowIdAccessor, isAnimating } = useTableContext();
+  const { useHoverRowBackground, rowIdAccessor, isAnimating, isRowSelected } = useTableContext();
   const { position } = tableRow;
   // Get row index from rowIndices using the row's ID
 
@@ -45,11 +45,14 @@ const TableRow = ({
   // Get stable row ID for key
   const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
 
+  // Check if this row is selected
+  const isSelected = isRowSelected ? isRowSelected(String(rowId)) : false;
+
   return (
     <div
       className={`st-row ${isOdd ? "even" : "odd"} ${
         hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
-      }`}
+      } ${isSelected ? "selected" : ""}`}
       onMouseEnter={() => {
         // Don't apply hover effects during animations
         if (!isAnimating) {
