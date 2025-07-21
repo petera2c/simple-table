@@ -68,6 +68,7 @@ const TableCell = ({
     isRowSelected,
     isWarningFlashing,
     onCellEdit,
+    onCellClick,
     onTableHeaderDragEnd,
     rowGrouping,
     rowIdAccessor,
@@ -261,6 +262,20 @@ const TableCell = ({
     }
   };
 
+  // Handle cell click callback
+  const handleCellClick = () => {
+    if (onCellClick && !isSelectionColumn) {
+      onCellClick({
+        accessor: header.accessor,
+        colIndex,
+        row,
+        rowId,
+        rowIndex,
+        value: localContent,
+      });
+    }
+  };
+
   // Don't handle cell editing for selection column
   if (isEditing && !isEditInDropdown && !isSelectionColumn) {
     return (
@@ -290,6 +305,7 @@ const TableCell = ({
       data-row-index={rowIndex}
       id={cellId}
       key={cellKey}
+      onClick={handleCellClick}
       onDoubleClick={() => header.isEditable && !isSelectionColumn && setIsEditing(true)}
       onDragOver={(event) => {
         if (!isSelectionColumn) {

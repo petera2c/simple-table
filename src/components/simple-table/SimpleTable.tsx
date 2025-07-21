@@ -46,10 +46,12 @@ import useTableRowProcessing from "../../hooks/useTableRowProcessing";
 import { useRowSelection } from "../../hooks/useRowSelection";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
+import CellClickProps from "../../types/CellClickProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
+  className?: string; // Class name for the table
   columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
@@ -66,6 +68,7 @@ interface SimpleTableProps {
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
+  onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
@@ -103,6 +106,7 @@ const SimpleTable = (props: SimpleTableProps) => {
 const SimpleTableComp = ({
   allowAnimations = false,
   cellUpdateFlash = false,
+  className,
   columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnReordering = false,
@@ -119,6 +123,7 @@ const SimpleTableComp = ({
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
+  onCellClick,
   onColumnOrderChange,
   onFilterChange,
   onGridReady,
@@ -383,6 +388,7 @@ const SimpleTableComp = ({
         mainBodyRef,
         nextIcon,
         onCellEdit,
+        onCellClick,
         onColumnOrderChange,
         onLoadMore,
         onSort,
@@ -420,7 +426,7 @@ const SimpleTableComp = ({
       }}
     >
       <div
-        className={`simple-table-root st-wrapper theme-${theme}`}
+        className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""}`}
         style={height ? { height } : {}}
       >
         <ScrollSync>

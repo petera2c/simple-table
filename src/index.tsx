@@ -20,6 +20,7 @@ import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
 import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
+import CellClickProps from "./types/CellClickProps";
 
 export { SimpleTable };
 export type {
@@ -29,6 +30,7 @@ export type {
   BoundingBox,
   Cell,
   CellChangeProps,
+  CellClickProps,
   CellValue,
   ColumnEditorPosition,
   ColumnType,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SimpleTable } from "../..";
+import { CellClickProps, SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import Row from "../../types/Row";
@@ -127,6 +127,10 @@ const RowSelectionExample = (props: UniversalTableProps) => {
     setSelectedRowsInfo(selectedRowsArray);
   };
 
+  const handleCellClick = ({ row, colIndex, accessor, value }: CellClickProps) => {
+    console.log("Cell clicked:", { row, colIndex, accessor, value });
+  };
+
   // Define headers
   const headers: HeaderObject[] = [
     {
@@ -227,6 +231,7 @@ const RowSelectionExample = (props: UniversalTableProps) => {
         rowIdAccessor="id"
         enableRowSelection={true}
         onRowSelectionChange={handleRowSelectionChange}
+        onCellClick={handleCellClick}
       />
     </div>
   );

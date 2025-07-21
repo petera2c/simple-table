@@ -14,6 +14,7 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Theme from "../types/Theme";
 import CellValue from "../types/CellValue";
+import CellClickProps from "../types/CellClickProps";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -58,6 +59,7 @@ interface TableContextType {
   mainBodyRef: RefObject<HTMLDivElement>;
   nextIcon: ReactNode;
   onCellEdit?: (props: any) => void;
+  onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onLoadMore?: () => void;
   onSort: OnSortProps;
