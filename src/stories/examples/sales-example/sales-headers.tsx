@@ -1,4 +1,4 @@
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
 type SalesRow = {
   id: number;
@@ -13,7 +13,7 @@ type SalesRow = {
   category: string;
 };
 
-export const SALES_HEADERS: HeaderObject<SalesRow>[] = [
+export const SALES_HEADERS: STColumn<SalesRow>[] = [
   {
     accessor: "repName",
     label: "Sales Representative",

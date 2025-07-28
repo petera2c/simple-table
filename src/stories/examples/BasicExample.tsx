@@ -1,5 +1,5 @@
 import { SimpleTable } from "../..";
-import { HeaderObject } from "../..";
+import { STColumn } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
 type Employee = {
@@ -176,7 +176,7 @@ const rows: Employee[] = [
 ];
 
 // Define headers
-const headers: HeaderObject<Employee>[] = [
+const headers: STColumn<Employee>[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true },
   {
     accessor: "name",

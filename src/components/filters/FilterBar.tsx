@@ -1,9 +1,11 @@
-import React from "react";
 import { useTableContext } from "../../context/TableContext";
 import { FILTER_OPERATOR_LABELS, FilterCondition } from "../../types/FilterTypes";
 import { HeaderObject } from "../..";
 
-const getFilterDisplayText = (filter: FilterCondition, currentHeaders: HeaderObject[]) => {
+const getFilterDisplayText = <T,>(
+  filter: FilterCondition<T>,
+  currentHeaders: HeaderObject<T>[]
+) => {
   const header = currentHeaders.find((h) => h.accessor === filter.accessor);
   const columnName = header?.label || filter.accessor;
   const operatorLabel = FILTER_OPERATOR_LABELS[filter.operator];
@@ -25,10 +27,10 @@ const getFilterDisplayText = (filter: FilterCondition, currentHeaders: HeaderObj
   }
 
   if (filter.operator === "isEmpty" || filter.operator === "isNotEmpty") {
-    return `${columnName}: ${operatorLabel}`;
+    return `${String(columnName)}: ${operatorLabel}`;
   }
 
-  return `${columnName}: ${operatorLabel} ${valueText}`;
+  return `${String(columnName)}: ${operatorLabel} ${valueText}`;
 };
 
 const FilterBar = () => {

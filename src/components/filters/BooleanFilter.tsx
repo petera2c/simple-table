@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import {
   FilterCondition,
@@ -13,19 +13,19 @@ import FilterSelect from "./shared/FilterSelect";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 
-interface BooleanFilterProps {
-  header: HeaderObject;
-  currentFilter?: FilterCondition;
-  onApplyFilter: (filter: FilterCondition) => void;
+interface BooleanFilterProps<T> {
+  header: HeaderObject<T>;
+  currentFilter?: FilterCondition<T>;
+  onApplyFilter: (filter: FilterCondition<T>) => void;
   onClearFilter: () => void;
 }
 
-const BooleanFilter: React.FC<BooleanFilterProps> = ({
+const BooleanFilter = <T,>({
   header,
   currentFilter,
   onApplyFilter,
   onClearFilter,
-}) => {
+}: BooleanFilterProps<T>) => {
   const [selectedOperator, setSelectedOperator] = useState<BooleanFilterOperator>(
     (currentFilter?.operator as BooleanFilterOperator) || "equals"
   );
@@ -47,7 +47,8 @@ const BooleanFilter: React.FC<BooleanFilterProps> = ({
   }, [currentFilter]);
 
   const handleApplyFilter = () => {
-    const filter: FilterCondition = {
+    if (!header.accessor) return;
+    const filter: FilterCondition<T> = {
       accessor: header.accessor,
       operator: selectedOperator,
     };

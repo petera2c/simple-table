@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { STColumn } from "../../types/HeaderObject";
 
 export type AthleteData = {
   id: number;
@@ -52,7 +52,7 @@ export const generateAthletesData = (): AthleteData[] => {
   });
 };
 
-export const ATHLETES_HEADERS: HeaderObject<AthleteData>[] = [
+export const ATHLETES_HEADERS: STColumn<AthleteData>[] = [
   {
     accessor: "country",
     label: "Country",

@@ -14,19 +14,19 @@ import FilterInput from "./shared/FilterInput";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 
-interface NumberFilterProps {
-  header: HeaderObject;
-  currentFilter?: FilterCondition;
-  onApplyFilter: (filter: FilterCondition) => void;
+interface NumberFilterProps<T> {
+  header: HeaderObject<T>;
+  currentFilter?: FilterCondition<T>;
+  onApplyFilter: (filter: FilterCondition<T>) => void;
   onClearFilter: () => void;
 }
 
-const NumberFilter: React.FC<NumberFilterProps> = ({
+const NumberFilter = <T,>({
   header,
   currentFilter,
   onApplyFilter,
   onClearFilter,
-}) => {
+}: NumberFilterProps<T>) => {
   const [selectedOperator, setSelectedOperator] = useState<NumberFilterOperator>(
     (currentFilter?.operator as NumberFilterOperator) || "equals"
   );
@@ -54,7 +54,7 @@ const NumberFilter: React.FC<NumberFilterProps> = ({
   }, [currentFilter]);
 
   const handleApplyFilter = () => {
-    const filter: FilterCondition = {
+    const filter: FilterCondition<T> = {
       accessor: header.accessor,
       operator: selectedOperator,
     };

@@ -8,23 +8,23 @@ import { getRowId } from "../utils/rowUtils";
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
 
-interface UseSelectionProps {
+interface UseSelectionProps<T> {
   selectableCells: boolean;
-  headers: HeaderObject[];
-  tableRows: TableRowType[];
-  rowIdAccessor: Accessor;
+  headers: HeaderObject<T>[];
+  tableRows: TableRowType<T>[];
+  rowIdAccessor: Accessor<T>;
   onCellEdit?: (props: any) => void;
   cellRegistry?: Map<string, any>;
 }
 
-const useSelection = ({
+const useSelection = <T>({
   selectableCells,
   headers,
   tableRows,
   rowIdAccessor,
   onCellEdit,
   cellRegistry,
-}: UseSelectionProps) => {
+}: UseSelectionProps<T>) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
   const [lastSelectedColumnIndex, setLastSelectedColumnIndex] = useState<number | null>(null);
@@ -47,7 +47,7 @@ const useSelection = ({
     // Example: {0: "name", 1: "age", 2: "email"}
     const colIndexToAccessor = new Map<number, string>();
     flattenedLeafHeaders.forEach((header, index) => {
-      colIndexToAccessor.set(index, header.accessor);
+      colIndexToAccessor.set(index, header.id);
     });
 
     // Convert selectedCells (Set of "row-col-depth" strings) to a text format suitable for clipboard
@@ -63,7 +63,9 @@ const useSelection = ({
 
       // Get the accessor for this column using our mapping
       // Example: for col=2, might get accessor="email"
-      const accessor = colIndexToAccessor.get(col);
+      const accessor = flattenedLeafHeaders.find(
+        (header) => header.id === colIndexToAccessor.get(col)
+      )?.accessor;
 
       if (accessor && tableRows[row]?.row) {
         // Use the accessor to get the cell value directly from the row
@@ -159,7 +161,11 @@ const useSelection = ({
           }
 
           // Update the data
-          targetRow.row[targetHeader.accessor] = convertedValue;
+          if (targetHeader.accessor) {
+            targetRow.row[targetHeader.accessor] = convertedValue;
+          } else {
+            console.warn("No accessor found for target header", targetHeader);
+          }
 
           // Use cell registry for direct update if available
           if (cellRegistry) {
@@ -214,7 +220,7 @@ const useSelection = ({
     const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
     const colIndexToAccessor = new Map<number, string>();
     flattenedLeafHeaders.forEach((header, index) => {
-      colIndexToAccessor.set(index, header.accessor);
+      colIndexToAccessor.set(index, header.id);
     });
 
     const deletedCells = new Set<string>();
@@ -248,7 +254,7 @@ const useSelection = ({
         emptyValue = false;
       } else if (targetHeader.type === "date") {
         emptyValue = null;
-      } else if (Array.isArray(targetRow.row[targetHeader.accessor])) {
+      } else if (targetHeader.accessor && Array.isArray(targetRow.row[targetHeader.accessor])) {
         // If the current value is an array, set it to an empty array
         emptyValue = [];
       } else {
@@ -256,7 +262,11 @@ const useSelection = ({
       }
 
       // Update the data
-      targetRow.row[targetHeader.accessor] = emptyValue;
+      if (targetHeader.accessor) {
+        targetRow.row[targetHeader.accessor] = emptyValue;
+      } else {
+        console.warn("No accessor found for target header", targetHeader);
+      }
 
       // Use cell registry for direct update if available
       if (cellRegistry) {

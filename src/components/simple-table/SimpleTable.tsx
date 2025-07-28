@@ -9,7 +9,7 @@ import {
   MutableRefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import HeaderObject, { Accessor, STColumn } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
@@ -46,6 +46,8 @@ import { useRowSelection } from "../../hooks/useRowSelection";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
+import { generateColumnId } from "../../utils/columnUtils";
+import RowGrouping from "../../types/RowGrouping";
 
 interface SimpleTableProps<T> {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -55,7 +57,7 @@ interface SimpleTableProps<T> {
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
-  defaultHeaders: HeaderObject<T>[]; // Default headers with type safety
+  defaultHeaders: STColumn<T>[]; // Default headers with type safety
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
@@ -76,7 +78,7 @@ interface SimpleTableProps<T> {
   onRowSelectionChange?: (props: RowSelectionChangeProps<T>) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn<T> | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
-  rowGrouping?: Accessor<T>[]; // Array of property names that define row grouping hierarchy
+  rowGrouping?: RowGrouping; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
   rowIdAccessor: Accessor<T>; // Property name to use as row ID (defaults to index-based ID)
   rows: T[]; // Rows data with type safety
@@ -86,7 +88,7 @@ interface SimpleTableProps<T> {
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
-  tableRef?: MutableRefObject<TableRefType | null>;
+  tableRef?: MutableRefObject<TableRefType<T> | null>;
   theme?: Theme; // Theme
   useOddColumnBackground?: boolean; // Flag for using column background
   useHoverRowBackground?: boolean; // Flag for using hover row background
@@ -149,6 +151,18 @@ const SimpleTableComp = <T,>({
 }: SimpleTableProps<T>) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
 
+  // Recursively add ids to headers
+  const headersWithIds = useMemo(() => {
+    const addIds = (headers: STColumn<T>[]): HeaderObject<T>[] => {
+      return headers.map((header) => ({
+        ...header,
+        id: generateColumnId(header),
+        children: header.children ? addIds(header.children) : undefined,
+      }));
+    };
+    return addIds(defaultHeaders);
+  }, [defaultHeaders]);
+
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
@@ -164,14 +178,14 @@ const SimpleTableComp = <T,>({
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
-  const [headers, setHeaders] = useState(defaultHeaders);
+  const [headers, setHeaders] = useState(headersWithIds);
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
-    setHeaders(defaultHeaders);
-  }, [defaultHeaders]);
+    setHeaders(headersWithIds);
+  }, [headersWithIds]);
 
   // Row selection hook
   const {
@@ -219,7 +233,7 @@ const SimpleTableComp = <T,>({
 
   const aggregatedRows = useAggregatedRows({
     rows,
-    headers,
+    headers: headersWithIds,
     rowGrouping,
   });
 
@@ -239,7 +253,7 @@ const SimpleTableComp = <T,>({
 
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, updateSort, computeSortedRowsPreview } = useSortableData({
-    headers,
+    headers: headersWithIds,
     tableRows: filteredRows,
     externalSortHandling,
     onSortChange,

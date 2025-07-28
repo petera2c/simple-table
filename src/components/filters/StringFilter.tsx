@@ -13,19 +13,19 @@ import FilterInput from "./shared/FilterInput";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 
-interface StringFilterProps {
-  header: HeaderObject;
-  currentFilter?: FilterCondition;
-  onApplyFilter: (filter: FilterCondition) => void;
+interface StringFilterProps<T> {
+  header: HeaderObject<T>;
+  currentFilter?: FilterCondition<T>;
+  onApplyFilter: (filter: FilterCondition<T>) => void;
   onClearFilter: () => void;
 }
 
-const StringFilter: React.FC<StringFilterProps> = ({
+const StringFilter = <T,>({
   header,
   currentFilter,
   onApplyFilter,
   onClearFilter,
-}) => {
+}: StringFilterProps<T>) => {
   const [selectedOperator, setSelectedOperator] = useState<StringFilterOperator>(
     (currentFilter?.operator as StringFilterOperator) || "contains"
   );
@@ -45,7 +45,7 @@ const StringFilter: React.FC<StringFilterProps> = ({
   }, [currentFilter]);
 
   const handleApplyFilter = () => {
-    const filter: FilterCondition = {
+    const filter: FilterCondition<T> = {
       accessor: header.accessor,
       operator: selectedOperator,
       ...(requiresSingleValue(selectedOperator) && { value: filterValue }),

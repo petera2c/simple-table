@@ -1,5 +1,5 @@
 import { Accessor } from "./HeaderObject";
 
-type OnSortProps = (accessor: Accessor) => void;
+type OnSortProps<T> = (accessor: Accessor<T>) => void;
 
 export default OnSortProps;

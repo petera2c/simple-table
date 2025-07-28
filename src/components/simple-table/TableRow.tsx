@@ -11,7 +11,7 @@ import { getRowId } from "../../utils/rowUtils";
 // Define just the props needed for RenderCells
 interface TableRowProps<T> {
   columnIndexStart?: number;
-  columnIndices: ColumnIndices<T>;
+  columnIndices: ColumnIndices;
   gridTemplateColumns: string;
   headers: HeaderObject<T>[];
   hoveredIndex: number | null;

@@ -1,26 +1,26 @@
 import { MutableRefObject, useEffect } from "react";
-import { Row, TableRefType, UpdateDataProps } from "..";
+import { TableRefType, UpdateDataProps } from "..";
 import { getRowId } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry } from "../context/TableContext";
 import { Accessor } from "../types/HeaderObject";
 
-const useTableAPI = ({
+const useTableAPI = <T>({
   tableRef,
   rows,
   rowIdAccessor,
   cellRegistryRef,
 }: {
-  tableRef?: MutableRefObject<TableRefType | null>;
-  rows: Row[];
-  rowIdAccessor: Accessor;
+  tableRef?: MutableRefObject<TableRefType<T> | null>;
+  rows: T[];
+  rowIdAccessor: Accessor<T>;
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
 }) => {
   // Set up API methods on the ref if provided
   useEffect(() => {
     if (tableRef) {
       tableRef.current = {
-        updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
+        updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps<T>) => {
           // Get the row ID using the new utility
           const row = rows?.[rowIndex];
           if (row) {

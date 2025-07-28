@@ -1,6 +1,7 @@
 import TableRow from "../types/TableRow";
 import { RowId } from "../types/RowId";
 import { Accessor } from "../types/HeaderObject";
+import RowGrouping from "../types/RowGrouping";
 
 /**
  * Check if an array contains Row objects (vs primitive arrays like string[] or number[])
@@ -58,7 +59,7 @@ export const flattenRowsWithGrouping = <T>({
   depth?: number;
   expandAll?: boolean;
   unexpandedRows: Set<string>;
-  rowGrouping?: Accessor<T>[];
+  rowGrouping?: RowGrouping;
   rowIdAccessor: Accessor<T>;
   rows: T[];
 }): TableRow<T>[] => {
@@ -79,7 +80,7 @@ export const flattenRowsWithGrouping = <T>({
       result.push({
         row,
         depth: currentDepth,
-        groupingKey: currentGroupingKey,
+        groupingKey: currentGroupingKey as keyof T,
         position,
         isLastGroupRow,
       });
@@ -94,7 +95,7 @@ export const flattenRowsWithGrouping = <T>({
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {
-        const nestedRows = getNestedRows(row, currentGroupingKey) as T[];
+        const nestedRows = getNestedRows(row, currentGroupingKey as keyof T) as T[];
 
         if (nestedRows.length > 0) {
           // Recursively process nested rows and update position

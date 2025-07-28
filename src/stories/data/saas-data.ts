@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import { STColumn } from "../../types/HeaderObject";
 
 export type SaaSData = {
   id: number;
@@ -64,7 +64,7 @@ export const generateSaaSData = (): SaaSData[] => {
   });
 };
 
-export const SAAS_HEADERS: HeaderObject<SaaSData>[] = [
+export const SAAS_HEADERS: STColumn<SaaSData>[] = [
   {
     accessor: "tier",
     label: "Tier",

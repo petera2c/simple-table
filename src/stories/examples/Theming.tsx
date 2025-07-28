@@ -2,7 +2,7 @@ import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
-import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
+import { generateSpaceData, SPACE_HEADERS, SpaceData } from "../data/space-data";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to Theming - exported for reuse in stories and tests
@@ -22,10 +22,10 @@ const HEADERS = SPACE_HEADERS;
 const THEME_OPTIONS: Theme[] = ["sky", "funky", "neutral", "light", "dark"];
 
 const ThemingExample = (props: UniversalTableProps) => {
-  const [rows, setRows] = useState(EXAMPLE_DATA);
+  const [rows, setRows] = useState<SpaceData[]>(EXAMPLE_DATA);
   const [theme, setTheme] = useState<Theme>(props.theme ?? "light");
 
-  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
+  const updateCell = ({ accessor, newValue, row }: CellChangeProps<SpaceData>) => {
     setRows((prevRows) => {
       const rowIndex = prevRows.findIndex((r) => r.id === row.id);
       if (rowIndex !== -1) {

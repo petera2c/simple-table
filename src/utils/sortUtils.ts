@@ -133,13 +133,13 @@ const sortFlatRows = <T>({
 }: {
   rows: T[];
   sortColumn: SortColumn<T>;
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
 }): T[] => {
   // Recursively search for the header in nested structure
   const findHeaderRecursively = (
-    headers: HeaderObject[],
-    accessor: Accessor
-  ): HeaderObject | undefined => {
+    headers: HeaderObject<T>[],
+    accessor?: Accessor<T>
+  ): HeaderObject<T> | undefined => {
     for (const header of headers) {
       if (header.accessor === accessor) {
         return header;
@@ -158,6 +158,7 @@ const sortFlatRows = <T>({
 
   return [...rows].sort((a, b) => {
     const accessor = sortColumn.key.accessor;
+    if (!accessor) return 0;
     const aValue = a[accessor];
     const bValue = b[accessor];
 
@@ -170,7 +171,7 @@ export const handleSort = <T>({
   rows,
   sortColumn,
 }: {
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
   rows: T[];
   sortColumn: SortColumn<T>;
 }) => {

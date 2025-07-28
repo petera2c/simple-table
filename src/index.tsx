@@ -19,6 +19,8 @@ import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
 import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 import CellClickProps from "./types/CellClickProps";
+import HeaderRendererProps from "./types/HeaderRendererProps";
+import CellRendererProps from "./types/CellRendererProps";
 
 export { SimpleTable };
 export type {
@@ -29,12 +31,14 @@ export type {
   Cell,
   CellChangeProps,
   CellClickProps,
+  CellRendererProps,
   ColumnEditorPosition,
   ColumnType,
   DragHandlerProps,
   EnumOption,
   FilterCondition,
   HeaderObject,
+  HeaderRendererProps,
   OnSortProps,
   RowSelectionChangeProps,
   SharedTableProps,

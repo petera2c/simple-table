@@ -11,7 +11,7 @@ import { getRowId } from "../../utils/rowUtils";
 
 interface RenderCellsProps<T> {
   columnIndexStart?: number;
-  columnIndices: ColumnIndices<T>;
+  columnIndices: ColumnIndices;
   headers: HeaderObject<T>[];
   pinned?: Pinned;
   rowIndex: number;
@@ -35,7 +35,7 @@ const RenderCells = <T,>({
     <>
       {filteredHeaders.map((header, index) => {
         const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
-        const cellKey = getCellId({ accessor: header.accessor, rowId });
+        const cellKey = getCellId({ headerId: header.id, rowId });
 
         return (
           <RecursiveRenderCells
@@ -65,7 +65,7 @@ const RecursiveRenderCells = <T,>({
   rowIndices,
   tableRow,
 }: {
-  columnIndices: ColumnIndices<T>;
+  columnIndices: ColumnIndices;
   header: HeaderObject<T>;
   headers: HeaderObject<T>[];
   nestedIndex: number;
@@ -88,7 +88,7 @@ const RecursiveRenderCells = <T,>({
     return (
       <Fragment>
         {filteredChildren.map((child) => {
-          const childCellKey = getCellId({ accessor: child.accessor, rowId });
+          const childCellKey = getCellId({ headerId: child.id, rowId });
           return (
             <RecursiveRenderCells
               columnIndices={columnIndices}
@@ -106,18 +106,16 @@ const RecursiveRenderCells = <T,>({
       </Fragment>
     );
   }
-  const accessor = header.accessor;
-  if (!accessor) return null;
 
   // Get the column index for this header from our pre-calculated mapping
-  const colIndex = columnIndices[accessor];
+  const colIndex = columnIndices[header.id];
   // Calculate selection state for this specific cell
   const cellData = { rowIndex, colIndex, rowId };
   const borderClass = getBorderClass(cellData);
   const isHighlighted = isSelected(cellData);
   const isInitialFocused = isInitialFocusedCell(cellData);
 
-  const tableCellKey = getCellId({ accessor: header.accessor, rowId });
+  const tableCellKey = getCellId({ headerId: header.id, rowId });
 
   return (
     <TableCell

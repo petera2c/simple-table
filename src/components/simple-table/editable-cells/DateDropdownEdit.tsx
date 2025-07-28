@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Dropdown from "../../dropdown/Dropdown";
 import DatePicker from "../../date-picker/DatePicker";
-import CellValue from "../../../types/CellValue";
 
 // Convert the input value to a Date object
-const parseDate = (value: CellValue): Date => {
+const parseDate = (value: string): Date => {
   if (!value) return new Date();
   const [year, month, day] = value.toString().split("-").map(Number);
 
@@ -20,7 +19,7 @@ interface DateDropdownEditProps {
   onChange: (value: string) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
-  value: CellValue;
+  value: string;
 }
 
 const DateDropdownEdit = ({ onBlur, onChange, open, setOpen, value }: DateDropdownEditProps) => {

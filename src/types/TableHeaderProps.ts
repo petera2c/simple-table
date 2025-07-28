@@ -2,15 +2,15 @@ import { RefObject } from "react";
 import SortColumn from "./SortColumn";
 import HeaderObject from "./HeaderObject";
 
-type TableHeaderProps = {
+type TableHeaderProps<T> = {
   centerHeaderRef: RefObject<HTMLDivElement>;
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
   mainTemplateColumns: string;
-  pinnedLeftColumns: HeaderObject[];
+  pinnedLeftColumns: HeaderObject<T>[];
   pinnedLeftTemplateColumns: string;
-  pinnedRightColumns: HeaderObject[];
+  pinnedRightColumns: HeaderObject<T>[];
   pinnedRightTemplateColumns: string;
-  sort: SortColumn | null;
+  sort: SortColumn<T> | null;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
 };

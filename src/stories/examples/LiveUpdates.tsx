@@ -1,6 +1,15 @@
 import { useRef, useEffect } from "react";
-import { HeaderObject, SimpleTable, TableRefType } from "../..";
+import { SimpleTable, TableRefType } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
+import { STColumn } from "../../types/HeaderObject";
+
+type RowData = {
+  id: number;
+  product: string;
+  price: number;
+  stock: number;
+  sales: number;
+};
 
 // Default args specific to LiveUpdates - exported for reuse in stories and tests
 export const liveUpdatesDefaults = {
@@ -9,7 +18,7 @@ export const liveUpdatesDefaults = {
 };
 
 // Define headers
-export const headers: HeaderObject[] = [
+export const headers: STColumn<RowData>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {
@@ -119,7 +128,7 @@ const initialData = [
 
 const LiveUpdatesExample = (props: UniversalTableProps) => {
   // Keep a local copy of the data to update
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = useRef<TableRefType<RowData> | null>(null);
 
   // Set up intervals for automatic updates
   useEffect(() => {

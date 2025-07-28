@@ -1,6 +1,6 @@
 import SimpleTable from "../../../components/simple-table/SimpleTable";
-import { HeaderObject } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
+import { STColumn } from "../../../types/HeaderObject";
 
 // Default args specific to RowGrouping - exported for reuse in stories and tests
 export const rowGroupingDefaults = {
@@ -8,7 +8,42 @@ export const rowGroupingDefaults = {
   height: "calc(100dvh - 112px)",
 };
 
-const headers: HeaderObject[] = [
+type RowGroupingRowData = {
+  id: number;
+  organization: string;
+  performance: string;
+  location: string;
+  growthRate: string;
+  status: string;
+  established: string;
+  divisions: {
+    id: number;
+    organization: string;
+    performance: string;
+    location: string;
+    growthRate: string;
+    status: string;
+    established: string;
+    teams: {
+      id: number;
+      organization: string;
+      employees: number;
+      budget: string;
+      rating?: number;
+      projectCount?: number;
+      minTeamSize?: number;
+      maxTeamSize?: number;
+      weightedScore?: number;
+      performance: string;
+      location: string;
+      status: string;
+      growthRate?: string;
+      established?: string;
+    }[];
+  }[];
+};
+
+const headers: STColumn<RowGroupingRowData>[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   {
     accessor: "employees",

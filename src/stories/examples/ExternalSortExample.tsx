@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { SimpleTable } from "../..";
-import HeaderObject from "../../types/HeaderObject";
+import { STColumn } from "../../types/HeaderObject";
 import SortColumn from "../../types/SortColumn";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -81,7 +81,7 @@ const sampleData: EmployeeData[] = [
   },
 ];
 
-const headers: HeaderObject<EmployeeData>[] = [
+const headers: STColumn<EmployeeData>[] = [
   {
     accessor: "name",
     label: "Name",

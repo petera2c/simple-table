@@ -5,6 +5,7 @@ import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
+import RowGrouping from "../types/RowGrouping";
 
 interface UseTableRowProcessingProps<T> {
   allowAnimations: boolean;
@@ -14,7 +15,7 @@ interface UseTableRowProcessingProps<T> {
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
-  rowGrouping?: Accessor<T>[];
+  rowGrouping?: RowGrouping;
   rowIdAccessor: Accessor<T>;
   unexpandedRows: Set<string>;
   expandAll: boolean;

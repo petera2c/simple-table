@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { CellClickProps, SimpleTable } from "../..";
-import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
+import { STColumn } from "../../types/HeaderObject";
 
 type EmployeeData = {
   id: number;
@@ -145,7 +145,7 @@ const RowSelectionExample = (props: UniversalTableProps) => {
   };
 
   // Define headers
-  const headers: HeaderObject<EmployeeData>[] = [
+  const headers: STColumn<EmployeeData>[] = [
     {
       accessor: "id",
       label: "ID",

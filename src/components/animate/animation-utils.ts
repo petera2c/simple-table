@@ -1,4 +1,3 @@
-import CellValue from "../../types/CellValue";
 import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from "./types";
 
 /**
@@ -102,8 +101,7 @@ const cleanupAnimation = (element: HTMLElement) => {
 const animateToFinalPosition = (
   element: HTMLElement,
   config: AnimationConfig,
-  options: FlipAnimationOptions = {},
-  id?: CellValue
+  options: FlipAnimationOptions = {}
 ): Promise<void> => {
   return new Promise((resolve) => {
     // Force a reflow to ensure the initial transform is applied

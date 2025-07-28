@@ -1,6 +1,6 @@
-import HeaderObject from "../../types/HeaderObject";
+import { STColumn } from "../../types/HeaderObject";
 
-export type RetailSalesData = {
+type RetailStore = {
   id: number;
   name: string;
   city: string;
@@ -13,10 +13,27 @@ export type RetailSalesData = {
   groceriesSales: number;
   furnitureSales: number;
   totalSales: number;
-  stores: RetailSalesData[];
 };
 
-export const generateRetailSalesData = () => {
+export type RetailRegion = {
+  id: number;
+  name: string;
+  city: string; // Will be "-" for regions
+  employees: number; // Aggregated from stores
+  squareFootage: number; // Aggregated from stores
+  openingDate: string; // Will be "-" for regions
+  customerRating: string; // Will be "-" for regions
+  electronicsSales: number; // Aggregated from stores
+  clothingSales: number; // Aggregated from stores
+  groceriesSales: number; // Aggregated from stores
+  furnitureSales: number; // Aggregated from stores
+  totalSales: number; // Aggregated from stores
+  stores: RetailStore[];
+};
+
+export type RetailSalesData = RetailStore | RetailRegion;
+
+export const generateRetailSalesData = (): RetailRegion[] => {
   const regions = Array.from({ length: 20 }, (_, i) => `Region ${i + 1}`);
   const storeNames = ["MegaMart", "ShopRite", "TrendyGoods", "ValueStore", "QuickBuy"];
   const cities = ["New York", "London", "Tokyo", "Sydney", "Paris", "Toronto", "Berlin"];
@@ -24,7 +41,7 @@ export const generateRetailSalesData = () => {
 
   return regions.map((region) => {
     const numStores = Math.floor(Math.random() * 7) + 2; // 2 to 8 children
-    const stores = Array.from({ length: numStores }, () => {
+    const stores: RetailStore[] = Array.from({ length: numStores }, () => {
       const storeName = storeNames[Math.floor(Math.random() * storeNames.length)];
       const city = cities[Math.floor(Math.random() * cities.length)];
       const electronicsSales = Math.floor(Math.random() * 100000) + 5000;
@@ -83,7 +100,7 @@ export const generateRetailSalesData = () => {
   });
 };
 
-export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
+export const RETAIL_SALES_HEADERS: STColumn<RetailSalesData>[] = [
   {
     accessor: "name",
     label: "Name",
@@ -126,7 +143,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: ({ row }: { row: RetailSalesData }) => {
+    cellRenderer: ({ row }) => {
       if (row.openingDate === "-") return "-";
       const date = new Date(row.openingDate as string);
       return date.toLocaleDateString("en-US", {
@@ -143,8 +160,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }: { row: RetailSalesData }) =>
-      row.customerRating === "-" ? "-" : `${row.customerRating}/5`,
+    cellRenderer: ({ row }) => (row.customerRating === "-" ? "-" : `${row.customerRating}/5`),
   },
   {
     accessor: "electronicsSales",
@@ -153,8 +169,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
     isSortable: true,
     isEditable: true,
     align: "center",
-    cellRenderer: ({ row }: { row: RetailSalesData }) =>
-      `$${(row.electronicsSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.electronicsSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "clothingSales",
@@ -163,8 +178,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: ({ row }: { row: RetailSalesData }) =>
-      `$${(row.clothingSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.clothingSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "groceriesSales",
@@ -173,8 +187,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }: { row: RetailSalesData }) =>
-      `$${(row.groceriesSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.groceriesSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "furnitureSales",
@@ -183,8 +196,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
     isSortable: true,
     isEditable: true,
     align: "center",
-    cellRenderer: ({ row }: { row: RetailSalesData }) =>
-      `$${(row.furnitureSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.furnitureSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "totalSales",
@@ -194,7 +206,6 @@ export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
     isEditable: true,
     pinned: "right",
     align: "center",
-    cellRenderer: ({ row }: { row: RetailSalesData }) =>
-      `$${(row.totalSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }) => `$${(row.totalSales as number).toLocaleString("en-US")}`,
   },
 ];

@@ -8,8 +8,9 @@ import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
 import { getRowId } from "../../utils/rowUtils";
+import TableRow from "../../types/TableRow";
 
-const TableBody = ({
+const TableBody = <T,>({
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -20,7 +21,7 @@ const TableBody = ({
   rowsToRender,
   setScrollTop,
   tableRows,
-}: TableBodyProps) => {
+}: TableBodyProps<T>) => {
   // Get stable props from context
   const {
     headerContainerRef,
@@ -34,7 +35,7 @@ const TableBody = ({
     setIsScrolling,
     shouldPaginate,
     tableBodyContainerRef,
-  } = useTableContext();
+  } = useTableContext<T>();
 
   // Local state
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -86,7 +87,7 @@ const TableBody = ({
     const indices: RowIndices = {};
 
     // Map each row's ID to its index in the visible rows array
-    rowsToRender.forEach((rowsToRender, index) => {
+    rowsToRender.forEach((rowsToRender: TableRow<T>, index: number) => {
       const rowId = String(getRowId({ row: rowsToRender.row, rowIdAccessor }));
       indices[rowId] = index;
     });

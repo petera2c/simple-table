@@ -1,3 +1,3 @@
-type ColumnIndices<T> = Record<keyof T, number>;
+type ColumnIndices = Record<string, number>;
 
 export default ColumnIndices;

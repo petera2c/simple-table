@@ -1,6 +1,13 @@
 import { SimpleTable } from "../..";
-import { HeaderObject } from "../..";
+import { STColumn } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
+
+type RowData = {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+};
 
 // Default args specific to CellRenderer - exported for reuse in stories and tests
 export const cellRendererDefaults = {
@@ -122,7 +129,7 @@ const CellRendererExample = (props: UniversalTableProps) => {
   const rows = CELL_RENDERER_DATA;
 
   // Define headers
-  const headers: HeaderObject[] = [
+  const headers: STColumn<RowData>[] = [
     {
       accessor: "id",
       label: "ID",

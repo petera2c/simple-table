@@ -2,7 +2,7 @@ import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import CellChangeProps from "../../types/CellChangeProps";
 import { RowId } from "../../types/RowId";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import { Accessor, STColumn } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
 type EmployeeData = {
@@ -27,7 +27,7 @@ export const editableCellsDefaults = {
 };
 
 // Define headers with editable property and various types
-const HEADERS: HeaderObject<EmployeeData>[] = [
+const HEADERS: STColumn<EmployeeData>[] = [
   {
     accessor: "status",
     label: "Status",

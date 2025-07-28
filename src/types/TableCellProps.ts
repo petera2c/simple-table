@@ -1,16 +1,15 @@
 import HeaderObject from "./HeaderObject";
 import TableRow from "./TableRow";
-import Cell from "./Cell";
 
-export interface TableCellProps {
+export interface TableCellProps<T> {
   borderClass?: string;
   colIndex: number;
-  header: HeaderObject;
+  header: HeaderObject<T>;
   isHighlighted?: boolean;
   isInitialFocused?: boolean;
   nestedIndex: number;
   rowIndex: number;
-  tableRow: TableRow;
+  tableRow: TableRow<T>;
 }
 
 export default TableCellProps;

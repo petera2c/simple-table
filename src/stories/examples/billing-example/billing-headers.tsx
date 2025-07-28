@@ -1,10 +1,88 @@
-import { HeaderObject } from "../../..";
+import { STColumn } from "../../../types/HeaderObject";
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const months: (
+  | "Jan"
+  | "Feb"
+  | "Mar"
+  | "Apr"
+  | "May"
+  | "Jun"
+  | "Jul"
+  | "Aug"
+  | "Sep"
+  | "Oct"
+  | "Nov"
+  | "Dec"
+)[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+type BillingCharge = {
+  id: string;
+  type: string;
+  name: string;
+  createdDate: string;
+  amount: number;
+  recognizedRevenue: number;
+  deferredRevenue: number;
+  month_Jan_2024: number;
+  month_Feb_2024: number;
+  month_Mar_2024: number;
+  month_Apr_2024: number;
+  month_May_2024: number;
+  month_Jun_2024: number;
+  month_Jul_2024: number;
+  month_Aug_2024: number;
+  month_Sep_2024: number;
+  month_Oct_2024: number;
+  month_Nov_2024: number;
+  month_Dec_2024: number;
+  revenue_Jan_2024: number;
+  revenue_Feb_2024: number;
+  revenue_Mar_2024: number;
+  revenue_Apr_2024: number;
+  revenue_May_2024: number;
+  revenue_Jun_2024: number;
+  revenue_Jul_2024: number;
+  revenue_Aug_2024: number;
+  revenue_Sep_2024: number;
+  revenue_Oct_2024: number;
+  revenue_Nov_2024: number;
+  revenue_Dec_2024: number;
+  balance_Jan_2024: number;
+  balance_Feb_2024: number;
+  balance_Mar_2024: number;
+  balance_Apr_2024: number;
+  balance_May_2024: number;
+  balance_Jun_2024: number;
+  balance_Jul_2024: number;
+  balance_Aug_2024: number;
+  balance_Sep_2024: number;
+  balance_Oct_2024: number;
+  balance_Nov_2024: number;
+  balance_Dec_2024: number;
+};
+
+type BillingInvoice = {
+  id: string;
+  type: string;
+  name: string;
+  status: string;
+  createdDate: string;
+  dueDate: string;
+  charges: BillingCharge[];
+};
+
+export type BillingRowData = {
+  id: string;
+  type: string;
+  name: string;
+  status: string;
+  createdDate: string;
+  invoices: BillingInvoice[];
+};
 
 // Generate header configs for 2024 months
 const generateMonthHeaders = () => {
-  const headers: HeaderObject[] = [];
+  const headers: STColumn<BillingRowData>[] = [];
   const year = 2024;
 
   // Add all months for 2024 in reverse chronological order (Dec to Jan)
@@ -12,7 +90,6 @@ const generateMonthHeaders = () => {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
 
     headers.push({
-      accessor: `month_${months[monthIndex]}_${year}`,
       label: `${fullMonthName} ${year}`,
       width: 200,
       isSortable: true,
@@ -68,7 +145,7 @@ const generateMonthHeaders = () => {
 };
 
 // Main headers
-export const HEADERS: HeaderObject[] = [
+export const HEADERS: STColumn<BillingRowData>[] = [
   {
     accessor: "name",
     label: "Name",

@@ -7,7 +7,7 @@ import HeaderObject from "../types/HeaderObject";
  * @param colIndex The column index of the header in the current context
  * @returns Array of column indices that belong to this header branch
  */
-export const getHeaderLeafIndices = (header: HeaderObject, colIndex: number): number[] => {
+export const getHeaderLeafIndices = <T>(header: HeaderObject<T>, colIndex: number): number[] => {
   // For a leaf node (no children), just return the current index
   if (!header.children || header.children.length === 0) {
     return [colIndex];
@@ -17,7 +17,7 @@ export const getHeaderLeafIndices = (header: HeaderObject, colIndex: number): nu
   const columnsToSelect: number[] = [];
 
   // Recursive function to collect column indices
-  const collectChildIndices = (childHeader: HeaderObject, startIndex: number): number => {
+  const collectChildIndices = (childHeader: HeaderObject<T>, startIndex: number): number => {
     // If this is a leaf node, add its index and increment
     if (!childHeader.children || childHeader.children.length === 0) {
       columnsToSelect.push(startIndex);
@@ -44,7 +44,7 @@ export const getHeaderLeafIndices = (header: HeaderObject, colIndex: number): nu
  * @param headers The headers array to flatten
  * @returns Flattened array of all leaf headers
  */
-export const flattenHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+export const flattenHeaders = <T>(headers: HeaderObject<T>[]): HeaderObject<T>[] => {
   return headers.flatMap((header) => {
     if (!header.children || header.children.length === 0) {
       return [header];

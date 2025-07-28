@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "../..";
-import { HeaderObject } from "../..";
+import { STColumn } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to DynamicHeaders - exported for reuse in stories and tests
@@ -8,6 +8,16 @@ export const dynamicHeadersDefaults = {
   columnResizing: true,
   editColumns: true,
   selectableCells: true,
+};
+
+type EmployeeData = {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+  salary: number;
 };
 
 const DynamicHeadersExample = (props: UniversalTableProps) => {
@@ -61,7 +71,7 @@ const DynamicHeadersExample = (props: UniversalTableProps) => {
   ];
 
   // Define all possible headers
-  const allHeaders: HeaderObject[] = [
+  const allHeaders: STColumn<EmployeeData>[] = [
     { accessor: "id", label: "ID", width: 80, isSortable: true },
     { accessor: "name", label: "Name", minWidth: 80, width: "1fr", isSortable: true },
     { accessor: "age", label: "Age", width: 100, isSortable: true },
@@ -72,7 +82,7 @@ const DynamicHeadersExample = (props: UniversalTableProps) => {
   ];
 
   // Define reduced headers (hiding department and salary)
-  const reducedHeaders: HeaderObject[] = [
+  const reducedHeaders: STColumn<EmployeeData>[] = [
     { accessor: "id", label: "ID", width: 80, isSortable: true },
     { accessor: "name", label: "Name", minWidth: 80, width: "1fr", isSortable: true },
     { accessor: "age", label: "Age", width: 100, isSortable: true },
@@ -81,14 +91,14 @@ const DynamicHeadersExample = (props: UniversalTableProps) => {
   ];
 
   // Define minimal headers (only basic info)
-  const minimalHeaders: HeaderObject[] = [
+  const minimalHeaders: STColumn<EmployeeData>[] = [
     { accessor: "id", label: "ID", width: 80, isSortable: true },
     { accessor: "name", label: "Name", minWidth: 80, width: "1fr", isSortable: true },
     { accessor: "role", label: "Role", width: 150, isSortable: true },
   ];
 
   // State to manage which headers to show
-  const [currentHeaders, setCurrentHeaders] = useState<HeaderObject[]>(allHeaders);
+  const [currentHeaders, setCurrentHeaders] = useState<STColumn<EmployeeData>[]>(allHeaders);
   const [currentView, setCurrentView] = useState<"all" | "reduced" | "minimal">("all");
 
   // Functions to handle button clicks

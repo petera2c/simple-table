@@ -7,7 +7,7 @@ import { isRowArray } from "../utils/rowUtils";
 interface UseAggregatedRowsProps<T> {
   rows: T[];
   headers: HeaderObject<T>[];
-  rowGrouping?: Accessor<T>[];
+  rowGrouping?: string[];
 }
 
 /**
@@ -45,14 +45,14 @@ export const useAggregatedRows = <T>({ rows, headers, rowGrouping }: UseAggregat
         const nextGroupKey = rowGrouping[groupingLevel + 1];
 
         // If this row has children at the current grouping level
-        const currentGroupValue = row[currentGroupKey] as T[];
+        const currentGroupValue = row[currentGroupKey as keyof T] as T[];
         if (currentGroupValue && isRowArray(currentGroupValue)) {
           // Process children recursively first
           const processedChildren = processRows(currentGroupValue, groupingLevel + 1);
 
           // Calculate aggregations for this parent row
           const aggregatedRow = { ...row };
-          aggregatedRow[currentGroupKey] = processedChildren as T[keyof T];
+          aggregatedRow[currentGroupKey as keyof T] = processedChildren as T[keyof T];
 
           // Calculate aggregated values for each configured header
           aggregationHeaders.forEach((header) => {
@@ -62,7 +62,7 @@ export const useAggregatedRows = <T>({ rows, headers, rowGrouping }: UseAggregat
               processedChildren,
               header.accessor,
               header.aggregation!,
-              nextGroupKey
+              nextGroupKey as keyof T
             );
 
             if (aggregatedValue !== undefined) {

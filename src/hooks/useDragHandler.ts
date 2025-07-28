@@ -1,5 +1,5 @@
 import { DragEvent } from "react";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import HeaderObject, { AggregatedRow } from "../types/HeaderObject";
 import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
 import { deepClone } from "../utils/generalUtils";
@@ -9,18 +9,18 @@ const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 let prevUpdateTime = Date.now();
 let prevDraggingPosition = { screenX: 0, screenY: 0 };
 
-const getHeaderIndexPath = (
-  headers: HeaderObject[],
-  targetAccessor: Accessor,
+const getHeaderIndexPath = <T>(
+  headers: HeaderObject<AggregatedRow<T>>[],
+  id: string,
   currentPath: number[] = []
 ): number[] | null => {
   for (let i = 0; i < headers.length; i++) {
     const header = headers[i];
-    if (header.accessor === targetAccessor) {
+    if (header.id === id) {
       return [...currentPath, i];
     }
     if (header.children && header.children.length > 0) {
-      const path = getHeaderIndexPath(header.children, targetAccessor, [...currentPath, i]);
+      const path = getHeaderIndexPath(header.children, id, [...currentPath, i]);
       if (path) return path;
     }
   }
@@ -28,17 +28,17 @@ const getHeaderIndexPath = (
 };
 
 // Helper function to determine which section a header belongs to based on its pinned property
-const getHeaderSection = (header: HeaderObject): "left" | "main" | "right" => {
+const getHeaderSection = <T>(header: HeaderObject<T>): "left" | "main" | "right" => {
   if (header.pinned === "left") return "left";
   if (header.pinned === "right") return "right";
   return "main";
 };
 
 // Helper function to update header's pinned property based on target section
-const updateHeaderPinnedProperty = (
-  header: HeaderObject,
+const updateHeaderPinnedProperty = <T>(
+  header: HeaderObject<T>,
   targetSection: "left" | "main" | "right"
-): HeaderObject => {
+): HeaderObject<T> => {
   const updatedHeader = { ...header };
   if (targetSection === "left") {
     updatedHeader.pinned = "left";
@@ -51,19 +51,19 @@ const updateHeaderPinnedProperty = (
   return updatedHeader;
 };
 
-function swapHeaders(
-  headers: HeaderObject[],
+function swapHeaders<T>(
+  headers: HeaderObject<T>[],
   draggedPath: number[],
   hoveredPath: number[]
-): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
+): { newHeaders: HeaderObject<T>[]; emergencyBreak: boolean } {
   // Create a deep copy of headers using our custom deep clone function
   const newHeaders = deepClone(headers);
   let emergencyBreak = false;
 
   // Helper function to get a header at a given path
-  function getHeaderAtPath(headers: HeaderObject[], path: number[]): HeaderObject {
+  function getHeaderAtPath(headers: HeaderObject<T>[], path: number[]): HeaderObject<T> {
     let current = headers;
-    let header: HeaderObject | undefined;
+    let header: HeaderObject<T> | undefined;
     for (let i = 0; i < path.length - 1; i++) {
       current = current[path[i]].children!;
     }
@@ -72,7 +72,11 @@ function swapHeaders(
   }
 
   // Helper function to set a header at a given path
-  function setHeaderAtPath(headers: HeaderObject[], path: number[], value: HeaderObject): void {
+  function setHeaderAtPath(
+    headers: HeaderObject<T>[],
+    path: number[],
+    value: HeaderObject<T>
+  ): void {
     let current = headers;
     for (let i = 0; i < path.length - 1; i++) {
       if (current[path[i]].children) {
@@ -98,11 +102,11 @@ function swapHeaders(
   return { newHeaders, emergencyBreak };
 }
 
-function insertHeaderAcrossSections(
-  headers: HeaderObject[],
-  draggedHeader: HeaderObject,
-  hoveredHeader: HeaderObject
-): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
+function insertHeaderAcrossSections<T>(
+  headers: HeaderObject<T>[],
+  draggedHeader: HeaderObject<T>,
+  hoveredHeader: HeaderObject<T>
+): { newHeaders: HeaderObject<T>[]; emergencyBreak: boolean } {
   const newHeaders = deepClone(headers);
   let emergencyBreak = false;
 
@@ -111,8 +115,8 @@ function insertHeaderAcrossSections(
     const hoveredSection = getHeaderSection(hoveredHeader);
 
     // Find the indices of both headers
-    const draggedIndex = newHeaders.findIndex((h) => h.accessor === draggedHeader.accessor);
-    const hoveredIndex = newHeaders.findIndex((h) => h.accessor === hoveredHeader.accessor);
+    const draggedIndex = newHeaders.findIndex((h) => h.id === draggedHeader.id);
+    const hoveredIndex = newHeaders.findIndex((h) => h.id === hoveredHeader.id);
 
     if (draggedIndex === -1 || hoveredIndex === -1) {
       emergencyBreak = true;
@@ -149,17 +153,17 @@ function insertHeaderAcrossSections(
   return { newHeaders, emergencyBreak };
 }
 
-const useDragHandler = ({
+const useDragHandler = <T>({
   draggedHeaderRef,
   headers,
   hoveredHeaderRef,
   onColumnOrderChange,
   onTableHeaderDragEnd,
-}: DragHandlerProps) => {
-  const { setHeaders } = useTableContext();
-  const prevHeaders = usePrevious<HeaderObject[] | null>(headers);
+}: DragHandlerProps<T>) => {
+  const { setHeaders } = useTableContext<T>();
+  const prevHeaders = usePrevious<HeaderObject<AggregatedRow<T>>[] | null>(headers);
 
-  const handleDragStart = (header: HeaderObject) => {
+  const handleDragStart = (header: HeaderObject<AggregatedRow<T>>) => {
     draggedHeaderRef.current = header;
     prevUpdateTime = Date.now();
   };
@@ -169,7 +173,7 @@ const useDragHandler = ({
     hoveredHeader,
   }: {
     event: DragEvent<HTMLDivElement>;
-    hoveredHeader: HeaderObject;
+    hoveredHeader: HeaderObject<AggregatedRow<T>>;
   }) => {
     // Prevent click event from firing
     event.preventDefault();
@@ -197,7 +201,7 @@ const useDragHandler = ({
     const hoveredSection = getHeaderSection(hoveredHeader);
     const isCrossSectionDrag = draggedSection !== hoveredSection;
 
-    let newHeaders: HeaderObject[];
+    let newHeaders: HeaderObject<AggregatedRow<T>>[];
     let emergencyBreak = false;
 
     if (isCrossSectionDrag) {
@@ -210,8 +214,8 @@ const useDragHandler = ({
       const currentHeaders = headers;
 
       // Get the index paths of both headers
-      const draggedHeaderIndexPath = getHeaderIndexPath(currentHeaders, draggedHeader.accessor);
-      const hoveredHeaderIndexPath = getHeaderIndexPath(currentHeaders, hoveredHeader.accessor);
+      const draggedHeaderIndexPath = getHeaderIndexPath(currentHeaders, draggedHeader.id);
+      const hoveredHeaderIndexPath = getHeaderIndexPath(currentHeaders, hoveredHeader.id);
 
       if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) return;
 
@@ -238,7 +242,7 @@ const useDragHandler = ({
       // If the header is animating, don't allow the drag
       isAnimating ||
       // If the header is the same as the dragged header, don't allow the drag
-      hoveredHeader.accessor === draggedHeader.accessor ||
+      hoveredHeader.id === draggedHeader.id ||
       // If the distance is less than 10, don't allow the drag
       distance < 10 ||
       // If the new headers are the same as the previous headers, don't allow the drag

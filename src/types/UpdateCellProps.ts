@@ -1,10 +1,9 @@
-import { CellValue } from "..";
 import { Accessor } from "./HeaderObject";
 
-type UpdateDataProps = {
-  accessor: Accessor;
+type UpdateCellProps<T> = {
+  accessor: Accessor<T>;
   rowIndex: number;
-  newValue: CellValue;
+  newValue: any;
 };
 
-export default UpdateDataProps;
+export default UpdateCellProps;

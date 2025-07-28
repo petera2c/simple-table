@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
-import { Accessor } from "../types/HeaderObject";
 
 // Helper function to compute filtered rows for a given filter state
 const computeFilteredRows = <T>({
@@ -35,21 +34,11 @@ interface UseFilterableDataProps<T> {
   onFilterChange?: (filters: TableFilterState<T>) => void;
 }
 
-interface UseFilterableDataReturn<T> {
-  filteredRows: T[];
-  updateFilter: (filter: FilterCondition<T>) => void;
-  clearFilter: (accessor: Accessor<T>) => void;
-  clearAllFilters: () => void;
-  filters: TableFilterState<T>;
-  // Function to compute what rows would be after applying a filter (for pre-animation calculation)
-  computeFilteredRowsPreview: (filter: FilterCondition<T>) => T[];
-}
-
 const useFilterableData = <T>({
   rows,
   externalFilterHandling,
   onFilterChange,
-}: UseFilterableDataProps<T>): UseFilterableDataReturn<T> => {
+}: UseFilterableDataProps<T>) => {
   // Single filter state instead of complex 3-state system
   const [filters, setFilters] = useState<TableFilterState<T>>({});
 
@@ -78,9 +67,9 @@ const useFilterableData = <T>({
 
   // Clear single filter
   const clearFilter = useCallback(
-    (accessor: Accessor<T>) => {
+    (id: string) => {
       const newFilterState = { ...filters };
-      delete newFilterState[String(accessor)];
+      delete newFilterState[id];
 
       setFilters(newFilterState);
       onFilterChange?.(newFilterState);

@@ -1,20 +1,20 @@
 import { RefObject, MutableRefObject } from "react";
 import HeaderObject from "./HeaderObject";
 
-interface SharedTableProps {
+interface SharedTableProps<T> {
   allowAnimations: boolean;
   centerHeaderRef: RefObject<HTMLDivElement>;
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef: MutableRefObject<HeaderObject<T> | null>;
   headerContainerRef: RefObject<HTMLDivElement>;
-  headers: HeaderObject[];
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  headers: HeaderObject<T>[];
+  hoveredHeaderRef: MutableRefObject<HeaderObject<T> | null>;
   mainBodyRef: RefObject<HTMLDivElement>;
   mainTemplateColumns: string;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  pinnedLeftColumns: HeaderObject[];
+  onTableHeaderDragEnd: (newHeaders: HeaderObject<T>[]) => void;
+  pinnedLeftColumns: HeaderObject<T>[];
   pinnedLeftHeaderRef: RefObject<HTMLDivElement>;
   pinnedLeftTemplateColumns: string;
-  pinnedRightColumns: HeaderObject[];
+  pinnedRightColumns: HeaderObject<T>[];
   pinnedRightHeaderRef: RefObject<HTMLDivElement>;
   pinnedRightTemplateColumns: string;
   rowHeight: number;

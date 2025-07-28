@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import { STColumn } from "../../types/HeaderObject";
 
 export type SpaceData = {
   id: number;
@@ -8,8 +8,8 @@ export type SpaceData = {
   destination: string;
   status: string;
   crewSize: number;
-  budget: number;
-  duration: string;
+  budget?: number;
+  duration: string | number;
   payloadWeight: number;
   launchSite: string;
   missionCostPerKg: number;
@@ -21,7 +21,7 @@ export type SpaceData = {
   q4: number;
 };
 
-export const generateSpaceData = () => {
+export const generateSpaceData = (): SpaceData[] => {
   const agencies = ["NASA", "ESA", "SpaceX", "Roscosmos", "ISRO"];
   const destinations = ["Moon", "Mars", "Venus", "Jupiter", "Asteroid Belt", "Saturn"];
   const missionTypes = ["Orbiter", "Rover", "Lander", "Crewed", "Probe"];
@@ -65,7 +65,7 @@ export const generateSpaceData = () => {
   });
 };
 
-export const SPACE_HEADERS: HeaderObject<SpaceData>[] = [
+export const SPACE_HEADERS: STColumn<SpaceData>[] = [
   {
     accessor: "agency",
     label: "Agency",

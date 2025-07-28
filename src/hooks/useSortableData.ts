@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import SortColumn from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
+import RowGrouping from "../types/RowGrouping";
 
 // Helper function to compute sorted rows for a given sort column
 const computeSortedRows = <T>({
@@ -15,14 +16,14 @@ const computeSortedRows = <T>({
 }: {
   externalSortHandling: boolean;
   tableRows: T[];
-  sortColumn: SortColumn | null;
-  rowGrouping?: (keyof T)[];
-  headers: HeaderObject[];
+  sortColumn: SortColumn<T> | null;
+  rowGrouping?: RowGrouping;
+  headers: HeaderObject<T>[];
   sortNestedRows: (params: {
-    groupingKeys: (keyof T)[];
-    headers: HeaderObject[];
+    groupingKeys: RowGrouping;
+    headers: HeaderObject<T>[];
     rows: T[];
-    sortColumn: SortColumn;
+    sortColumn: SortColumn<T>;
   }) => T[];
 }): T[] => {
   if (externalSortHandling) return tableRows;
@@ -48,14 +49,14 @@ const useSortableData = <T>({
   onSortChange,
   rowGrouping,
 }: {
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
   tableRows: T[];
   externalSortHandling: boolean;
-  onSortChange?: (sort: SortColumn | null) => void;
-  rowGrouping?: (keyof T)[];
+  onSortChange?: (sort: SortColumn<T> | null) => void;
+  rowGrouping?: RowGrouping;
 }) => {
   // Single sort state instead of complex 3-state system
-  const [sort, setSort] = useState<SortColumn | null>(null);
+  const [sort, setSort] = useState<SortColumn<T> | null>(null);
 
   // Recursive sort function for nested data
   const sortNestedRows = useCallback(
@@ -65,10 +66,10 @@ const useSortableData = <T>({
       rows,
       sortColumn,
     }: {
-      groupingKeys: (keyof T)[];
-      headers: HeaderObject[];
+      groupingKeys: string[];
+      headers: HeaderObject<T>[];
       rows: T[];
-      sortColumn: SortColumn;
+      sortColumn: SortColumn<T>;
     }): T[] => {
       // First sort the current level
       const sortedData = handleSort({ headers, rows, sortColumn });
@@ -81,12 +82,12 @@ const useSortableData = <T>({
       // For each row, recursively sort its nested data
       return sortedData.map((row) => {
         const currentGroupingKey = groupingKeys[0];
-        const nestedData = row[currentGroupingKey];
+        const nestedData = row[currentGroupingKey as keyof T];
 
         if (isRowArray(nestedData)) {
           // Recursively sort the nested data with remaining grouping keys
           const sortedNestedData = sortNestedRows({
-            rows: nestedData,
+            rows: nestedData as T[],
             sortColumn,
             headers,
             groupingKeys: groupingKeys.slice(1),
@@ -119,8 +120,8 @@ const useSortableData = <T>({
 
   // Simple sort handler
   const updateSort = useCallback(
-    (accessor: Accessor) => {
-      const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+    (accessor: Accessor<T>) => {
+      const findHeaderRecursively = (headers: HeaderObject<T>[]): HeaderObject<T> | undefined => {
         for (const header of headers) {
           if (header.accessor === accessor) {
             return header;
@@ -139,7 +140,7 @@ const useSortableData = <T>({
         return;
       }
 
-      let newSortColumn: SortColumn | null = null;
+      let newSortColumn: SortColumn<T> | null = null;
 
       if (!sort || sort.key.accessor !== accessor) {
         newSortColumn = {
@@ -162,8 +163,8 @@ const useSortableData = <T>({
   // Function to preview what rows would be after applying a sort
   // This is used for pre-animation calculation
   const computeSortedRowsPreview = useCallback(
-    (accessor: Accessor) => {
-      const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+    (accessor: Accessor<T>) => {
+      const findHeaderRecursively = (headers: HeaderObject<T>[]): HeaderObject<T> | undefined => {
         for (const header of headers) {
           if (header.accessor === accessor) {
             return header;
@@ -182,7 +183,7 @@ const useSortableData = <T>({
         return tableRows;
       }
 
-      let previewSortColumn: SortColumn | null = null;
+      let previewSortColumn: SortColumn<T> | null = null;
 
       if (!sort || sort.key.accessor !== accessor) {
         previewSortColumn = {

@@ -1,12 +1,11 @@
 import { expect } from "@storybook/test";
-import { Accessor } from "../../types/HeaderObject";
 
 // Assertion helpers
-export const getCellElement = (rowIndex: number, accessor: Accessor): Element | null => {
+export const getCellElement = (rowIndex: number, accessor: string): Element | null => {
   return document.querySelector(`[data-row-index="${rowIndex}"][data-accessor="${accessor}"]`);
 };
 
-export const getCellValue = (rowIndex: number, accessor: Accessor): string | null => {
+export const getCellValue = (rowIndex: number, accessor: string): string | null => {
   const cell = getCellElement(rowIndex, accessor);
   if (!cell) return null;
 
@@ -14,7 +13,7 @@ export const getCellValue = (rowIndex: number, accessor: Accessor): string | nul
   return contentSpan?.textContent || null;
 };
 
-export const hasCellUpdatingClass = (rowIndex: number, accessor: Accessor): boolean => {
+export const hasCellUpdatingClass = (rowIndex: number, accessor: string): boolean => {
   const cell = getCellElement(rowIndex, accessor);
   return cell?.classList.contains("st-cell-updating") || false;
 };

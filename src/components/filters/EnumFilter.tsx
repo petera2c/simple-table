@@ -6,19 +6,19 @@ import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 import Checkbox from "../Checkbox";
 
-interface EnumFilterProps {
-  header: HeaderObject;
-  currentFilter?: FilterCondition;
-  onApplyFilter: (filter: FilterCondition) => void;
+interface EnumFilterProps<T> {
+  header: HeaderObject<T>;
+  currentFilter?: FilterCondition<T>;
+  onApplyFilter: (filter: FilterCondition<T>) => void;
   onClearFilter: () => void;
 }
 
-const EnumFilter: React.FC<EnumFilterProps> = ({
+const EnumFilter = <T,>({
   header,
   currentFilter,
   onApplyFilter,
   onClearFilter,
-}) => {
+}: EnumFilterProps<T>) => {
   const enumOptions = useMemo(() => header.enumOptions || [], [header.enumOptions]);
 
   // Work with string values instead of full EnumOption objects
@@ -64,7 +64,7 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
       return;
     }
 
-    const filter: FilterCondition = {
+    const filter: FilterCondition<T> = {
       accessor: header.accessor,
       operator: selectedOperator,
       values: selectedValues,

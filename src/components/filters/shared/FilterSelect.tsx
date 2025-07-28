@@ -1,21 +1,20 @@
-import React from "react";
 import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 
 interface FilterSelectProps {
-  value: string;
+  className?: string;
   onChange: (value: string) => void;
   options: CustomSelectOption[];
-  className?: string;
   placeholder?: string;
+  value: string;
 }
 
-const FilterSelect: React.FC<FilterSelectProps> = ({
-  value,
+const FilterSelect = ({
+  className = "",
   onChange,
   options,
-  className = "",
   placeholder,
-}) => {
+  value,
+}: FilterSelectProps) => {
   return (
     <CustomSelect
       value={value}

@@ -1,6 +1,5 @@
 import { expect } from "@storybook/test";
 import { waitForTable } from "./commonTestUtils";
-import { Accessor } from "../../types/HeaderObject";
 
 /**
  * Aggregation Test Utilities for RowGrouping Example
@@ -73,7 +72,7 @@ export const ensureRowExpanded = async (
 export const getAggregatedValue = (
   canvasElement: HTMLElement,
   rowText: string,
-  columnAccessor: Accessor
+  columnAccessor: string
 ): string | null => {
   // Find the row that contains the specified text
   const rows = canvasElement.querySelectorAll(".st-row");

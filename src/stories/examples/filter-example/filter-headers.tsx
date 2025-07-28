@@ -1,4 +1,4 @@
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
 type Product = {
   id: number;
@@ -12,7 +12,7 @@ type Product = {
   releaseDate: string;
 };
 
-export const PRODUCT_HEADERS: HeaderObject<Product>[] = [
+export const PRODUCT_HEADERS: STColumn<Product>[] = [
   {
     accessor: "productName",
     label: "Product",

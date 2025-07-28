@@ -20,6 +20,6 @@ export const deepClone = <T>(obj: T): T => {
   return clonedObj;
 };
 
-export const canDisplaySection = (headers: HeaderObject[], pinned?: Pinned) => {
+export const canDisplaySection = <T>(headers: HeaderObject<T>[], pinned?: Pinned) => {
   return headers.filter((header) => header.pinned === pinned).some((header) => !header.hide);
 };

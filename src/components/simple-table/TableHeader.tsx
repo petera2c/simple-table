@@ -7,11 +7,11 @@ import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import { canDisplaySection } from "../../utils/generalUtils";
 
-const getHeaderDepth = (header: HeaderObject): number => {
+const getHeaderDepth = <T,>(header: HeaderObject<T>): number => {
   return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
 };
 
-const TableHeader = ({
+const TableHeader = <T,>({
   centerHeaderRef,
   headers,
   mainTemplateColumns,
@@ -22,7 +22,7 @@ const TableHeader = ({
   sort,
   pinnedLeftWidth,
   pinnedRightWidth,
-}: TableHeaderProps) => {
+}: TableHeaderProps<T>) => {
   const { headerContainerRef, pinnedLeftRef, pinnedRightRef } = useTableContext();
 
   // Calculate column indices for all headers to ensure consistent colIndex values

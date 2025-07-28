@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
-import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
+import { generateSpaceData, SPACE_HEADERS, SpaceData } from "../data/space-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -19,7 +19,7 @@ const HEADERS = SPACE_HEADERS;
 const FilterColumnsExample = (props: UniversalTableProps) => {
   const [rows, setRows] = useState(EXAMPLE_DATA);
 
-  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
+  const updateCell = ({ accessor, newValue, row }: CellChangeProps<SpaceData>) => {
     setRows((prevRows) => {
       const rowIndex = prevRows.findIndex((r) => r.id === row.id);
       if (rowIndex !== -1) {

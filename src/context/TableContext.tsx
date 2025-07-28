@@ -10,10 +10,11 @@ import {
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import TableRow from "../types/TableRow";
 import Cell from "../types/Cell";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import HeaderObject, { Accessor, AggregatedRow } from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Theme from "../types/Theme";
 import CellClickProps from "../types/CellClickProps";
+import RowGrouping from "../types/RowGrouping";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -38,15 +39,15 @@ interface TableContextType<T> {
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition<T>) => void;
   handleClearAllFilters: () => void;
-  handleClearFilter: (accessor: Accessor<T>) => void;
+  handleClearFilter: (id: string) => void;
   handleMouseDown: (cell: Cell) => void;
   handleMouseOver: (cell: Cell) => void;
   handleRowSelect?: (rowId: string, isSelected: boolean) => void;
   handleSelectAll?: (isSelected: boolean) => void;
   handleToggleRow?: (rowId: string) => void;
   headerContainerRef: RefObject<HTMLDivElement>;
-  headers: HeaderObject<T>[];
-  hoveredHeaderRef: MutableRefObject<HeaderObject<T> | null>;
+  headers: HeaderObject<AggregatedRow<T>>[];
+  hoveredHeaderRef: MutableRefObject<HeaderObject<AggregatedRow<T>> | null>;
   isAnimating: boolean;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
@@ -61,12 +62,12 @@ interface TableContextType<T> {
   onCellClick?: (props: CellClickProps<T>) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject<T>[]) => void;
   onLoadMore?: () => void;
-  onSort: OnSortProps;
+  onSort: OnSortProps<T>;
   onTableHeaderDragEnd: (newHeaders: HeaderObject<T>[]) => void;
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   prevIcon: ReactNode;
-  rowGrouping?: Accessor<T>[];
+  rowGrouping?: RowGrouping;
   rowHeight: number;
   rowIdAccessor: Accessor<T>;
   scrollbarWidth: number;

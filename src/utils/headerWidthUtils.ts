@@ -1,11 +1,11 @@
-import { HeaderObject, Row } from "..";
+import { HeaderObject } from "..";
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
 import { getCellId } from "./cellUtils";
 
 /**
  * Find all leaf headers (headers without children) in a header tree
  */
-export const findLeafHeaders = <T = Row>(header: HeaderObject<T>): HeaderObject<T>[] => {
+export const findLeafHeaders = <T>(header: HeaderObject<T>): HeaderObject<T>[] => {
   // Skip hidden headers
   if (header.hide) {
     return [];
@@ -21,7 +21,7 @@ export const findLeafHeaders = <T = Row>(header: HeaderObject<T>): HeaderObject<
 /**
  * Get actual width of a header in pixels
  */
-export const getHeaderWidthInPixels = <T = Row>(header: HeaderObject<T>): number => {
+export const getHeaderWidthInPixels = <T>(header: HeaderObject<T>): number => {
   // Skip hidden headers
   if (header.hide) {
     return 0;
@@ -38,7 +38,7 @@ export const getHeaderWidthInPixels = <T = Row>(header: HeaderObject<T>): number
   // For fr, %, or any other format, get the actual DOM element width
   else {
     const cellElement = document.getElementById(
-      getCellId({ accessor: header.accessor, rowId: "header" })
+      getCellId({ headerId: header.id, rowId: "header" })
     );
     return cellElement?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
@@ -47,12 +47,12 @@ export const getHeaderWidthInPixels = <T = Row>(header: HeaderObject<T>): number
 /**
  * Convert fractional widths to pixel values
  */
-export const removeAllFractionalWidths = (header: HeaderObject): void => {
+export const removeAllFractionalWidths = <T>(header: HeaderObject<T>): void => {
   const headerWidth = header.width;
   if (typeof headerWidth === "string" && headerWidth.includes("fr")) {
     header.width =
-      document.getElementById(getCellId({ accessor: header.accessor, rowId: "header" }))
-        ?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
+      document.getElementById(getCellId({ headerId: header.id, rowId: "header" }))?.offsetWidth ||
+      TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
   if (header.children) {
     header.children.forEach((child) => {
@@ -64,6 +64,6 @@ export const removeAllFractionalWidths = (header: HeaderObject): void => {
 /**
  * Calculate the minimum width for a header
  */
-export const getHeaderMinWidth = (header: HeaderObject): number => {
+export const getHeaderMinWidth = <T>(header: HeaderObject<T>): number => {
   return typeof header.minWidth === "number" ? header.minWidth : 40;
 };

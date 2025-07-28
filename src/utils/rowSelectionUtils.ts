@@ -76,6 +76,7 @@ export const getSelectedRowCount = (selectedRows: Set<string>): number => {
  */
 export const createSelectionHeader = <T>(): HeaderObject<T> => {
   const selectionHeader: HeaderObject<T> = {
+    id: "__row_selection__",
     accessor: "__row_selection__" as Accessor<T>,
     label: "",
     width: 42,

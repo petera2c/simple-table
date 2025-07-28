@@ -1,7 +1,7 @@
-import UpdateDataProps from "./UpdateCellProps";
+import UpdateCellProps from "./UpdateCellProps";
 
-type TableRefType = {
-  updateData: (props: UpdateDataProps) => void;
+type TableRefType<T> = {
+  updateData: (props: UpdateCellProps<T>) => void;
 };
 
 export default TableRefType;
