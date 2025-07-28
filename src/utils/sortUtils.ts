@@ -1,5 +1,4 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import Row from "../types/Row";
 import SortColumn from "../types/SortColumn";
 
 // Type-specific comparators for different data types
@@ -127,15 +126,15 @@ const compareValues = (
 };
 
 // Basic sort function for flat data (no grouping)
-const sortFlatRows = ({
+const sortFlatRows = <T>({
   rows,
   sortColumn,
   headers,
 }: {
-  rows: Row[];
-  sortColumn: SortColumn;
+  rows: T[];
+  sortColumn: SortColumn<T>;
   headers: HeaderObject[];
-}): Row[] => {
+}): T[] => {
   // Recursively search for the header in nested structure
   const findHeaderRecursively = (
     headers: HeaderObject[],
@@ -166,14 +165,14 @@ const sortFlatRows = ({
   });
 };
 
-export const handleSort = ({
+export const handleSort = <T>({
   headers,
   rows,
   sortColumn,
 }: {
   headers: HeaderObject[];
-  rows: Row[];
-  sortColumn: SortColumn;
+  rows: T[];
+  sortColumn: SortColumn<T>;
 }) => {
   // For now, use simple flat sorting since we've simplified the row structure
   // Row grouping will be handled by the table internally using the rowGrouping prop

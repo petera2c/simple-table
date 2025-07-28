@@ -1,7 +1,5 @@
-import Row from "./Row";
-
-type RowSelectionChangeProps = {
-  row: Row;
+type RowSelectionChangeProps<T> = {
+  row: T;
   isSelected: boolean;
   selectedRows: Set<string>;
 };

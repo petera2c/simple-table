@@ -19,22 +19,22 @@ import { canDisplaySection } from "../../utils/generalUtils";
 import { getRowId } from "../../utils/rowUtils";
 import { useTableContext } from "../../context/TableContext";
 
-interface TableSectionProps {
-  columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
-  columnIndices: ColumnIndices;
-  headers: HeaderObject[];
+interface TableSectionProps<T> {
+  columnIndexStart?: number;
+  columnIndices: ColumnIndices<T>;
+  headers: HeaderObject<T>[];
   hoveredIndex: number | null;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
-  rowsToRender: TableRowType[];
+  rowsToRender: TableRowType<T>[];
   setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
   width?: number;
 }
 
-const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
+const TableSection = forwardRef<HTMLDivElement, TableSectionProps<any>>(
   (
     {
       columnIndexStart,

@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { TableFilterState } from "../types/FilterTypes";
 
-const useExternalFilters = ({
+const useExternalFilters = <T>({
   filters,
   onFilterChange,
 }: {
-  filters: TableFilterState;
-  onFilterChange?: (filters: TableFilterState) => void;
+  filters: TableFilterState<T>;
+  onFilterChange?: (filters: TableFilterState<T>) => void;
 }) => {
   // On filter change, if there is an external filter handling, call the onFilterChange prop
   useEffect(() => {

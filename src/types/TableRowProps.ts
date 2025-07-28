@@ -1,10 +1,9 @@
 import { MutableRefObject } from "react";
 import CellChangeProps from "./CellChangeProps";
 import HeaderObject from "./HeaderObject";
-import Row from "./Row";
 import Cell from "./Cell";
 
-type TableRowProps = {
+type TableRowProps<T> = {
   allowAnimations: boolean;
   currentRows: { [key: string]: any }[];
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
@@ -18,7 +17,7 @@ type TableRowProps = {
   onCellEdit?: (props: CellChangeProps) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   onToggleGroup: (rowId: number) => void;
-  row: Row;
+  row: T;
   rowIndex: number;
   shouldPaginate: boolean;
   tableRef: MutableRefObject<HTMLDivElement | null>;

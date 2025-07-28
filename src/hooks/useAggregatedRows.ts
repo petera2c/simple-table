@@ -1,27 +1,26 @@
 import { useMemo } from "react";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { AggregationConfig } from "../types/AggregationTypes";
-import Row from "../types/Row";
 import { flattenAllHeaders } from "../utils/headerUtils";
 import { isRowArray } from "../utils/rowUtils";
 
-interface UseAggregatedRowsProps {
-  rows: Row[];
-  headers: HeaderObject[];
-  rowGrouping?: string[];
+interface UseAggregatedRowsProps<T> {
+  rows: T[];
+  headers: HeaderObject<T>[];
+  rowGrouping?: Accessor<T>[];
 }
 
 /**
  * Gets all headers that have aggregation configuration
  */
-const getAllAggregationHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+const getAllAggregationHeaders = <T>(headers: HeaderObject<T>[]): HeaderObject<T>[] => {
   return flattenAllHeaders(headers).filter((header) => header.aggregation);
 };
 
 /**
  * Aggregates child row data into parent rows based on header configuration
  */
-export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedRowsProps) => {
+export const useAggregatedRows = <T>({ rows, headers, rowGrouping }: UseAggregatedRowsProps<T>) => {
   return useMemo(() => {
     // If no row grouping is configured, return rows as-is
     if (!rowGrouping || rowGrouping.length === 0) {
@@ -37,26 +36,28 @@ export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedR
     }
 
     // Deep clone rows to avoid mutating original data
-    const aggregatedRows = JSON.parse(JSON.stringify(rows));
+    const aggregatedRows = JSON.parse(JSON.stringify(rows)) as T[];
 
     // Process each row recursively
-    const processRows = (rowsToProcess: Row[], groupingLevel: number = 0): Row[] => {
+    const processRows = (rowsToProcess: T[], groupingLevel: number = 0) => {
       return rowsToProcess.map((row) => {
         const currentGroupKey = rowGrouping[groupingLevel];
         const nextGroupKey = rowGrouping[groupingLevel + 1];
 
         // If this row has children at the current grouping level
-        const currentGroupValue = row[currentGroupKey];
+        const currentGroupValue = row[currentGroupKey] as T[];
         if (currentGroupValue && isRowArray(currentGroupValue)) {
           // Process children recursively first
           const processedChildren = processRows(currentGroupValue, groupingLevel + 1);
 
           // Calculate aggregations for this parent row
           const aggregatedRow = { ...row };
-          aggregatedRow[currentGroupKey] = processedChildren;
+          aggregatedRow[currentGroupKey] = processedChildren as T[keyof T];
 
           // Calculate aggregated values for each configured header
           aggregationHeaders.forEach((header) => {
+            if (!header.accessor) return;
+
             const aggregatedValue = calculateAggregation(
               processedChildren,
               header.accessor,
@@ -83,21 +84,21 @@ export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedR
 /**
  * Calculates aggregation for a specific field across child rows
  */
-const calculateAggregation = (
-  childRows: Row[],
-  accessor: Accessor,
+const calculateAggregation = <T>(
+  childRows: T[],
+  accessor: Accessor<T>,
   config: AggregationConfig,
-  nextGroupKey?: string
+  nextGroupKey?: Accessor<T>
 ): any => {
   // Collect all values from child rows
   const allValues: any[] = [];
 
-  const collectValues = (rows: Row[]) => {
+  const collectValues = (rows: T[]) => {
     rows.forEach((row) => {
       // If this row has further children, collect from them too
       const nextGroupValue = nextGroupKey ? row[nextGroupKey] : undefined;
       if (nextGroupKey && nextGroupValue && isRowArray(nextGroupValue)) {
-        collectValues(nextGroupValue);
+        collectValues(nextGroupValue as T[]);
       } else {
         // This is a leaf row, collect its value
         if (row[accessor] !== undefined && row[accessor] !== null) {

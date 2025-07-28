@@ -17,7 +17,6 @@ import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
-import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
@@ -48,7 +47,7 @@ import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
 
-interface SimpleTableProps {
+interface SimpleTableProps<T> {
   allowAnimations?: boolean; // Flag for allowing animations
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   className?: string; // Class name for the table
@@ -56,7 +55,7 @@ interface SimpleTableProps {
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
-  defaultHeaders: HeaderObject[]; // Default headers
+  defaultHeaders: HeaderObject<T>[]; // Default headers with type safety
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
@@ -67,20 +66,20 @@ interface SimpleTableProps {
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
-  onCellEdit?: (props: CellChangeProps) => void;
-  onCellClick?: (props: CellClickProps) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
+  onCellEdit?: (props: CellChangeProps<T>) => void;
+  onCellClick?: (props: CellClickProps<T>) => void;
+  onColumnOrderChange?: (newHeaders: HeaderObject<T>[]) => void;
+  onFilterChange?: (filters: TableFilterState<T>) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
-  onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
-  onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
+  onRowSelectionChange?: (props: RowSelectionChangeProps<T>) => void; // Callback when row selection changes
+  onSortChange?: (sort: SortColumn<T> | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
-  rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
+  rowGrouping?: Accessor<T>[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
-  rowIdAccessor: Accessor; // Property name to use as row ID (defaults to index-based ID)
-  rows: Row[]; // Rows data
+  rowIdAccessor: Accessor<T>; // Property name to use as row ID (defaults to index-based ID)
+  rows: T[]; // Rows data with type safety
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
@@ -94,7 +93,7 @@ interface SimpleTableProps {
   useOddEvenRowBackground?: boolean; // Flag for using odd/even row background
 }
 
-const SimpleTable = (props: SimpleTableProps) => {
+const SimpleTable = <T,>(props: SimpleTableProps<T>) => {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
@@ -103,7 +102,7 @@ const SimpleTable = (props: SimpleTableProps) => {
   return <SimpleTableComp {...props} />;
 };
 
-const SimpleTableComp = ({
+const SimpleTableComp = <T,>({
   allowAnimations = false,
   cellUpdateFlash = false,
   className,
@@ -147,15 +146,15 @@ const SimpleTableComp = ({
   useHoverRowBackground = true,
   useOddEvenRowBackground = true,
   useOddColumnBackground = false,
-}: SimpleTableProps) => {
+}: SimpleTableProps<T>) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   // Refs
-  const draggedHeaderRef = useRef<HeaderObject | null>(null);
-  const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const draggedHeaderRef = useRef<HeaderObject<T> | null>(null);
+  const hoveredHeaderRef = useRef<HeaderObject<T> | null>(null);
 
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
@@ -197,7 +196,7 @@ const SimpleTableComp = ({
   const effectiveHeaders = useMemo(() => {
     if (!enableRowSelection || headers?.[0]?.isSelectionColumn) return headers;
 
-    const selectionHeader = createSelectionHeader();
+    const selectionHeader = createSelectionHeader<T>();
     return [selectionHeader, ...headers];
   }, [enableRowSelection, headers]);
 
@@ -300,7 +299,7 @@ const SimpleTableComp = ({
 
   // Memoize handlers
   const onSort = useCallback(
-    (accessor: Accessor) => {
+    (accessor: Accessor<T>) => {
       // STAGE 1: Prepare animation by adding entering rows before applying sort
       prepareForSortChange(accessor);
 
@@ -312,7 +311,7 @@ const SimpleTableComp = ({
     [prepareForSortChange, updateSort]
   );
 
-  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
+  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject<T>[]) => {
     setHeaders(newHeaders);
   }, []);
 
@@ -336,7 +335,7 @@ const SimpleTableComp = ({
 
   // Custom filter handler that respects external filter handling flag
   const handleApplyFilter = useCallback(
-    (filter: FilterCondition) => {
+    (filter: FilterCondition<T>) => {
       // STAGE 1: Prepare animation by adding entering rows before applying filter
       prepareForFilterChange(filter);
 

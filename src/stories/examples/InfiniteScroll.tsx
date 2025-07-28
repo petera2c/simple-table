@@ -1,9 +1,8 @@
 import { useState, useCallback } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
-import { SAAS_HEADERS } from "../data/saas-data";
+import { SAAS_HEADERS, SaaSData } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import { UniversalTableProps } from "./StoryWrapper";
-import Row from "../../types/Row";
 
 // Default args specific to InfiniteScroll - exported for reuse in stories and tests
 export const infiniteScrollDefaults = {
@@ -39,7 +38,7 @@ const HEADERS = SAAS_HEADERS;
 const simulateApiDelay = (ms: number = 800) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Local data generation function that accepts parameters
-const generateSaaSDataWithParams = (count: number, startId: number = 0): Row[] => {
+const generateSaaSDataWithParams = (count: number, startId: number = 0): SaaSData[] => {
   const segments = ["Freelancers", "Small Business", "Startups", "Corporations", "Nonprofits"];
   const features = ["Analytics", "Collaboration", "Storage", "API Access"];
   const paymentMethods = ["Credit Card", "PayPal", "Bank Transfer", "Crypto"];
@@ -90,7 +89,7 @@ const InfiniteScrollExample = (props: UniversalTableProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalLoadedRows, setTotalLoadedRows] = useState(INITIAL_ROWS_COUNT);
 
-  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
+  const updateCell = ({ accessor, newValue, row }: CellChangeProps<SaaSData>) => {
     setRows((prevRows) => {
       const rowIndex = prevRows.findIndex((r) => r.id === row.id);
       if (rowIndex !== -1) {

@@ -1,12 +1,11 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import Row from "../types/Row";
 import { useCallback, useMemo, useState } from "react";
 import SortColumn from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
 
 // Helper function to compute sorted rows for a given sort column
-const computeSortedRows = ({
+const computeSortedRows = <T>({
   externalSortHandling,
   tableRows,
   sortColumn,
@@ -15,17 +14,17 @@ const computeSortedRows = ({
   sortNestedRows,
 }: {
   externalSortHandling: boolean;
-  tableRows: Row[];
+  tableRows: T[];
   sortColumn: SortColumn | null;
-  rowGrouping?: string[];
+  rowGrouping?: (keyof T)[];
   headers: HeaderObject[];
   sortNestedRows: (params: {
-    groupingKeys: string[];
+    groupingKeys: (keyof T)[];
     headers: HeaderObject[];
-    rows: Row[];
+    rows: T[];
     sortColumn: SortColumn;
-  }) => Row[];
-}): Row[] => {
+  }) => T[];
+}): T[] => {
   if (externalSortHandling) return tableRows;
   if (!sortColumn) return tableRows;
 
@@ -42,7 +41,7 @@ const computeSortedRows = ({
 };
 
 // Extract sort logic to custom hook
-const useSortableData = ({
+const useSortableData = <T>({
   headers,
   tableRows,
   externalSortHandling,
@@ -50,10 +49,10 @@ const useSortableData = ({
   rowGrouping,
 }: {
   headers: HeaderObject[];
-  tableRows: Row[];
+  tableRows: T[];
   externalSortHandling: boolean;
   onSortChange?: (sort: SortColumn | null) => void;
-  rowGrouping?: string[];
+  rowGrouping?: (keyof T)[];
 }) => {
   // Single sort state instead of complex 3-state system
   const [sort, setSort] = useState<SortColumn | null>(null);
@@ -66,11 +65,11 @@ const useSortableData = ({
       rows,
       sortColumn,
     }: {
-      groupingKeys: string[];
+      groupingKeys: (keyof T)[];
       headers: HeaderObject[];
-      rows: Row[];
+      rows: T[];
       sortColumn: SortColumn;
-    }): Row[] => {
+    }): T[] => {
       // First sort the current level
       const sortedData = handleSort({ headers, rows, sortColumn });
 

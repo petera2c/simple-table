@@ -9,17 +9,17 @@ import RowIndices from "../../types/RowIndices";
 import ColumnIndices from "../../types/ColumnIndices";
 import { getRowId } from "../../utils/rowUtils";
 
-interface RenderCellsProps {
+interface RenderCellsProps<T> {
   columnIndexStart?: number;
-  columnIndices: ColumnIndices;
-  headers: HeaderObject[];
+  columnIndices: ColumnIndices<T>;
+  headers: HeaderObject<T>[];
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  tableRow: TableRowType;
+  tableRow: TableRowType<T>;
 }
 
-const RenderCells = ({
+const RenderCells = <T,>({
   columnIndexStart,
   columnIndices,
   headers,
@@ -27,7 +27,7 @@ const RenderCells = ({
   rowIndex,
   rowIndices,
   tableRow,
-}: RenderCellsProps) => {
+}: RenderCellsProps<T>) => {
   const { rowIdAccessor } = useTableContext();
   const filteredHeaders = headers.filter((header) => displayCell({ header, pinned }));
 
@@ -55,7 +55,7 @@ const RenderCells = ({
   );
 };
 
-const RecursiveRenderCells = ({
+const RecursiveRenderCells = <T,>({
   columnIndices,
   header,
   headers,
@@ -65,18 +65,15 @@ const RecursiveRenderCells = ({
   rowIndices,
   tableRow,
 }: {
-  columnIndices: ColumnIndices;
-  header: HeaderObject;
-  headers: HeaderObject[];
+  columnIndices: ColumnIndices<T>;
+  header: HeaderObject<T>;
+  headers: HeaderObject<T>[];
   nestedIndex: number;
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
-  tableRow: TableRowType;
+  tableRow: TableRowType<T>;
 }) => {
-  // Get the column index for this header from our pre-calculated mapping
-  const colIndex = columnIndices[header.accessor];
-
   // Get selection state for this cell
   const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor } = useTableContext();
 
@@ -109,7 +106,11 @@ const RecursiveRenderCells = ({
       </Fragment>
     );
   }
+  const accessor = header.accessor;
+  if (!accessor) return null;
 
+  // Get the column index for this header from our pre-calculated mapping
+  const colIndex = columnIndices[accessor];
   // Calculate selection state for this specific cell
   const cellData = { rowIndex, colIndex, rowId };
   const borderClass = getBorderClass(cellData);

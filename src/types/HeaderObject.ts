@@ -1,15 +1,14 @@
 import { ReactNode } from "react";
-import Row from "./Row";
 import { Pinned } from "./Pinned";
 import Theme from "./Theme";
 import EnumOption from "./EnumOption";
 import { AggregationConfig } from "./AggregationTypes";
 
-export type Accessor = keyof Row;
+export type Accessor<T> = keyof T;
 export type ColumnType = "string" | "number" | "boolean" | "date" | "enum" | "other";
 
-type HeaderObject = {
-  accessor: Accessor;
+type HeaderObject<T> = {
+  accessor?: Accessor<T>;
   aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
   cellRenderer?: ({
@@ -17,12 +16,12 @@ type HeaderObject = {
     colIndex,
     row,
   }: {
-    accessor: Accessor;
+    accessor: Accessor<T>;
     colIndex: number;
-    row: Row;
+    row: T;
     theme: Theme;
   }) => ReactNode | string;
-  children?: HeaderObject[];
+  children?: HeaderObject<T>[];
   disableReorder?: boolean;
   enumOptions?: EnumOption[];
   expandable?: boolean;
@@ -32,9 +31,9 @@ type HeaderObject = {
     colIndex,
     header,
   }: {
-    accessor: Accessor;
+    accessor: Accessor<T>;
     colIndex: number;
-    header: HeaderObject;
+    header: HeaderObject<T>;
   }) => ReactNode | string;
   hide?: boolean;
   isEditable?: boolean;

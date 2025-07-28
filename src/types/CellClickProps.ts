@@ -1,15 +1,13 @@
-import CellValue from "./CellValue";
 import { Accessor } from "./HeaderObject";
-import Row from "./Row";
 import { RowId } from "./RowId";
 
-type CellClickProps = {
-  accessor: Accessor;
+type CellClickProps<T> = {
+  accessor: Accessor<T>;
   colIndex: number;
-  row: Row;
+  row: T;
   rowId: RowId;
   rowIndex: number;
-  value: CellValue;
+  value: any;
 };
 
 export default CellClickProps;

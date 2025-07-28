@@ -3,31 +3,30 @@ import { BUFFER_ROW_COUNT } from "../consts/general-consts";
 import { getVisibleRows } from "../utils/infiniteScrollUtils";
 import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
-import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
 
-interface UseTableRowProcessingProps {
+interface UseTableRowProcessingProps<T> {
   allowAnimations: boolean;
-  sortedRows: Row[];
+  sortedRows: T[];
   // Original unfiltered rows for establishing baseline positions
-  originalRows: Row[];
+  originalRows: T[];
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
-  rowGrouping?: Accessor[];
-  rowIdAccessor: Accessor;
+  rowGrouping?: Accessor<T>[];
+  rowIdAccessor: Accessor<T>;
   unexpandedRows: Set<string>;
   expandAll: boolean;
   contentHeight: number;
   rowHeight: number;
   scrollTop: number;
   // Functions to preview what rows would be after changes
-  computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
-  computeSortedRowsPreview: (accessor: Accessor) => Row[];
+  computeFilteredRowsPreview: (filter: FilterCondition<T>) => T[];
+  computeSortedRowsPreview: (accessor: Accessor<T>) => T[];
 }
 
-const useTableRowProcessing = ({
+const useTableRowProcessing = <T>({
   allowAnimations,
   sortedRows,
   originalRows,
@@ -43,7 +42,7 @@ const useTableRowProcessing = ({
   scrollTop,
   computeFilteredRowsPreview,
   computeSortedRowsPreview,
-}: UseTableRowProcessingProps) => {
+}: UseTableRowProcessingProps<T>) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [extendedRows, setExtendedRows] = useState<any[]>([]);
   const previousTableRowsRef = useRef<any[]>([]); // Track ALL processed rows, not just visible
@@ -60,7 +59,7 @@ const useTableRowProcessing = ({
 
   // Process rows through pagination and grouping
   const processRowSet = useCallback(
-    (rows: Row[]) => {
+    (rows: T[]) => {
       // Apply pagination
       const paginatedRows = shouldPaginate
         ? rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
@@ -344,7 +343,7 @@ const useTableRowProcessing = ({
   );
 
   const prepareForSortChange = useCallback(
-    (accessor: Accessor) => {
+    (accessor: Accessor<T>) => {
       if (!allowAnimations || shouldPaginate) return;
 
       // Calculate what rows would be after sort

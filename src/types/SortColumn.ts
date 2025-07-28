@@ -1,8 +1,8 @@
 import HeaderObject from "./HeaderObject";
 
 // Type for a single sort column
-type SortColumn = {
-  key: HeaderObject;
+type SortColumn<T> = {
+  key: HeaderObject<T>;
   direction: "ascending" | "descending";
 };
 

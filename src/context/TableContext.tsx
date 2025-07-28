@@ -13,15 +13,14 @@ import Cell from "../types/Cell";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import OnSortProps from "../types/OnSortProps";
 import Theme from "../types/Theme";
-import CellValue from "../types/CellValue";
 import CellClickProps from "../types/CellClickProps";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
-  updateContent: (newValue: CellValue) => void;
+  updateContent: (newValue: any) => void;
 }
 
-interface TableContextType {
+interface TableContextType<T> {
   // Stable values that don't change frequently
   allowAnimations?: boolean;
   areAllRowsSelected?: () => boolean;
@@ -30,24 +29,24 @@ interface TableContextType {
   clearSelection?: () => void;
   columnReordering: boolean;
   columnResizing: boolean;
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef: MutableRefObject<HeaderObject<T> | null>;
   editColumns?: boolean;
   enableRowSelection?: boolean;
   expandIcon?: ReactNode;
-  filters: TableFilterState;
+  filters: TableFilterState<T>;
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;
-  handleApplyFilter: (filter: FilterCondition) => void;
+  handleApplyFilter: (filter: FilterCondition<T>) => void;
   handleClearAllFilters: () => void;
-  handleClearFilter: (accessor: Accessor) => void;
+  handleClearFilter: (accessor: Accessor<T>) => void;
   handleMouseDown: (cell: Cell) => void;
   handleMouseOver: (cell: Cell) => void;
   handleRowSelect?: (rowId: string, isSelected: boolean) => void;
   handleSelectAll?: (isSelected: boolean) => void;
   handleToggleRow?: (rowId: string) => void;
   headerContainerRef: RefObject<HTMLDivElement>;
-  headers: HeaderObject[];
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  headers: HeaderObject<T>[];
+  hoveredHeaderRef: MutableRefObject<HeaderObject<T> | null>;
   isAnimating: boolean;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
@@ -59,24 +58,24 @@ interface TableContextType {
   mainBodyRef: RefObject<HTMLDivElement>;
   nextIcon: ReactNode;
   onCellEdit?: (props: any) => void;
-  onCellClick?: (props: CellClickProps) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onCellClick?: (props: CellClickProps<T>) => void;
+  onColumnOrderChange?: (newHeaders: HeaderObject<T>[]) => void;
   onLoadMore?: () => void;
   onSort: OnSortProps;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  onTableHeaderDragEnd: (newHeaders: HeaderObject<T>[]) => void;
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   prevIcon: ReactNode;
-  rowGrouping?: Accessor[];
+  rowGrouping?: Accessor<T>[];
   rowHeight: number;
-  rowIdAccessor: Accessor;
+  rowIdAccessor: Accessor<T>;
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
   selectedRows?: Set<string>;
   selectedRowCount?: number;
   selectedRowsData?: any[];
-  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
+  setHeaders: Dispatch<SetStateAction<HeaderObject<T>[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;
   setIsScrolling: Dispatch<SetStateAction<boolean>>;
@@ -88,7 +87,7 @@ interface TableContextType {
   sortDownIcon: ReactNode;
   sortUpIcon: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement>;
-  tableRows: TableRow[];
+  tableRows: TableRow<T>[];
   theme: Theme;
   unexpandedRows: Set<string>;
   useHoverRowBackground: boolean;
@@ -96,22 +95,25 @@ interface TableContextType {
   useOddEvenRowBackground: boolean;
 }
 
-export const TableContext = createContext<TableContextType | undefined>(undefined);
+// Use any for the context creation since React contexts can't be truly generic
+export const TableContext = createContext<TableContextType<any> | undefined>(undefined);
 
-export const TableProvider = ({
+export const TableProvider = <T,>({
   children,
   value,
 }: {
   children: ReactNode;
-  value: TableContextType;
+  value: TableContextType<T>;
 }) => {
   return <TableContext.Provider value={value}>{children}</TableContext.Provider>;
 };
 
-export const useTableContext = () => {
+export const useTableContext = <T,>(): TableContextType<T> => {
   const context = useContext(TableContext);
   if (context === undefined) {
     throw new Error("useTableContext must be used within a TableProvider");
   }
+  // This is safe because TableProvider ensures the value matches TableContextType<T>
+  // at runtime, and the generic T is enforced at compile time at the usage site
   return context;
 };

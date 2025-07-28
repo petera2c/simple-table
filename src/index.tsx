@@ -2,14 +2,12 @@ import SimpleTable from "./components/simple-table/SimpleTable";
 import BoundingBox from "./types/BoundingBox";
 import Cell from "./types/Cell";
 import CellChangeProps from "./types/CellChangeProps";
-import CellValue from "./types/CellValue";
 import ColumnEditorPosition from "./types/ColumnEditorPosition";
 import DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
 import HeaderObject, { Accessor, ColumnType } from "./types/HeaderObject";
 import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import OnSortProps from "./types/OnSortProps";
-import Row from "./types/Row";
 import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
 import TableCellProps from "./types/TableCellProps";
@@ -31,7 +29,6 @@ export type {
   Cell,
   CellChangeProps,
   CellClickProps,
-  CellValue,
   ColumnEditorPosition,
   ColumnType,
   DragHandlerProps,
@@ -39,7 +36,6 @@ export type {
   FilterCondition,
   HeaderObject,
   OnSortProps,
-  Row,
   RowSelectionChangeProps,
   SharedTableProps,
   SortColumn,

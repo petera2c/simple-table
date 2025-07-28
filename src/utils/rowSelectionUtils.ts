@@ -1,10 +1,9 @@
-import Row from "../types/Row";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 
 /**
  * Get the set of selected row IDs from an array of rows
  */
-export const getSelectedRowIds = (rows: Row[], rowIdAccessor: Accessor): string[] => {
+export const getSelectedRowIds = <T>(rows: T[], rowIdAccessor: Accessor<T>): string[] => {
   return rows.map((row) => String(row[rowIdAccessor]));
 };
 
@@ -18,9 +17,9 @@ export const isRowSelected = (rowId: string, selectedRows: Set<string>): boolean
 /**
  * Check if all rows are selected
  */
-export const areAllRowsSelected = (
-  rows: Row[],
-  rowIdAccessor: Accessor,
+export const areAllRowsSelected = <T>(
+  rows: T[],
+  rowIdAccessor: Accessor<T>,
   selectedRows: Set<string>
 ): boolean => {
   if (rows.length === 0) return false;
@@ -43,7 +42,7 @@ export const toggleRowSelection = (rowId: string, selectedRows: Set<string>): Se
 /**
  * Select all rows
  */
-export const selectAllRows = (rows: Row[], rowIdAccessor: Accessor): Set<string> => {
+export const selectAllRows = <T>(rows: T[], rowIdAccessor: Accessor<T>): Set<string> => {
   return new Set(rows.map((row) => String(row[rowIdAccessor])));
 };
 
@@ -57,11 +56,11 @@ export const deselectAllRows = (): Set<string> => {
 /**
  * Get the selected rows from the rows array
  */
-export const getSelectedRows = (
-  rows: Row[],
-  rowIdAccessor: Accessor,
+export const getSelectedRows = <T>(
+  rows: T[],
+  rowIdAccessor: Accessor<T>,
   selectedRows: Set<string>
-): Row[] => {
+): T[] => {
   return rows.filter((row) => selectedRows.has(String(row[rowIdAccessor])));
 };
 
@@ -75,9 +74,9 @@ export const getSelectedRowCount = (selectedRows: Set<string>): number => {
 /**
  * Create a selection header for the checkbox column
  */
-export const createSelectionHeader = () => {
-  const selectionHeader: HeaderObject = {
-    accessor: "__row_selection__" as Accessor,
+export const createSelectionHeader = <T>(): HeaderObject<T> => {
+  const selectionHeader: HeaderObject<T> = {
+    accessor: "__row_selection__" as Accessor<T>,
     label: "",
     width: 42,
     isEditable: false,

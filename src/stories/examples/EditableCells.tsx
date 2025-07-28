@@ -1,11 +1,22 @@
 import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import CellChangeProps from "../../types/CellChangeProps";
-import Row from "../../types/Row";
 import { RowId } from "../../types/RowId";
-import CellValue from "../../types/CellValue";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
+
+type EmployeeData = {
+  id: number;
+  status: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  hireDate: string;
+  isActive: boolean;
+  salary: number;
+  reviewDate: string;
+};
 
 // Default args specific to EditableCells - exported for reuse in stories and tests
 export const editableCellsDefaults = {
@@ -16,7 +27,7 @@ export const editableCellsDefaults = {
 };
 
 // Define headers with editable property and various types
-const HEADERS: HeaderObject[] = [
+const HEADERS: HeaderObject<EmployeeData>[] = [
   {
     accessor: "status",
     label: "Status",
@@ -151,14 +162,14 @@ const ROWS = [
 ];
 
 const EditableCellsExample = (props: UniversalTableProps) => {
-  const [rows, setRows] = useState<Row[]>(ROWS);
+  const [rows, setRows] = useState<EmployeeData[]>(ROWS);
 
   const updateRowData = (
-    rows: Row[],
+    rows: EmployeeData[],
     targetRowId: RowId,
-    accessor: Accessor,
-    newValue: CellValue
-  ): Row[] => {
+    accessor: Accessor<EmployeeData>,
+    newValue: any
+  ): EmployeeData[] => {
     return rows.map((row) => {
       if (row.id === targetRowId) {
         // Found the row, update its data directly
@@ -172,7 +183,7 @@ const EditableCellsExample = (props: UniversalTableProps) => {
     });
   };
 
-  const updateCell = ({ accessor, newValue, row }: CellChangeProps) => {
+  const updateCell = ({ accessor, newValue, row }: CellChangeProps<EmployeeData>) => {
     const rowId = row.id as RowId; // Get the row ID directly from the row
     setRows((prevRows) => updateRowData(prevRows, rowId, accessor, newValue));
   };

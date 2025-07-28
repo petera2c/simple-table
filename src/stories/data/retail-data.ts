@@ -1,7 +1,22 @@
-import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
 
-export const generateRetailSalesData = (): Row[] => {
+export type RetailSalesData = {
+  id: number;
+  name: string;
+  city: string;
+  employees: number;
+  squareFootage: number;
+  openingDate: string;
+  customerRating: string;
+  electronicsSales: number;
+  clothingSales: number;
+  groceriesSales: number;
+  furnitureSales: number;
+  totalSales: number;
+  stores: RetailSalesData[];
+};
+
+export const generateRetailSalesData = () => {
   const regions = Array.from({ length: 20 }, (_, i) => `Region ${i + 1}`);
   const storeNames = ["MegaMart", "ShopRite", "TrendyGoods", "ValueStore", "QuickBuy"];
   const cities = ["New York", "London", "Tokyo", "Sydney", "Paris", "Toronto", "Berlin"];
@@ -68,7 +83,7 @@ export const generateRetailSalesData = (): Row[] => {
   });
 };
 
-export const RETAIL_SALES_HEADERS: HeaderObject[] = [
+export const RETAIL_SALES_HEADERS: HeaderObject<RetailSalesData>[] = [
   {
     accessor: "name",
     label: "Name",
@@ -111,7 +126,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: ({ row }) => {
+    cellRenderer: ({ row }: { row: RetailSalesData }) => {
       if (row.openingDate === "-") return "-";
       const date = new Date(row.openingDate as string);
       return date.toLocaleDateString("en-US", {
@@ -128,7 +143,8 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => (row.customerRating === "-" ? "-" : `${row.customerRating}/5`),
+    cellRenderer: ({ row }: { row: RetailSalesData }) =>
+      row.customerRating === "-" ? "-" : `${row.customerRating}/5`,
   },
   {
     accessor: "electronicsSales",
@@ -137,7 +153,8 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "center",
-    cellRenderer: ({ row }) => `$${(row.electronicsSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }: { row: RetailSalesData }) =>
+      `$${(row.electronicsSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "clothingSales",
@@ -146,7 +163,8 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: ({ row }) => `$${(row.clothingSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }: { row: RetailSalesData }) =>
+      `$${(row.clothingSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "groceriesSales",
@@ -155,7 +173,8 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `$${(row.groceriesSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }: { row: RetailSalesData }) =>
+      `$${(row.groceriesSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "furnitureSales",
@@ -164,7 +183,8 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "center",
-    cellRenderer: ({ row }) => `$${(row.furnitureSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }: { row: RetailSalesData }) =>
+      `$${(row.furnitureSales as number).toLocaleString("en-US")}`,
   },
   {
     accessor: "totalSales",
@@ -174,6 +194,7 @@ export const RETAIL_SALES_HEADERS: HeaderObject[] = [
     isEditable: true,
     pinned: "right",
     align: "center",
-    cellRenderer: ({ row }) => `$${(row.totalSales as number).toLocaleString("en-US")}`,
+    cellRenderer: ({ row }: { row: RetailSalesData }) =>
+      `$${(row.totalSales as number).toLocaleString("en-US")}`,
   },
 ];

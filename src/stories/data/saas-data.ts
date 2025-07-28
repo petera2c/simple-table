@@ -1,7 +1,23 @@
-import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
 
-export const generateSaaSData = (): Row[] => {
+export type SaaSData = {
+  id: number;
+  tier: string;
+  segment: string;
+  monthlyRevenue: number;
+  activeUsers: number;
+  churnRate: number;
+  avgSessionTime: number;
+  renewalDate: string;
+  supportTickets: number;
+  signUpDate: string;
+  lastLogin: string;
+  featureUsage: string;
+  customerSatisfaction: number;
+  paymentMethod: string;
+};
+
+export const generateSaaSData = (): SaaSData[] => {
   const segments = ["Freelancers", "Small Business", "Startups", "Corporations", "Nonprofits"];
   const features = ["Analytics", "Collaboration", "Storage", "API Access"];
   const paymentMethods = ["Credit Card", "PayPal", "Bank Transfer", "Crypto"];
@@ -48,7 +64,7 @@ export const generateSaaSData = (): Row[] => {
   });
 };
 
-export const SAAS_HEADERS: HeaderObject[] = [
+export const SAAS_HEADERS: HeaderObject<SaaSData>[] = [
   {
     accessor: "tier",
     label: "Tier",

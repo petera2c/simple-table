@@ -1,58 +1,57 @@
 import { useState, useCallback, useMemo } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
-import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
 
 // Helper function to compute filtered rows for a given filter state
-const computeFilteredRows = ({
+const computeFilteredRows = <T>({
   externalFilterHandling,
   tableRows,
   filterState,
 }: {
   externalFilterHandling: boolean;
-  tableRows: Row[];
-  filterState: TableFilterState | null;
-}): Row[] => {
+  tableRows: T[];
+  filterState: TableFilterState<T> | null;
+}): T[] => {
   if (externalFilterHandling) return tableRows;
   if (!filterState || Object.keys(filterState).length === 0) return tableRows;
 
   return tableRows.filter((row) => {
-    return Object.values(filterState).every((filter) => {
+    return Object.values(filterState).every((filter: FilterCondition<T>) => {
       try {
         const cellValue = row[filter.accessor];
         return applyFilterToValue(cellValue, filter);
       } catch (error) {
-        console.warn(`Filter error for accessor ${filter.accessor}:`, error);
+        console.warn(`Filter error for accessor ${String(filter.accessor)}:`, error);
         return true; // Include row if filter fails
       }
     });
   });
 };
 
-interface UseFilterableDataProps {
-  rows: Row[];
+interface UseFilterableDataProps<T> {
+  rows: T[];
   externalFilterHandling: boolean;
-  onFilterChange?: (filters: TableFilterState) => void;
+  onFilterChange?: (filters: TableFilterState<T>) => void;
 }
 
-interface UseFilterableDataReturn {
-  filteredRows: Row[];
-  updateFilter: (filter: FilterCondition) => void;
-  clearFilter: (accessor: Accessor) => void;
+interface UseFilterableDataReturn<T> {
+  filteredRows: T[];
+  updateFilter: (filter: FilterCondition<T>) => void;
+  clearFilter: (accessor: Accessor<T>) => void;
   clearAllFilters: () => void;
-  filters: TableFilterState;
+  filters: TableFilterState<T>;
   // Function to compute what rows would be after applying a filter (for pre-animation calculation)
-  computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
+  computeFilteredRowsPreview: (filter: FilterCondition<T>) => T[];
 }
 
-const useFilterableData = ({
+const useFilterableData = <T>({
   rows,
   externalFilterHandling,
   onFilterChange,
-}: UseFilterableDataProps): UseFilterableDataReturn => {
+}: UseFilterableDataProps<T>): UseFilterableDataReturn<T> => {
   // Single filter state instead of complex 3-state system
-  const [filters, setFilters] = useState<TableFilterState>({});
+  const [filters, setFilters] = useState<TableFilterState<T>>({});
 
   // Compute current filtered rows
   const filteredRows = useMemo(() => {
@@ -65,7 +64,7 @@ const useFilterableData = ({
 
   // Filter update handler
   const updateFilter = useCallback(
-    (filter: FilterCondition) => {
+    (filter: FilterCondition<T>) => {
       const newFilterState = {
         ...filters,
         [filter.accessor]: filter,
@@ -79,9 +78,9 @@ const useFilterableData = ({
 
   // Clear single filter
   const clearFilter = useCallback(
-    (accessor: Accessor) => {
+    (accessor: Accessor<T>) => {
       const newFilterState = { ...filters };
-      delete newFilterState[accessor];
+      delete newFilterState[String(accessor)];
 
       setFilters(newFilterState);
       onFilterChange?.(newFilterState);
@@ -98,7 +97,7 @@ const useFilterableData = ({
   // Function to preview what rows would be after applying a filter
   // This is used for pre-animation calculation
   const computeFilteredRowsPreview = useCallback(
-    (filter: FilterCondition) => {
+    (filter: FilterCondition<T>) => {
       const previewFilterState = {
         ...filters,
         [filter.accessor]: filter,

@@ -58,7 +58,7 @@ export const flattenHeaders = (headers: HeaderObject[]): HeaderObject[] => {
  * @param headers The headers array to flatten
  * @returns Flattened array of all headers in the hierarchy
  */
-export const flattenAllHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+export const flattenAllHeaders = <T>(headers: HeaderObject<T>[]): HeaderObject<T>[] => {
   return headers.flatMap((header) => {
     const result = [header];
     if (header.children && header.children.length > 0) {

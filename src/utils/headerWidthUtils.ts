@@ -1,11 +1,11 @@
-import { HeaderObject } from "..";
+import { HeaderObject, Row } from "..";
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
 import { getCellId } from "./cellUtils";
 
 /**
  * Find all leaf headers (headers without children) in a header tree
  */
-export const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
+export const findLeafHeaders = <T = Row>(header: HeaderObject<T>): HeaderObject<T>[] => {
   // Skip hidden headers
   if (header.hide) {
     return [];
@@ -21,7 +21,7 @@ export const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
 /**
  * Get actual width of a header in pixels
  */
-export const getHeaderWidthInPixels = (header: HeaderObject): number => {
+export const getHeaderWidthInPixels = <T = Row>(header: HeaderObject<T>): number => {
   // Skip hidden headers
   if (header.hide) {
     return 0;
