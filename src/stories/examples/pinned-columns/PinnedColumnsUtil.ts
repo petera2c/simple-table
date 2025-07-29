@@ -1,6 +1,22 @@
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
-export const SAMPLE_HEADERS: HeaderObject[] = [
+type RowData = {
+  productName: string;
+  category: string;
+  quantity: number;
+  price: number;
+  supplier: string;
+  location: string;
+  reorderLevel: number;
+  sku: string;
+  description: string;
+  weight: number;
+  dimensions: string;
+  barcode: string;
+  expirationDate: string;
+  manufacturer: string;
+};
+export const SAMPLE_HEADERS: STColumn<RowData>[] = [
   {
     accessor: "productName",
     label: "Product Name",

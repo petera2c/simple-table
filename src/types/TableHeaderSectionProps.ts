@@ -3,17 +3,17 @@ import { Pinned } from "./Pinned";
 import SortColumn from "./SortColumn";
 import { HeaderObject } from "..";
 import { RefObject } from "react";
-import { ColumnIndices } from "../utils/columnIndicesUtils";
+import ColumnIndices from "./ColumnIndices";
 
-interface TableHeaderSectionProps {
+interface TableHeaderSectionProps<T> {
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
   handleScroll?: UIEventHandler<HTMLDivElement>;
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
   maxDepth: number;
   pinned?: Pinned;
   sectionRef: RefObject<HTMLDivElement>;
-  sort: SortColumn | null;
+  sort: SortColumn<T> | null;
   width?: number;
 }
 

@@ -1,4 +1,4 @@
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
 // Custom Tag component
 const Tag = ({
@@ -112,7 +112,50 @@ const Progress = ({
   );
 };
 
-export const HEADERS: HeaderObject[] = [
+export type ManufacturingStation = {
+  id: string;
+  productLine: string;
+  station: string;
+  machineType: string;
+  operator: string;
+  productType: string;
+  outputRate: number;
+  cycletime: string;
+  efficiency: number;
+  defectRate: string;
+  defectCount: number;
+  downtime: string;
+  utilization: number;
+  energy: number;
+  status: string;
+  maintenanceDate: string;
+  cycleTimeData: string;
+};
+
+export type ManufacturingProductionLine = {
+  id: string;
+  productLine: string;
+  stations: ManufacturingStation[];
+  // Computed aggregated fields for table display
+  station?: string;
+  machineType?: string;
+  operator?: string;
+  productType?: string;
+  outputRate?: number;
+  cycletime?: number;
+  efficiency?: number;
+  defectRate?: string;
+  defectCount?: number;
+  downtime?: string;
+  utilization?: number;
+  energy?: number;
+  status?: string;
+  maintenanceDate?: string;
+};
+
+export type ManufacturingRowData = ManufacturingStation | ManufacturingProductionLine;
+
+export const HEADERS: STColumn<ManufacturingRowData>[] = [
   {
     accessor: "productLine",
     label: "Production Line",
@@ -223,7 +266,7 @@ export const HEADERS: HeaderObject[] = [
         const value = row.cycletime as number;
         return <span className="font-bold">{value?.toFixed(1)}</span>;
       }
-      return <span>{row.cycletime as string}</span>;
+      return <span>{row.cycletime.toFixed(1)}</span>;
     },
   },
   {
@@ -290,7 +333,7 @@ export const HEADERS: HeaderObject[] = [
     cellRenderer: ({ row }) => {
       const hasChildren = row.stations && Array.isArray(row.stations);
       if (hasChildren) {
-        const rate = row.defectRate as number;
+        const rate = parseFloat(row.defectRate);
         const color = rate < 1 ? "text-green-600" : rate < 3 ? "text-orange-500" : "text-red-600";
         return <span className={`${color} font-bold`}>{rate?.toFixed(2)}%</span>;
       }
@@ -326,7 +369,7 @@ export const HEADERS: HeaderObject[] = [
     cellRenderer: ({ row }) => {
       const hasChildren = row.stations && Array.isArray(row.stations);
       if (hasChildren) {
-        const hours = row.downtime as number;
+        const hours = parseFloat(row.downtime);
         const color = hours < 1 ? "text-green-600" : hours < 2 ? "text-orange-500" : "text-red-600";
         return <span className={`${color} font-bold`}>{hours?.toFixed(2)}</span>;
       }

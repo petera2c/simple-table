@@ -21,16 +21,13 @@ export const useThrottle = () => {
   };
 };
 
-export const logArrayDifferences = (
-  original: HeaderObject[],
-  updated: HeaderObject[]
-) => {
+export const logArrayDifferences = <T>(original: HeaderObject<T>[], updated: HeaderObject<T>[]) => {
   const differences = original.reduce((diff, header, index) => {
     if (header.accessor !== updated[index]?.accessor) {
       diff.push({ original: header, updated: updated[index] });
     }
     return diff;
-  }, [] as { original: HeaderObject; updated: HeaderObject | undefined }[]);
+  }, [] as { original: HeaderObject<T>; updated: HeaderObject<T> | undefined }[]);
 
   console.info("Differences between arrays:", differences);
   console.info("\n");

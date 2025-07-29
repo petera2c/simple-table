@@ -9,7 +9,7 @@ import {
   MutableRefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import HeaderObject, { Accessor, STColumn } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import AngleLeftIcon from "../../icons/AngleLeftIcon";
 import AngleRightIcon from "../../icons/AngleRightIcon";
@@ -17,7 +17,6 @@ import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
-import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
@@ -47,8 +46,10 @@ import { useRowSelection } from "../../hooks/useRowSelection";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
+import { generateColumnId } from "../../utils/columnUtils";
+import RowGrouping from "../../types/RowGrouping";
 
-interface SimpleTableProps {
+interface SimpleTableProps<T> {
   allowAnimations?: boolean; // Flag for allowing animations
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   className?: string; // Class name for the table
@@ -56,7 +57,7 @@ interface SimpleTableProps {
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
-  defaultHeaders: HeaderObject[]; // Default headers
+  defaultHeaders: STColumn<T>[]; // Default headers with type safety
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
@@ -67,34 +68,34 @@ interface SimpleTableProps {
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
-  onCellEdit?: (props: CellChangeProps) => void;
-  onCellClick?: (props: CellClickProps) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
+  onCellEdit?: (props: CellChangeProps<T>) => void;
+  onCellClick?: (props: CellClickProps<T>) => void;
+  onColumnOrderChange?: (newHeaders: HeaderObject<T>[]) => void;
+  onFilterChange?: (filters: TableFilterState<T>) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
-  onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
-  onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
+  onRowSelectionChange?: (props: RowSelectionChangeProps<T>) => void; // Callback when row selection changes
+  onSortChange?: (sort: SortColumn<T> | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
-  rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
+  rowGrouping?: RowGrouping; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
-  rowIdAccessor: Accessor; // Property name to use as row ID (defaults to index-based ID)
-  rows: Row[]; // Rows data
+  rowIdAccessor: Accessor<T>; // Property name to use as row ID (defaults to index-based ID)
+  rows: T[]; // Rows data with type safety
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
-  tableRef?: MutableRefObject<TableRefType | null>;
+  tableRef?: MutableRefObject<TableRefType<T> | null>;
   theme?: Theme; // Theme
   useOddColumnBackground?: boolean; // Flag for using column background
   useHoverRowBackground?: boolean; // Flag for using hover row background
   useOddEvenRowBackground?: boolean; // Flag for using odd/even row background
 }
 
-const SimpleTable = (props: SimpleTableProps) => {
+const SimpleTable = <T,>(props: SimpleTableProps<T>) => {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
@@ -103,7 +104,7 @@ const SimpleTable = (props: SimpleTableProps) => {
   return <SimpleTableComp {...props} />;
 };
 
-const SimpleTableComp = ({
+const SimpleTableComp = <T,>({
   allowAnimations = false,
   cellUpdateFlash = false,
   className,
@@ -147,15 +148,27 @@ const SimpleTableComp = ({
   useHoverRowBackground = true,
   useOddEvenRowBackground = true,
   useOddColumnBackground = false,
-}: SimpleTableProps) => {
+}: SimpleTableProps<T>) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
+
+  // Recursively add ids to headers
+  const headersWithIds = useMemo(() => {
+    const addIds = (headers: STColumn<T>[]): HeaderObject<T>[] => {
+      return headers.map((header) => ({
+        ...header,
+        id: generateColumnId(header),
+        children: header.children ? addIds(header.children) : undefined,
+      }));
+    };
+    return addIds(defaultHeaders);
+  }, [defaultHeaders]);
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   // Refs
-  const draggedHeaderRef = useRef<HeaderObject | null>(null);
-  const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const draggedHeaderRef = useRef<HeaderObject<T> | null>(null);
+  const hoveredHeaderRef = useRef<HeaderObject<T> | null>(null);
 
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
@@ -165,14 +178,14 @@ const SimpleTableComp = ({
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
-  const [headers, setHeaders] = useState(defaultHeaders);
+  const [headers, setHeaders] = useState(headersWithIds);
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
-    setHeaders(defaultHeaders);
-  }, [defaultHeaders]);
+    setHeaders(headersWithIds);
+  }, [headersWithIds]);
 
   // Row selection hook
   const {
@@ -197,7 +210,7 @@ const SimpleTableComp = ({
   const effectiveHeaders = useMemo(() => {
     if (!enableRowSelection || headers?.[0]?.isSelectionColumn) return headers;
 
-    const selectionHeader = createSelectionHeader();
+    const selectionHeader = createSelectionHeader<T>();
     return [selectionHeader, ...headers];
   }, [enableRowSelection, headers]);
 
@@ -220,7 +233,7 @@ const SimpleTableComp = ({
 
   const aggregatedRows = useAggregatedRows({
     rows,
-    headers,
+    headers: headersWithIds,
     rowGrouping,
   });
 
@@ -240,7 +253,7 @@ const SimpleTableComp = ({
 
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, updateSort, computeSortedRowsPreview } = useSortableData({
-    headers,
+    headers: headersWithIds,
     tableRows: filteredRows,
     externalSortHandling,
     onSortChange,
@@ -300,7 +313,7 @@ const SimpleTableComp = ({
 
   // Memoize handlers
   const onSort = useCallback(
-    (accessor: Accessor) => {
+    (accessor: Accessor<T>) => {
       // STAGE 1: Prepare animation by adding entering rows before applying sort
       prepareForSortChange(accessor);
 
@@ -312,7 +325,7 @@ const SimpleTableComp = ({
     [prepareForSortChange, updateSort]
   );
 
-  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
+  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject<T>[]) => {
     setHeaders(newHeaders);
   }, []);
 
@@ -336,7 +349,7 @@ const SimpleTableComp = ({
 
   // Custom filter handler that respects external filter handling flag
   const handleApplyFilter = useCallback(
-    (filter: FilterCondition) => {
+    (filter: FilterCondition<T>) => {
       // STAGE 1: Prepare animation by adding entering rows before applying filter
       prepareForFilterChange(filter);
 

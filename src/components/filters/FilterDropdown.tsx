@@ -1,4 +1,3 @@
-import React from "react";
 import HeaderObject from "../../types/HeaderObject";
 import { FilterCondition } from "../../types/FilterTypes";
 import StringFilter from "./StringFilter";
@@ -7,19 +6,19 @@ import BooleanFilter from "./BooleanFilter";
 import DateFilter from "./DateFilter";
 import EnumFilter from "./EnumFilter";
 
-interface FilterDropdownProps {
-  header: HeaderObject;
-  currentFilter?: FilterCondition;
-  onApplyFilter: (filter: FilterCondition) => void;
+interface FilterDropdownProps<T> {
+  header: HeaderObject<T>;
+  currentFilter?: FilterCondition<T>;
+  onApplyFilter: (filter: FilterCondition<T>) => void;
   onClearFilter: () => void;
 }
 
-const FilterDropdown: React.FC<FilterDropdownProps> = ({
+const FilterDropdown = <T,>({
   header,
   currentFilter,
   onApplyFilter,
   onClearFilter,
-}) => {
+}: FilterDropdownProps<T>) => {
   const renderFilterComponent = () => {
     switch (header.type) {
       case "number":

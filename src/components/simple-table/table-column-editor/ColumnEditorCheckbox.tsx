@@ -6,17 +6,17 @@ import { areAllChildrenHidden, findAndMarkParentsVisible } from "./columnEditorU
 import { updateParentHeaders } from "./columnEditorUtils";
 
 // Recursive component to render headers with proper indentation
-const ColumnEditorCheckbox = ({
+const ColumnEditorCheckbox = <T,>({
   allHeaders,
   depth = 0,
   doesAnyHeaderHaveChildren,
   header,
   isCheckedOverride,
 }: {
-  allHeaders: HeaderObject[];
+  allHeaders: HeaderObject<T>[];
   depth?: number;
   doesAnyHeaderHaveChildren: boolean;
-  header: HeaderObject;
+  header: HeaderObject<T>;
   isCheckedOverride?: boolean;
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -38,19 +38,21 @@ const ColumnEditorCheckbox = ({
       updateParentHeaders(allHeaders);
     } else {
       // If unchecked (visible), ensure all parent headers are also visible
-      findAndMarkParentsVisible(allHeaders, header.accessor);
+      findAndMarkParentsVisible(allHeaders, header.id);
 
       // If this is a parent header being made visible, and all its children are hidden,
       // make at least the first child visible for better UX
       if (hasChildren && header.children && header.children.length > 0) {
-        const allChildrenCurrentlyHidden = header.children.every((child) => child.hide === true);
+        const allChildrenCurrentlyHidden = header.children.every(
+          (child: HeaderObject<T>) => child.hide === true
+        );
 
         if (allChildrenCurrentlyHidden && header.children[0]) {
           // Make the first child visible
           header.children[0].hide = false;
 
           // Also make sure any parents of the child we just made visible are also visible
-          findAndMarkParentsVisible(allHeaders, header.children[0].accessor);
+          findAndMarkParentsVisible(allHeaders, header.children[0].id);
         }
       }
     }
@@ -91,7 +93,7 @@ const ColumnEditorCheckbox = ({
               depth={depth + 1}
               doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
               header={childHeader}
-              key={`${childHeader.accessor}-${index}`}
+              key={index}
               isCheckedOverride={isChecked ? true : undefined}
             />
           ))}

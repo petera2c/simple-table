@@ -3,21 +3,21 @@ import TableColumnEditorPopout from "./TableColumnEditorPopout";
 import HeaderObject from "../../../types/HeaderObject";
 import { COLUMN_EDIT_WIDTH } from "../../../consts/general-consts";
 
-type TableColumnEditorProps = {
+type TableColumnEditorProps<T> = {
   columnEditorText: string;
   editColumns: boolean;
   editColumnsInitOpen: boolean;
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
   position: "left" | "right";
 };
 
-const TableColumnEditor = ({
+const TableColumnEditor = <T,>({
   columnEditorText,
   editColumns,
   editColumnsInitOpen,
   headers,
   position = "right",
-}: TableColumnEditorProps) => {
+}: TableColumnEditorProps<T>) => {
   const [open, setOpen] = useState(editColumnsInitOpen);
 
   const handleClick = (open: boolean) => {

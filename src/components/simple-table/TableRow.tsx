@@ -9,21 +9,21 @@ import { useTableContext } from "../../context/TableContext";
 import { getRowId } from "../../utils/rowUtils";
 
 // Define just the props needed for RenderCells
-interface TableRowProps {
+interface TableRowProps<T> {
   columnIndexStart?: number;
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
   hoveredIndex: number | null;
   index: number;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
   setHoveredIndex: (index: number | null) => void;
-  tableRow: TableRowType;
+  tableRow: TableRowType<T>;
 }
 
-const TableRow = ({
+const TableRow = <T,>({
   columnIndices,
   columnIndexStart,
   gridTemplateColumns,
@@ -35,8 +35,8 @@ const TableRow = ({
   rowIndices,
   setHoveredIndex,
   tableRow,
-}: TableRowProps) => {
-  const { useHoverRowBackground, rowIdAccessor, isAnimating, isRowSelected } = useTableContext();
+}: TableRowProps<T>) => {
+  const { useHoverRowBackground, rowIdAccessor, isAnimating, isRowSelected } = useTableContext<T>();
   const { position } = tableRow;
   // Get row index from rowIndices using the row's ID
 

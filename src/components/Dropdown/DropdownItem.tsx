@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 export interface DropdownItemProps {
   children: ReactNode;
@@ -8,13 +8,13 @@ export interface DropdownItemProps {
   className?: string;
 }
 
-const DropdownItem: React.FC<DropdownItemProps> = ({
+const DropdownItem = ({
   children,
   onClick,
   isSelected = false,
   disabled = false,
   className = "",
-}) => {
+}: DropdownItemProps) => {
   const handleClick = () => {
     if (!disabled && onClick) {
       onClick();

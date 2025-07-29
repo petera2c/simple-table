@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { HEADERS } from "./finance-headers";
+import { HEADERS, type FinancialRowData } from "./finance-headers";
 import data from "./finance-data.json";
 import TableRefType from "../../../types/TableRefType";
 import SimpleTable from "../../../components/simple-table/SimpleTable";
@@ -15,7 +15,7 @@ export const financeExampleDefaults = {
 };
 
 export const FinancialExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = useRef<TableRefType<FinancialRowData> | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {

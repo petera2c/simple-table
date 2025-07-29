@@ -1,7 +1,18 @@
-import Row from "../../../types/Row";
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
-export const PRODUCT_HEADERS: HeaderObject[] = [
+type Product = {
+  id: number;
+  productName: string;
+  category: string;
+  brand: string;
+  rating: number | "—";
+  price: number | "—";
+  stockLevel: number | "—";
+  isActive: boolean | "—";
+  releaseDate: string;
+};
+
+export const PRODUCT_HEADERS: STColumn<Product>[] = [
   {
     accessor: "productName",
     label: "Product",
@@ -12,7 +23,6 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
     type: "string",
   },
   {
-    accessor: "details",
     label: "Product Details",
     width: 500,
     isSortable: false,
@@ -90,7 +100,7 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         align: "center",
         type: "number",
         filterable: true,
-        cellRenderer: ({ row }: { row: Row }) => {
+        cellRenderer: ({ row }: { row: Product }) => {
           if (row.rating === "—") return "—";
           const rating = row.rating as number;
           const stars = "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
@@ -114,7 +124,6 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
     ],
   },
   {
-    accessor: "pricing",
     label: "Pricing & Inventory",
     width: "1fr",
     isSortable: false,
@@ -160,7 +169,7 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         align: "center",
         type: "number",
         filterable: true,
-        cellRenderer: ({ row }: { row: Row }) => {
+        cellRenderer: ({ row }: { row: Product }) => {
           if (row.stockLevel === "—") return "—";
           const stock = row.stockLevel as number;
 
@@ -194,7 +203,7 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         align: "center",
         type: "boolean",
         filterable: true,
-        cellRenderer: ({ row }: { row: Row }) => {
+        cellRenderer: ({ row }: { row: Product }) => {
           if (row.isActive === "—") return "—";
           const isActive = row.isActive as boolean;
           return (
@@ -217,7 +226,7 @@ export const PRODUCT_HEADERS: HeaderObject[] = [
         align: "center",
         type: "date",
         filterable: true,
-        cellRenderer: ({ row }: { row: Row }) => {
+        cellRenderer: ({ row }: { row: Product }) => {
           if (row.releaseDate === "—") return "—";
           // Parse ISO date string directly to avoid timezone issues
           const dateString = row.releaseDate as string;

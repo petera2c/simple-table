@@ -10,7 +10,7 @@ const normalizeDate = (date: Date): Date => {
 /**
  * Applies a filter condition to a cell value
  */
-export const applyFilterToValue = (cellValue: any, filter: FilterCondition): boolean => {
+export const applyFilterToValue = <T>(cellValue: any, filter: FilterCondition<T>): boolean => {
   const { operator, value, values } = filter;
 
   // Handle null/undefined values for isEmpty/isNotEmpty

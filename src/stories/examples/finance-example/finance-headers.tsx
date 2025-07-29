@@ -1,6 +1,20 @@
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
-export const HEADERS: HeaderObject[] = [
+export type FinancialRowData = {
+  id: number;
+  ticker: string;
+  companyName: string;
+  price: number | "—";
+  priceChangePercent: number | "—";
+  marketCap: number | "—";
+  peRatio: number | "—";
+  dividendYield: number | null | "—";
+  analystRating: string;
+  date: string;
+  isFollowed: boolean;
+};
+
+export const HEADERS: STColumn<FinancialRowData>[] = [
   {
     accessor: "ticker",
     align: "left",
@@ -25,7 +39,6 @@ export const HEADERS: HeaderObject[] = [
     width: "2fr",
   },
   {
-    accessor: "priceMetrics",
     label: "Price Performance",
     width: 250,
     isSortable: false,
@@ -74,7 +87,6 @@ export const HEADERS: HeaderObject[] = [
     ],
   },
   {
-    accessor: "fundamentals",
     label: "Fundamentals",
     width: 380,
     isSortable: false,
@@ -120,7 +132,6 @@ export const HEADERS: HeaderObject[] = [
     ],
   },
   {
-    accessor: "analystInfo",
     label: "Analyst Information",
     width: 380,
     isSortable: false,

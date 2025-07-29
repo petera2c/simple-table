@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import SelectIcon from "../../../icons/SelectIcon";
 import Dropdown from "../../dropdown/Dropdown";
 

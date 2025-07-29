@@ -1,26 +1,32 @@
 import TableRow from "../types/TableRow";
-import Row from "../types/Row";
 import { RowId } from "../types/RowId";
 import { Accessor } from "../types/HeaderObject";
+import RowGrouping from "../types/RowGrouping";
 
 /**
  * Check if an array contains Row objects (vs primitive arrays like string[] or number[])
  */
-export const isRowArray = (data: any): data is Row[] => {
+export const isRowArray = <T>(data: any): data is T[] => {
   return Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && data[0] !== null;
 };
 
 /**
  * Get the row ID from a row using the specified accessor or fall back to index
  */
-export const getRowId = ({ row, rowIdAccessor }: { row: Row; rowIdAccessor: Accessor }): RowId => {
+export const getRowId = <T>({
+  row,
+  rowIdAccessor,
+}: {
+  row: T;
+  rowIdAccessor: Accessor<T>;
+}): RowId => {
   return row[rowIdAccessor] as RowId;
 };
 
 /**
  * Get nested rows from a row based on the grouping path
  */
-export const getNestedRows = (row: Row, groupingKey: string): Row[] => {
+export const getNestedRows = <T>(row: T, groupingKey: keyof T) => {
   const nestedData = row[groupingKey];
   // Only return as Row[] if it's an array of objects (potential rows)
   if (isRowArray(nestedData)) {
@@ -32,7 +38,7 @@ export const getNestedRows = (row: Row, groupingKey: string): Row[] => {
 /**
  * Check if a row has nested rows for a given grouping key
  */
-export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
+export const hasNestedRows = <T>(row: T, groupingKey?: keyof T): boolean => {
   if (!groupingKey) return false;
   const nestedData = row[groupingKey];
   return isRowArray(nestedData);
@@ -42,7 +48,7 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
  * Flatten rows recursively based on row grouping configuration
  * Now calculates ALL properties including position and isLastGroupRow
  */
-export const flattenRowsWithGrouping = ({
+export const flattenRowsWithGrouping = <T>({
   depth = 0,
   expandAll = false,
   unexpandedRows,
@@ -53,13 +59,14 @@ export const flattenRowsWithGrouping = ({
   depth?: number;
   expandAll?: boolean;
   unexpandedRows: Set<string>;
-  rowGrouping?: Accessor[];
-  rowIdAccessor: Accessor;
-  rows: Row[];
-}): TableRow[] => {
-  const result: TableRow[] = [];
+  rowGrouping?: RowGrouping;
+  rowIdAccessor: Accessor<T>;
+  rows: T[];
+}): TableRow<T>[] => {
+  const result: TableRow<T>[] = [];
 
-  const processRows = (currentRows: Row[], currentDepth: number, parentPosition = 0): number => {
+  //'never[] | (T[keyof T] & unknown[])'
+  const processRows = (currentRows: T[], currentDepth: number, parentPosition = 0): number => {
     let position = parentPosition;
 
     currentRows.forEach((row, index) => {
@@ -73,7 +80,7 @@ export const flattenRowsWithGrouping = ({
       result.push({
         row,
         depth: currentDepth,
-        groupingKey: currentGroupingKey,
+        groupingKey: currentGroupingKey as keyof T,
         position,
         isLastGroupRow,
       });
@@ -88,7 +95,7 @@ export const flattenRowsWithGrouping = ({
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {
-        const nestedRows = getNestedRows(row, currentGroupingKey);
+        const nestedRows = getNestedRows(row, currentGroupingKey as keyof T) as T[];
 
         if (nestedRows.length > 0) {
           // Recursively process nested rows and update position

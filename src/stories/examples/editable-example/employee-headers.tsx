@@ -1,6 +1,20 @@
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
-export const EMPLOYEE_HEADERS: HeaderObject[] = [
+type EmployeeData = {
+  name: string;
+  email: string;
+  department: string;
+  position: string;
+  salary: number;
+  hireDate: string;
+  performanceReview: string;
+  rating: number;
+  isActive: boolean;
+  isRemote: boolean;
+  projectsCompleted: number;
+};
+
+export const EMPLOYEE_HEADERS: STColumn<EmployeeData>[] = [
   {
     accessor: "name",
     label: "Full Name",

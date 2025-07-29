@@ -1,7 +1,19 @@
-import Row from "../../../types/Row";
-import HeaderObject from "../../../types/HeaderObject";
+import { STColumn } from "../../../types/HeaderObject";
 
-export const SALES_HEADERS: HeaderObject[] = [
+type SalesRow = {
+  id: number;
+  repName: string;
+  dealSize: number | "—";
+  isWon: boolean;
+  commission: number;
+  dealProfit: number | "—";
+  dealValue: number | "—";
+  profitMargin: number | "—";
+  closeDate: string;
+  category: string;
+};
+
+export const SALES_HEADERS: STColumn<SalesRow>[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
@@ -10,7 +22,6 @@ export const SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
   },
   {
-    accessor: "salesMetrics",
     label: "Sales Metrics",
     width: 460,
     isSortable: false,
@@ -23,7 +34,7 @@ export const SALES_HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: { row: SalesRow }) => {
           if (row.dealSize === "—") return "—";
           return `$${(row.dealSize as number).toLocaleString("en-US", {
             minimumFractionDigits: 2,
@@ -69,8 +80,7 @@ export const SALES_HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "center",
         type: "boolean",
-        cellRenderer: ({ row }: { row: Row }) => {
-          if (row.isWon === "—") return "—";
+        cellRenderer: ({ row }: { row: SalesRow }) => {
           const isWon = row.isWon as boolean;
           return isWon ? "Won" : "Lost";
         },
@@ -79,7 +89,6 @@ export const SALES_HEADERS: HeaderObject[] = [
   },
 
   {
-    accessor: "financialMetrics",
     label: "Financial Metrics",
     width: "1fr",
     isSortable: false,
@@ -92,8 +101,7 @@ export const SALES_HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }: { row: Row }) => {
-          if (row.commission === "—") return "—";
+        cellRenderer: ({ row }: { row: SalesRow }) => {
           const value = row.commission as number;
           if (value === 0) return <span className="text-gray-400">$0.00</span>;
 
@@ -111,8 +119,7 @@ export const SALES_HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }: { row: Row }) => {
-          if (row.profitMargin === "—") return "—";
+        cellRenderer: ({ row }: { row: SalesRow }) => {
           const value = row.profitMargin as number;
 
           // Enhanced color coding based on profit margin tiers
@@ -138,7 +145,7 @@ export const SALES_HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }: { row: Row }) => {
+        cellRenderer: ({ row }: { row: SalesRow }) => {
           if (row.dealProfit === "—") return "—";
           const value = row.dealProfit as number;
           if (value === 0) return <span className="text-gray-400">$0.00</span>;

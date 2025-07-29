@@ -1,11 +1,9 @@
-import Row from "./Row";
-
-type TableRow = {
+type TableRow<T> = {
   depth: number;
-  groupingKey?: string;
+  groupingKey?: keyof T;
   isLastGroupRow: boolean;
   position: number;
-  row: Row;
+  row: T;
 };
 
 export default TableRow;

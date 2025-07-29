@@ -1,5 +1,15 @@
-import { HeaderObject, SimpleTable } from "../..";
+import { SimpleTable } from "../..";
+import { STColumn } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
+
+type RowData = {
+  id: number;
+  product: string;
+  sales: number;
+  growth: number;
+  status: string;
+  risk: string;
+};
 
 // Default args specific to CellHighlighting - exported for reuse in stories and tests
 export const cellHighlightingDefaults = {
@@ -8,7 +18,7 @@ export const cellHighlightingDefaults = {
 };
 
 // Define headers with conditional cell styling
-const headers: HeaderObject[] = [
+const headers: STColumn<RowData>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "product", label: "Product", minWidth: 100, width: "1fr", type: "string" },
   {

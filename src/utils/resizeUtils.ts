@@ -1,4 +1,4 @@
-import { HeaderObject } from "..";
+import { HeaderObject, Row } from "..";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
 import { calculatePinnedWidth } from "./headerUtils";
 import {
@@ -137,10 +137,10 @@ const handleParentHeaderResize = ({
 /**
  * Recalculate widths for all sections (left, right, main)
  */
-export const recalculateAllSectionWidths = ({
+export const recalculateAllSectionWidths = <T = Row>({
   headers,
 }: {
-  headers: HeaderObject[];
+  headers: HeaderObject<T>[];
 }): {
   leftWidth: number;
   rightWidth: number;

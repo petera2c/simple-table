@@ -5,10 +5,11 @@ import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import ConditionalWrapper from "../ConditionalWrapper";
+import { AggregatedRow } from "../../types/HeaderObject";
 
 // Define a type for grid cell position
-type GridCell = {
-  header: HeaderObject;
+type GridCell<T> = {
+  header: HeaderObject<AggregatedRow<T>>;
   gridColumnStart: number;
   gridColumnEnd: number;
   gridRowStart: number;
@@ -16,7 +17,7 @@ type GridCell = {
   colIndex: number;
 };
 
-const TableHeaderSection = ({
+const TableHeaderSection = <T,>({
   columnIndices,
   gridTemplateColumns,
   handleScroll,
@@ -26,14 +27,18 @@ const TableHeaderSection = ({
   sectionRef,
   sort,
   width,
-}: TableHeaderSectionProps) => {
+}: TableHeaderSectionProps<T>) => {
   // First, flatten all headers into grid cells
   const gridCells = useMemo(() => {
-    const cells: GridCell[] = [];
+    const cells: GridCell<T>[] = [];
     let columnCounter = 1;
 
     // Helper function to process a header and its children
-    const processHeader = (header: HeaderObject, depth: number, isFirst = false) => {
+    const processHeader = (
+      header: HeaderObject<AggregatedRow<T>>,
+      depth: number,
+      isFirst = false
+    ) => {
       if (!displayCell({ header, pinned })) return 0;
 
       // Only increment for non-first siblings
@@ -58,7 +63,7 @@ const TableHeaderSection = ({
         gridColumnEnd,
         gridRowStart,
         gridRowEnd,
-        colIndex: columnIndices[header.accessor],
+        colIndex: columnIndices[header.id],
       });
 
       // Process children if any
@@ -104,7 +109,7 @@ const TableHeaderSection = ({
         }}
       >
         <>
-          {gridCells.map((cell) => (
+          {gridCells.map((cell, index) => (
             <TableHeaderCell
               colIndex={cell.colIndex}
               gridColumnEnd={cell.gridColumnEnd}
@@ -112,7 +117,7 @@ const TableHeaderSection = ({
               gridRowEnd={cell.gridRowEnd}
               gridRowStart={cell.gridRowStart}
               header={cell.header}
-              key={cell.header.accessor}
+              key={index}
               reverse={pinned === "right"}
               sort={sort}
             />

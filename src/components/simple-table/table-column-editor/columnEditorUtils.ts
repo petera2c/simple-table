@@ -1,26 +1,26 @@
-import HeaderObject, { Accessor } from "../../../types/HeaderObject";
+import HeaderObject from "../../../types/HeaderObject";
 
 // Find all parents for a given header to ensure they're visible
-export const findAndMarkParentsVisible = (
-  headers: HeaderObject[],
-  childAccessor: Accessor,
+export const findAndMarkParentsVisible = <T>(
+  headers: HeaderObject<T>[],
+  childId: string,
   visited: Set<string> = new Set()
 ) => {
   for (const header of headers) {
     // Skip if already processed this header
-    if (visited.has(header.accessor)) continue;
-    visited.add(header.accessor);
+    if (visited.has(header.id)) continue;
+    visited.add(header.id);
 
     // Check if this header has the child we're looking for
     if (header.children && header.children.length > 0) {
       // Check direct children
-      const hasDirectChild = header.children.some((child) => child.accessor === childAccessor);
+      const hasDirectChild = header.children.some((child) => child.id === childId);
 
       // Or recurse deeper to find in nested children
       let hasNestedChild = false;
       if (!hasDirectChild) {
         for (const child of header.children) {
-          findAndMarkParentsVisible([child], childAccessor, visited);
+          findAndMarkParentsVisible([child], childId, visited);
           // If this child is now visible after recursion, it means it's in the path
           if (child.hide === false) {
             hasNestedChild = true;
@@ -37,12 +37,12 @@ export const findAndMarkParentsVisible = (
   }
 };
 
-export const areAllChildrenHidden = (children: HeaderObject[]) => {
+export const areAllChildrenHidden = <T>(children: HeaderObject<T>[]) => {
   return children.every((child) => child.hide);
 };
 
 // Update parent headers based on children's state
-export const updateParentHeaders = (headers: HeaderObject[]) => {
+export const updateParentHeaders = <T>(headers: HeaderObject<T>[]) => {
   // Process each header
   headers.forEach((header) => {
     // If it has children, check if all children are hidden

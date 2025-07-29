@@ -15,19 +15,19 @@ import FilterActions from "./shared/FilterActions";
 import DatePicker from "../date-picker/DatePicker";
 import Dropdown from "../dropdown/Dropdown";
 
-interface DateFilterProps {
-  header: HeaderObject;
-  currentFilter?: FilterCondition;
-  onApplyFilter: (filter: FilterCondition) => void;
+interface DateFilterProps<T> {
+  header: HeaderObject<T>;
+  currentFilter?: FilterCondition<T>;
+  onApplyFilter: (filter: FilterCondition<T>) => void;
   onClearFilter: () => void;
 }
 
-const DateFilter: React.FC<DateFilterProps> = ({
+const DateFilter = <T,>({
   header,
   currentFilter,
   onApplyFilter,
   onClearFilter,
-}) => {
+}: DateFilterProps<T>) => {
   const [selectedOperator, setSelectedOperator] = useState<DateFilterOperator>(
     (currentFilter?.operator as DateFilterOperator) || "equals"
   );
@@ -59,7 +59,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
   }, [currentFilter]);
 
   const handleApplyFilter = () => {
-    const filter: FilterCondition = {
+    const filter: FilterCondition<T> = {
       accessor: header.accessor,
       operator: selectedOperator,
     };

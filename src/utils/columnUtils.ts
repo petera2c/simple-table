@@ -1,6 +1,25 @@
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { STColumn } from "../types/HeaderObject";
 
-const getColumnWidth = (header: HeaderObject) => {
+export function generateColumnId<T>(
+  header: STColumn<T>,
+  path: string[] = [],
+  initialIndex: number = 0
+): string {
+  // Use accessor if available
+  if (header.accessor) {
+    return String(header.accessor);
+  }
+
+  // Generate stable ID from path and label
+  const pathPrefix = path.length > 0 ? path.join("-") + "-" : "";
+  const labelSlug = header.label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return `${pathPrefix}${labelSlug}-${initialIndex}`;
+}
+const getColumnWidth = <T>(header: HeaderObject<T>) => {
   let { minWidth, width } = header;
 
   if (typeof width === "number") {
@@ -20,15 +39,15 @@ const getColumnWidth = (header: HeaderObject) => {
   return width;
 };
 
-export const createGridTemplateColumns = ({ headers }: { headers: HeaderObject[] }) => {
+export const createGridTemplateColumns = <T>({ headers }: { headers: HeaderObject<T>[] }) => {
   // We only care about the most children headers to create the grid template columns
   const flattenHeaders = ({
     headers,
     flattenedHeaders,
   }: {
-    headers: HeaderObject[];
-    flattenedHeaders: HeaderObject[];
-  }): HeaderObject[] => {
+    headers: HeaderObject<T>[];
+    flattenedHeaders: HeaderObject<T>[];
+  }): HeaderObject<T>[] => {
     headers.forEach((header) => {
       if (header.hide) return;
       if (header.children) {

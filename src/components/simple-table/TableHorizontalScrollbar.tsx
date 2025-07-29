@@ -3,7 +3,7 @@ import { useTableContext } from "../../context/TableContext";
 import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-consts";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 
-const TableHorizontalScrollbar = ({
+const TableHorizontalScrollbar = <T,>({
   mainBodyWidth,
   mainBodyRef,
   pinnedLeftWidth,
@@ -17,7 +17,7 @@ const TableHorizontalScrollbar = ({
   tableBodyContainerRef: RefObject<HTMLDivElement>;
 }) => {
   // Context
-  const { editColumns } = useTableContext();
+  const { editColumns } = useTableContext<T>();
 
   // Local state
   const [isScrollable, setIsScrollable] = useState(false);

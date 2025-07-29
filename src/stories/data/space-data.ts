@@ -1,7 +1,27 @@
-import Row from "../../types/Row";
-import HeaderObject from "../../types/HeaderObject";
+import { STColumn } from "../../types/HeaderObject";
 
-export const generateSpaceData = (): Row[] => {
+export type SpaceData = {
+  id: number;
+  agency: string;
+  missionName: string;
+  launchDate: string;
+  destination: string;
+  status: string;
+  crewSize: number;
+  budget?: number;
+  duration: string | number;
+  payloadWeight: number;
+  launchSite: string;
+  missionCostPerKg: number;
+  successRate: number;
+  scientificYield: number;
+  q1: number;
+  q2: number;
+  q3: number;
+  q4: number;
+};
+
+export const generateSpaceData = (): SpaceData[] => {
   const agencies = ["NASA", "ESA", "SpaceX", "Roscosmos", "ISRO"];
   const destinations = ["Moon", "Mars", "Venus", "Jupiter", "Asteroid Belt", "Saturn"];
   const missionTypes = ["Orbiter", "Rover", "Lander", "Crewed", "Probe"];
@@ -45,7 +65,7 @@ export const generateSpaceData = (): Row[] => {
   });
 };
 
-export const SPACE_HEADERS: HeaderObject[] = [
+export const SPACE_HEADERS: STColumn<SpaceData>[] = [
   {
     accessor: "agency",
     label: "Agency",
@@ -71,7 +91,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: ({ row }) => {
+    cellRenderer: ({ row }: { row: SpaceData }) => {
       const date = new Date(row.launchDate as string);
       return date.toLocaleDateString("en-US", {
         month: "numeric",
@@ -158,7 +178,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => {
+    cellRenderer: ({ row }: { row: SpaceData }) => {
       if (row.duration === "Ongoing") return "Ongoing";
       return `${row.duration}y`;
     },
@@ -170,7 +190,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.payloadWeight as number}kg`,
+    cellRenderer: ({ row }: { row: SpaceData }) => `${row.payloadWeight as number}kg`,
   },
   {
     accessor: "launchSite",
@@ -187,7 +207,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => {
+    cellRenderer: ({ row }: { row: SpaceData }) => {
       return `$${(row.missionCostPerKg as number).toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -201,7 +221,7 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.successRate}%`,
+    cellRenderer: ({ row }: { row: SpaceData }) => `${row.successRate}%`,
   },
   {
     accessor: "scientificYield",
@@ -210,6 +230,6 @@ export const SPACE_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.scientificYield}TB`,
+    cellRenderer: ({ row }: { row: SpaceData }) => `${row.scientificYield}TB`,
   },
 ];

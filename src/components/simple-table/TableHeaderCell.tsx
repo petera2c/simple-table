@@ -1,7 +1,7 @@
 import { DragEvent, useEffect, MouseEvent, TouchEvent, useState } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor, AggregatedRow } from "../../types/HeaderObject";
 import SortColumn from "../../types/SortColumn";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
@@ -16,18 +16,18 @@ import { FilterCondition } from "../../types/FilterTypes";
 import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
 
-interface HeaderCellProps {
+interface HeaderCellProps<T> {
   colIndex: number;
   gridColumnEnd: number;
   gridColumnStart: number;
   gridRowEnd: number;
   gridRowStart: number;
-  header: HeaderObject;
+  header: HeaderObject<AggregatedRow<T>>;
   reverse?: boolean;
-  sort: SortColumn | null;
+  sort: SortColumn<T> | null;
 }
 
-const TableHeaderCell = ({
+const TableHeaderCell = <T,>({
   colIndex,
   gridColumnEnd,
   gridColumnStart,
@@ -36,7 +36,7 @@ const TableHeaderCell = ({
   header,
   reverse,
   sort,
-}: HeaderCellProps) => {
+}: HeaderCellProps<T>) => {
   // Local state for filter dropdown
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
@@ -66,12 +66,12 @@ const TableHeaderCell = ({
     setSelectedColumns,
     sortDownIcon,
     sortUpIcon,
-  } = useTableContext();
+  } = useTableContext<T>();
 
   // Derived state
   const clickable = Boolean(header?.isSortable);
   const filterable = Boolean(header?.filterable);
-  const currentFilter = filters[header.accessor];
+  const currentFilter = filters[header.id];
 
   const className = `st-header-cell ${
     header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
@@ -91,7 +91,7 @@ const TableHeaderCell = ({
   const throttle = useThrottle();
 
   // Handlers
-  const handleDragStartWrapper = (header: HeaderObject) => {
+  const handleDragStartWrapper = (header: HeaderObject<AggregatedRow<T>>) => {
     handleDragStart(header);
   };
   const handleDragEndWrapper = (event: DragEvent) => {
@@ -105,13 +105,13 @@ const TableHeaderCell = ({
     setIsFilterDropdownOpen(!isFilterDropdownOpen);
   };
 
-  const handleApplyFilterWrapper = (filter: FilterCondition) => {
+  const handleApplyFilterWrapper = (filter: FilterCondition<T>) => {
     handleApplyFilter(filter);
     setIsFilterDropdownOpen(false);
   };
 
   const handleClearFilterWrapper = () => {
-    handleClearFilter(header.accessor);
+    handleClearFilter(header.id);
     setIsFilterDropdownOpen(false);
   };
 
@@ -119,9 +119,11 @@ const TableHeaderCell = ({
   const handleColumnHeaderClick = ({
     event,
     header,
+    accessor,
   }: {
     event: MouseEvent;
-    header: HeaderObject;
+    header: HeaderObject<T>;
+    accessor: Accessor<T>;
   }) => {
     // If this is the selection column, don't handle column selection
     if (header.isSelectionColumn) {
@@ -178,7 +180,7 @@ const TableHeaderCell = ({
     }
 
     if (!header.isSortable) return;
-    onSort(header.accessor);
+    onSort(accessor);
   };
   // Drag handler
   const onDragStart = (event: DragEvent) => {
@@ -214,7 +216,7 @@ const TableHeaderCell = ({
       onMouseDown={(event: MouseEvent) => {
         // Get the start width from the DOM element directly if ref is not available
         const startWidth = document.getElementById(
-          getCellId({ accessor: header.accessor, rowId: "header" })
+          getCellId({ headerId: header.id, rowId: "header" })
         )?.offsetWidth;
 
         throttle({
@@ -228,14 +230,14 @@ const TableHeaderCell = ({
             setHeaders,
             setIsResizing,
             startWidth,
-          } as HandleResizeStartProps,
+          } as HandleResizeStartProps<T>,
           limit: 10,
         });
       }}
       onTouchStart={(event: TouchEvent) => {
         // Get the start width from the DOM element directly if ref is not available
         const startWidth = document.getElementById(
-          getCellId({ accessor: header.accessor, rowId: "header" })
+          getCellId({ headerId: header.id, rowId: "header" })
         )?.offsetWidth;
 
         throttle({
@@ -249,7 +251,7 @@ const TableHeaderCell = ({
             setHeaders,
             setIsResizing,
             startWidth,
-          } as HandleResizeStartProps,
+          } as HandleResizeStartProps<T>,
           limit: 10,
         });
       }}
@@ -261,7 +263,9 @@ const TableHeaderCell = ({
   const SortIcon = sort && sort.key.accessor === header.accessor && (
     <div
       className="st-icon-container"
-      onClick={(event) => handleColumnHeaderClick({ event, header })}
+      onClick={(event) =>
+        header.accessor && handleColumnHeaderClick({ event, header, accessor: header.accessor })
+      }
     >
       {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
       {sort.direction === "descending" && sortDownIcon && sortDownIcon}
@@ -305,7 +309,7 @@ const TableHeaderCell = ({
   return (
     <Animate
       className={className}
-      id={getCellId({ accessor: header.accessor, rowId: "header" })}
+      id={getCellId({ headerId: header.id, rowId: "header" })}
       onDragOver={(event) => {
         if (!isSelectionColumn) {
           throttle({
@@ -332,7 +336,8 @@ const TableHeaderCell = ({
         draggable={columnReordering && !header.disableReorder && !isSelectionColumn}
         onClick={(event) => {
           if (!isSelectionColumn) {
-            handleColumnHeaderClick({ event, header });
+            header.accessor &&
+              handleColumnHeaderClick({ event, header, accessor: header.accessor });
           }
         }}
         onDragEnd={!isSelectionColumn ? handleDragEndWrapper : undefined}

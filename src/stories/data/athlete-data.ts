@@ -1,7 +1,22 @@
-import Row from "../../types/Row";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { STColumn } from "../../types/HeaderObject";
 
-export const generateAthletesData = (): Row[] => {
+export type AthleteData = {
+  id: number;
+  country: string;
+  athleteName: string;
+  medals: number;
+  gold: number;
+  event: string;
+  personalBest: number;
+  lastCompeted: number;
+  age: number;
+  height: number;
+  weight: number;
+  team: string;
+  sponsor: string;
+};
+
+export const generateAthletesData = (): AthleteData[] => {
   const countries = ["USA", "China", "Russia", "UK", "Brazil", "Australia", "Japan"];
   const firstNames = ["Alex", "Jordan", "Taylor", "Sam", "Chris", "Lee", "Pat"];
   const lastNames = ["Smith", "Johnson", "Brown", "Davis", "Wilson", "Clark"];
@@ -37,7 +52,7 @@ export const generateAthletesData = (): Row[] => {
   });
 };
 
-export const ATHLETES_HEADERS: HeaderObject[] = [
+export const ATHLETES_HEADERS: STColumn<AthleteData>[] = [
   {
     accessor: "country",
     label: "Country",
@@ -85,7 +100,7 @@ export const ATHLETES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${(row.personalBest as number).toFixed(2)}`,
+    cellRenderer: ({ row }: { row: AthleteData }) => `${(row.personalBest as number).toFixed(2)}`,
   },
   {
     accessor: "lastCompeted",
@@ -94,7 +109,7 @@ export const ATHLETES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "left",
-    cellRenderer: ({ row }) => `${row.lastCompeted}`,
+    cellRenderer: ({ row }: { row: AthleteData }) => `${row.lastCompeted}`,
   },
   { accessor: "age", label: "Age", width: 80, isSortable: true, isEditable: true, align: "right" },
   {
@@ -104,7 +119,7 @@ export const ATHLETES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${(row.height as number).toFixed(2)}m`,
+    cellRenderer: ({ row }: { row: AthleteData }) => `${(row.height as number).toFixed(2)}m`,
   },
   {
     accessor: "weight",
@@ -113,7 +128,7 @@ export const ATHLETES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     align: "right",
-    cellRenderer: ({ row }) => `${row.weight}kg`,
+    cellRenderer: ({ row }: { row: AthleteData }) => `${row.weight}kg`,
   },
   {
     accessor: "team",

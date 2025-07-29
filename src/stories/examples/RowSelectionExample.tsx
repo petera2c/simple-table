@@ -1,9 +1,112 @@
 import { useState } from "react";
 import { CellClickProps, SimpleTable } from "../..";
-import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
-import Row from "../../types/Row";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
+import { STColumn } from "../../types/HeaderObject";
+
+type EmployeeData = {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+  status: string;
+};
+
+// Sample data for the row selection demo
+const rows: EmployeeData[] = [
+  {
+    id: 1,
+    name: "John Doe",
+    age: 28,
+    role: "Developer",
+    department: "Engineering",
+    startDate: "2020-01-01",
+    status: "Active",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    age: 32,
+    role: "Designer",
+    department: "Design",
+    startDate: "2019-03-15",
+    status: "Active",
+  },
+  {
+    id: 3,
+    name: "Bob Johnson",
+    age: 45,
+    role: "Manager",
+    department: "Management",
+    startDate: "2018-07-20",
+    status: "Active",
+  },
+  {
+    id: 4,
+    name: "Alice Williams",
+    age: 24,
+    role: "Intern",
+    department: "Internship",
+    startDate: "2023-01-10",
+    status: "Active",
+  },
+  {
+    id: 5,
+    name: "Charlie Brown",
+    age: 37,
+    role: "DevOps",
+    department: "Engineering",
+    startDate: "2021-05-12",
+    status: "Active",
+  },
+  {
+    id: 6,
+    name: "Diana Prince",
+    age: 29,
+    role: "Developer",
+    department: "Engineering",
+    startDate: "2022-02-28",
+    status: "Inactive",
+  },
+  {
+    id: 7,
+    name: "Ethan Hunt",
+    age: 31,
+    role: "Developer",
+    department: "Engineering",
+    startDate: "2021-09-15",
+    status: "Active",
+  },
+  {
+    id: 8,
+    name: "Frank Underwood",
+    age: 40,
+    role: "Team Lead",
+    department: "Engineering",
+    startDate: "2020-11-03",
+    status: "Active",
+  },
+  {
+    id: 9,
+    name: "Grace Hopper",
+    age: 35,
+    role: "Senior Developer",
+    department: "Engineering",
+    startDate: "2019-08-22",
+    status: "Active",
+  },
+  {
+    id: 10,
+    name: "Hannah Montana",
+    age: 22,
+    role: "Junior Developer",
+    department: "Engineering",
+    startDate: "2023-06-01",
+    status: "Active",
+  },
+];
 
 // Default args specific to RowSelectionExample - exported for reuse in stories and tests
 export const rowSelectionExampleDefaults = {
@@ -17,122 +120,32 @@ export const rowSelectionExampleDefaults = {
 
 const RowSelectionExample = (props: UniversalTableProps) => {
   // State to track selection for demo purposes
-  const [selectedRowsInfo, setSelectedRowsInfo] = useState<Row[]>([]);
+  const [selectedRowsInfo, setSelectedRowsInfo] = useState<EmployeeData[]>([]);
   const [lastAction, setLastAction] = useState<string>("");
 
-  // Sample data for the row selection demo
-  const rows = [
-    {
-      id: 1,
-      name: "John Doe",
-      age: 28,
-      role: "Developer",
-      department: "Engineering",
-      startDate: "2020-01-01",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      age: 32,
-      role: "Designer",
-      department: "Design",
-      startDate: "2019-03-15",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Bob Johnson",
-      age: 45,
-      role: "Manager",
-      department: "Management",
-      startDate: "2018-07-20",
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Alice Williams",
-      age: 24,
-      role: "Intern",
-      department: "Internship",
-      startDate: "2023-01-10",
-      status: "Active",
-    },
-    {
-      id: 5,
-      name: "Charlie Brown",
-      age: 37,
-      role: "DevOps",
-      department: "Engineering",
-      startDate: "2021-05-12",
-      status: "Active",
-    },
-    {
-      id: 6,
-      name: "Diana Prince",
-      age: 29,
-      role: "Developer",
-      department: "Engineering",
-      startDate: "2022-02-28",
-      status: "Inactive",
-    },
-    {
-      id: 7,
-      name: "Ethan Hunt",
-      age: 31,
-      role: "Developer",
-      department: "Engineering",
-      startDate: "2021-09-15",
-      status: "Active",
-    },
-    {
-      id: 8,
-      name: "Frank Underwood",
-      age: 40,
-      role: "Team Lead",
-      department: "Engineering",
-      startDate: "2020-11-03",
-      status: "Active",
-    },
-    {
-      id: 9,
-      name: "Grace Hopper",
-      age: 35,
-      role: "Senior Developer",
-      department: "Engineering",
-      startDate: "2019-08-22",
-      status: "Active",
-    },
-    {
-      id: 10,
-      name: "Hannah Montana",
-      age: 22,
-      role: "Junior Developer",
-      department: "Engineering",
-      startDate: "2023-06-01",
-      status: "Active",
-    },
-  ];
-
   // Handle row selection changes
-  const handleRowSelectionChange = ({ row, isSelected, selectedRows }: RowSelectionChangeProps) => {
+  const handleRowSelectionChange = ({
+    row,
+    isSelected,
+    selectedRows,
+  }: RowSelectionChangeProps<EmployeeData>) => {
     const action = isSelected ? "Selected" : "Deselected";
     setLastAction(`${action}: ${row.name} (ID: ${row.id})`);
 
     // Convert Set to Array for display
     const selectedRowsArray = Array.from(selectedRows)
       .map((rowId) => rows.find((r) => String(r.id) === rowId))
-      .filter(Boolean) as Row[];
+      .filter(Boolean) as EmployeeData[];
 
     setSelectedRowsInfo(selectedRowsArray);
   };
 
-  const handleCellClick = ({ row, colIndex, accessor, value }: CellClickProps) => {
+  const handleCellClick = ({ row, colIndex, accessor, value }: CellClickProps<EmployeeData>) => {
     console.log("Cell clicked:", { row, colIndex, accessor, value });
   };
 
   // Define headers
-  const headers: HeaderObject[] = [
+  const headers: STColumn<EmployeeData>[] = [
     {
       accessor: "id",
       label: "ID",

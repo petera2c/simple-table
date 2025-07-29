@@ -2,13 +2,17 @@ import { useMemo } from "react";
 import HeaderObject from "../../../types/HeaderObject";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
 
-type TableColumnEditorPopoutProps = {
-  headers: HeaderObject[];
+type TableColumnEditorPopoutProps<T> = {
+  headers: HeaderObject<T>[];
   open: boolean;
   position: "left" | "right";
 };
 
-const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorPopoutProps) => {
+const TableColumnEditorPopout = <T,>({
+  headers,
+  open,
+  position,
+}: TableColumnEditorPopoutProps<T>) => {
   const positionClass = position === "left" ? "left" : "";
   const doesAnyHeaderHaveChildren = useMemo(
     () => headers.some((header) => header.children && header.children.length > 0),

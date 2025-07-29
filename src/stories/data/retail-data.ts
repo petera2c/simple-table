@@ -1,7 +1,39 @@
-import Row from "../../types/Row";
-import HeaderObject from "../../types/HeaderObject";
+import { STColumn } from "../../types/HeaderObject";
 
-export const generateRetailSalesData = (): Row[] => {
+type RetailStore = {
+  id: number;
+  name: string;
+  city: string;
+  employees: number;
+  squareFootage: number;
+  openingDate: string;
+  customerRating: string;
+  electronicsSales: number;
+  clothingSales: number;
+  groceriesSales: number;
+  furnitureSales: number;
+  totalSales: number;
+};
+
+export type RetailRegion = {
+  id: number;
+  name: string;
+  city: string; // Will be "-" for regions
+  employees: number; // Aggregated from stores
+  squareFootage: number; // Aggregated from stores
+  openingDate: string; // Will be "-" for regions
+  customerRating: string; // Will be "-" for regions
+  electronicsSales: number; // Aggregated from stores
+  clothingSales: number; // Aggregated from stores
+  groceriesSales: number; // Aggregated from stores
+  furnitureSales: number; // Aggregated from stores
+  totalSales: number; // Aggregated from stores
+  stores: RetailStore[];
+};
+
+export type RetailSalesData = RetailStore | RetailRegion;
+
+export const generateRetailSalesData = (): RetailRegion[] => {
   const regions = Array.from({ length: 20 }, (_, i) => `Region ${i + 1}`);
   const storeNames = ["MegaMart", "ShopRite", "TrendyGoods", "ValueStore", "QuickBuy"];
   const cities = ["New York", "London", "Tokyo", "Sydney", "Paris", "Toronto", "Berlin"];
@@ -9,7 +41,7 @@ export const generateRetailSalesData = (): Row[] => {
 
   return regions.map((region) => {
     const numStores = Math.floor(Math.random() * 7) + 2; // 2 to 8 children
-    const stores = Array.from({ length: numStores }, () => {
+    const stores: RetailStore[] = Array.from({ length: numStores }, () => {
       const storeName = storeNames[Math.floor(Math.random() * storeNames.length)];
       const city = cities[Math.floor(Math.random() * cities.length)];
       const electronicsSales = Math.floor(Math.random() * 100000) + 5000;
@@ -68,7 +100,7 @@ export const generateRetailSalesData = (): Row[] => {
   });
 };
 
-export const RETAIL_SALES_HEADERS: HeaderObject[] = [
+export const RETAIL_SALES_HEADERS: STColumn<RetailSalesData>[] = [
   {
     accessor: "name",
     label: "Name",

@@ -1,5 +1,5 @@
 import SimpleTable from "../../components/simple-table/SimpleTable";
-import HeaderObject from "../../types/HeaderObject";
+import { STColumn } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to AggregateExample - exported for reuse in stories and tests
@@ -8,7 +8,33 @@ export const aggregateExampleDefaults = {
   height: "400px",
 };
 
-const headers: HeaderObject[] = [
+type RowData = {
+  id: number;
+  name: string;
+  status: string;
+  followers?: number;
+  revenue?: number;
+  rating?: number;
+  contentCount?: number;
+  avgViewTime?: number;
+  categories: {
+    id: number;
+    name: string;
+    status: string;
+    creators: {
+      id: number;
+      name: string;
+      followers: number;
+      revenue: string;
+      rating: number;
+      contentCount: number;
+      avgViewTime: number;
+      status: string;
+    }[];
+  }[];
+};
+
+const headers: STColumn<RowData>[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",
@@ -93,7 +119,7 @@ const headers: HeaderObject[] = [
 ];
 
 // Streaming platform data with categories and creators
-const rows = [
+const rows: RowData[] = [
   // StreamFlix Platform
   {
     id: 1,

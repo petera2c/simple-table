@@ -1,7 +1,6 @@
+import ColumnIndices from "../types/ColumnIndices";
 import HeaderObject from "../types/HeaderObject";
 import { displayCell } from "./cellUtils";
-
-export type ColumnIndices = Record<string, number>;
 
 /**
  * Calculates column indices for all headers to ensure consistent colIndex values
@@ -10,26 +9,25 @@ export type ColumnIndices = Record<string, number>;
  * Note: In hierarchical headers, a parent header and its first child can share
  * the same column index, which is needed for proper alignment in the grid.
  */
-export function calculateColumnIndices({
+export function calculateColumnIndices<T>({
   headers,
   pinnedLeftColumns,
   pinnedRightColumns,
 }: {
-  headers: HeaderObject[];
-  pinnedLeftColumns: HeaderObject[];
-  pinnedRightColumns: HeaderObject[];
+  headers: HeaderObject<T>[];
+  pinnedLeftColumns: HeaderObject<T>[];
+  pinnedRightColumns: HeaderObject<T>[];
 }): ColumnIndices {
   const indices: ColumnIndices = {};
   let columnCounter = 0;
 
-  const processHeader = (header: HeaderObject, isFirst: boolean = false): void => {
+  const processHeader = (header: HeaderObject<T>, isFirst: boolean = false): void => {
     // Only increment for non-first children or top-level headers
     if (!isFirst) {
       columnCounter++;
     }
-
     // Store the column index for this header
-    indices[header.accessor] = columnCounter;
+    indices[header.id] = columnCounter;
 
     // Process children recursively, if any
     if (header.children && header.children.length > 0) {

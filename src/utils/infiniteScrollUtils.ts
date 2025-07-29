@@ -4,12 +4,12 @@ import TableRow from "../types/TableRow";
 const SEPARATOR_HEIGHT = 1;
 
 // Calculate total row count - now just the array length
-export const getTotalRowCount = (tableRows: TableRow[]): number => {
+export const getTotalRowCount = <T>(tableRows: TableRow<T>[]): number => {
   return tableRows.length;
 };
 
 // Get visible rows with simple array slicing
-export const getVisibleRows = ({
+export const getVisibleRows = <T>({
   bufferRowCount,
   contentHeight,
   rowHeight,
@@ -20,8 +20,8 @@ export const getVisibleRows = ({
   contentHeight: number;
   rowHeight: number;
   scrollTop: number;
-  tableRows: TableRow[];
-}): TableRow[] => {
+  tableRows: TableRow<T>[];
+}): TableRow<T>[] => {
   const rowHeightWithSeparator = rowHeight + SEPARATOR_HEIGHT;
 
   // Calculate start and end indices directly

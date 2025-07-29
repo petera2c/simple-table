@@ -9,25 +9,25 @@ import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "../../types/TableRow";
 
 // Define props for the frequently changing values not in context
-interface TableContentLocalProps {
+interface TableContentLocalProps<T> {
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: Dispatch<SetStateAction<number>>;
-  sort: SortColumn | null;
-  tableRows: TableRow[];
-  rowsToRender: TableRow[];
+  sort: SortColumn<T> | null;
+  tableRows: TableRow<T>[];
+  rowsToRender: TableRow<T>[];
 }
 
-const TableContent = ({
+const TableContent = <T,>({
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
   sort,
   tableRows,
   rowsToRender,
-}: TableContentLocalProps) => {
+}: TableContentLocalProps<T>) => {
   // Get stable props from context
-  const { columnResizing, editColumns, headers } = useTableContext();
+  const { columnResizing, editColumns, headers } = useTableContext<T>();
 
   // Refs
   const centerHeaderRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ const TableContent = ({
     return createGridTemplateColumns({ headers: pinnedRightColumns });
   }, [pinnedRightColumns]);
 
-  const tableHeaderProps: TableHeaderProps = {
+  const tableHeaderProps: TableHeaderProps<T> = {
     centerHeaderRef,
     headers,
     mainTemplateColumns,
@@ -61,7 +61,7 @@ const TableContent = ({
     pinnedRightWidth,
   };
 
-  const tableBodyProps: TableBodyProps = {
+  const tableBodyProps: TableBodyProps<T> = {
     tableRows,
     mainTemplateColumns,
     pinnedLeftColumns,

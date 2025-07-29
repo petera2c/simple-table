@@ -1,10 +1,17 @@
 import { SimpleTable } from "../..";
-import { HeaderObject } from "../..";
+import { STColumn } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to RowHeight - exported for reuse in stories and tests
 export const rowHeightDefaults = {
   rowHeight: 24,
+};
+
+type RowData = {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
 };
 
 const RowHeightExampleComponent = (props: UniversalTableProps) => {
@@ -31,7 +38,7 @@ const RowHeightExampleComponent = (props: UniversalTableProps) => {
   ];
 
   // Define headers
-  const headers: HeaderObject[] = [
+  const headers: STColumn<RowData>[] = [
     { accessor: "id", label: "ID", width: 80 },
     { accessor: "name", label: "Name", width: 150 },
     { accessor: "age", label: "Age", width: 100 },

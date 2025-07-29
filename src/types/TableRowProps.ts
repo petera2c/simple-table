@@ -1,24 +1,23 @@
 import { MutableRefObject } from "react";
 import CellChangeProps from "./CellChangeProps";
 import HeaderObject from "./HeaderObject";
-import Row from "./Row";
 import Cell from "./Cell";
 
-type TableRowProps = {
+type TableRowProps<T> = {
   allowAnimations: boolean;
   currentRows: { [key: string]: any }[];
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef: MutableRefObject<HeaderObject<T> | null>;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (props: Cell) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
-  headers: HeaderObject[];
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  headers: HeaderObject<T>[];
+  hoveredHeaderRef: MutableRefObject<HeaderObject<T> | null>;
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isInitialFocusedCell: (rowIndex: number, columnIndex: number) => boolean;
-  onCellEdit?: (props: CellChangeProps) => void;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  onCellEdit?: (props: CellChangeProps<T>) => void;
+  onTableHeaderDragEnd: (newHeaders: HeaderObject<T>[]) => void;
   onToggleGroup: (rowId: number) => void;
-  row: Row;
+  row: T;
   rowIndex: number;
   shouldPaginate: boolean;
   tableRef: MutableRefObject<HTMLDivElement | null>;

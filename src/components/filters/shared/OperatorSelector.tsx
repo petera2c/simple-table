@@ -1,4 +1,3 @@
-import React from "react";
 import { FILTER_OPERATOR_LABELS, FilterOperator } from "../../../types/FilterTypes";
 import CustomSelect, { CustomSelectOption } from "./CustomSelect";
 

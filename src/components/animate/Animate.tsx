@@ -24,14 +24,14 @@ const MIN_DYNAMIC_DISTANCE = 100; // px - minimum distance from viewport edge fo
 const MAX_DYNAMIC_DISTANCE = 900; // px - maximum distance from viewport edge for animations
 const DISTANCE_SCALING_FACTOR = 80; // Factor for logarithmic scaling of dynamic distance
 
-interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
+interface AnimateProps<T> extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
   children: ReactNode;
   id: string;
   parentRef?: MutableRefObject<HTMLDivElement | null>;
-  tableRow?: TableRow;
+  tableRow?: TableRow<T>;
 }
-export const Animate = ({ children, id, parentRef, tableRow, ...props }: AnimateProps) => {
-  const { allowAnimations, isResizing, isScrolling, rowHeight } = useTableContext();
+export const Animate = <T,>({ children, id, parentRef, tableRow, ...props }: AnimateProps<T>) => {
+  const { allowAnimations, isResizing, isScrolling, rowHeight } = useTableContext<T>();
   const elementRef = useRef<HTMLDivElement>(null);
   const fromBoundsRef = useRef<DOMRect | null>(null);
   const previousScrollingState = usePrevious(isScrolling);

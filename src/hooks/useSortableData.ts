@@ -1,12 +1,12 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import Row from "../types/Row";
 import { useCallback, useMemo, useState } from "react";
 import SortColumn from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
+import RowGrouping from "../types/RowGrouping";
 
 // Helper function to compute sorted rows for a given sort column
-const computeSortedRows = ({
+const computeSortedRows = <T>({
   externalSortHandling,
   tableRows,
   sortColumn,
@@ -15,17 +15,17 @@ const computeSortedRows = ({
   sortNestedRows,
 }: {
   externalSortHandling: boolean;
-  tableRows: Row[];
-  sortColumn: SortColumn | null;
-  rowGrouping?: string[];
-  headers: HeaderObject[];
+  tableRows: T[];
+  sortColumn: SortColumn<T> | null;
+  rowGrouping?: RowGrouping;
+  headers: HeaderObject<T>[];
   sortNestedRows: (params: {
-    groupingKeys: string[];
-    headers: HeaderObject[];
-    rows: Row[];
-    sortColumn: SortColumn;
-  }) => Row[];
-}): Row[] => {
+    groupingKeys: RowGrouping;
+    headers: HeaderObject<T>[];
+    rows: T[];
+    sortColumn: SortColumn<T>;
+  }) => T[];
+}): T[] => {
   if (externalSortHandling) return tableRows;
   if (!sortColumn) return tableRows;
 
@@ -42,21 +42,21 @@ const computeSortedRows = ({
 };
 
 // Extract sort logic to custom hook
-const useSortableData = ({
+const useSortableData = <T>({
   headers,
   tableRows,
   externalSortHandling,
   onSortChange,
   rowGrouping,
 }: {
-  headers: HeaderObject[];
-  tableRows: Row[];
+  headers: HeaderObject<T>[];
+  tableRows: T[];
   externalSortHandling: boolean;
-  onSortChange?: (sort: SortColumn | null) => void;
-  rowGrouping?: string[];
+  onSortChange?: (sort: SortColumn<T> | null) => void;
+  rowGrouping?: RowGrouping;
 }) => {
   // Single sort state instead of complex 3-state system
-  const [sort, setSort] = useState<SortColumn | null>(null);
+  const [sort, setSort] = useState<SortColumn<T> | null>(null);
 
   // Recursive sort function for nested data
   const sortNestedRows = useCallback(
@@ -67,10 +67,10 @@ const useSortableData = ({
       sortColumn,
     }: {
       groupingKeys: string[];
-      headers: HeaderObject[];
-      rows: Row[];
-      sortColumn: SortColumn;
-    }): Row[] => {
+      headers: HeaderObject<T>[];
+      rows: T[];
+      sortColumn: SortColumn<T>;
+    }): T[] => {
       // First sort the current level
       const sortedData = handleSort({ headers, rows, sortColumn });
 
@@ -82,12 +82,12 @@ const useSortableData = ({
       // For each row, recursively sort its nested data
       return sortedData.map((row) => {
         const currentGroupingKey = groupingKeys[0];
-        const nestedData = row[currentGroupingKey];
+        const nestedData = row[currentGroupingKey as keyof T];
 
         if (isRowArray(nestedData)) {
           // Recursively sort the nested data with remaining grouping keys
           const sortedNestedData = sortNestedRows({
-            rows: nestedData,
+            rows: nestedData as T[],
             sortColumn,
             headers,
             groupingKeys: groupingKeys.slice(1),
@@ -120,8 +120,8 @@ const useSortableData = ({
 
   // Simple sort handler
   const updateSort = useCallback(
-    (accessor: Accessor) => {
-      const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+    (accessor: Accessor<T>) => {
+      const findHeaderRecursively = (headers: HeaderObject<T>[]): HeaderObject<T> | undefined => {
         for (const header of headers) {
           if (header.accessor === accessor) {
             return header;
@@ -140,7 +140,7 @@ const useSortableData = ({
         return;
       }
 
-      let newSortColumn: SortColumn | null = null;
+      let newSortColumn: SortColumn<T> | null = null;
 
       if (!sort || sort.key.accessor !== accessor) {
         newSortColumn = {
@@ -163,8 +163,8 @@ const useSortableData = ({
   // Function to preview what rows would be after applying a sort
   // This is used for pre-animation calculation
   const computeSortedRowsPreview = useCallback(
-    (accessor: Accessor) => {
-      const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+    (accessor: Accessor<T>) => {
+      const findHeaderRecursively = (headers: HeaderObject<T>[]): HeaderObject<T> | undefined => {
         for (const header of headers) {
           if (header.accessor === accessor) {
             return header;
@@ -183,7 +183,7 @@ const useSortableData = ({
         return tableRows;
       }
 
-      let previewSortColumn: SortColumn | null = null;
+      let previewSortColumn: SortColumn<T> | null = null;
 
       if (!sort || sort.key.accessor !== accessor) {
         previewSortColumn = {

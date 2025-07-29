@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo } from "react";
-import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
 import {
   areAllRowsSelected,
@@ -12,19 +11,19 @@ import {
 } from "../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../types/RowSelectionChangeProps";
 
-interface UseRowSelectionProps {
-  rows: Row[];
-  rowIdAccessor: Accessor;
-  onRowSelectionChange?: (props: RowSelectionChangeProps) => void;
+interface UseRowSelectionProps<T> {
+  rows: T[];
+  rowIdAccessor: Accessor<T>;
+  onRowSelectionChange?: (props: RowSelectionChangeProps<T>) => void;
   enableRowSelection?: boolean;
 }
 
-export const useRowSelection = ({
+export const useRowSelection = <T>({
   rows,
   rowIdAccessor,
   onRowSelectionChange,
   enableRowSelection = false,
-}: UseRowSelectionProps) => {
+}: UseRowSelectionProps<T>) => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   // Check if a specific row is selected

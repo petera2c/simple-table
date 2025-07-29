@@ -1,12 +1,20 @@
 import React, { useState, useMemo } from "react";
 import { SimpleTable } from "../..";
-import HeaderObject from "../../types/HeaderObject";
-import Row from "../../types/Row";
+import { STColumn } from "../../types/HeaderObject";
 import SortColumn from "../../types/SortColumn";
 import { UniversalTableProps } from "./StoryWrapper";
 
+type EmployeeData = {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  salary: number;
+  department: string;
+};
+
 // Sample data
-const sampleData: Row[] = [
+const sampleData: EmployeeData[] = [
   {
     id: 1,
     name: "John Doe",
@@ -73,7 +81,7 @@ const sampleData: Row[] = [
   },
 ];
 
-const headers: HeaderObject[] = [
+const headers: STColumn<EmployeeData>[] = [
   {
     accessor: "name",
     label: "Name",
@@ -108,7 +116,7 @@ const headers: HeaderObject[] = [
     width: 120,
     isSortable: true,
     type: "number",
-    cellRenderer: ({ row }) => `$${(row.salary || 0).toLocaleString()}`,
+    cellRenderer: ({ row }: { row: EmployeeData }) => `$${(row.salary || 0).toLocaleString()}`,
     align: "right",
   },
 ];
@@ -122,7 +130,7 @@ export const externalSortExampleDefaults = {
 };
 
 const ExternalSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
-  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortColumn, setSortColumn] = useState<SortColumn<EmployeeData> | null>(null);
 
   // Sort data externally based on sortConfig
   const sortedData = useMemo(() => {
@@ -130,6 +138,9 @@ const ExternalSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
 
     const sorted = [...sampleData].sort((a, b) => {
       const accessor = sortColumn.key.accessor;
+
+      if (!accessor) return 0;
+
       const aValue = a[accessor];
       const bValue = b[accessor];
 

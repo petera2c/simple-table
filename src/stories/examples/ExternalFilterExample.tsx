@@ -1,13 +1,22 @@
 import React, { useState, useMemo } from "react";
 import { SimpleTable } from "../..";
-import HeaderObject from "../../types/HeaderObject";
-import Row from "../../types/Row";
+import { STColumn } from "../../types/HeaderObject";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
-import CellValue from "../../types/CellValue";
 import { UniversalTableProps } from "./StoryWrapper";
 
+type EmployeeData = {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  salary: number;
+  department: string;
+  active: boolean;
+  location: string;
+};
+
 // Sample data with more variety for filtering
-const sampleData: Row[] = [
+const sampleData: EmployeeData[] = [
   {
     id: 1,
     name: "John Doe",
@@ -110,7 +119,7 @@ const sampleData: Row[] = [
   },
 ];
 
-const headers: HeaderObject[] = [
+const headers: STColumn<EmployeeData>[] = [
   {
     accessor: "name",
     label: "Name",
@@ -186,7 +195,7 @@ export const externalFilterExampleDefaults = {
 };
 
 const ExternalFilterExampleComponent: React.FC<UniversalTableProps> = (props) => {
-  const [filters, setFilters] = useState<{ [key: string]: FilterCondition }>({});
+  const [filters, setFilters] = useState<{ [key: string]: FilterCondition<EmployeeData> }>({});
 
   // Filter data externally based on filters
   const filteredData = useMemo(() => {
@@ -194,7 +203,7 @@ const ExternalFilterExampleComponent: React.FC<UniversalTableProps> = (props) =>
 
     return sampleData.filter((row) => {
       return Object.values(filters).every((filter) => {
-        const cellValue = row[filter.accessor] as CellValue;
+        const cellValue = row[filter.accessor];
 
         // Apply filter based on operator
         switch (filter.operator) {
@@ -233,7 +242,7 @@ const ExternalFilterExampleComponent: React.FC<UniversalTableProps> = (props) =>
     });
   }, [filters]);
 
-  const handleFilterChange = (filters: TableFilterState) => {
+  const handleFilterChange = (filters: TableFilterState<EmployeeData>) => {
     setFilters(filters);
   };
   return (

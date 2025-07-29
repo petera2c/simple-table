@@ -1,6 +1,5 @@
 import { useEffect, useState, KeyboardEvent, useCallback, useRef } from "react";
 import EditableCell from "./editable-cells/EditableCell";
-import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
 import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
@@ -13,7 +12,7 @@ import { getRowId, hasNestedRows } from "../../utils/rowUtils";
 import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
 
-const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
+const displayContent = <T,>({ content, header }: { content: any; header: HeaderObject<T> }) => {
   if (typeof content === "boolean") {
     return content ? "True" : "False";
   } else if (Array.isArray(content)) {
@@ -42,7 +41,7 @@ const displayContent = ({ content, header }: { content: CellValue; header: Heade
   return content;
 };
 
-const TableCell = ({
+const TableCell = <T,>({
   borderClass,
   colIndex,
   header,
@@ -51,7 +50,7 @@ const TableCell = ({
   nestedIndex,
   rowIndex,
   tableRow,
-}: TableCellProps) => {
+}: TableCellProps<T>) => {
   // Get shared props from context
   const {
     cellRegistry,
@@ -77,12 +76,12 @@ const TableCell = ({
     theme,
     unexpandedRows,
     useOddColumnBackground,
-  } = useTableContext();
+  } = useTableContext<T>();
 
   const { depth, row } = tableRow;
 
   // Local state
-  const [localContent, setLocalContent] = useState<CellValue>(row[header.accessor] as CellValue);
+  const [localContent, setLocalContent] = useState<any>(row[header.accessor as keyof T]);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -90,7 +89,9 @@ const TableCell = ({
   // Get row ID and check if row has children
   const rowId = getRowId({ row, rowIdAccessor });
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
-  const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
+  const cellHasChildren = currentGroupingKey
+    ? hasNestedRows(row, currentGroupingKey as keyof T)
+    : false;
   const isRowExpanded = !unexpandedRows.has(String(rowId));
 
   // Check if this cell is currently flashing from copy operation
@@ -109,10 +110,7 @@ const TableCell = ({
   const throttle = useThrottle();
 
   // Cell focus id (used for keyboard navigation)
-  const cellId = getCellId({ accessor: header.accessor, rowId });
-
-  // Generate a unique key that includes the content value to force re-render when it changes
-  const cellKey = getCellKey({ rowId, accessor: header.accessor });
+  const cellId = getCellId({ headerId: header.id, rowId });
 
   // Check if this is the selection column
   const isSelectionColumn = header.isSelectionColumn && enableRowSelection;
@@ -120,9 +118,9 @@ const TableCell = ({
   // Register this cell with the cell registry for direct updates
   useEffect(() => {
     if (cellRegistry) {
-      const key = `${rowId}-${header.accessor}`;
+      const key = `${rowId}-${header.id}`;
       cellRegistry.set(key, {
-        updateContent: (newValue: CellValue) => {
+        updateContent: (newValue: any) => {
           // If the value is different, trigger the update animation
           if (localContent !== newValue) {
             setLocalContent(newValue);
@@ -153,7 +151,7 @@ const TableCell = ({
         }
       };
     }
-  }, [cellRegistry, cellUpdateFlash, rowId, header.accessor, localContent]);
+  }, [cellRegistry, cellUpdateFlash, rowId, header.id, localContent]);
 
   // Add another effect to ensure animation gets removed
   useEffect(() => {
@@ -168,7 +166,7 @@ const TableCell = ({
 
   // Update local content when row data changes
   useEffect(() => {
-    setLocalContent(row[header.accessor] as CellValue);
+    setLocalContent(row[header.accessor as keyof T]);
   }, [row, header.accessor]);
 
   // Derived state
@@ -199,9 +197,9 @@ const TableCell = ({
   }`;
 
   const updateContent = useCallback(
-    (newValue: CellValue) => {
+    (newValue: any) => {
       setLocalContent(newValue);
-      row[header.accessor] = newValue;
+      row[header.accessor as keyof T] = newValue;
 
       onCellEdit?.({
         accessor: header.accessor,
@@ -226,6 +224,14 @@ const TableCell = ({
       return newSet;
     });
   }, [rowId, setUnexpandedRows]);
+
+  if (!header.accessor) {
+    return null;
+  }
+
+  // Generate a unique key that includes the content value to force re-render when it changes
+  const accessor = header.accessor;
+  const cellKey = getCellKey({ rowId, accessor });
 
   // Handle keyboard events when cell is focused
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -264,7 +270,7 @@ const TableCell = ({
 
   // Handle cell click callback
   const handleCellClick = () => {
-    if (onCellClick && !isSelectionColumn) {
+    if (onCellClick && !isSelectionColumn && header.accessor) {
       onCellClick({
         accessor: header.accessor,
         colIndex,
@@ -281,7 +287,7 @@ const TableCell = ({
     return (
       <div
         className="st-cell-editing"
-        id={getCellId({ accessor: header.accessor, rowId })}
+        id={getCellId({ headerId: header.id, rowId })}
         onMouseDown={(e) => e.stopPropagation()} // Prevent cell selection when clicking in edit mode
         onKeyDown={(e) => e.stopPropagation()} // Prevent table navigation when editing
       >

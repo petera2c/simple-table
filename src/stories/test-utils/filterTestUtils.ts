@@ -1,7 +1,6 @@
 import { expect } from "@storybook/test";
 import { waitForTable } from "./commonTestUtils";
 import { PRODUCT_HEADERS } from "../examples/filter-example/filter-headers";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
 
 /**
  * Filter Test Utilities for FilterExample
@@ -12,12 +11,12 @@ import HeaderObject, { Accessor } from "../../types/HeaderObject";
  */
 export const getFilterableColumnsFromHeaders = (): Array<{
   label: string;
-  accessor: Accessor;
+  accessor: string;
   type: string;
 }> => {
-  const filterableColumns: Array<{ label: string; accessor: Accessor; type: string }> = [];
+  const filterableColumns: Array<{ label: string; accessor: string; type: string }> = [];
 
-  const extractFilterableColumns = (headers: HeaderObject[]): void => {
+  const extractFilterableColumns = (headers: any): void => {
     for (const header of headers) {
       if (header.filterable && header.type) {
         filterableColumns.push({
@@ -79,7 +78,7 @@ export const getPriceDisplayText = (price: number): string => {
  */
 export const extractNumericValueFromDisplay = (
   displayText: string,
-  columnAccessor: Accessor
+  columnAccessor: string
 ): number | null => {
   switch (columnAccessor) {
     case "stockLevel":
@@ -125,7 +124,7 @@ export const doesDisplayValueMatchNumericCondition = (
   displayText: string,
   operator: string,
   targetValue: number,
-  columnAccessor: Accessor
+  columnAccessor: string
 ): boolean => {
   const actualValue = extractNumericValueFromDisplay(displayText, columnAccessor);
 
@@ -1210,7 +1209,7 @@ export const getVisibleRowCount = (canvasElement: HTMLElement): number => {
 /**
  * Get visible row data for a specific column
  */
-export const getVisibleColumnData = (canvasElement: HTMLElement, accessor: Accessor): string[] => {
+export const getVisibleColumnData = (canvasElement: HTMLElement, accessor: string): string[] => {
   const cells = canvasElement.querySelectorAll(`[data-accessor="${accessor}"] .st-cell-content`);
   const data = Array.from(cells).map((cell) => cell.textContent?.trim() || "");
   return data;

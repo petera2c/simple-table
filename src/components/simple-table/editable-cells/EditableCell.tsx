@@ -1,6 +1,5 @@
 import BooleanDropdownEdit from "./BooleanDropdownEdit";
 import StringEdit from "./StringEdit";
-import CellValue from "../../../types/CellValue";
 import NumberEdit from "./NumberEdit";
 import DateDropdownEdit from "./DateDropdownEdit";
 import EnumDropdownEdit from "./EnumDropdownEdit";
@@ -9,10 +8,10 @@ import { ColumnType } from "../../../types/HeaderObject";
 
 interface EditableCellProps {
   enumOptions?: EnumOption[];
-  onChange: (newValue: CellValue) => void;
+  onChange: (newValue: any) => void;
   setIsEditing: (isEditing: boolean) => void;
   type?: ColumnType;
-  value: CellValue;
+  value: any;
 }
 
 const EditableCell = ({

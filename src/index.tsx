@@ -2,14 +2,12 @@ import SimpleTable from "./components/simple-table/SimpleTable";
 import BoundingBox from "./types/BoundingBox";
 import Cell from "./types/Cell";
 import CellChangeProps from "./types/CellChangeProps";
-import CellValue from "./types/CellValue";
 import ColumnEditorPosition from "./types/ColumnEditorPosition";
 import DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
 import HeaderObject, { Accessor, ColumnType } from "./types/HeaderObject";
 import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import OnSortProps from "./types/OnSortProps";
-import Row from "./types/Row";
 import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
 import TableCellProps from "./types/TableCellProps";
@@ -21,6 +19,8 @@ import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
 import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 import CellClickProps from "./types/CellClickProps";
+import HeaderRendererProps from "./types/HeaderRendererProps";
+import CellRendererProps from "./types/CellRendererProps";
 
 export { SimpleTable };
 export type {
@@ -31,15 +31,15 @@ export type {
   Cell,
   CellChangeProps,
   CellClickProps,
-  CellValue,
+  CellRendererProps,
   ColumnEditorPosition,
   ColumnType,
   DragHandlerProps,
   EnumOption,
   FilterCondition,
   HeaderObject,
+  HeaderRendererProps,
   OnSortProps,
-  Row,
   RowSelectionChangeProps,
   SharedTableProps,
   SortColumn,
