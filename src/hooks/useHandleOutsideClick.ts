@@ -20,7 +20,8 @@ const useHandleOutsideClick = ({
         !target.closest(".st-cell") &&
         (selectableColumns
           ? !target.classList.contains("st-header-cell") &&
-            !target.classList.contains("st-header-label")
+            !target.classList.contains("st-header-label") &&
+            !target.classList.contains("st-header-label-text")
           : true)
       ) {
         // Check if there actually are any selected cells

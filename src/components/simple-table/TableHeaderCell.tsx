@@ -177,8 +177,28 @@ const TableHeaderCell = ({
       return;
     }
 
+    // If selectableColumns is disabled, handle sorting on single click
     if (!header.isSortable) return;
     onSort(header.accessor);
+  };
+
+  // Double-click handler for sorting when selectableColumns is enabled
+  const handleColumnHeaderDoubleClick = ({
+    event,
+    header,
+  }: {
+    event: MouseEvent;
+    header: HeaderObject;
+  }) => {
+    // If this is the selection column, don't handle sorting
+    if (header.isSelectionColumn) {
+      return;
+    }
+
+    // Only handle sorting on double-click when selectableColumns is enabled
+    if (selectableColumns && header.isSortable) {
+      onSort(header.accessor);
+    }
   };
   // Drag handler
   const onDragStart = (event: DragEvent) => {
@@ -333,6 +353,11 @@ const TableHeaderCell = ({
         onClick={(event) => {
           if (!isSelectionColumn) {
             handleColumnHeaderClick({ event, header });
+          }
+        }}
+        onDoubleClick={(event) => {
+          if (!isSelectionColumn) {
+            handleColumnHeaderDoubleClick({ event, header });
           }
         }}
         onDragEnd={!isSelectionColumn ? handleDragEndWrapper : undefined}
