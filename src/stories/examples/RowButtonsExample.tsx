@@ -14,6 +14,7 @@ export const rowButtonsExampleDefaults = {
   enableRowSelection: true,
   height: "400px",
   selectionColumnWidth: 160, // Wider to accommodate row buttons
+  columnBorders: true,
 };
 
 // Simple button component with icon styling

@@ -1,4 +1,4 @@
-import { DragEvent, useEffect, MouseEvent, TouchEvent, useState } from "react";
+import { DragEvent, useEffect, MouseEvent, TouchEvent, useState, useMemo } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
@@ -43,6 +43,7 @@ const TableHeaderCell = ({
   // Get shared props from context
   const {
     areAllRowsSelected,
+    columnBorders,
     columnReordering,
     columnResizing,
     draggedHeaderRef,
@@ -73,11 +74,30 @@ const TableHeaderCell = ({
   const filterable = Boolean(header?.filterable);
   const currentFilter = filters[header.accessor];
 
+  // Determine if this is the last column in its section for column borders
+  const isLastColumnInSection = useMemo(() => {
+    if (!columnBorders) return false;
+
+    const pinnedLeftColumns = headers.filter((h) => h.pinned === "left");
+    const mainColumns = headers.filter((h) => !h.pinned);
+    const pinnedRightColumns = headers.filter((h) => h.pinned === "right");
+
+    if (header.pinned === "left") {
+      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
+    } else if (header.pinned === "right") {
+      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
+    } else {
+      return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
+    }
+  }, [columnBorders, headers, header.accessor, header.pinned]);
+
   const className = `st-header-cell ${
     header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
   } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
     clickable ? "clickable" : ""
-  } ${columnReordering && !clickable ? "columnReordering" : ""} ${header.children ? "parent" : ""}`;
+  } ${columnReordering && !clickable ? "columnReordering" : ""} ${
+    header.children ? "parent" : ""
+  } ${isLastColumnInSection ? "st-last-column" : ""}`;
 
   // Hooks
   const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({

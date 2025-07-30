@@ -53,6 +53,7 @@ interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   className?: string; // Class name for the table
+  columnBorders?: boolean; // Flag for showing column borders
   columnEditorPosition?: ColumnEditorPosition;
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
@@ -110,6 +111,7 @@ const SimpleTableComp = ({
   allowAnimations = false,
   cellUpdateFlash = false,
   className,
+  columnBorders = false,
   columnEditorPosition = "right",
   columnEditorText = "Columns",
   columnReordering = false,
@@ -154,6 +156,8 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
 }: SimpleTableProps) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
+  // Disable hover row background when column borders are enabled to prevent visual conflicts
+  if (columnBorders) useHoverRowBackground = false;
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -367,6 +371,7 @@ const SimpleTableComp = ({
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
         clearSelection,
+        columnBorders,
         columnReordering,
         columnResizing,
         draggedHeaderRef,
@@ -437,7 +442,9 @@ const SimpleTableComp = ({
       }}
     >
       <div
-        className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""}`}
+        className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
+          columnBorders ? "st-column-borders" : ""
+        }`}
         style={height ? { height } : {}}
       >
         <ScrollSync>

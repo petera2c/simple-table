@@ -29,6 +29,7 @@ interface TableContextType {
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;
   clearSelection?: () => void;
+  columnBorders: boolean;
   columnReordering: boolean;
   columnResizing: boolean;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;

@@ -317,7 +317,6 @@
   --st-selected-cell-color: var(--st-slate-900);
   --st-selected-first-cell-color: var(--st-slate-900);
   --st-resize-handle-color: var(--st-slate-400);
-  --st-separator-border-color: var(--st-slate-200);
   --st-last-group-row-separator-border-color: var(--st-slate-400);
 
   /* Border colors */
@@ -396,7 +395,6 @@
   --st-selected-cell-color: var(--st-white);
   --st-selected-first-cell-color: var(--st-white);
   --st-resize-handle-color: var(--st-gray-500);
-  --st-separator-border-color: var(--st-gray-600);
   --st-last-group-row-separator-border-color: var(--st-gray-500);
 
   /* Border colors */
@@ -475,7 +473,6 @@
   --st-selected-cell-color: var(--st-neutral-900);
   --st-selected-first-cell-color: var(--st-neutral-900);
   --st-resize-handle-color: var(--st-neutral-400);
-  --st-separator-border-color: var(--st-neutral-200);
   --st-last-group-row-separator-border-color: var(--st-neutral-400);
 
   /* Border colors */
@@ -554,7 +551,6 @@
   --st-selected-cell-color: var(--st-blue-900);
   --st-selected-first-cell-color: var(--st-blue-900);
   --st-resize-handle-color: var(--st-blue-400);
-  --st-separator-border-color: var(--st-blue-200);
   --st-last-group-row-separator-border-color: var(--st-blue-400);
 
   /* Border colors */
@@ -634,7 +630,6 @@
   --st-selected-cell-color: var(--st-violet-800);
   --st-selected-first-cell-color: var(--st-violet-800);
   --st-resize-handle-color: var(--st-violet-400);
-  --st-separator-border-color: var(--st-stone-200);
   --st-last-group-row-separator-border-color: var(--st-stone-300);
 
   /* Border colors */
@@ -1066,7 +1061,7 @@ input {
   display: grid;
   cursor: pointer;
   height: 1px;
-  background-color: var(--st-separator-border-color);
+  background-color: var(--st-border-color);
   grid-column: 1 / -1;
 }
 .st-row-separator.st-last-group-row {
@@ -2112,4 +2107,23 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Column borders - Add right border to cells when column borders are enabled */
+.st-column-borders .st-header-cell:not(.st-last-column) {
+  box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
+}
+
+.st-column-borders .st-cell:not(.st-last-column) {
+  box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
+}
+
+/* Maintain column borders on hover */
+.st-column-borders .st-row.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+  box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
+}
+
+/* Maintain column borders on selected row hover */
+.st-column-borders .st-row.selected.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+  box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }

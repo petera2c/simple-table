@@ -1,4 +1,4 @@
-import { useEffect, useState, KeyboardEvent, useCallback, useRef } from "react";
+import { useEffect, useState, KeyboardEvent, useCallback, useRef, useMemo } from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -57,6 +57,7 @@ const TableCell = ({
   const {
     cellRegistry,
     cellUpdateFlash,
+    columnBorders,
     draggedHeaderRef,
     enableRowSelection,
     expandIcon,
@@ -101,6 +102,23 @@ const TableCell = ({
 
   // Check if this cell is currently showing warning flash
   const isCellWarningFlashing = isWarningFlashing({ rowIndex, colIndex, rowId });
+
+  // Determine if this is the last column in its section for column borders
+  const isLastColumnInSection = useMemo(() => {
+    if (!columnBorders) return false;
+
+    const pinnedLeftColumns = headers.filter((h) => h.pinned === "left");
+    const mainColumns = headers.filter((h) => !h.pinned);
+    const pinnedRightColumns = headers.filter((h) => h.pinned === "right");
+
+    if (header.pinned === "left") {
+      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
+    } else if (header.pinned === "right") {
+      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
+    } else {
+      return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
+    }
+  }, [columnBorders, headers, header.accessor, header.pinned]);
 
   // Hooks
   const { handleDragOver } = useDragHandler({
@@ -199,7 +217,7 @@ const TableCell = ({
       : ""
   } ${useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""} ${
     isSelectionColumn ? "st-selection-cell" : ""
-  }`;
+  } ${isLastColumnInSection ? "st-last-column" : ""}`;
 
   const updateContent = useCallback(
     (newValue: CellValue) => {
