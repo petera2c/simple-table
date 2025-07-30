@@ -22,6 +22,11 @@ export interface CellRegistryEntry {
   updateContent: (newValue: CellValue) => void;
 }
 
+// Define the interface for header cell registry entries
+export interface HeaderRegistryEntry {
+  setEditing: (isEditing: boolean) => void;
+}
+
 interface TableContextType {
   // Stable values that don't change frequently
   allowAnimations?: boolean;
@@ -48,6 +53,7 @@ interface TableContextType {
   handleSelectAll?: (isSelected: boolean) => void;
   handleToggleRow?: (rowId: string) => void;
   headerContainerRef: RefObject<HTMLDivElement>;
+  headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   isAnimating: boolean;
@@ -63,6 +69,7 @@ interface TableContextType {
   onCellEdit?: (props: any) => void;
   onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onColumnSelect?: (header: HeaderObject) => void;
   onLoadMore?: () => void;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;

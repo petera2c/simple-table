@@ -1,4 +1,12 @@
-import { DragEvent, useEffect, MouseEvent, TouchEvent, useState, useMemo } from "react";
+import {
+  DragEvent,
+  useEffect,
+  MouseEvent,
+  TouchEvent,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
 import HeaderObject from "../../types/HeaderObject";
@@ -15,6 +23,7 @@ import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
 import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
+import StringEdit from "./editable-cells/StringEdit";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -37,8 +46,10 @@ const TableHeaderCell = ({
   reverse,
   sort,
 }: HeaderCellProps) => {
-  // Local state for filter dropdown
+  // Local state for filter dropdown and editing
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [localLabel, setLocalLabel] = useState(header.label || "");
 
   // Get shared props from context
   const {
@@ -52,9 +63,11 @@ const TableHeaderCell = ({
     handleApplyFilter,
     handleClearFilter,
     handleSelectAll,
+    headerRegistry,
     headers,
     hoveredHeaderRef,
     onColumnOrderChange,
+    onColumnSelect,
     onSort,
     onTableHeaderDragEnd,
     rowHeight,
@@ -110,6 +123,27 @@ const TableHeaderCell = ({
 
   const throttle = useThrottle();
 
+  // Register this header cell with the header registry for API access
+  useEffect(() => {
+    if (headerRegistry && !header.isSelectionColumn) {
+      const key = String(header.accessor);
+      headerRegistry.set(key, {
+        setEditing: (editing: boolean) => {
+          setIsEditing(editing);
+        },
+      });
+
+      return () => {
+        headerRegistry.delete(key);
+      };
+    }
+  }, [headerRegistry, header.accessor, header.isSelectionColumn]);
+
+  // Update local label when header label changes
+  useEffect(() => {
+    setLocalLabel(header.label || "");
+  }, [header.label]);
+
   // Handlers
   const handleDragStartWrapper = (header: HeaderObject) => {
     handleDragStart(header);
@@ -134,6 +168,19 @@ const TableHeaderCell = ({
     handleClearFilter(header.accessor);
     setIsFilterDropdownOpen(false);
   };
+
+  // Update header label handler
+  const updateHeaderLabel = useCallback(
+    (newLabel: string) => {
+      setLocalLabel(newLabel);
+      // Update the header object
+      const updatedHeaders = headers.map((h) =>
+        h.accessor === header.accessor ? { ...h, label: newLabel } : h
+      );
+      setHeaders(updatedHeaders);
+    },
+    [header.accessor, headers, setHeaders]
+  );
 
   // Sort and select handler
   const handleColumnHeaderClick = ({
@@ -194,12 +241,17 @@ const TableHeaderCell = ({
       // Clear the selected cells
       setSelectedCells(new Set());
       setInitialFocusedCell(null);
-      return;
+    }
+
+    // Call onColumnSelect callback if provided
+    if (onColumnSelect) {
+      onColumnSelect(header);
     }
 
     // If selectableColumns is disabled, handle sorting on single click
-    if (!header.isSortable) return;
-    onSort(header.accessor);
+    if (!selectableColumns && header.isSortable) {
+      onSort(header.accessor);
+    }
   };
 
   // Double-click handler for sorting when selectableColumns is enabled
@@ -397,10 +449,16 @@ const TableHeaderCell = ({
               checked={areAllRowsSelected ? areAllRowsSelected() : false}
               onChange={handleSelectAllChange}
             />
+          ) : isEditing ? (
+            <StringEdit
+              defaultValue={localLabel}
+              onBlur={() => setIsEditing(false)}
+              onChange={updateHeaderLabel}
+            />
           ) : header.headerRenderer ? (
             header.headerRenderer({ accessor: header.accessor, colIndex, header })
           ) : (
-            header?.label
+            localLabel || header?.label
           )}
         </span>
       </div>

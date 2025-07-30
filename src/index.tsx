@@ -14,13 +14,16 @@ import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
 import TableCellProps from "./types/TableCellProps";
 import TableHeaderProps from "./types/TableHeaderProps";
-import TableRefType from "./types/TableRefType";
+import TableRefType, { SetHeaderRenameProps } from "./types/TableRefType";
 import TableRowProps from "./types/TableRowProps";
 import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
 import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 import CellClickProps from "./types/CellClickProps";
+import CellRendererProps, { CellRenderer } from "./types/CellRendererProps";
+import HeaderRendererProps, { HeaderRenderer } from "./types/HeaderRendererProps";
+import { RowButtonProps } from "./types/RowButton";
 
 export { SimpleTable };
 export type {
@@ -31,6 +34,8 @@ export type {
   Cell,
   CellChangeProps,
   CellClickProps,
+  CellRenderer,
+  CellRendererProps,
   CellValue,
   ColumnEditorPosition,
   ColumnType,
@@ -38,9 +43,13 @@ export type {
   EnumOption,
   FilterCondition,
   HeaderObject,
+  HeaderRenderer,
+  HeaderRendererProps,
   OnSortProps,
   Row,
+  RowButtonProps,
   RowSelectionChangeProps,
+  SetHeaderRenameProps,
   SharedTableProps,
   SortColumn,
   TableCellProps,

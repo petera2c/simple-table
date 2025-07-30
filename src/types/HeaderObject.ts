@@ -4,6 +4,8 @@ import { Pinned } from "./Pinned";
 import Theme from "./Theme";
 import EnumOption from "./EnumOption";
 import { AggregationConfig } from "./AggregationTypes";
+import { CellRenderer } from "./CellRendererProps";
+import { HeaderRenderer } from "./HeaderRendererProps";
 
 export type Accessor = keyof Row;
 export type ColumnType = "string" | "number" | "boolean" | "date" | "enum" | "other";
@@ -12,30 +14,13 @@ type HeaderObject = {
   accessor: Accessor;
   aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
-  cellRenderer?: ({
-    accessor,
-    colIndex,
-    row,
-  }: {
-    accessor: Accessor;
-    colIndex: number;
-    row: Row;
-    theme: Theme;
-  }) => ReactNode | string;
+  cellRenderer?: CellRenderer;
   children?: HeaderObject[];
   disableReorder?: boolean;
   enumOptions?: EnumOption[];
   expandable?: boolean;
   filterable?: boolean;
-  headerRenderer?: ({
-    accessor,
-    colIndex,
-    header,
-  }: {
-    accessor: Accessor;
-    colIndex: number;
-    header: HeaderObject;
-  }) => ReactNode | string;
+  headerRenderer?: HeaderRenderer;
   hide?: boolean;
   isEditable?: boolean; // This is used to determine if the column is editable
   isSelectionColumn?: boolean; // This is a flag for the checkbox select row column

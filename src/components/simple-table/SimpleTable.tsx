@@ -20,7 +20,7 @@ import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
-import { TableProvider, CellRegistryEntry } from "../../context/TableContext";
+import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../context/TableContext";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import TableRefType from "../../types/TableRefType";
 import OnNextPage from "../../types/OnNextPage";
@@ -72,6 +72,7 @@ interface SimpleTableProps {
   onCellEdit?: (props: CellChangeProps) => void;
   onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onColumnSelect?: (header: HeaderObject) => void; // Callback when a column is selected/clicked
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
@@ -130,6 +131,7 @@ const SimpleTableComp = ({
   onCellEdit,
   onCellClick,
   onColumnOrderChange,
+  onColumnSelect,
   onFilterChange,
   onGridReady,
   onLoadMore,
@@ -288,6 +290,9 @@ const SimpleTableComp = ({
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
+
+  // Create a registry for header cells to enable direct updates (like editing)
+  const headerRegistryRef = useRef<Map<string, HeaderRegistryEntry>>(new Map());
   const {
     getBorderClass,
     handleMouseDown,
@@ -344,7 +349,7 @@ const SimpleTableComp = ({
     setScrollbarWidth,
   });
   useOnGridReady({ onGridReady });
-  useTableAPI({ cellRegistryRef, rowIdAccessor, rows, tableRef });
+  useTableAPI({ cellRegistryRef, headerRegistryRef, rowIdAccessor, rows, tableRef });
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
 
@@ -390,6 +395,7 @@ const SimpleTableComp = ({
         handleSelectAll,
         handleToggleRow,
         headerContainerRef,
+        headerRegistry: headerRegistryRef.current,
         headers: effectiveHeaders,
         hoveredHeaderRef,
         isAnimating,
@@ -405,6 +411,7 @@ const SimpleTableComp = ({
         onCellEdit,
         onCellClick,
         onColumnOrderChange,
+        onColumnSelect,
         onLoadMore,
         onSort,
         onTableHeaderDragEnd,

@@ -2,19 +2,22 @@ import { MutableRefObject, useEffect } from "react";
 import { Row, TableRefType, UpdateDataProps } from "..";
 import { getRowId } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
-import { CellRegistryEntry } from "../context/TableContext";
+import { CellRegistryEntry, HeaderRegistryEntry } from "../context/TableContext";
 import { Accessor } from "../types/HeaderObject";
+import { SetHeaderRenameProps } from "../types/TableRefType";
 
 const useTableAPI = ({
   tableRef,
   rows,
   rowIdAccessor,
   cellRegistryRef,
+  headerRegistryRef,
 }: {
   tableRef?: MutableRefObject<TableRefType | null>;
   rows: Row[];
   rowIdAccessor: Accessor;
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
+  headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
 }) => {
   // Set up API methods on the ref if provided
   useEffect(() => {
@@ -39,9 +42,16 @@ const useTableAPI = ({
             }
           }
         },
+        setHeaderRename: ({ accessor }: SetHeaderRenameProps) => {
+          // Find the header cell in the registry and set it to editing mode
+          const headerCell = headerRegistryRef.current.get(String(accessor));
+          if (headerCell) {
+            headerCell.setEditing(true);
+          }
+        },
       };
     }
-  }, [cellRegistryRef, rows, rowIdAccessor, tableRef]);
+  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef]);
 };
 
 export default useTableAPI;
