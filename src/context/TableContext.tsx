@@ -15,6 +15,7 @@ import OnSortProps from "../types/OnSortProps";
 import Theme from "../types/Theme";
 import CellValue from "../types/CellValue";
 import CellClickProps from "../types/CellClickProps";
+import { RowButton } from "../types/RowButton";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -67,6 +68,7 @@ interface TableContextType {
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   prevIcon: ReactNode;
+  rowButtons?: RowButton[];
   rowGrouping?: Accessor[];
   rowHeight: number;
   rowIdAccessor: Accessor;

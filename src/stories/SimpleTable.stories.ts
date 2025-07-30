@@ -56,6 +56,7 @@ import ManufacturingExampleComponent, {
   manufacturingExampleDefaults,
 } from "./examples/manufacturing/ManufacturingExample";
 import RowSelectionExample, { rowSelectionExampleDefaults } from "./examples/RowSelectionExample";
+import RowButtonsExample, { rowButtonsExampleDefaults } from "./examples/RowButtonsExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -276,6 +277,25 @@ export const RowSelection: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: RowSelectionExample, ...args }),
 };
+
+export const RowButtons: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...rowButtonsExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: RowButtonsExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates row action buttons functionality. Hover over rows or select them to reveal action buttons with icons. Includes View, Edit, Email, Duplicate, and Delete actions that only appear when needed for a clean interface.",
+      },
+    },
+  },
+};
+
 export const RowHeight: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,

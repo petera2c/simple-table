@@ -75,11 +75,11 @@ export const getSelectedRowCount = (selectedRows: Set<string>): number => {
 /**
  * Create a selection header for the checkbox column
  */
-export const createSelectionHeader = () => {
+export const createSelectionHeader = (width: number) => {
   const selectionHeader: HeaderObject = {
     accessor: "__row_selection__" as Accessor,
     label: "",
-    width: 42,
+    width, // Configurable width for selection column
     isEditable: false,
     type: "boolean",
     pinned: "left",

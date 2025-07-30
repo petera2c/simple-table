@@ -37,8 +37,8 @@ type HeaderObject = {
     header: HeaderObject;
   }) => ReactNode | string;
   hide?: boolean;
-  isEditable?: boolean;
-  isSelectionColumn?: boolean;
+  isEditable?: boolean; // This is used to determine if the column is editable
+  isSelectionColumn?: boolean; // This is a flag for the checkbox select row column
   isSortable?: boolean;
   label: string;
   minWidth?: number | string;

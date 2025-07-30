@@ -47,6 +47,7 @@ import { useRowSelection } from "../../hooks/useRowSelection";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
+import { RowButton } from "../../types/RowButton";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -78,9 +79,11 @@ interface SimpleTableProps {
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
+  rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowHeight?: number; // Height of each row
   rowIdAccessor: Accessor; // Property name to use as row ID (defaults to index-based ID)
   rows: Row[]; // Rows data
+  selectionColumnWidth?: number; // Width of the selection column (defaults to 42)
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
@@ -132,10 +135,12 @@ const SimpleTableComp = ({
   onRowSelectionChange,
   onSortChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
+  rowButtons,
   rowGrouping,
   rowHeight = 32,
   rowIdAccessor,
   rows,
+  selectionColumnWidth = 42,
   rowsPerPage = 10,
   selectableCells = false,
   selectableColumns = false,
@@ -195,11 +200,16 @@ const SimpleTableComp = ({
 
   // Create headers with selection column if enabled
   const effectiveHeaders = useMemo(() => {
-    if (!enableRowSelection || headers?.[0]?.isSelectionColumn) return headers;
+    let processedHeaders = [...headers];
 
-    const selectionHeader = createSelectionHeader();
-    return [selectionHeader, ...headers];
-  }, [enableRowSelection, headers]);
+    // Add selection column if enabled and not already present
+    if (enableRowSelection && !headers?.[0]?.isSelectionColumn) {
+      const selectionHeader = createSelectionHeader(selectionColumnWidth);
+      processedHeaders = [selectionHeader, ...processedHeaders];
+    }
+
+    return processedHeaders;
+  }, [enableRowSelection, headers, selectionColumnWidth]);
 
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
@@ -396,6 +406,7 @@ const SimpleTableComp = ({
         pinnedLeftRef,
         pinnedRightRef,
         prevIcon,
+        rowButtons,
         rowGrouping,
         rowHeight,
         rowIdAccessor,

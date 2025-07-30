@@ -1313,7 +1313,6 @@ input {
 .st-checkbox-label {
   display: flex;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
   text-overflow: ellipsis;
@@ -2075,4 +2074,42 @@ input {
   color: var(--st-header-label-color);
   font-size: 14px;
   flex-shrink: 0;
+}
+
+/* Row number styling */
+.st-row-number {
+  font-size: 12px;
+  opacity: 0.6;
+  user-select: none;
+  font-weight: 500;
+}
+
+/* Selection cell with row buttons layout */
+.st-selection-cell-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.st-selection-control {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Row buttons styling within selection column */
+.st-row-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.st-row-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

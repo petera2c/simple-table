@@ -12,6 +12,7 @@ import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
 import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
+import { RowButton, RowButtonProps } from "../../types/RowButton";
 
 const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
@@ -70,6 +71,7 @@ const TableCell = ({
     onCellEdit,
     onCellClick,
     onTableHeaderDragEnd,
+    rowButtons,
     rowGrouping,
     rowIdAccessor,
     setUnexpandedRows,
@@ -85,6 +87,7 @@ const TableCell = ({
   const [localContent, setLocalContent] = useState<CellValue>(row[header.accessor] as CellValue);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get row ID and check if row has children
@@ -255,6 +258,15 @@ const TableCell = ({
     }
   };
 
+  // Handle mouse enter/leave for row hover state (affects selection column and buttons)
+  const handleCellMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleCellMouseLeave = () => {
+    setIsHovered(false);
+  };
+
   // Handle row selection checkbox change
   const handleRowCheckboxChange = (checked: boolean) => {
     if (handleRowSelect) {
@@ -274,6 +286,26 @@ const TableCell = ({
         value: localContent,
       });
     }
+  };
+
+  // Render row buttons - only show in selection column when hovered or selected
+  const renderRowButtons = () => {
+    if (!rowButtons || !isSelectionColumn || rowButtons.length === 0) return null;
+
+    // Only show buttons when hovered or row is selected
+    if (!isHovered && !(isRowSelected && isRowSelected(String(rowId)))) return null;
+
+    const buttonProps: RowButtonProps = { row };
+
+    return (
+      <div className="st-row-buttons">
+        {rowButtons.map((button, index) => (
+          <span key={index} className="st-row-button">
+            {button(buttonProps)}
+          </span>
+        ))}
+      </div>
+    );
   };
 
   // Don't handle cell editing for selection column
@@ -318,6 +350,8 @@ const TableCell = ({
       }}
       onKeyDown={handleKeyDown}
       onMouseDown={handleCellMouseDown}
+      onMouseEnter={handleCellMouseEnter}
+      onMouseLeave={handleCellMouseLeave}
       onMouseOver={handleCellMouseOver}
       parentRef={tableBodyContainerRef}
       tableRow={tableRow}
@@ -344,10 +378,21 @@ const TableCell = ({
       >
         <span>
           {isSelectionColumn ? (
-            <Checkbox
-              checked={isRowSelected ? isRowSelected(String(rowId)) : false}
-              onChange={handleRowCheckboxChange}
-            />
+            <div className="st-selection-cell-content">
+              <div className="st-selection-control">
+                {/* Show checkbox if hovered or selected, otherwise show row number */}
+                {isHovered || (isRowSelected && isRowSelected(String(rowId))) ? (
+                  <Checkbox
+                    checked={isRowSelected ? isRowSelected(String(rowId)) : false}
+                    onChange={handleRowCheckboxChange}
+                  />
+                ) : (
+                  <span className="st-row-number">{rowIndex + 1}</span>
+                )}
+              </div>
+              {/* Show row buttons to the right of checkbox/row number */}
+              {renderRowButtons()}
+            </div>
           ) : header.cellRenderer ? (
             header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
           ) : (
