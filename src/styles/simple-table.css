@@ -859,12 +859,14 @@ input {
   display: flex;
   align-items: center;
   gap: var(--st-spacing-small);
-  border-top: var(--st-border-width) solid transparent;
 }
 .st-header-cell.parent {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-cell.clickable {
+  cursor: pointer;
+}
+.st-header-cell.st-header-editable {
   cursor: pointer;
 }
 .st-header-cell.draggable {

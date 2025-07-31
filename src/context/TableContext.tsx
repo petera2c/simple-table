@@ -41,6 +41,7 @@ interface TableContextType {
   columnResizing: boolean;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   editColumns?: boolean;
+  enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   expandIcon?: ReactNode;
   filters: TableFilterState;
@@ -87,6 +88,7 @@ interface TableContextType {
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
+  selectedColumns: Set<number>;
   selectedRows?: Set<string>;
   selectedRowCount?: number;
   selectedRowsData?: any[];

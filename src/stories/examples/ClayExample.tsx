@@ -148,30 +148,22 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
         accessor: "id",
         label: "ID",
         width: 60,
-        isSortable: true,
-        filterable: true,
       },
       {
         accessor: "name",
         label: "Name",
         minWidth: 120,
         width: "1fr",
-        isSortable: true,
-        filterable: true,
       },
       {
         accessor: "role",
         label: "Role",
         width: 120,
-        isSortable: true,
-        filterable: true,
       },
       {
         accessor: "department",
         label: "Department",
         width: 120,
-        isSortable: true,
-        filterable: true,
       },
       ...additionalColumns,
       {
@@ -191,8 +183,7 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
                     accessor: `other-${additionalColumns.length + 1}`,
                     label: `Other ${additionalColumns.length + 1}`,
                     width: 120,
-                    isSortable: true,
-                    filterable: true,
+
                     type: "other",
                   },
                 ])
@@ -378,14 +369,15 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
       <SimpleTable
         {...props}
         defaultHeaders={headers}
-        rows={rows}
-        rowIdAccessor="id"
+        enableHeaderEditing
         enableRowSelection={true}
-        rowButtons={rowButtons}
-        onRowSelectionChange={handleRowSelectionChange}
         onCellClick={handleCellClick}
-        selectableColumns
         onColumnSelect={handleColumnSelect}
+        onRowSelectionChange={handleRowSelectionChange}
+        rowButtons={rowButtons}
+        rowIdAccessor="id"
+        rows={rows}
+        selectableColumns
         tableRef={tableRef}
         headerDropdown={({ accessor, colIndex, header, isOpen, onClose, position }) => {
           if (!isOpen) return null;

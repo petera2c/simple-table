@@ -61,6 +61,7 @@ const TableHeaderCell = ({
     columnReordering,
     columnResizing,
     draggedHeaderRef,
+    enableHeaderEditing,
     enableRowSelection,
     filters,
     handleApplyFilter,
@@ -78,6 +79,7 @@ const TableHeaderCell = ({
     rowHeight,
     selectColumns,
     selectableColumns,
+    selectedColumns,
     setActiveHeaderDropdown,
     setHeaders,
     setInitialFocusedCell,
@@ -93,6 +95,9 @@ const TableHeaderCell = ({
   const filterable = Boolean(header?.filterable);
   const currentFilter = filters[header.accessor];
   const isDropdownOpen = activeHeaderDropdown?.accessor === header.accessor;
+
+  // Check if this is the selection column
+  const isSelectionColumn = header.isSelectionColumn && enableRowSelection;
 
   // Hook for dropdown positioning
   const { triggerRef: headerCellRef, position: dropdownPosition } = useDropdownPosition({
@@ -125,7 +130,9 @@ const TableHeaderCell = ({
     clickable ? "clickable" : ""
   } ${columnReordering && !clickable ? "columnReordering" : ""} ${
     header.children ? "parent" : ""
-  } ${isLastColumnInSection ? "st-last-column" : ""}`;
+  } ${isLastColumnInSection ? "st-last-column" : ""} ${
+    enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : ""
+  }`;
 
   // Hooks
   const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
@@ -233,6 +240,24 @@ const TableHeaderCell = ({
       // Get all column indices that should be selected (including children)
       const columnsToSelect = getHeaderLeafIndices(header, colIndex);
 
+      // Check if this header is already selected and header editing is enabled
+      const isHeaderAlreadySelected = columnsToSelect.some((columnIndex) =>
+        selectedColumns.has(columnIndex)
+      );
+
+      if (enableHeaderEditing && isHeaderAlreadySelected && !event.shiftKey) {
+        // Start editing the header label instead of re-selecting
+
+        // Handle header dropdown toggle if dropdown component is provided
+        if (headerDropdown) {
+          // If dropdown is already open for this header, close it on second click
+          if (isDropdownOpen) handleHeaderDropdownClose();
+        }
+
+        setIsEditing(true);
+        return;
+      }
+
       if (event.shiftKey && selectColumns) {
         // If shift key is pressed and we have columns already selected
         setSelectedColumns((prevSelected: Set<number>) => {
@@ -282,11 +307,6 @@ const TableHeaderCell = ({
       onColumnSelect(header);
     }
 
-    // Handle header dropdown toggle if dropdown component is provided
-    if (headerDropdown) {
-      handleHeaderDropdownToggle();
-    }
-
     // If selectableColumns is disabled, handle sorting on single click
     if (!selectableColumns && header.isSortable) {
       onSort(header.accessor);
@@ -331,9 +351,6 @@ const TableHeaderCell = ({
       document.removeEventListener("dragover", dragOverImageRemoval);
     };
   }, []);
-
-  // Check if this is the selection column
-  const isSelectionColumn = header.isSelectionColumn && enableRowSelection;
 
   if (!header) {
     return null;

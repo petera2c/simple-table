@@ -62,6 +62,7 @@ interface SimpleTableProps {
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
+  enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
@@ -123,6 +124,7 @@ const SimpleTableComp = ({
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
+  enableHeaderEditing = false,
   enableRowSelection = false,
   expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
@@ -389,6 +391,7 @@ const SimpleTableComp = ({
         columnResizing,
         draggedHeaderRef,
         editColumns,
+        enableHeaderEditing,
         enableRowSelection,
         expandIcon,
         filters,
@@ -433,6 +436,7 @@ const SimpleTableComp = ({
         scrollbarWidth,
         selectColumns,
         selectableColumns,
+        selectedColumns,
         selectedRows,
         selectedRowCount,
         selectedRowsData,
