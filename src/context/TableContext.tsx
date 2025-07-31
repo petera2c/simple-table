@@ -89,6 +89,8 @@ interface TableContextType {
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
   selectedColumns: Set<number>;
+  columnsWithSelectedCells: Set<number>;
+  rowsWithSelectedCells: Set<string>;
   selectedRows?: Set<string>;
   selectedRowCount?: number;
   selectedRowsData?: any[];

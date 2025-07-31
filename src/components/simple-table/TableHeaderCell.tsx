@@ -60,6 +60,7 @@ const TableHeaderCell = ({
     columnBorders,
     columnReordering,
     columnResizing,
+    columnsWithSelectedCells,
     draggedHeaderRef,
     enableHeaderEditing,
     enableRowSelection,
@@ -124,6 +125,22 @@ const TableHeaderCell = ({
     }
   }, [columnBorders, headers, header.accessor, header.pinned]);
 
+  // Check if this header is selected (for styling)
+  const isHeaderSelected = useMemo(() => {
+    if (!selectableColumns || isSelectionColumn) return false;
+
+    const columnsToSelect = getHeaderLeafIndices(header, colIndex);
+    return columnsToSelect.some((columnIndex) => selectedColumns.has(columnIndex));
+  }, [selectableColumns, isSelectionColumn, header, colIndex, selectedColumns]);
+
+  // Check if this header has any highlighted cells in its column (O(1) lookup)
+  const hasHighlightedCell = useMemo(() => {
+    if (isSelectionColumn) return false;
+
+    // Efficient lookup: check if this column has any selected cells
+    return columnsWithSelectedCells.has(colIndex);
+  }, [isSelectionColumn, columnsWithSelectedCells, colIndex]);
+
   const className = `st-header-cell ${
     header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
   } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
@@ -132,6 +149,8 @@ const TableHeaderCell = ({
     header.children ? "parent" : ""
   } ${isLastColumnInSection ? "st-last-column" : ""} ${
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : ""
+  } ${isHeaderSelected ? "st-header-selected" : ""} ${
+    hasHighlightedCell && !isHeaderSelected ? "st-header-has-highlighted-cell" : ""
   }`;
 
   // Hooks

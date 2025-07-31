@@ -161,7 +161,7 @@ const SimpleTableComp = ({
   tableRef,
   theme = "light",
   useHoverRowBackground = true,
-  useOddEvenRowBackground = true,
+  useOddEvenRowBackground = false,
   useOddColumnBackground = false,
 }: SimpleTableProps) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
@@ -316,6 +316,8 @@ const SimpleTableComp = ({
     setInitialFocusedCell,
     setSelectedCells,
     setSelectedColumns,
+    columnsWithSelectedCells,
+    rowsWithSelectedCells,
   } = useSelection({
     selectableCells,
     headers,
@@ -437,6 +439,8 @@ const SimpleTableComp = ({
         selectColumns,
         selectableColumns,
         selectedColumns,
+        columnsWithSelectedCells,
+        rowsWithSelectedCells,
         selectedRows,
         selectedRowCount,
         selectedRowsData,
