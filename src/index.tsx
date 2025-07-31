@@ -23,6 +23,7 @@ import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 import CellClickProps from "./types/CellClickProps";
 import CellRendererProps, { CellRenderer } from "./types/CellRendererProps";
 import HeaderRendererProps, { HeaderRenderer } from "./types/HeaderRendererProps";
+import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps";
 import { RowButtonProps } from "./types/RowButton";
 
 export { SimpleTable };
@@ -42,6 +43,8 @@ export type {
   DragHandlerProps,
   EnumOption,
   FilterCondition,
+  HeaderDropdown,
+  HeaderDropdownProps,
   HeaderObject,
   HeaderRenderer,
   HeaderRendererProps,

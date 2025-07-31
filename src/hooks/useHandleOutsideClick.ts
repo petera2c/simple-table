@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import HeaderObject from "../types/HeaderObject";
 
 const useHandleOutsideClick = ({
   selectableColumns,
@@ -6,16 +7,33 @@ const useHandleOutsideClick = ({
   selectedColumns,
   setSelectedCells,
   setSelectedColumns,
+  activeHeaderDropdown,
+  setActiveHeaderDropdown,
 }: {
   selectableColumns: boolean;
   selectedCells: Set<string>;
   selectedColumns: Set<number>;
   setSelectedCells: (cells: Set<string>) => void;
   setSelectedColumns: (columns: Set<number>) => void;
+  activeHeaderDropdown?: HeaderObject | null;
+  setActiveHeaderDropdown?: (header: HeaderObject | null) => void;
 }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+
+      // Check if the click is inside an editable header input - if so, don't handle outside click
+      if (target.closest(".editable-cell-input") && target.closest(".st-header-cell")) {
+        return;
+      }
+
+      // Close header dropdown if clicking outside of it
+      if (activeHeaderDropdown && setActiveHeaderDropdown) {
+        if (!target.closest(".st-header-cell") && !target.closest(".dropdown-content")) {
+          setActiveHeaderDropdown(null);
+        }
+      }
+
       if (
         !target.closest(".st-cell") &&
         (selectableColumns
@@ -38,7 +56,15 @@ const useHandleOutsideClick = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [selectableColumns, selectedCells, selectedColumns, setSelectedCells, setSelectedColumns]);
+  }, [
+    selectableColumns,
+    selectedCells,
+    selectedColumns,
+    setSelectedCells,
+    setSelectedColumns,
+    activeHeaderDropdown,
+    setActiveHeaderDropdown,
+  ]);
 };
 
 export default useHandleOutsideClick;

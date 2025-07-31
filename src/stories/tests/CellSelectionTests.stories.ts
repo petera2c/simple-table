@@ -52,7 +52,6 @@ export const ComprehensiveCellSelectionTests: StoryObj<UniversalTableProps> = {
     try {
       // Run the comprehensive test suite
       await testCellSelectionComprehensive(canvasElement);
-      return;
 
       // Additional specific tests with multiple expect statements
 

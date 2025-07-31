@@ -6,6 +6,7 @@ import {
   useState,
   useMemo,
   useCallback,
+  useRef,
 } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -24,6 +25,7 @@ import { FilterCondition } from "../../types/FilterTypes";
 import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
 import StringEdit from "./editable-cells/StringEdit";
+import useDropdownPosition from "../../hooks/useDropdownPosition";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -53,6 +55,7 @@ const TableHeaderCell = ({
 
   // Get shared props from context
   const {
+    activeHeaderDropdown,
     areAllRowsSelected,
     columnBorders,
     columnReordering,
@@ -63,16 +66,19 @@ const TableHeaderCell = ({
     handleApplyFilter,
     handleClearFilter,
     handleSelectAll,
+    headerDropdown,
     headerRegistry,
     headers,
     hoveredHeaderRef,
     onColumnOrderChange,
     onColumnSelect,
+    onHeaderEdit,
     onSort,
     onTableHeaderDragEnd,
     rowHeight,
     selectColumns,
     selectableColumns,
+    setActiveHeaderDropdown,
     setHeaders,
     setInitialFocusedCell,
     setIsResizing,
@@ -86,6 +92,15 @@ const TableHeaderCell = ({
   const clickable = Boolean(header?.isSortable);
   const filterable = Boolean(header?.filterable);
   const currentFilter = filters[header.accessor];
+  const isDropdownOpen = activeHeaderDropdown?.accessor === header.accessor;
+
+  // Hook for dropdown positioning
+  const { triggerRef: headerCellRef, position: dropdownPosition } = useDropdownPosition({
+    isOpen: isDropdownOpen,
+    estimatedHeight: 200,
+    estimatedWidth: 250,
+    margin: 4,
+  });
 
   // Determine if this is the last column in its section for column borders
   const isLastColumnInSection = useMemo(() => {
@@ -178,9 +193,28 @@ const TableHeaderCell = ({
         h.accessor === header.accessor ? { ...h, label: newLabel } : h
       );
       setHeaders(updatedHeaders);
+
+      // Call the header edit callback if provided
+      if (onHeaderEdit) {
+        onHeaderEdit(header, newLabel);
+      }
     },
-    [header.accessor, headers, setHeaders]
+    [headers, setHeaders, onHeaderEdit, header]
   );
+
+  // Handle header dropdown toggle
+  const handleHeaderDropdownToggle = useCallback(() => {
+    if (setActiveHeaderDropdown) {
+      setActiveHeaderDropdown(isDropdownOpen ? null : header);
+    }
+  }, [setActiveHeaderDropdown, isDropdownOpen, header]);
+
+  // Close header dropdown
+  const handleHeaderDropdownClose = useCallback(() => {
+    if (setActiveHeaderDropdown) {
+      setActiveHeaderDropdown(null);
+    }
+  }, [setActiveHeaderDropdown]);
 
   // Sort and select handler
   const handleColumnHeaderClick = ({
@@ -246,6 +280,11 @@ const TableHeaderCell = ({
     // Call onColumnSelect callback if provided
     if (onColumnSelect) {
       onColumnSelect(header);
+    }
+
+    // Handle header dropdown toggle if dropdown component is provided
+    if (headerDropdown) {
+      handleHeaderDropdownToggle();
     }
 
     // If selectableColumns is disabled, handle sorting on single click
@@ -420,6 +459,7 @@ const TableHeaderCell = ({
       {header.align === "right" && FilterIconComponent}
       {header.align === "right" && SortIcon}
       <div
+        ref={headerCellRef}
         className="st-header-label"
         draggable={columnReordering && !header.disableReorder && !isSelectionColumn}
         onClick={(event) => {
@@ -466,6 +506,20 @@ const TableHeaderCell = ({
       {header.align !== "right" && FilterIconComponent}
 
       {!reverse && ResizeHandle}
+
+      {/* Header dropdown component */}
+      {headerDropdown && !isSelectionColumn && (
+        <div className="st-header-dropdown-container">
+          {headerDropdown({
+            accessor: header.accessor,
+            colIndex,
+            header,
+            isOpen: isDropdownOpen,
+            onClose: handleHeaderDropdownClose,
+            position: dropdownPosition,
+          })}
+        </div>
+      )}
     </Animate>
   );
 };

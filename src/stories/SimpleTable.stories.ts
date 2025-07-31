@@ -57,6 +57,7 @@ import ManufacturingExampleComponent, {
 } from "./examples/manufacturing/ManufacturingExample";
 import RowSelectionExample, { rowSelectionExampleDefaults } from "./examples/RowSelectionExample";
 import RowButtonsExample, { rowButtonsExampleDefaults } from "./examples/RowButtonsExample";
+import ClayExampleComponent, { clayExampleDefaults } from "./examples/ClayExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -139,6 +140,17 @@ export const CellRenderer: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: CellRendererExample, ...args }),
 };
+
+export const ClayExample: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...clayExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: ClayExampleComponent, ...args }),
+};
+
 export const DynamicHeaders: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,

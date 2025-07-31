@@ -12,7 +12,7 @@ import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
 import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
-import { RowButton, RowButtonProps } from "../../types/RowButton";
+import { RowButtonProps } from "../../types/RowButton";
 
 const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
