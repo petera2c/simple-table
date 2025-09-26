@@ -36,7 +36,13 @@ const TableRow = ({
   setHoveredIndex,
   tableRow,
 }: TableRowProps) => {
-  const { useHoverRowBackground, rowIdAccessor, isAnimating, isRowSelected } = useTableContext();
+  const {
+    useHoverRowBackground,
+    rowIdAccessor,
+    isAnimating,
+    isRowSelected,
+    useOddEvenRowBackground,
+  } = useTableContext();
   const { position } = tableRow;
   // Get row index from rowIndices using the row's ID
 
@@ -50,7 +56,7 @@ const TableRow = ({
 
   return (
     <div
-      className={`st-row ${isOdd ? "even" : "odd"} ${
+      className={`st-row ${useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""} ${
         hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
       } ${isSelected ? "selected" : ""}`}
       onMouseEnter={() => {

@@ -48,6 +48,7 @@ import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
 import { RowButton } from "../../types/RowButton";
+import { HeaderDropdown } from "../../types/HeaderDropdownProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -61,11 +62,13 @@ interface SimpleTableProps {
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
+  enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
+  headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -75,6 +78,7 @@ interface SimpleTableProps {
   onColumnSelect?: (header: HeaderObject) => void; // Callback when a column is selected/clicked
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
+  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void; // Callback when a header is edited
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
@@ -120,11 +124,13 @@ const SimpleTableComp = ({
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
+  enableHeaderEditing = false,
   enableRowSelection = false,
   expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   externalFilterHandling = false,
   externalSortHandling = false,
+  headerDropdown,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
@@ -134,6 +140,7 @@ const SimpleTableComp = ({
   onColumnSelect,
   onFilterChange,
   onGridReady,
+  onHeaderEdit,
   onLoadMore,
   onNextPage,
   onRowSelectionChange,
@@ -154,7 +161,7 @@ const SimpleTableComp = ({
   tableRef,
   theme = "light",
   useHoverRowBackground = true,
-  useOddEvenRowBackground = true,
+  useOddEvenRowBackground = false,
   useOddColumnBackground = false,
 }: SimpleTableProps) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
@@ -179,6 +186,7 @@ const SimpleTableComp = ({
   const [headers, setHeaders] = useState(defaultHeaders);
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
@@ -308,6 +316,8 @@ const SimpleTableComp = ({
     setInitialFocusedCell,
     setSelectedCells,
     setSelectedColumns,
+    columnsWithSelectedCells,
+    rowsWithSelectedCells,
   } = useSelection({
     selectableCells,
     headers,
@@ -342,6 +352,8 @@ const SimpleTableComp = ({
     selectedColumns,
     setSelectedCells,
     setSelectedColumns,
+    activeHeaderDropdown,
+    setActiveHeaderDropdown,
   });
   useWindowResize({
     forceUpdate,
@@ -381,6 +393,7 @@ const SimpleTableComp = ({
         columnResizing,
         draggedHeaderRef,
         editColumns,
+        enableHeaderEditing,
         enableRowSelection,
         expandIcon,
         filters,
@@ -425,6 +438,9 @@ const SimpleTableComp = ({
         scrollbarWidth,
         selectColumns,
         selectableColumns,
+        selectedColumns,
+        columnsWithSelectedCells,
+        rowsWithSelectedCells,
         selectedRows,
         selectedRowCount,
         selectedRowsData,
@@ -446,6 +462,10 @@ const SimpleTableComp = ({
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,
+        headerDropdown,
+        activeHeaderDropdown,
+        setActiveHeaderDropdown,
+        onHeaderEdit,
       }}
     >
       <div

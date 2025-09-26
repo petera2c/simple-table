@@ -12,7 +12,7 @@ import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
 import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
-import { RowButton, RowButtonProps } from "../../types/RowButton";
+import { RowButtonProps } from "../../types/RowButton";
 
 const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
   if (typeof content === "boolean") {
@@ -75,6 +75,8 @@ const TableCell = ({
     rowButtons,
     rowGrouping,
     rowIdAccessor,
+    rowsWithSelectedCells,
+    selectedColumns,
     setUnexpandedRows,
     tableBodyContainerRef,
     theme,
@@ -197,13 +199,31 @@ const TableCell = ({
     header.type === "boolean" || header.type === "date" || header.type === "enum";
   const clickable = Boolean(header?.isEditable);
 
+  // Check if this cell is selected due to column selection (no borders) vs individual cell selection (with borders)
+  const isColumnSelected = selectedColumns.has(colIndex);
+  const isIndividuallySelected = isHighlighted && !isColumnSelected;
+
+  // Check if this is a selection column cell with highlighted cells in the row (O(1) lookup)
+  const hasHighlightedCellInRow = useMemo(() => {
+    if (!isSelectionColumn) return false;
+
+    // Efficient lookup: check if this row has any selected cells
+    return rowsWithSelectedCells.has(String(rowId));
+  }, [isSelectionColumn, rowsWithSelectedCells, rowId]);
+
   const cellClassName = `st-cell ${
     depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
   } ${
-    isHighlighted
+    isIndividuallySelected
       ? isInitialFocused
         ? `st-cell-selected-first ${borderClass}`
         : `st-cell-selected ${borderClass}`
+      : ""
+  } ${
+    isColumnSelected
+      ? isInitialFocused
+        ? "st-cell-column-selected-first"
+        : "st-cell-column-selected"
       : ""
   } ${clickable ? "clickable" : ""} ${
     isUpdating ? (isInitialFocused ? "st-cell-updating-first" : "st-cell-updating") : ""
@@ -217,7 +237,9 @@ const TableCell = ({
       : ""
   } ${useOddColumnBackground ? (nestedIndex % 2 === 0 ? "even-column" : "odd-column") : ""} ${
     isSelectionColumn ? "st-selection-cell" : ""
-  } ${isLastColumnInSection ? "st-last-column" : ""}`;
+  } ${hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : ""} ${
+    isLastColumnInSection ? "st-last-column" : ""
+  }`;
 
   const updateContent = useCallback(
     (newValue: CellValue) => {

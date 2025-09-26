@@ -16,6 +16,7 @@ import Theme from "../types/Theme";
 import CellValue from "../types/CellValue";
 import CellClickProps from "../types/CellClickProps";
 import { RowButton } from "../types/RowButton";
+import { HeaderDropdown } from "../types/HeaderDropdownProps";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -29,6 +30,7 @@ export interface HeaderRegistryEntry {
 
 interface TableContextType {
   // Stable values that don't change frequently
+  activeHeaderDropdown?: HeaderObject | null;
   allowAnimations?: boolean;
   areAllRowsSelected?: () => boolean;
   cellRegistry?: Map<string, CellRegistryEntry>;
@@ -39,6 +41,7 @@ interface TableContextType {
   columnResizing: boolean;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   editColumns?: boolean;
+  enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   expandIcon?: ReactNode;
   filters: TableFilterState;
@@ -53,6 +56,7 @@ interface TableContextType {
   handleSelectAll?: (isSelected: boolean) => void;
   handleToggleRow?: (rowId: string) => void;
   headerContainerRef: RefObject<HTMLDivElement>;
+  headerDropdown?: HeaderDropdown;
   headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
@@ -70,6 +74,7 @@ interface TableContextType {
   onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void;
+  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
   onLoadMore?: () => void;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
@@ -83,9 +88,13 @@ interface TableContextType {
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
   selectableColumns: boolean;
+  selectedColumns: Set<number>;
+  columnsWithSelectedCells: Set<number>;
+  rowsWithSelectedCells: Set<string>;
   selectedRows?: Set<string>;
   selectedRowCount?: number;
   selectedRowsData?: any[];
+  setActiveHeaderDropdown?: Dispatch<SetStateAction<HeaderObject | null>>;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;

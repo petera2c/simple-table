@@ -58,8 +58,8 @@ export default StoryWrapper;
 export const defaultUniversalArgs: UniversalTableProps = {
   theme: "light",
   useOddColumnBackground: false,
-  useHoverRowBackground: true,
-  useOddEvenRowBackground: true,
+  useHoverRowBackground: false,
+  useOddEvenRowBackground: false,
   cellUpdateFlash: false,
   height: undefined,
   rowHeight: 32,

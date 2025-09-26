@@ -34,6 +34,53 @@ const useSelection = ({
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
 
+  // Derived state for efficient lookups - tracks which columns and rows have selected cells
+  const columnsWithSelectedCells = useMemo(() => {
+    const columns = new Set<number>();
+
+    // Add columns that have individually selected cells
+    selectedCells.forEach((cellId) => {
+      const parts = cellId.split("-");
+      if (parts.length >= 2) {
+        const colIndex = parseInt(parts[1], 10);
+        if (!isNaN(colIndex)) {
+          columns.add(colIndex);
+        }
+      }
+    });
+
+    // Add columns that are entirely selected
+    selectedColumns.forEach((colIndex) => {
+      columns.add(colIndex);
+    });
+
+    return columns;
+  }, [selectedCells, selectedColumns]);
+
+  const rowsWithSelectedCells = useMemo(() => {
+    const rows = new Set<string>();
+
+    // Add rows that have individually selected cells
+    selectedCells.forEach((cellId) => {
+      const parts = cellId.split("-");
+      if (parts.length >= 3) {
+        // rowId is everything after the second dash
+        const rowId = parts.slice(2).join("-");
+        rows.add(rowId);
+      }
+    });
+
+    // Add rows that have cells in selected columns
+    if (selectedColumns.size > 0) {
+      tableRows.forEach((tableRow) => {
+        const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+        rows.add(String(rowId));
+      });
+    }
+
+    return rows;
+  }, [selectedCells, selectedColumns, tableRows, rowIdAccessor]);
+
   // Get flattened leaf headers (actual navigable columns) for proper boundary checking
   const leafHeaders = useMemo(() => {
     return headers.flatMap(findLeafHeaders);
@@ -623,6 +670,9 @@ const useSelection = ({
     setSelectedCells,
     setSelectedColumns,
     deleteSelectedCells,
+    // Efficient lookup sets
+    columnsWithSelectedCells,
+    rowsWithSelectedCells,
   };
 };
 

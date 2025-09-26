@@ -317,6 +317,7 @@
   --st-selected-cell-color: var(--st-slate-900);
   --st-selected-first-cell-color: var(--st-slate-900);
   --st-resize-handle-color: var(--st-slate-400);
+  --st-resize-handle-selected-color: var(--st-white);
   --st-last-group-row-separator-border-color: var(--st-slate-400);
 
   /* Border colors */
@@ -333,6 +334,15 @@
   --st-cell-flash-color: var(--st-slate-200);
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-300);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: var(--st-blue-600);
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: var(--st-slate-300);
+  --st-selection-highlight-indicator-color: var(--st-slate-300);
 
   /* Navigation button colors */
   --st-next-prev-btn-color: var(--st-slate-600);
@@ -395,6 +405,7 @@
   --st-selected-cell-color: var(--st-white);
   --st-selected-first-cell-color: var(--st-white);
   --st-resize-handle-color: var(--st-gray-500);
+  --st-resize-handle-selected-color: var(--st-white);
   --st-last-group-row-separator-border-color: var(--st-gray-500);
 
   /* Border colors */
@@ -411,6 +422,15 @@
   --st-cell-flash-color: var(--st-gray-600);
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-400);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: var(--st-blue-500);
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: var(--st-gray-600);
+  --st-selection-highlight-indicator-color: var(--st-gray-600);
 
   /* Navigation button colors */
   --st-next-prev-btn-color: var(--st-gray-400);
@@ -473,6 +493,7 @@
   --st-selected-cell-color: var(--st-neutral-900);
   --st-selected-first-cell-color: var(--st-neutral-900);
   --st-resize-handle-color: var(--st-neutral-400);
+  --st-resize-handle-selected-color: var(--st-white);
   --st-last-group-row-separator-border-color: var(--st-neutral-400);
 
   /* Border colors */
@@ -489,6 +510,15 @@
   --st-cell-flash-color: var(--st-neutral-400);
   --st-copy-flash-color: var(--st-neutral-600);
   --st-warning-flash-color: var(--st-red-400);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: var(--st-neutral-600);
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: var(--st-neutral-400);
+  --st-selection-highlight-indicator-color: var(--st-neutral-400);
 
   /* Navigation button colors */
   --st-next-prev-btn-color: var(--st-neutral-600);
@@ -551,6 +581,7 @@
   --st-selected-cell-color: var(--st-blue-900);
   --st-selected-first-cell-color: var(--st-blue-900);
   --st-resize-handle-color: var(--st-blue-400);
+  --st-resize-handle-selected-color: var(--st-white);
   --st-last-group-row-separator-border-color: var(--st-blue-400);
 
   /* Border colors */
@@ -567,6 +598,15 @@
   --st-cell-flash-color: var(--st-blue-300);
   --st-copy-flash-color: var(--st-blue-600);
   --st-warning-flash-color: var(--st-orange-400);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: var(--st-blue-600);
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: var(--st-blue-400);
+  --st-selection-highlight-indicator-color: var(--st-blue-400);
 
   /* Navigation button colors */
   --st-next-prev-btn-color: var(--st-blue-600);
@@ -630,6 +670,7 @@
   --st-selected-cell-color: var(--st-violet-800);
   --st-selected-first-cell-color: var(--st-violet-800);
   --st-resize-handle-color: var(--st-violet-400);
+  --st-resize-handle-selected-color: var(--st-white);
   --st-last-group-row-separator-border-color: var(--st-stone-300);
 
   /* Border colors */
@@ -646,6 +687,15 @@
   --st-cell-flash-color: var(--st-violet-200);
   --st-copy-flash-color: var(--st-violet-600);
   --st-warning-flash-color: var(--st-red-400);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: var(--st-violet-600);
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: var(--st-stone-400);
+  --st-selection-highlight-indicator-color: var(--st-stone-400);
 
   /* Navigation button colors */
   --st-next-prev-btn-color: var(--st-violet-600);
@@ -859,7 +909,6 @@ input {
   display: flex;
   align-items: center;
   gap: var(--st-spacing-small);
-  border-top: var(--st-border-width) solid transparent;
 }
 .st-header-cell.parent {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
@@ -867,8 +916,32 @@ input {
 .st-header-cell.clickable {
   cursor: pointer;
 }
+.st-header-cell.st-header-editable {
+  cursor: pointer;
+}
 .st-header-cell.draggable {
   cursor: grab;
+}
+.st-header-cell.st-header-selected {
+  background-color: var(--st-header-selected-background-color);
+}
+.st-header-cell.st-header-selected .st-header-label-text {
+  color: var(--st-header-selected-label-color);
+}
+.st-header-cell.st-header-selected .st-header-icon {
+  fill: var(--st-header-selected-icon-color);
+}
+.st-header-cell.st-header-selected .st-icon-container svg {
+  fill: var(--st-header-selected-icon-color);
+}
+.st-header-cell.st-header-selected .st-icon-container {
+  color: var(--st-header-selected-icon-color);
+}
+.st-header-cell.st-header-selected .st-header-resize-handle {
+  background-color: var(--st-resize-handle-selected-color);
+}
+.st-header-cell.st-header-has-highlighted-cell {
+  background-color: var(--st-header-highlight-indicator-color);
 }
 
 /* Common styles for table header and cells */
@@ -985,6 +1058,11 @@ input {
   padding-right: var(--st-cell-padding);
 }
 
+/* Selection cell highlight when row has highlighted cells */
+.st-selection-cell.st-selection-has-highlighted-cell {
+  background-color: var(--st-selection-highlight-indicator-color);
+}
+
 .st-cell {
   border: var(--st-border-width) solid transparent;
 }
@@ -1087,6 +1165,22 @@ input {
   border: var(--st-border-width) solid var(--st-selected-border-color);
 }
 .st-cell-selected-first .st-cell-content {
+  color: var(--st-selected-first-cell-color) !important;
+}
+
+/* Style for column selected cells (no borders) */
+.st-cell-column-selected {
+  background-color: var(--st-selected-cell-background-color);
+}
+.st-cell-column-selected .st-cell-content {
+  color: var(--st-selected-cell-color) !important;
+}
+
+/* Style for the first column selected cell (no borders) */
+.st-cell-column-selected-first {
+  background-color: var(--st-selected-first-cell-background-color);
+}
+.st-cell-column-selected-first .st-cell-content {
   color: var(--st-selected-first-cell-color) !important;
 }
 
@@ -1203,7 +1297,6 @@ input {
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: var(--st-border-radius);
   border: var(--st-border-width) solid var(--st-border-color);
   box-shadow: var(--st-edit-cell-shadow-color);
   z-index: 1;
