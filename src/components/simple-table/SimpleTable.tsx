@@ -2,6 +2,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
   useReducer,
   ReactNode,
   useMemo,
@@ -231,13 +232,41 @@ const SimpleTableComp = ({
   // Apply aggregation to current rows
   const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
 
+  // Track container width changes to ensure proper recalculation of pinned section limits
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+
+  // Update container width when the table container changes
+  useLayoutEffect(() => {
+    const updateContainerWidth = () => {
+      if (tableBodyContainerRef.current) {
+        setContainerWidth(tableBodyContainerRef.current.clientWidth);
+      }
+    };
+
+    updateContainerWidth();
+
+    // Set up a ResizeObserver to watch for container size changes
+    let resizeObserver: ResizeObserver | null = null;
+    if (tableBodyContainerRef.current) {
+      resizeObserver = new ResizeObserver(updateContainerWidth);
+      resizeObserver.observe(tableBodyContainerRef.current);
+    }
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, []);
+
   // Calculate the width of the sections
   const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
     const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
       headers: effectiveHeaders,
+      containerWidth,
     });
     return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
-  }, [effectiveHeaders]);
+  }, [effectiveHeaders, containerWidth]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });
