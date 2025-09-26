@@ -7,6 +7,62 @@ import {
   removeAllFractionalWidths,
   getHeaderMinWidth,
 } from "./headerWidthUtils";
+import { MAX_PINNED_WIDTH_PERCENT } from "../consts/general-consts";
+
+/**
+ * Calculate the maximum allowable width for a header based on container constraints
+ */
+const calculateMaxHeaderWidth = ({
+  header,
+  headers,
+}: {
+  header: HeaderObject;
+  headers: HeaderObject[];
+}): number => {
+  // Get the table container element
+  const tableContainer = document.querySelector(".st-body-container") as HTMLElement;
+  if (!tableContainer || tableContainer.clientWidth === 0) {
+    // If no container found or invalid width, return a reasonable default value
+    return 1000;
+  }
+
+  const containerWidth = tableContainer.clientWidth;
+  const maxPinnedSectionWidth = containerWidth * MAX_PINNED_WIDTH_PERCENT;
+
+  // If this is not a pinned header, use a more generous limit for main columns
+  if (!header.pinned) {
+    return Math.max(containerWidth * 0.6, 600); // Allow main headers to be up to 60% of container width
+  }
+
+  // For pinned headers, calculate the current width of the pinned section (excluding the header being resized)
+  const pinnedHeaders = headers.filter(
+    (h) => h.pinned === header.pinned && h.accessor !== header.accessor
+  );
+  const currentPinnedSectionWidth = pinnedHeaders.reduce((sum, h) => {
+    if (h.hide) return sum;
+    const leafHeaders = findLeafHeaders(h);
+    return (
+      sum +
+      leafHeaders.reduce((leafSum, leafHeader) => {
+        return leafSum + getHeaderWidthInPixels(leafHeader);
+      }, 0)
+    );
+  }, 0);
+
+  // Calculate the maximum width this header can have without exceeding the section limit
+  const availableWidth = maxPinnedSectionWidth - currentPinnedSectionWidth;
+
+  // Ensure we return at least the minimum width
+  const minWidth = getHeaderMinWidth(header);
+
+  // If available width is less than minimum, allow the minimum but log the constraint violation
+  if (availableWidth < minWidth) {
+    console.warn(`Header ${header.accessor} exceeds pinned section width limit`);
+    return minWidth;
+  }
+
+  return availableWidth;
+};
 
 /**
  * Handler for when resize dragging starts
@@ -42,16 +98,20 @@ export const handleResizeStart = ({
     // For right-pinned headers, delta is reversed
     const delta = header.pinned === "right" ? startX - clientX : clientX - startX;
 
+    // Calculate maximum allowable width based on container constraints
+    const maxWidth = calculateMaxHeaderWidth({ header, headers });
+
     if (isParentHeader && leafHeaders.length > 1) {
       handleParentHeaderResize({
         delta,
         leafHeaders,
         minWidth,
         startWidth,
+        maxWidth,
       });
     } else {
       // For leaf headers or parents with only one leaf, just adjust the width directly
-      const newWidth = Math.max(startWidth + delta, minWidth);
+      const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
       header.width = newWidth;
     }
 
@@ -101,11 +161,13 @@ const handleParentHeaderResize = ({
   leafHeaders,
   minWidth,
   startWidth,
+  maxWidth,
 }: {
   delta: number;
   leafHeaders: HeaderObject[];
   minWidth: number;
   startWidth: number;
+  maxWidth: number;
 }): void => {
   // Find the minimum width across all leaf headers
   const totalMinWidth = leafHeaders.reduce((min, header) => {
@@ -118,8 +180,8 @@ const handleParentHeaderResize = ({
     return sum + width;
   }, 0);
 
-  // Calculate new total width with minimum constraints
-  const newTotalWidth = Math.max(startWidth + delta, totalMinWidth);
+  // Calculate new total width with minimum and maximum constraints
+  const newTotalWidth = Math.max(Math.min(startWidth + delta, maxWidth), totalMinWidth);
 
   // Calculate the total width to distribute
   const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
@@ -139,8 +201,12 @@ const handleParentHeaderResize = ({
  */
 export const recalculateAllSectionWidths = ({
   headers,
+  containerWidth,
+  maxPinnedWidthPercent = MAX_PINNED_WIDTH_PERCENT,
 }: {
   headers: HeaderObject[];
+  containerWidth?: number;
+  maxPinnedWidthPercent?: number;
 }): {
   leftWidth: number;
   rightWidth: number;
@@ -169,6 +235,19 @@ export const recalculateAllSectionWidths = ({
       mainWidth += totalHeaderWidth;
     }
   });
+
+  // Apply width limits if container width is provided
+  if (containerWidth && containerWidth > 0) {
+    const maxPinnedWidth = containerWidth * maxPinnedWidthPercent;
+
+    // Limit each pinned section to the specified percentage of container width
+    if (leftWidth > maxPinnedWidth) {
+      leftWidth = maxPinnedWidth;
+    }
+    if (rightWidth > maxPinnedWidth) {
+      rightWidth = maxPinnedWidth;
+    }
+  }
 
   // Calculate pinned widths with any additional styling
   const totalPinnedLeftWidth = calculatePinnedWidth(leftWidth);
