@@ -6,7 +6,6 @@ import {
   useState,
   useMemo,
   useCallback,
-  useRef,
 } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -26,6 +25,9 @@ import Animate from "../animate/Animate";
 import Checkbox from "../Checkbox";
 import StringEdit from "./editable-cells/StringEdit";
 import useDropdownPosition from "../../hooks/useDropdownPosition";
+import { hasCollapsibleChildren } from "../../utils/collapseUtils";
+import AngleRightIcon from "../../icons/AngleRightIcon";
+import AngleLeftIcon from "../../icons/AngleLeftIcon";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -57,6 +59,7 @@ const TableHeaderCell = ({
   const {
     activeHeaderDropdown,
     areAllRowsSelected,
+    collapsedHeaders,
     columnBorders,
     columnReordering,
     columnResizing,
@@ -82,6 +85,7 @@ const TableHeaderCell = ({
     selectableColumns,
     selectedColumns,
     setActiveHeaderDropdown,
+    setCollapsedHeaders,
     setHeaders,
     setInitialFocusedCell,
     setIsResizing,
@@ -99,6 +103,10 @@ const TableHeaderCell = ({
 
   // Check if this is the selection column
   const isSelectionColumn = header.isSelectionColumn && enableRowSelection;
+
+  // Collapse state
+  const isCollapsible = hasCollapsibleChildren(header);
+  const isCollapsed = collapsedHeaders.has(header.accessor);
 
   // Hook for dropdown positioning
   const { triggerRef: headerCellRef, position: dropdownPosition } = useDropdownPosition({
@@ -241,6 +249,23 @@ const TableHeaderCell = ({
       setActiveHeaderDropdown(null);
     }
   }, [setActiveHeaderDropdown]);
+
+  // Handle collapse/expand toggle
+  const handleCollapseToggle = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation();
+      setCollapsedHeaders((prev) => {
+        const newSet = new Set(prev);
+        if (isCollapsed) {
+          newSet.delete(header.accessor);
+        } else {
+          newSet.add(header.accessor);
+        }
+        return newSet;
+      });
+    },
+    [setCollapsedHeaders, isCollapsed, header.accessor]
+  );
 
   // Sort and select handler
   const handleColumnHeaderClick = ({
@@ -462,6 +487,16 @@ const TableHeaderCell = ({
     </div>
   );
 
+  const CollapseIconComponent = isCollapsible && !isSelectionColumn && (
+    <div className="st-icon-container st-collapse-icon-container" onClick={handleCollapseToggle}>
+      {isCollapsed ? (
+        <AngleRightIcon className="st-header-icon st-collapse-icon" />
+      ) : (
+        <AngleLeftIcon className="st-header-icon st-collapse-icon" />
+      )}
+    </div>
+  );
+
   // Handle select all checkbox change
   const handleSelectAllChange = (checked: boolean) => {
     if (handleSelectAll) {
@@ -492,6 +527,7 @@ const TableHeaderCell = ({
       }}
     >
       {reverse && ResizeHandle}
+      {header.align === "right" && CollapseIconComponent}
       {header.align === "right" && FilterIconComponent}
       {header.align === "right" && SortIcon}
       <div
@@ -540,6 +576,7 @@ const TableHeaderCell = ({
       </div>
       {header.align !== "right" && SortIcon}
       {header.align !== "right" && FilterIconComponent}
+      {header.align !== "right" && CollapseIconComponent}
 
       {!reverse && ResizeHandle}
 

@@ -188,6 +188,7 @@ const SimpleTableComp = ({
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
+  const [collapsedHeaders, setCollapsedHeaders] = useState<Set<Accessor>>(new Set());
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
@@ -417,6 +418,7 @@ const SimpleTableComp = ({
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
         clearSelection,
+        collapsedHeaders,
         columnBorders,
         columnReordering,
         columnResizing,
@@ -473,6 +475,7 @@ const SimpleTableComp = ({
         selectedRows,
         selectedRowCount,
         selectedRowsData,
+        setCollapsedHeaders,
         setHeaders,
         setInitialFocusedCell,
         setIsResizing,

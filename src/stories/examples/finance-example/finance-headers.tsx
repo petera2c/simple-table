@@ -29,6 +29,7 @@ export const HEADERS: HeaderObject[] = [
     label: "Price Performance",
     width: 250,
     isSortable: false,
+    collapsible: true,
     children: [
       {
         accessor: "price",
@@ -37,6 +38,7 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         filterable: true,
         isEditable: true,
+        visibleWhenCollapsed: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
@@ -48,6 +50,7 @@ export const HEADERS: HeaderObject[] = [
         },
       },
       {
+        visibleWhenCollapsed: true,
         accessor: "priceChangePercent",
         label: "Change %",
         width: 160,
@@ -78,6 +81,7 @@ export const HEADERS: HeaderObject[] = [
     label: "Fundamentals",
     width: 380,
     isSortable: false,
+    collapsible: true,
     children: [
       {
         accessor: "marketCap",
@@ -86,6 +90,7 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         filterable: true,
         isEditable: true,
+        visibleWhenCollapsed: true,
         align: "right",
         type: "number",
       },
@@ -124,6 +129,7 @@ export const HEADERS: HeaderObject[] = [
     label: "Analyst Information",
     width: 380,
     isSortable: false,
+    collapsible: true,
     children: [
       {
         accessor: "analystRating",
@@ -132,6 +138,7 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         isEditable: true,
         filterable: true,
+        visibleWhenCollapsed: true,
         align: "center",
         type: "enum",
         enumOptions: [

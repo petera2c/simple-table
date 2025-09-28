@@ -1,4 +1,4 @@
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { displayCell } from "./cellUtils";
 
 export type ColumnIndices = Record<string, number>;
@@ -14,13 +14,18 @@ export function calculateColumnIndices({
   headers,
   pinnedLeftColumns,
   pinnedRightColumns,
+  collapsedHeaders,
 }: {
   headers: HeaderObject[];
   pinnedLeftColumns: HeaderObject[];
   pinnedRightColumns: HeaderObject[];
+  collapsedHeaders?: Set<Accessor>;
 }): ColumnIndices {
   const indices: ColumnIndices = {};
   let columnCounter = 0;
+
+  // Combine all headers for context in displayCell checks
+  const allHeaders = [...pinnedLeftColumns, ...headers, ...pinnedRightColumns];
 
   const processHeader = (header: HeaderObject, isFirst: boolean = false): void => {
     // Only increment for non-first children or top-level headers
@@ -34,7 +39,7 @@ export function calculateColumnIndices({
     // Process children recursively, if any
     if (header.children && header.children.length > 0) {
       header.children
-        .filter((child) => displayCell({ header: child }))
+        .filter((child) => displayCell({ header: child, headers: allHeaders, collapsedHeaders }))
         .forEach((child, index) => {
           // The first child shares the column index with its parent
           processHeader(child, index === 0);
@@ -53,7 +58,9 @@ export function calculateColumnIndices({
 
   // Process main headers
   headers
-    .filter((header) => !header.pinned && displayCell({ header }))
+    .filter(
+      (header) => !header.pinned && displayCell({ header, headers: allHeaders, collapsedHeaders })
+    )
     .forEach((header, index) => {
       // If this is the first header and there are no pinned left columns,
       // don't increment counter

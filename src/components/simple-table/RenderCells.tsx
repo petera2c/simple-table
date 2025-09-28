@@ -28,8 +28,10 @@ const RenderCells = ({
   rowIndices,
   tableRow,
 }: RenderCellsProps) => {
-  const { rowIdAccessor } = useTableContext();
-  const filteredHeaders = headers.filter((header) => displayCell({ header, pinned }));
+  const { rowIdAccessor, collapsedHeaders } = useTableContext();
+  const filteredHeaders = headers.filter((header) =>
+    displayCell({ header, pinned, headers, collapsedHeaders })
+  );
 
   return (
     <>
@@ -78,14 +80,15 @@ const RecursiveRenderCells = ({
   const colIndex = columnIndices[header.accessor];
 
   // Get selection state for this cell
-  const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor } = useTableContext();
+  const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor, collapsedHeaders } =
+    useTableContext();
 
   // Calculate rowId once at the beginning
   const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
 
   if (header.children) {
     const filteredChildren = header.children.filter((child) =>
-      displayCell({ header: child, pinned })
+      displayCell({ header: child, pinned, headers, collapsedHeaders })
     );
 
     return (
