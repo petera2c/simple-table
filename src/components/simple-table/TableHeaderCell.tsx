@@ -522,7 +522,6 @@ const TableHeaderCell = ({
         gridRowEnd,
         gridColumnStart,
         gridColumnEnd,
-        ...(gridColumnEnd - gridColumnStart > 1 ? {} : { width: header.width }),
         ...(gridRowEnd - gridRowStart > 1 ? {} : { height: rowHeight }),
       }}
     >
