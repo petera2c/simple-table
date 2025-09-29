@@ -149,12 +149,25 @@ const TableHeaderCell = ({
     return columnsWithSelectedCells.has(colIndex);
   }, [isSelectionColumn, columnsWithSelectedCells, colIndex]);
 
+  // Check if header has visible children (considering collapsed state)
+  const hasVisibleChildren = useMemo(() => {
+    if (!header.children || header.children.length === 0) return false;
+
+    // If collapsed, check if any children are visible when collapsed
+    if (isCollapsed) {
+      return header.children.some((child) => child.visibleWhenCollapsed);
+    }
+
+    // If not collapsed, has visible children if it has any children
+    return true;
+  }, [header.children, isCollapsed]);
+
   const className = `st-header-cell ${
     header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
   } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
     clickable ? "clickable" : ""
   } ${columnReordering && !clickable ? "columnReordering" : ""} ${
-    header.children && header.children.length > 0 ? "parent" : ""
+    hasVisibleChildren ? "parent" : ""
   } ${isLastColumnInSection ? "st-last-column" : ""} ${
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : ""
   } ${isHeaderSelected ? "st-header-selected" : ""} ${

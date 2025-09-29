@@ -42,7 +42,12 @@ export const createGridTemplateColumns = ({
         // If this header is collapsed, only show children marked as visibleWhenCollapsed
         if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
           const visibleChildren = header.children.filter((child) => child.visibleWhenCollapsed);
-          flattenHeaders({ headers: visibleChildren, flattenedHeaders });
+          if (visibleChildren.length > 0) {
+            flattenHeaders({ headers: visibleChildren, flattenedHeaders });
+          } else {
+            // No visible children when collapsed - use the parent header itself
+            flattenedHeaders.push(header);
+          }
         } else {
           // If not collapsed, show all children normally
           flattenHeaders({ headers: header.children, flattenedHeaders });

@@ -93,6 +93,7 @@ export const handleResizeStart = ({
   // Check if this is a parent header by looking at whether it has children
   const isParentHeader = header.children && header.children.length > 0;
   const leafHeaders = isParentHeader ? findLeafHeaders(header, collapsedHeaders) : [header];
+  console.log(leafHeaders);
 
   const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
@@ -126,6 +127,7 @@ export const handleResizeStart = ({
       removeAllFractionalWidths(header);
     });
     const newHeaders = [...headers];
+    console.log(newHeaders);
     setHeaders(newHeaders);
   };
 
