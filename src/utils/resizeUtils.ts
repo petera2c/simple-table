@@ -15,9 +15,11 @@ import { MAX_PINNED_WIDTH_PERCENT } from "../consts/general-consts";
 const calculateMaxHeaderWidth = ({
   header,
   headers,
+  collapsedHeaders,
 }: {
   header: HeaderObject;
   headers: HeaderObject[];
+  collapsedHeaders?: Set<string>;
 }): number => {
   // Get the table container element
   const tableContainer = document.querySelector(".st-body-container") as HTMLElement;
@@ -40,7 +42,7 @@ const calculateMaxHeaderWidth = ({
   );
   const currentPinnedSectionWidth = pinnedHeaders.reduce((sum, h) => {
     if (h.hide) return sum;
-    const leafHeaders = findLeafHeaders(h);
+    const leafHeaders = findLeafHeaders(h, collapsedHeaders);
     return (
       sum +
       leafHeaders.reduce((leafSum, leafHeader) => {
@@ -94,9 +96,15 @@ export const handleResizeStart = ({
   const isParentHeader = header.children && header.children.length > 0;
 
   // Get the children that should be resized:
-  // - For parents: always resize actual leaf children (not just visible ones)
+  // - For parents: resize only currently visible leaf children, or parent itself if no visible children
   // - For leaf headers: resize the header itself
-  const childrenToResize = isParentHeader ? findLeafHeaders(header) : [header];
+  let childrenToResize: HeaderObject[];
+  if (isParentHeader) {
+    const visibleChildren = findLeafHeaders(header, collapsedHeaders);
+    childrenToResize = visibleChildren.length > 0 ? visibleChildren : [header];
+  } else {
+    childrenToResize = [header];
+  }
 
   const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
@@ -104,7 +112,7 @@ export const handleResizeStart = ({
     const delta = header.pinned === "right" ? startX - clientX : clientX - startX;
 
     // Calculate maximum allowable width based on container constraints
-    const maxWidth = calculateMaxHeaderWidth({ header, headers });
+    const maxWidth = calculateMaxHeaderWidth({ header, headers, collapsedHeaders });
 
     // Simplified logic: always resize the leaf children (single source of truth)
     if (childrenToResize.length > 1) {
@@ -211,10 +219,12 @@ export const recalculateAllSectionWidths = ({
   headers,
   containerWidth,
   maxPinnedWidthPercent = MAX_PINNED_WIDTH_PERCENT,
+  collapsedHeaders,
 }: {
   headers: HeaderObject[];
   containerWidth?: number;
   maxPinnedWidthPercent?: number;
+  collapsedHeaders?: Set<string>;
 }): {
   leftWidth: number;
   rightWidth: number;
@@ -230,7 +240,7 @@ export const recalculateAllSectionWidths = ({
       return;
     }
 
-    const leafHeaders = findLeafHeaders(header);
+    const leafHeaders = findLeafHeaders(header, collapsedHeaders);
     const totalHeaderWidth = leafHeaders.reduce((sum, leafHeader) => {
       return sum + getHeaderWidthInPixels(leafHeader);
     }, 0);

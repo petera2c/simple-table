@@ -30,7 +30,7 @@ type HeaderObject = {
   minWidth?: number | string;
   pinned?: Pinned;
   type?: ColumnType;
-  visibleWhenCollapsed?: boolean; // Shows this child column when parent is collapsed
+  summaryColumn?: boolean; // Shows this child column when parent is collapsed
   width: number | string;
   maxWidth?: number | string;
 };
