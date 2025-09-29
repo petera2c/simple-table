@@ -155,7 +155,7 @@ const TableHeaderCell = ({
 
     // If collapsed, check if any children are visible when collapsed
     if (isCollapsed) {
-      return header.children.some((child) => child.visibleWhenCollapsed);
+      return header.children.some((child) => child.summaryColumn);
     }
 
     // If not collapsed, has visible children if it has any children

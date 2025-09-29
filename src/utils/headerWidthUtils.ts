@@ -5,7 +5,7 @@ import { getCellId } from "./cellUtils";
 /**
  * Find all leaf headers (headers without children) in a header tree
  * Takes collapsed state into account - when a header is collapsed, only returns
- * children that are marked as visibleWhenCollapsed
+ * children that are marked as summaryColumn
  */
 export const findLeafHeaders = (
   header: HeaderObject,
@@ -23,12 +23,14 @@ export const findLeafHeaders = (
   // If this header is collapsed, only return children that are visible when collapsed
   if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
     return header.children
-      .filter((child) => child.visibleWhenCollapsed)
+      .filter((child) => child.summaryColumn)
       .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
   }
 
-  // If not collapsed, return all leaf headers normally
-  return header.children.flatMap((child) => findLeafHeaders(child, collapsedHeaders));
+  // If not collapsed, return only leaf headers that are NOT marked as summaryColumn
+  return header.children
+    .filter((child) => !child.summaryColumn)
+    .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
 };
 
 /**

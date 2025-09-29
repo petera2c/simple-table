@@ -265,9 +265,10 @@ const SimpleTableComp = ({
     const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
       headers: effectiveHeaders,
       containerWidth,
+      collapsedHeaders,
     });
     return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
-  }, [effectiveHeaders, containerWidth]);
+  }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight });

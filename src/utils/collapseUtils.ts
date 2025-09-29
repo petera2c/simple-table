@@ -25,7 +25,7 @@ export const findParentHeader = (
 };
 
 /**
- * Check if a header should be hidden when its parent is collapsed
+ * Check if a header should be hidden based on its parent's collapsed state
  */
 export const shouldHideWhenParentCollapsed = (
   header: HeaderObject,
@@ -34,9 +34,16 @@ export const shouldHideWhenParentCollapsed = (
 ): boolean => {
   const parentHeader = findParentHeader(headers, header.accessor);
 
-  if (parentHeader && collapsedHeaders.has(parentHeader.accessor)) {
-    // If parent is collapsed, only show if visibleWhenCollapsed is true
-    return !header.visibleWhenCollapsed;
+  if (parentHeader) {
+    const isParentCollapsed = collapsedHeaders.has(parentHeader.accessor);
+
+    if (isParentCollapsed) {
+      // If parent is collapsed, only show if summaryColumn is true
+      return !header.summaryColumn;
+    } else {
+      // If parent is NOT collapsed, only show if summaryColumn is false/undefined
+      return header.summaryColumn === true;
+    }
   }
 
   return false;
@@ -75,5 +82,5 @@ export const getVisibleLeafHeadersWhenCollapsed = (header: HeaderObject): Header
   const leafHeaders = flattenHeaders(header.children);
 
   // Return only those marked as visible when collapsed
-  return leafHeaders.filter((leafHeader) => leafHeader.visibleWhenCollapsed);
+  return leafHeaders.filter((leafHeader) => leafHeader.summaryColumn);
 };

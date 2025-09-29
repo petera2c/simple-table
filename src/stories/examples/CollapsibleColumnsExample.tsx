@@ -11,384 +11,670 @@ export const collapsibleColumnsExampleDefaults = {
   height: "400px",
 };
 
+// Sample data showcasing quarterly sales performance - perfect for collapsible columns
+const SALES_DATA = [
+  {
+    id: 1,
+    name: "Alice Thompson",
+    region: "North America",
+    // Quarterly Sales (detailed breakdown)
+    q1Sales: 245000,
+    q2Sales: 289000,
+    q3Sales: 312000,
+    q4Sales: 298000,
+    // Annual Summary (shows when collapsed)
+    totalSales: 1144000,
+    avgQuarterly: 286000,
+    // Monthly Performance Breakdown
+    jan: 78000,
+    feb: 82000,
+    mar: 85000,
+    apr: 89000,
+    may: 95000,
+    jun: 105000,
+    jul: 98000,
+    aug: 102000,
+    sep: 112000,
+    oct: 108000,
+    nov: 95000,
+    dec: 95000,
+    // Performance Summary (when collapsed)
+    avgMonthly: 95333,
+    bestMonth: 112000,
+    // Product Category Breakdown
+    softwareSales: 456000,
+    hardwareSales: 342000,
+    servicesSales: 346000,
+    // Category Summary (when collapsed)
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 2,
+    name: "Marcus Chen",
+    region: "Asia Pacific",
+    // Quarterly Sales
+    q1Sales: 189000,
+    q2Sales: 234000,
+    q3Sales: 287000,
+    q4Sales: 276000,
+    // Annual Summary
+    totalSales: 986000,
+    avgQuarterly: 246500,
+    // Monthly Performance
+    jan: 58000,
+    feb: 62000,
+    mar: 69000,
+    apr: 72000,
+    may: 78000,
+    jun: 84000,
+    jul: 89000,
+    aug: 95000,
+    sep: 103000,
+    oct: 98000,
+    nov: 89000,
+    dec: 89000,
+    // Performance Summary
+    avgMonthly: 82166,
+    bestMonth: 103000,
+    // Product Categories
+    softwareSales: 398000,
+    hardwareSales: 298000,
+    servicesSales: 290000,
+    // Category Summary
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 3,
+    name: "Sofia Rodriguez",
+    region: "Europe",
+    // Quarterly Sales
+    q1Sales: 198000,
+    q2Sales: 245000,
+    q3Sales: 267000,
+    q4Sales: 289000,
+    // Annual Summary
+    totalSales: 999000,
+    avgQuarterly: 249750,
+    // Monthly Performance
+    jan: 62000,
+    feb: 66000,
+    mar: 70000,
+    apr: 78000,
+    may: 82000,
+    jun: 85000,
+    jul: 85000,
+    aug: 88000,
+    sep: 94000,
+    oct: 96000,
+    nov: 97000,
+    dec: 96000,
+    // Performance Summary
+    avgMonthly: 83250,
+    bestMonth: 97000,
+    // Product Categories
+    softwareSales: 389000,
+    hardwareSales: 312000,
+    servicesSales: 298000,
+    // Category Summary
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 4,
+    name: "David Kim",
+    region: "North America",
+    // Quarterly Sales
+    q1Sales: 167000,
+    q2Sales: 198000,
+    q3Sales: 234000,
+    q4Sales: 267000,
+    // Annual Summary
+    totalSales: 866000,
+    avgQuarterly: 216500,
+    // Monthly Performance
+    jan: 52000,
+    feb: 55000,
+    mar: 60000,
+    apr: 63000,
+    may: 66000,
+    jun: 69000,
+    jul: 75000,
+    aug: 78000,
+    sep: 81000,
+    oct: 87000,
+    nov: 89000,
+    dec: 91000,
+    // Performance Summary
+    avgMonthly: 72166,
+    bestMonth: 91000,
+    // Product Categories
+    softwareSales: 346000,
+    hardwareSales: 267000,
+    servicesSales: 253000,
+    // Category Summary
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 5,
+    name: "Emma Wilson",
+    region: "Australia",
+    // Quarterly Sales
+    q1Sales: 134000,
+    q2Sales: 167000,
+    q3Sales: 198000,
+    q4Sales: 234000,
+    // Annual Summary
+    totalSales: 733000,
+    avgQuarterly: 183250,
+    // Monthly Performance
+    jan: 42000,
+    feb: 45000,
+    mar: 47000,
+    apr: 52000,
+    may: 55000,
+    jun: 60000,
+    jul: 63000,
+    aug: 66000,
+    sep: 69000,
+    oct: 75000,
+    nov: 78000,
+    dec: 81000,
+    // Performance Summary
+    avgMonthly: 61083,
+    bestMonth: 81000,
+    // Product Categories
+    softwareSales: 293000,
+    hardwareSales: 220000,
+    servicesSales: 220000,
+    // Category Summary
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 6,
+    name: "James Anderson",
+    region: "South America",
+    // Quarterly Sales
+    q1Sales: 156000,
+    q2Sales: 178000,
+    q3Sales: 201000,
+    q4Sales: 223000,
+    // Annual Summary
+    totalSales: 758000,
+    avgQuarterly: 189500,
+    // Monthly Performance
+    jan: 48000,
+    feb: 52000,
+    mar: 56000,
+    apr: 58000,
+    may: 60000,
+    jun: 60000,
+    jul: 65000,
+    aug: 67000,
+    sep: 69000,
+    oct: 72000,
+    nov: 75000,
+    dec: 76000,
+    // Performance Summary
+    avgMonthly: 63166,
+    bestMonth: 76000,
+    // Product Categories
+    softwareSales: 303000,
+    hardwareSales: 227000,
+    servicesSales: 228000,
+    // Category Summary
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 7,
+    name: "Lisa Chang",
+    region: "Asia Pacific",
+    q1Sales: 145000,
+    q2Sales: 178000,
+    q3Sales: 201000,
+    q4Sales: 234000,
+    totalSales: 758000,
+    avgQuarterly: 189500,
+    jan: 45000,
+    feb: 48000,
+    mar: 52000,
+    apr: 58000,
+    may: 60000,
+    jun: 60000,
+    jul: 65000,
+    aug: 67000,
+    sep: 69000,
+    oct: 75000,
+    nov: 78000,
+    dec: 81000,
+    avgMonthly: 63166,
+    bestMonth: 81000,
+    softwareSales: 303000,
+    hardwareSales: 227000,
+    servicesSales: 228000,
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 8,
+    name: "Michael Brown",
+    region: "Europe",
+    q1Sales: 178000,
+    q2Sales: 201000,
+    q3Sales: 234000,
+    q4Sales: 256000,
+    totalSales: 869000,
+    avgQuarterly: 217250,
+    jan: 56000,
+    feb: 60000,
+    mar: 62000,
+    apr: 65000,
+    may: 67000,
+    jun: 69000,
+    jul: 75000,
+    aug: 78000,
+    sep: 81000,
+    oct: 83000,
+    nov: 86000,
+    dec: 87000,
+    avgMonthly: 72416,
+    bestMonth: 87000,
+    softwareSales: 347000,
+    hardwareSales: 260000,
+    servicesSales: 262000,
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 9,
+    name: "Sarah Johnson",
+    region: "North America",
+    q1Sales: 201000,
+    q2Sales: 234000,
+    q3Sales: 267000,
+    q4Sales: 289000,
+    totalSales: 991000,
+    avgQuarterly: 247750,
+    jan: 63000,
+    feb: 67000,
+    mar: 71000,
+    apr: 75000,
+    may: 78000,
+    jun: 81000,
+    jul: 85000,
+    aug: 89000,
+    sep: 93000,
+    oct: 95000,
+    nov: 97000,
+    dec: 97000,
+    avgMonthly: 82583,
+    bestMonth: 97000,
+    softwareSales: 396000,
+    hardwareSales: 297000,
+    servicesSales: 298000,
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 10,
+    name: "Robert Davis",
+    region: "Australia",
+    q1Sales: 123000,
+    q2Sales: 145000,
+    q3Sales: 167000,
+    q4Sales: 189000,
+    totalSales: 624000,
+    avgQuarterly: 156000,
+    jan: 38000,
+    feb: 42000,
+    mar: 43000,
+    apr: 46000,
+    may: 48000,
+    jun: 51000,
+    jul: 53000,
+    aug: 56000,
+    sep: 58000,
+    oct: 60000,
+    nov: 63000,
+    dec: 66000,
+    avgMonthly: 52000,
+    bestMonth: 66000,
+    softwareSales: 249000,
+    hardwareSales: 187000,
+    servicesSales: 188000,
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 11,
+    name: "Jennifer Martinez",
+    region: "South America",
+    q1Sales: 134000,
+    q2Sales: 156000,
+    q3Sales: 178000,
+    q4Sales: 201000,
+    totalSales: 669000,
+    avgQuarterly: 167250,
+    jan: 42000,
+    feb: 45000,
+    mar: 47000,
+    apr: 50000,
+    may: 52000,
+    jun: 54000,
+    jul: 57000,
+    aug: 59000,
+    sep: 62000,
+    oct: 65000,
+    nov: 67000,
+    dec: 69000,
+    avgMonthly: 55750,
+    bestMonth: 69000,
+    softwareSales: 267000,
+    hardwareSales: 201000,
+    servicesSales: 201000,
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+  {
+    id: 12,
+    name: "Christopher Lee",
+    region: "Europe",
+    q1Sales: 167000,
+    q2Sales: 189000,
+    q3Sales: 212000,
+    q4Sales: 234000,
+    totalSales: 802000,
+    avgQuarterly: 200500,
+    jan: 52000,
+    feb: 55000,
+    mar: 60000,
+    apr: 61000,
+    may: 63000,
+    jun: 65000,
+    jul: 68000,
+    aug: 71000,
+    sep: 73000,
+    oct: 76000,
+    nov: 78000,
+    dec: 80000,
+    avgMonthly: 66833,
+    bestMonth: 80000,
+    softwareSales: 320000,
+    hardwareSales: 241000,
+    servicesSales: 241000,
+    topCategory: "Software",
+    categoryCount: 3,
+  },
+];
+
+// Define headers showcasing meaningful collapsible scenarios
+const headers: HeaderObject[] = [
+  {
+    accessor: "id",
+    label: "ID",
+    width: 60,
+    isSortable: true,
+  },
+  {
+    accessor: "name",
+    label: "Sales Rep",
+    minWidth: 150,
+    width: "1fr",
+    isSortable: true,
+  },
+  {
+    accessor: "region",
+    label: "Region",
+    width: 140,
+    isSortable: true,
+  },
+
+  // Quarterly Sales - Show total when collapsed, breakdown when expanded
+  {
+    accessor: "quarterlySales",
+    label: "Quarterly Sales",
+    width: 500,
+    collapsible: true,
+    children: [
+      {
+        accessor: "totalSales",
+        label: "Total Sales",
+        width: 140,
+        summaryColumn: true, // Summary view
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.totalSales as number).toLocaleString()}`,
+      },
+      {
+        summaryColumn: false, // Summary view
+        accessor: "q1Sales",
+        label: "Q1",
+        width: 120,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.q1Sales as number).toLocaleString()}`,
+      },
+      {
+        accessor: "q2Sales",
+        label: "Q2",
+        width: 120,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.q2Sales as number).toLocaleString()}`,
+      },
+      {
+        accessor: "q3Sales",
+        label: "Q3",
+        width: 120,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.q3Sales as number).toLocaleString()}`,
+      },
+      {
+        accessor: "q4Sales",
+        label: "Q4",
+        width: 120,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.q4Sales as number).toLocaleString()}`,
+      },
+    ],
+  },
+
+  // Monthly Performance - Show summary when collapsed, all months when expanded
+  {
+    accessor: "monthlyPerformance",
+    label: "Monthly Performance",
+    width: 800,
+    collapsible: true,
+    children: [
+      {
+        accessor: "avgMonthly",
+        label: "Avg Monthly",
+        width: 130,
+        summaryColumn: true, // Summary view
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.avgMonthly as number).toLocaleString()}`,
+      },
+      {
+        accessor: "bestMonth",
+        label: "Best Month",
+        width: 130,
+        summaryColumn: true, // Summary view
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.bestMonth as number).toLocaleString()}`,
+      },
+      {
+        accessor: "jan",
+        label: "Jan",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.jan as number).toLocaleString()}`,
+      },
+      {
+        accessor: "feb",
+        label: "Feb",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.feb as number).toLocaleString()}`,
+      },
+      {
+        accessor: "mar",
+        label: "Mar",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.mar as number).toLocaleString()}`,
+      },
+      {
+        accessor: "apr",
+        label: "Apr",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.apr as number).toLocaleString()}`,
+      },
+      {
+        accessor: "may",
+        label: "May",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.may as number).toLocaleString()}`,
+      },
+      {
+        accessor: "jun",
+        label: "Jun",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.jun as number).toLocaleString()}`,
+      },
+      {
+        accessor: "jul",
+        label: "Jul",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.jul as number).toLocaleString()}`,
+      },
+      {
+        accessor: "aug",
+        label: "Aug",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.aug as number).toLocaleString()}`,
+      },
+      {
+        accessor: "sep",
+        label: "Sep",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.sep as number).toLocaleString()}`,
+      },
+      {
+        accessor: "oct",
+        label: "Oct",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.oct as number).toLocaleString()}`,
+      },
+      {
+        accessor: "nov",
+        label: "Nov",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.nov as number).toLocaleString()}`,
+      },
+      {
+        accessor: "dec",
+        label: "Dec",
+        width: 100,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.dec as number).toLocaleString()}`,
+      },
+    ],
+  },
+
+  // Product Categories - Show top category when collapsed, breakdown when expanded
+  {
+    accessor: "productCategories",
+    label: "Product Categories",
+    width: 450,
+    collapsible: true,
+    children: [
+      {
+        accessor: "topCategory",
+        label: "Top Category",
+        width: 140,
+        summaryColumn: true, // Summary view
+        isSortable: true,
+        type: "string",
+      },
+      {
+        accessor: "softwareSales",
+        label: "Software",
+        width: 130,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.softwareSales as number).toLocaleString()}`,
+      },
+      {
+        accessor: "hardwareSales",
+        label: "Hardware",
+        width: 130,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.hardwareSales as number).toLocaleString()}`,
+      },
+      {
+        accessor: "servicesSales",
+        label: "Services",
+        width: 130,
+        isSortable: true,
+        align: "right",
+        type: "number",
+        cellRenderer: ({ row }) => `$${(row.servicesSales as number).toLocaleString()}`,
+      },
+    ],
+  },
+];
 const CollapsibleColumnsExample = (props: UniversalTableProps) => {
-  // Sample data showcasing different scenarios for collapsible columns
-  const rows = [
-    {
-      id: 1,
-      name: "John Doe",
-      age: 28,
-      email: "john@example.com",
-      phone: "+1-555-0101",
-      // Contact Info
-      address: "123 Main St",
-      city: "New York",
-      zipCode: "10001",
-      // Work Details
-      role: "Senior Developer",
-      department: "Engineering",
-      salary: 95000,
-      startDate: "2020-01-15",
-      // Performance Metrics
-      projectsCompleted: 23,
-      efficiency: 94.2,
-      satisfaction: 4.8,
-      // Skills Assessment
-      technical: 9.1,
-      communication: 8.7,
-      leadership: 7.9,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      age: 32,
-      email: "jane@example.com",
-      phone: "+1-555-0102",
-      // Contact Info
-      address: "456 Oak Ave",
-      city: "San Francisco",
-      zipCode: "94102",
-      // Work Details
-      role: "UX Designer",
-      department: "Design",
-      salary: 88000,
-      startDate: "2019-03-20",
-      // Performance Metrics
-      projectsCompleted: 31,
-      efficiency: 96.8,
-      satisfaction: 4.9,
-      // Skills Assessment
-      technical: 8.4,
-      communication: 9.3,
-      leadership: 8.8,
-    },
-    {
-      id: 3,
-      name: "Bob Johnson",
-      age: 45,
-      email: "bob@example.com",
-      phone: "+1-555-0103",
-      // Contact Info
-      address: "789 Pine Rd",
-      city: "Austin",
-      zipCode: "73301",
-      // Work Details
-      role: "Engineering Manager",
-      department: "Engineering",
-      salary: 125000,
-      startDate: "2018-07-10",
-      // Performance Metrics
-      projectsCompleted: 18,
-      efficiency: 91.5,
-      satisfaction: 4.6,
-      // Skills Assessment
-      technical: 8.9,
-      communication: 9.5,
-      leadership: 9.2,
-    },
-    {
-      id: 4,
-      name: "Alice Williams",
-      age: 24,
-      email: "alice@example.com",
-      phone: "+1-555-0104",
-      // Contact Info
-      address: "321 Elm St",
-      city: "Portland",
-      zipCode: "97201",
-      // Work Details
-      role: "Junior Developer",
-      department: "Engineering",
-      salary: 72000,
-      startDate: "2022-09-01",
-      // Performance Metrics
-      projectsCompleted: 8,
-      efficiency: 87.3,
-      satisfaction: 4.7,
-      // Skills Assessment
-      technical: 7.8,
-      communication: 8.2,
-      leadership: 6.5,
-    },
-    {
-      id: 5,
-      name: "Charlie Brown",
-      age: 37,
-      email: "charlie@example.com",
-      phone: "+1-555-0105",
-      // Contact Info
-      address: "654 Maple Dr",
-      city: "Seattle",
-      zipCode: "98101",
-      // Work Details
-      role: "DevOps Engineer",
-      department: "Engineering",
-      salary: 102000,
-      startDate: "2020-11-12",
-      // Performance Metrics
-      projectsCompleted: 15,
-      efficiency: 93.7,
-      satisfaction: 4.5,
-      // Skills Assessment
-      technical: 9.4,
-      communication: 8.1,
-      leadership: 7.6,
-    },
-  ];
-
-  // Define headers with various collapsible scenarios
-  const headers: HeaderObject[] = [
-    {
-      accessor: "id",
-      label: "ID",
-      width: 60,
-      isSortable: true,
-      filterable: true,
-    },
-    {
-      accessor: "name",
-      label: "Name",
-      minWidth: 120,
-      width: "1fr",
-      isSortable: true,
-      filterable: true,
-    },
-
-    // Scenario 1: Basic Info (one column visible when collapsed)
-    {
-      accessor: "basicInfo",
-      label: "Basic Info",
-      width: 300,
-      collapsible: true,
-      children: [
-        {
-          accessor: "age",
-          label: "Age",
-          width: 80,
-          isSortable: true,
-          filterable: true,
-          visibleWhenCollapsed: true, // This shows when collapsed
-          type: "number",
-        },
-      ],
-    },
-
-    // Scenario 2: Contact Details (multiple columns visible when collapsed)
-    {
-      accessor: "contactDetails",
-      label: "Contact Details",
-      width: 400,
-      collapsible: true,
-      children: [
-        {
-          accessor: "address",
-          label: "Address",
-          width: 180,
-          visibleWhenCollapsed: true, // Visible when collapsed
-          filterable: true,
-          type: "string",
-        },
-        {
-          accessor: "city",
-          label: "City",
-          width: 120,
-          visibleWhenCollapsed: true, // Visible when collapsed
-          isSortable: true,
-          filterable: true,
-          type: "string",
-        },
-        {
-          accessor: "zipCode",
-          label: "Zip Code",
-          width: 100,
-          filterable: true,
-          type: "string",
-        },
-      ],
-    },
-
-    // Scenario 3: Work Info (no columns visible when collapsed - fully collapses)
-    {
-      accessor: "workInfo",
-      label: "Work Information",
-      width: 500,
-      collapsible: true,
-      children: [
-        {
-          accessor: "role",
-          label: "Role",
-          width: 160,
-          isSortable: true,
-          filterable: true,
-          type: "string",
-        },
-        {
-          accessor: "department",
-          label: "Department",
-          width: 120,
-          isSortable: true,
-          filterable: true,
-          type: "string",
-        },
-        {
-          accessor: "salary",
-          label: "Salary",
-          width: 120,
-          isSortable: true,
-          filterable: true,
-          align: "right",
-          type: "number",
-          cellRenderer: ({ row }) => {
-            return `$${(row.salary as number).toLocaleString()}`;
-          },
-        },
-        {
-          accessor: "startDate",
-          label: "Start Date",
-          width: 120,
-          isSortable: true,
-          filterable: true,
-          type: "date",
-        },
-      ],
-    },
-
-    // Scenario 4: Performance (first column visible when collapsed)
-    {
-      accessor: "performance",
-      label: "Performance Metrics",
-      width: 360,
-      collapsible: true,
-      children: [
-        {
-          accessor: "projectsCompleted",
-          label: "Projects",
-          width: 100,
-          visibleWhenCollapsed: true, // Shows key metric when collapsed
-          isSortable: true,
-          filterable: true,
-          align: "center",
-          type: "number",
-        },
-        {
-          accessor: "efficiency",
-          label: "Efficiency %",
-          width: 120,
-          isSortable: true,
-          filterable: true,
-          align: "right",
-          type: "number",
-          cellRenderer: ({ row }) => {
-            const value = row.efficiency as number;
-            const color =
-              value >= 95 ? "text-green-600" : value >= 90 ? "text-yellow-600" : "text-red-600";
-            return <span className={color}>{value.toFixed(1)}%</span>;
-          },
-        },
-        {
-          accessor: "satisfaction",
-          label: "Satisfaction",
-          width: 120,
-          isSortable: true,
-          filterable: true,
-          align: "right",
-          type: "number",
-          cellRenderer: ({ row }) => {
-            const value = row.satisfaction as number;
-            return `${value.toFixed(1)}/5.0`;
-          },
-        },
-      ],
-    },
-
-    // Scenario 5: Skills (all columns visible when collapsed)
-    {
-      accessor: "skills",
-      label: "Skills Assessment",
-      width: 300,
-      collapsible: true,
-      children: [
-        {
-          accessor: "technical",
-          label: "Technical",
-          width: 100,
-          visibleWhenCollapsed: true,
-          isSortable: true,
-          filterable: true,
-          align: "center",
-          type: "number",
-          cellRenderer: ({ row }) => {
-            return (row.technical as number).toFixed(1);
-          },
-        },
-        {
-          accessor: "communication",
-          label: "Communication",
-          width: 120,
-          visibleWhenCollapsed: true,
-          isSortable: true,
-          filterable: true,
-          align: "center",
-          type: "number",
-          cellRenderer: ({ row }) => {
-            return (row.communication as number).toFixed(1);
-          },
-        },
-        {
-          accessor: "leadership",
-          label: "Leadership",
-          width: 100,
-          visibleWhenCollapsed: true,
-          isSortable: true,
-          filterable: true,
-          align: "center",
-          type: "number",
-          cellRenderer: ({ row }) => {
-            return (row.leadership as number).toFixed(1);
-          },
-        },
-      ],
-    },
-  ];
-
-  return (
-    <div>
-      <div
-        style={{
-          padding: "1rem",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "8px",
-          margin: "1rem 0",
-          border: "1px solid #e9ecef",
-        }}
-      >
-        <h3 style={{ margin: "0 0 0.5rem 0", color: "#495057" }}>🔄 Collapsible Columns Demo</h3>
-        <p style={{ margin: 0, fontSize: "0.9rem", color: "#6c757d" }}>
-          Click the <strong>◀</strong> arrow icons in headers to collapse column groups. Different
-          groups show different behaviors when collapsed:
-        </p>
-        <ul style={{ margin: "0.5rem 0 0 1rem", fontSize: "0.85rem", color: "#6c757d" }}>
-          <li>
-            <strong>Basic Info:</strong> Shows Age only when collapsed
-          </li>
-          <li>
-            <strong>Contact Details:</strong> Shows Address & City when collapsed
-          </li>
-          <li>
-            <strong>Work Information:</strong> Fully collapses (no columns visible)
-          </li>
-          <li>
-            <strong>Performance:</strong> Shows Projects count when collapsed
-          </li>
-          <li>
-            <strong>Skills:</strong> Shows all skill ratings when collapsed
-          </li>
-        </ul>
-      </div>
-
-      <SimpleTable {...props} defaultHeaders={headers} rows={rows} rowIdAccessor="id" />
-    </div>
-  );
+  return <SimpleTable {...props} defaultHeaders={headers} rows={SALES_DATA} rowIdAccessor="id" />;
 };
 
 export default CollapsibleColumnsExample;

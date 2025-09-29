@@ -40,26 +40,19 @@ export const createGridTemplateColumns = ({
       if (header.hide) return;
 
       if (header.children && header.children.length > 0) {
-        // If this header is collapsed, only show children marked as visibleWhenCollapsed
+        // If this header is collapsed, only show children marked as summaryColumn
         if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
-          const visibleChildren = header.children.filter((child) => child.visibleWhenCollapsed);
+          const visibleChildren = header.children.filter((child) => child.summaryColumn);
           if (visibleChildren.length > 0) {
             flattenHeaders({ headers: visibleChildren, flattenedHeaders });
           } else {
-            // No visible children when collapsed - use the parent header itself
-            // But first calculate its width from all actual children
-            const allChildren = findLeafHeaders(header);
-            const calculatedWidth = allChildren.reduce((sum, child) => {
-              const childWidth = typeof child.width === "number" ? child.width : 150;
-              return sum + childWidth;
-            }, 0);
-            // Create a temporary header object with calculated width for grid template
-            const headerWithCalculatedWidth = { ...header, width: calculatedWidth };
-            flattenedHeaders.push(headerWithCalculatedWidth);
+            // No visible children when collapsed - use the parent header itself with its own width
+            flattenedHeaders.push(header);
           }
         } else {
-          // If not collapsed, show all children normally
-          flattenHeaders({ headers: header.children, flattenedHeaders });
+          // If not collapsed, show only children that are NOT marked as summaryColumn
+          const childrenToShow = header.children.filter((child) => !child.summaryColumn);
+          flattenHeaders({ headers: childrenToShow, flattenedHeaders });
         }
       } else {
         flattenedHeaders.push(header);
