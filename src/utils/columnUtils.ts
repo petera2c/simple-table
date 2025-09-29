@@ -38,7 +38,7 @@ export const createGridTemplateColumns = ({
     headers.forEach((header) => {
       if (header.hide) return;
 
-      if (header.children) {
+      if (header.children && header.children.length > 0) {
         // If this header is collapsed, only show children marked as visibleWhenCollapsed
         if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
           const visibleChildren = header.children.filter((child) => child.visibleWhenCollapsed);

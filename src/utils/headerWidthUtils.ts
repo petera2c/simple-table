@@ -67,7 +67,7 @@ export const removeAllFractionalWidths = (header: HeaderObject): void => {
       document.getElementById(getCellId({ accessor: header.accessor, rowId: "header" }))
         ?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
-  if (header.children) {
+  if (header.children && header.children.length > 0) {
     header.children.forEach((child) => {
       removeAllFractionalWidths(child);
     });

@@ -67,7 +67,7 @@ const TableHeaderSection = ({
       });
 
       // Process children if any
-      if (header.children) {
+      if (header.children && header.children.length > 0) {
         let isFirstChild = true;
         header.children.forEach((child) => {
           if (displayCell({ header: child, pinned, headers, collapsedHeaders })) {

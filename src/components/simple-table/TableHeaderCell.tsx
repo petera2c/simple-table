@@ -154,7 +154,7 @@ const TableHeaderCell = ({
   } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
     clickable ? "clickable" : ""
   } ${columnReordering && !clickable ? "columnReordering" : ""} ${
-    header.children ? "parent" : ""
+    header.children && header.children.length > 0 ? "parent" : ""
   } ${isLastColumnInSection ? "st-last-column" : ""} ${
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : ""
   } ${isHeaderSelected ? "st-header-selected" : ""} ${

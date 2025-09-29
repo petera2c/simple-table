@@ -86,7 +86,7 @@ const RecursiveRenderCells = ({
   // Calculate rowId once at the beginning
   const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
 
-  if (header.children) {
+  if (header.children && header.children.length > 0) {
     const filteredChildren = header.children.filter((child) =>
       displayCell({ header: child, pinned, headers, collapsedHeaders })
     );

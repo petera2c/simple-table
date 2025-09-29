@@ -170,22 +170,6 @@ const CollapsibleColumnsExample = (props: UniversalTableProps) => {
           visibleWhenCollapsed: true, // This shows when collapsed
           type: "number",
         },
-        {
-          accessor: "email",
-          label: "Email",
-          width: 200,
-          isSortable: true,
-          filterable: true,
-          type: "string",
-        },
-        {
-          accessor: "phone",
-          label: "Phone",
-          width: 140,
-          isSortable: true,
-          filterable: true,
-          type: "string",
-        },
       ],
     },
 

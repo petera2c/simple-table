@@ -90,8 +90,8 @@ export const handleResizeStart = ({
   // Get the minimum width for this header
   const minWidth = getHeaderMinWidth(header);
 
-  // Get all leaf headers if this is a parent header, considering collapsed state
-  const isParentHeader = gridColumnEnd - gridColumnStart > 1;
+  // Check if this is a parent header by looking at whether it has children
+  const isParentHeader = header.children && header.children.length > 0;
   const leafHeaders = isParentHeader ? findLeafHeaders(header, collapsedHeaders) : [header];
 
   const handleMove = (clientX: number) => {
@@ -103,6 +103,7 @@ export const handleResizeStart = ({
     const maxWidth = calculateMaxHeaderWidth({ header, headers });
 
     if (isParentHeader && leafHeaders.length > 1) {
+      // For parents with multiple children, distribute width proportionally
       handleParentHeaderResize({
         delta,
         leafHeaders,
@@ -110,19 +111,21 @@ export const handleResizeStart = ({
         startWidth,
         maxWidth,
       });
+    } else if (isParentHeader && leafHeaders.length === 1) {
+      // For parents with exactly one child, update the child's width directly
+      const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
+      leafHeaders[0].width = newWidth;
     } else {
-      // For leaf headers or parents with only one leaf, just adjust the width directly
+      // For true leaf headers (no children), adjust the header's own width
       const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
       header.width = newWidth;
     }
-    console.log(header);
 
     // After a header is resized, update any headers that use fractional widths
     headers.forEach((header) => {
       removeAllFractionalWidths(header);
     });
     const newHeaders = [...headers];
-    console.log(newHeaders);
     setHeaders(newHeaders);
   };
 
