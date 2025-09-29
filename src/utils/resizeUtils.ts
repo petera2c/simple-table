@@ -97,7 +97,6 @@ export const handleResizeStart = ({
   // - For parents: always resize actual leaf children (not just visible ones)
   // - For leaf headers: resize the header itself
   const childrenToResize = isParentHeader ? findLeafHeaders(header) : [header];
-  console.log(childrenToResize);
 
   const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
@@ -129,7 +128,6 @@ export const handleResizeStart = ({
     });
 
     const newHeaders = [...headers];
-    console.log(newHeaders);
     setHeaders(newHeaders);
   };
 
