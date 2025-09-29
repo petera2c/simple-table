@@ -66,9 +66,11 @@ interface SimpleTableProps {
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
   expandAll?: boolean; // Flag for expanding all rows by default
-  expandIcon?: ReactNode; // Icon for expandable rows (will rotate on expand/collapse)
+  expandIcon?: ReactNode; // Icon for expanded state (used in expandable rows)
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
+  headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
+  headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
@@ -131,6 +133,8 @@ const SimpleTableComp = ({
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   externalFilterHandling = false,
   externalSortHandling = false,
+  headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
+  headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
   headerDropdown,
   height,
   hideFooter = false,
@@ -440,7 +444,10 @@ const SimpleTableComp = ({
         handleRowSelect,
         handleSelectAll,
         handleToggleRow,
+        headerCollapseIcon,
         headerContainerRef,
+        headerDropdown,
+        headerExpandIcon,
         headerRegistry: headerRegistryRef.current,
         headers: effectiveHeaders,
         hoveredHeaderRef,
@@ -496,7 +503,6 @@ const SimpleTableComp = ({
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,
-        headerDropdown,
         activeHeaderDropdown,
         setActiveHeaderDropdown,
         onHeaderEdit,

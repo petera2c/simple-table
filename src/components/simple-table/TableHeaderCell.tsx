@@ -26,8 +26,6 @@ import Checkbox from "../Checkbox";
 import StringEdit from "./editable-cells/StringEdit";
 import useDropdownPosition from "../../hooks/useDropdownPosition";
 import { hasCollapsibleChildren } from "../../utils/collapseUtils";
-import AngleRightIcon from "../../icons/AngleRightIcon";
-import AngleLeftIcon from "../../icons/AngleLeftIcon";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -71,7 +69,9 @@ const TableHeaderCell = ({
     handleApplyFilter,
     handleClearFilter,
     handleSelectAll,
+    headerCollapseIcon,
     headerDropdown,
+    headerExpandIcon,
     headerRegistry,
     headers,
     hoveredHeaderRef,
@@ -504,11 +504,7 @@ const TableHeaderCell = ({
 
   const CollapseIconComponent = isCollapsible && !isSelectionColumn && (
     <div className="st-icon-container st-collapse-icon-container" onClick={handleCollapseToggle}>
-      {isCollapsed ? (
-        <AngleRightIcon className="st-header-icon st-collapse-icon" />
-      ) : (
-        <AngleLeftIcon className="st-header-icon st-collapse-icon" />
-      )}
+      {isCollapsed ? headerCollapseIcon : headerExpandIcon}
     </div>
   );
 

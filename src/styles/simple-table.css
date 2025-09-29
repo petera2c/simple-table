@@ -1114,6 +1114,10 @@ input {
   margin-left: 4px;
 }
 
+.st-collapse-icon-container {
+  cursor: pointer;
+}
+
 .st-expand-icon {
   cursor: pointer;
   fill: var(--st-header-label-color);
