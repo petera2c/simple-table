@@ -56,8 +56,10 @@ interface TableContextType {
   handleRowSelect?: (rowId: string, isSelected: boolean) => void;
   handleSelectAll?: (isSelected: boolean) => void;
   handleToggleRow?: (rowId: string) => void;
+  headerCollapseIcon?: ReactNode;
   headerContainerRef: RefObject<HTMLDivElement>;
   headerDropdown?: HeaderDropdown;
+  headerExpandIcon?: ReactNode;
   headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
