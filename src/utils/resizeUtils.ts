@@ -143,6 +143,11 @@ export const handleResizeStart = ({
     headers.forEach((header) => {
       removeAllFractionalWidths(header);
     });
+
+    // Update parent widths based on their children's total width
+    // This ensures parent width stays in sync when children are resized
+    updateParentWidths(headers);
+
     const newHeaders = [...headers];
     console.log(newHeaders);
     setHeaders(newHeaders);
@@ -283,4 +288,28 @@ export const recalculateAllSectionWidths = ({
     rightWidth: totalPinnedRightWidth,
     mainWidth,
   };
+};
+
+/**
+ * Update parent header widths to match the total width of their children
+ * This ensures parent width stays in sync when children are resized
+ */
+const updateParentWidths = (headers: HeaderObject[]): void => {
+  headers.forEach((header) => {
+    // Only update headers that have children
+    if (header.children && header.children.length > 0) {
+      // Calculate total width of all children (regardless of visibility)
+      const allChildren = findLeafHeaders(header); // Get all actual children
+      const totalChildrenWidth = allChildren.reduce((sum, child) => {
+        const childWidth = typeof child.width === "number" ? child.width : 0;
+        return sum + childWidth;
+      }, 0);
+
+      // Update parent width to match children total
+      header.width = totalChildrenWidth;
+
+      // Recursively update nested parents
+      updateParentWidths(header.children);
+    }
+  });
 };
