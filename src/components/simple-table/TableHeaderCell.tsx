@@ -420,6 +420,7 @@ const TableHeaderCell = ({
             setHeaders,
             setIsResizing,
             startWidth,
+            collapsedHeaders,
           } as HandleResizeStartProps,
           limit: 10,
         });
@@ -441,6 +442,7 @@ const TableHeaderCell = ({
             setHeaders,
             setIsResizing,
             startWidth,
+            collapsedHeaders,
           } as HandleResizeStartProps,
           limit: 10,
         });

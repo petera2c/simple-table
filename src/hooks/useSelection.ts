@@ -15,6 +15,7 @@ interface UseSelectionProps {
   rowIdAccessor: Accessor;
   onCellEdit?: (props: any) => void;
   cellRegistry?: Map<string, any>;
+  collapsedHeaders?: Set<Accessor>;
 }
 
 const useSelection = ({
@@ -24,6 +25,7 @@ const useSelection = ({
   rowIdAccessor,
   onCellEdit,
   cellRegistry,
+  collapsedHeaders,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
@@ -83,8 +85,8 @@ const useSelection = ({
 
   // Get flattened leaf headers (actual navigable columns) for proper boundary checking
   const leafHeaders = useMemo(() => {
-    return headers.flatMap(findLeafHeaders);
-  }, [headers]);
+    return headers.flatMap((header) => findLeafHeaders(header, collapsedHeaders));
+  }, [headers, collapsedHeaders]);
 
   const copyToClipboard = useCallback(() => {
     // Use the already flattened leaf headers

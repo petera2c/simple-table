@@ -1,5 +1,5 @@
 import { Dispatch, RefObject, SetStateAction, TouchEvent } from "react";
-import { HeaderObject } from "..";
+import { HeaderObject, Accessor } from "..";
 
 export type HandleResizeStartProps = {
   event: MouseEvent | TouchEvent;
@@ -14,4 +14,5 @@ export type HandleResizeStartProps = {
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   startWidth: number;
+  collapsedHeaders: Set<Accessor>;
 };

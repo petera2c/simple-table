@@ -76,6 +76,7 @@ export const handleResizeStart = ({
   setHeaders,
   setIsResizing,
   startWidth,
+  collapsedHeaders,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
   const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
@@ -89,9 +90,9 @@ export const handleResizeStart = ({
   // Get the minimum width for this header
   const minWidth = getHeaderMinWidth(header);
 
-  // Get all leaf headers if this is a parent header
+  // Get all leaf headers if this is a parent header, considering collapsed state
   const isParentHeader = gridColumnEnd - gridColumnStart > 1;
-  const leafHeaders = isParentHeader ? findLeafHeaders(header) : [header];
+  const leafHeaders = isParentHeader ? findLeafHeaders(header, collapsedHeaders) : [header];
 
   const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
@@ -114,12 +115,14 @@ export const handleResizeStart = ({
       const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
       header.width = newWidth;
     }
+    console.log(header);
 
     // After a header is resized, update any headers that use fractional widths
     headers.forEach((header) => {
       removeAllFractionalWidths(header);
     });
     const newHeaders = [...headers];
+    console.log(newHeaders);
     setHeaders(newHeaders);
   };
 

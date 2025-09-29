@@ -355,6 +355,7 @@ const SimpleTableComp = ({
     rowIdAccessor,
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
+    collapsedHeaders,
   });
 
   // Memoize handlers

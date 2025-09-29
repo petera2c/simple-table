@@ -1,4 +1,4 @@
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 
 const getColumnWidth = (header: HeaderObject) => {
   let { minWidth, width } = header;
@@ -20,8 +20,14 @@ const getColumnWidth = (header: HeaderObject) => {
   return width;
 };
 
-export const createGridTemplateColumns = ({ headers }: { headers: HeaderObject[] }) => {
-  // We only care about the most children headers to create the grid template columns
+export const createGridTemplateColumns = ({
+  headers,
+  collapsedHeaders,
+}: {
+  headers: HeaderObject[];
+  collapsedHeaders?: Set<Accessor>;
+}) => {
+  // We only care about the leaf headers that are actually visible to create the grid template columns
   const flattenHeaders = ({
     headers,
     flattenedHeaders,
@@ -31,8 +37,16 @@ export const createGridTemplateColumns = ({ headers }: { headers: HeaderObject[]
   }): HeaderObject[] => {
     headers.forEach((header) => {
       if (header.hide) return;
+
       if (header.children) {
-        flattenHeaders({ headers: header.children, flattenedHeaders });
+        // If this header is collapsed, only show children marked as visibleWhenCollapsed
+        if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
+          const visibleChildren = header.children.filter((child) => child.visibleWhenCollapsed);
+          flattenHeaders({ headers: visibleChildren, flattenedHeaders });
+        } else {
+          // If not collapsed, show all children normally
+          flattenHeaders({ headers: header.children, flattenedHeaders });
+        }
       } else {
         flattenedHeaders.push(header);
       }

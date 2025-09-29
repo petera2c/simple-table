@@ -154,15 +154,6 @@ export const ClayExample: StoryObj<UniversalTableProps> = {
     React.createElement(StoryWrapper, { ExampleComponent: ClayExampleComponent, ...args }),
 };
 
-export const DynamicHeaders: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...dynamicHeadersDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: DynamicHeadersExample, ...args }),
-};
 export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -171,6 +162,16 @@ export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: CollapsibleColumnsExample, ...args }),
+};
+
+export const DynamicHeaders: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...dynamicHeadersDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: DynamicHeadersExample, ...args }),
 };
 export const EditableCells: StoryObj<UniversalTableProps> = {
   args: {
