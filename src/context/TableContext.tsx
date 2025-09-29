@@ -36,6 +36,7 @@ interface TableContextType {
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;
   clearSelection?: () => void;
+  collapsedHeaders: Set<Accessor>;
   columnBorders: boolean;
   columnReordering: boolean;
   columnResizing: boolean;
@@ -95,6 +96,7 @@ interface TableContextType {
   selectedRowCount?: number;
   selectedRowsData?: any[];
   setActiveHeaderDropdown?: Dispatch<SetStateAction<HeaderObject | null>>;
+  setCollapsedHeaders: Dispatch<SetStateAction<Set<Accessor>>>;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;

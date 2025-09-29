@@ -16,6 +16,7 @@ type HeaderObject = {
   align?: "left" | "center" | "right";
   cellRenderer?: CellRenderer;
   children?: HeaderObject[];
+  collapsible?: boolean; // This is used to determine if the column is collapsible
   disableReorder?: boolean;
   enumOptions?: EnumOption[];
   expandable?: boolean;
@@ -29,6 +30,7 @@ type HeaderObject = {
   minWidth?: number | string;
   pinned?: Pinned;
   type?: ColumnType;
+  visibleWhenCollapsed?: boolean; // Shows this child column when parent is collapsed
   width: number | string;
   maxWidth?: number | string;
 };

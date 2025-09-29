@@ -23,6 +23,7 @@ const TableBody = ({
 }: TableBodyProps) => {
   // Get stable props from context
   const {
+    collapsedHeaders,
     headerContainerRef,
     headers,
     isAnimating,
@@ -78,8 +79,9 @@ const TableBody = ({
       headers,
       pinnedLeftColumns,
       pinnedRightColumns,
+      collapsedHeaders,
     });
-  }, [headers, pinnedLeftColumns, pinnedRightColumns]);
+  }, [headers, pinnedLeftColumns, pinnedRightColumns, collapsedHeaders]);
 
   // Calculate row indices for all visible rows
   const rowIndices = useMemo(() => {

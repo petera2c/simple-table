@@ -127,9 +127,7 @@ const RowSelectionExample = (props: UniversalTableProps) => {
     setSelectedRowsInfo(selectedRowsArray);
   };
 
-  const handleCellClick = ({ row, colIndex, accessor, value }: CellClickProps) => {
-    console.log("Cell clicked:", { row, colIndex, accessor, value });
-  };
+  const handleCellClick = ({ row, colIndex, accessor, value }: CellClickProps) => {};
 
   // Define headers
   const headers: HeaderObject[] = [

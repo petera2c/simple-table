@@ -1,11 +1,16 @@
-import { HeaderObject } from "..";
+import { HeaderObject, Accessor } from "..";
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
 import { getCellId } from "./cellUtils";
 
 /**
  * Find all leaf headers (headers without children) in a header tree
+ * Takes collapsed state into account - when a header is collapsed, only returns
+ * children that are marked as visibleWhenCollapsed
  */
-export const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
+export const findLeafHeaders = (
+  header: HeaderObject,
+  collapsedHeaders?: Set<Accessor>
+): HeaderObject[] => {
   // Skip hidden headers
   if (header.hide) {
     return [];
@@ -15,7 +20,15 @@ export const findLeafHeaders = (header: HeaderObject): HeaderObject[] => {
     return [header];
   }
 
-  return header.children.flatMap((child) => findLeafHeaders(child));
+  // If this header is collapsed, only return children that are visible when collapsed
+  if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
+    return header.children
+      .filter((child) => child.visibleWhenCollapsed)
+      .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
+  }
+
+  // If not collapsed, return all leaf headers normally
+  return header.children.flatMap((child) => findLeafHeaders(child, collapsedHeaders));
 };
 
 /**
@@ -54,7 +67,7 @@ export const removeAllFractionalWidths = (header: HeaderObject): void => {
       document.getElementById(getCellId({ accessor: header.accessor, rowId: "header" }))
         ?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
-  if (header.children) {
+  if (header.children && header.children.length > 0) {
     header.children.forEach((child) => {
       removeAllFractionalWidths(child);
     });

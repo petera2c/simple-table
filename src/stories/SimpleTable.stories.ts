@@ -7,6 +7,9 @@ import BasicExampleComponent from "./examples/BasicExample";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";
 import CellRendererExample from "./examples/CellRenderer";
+import CollapsibleColumnsExample, {
+  collapsibleColumnsExampleDefaults,
+} from "./examples/CollapsibleColumnsExample";
 import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import EditableCellsExample from "./examples/EditableCells";
 import ExternalSortExample, { externalSortExampleDefaults } from "./examples/ExternalSortExample";
@@ -149,6 +152,16 @@ export const ClayExample: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: ClayExampleComponent, ...args }),
+};
+
+export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...collapsibleColumnsExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CollapsibleColumnsExample, ...args }),
 };
 
 export const DynamicHeaders: StoryObj<UniversalTableProps> = {

@@ -23,7 +23,7 @@ const TableHeader = ({
   pinnedLeftWidth,
   pinnedRightWidth,
 }: TableHeaderProps) => {
-  const { headerContainerRef, pinnedLeftRef, pinnedRightRef } = useTableContext();
+  const { headerContainerRef, pinnedLeftRef, pinnedRightRef, collapsedHeaders } = useTableContext();
 
   // Calculate column indices for all headers to ensure consistent colIndex values
   const columnIndices = useMemo(() => {
@@ -31,19 +31,21 @@ const TableHeader = ({
       headers,
       pinnedLeftColumns,
       pinnedRightColumns,
+      collapsedHeaders,
     });
-  }, [headers, pinnedLeftColumns, pinnedRightColumns]);
+  }, [headers, pinnedLeftColumns, pinnedRightColumns, collapsedHeaders]);
 
   const { maxDepth } = useMemo(() => {
     let maxDepth = 0;
+    const allHeaders = [...pinnedLeftColumns, ...headers, ...pinnedRightColumns];
     headers.forEach((header) => {
-      if (displayCell({ header })) {
+      if (displayCell({ header, headers: allHeaders, collapsedHeaders })) {
         const depth = getHeaderDepth(header);
         maxDepth = Math.max(maxDepth, depth);
       }
     });
     return { maxDepth };
-  }, [headers]);
+  }, [headers, pinnedLeftColumns, pinnedRightColumns, collapsedHeaders]);
 
   return (
     <div className="st-header-container" ref={headerContainerRef}>

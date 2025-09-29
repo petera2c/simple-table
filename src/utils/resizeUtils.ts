@@ -76,6 +76,7 @@ export const handleResizeStart = ({
   setHeaders,
   setIsResizing,
   startWidth,
+  collapsedHeaders,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
   const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
@@ -89,9 +90,13 @@ export const handleResizeStart = ({
   // Get the minimum width for this header
   const minWidth = getHeaderMinWidth(header);
 
-  // Get all leaf headers if this is a parent header
-  const isParentHeader = gridColumnEnd - gridColumnStart > 1;
-  const leafHeaders = isParentHeader ? findLeafHeaders(header) : [header];
+  // Always work with leaf children - they are the single source of truth for widths
+  const isParentHeader = header.children && header.children.length > 0;
+
+  // Get the children that should be resized:
+  // - For parents: always resize actual leaf children (not just visible ones)
+  // - For leaf headers: resize the header itself
+  const childrenToResize = isParentHeader ? findLeafHeaders(header) : [header];
 
   const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
@@ -101,24 +106,27 @@ export const handleResizeStart = ({
     // Calculate maximum allowable width based on container constraints
     const maxWidth = calculateMaxHeaderWidth({ header, headers });
 
-    if (isParentHeader && leafHeaders.length > 1) {
+    // Simplified logic: always resize the leaf children (single source of truth)
+    if (childrenToResize.length > 1) {
+      // Multiple children: distribute width proportionally
       handleParentHeaderResize({
         delta,
-        leafHeaders,
+        leafHeaders: childrenToResize,
         minWidth,
         startWidth,
         maxWidth,
       });
     } else {
-      // For leaf headers or parents with only one leaf, just adjust the width directly
+      // Single child (or leaf header): direct resize
       const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
-      header.width = newWidth;
+      childrenToResize[0].width = newWidth;
     }
 
     // After a header is resized, update any headers that use fractional widths
     headers.forEach((header) => {
       removeAllFractionalWidths(header);
     });
+
     const newHeaders = [...headers];
     setHeaders(newHeaders);
   };

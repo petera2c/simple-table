@@ -27,7 +27,7 @@ const TableContent = ({
   rowsToRender,
 }: TableContentLocalProps) => {
   // Get stable props from context
-  const { columnResizing, editColumns, headers } = useTableContext();
+  const { columnResizing, editColumns, headers, collapsedHeaders } = useTableContext();
 
   // Refs
   const centerHeaderRef = useRef<HTMLDivElement>(null);
@@ -39,14 +39,14 @@ const TableContent = ({
   const pinnedRightColumns = headers.filter((header) => header.pinned === "right");
 
   const pinnedLeftTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: pinnedLeftColumns });
-  }, [pinnedLeftColumns]);
+    return createGridTemplateColumns({ headers: pinnedLeftColumns, collapsedHeaders });
+  }, [pinnedLeftColumns, collapsedHeaders]);
   const mainTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: currentHeaders });
-  }, [currentHeaders]);
+    return createGridTemplateColumns({ headers: currentHeaders, collapsedHeaders });
+  }, [currentHeaders, collapsedHeaders]);
   const pinnedRightTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: pinnedRightColumns });
-  }, [pinnedRightColumns]);
+    return createGridTemplateColumns({ headers: pinnedRightColumns, collapsedHeaders });
+  }, [pinnedRightColumns, collapsedHeaders]);
 
   const tableHeaderProps: TableHeaderProps = {
     centerHeaderRef,
