@@ -93,6 +93,10 @@ export const handleResizeStart = ({
   // Check if this is a parent header by looking at whether it has children
   const isParentHeader = header.children && header.children.length > 0;
   const leafHeaders = isParentHeader ? findLeafHeaders(header, collapsedHeaders) : [header];
+
+  // For collapsed parents with no visible children, we need to resize all actual children
+  const isCollapsedWithNoVisibleChildren = isParentHeader && leafHeaders.length === 0;
+  const allActualChildren = isCollapsedWithNoVisibleChildren ? findLeafHeaders(header) : [];
   console.log(leafHeaders);
 
   const handleMove = (clientX: number) => {
@@ -103,7 +107,20 @@ export const handleResizeStart = ({
     // Calculate maximum allowable width based on container constraints
     const maxWidth = calculateMaxHeaderWidth({ header, headers });
 
-    if (isParentHeader && leafHeaders.length > 1) {
+    if (isCollapsedWithNoVisibleChildren) {
+      // Special case: collapsed parent with no visible children
+      // Distribute the width change to all actual children (so when expanded, total width is correct)
+      handleParentHeaderResize({
+        delta,
+        leafHeaders: allActualChildren,
+        minWidth,
+        startWidth,
+        maxWidth,
+      });
+      // Also update parent width for the current collapsed display
+      const newParentWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
+      header.width = newParentWidth;
+    } else if (isParentHeader && leafHeaders.length > 1) {
       // For parents with multiple children, distribute width proportionally
       handleParentHeaderResize({
         delta,
