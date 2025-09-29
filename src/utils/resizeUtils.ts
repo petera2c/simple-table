@@ -90,14 +90,14 @@ export const handleResizeStart = ({
   // Get the minimum width for this header
   const minWidth = getHeaderMinWidth(header);
 
-  // Check if this is a parent header by looking at whether it has children
+  // Always work with leaf children - they are the single source of truth for widths
   const isParentHeader = header.children && header.children.length > 0;
-  const leafHeaders = isParentHeader ? findLeafHeaders(header, collapsedHeaders) : [header];
 
-  // For collapsed parents with no visible children, we need to resize all actual children
-  const isCollapsedWithNoVisibleChildren = isParentHeader && leafHeaders.length === 0;
-  const allActualChildren = isCollapsedWithNoVisibleChildren ? findLeafHeaders(header) : [];
-  console.log(leafHeaders);
+  // Get the children that should be resized:
+  // - For parents: always resize actual leaf children (not just visible ones)
+  // - For leaf headers: resize the header itself
+  const childrenToResize = isParentHeader ? findLeafHeaders(header) : [header];
+  console.log(childrenToResize);
 
   const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
@@ -107,46 +107,26 @@ export const handleResizeStart = ({
     // Calculate maximum allowable width based on container constraints
     const maxWidth = calculateMaxHeaderWidth({ header, headers });
 
-    if (isCollapsedWithNoVisibleChildren) {
-      // Special case: collapsed parent with no visible children
-      // Distribute the width change to all actual children (so when expanded, total width is correct)
+    // Simplified logic: always resize the leaf children (single source of truth)
+    if (childrenToResize.length > 1) {
+      // Multiple children: distribute width proportionally
       handleParentHeaderResize({
         delta,
-        leafHeaders: allActualChildren,
+        leafHeaders: childrenToResize,
         minWidth,
         startWidth,
         maxWidth,
       });
-      // Also update parent width for the current collapsed display
-      const newParentWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
-      header.width = newParentWidth;
-    } else if (isParentHeader && leafHeaders.length > 1) {
-      // For parents with multiple children, distribute width proportionally
-      handleParentHeaderResize({
-        delta,
-        leafHeaders,
-        minWidth,
-        startWidth,
-        maxWidth,
-      });
-    } else if (isParentHeader && leafHeaders.length === 1) {
-      // For parents with exactly one child, update the child's width directly
-      const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
-      leafHeaders[0].width = newWidth;
     } else {
-      // For true leaf headers (no children), adjust the header's own width
+      // Single child (or leaf header): direct resize
       const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
-      header.width = newWidth;
+      childrenToResize[0].width = newWidth;
     }
 
     // After a header is resized, update any headers that use fractional widths
     headers.forEach((header) => {
       removeAllFractionalWidths(header);
     });
-
-    // Update parent widths based on their children's total width
-    // This ensures parent width stays in sync when children are resized
-    updateParentWidths(headers);
 
     const newHeaders = [...headers];
     console.log(newHeaders);
@@ -288,28 +268,4 @@ export const recalculateAllSectionWidths = ({
     rightWidth: totalPinnedRightWidth,
     mainWidth,
   };
-};
-
-/**
- * Update parent header widths to match the total width of their children
- * This ensures parent width stays in sync when children are resized
- */
-const updateParentWidths = (headers: HeaderObject[]): void => {
-  headers.forEach((header) => {
-    // Only update headers that have children
-    if (header.children && header.children.length > 0) {
-      // Calculate total width of all children (regardless of visibility)
-      const allChildren = findLeafHeaders(header); // Get all actual children
-      const totalChildrenWidth = allChildren.reduce((sum, child) => {
-        const childWidth = typeof child.width === "number" ? child.width : 0;
-        return sum + childWidth;
-      }, 0);
-
-      // Update parent width to match children total
-      header.width = totalChildrenWidth;
-
-      // Recursively update nested parents
-      updateParentWidths(header.children);
-    }
-  });
 };

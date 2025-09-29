@@ -1,4 +1,5 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
+import { findLeafHeaders } from "./headerWidthUtils";
 
 const getColumnWidth = (header: HeaderObject) => {
   let { minWidth, width } = header;
@@ -46,7 +47,15 @@ export const createGridTemplateColumns = ({
             flattenHeaders({ headers: visibleChildren, flattenedHeaders });
           } else {
             // No visible children when collapsed - use the parent header itself
-            flattenedHeaders.push(header);
+            // But first calculate its width from all actual children
+            const allChildren = findLeafHeaders(header);
+            const calculatedWidth = allChildren.reduce((sum, child) => {
+              const childWidth = typeof child.width === "number" ? child.width : 150;
+              return sum + childWidth;
+            }, 0);
+            // Create a temporary header object with calculated width for grid template
+            const headerWithCalculatedWidth = { ...header, width: calculatedWidth };
+            flattenedHeaders.push(headerWithCalculatedWidth);
           }
         } else {
           // If not collapsed, show all children normally
