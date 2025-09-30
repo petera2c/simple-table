@@ -116,7 +116,7 @@ const SimpleTable = (props: SimpleTableProps) => {
 };
 
 const SimpleTableComp = ({
-  allowAnimations = false,
+  allowAnimations = true,
   cellUpdateFlash = false,
   className,
   columnBorders = false,

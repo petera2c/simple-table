@@ -2,36 +2,14 @@ import CellValue from "../../types/CellValue";
 import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from "./types";
 
 /**
- * Check if user prefers reduced motion
- */
-export const prefersReducedMotion = (): boolean => {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-};
-
-/**
  * Animation configs for different types of movements
  */
 export const ANIMATION_CONFIGS = {
-  // For column reordering (horizontal movement)
-  COLUMN_REORDER: {
-    // duration: 3000,
-    duration: 180,
-    easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
-    delay: 0,
-  },
   // For row reordering (vertical movement)
   ROW_REORDER: {
     // duration: 3000,
-    duration: 200,
+    duration: 500,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
-    delay: 0,
-  },
-  // For reduced motion users
-  REDUCED_MOTION: {
-    // duration: 3000,
-    duration: 150, // Even faster for reduced motion
-    easing: "ease-out",
     delay: 0,
   },
 } as const;
@@ -42,11 +20,7 @@ export const ANIMATION_CONFIGS = {
 export const createAnimationConfig = (
   overrides: Partial<AnimationConfig> = {}
 ): AnimationConfig => {
-  const baseConfig = prefersReducedMotion()
-    ? ANIMATION_CONFIGS.REDUCED_MOTION
-    : ANIMATION_CONFIGS.ROW_REORDER; // Default to row reorder as it's more common in tables
-
-  return { ...baseConfig, ...overrides };
+  return { ...ANIMATION_CONFIGS.ROW_REORDER, ...overrides };
 };
 
 /**
@@ -142,23 +116,7 @@ const animateToFinalPosition = (
 /**
  * Get appropriate animation config based on movement type and user preferences
  */
-export const getAnimationConfig = (
-  options: FlipAnimationOptions = {},
-  movementType?: "column" | "row"
-): AnimationConfig => {
-  // Check for user's motion preferences first
-  if (prefersReducedMotion()) {
-    return { ...ANIMATION_CONFIGS.REDUCED_MOTION, ...options };
-  }
-
-  // Use specific config based on movement type
-  if (movementType === "column") {
-    return { ...ANIMATION_CONFIGS.COLUMN_REORDER, ...options };
-  }
-  if (movementType === "row") {
-    return { ...ANIMATION_CONFIGS.ROW_REORDER, ...options };
-  }
-
+export const getAnimationConfig = (options: FlipAnimationOptions = {}): AnimationConfig => {
   // Fall back to default config
   return { ...ANIMATION_CONFIGS.ROW_REORDER, ...options };
 };
@@ -186,17 +144,8 @@ export const flipElement = async ({
     return;
   }
 
-  // Skip animation entirely if user prefers reduced motion and no explicit override
-  if (prefersReducedMotion() && finalConfig.respectReducedMotion !== false) {
-    return;
-  }
-
-  // Determine movement type based on the invert values
-  const isColumnMovement = Math.abs(invert.x) > Math.abs(invert.y);
-  const movementType = isColumnMovement ? "column" : "row";
-
   // Get appropriate config based on movement type and user preferences
-  const config = getAnimationConfig(finalConfig, movementType);
+  const config = getAnimationConfig(finalConfig);
 
   // Clean up any existing animation before starting a new one
   cleanupAnimation(element);
@@ -230,17 +179,6 @@ export const animateWithCustomCoordinates = async ({
     onComplete,
     respectReducedMotion = true,
   } = options;
-
-  // Skip animation entirely if user prefers reduced motion and no explicit override
-  if (prefersReducedMotion() && respectReducedMotion) {
-    // Jump directly to final position if specified
-    if (finalY !== undefined) {
-      element.style.transform = "";
-      element.style.top = `${finalY}px`;
-    }
-    if (onComplete) onComplete();
-    return;
-  }
 
   // Get element's current position
   const rect = element.getBoundingClientRect();
