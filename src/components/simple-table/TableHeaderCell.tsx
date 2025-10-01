@@ -249,13 +249,6 @@ const TableHeaderCell = ({
     [headers, setHeaders, onHeaderEdit, header]
   );
 
-  // Handle header dropdown toggle
-  const handleHeaderDropdownToggle = useCallback(() => {
-    if (setActiveHeaderDropdown) {
-      setActiveHeaderDropdown(isDropdownOpen ? null : header);
-    }
-  }, [setActiveHeaderDropdown, isDropdownOpen, header]);
-
   // Close header dropdown
   const handleHeaderDropdownClose = useCallback(() => {
     if (setActiveHeaderDropdown) {

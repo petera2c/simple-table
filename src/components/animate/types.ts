@@ -13,7 +13,6 @@ export interface FlipAnimationOptions {
   maxYLeavingRatio?: number;
   maxYEnteringRatio?: number;
   onComplete?: () => void;
-  respectReducedMotion?: boolean; // Whether to respect user's reduced motion preference (default: true)
 }
 
 export interface CustomAnimationOptions {
@@ -24,5 +23,4 @@ export interface CustomAnimationOptions {
   easing?: string;
   delay?: number;
   onComplete?: () => void;
-  respectReducedMotion?: boolean;
 }

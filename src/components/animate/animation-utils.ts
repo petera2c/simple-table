@@ -7,8 +7,8 @@ import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from ".
 export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    // duration: 3000,
-    duration: 500,
+    duration: 3000,
+    // duration: 500,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
@@ -177,7 +177,6 @@ export const animateWithCustomCoordinates = async ({
     easing = "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay = 0,
     onComplete,
-    respectReducedMotion = true,
   } = options;
 
   // Get element's current position

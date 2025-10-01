@@ -51,6 +51,11 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     const toBounds = elementRef.current.getBoundingClientRect();
     const fromBounds = fromBoundsRef.current;
 
+    if (id === "1-name") {
+      console.log(elementRef.current.getBoundingClientRect());
+      console.log(fromBoundsRef.current);
+    }
+
     // If we're currently scrolling, don't animate and don't update bounds
     if (isScrolling) {
       return;
