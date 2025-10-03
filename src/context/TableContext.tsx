@@ -33,6 +33,7 @@ interface TableContextType {
   activeHeaderDropdown?: HeaderObject | null;
   allowAnimations?: boolean;
   areAllRowsSelected?: () => boolean;
+  capturedPositionsRef: MutableRefObject<Map<string, DOMRect>>;
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;
   clearSelection?: () => void;

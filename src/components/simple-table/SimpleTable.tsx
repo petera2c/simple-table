@@ -179,6 +179,7 @@ const SimpleTableComp = ({
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const capturedPositionsRef = useRef<Map<string, DOMRect>>(new Map());
 
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
@@ -297,6 +298,27 @@ const SimpleTableComp = ({
     onFilterChange,
   });
 
+  // Function to capture all element positions (called right before sort state change)
+  const captureAllPositions = useCallback(() => {
+    const allElements = document.querySelectorAll("[data-animate-id]");
+    capturedPositionsRef.current.clear();
+    allElements.forEach((el) => {
+      const id = el.getAttribute("data-animate-id");
+      if (id && el instanceof HTMLElement) {
+        const rect = el.getBoundingClientRect();
+        capturedPositionsRef.current.set(id, rect);
+
+        // Debug logging for one specific cell
+        if (id === "1-name") {
+          console.log("🎯 [captureAllPositions] Capturing position for 1-name:", {
+            y: rect.y,
+            top: rect.top,
+          });
+        }
+      }
+    });
+  }, []);
+
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, updateSort, computeSortedRowsPreview } = useSortableData({
     headers,
@@ -304,6 +326,7 @@ const SimpleTableComp = ({
     externalSortHandling,
     onSortChange,
     rowGrouping,
+    onBeforeSort: captureAllPositions,
   });
 
   // Process rows through pagination, grouping, and virtualization
@@ -370,6 +393,7 @@ const SimpleTableComp = ({
       prepareForSortChange(accessor);
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
+      // Note: Position capture happens in updateSort via onBeforeSort callback
       setTimeout(() => {
         updateSort(accessor);
       }, 0);
@@ -409,11 +433,14 @@ const SimpleTableComp = ({
 
       // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
       setTimeout(() => {
+        // Capture positions right before filter state change
+        captureAllPositions();
+
         // Update internal state and call external handler if provided
         internalHandleApplyFilter(filter);
       }, 0);
     },
-    [prepareForFilterChange, internalHandleApplyFilter]
+    [prepareForFilterChange, internalHandleApplyFilter, captureAllPositions]
   );
 
   return (
@@ -421,6 +448,7 @@ const SimpleTableComp = ({
       value={{
         allowAnimations,
         areAllRowsSelected,
+        capturedPositionsRef,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
         clearSelection,

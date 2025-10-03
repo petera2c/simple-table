@@ -48,12 +48,14 @@ const useSortableData = ({
   externalSortHandling,
   onSortChange,
   rowGrouping,
+  onBeforeSort,
 }: {
   headers: HeaderObject[];
   tableRows: Row[];
   externalSortHandling: boolean;
   onSortChange?: (sort: SortColumn | null) => void;
   rowGrouping?: string[];
+  onBeforeSort?: () => void;
 }) => {
   // Single sort state instead of complex 3-state system
   const [sort, setSort] = useState<SortColumn | null>(null);
@@ -154,10 +156,13 @@ const useSortableData = ({
         };
       }
 
+      // CRITICAL: Capture positions right before state change (react-flip-move pattern)
+      onBeforeSort?.();
+
       setSort(newSortColumn);
       onSortChange?.(newSortColumn);
     },
-    [sort, headers, onSortChange]
+    [sort, headers, onSortChange, onBeforeSort]
   );
 
   // Function to preview what rows would be after applying a sort

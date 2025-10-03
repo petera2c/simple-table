@@ -31,11 +31,13 @@ interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> 
   tableRow?: TableRow;
 }
 export const Animate = ({ children, id, parentRef, tableRow, ...props }: AnimateProps) => {
-  const { allowAnimations, isResizing, isScrolling, rowHeight } = useTableContext();
+  const { allowAnimations, capturedPositionsRef, isResizing, isScrolling, rowHeight } =
+    useTableContext();
   const elementRef = useRef<HTMLDivElement>(null);
   const fromBoundsRef = useRef<DOMRect | null>(null);
   const previousScrollingState = usePrevious(isScrolling);
   const previousResizingState = usePrevious(isResizing);
+  const cleanupCallbackRef = useRef<(() => void) | null>(null);
 
   useLayoutEffect(() => {
     // Early exit if animations are disabled - don't do any work at all
@@ -49,11 +51,22 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     }
 
     const toBounds = elementRef.current.getBoundingClientRect();
-    const fromBounds = fromBoundsRef.current;
 
+    // CRITICAL: Check if we have a captured position for this element (react-flip-move pattern)
+    // This allows animations to continue smoothly even when interrupted by rapid clicks
+    const capturedPosition = capturedPositionsRef.current.get(id);
+    const fromBounds = capturedPosition || fromBoundsRef.current;
+
+    // Debug logging for one specific cell
     if (id === "1-name") {
-      console.log(elementRef.current.getBoundingClientRect());
-      console.log(fromBoundsRef.current);
+      console.log("📍 [Animate useLayoutEffect] 1-name:", {
+        hasCapturedPosition: !!capturedPosition,
+        capturedY: capturedPosition?.y,
+        fromBoundsRefY: fromBoundsRef.current?.y,
+        fromBoundsY: fromBounds?.y,
+        toBoundsY: toBounds.y,
+        delta: fromBounds ? toBounds.y - fromBounds.y : null,
+      });
     }
 
     // If we're currently scrolling, don't animate and don't update bounds
@@ -70,11 +83,20 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     // If resizing just ended, update the previous bounds without animating
     if (previousResizingState && !isResizing) {
       fromBoundsRef.current = toBounds;
+      capturedPositionsRef.current.delete(id); // Clear captured position
       return;
     }
 
     // Store current bounds for next render
     fromBoundsRef.current = toBounds;
+
+    // Clear captured position after using it (it's been consumed)
+    if (capturedPosition) {
+      capturedPositionsRef.current.delete(id);
+      if (id === "1-name") {
+        console.log("🧹 [Animate] Cleared captured position for 1-name");
+      }
+    }
 
     // If there's no previous bound data, don't animate (prevents first render animations)
     if (!fromBounds) {
@@ -101,6 +123,48 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     hasPositionChanged = hasDOMPositionChanged;
 
     if (hasPositionChanged) {
+      if (id === "1-name") {
+        console.log("🎬 [Animate] Starting animation for 1-name", {
+          deltaX,
+          deltaY,
+          fromY: fromBounds.y,
+          toY: toBounds.y,
+          currentTransform: elementRef.current.style.transform,
+          currentTransition: elementRef.current.style.transition,
+        });
+      }
+
+      // CRITICAL: Cancel any pending cleanup from the previous animation
+      // This prevents the old animation's cleanup from interfering with the new one
+      if (cleanupCallbackRef.current) {
+        if (id === "1-name") {
+          console.log("🚫 [Animate] Cancelling old animation cleanup for 1-name");
+        }
+        cleanupCallbackRef.current();
+        cleanupCallbackRef.current = null;
+      }
+
+      // CRITICAL: Immediately stop any in-progress animation before starting a new one
+      // This prevents the old animation from interfering with position calculations
+      if (elementRef.current.style.transition) {
+        if (id === "1-name") {
+          console.log("⏸️ [Animate] Stopping in-progress animation for 1-name", {
+            beforeStopVisualY: elementRef.current.getBoundingClientRect().y,
+            currentTransform: elementRef.current.style.transform,
+          });
+        }
+
+        // Force stop the animation by removing transition and keeping current transform
+        elementRef.current.style.transition = "none";
+
+        if (id === "1-name") {
+          console.log("⏸️ [Animate] After stopping animation for 1-name", {
+            afterStopVisualY: elementRef.current.getBoundingClientRect().y,
+            transform: elementRef.current.style.transform,
+          });
+        }
+      }
+
       // Merge animation config with defaults
       const finalConfig = {
         ...ANIMATION_CONFIGS.ROW_REORDER,
@@ -289,11 +353,14 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         }
       }
 
+      // Start the animation and store the cleanup function
       flipElement({
         element: elementRef.current,
         fromBounds,
         toBounds,
         finalConfig,
+      }).then((cleanup) => {
+        cleanupCallbackRef.current = cleanup;
       });
     } else {
     }
