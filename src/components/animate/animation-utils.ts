@@ -7,7 +7,7 @@ import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from ".
 export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    duration: 3000,
+    duration: 9000,
     // duration: 500,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
@@ -47,9 +47,45 @@ export const calculateInvert = (
  */
 export const applyInitialTransform = (element: HTMLElement, invert: { x: number; y: number }) => {
   const elementId = element.getAttribute("data-animate-id");
-  const beforeY = element.getBoundingClientRect().y;
+  const currentVisualY = element.getBoundingClientRect().y;
+  const hasExistingTransform = element.style.transform && element.style.transform !== "none";
 
-  element.style.transform = `translate3d(${invert.x}px, ${invert.y}px, 0)`;
+  // CRITICAL: If element has a frozen transform, we need to recalculate invert from pure DOM position
+  let adjustedInvertX = invert.x;
+  let adjustedInvertY = invert.y;
+
+  if (hasExistingTransform) {
+    const oldTransform = element.style.transform;
+
+    // Temporarily remove transform to get pure DOM position
+    element.style.transform = "none";
+    const pureDOMY = element.getBoundingClientRect().y;
+    const pureDOMX = element.getBoundingClientRect().x;
+
+    // Recalculate invert: we want to go from current visual position to where fromBounds expects
+    // The invert passed in assumes we're at pureDOMY, but we need to adjust for frozen position
+    // Original calculation: fromBoundsY - toBoundsY = invert.y
+    // But toBounds is the frozen visual position, not DOM position
+    // So we need: fromBoundsY - pureDOMY = adjusted invert
+    const fromBoundsY = currentVisualY + invert.y; // Reverse engineer fromBounds
+    const fromBoundsX = element.getBoundingClientRect().x + invert.x;
+
+    adjustedInvertY = fromBoundsY - pureDOMY;
+    adjustedInvertX = fromBoundsX - pureDOMX;
+
+    if (elementId === "1-name") {
+      console.log("🔧 [applyInitialTransform] Adjusting for frozen transform", {
+        oldTransform,
+        currentVisualY,
+        pureDOMY,
+        originalInvertY: invert.y,
+        adjustedInvertY,
+        fromBoundsY,
+      });
+    }
+  }
+
+  element.style.transform = `translate3d(${adjustedInvertX}px, ${adjustedInvertY}px, 0)`;
   element.style.transition = "none";
   // Performance optimizations for smoother animations
   element.style.willChange = "transform"; // Hint to browser for optimization
@@ -60,7 +96,8 @@ export const applyInitialTransform = (element: HTMLElement, invert: { x: number;
   if (elementId === "1-name") {
     console.log("🎨 [applyInitialTransform] 1-name", {
       invertY: invert.y,
-      beforeY,
+      adjustedInvertY,
+      beforeY: currentVisualY,
       afterY: element.getBoundingClientRect().y,
       transform: element.style.transform,
     });

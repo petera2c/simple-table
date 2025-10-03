@@ -50,7 +50,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
       return;
     }
 
-    const toBounds = elementRef.current.getBoundingClientRect();
+    let toBounds = elementRef.current.getBoundingClientRect();
 
     // CRITICAL: Check if we have a captured position for this element (react-flip-move pattern)
     // This allows animations to continue smoothly even when interrupted by rapid clicks
@@ -147,20 +147,52 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
       // CRITICAL: Immediately stop any in-progress animation before starting a new one
       // This prevents the old animation from interfering with position calculations
       if (elementRef.current.style.transition) {
+        // Get current visual position (with transform applied)
+        const currentVisualY = elementRef.current.getBoundingClientRect().y;
+        const oldTransform = elementRef.current.style.transform;
+        const oldTransition = elementRef.current.style.transition;
+
         if (id === "1-name") {
           console.log("⏸️ [Animate] Stopping in-progress animation for 1-name", {
-            beforeStopVisualY: elementRef.current.getBoundingClientRect().y,
-            currentTransform: elementRef.current.style.transform,
+            beforeStopVisualY: currentVisualY,
+            currentTransform: oldTransform,
           });
         }
 
-        // Force stop the animation by removing transition and keeping current transform
+        // CRITICAL: Get the pure DOM position without any transforms
+        // Temporarily remove transform to get true DOM position
+        elementRef.current.style.transform = "none";
         elementRef.current.style.transition = "none";
+        const pureDOMY = elementRef.current.getBoundingClientRect().y;
+
+        // Calculate offset needed to keep element at current visual position
+        const offsetY = currentVisualY - pureDOMY;
+
+        // Set the frozen transform to keep element at current visual position
+        elementRef.current.style.transform = `translate3d(0px, ${offsetY}px, 0px)`;
+
+        // Force reflow to ensure the freeze is applied
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        elementRef.current.offsetHeight;
 
         if (id === "1-name") {
           console.log("⏸️ [Animate] After stopping animation for 1-name", {
             afterStopVisualY: elementRef.current.getBoundingClientRect().y,
-            transform: elementRef.current.style.transform,
+            frozenTransform: elementRef.current.style.transform,
+            pureDOMY,
+            currentVisualY,
+            offsetY,
+          });
+        }
+
+        // CRITICAL: Recapture toBounds after freezing the element
+        // The DOM position has changed (it's now at pureDOMY), so we need to update toBounds
+        toBounds = elementRef.current.getBoundingClientRect();
+
+        if (id === "1-name") {
+          console.log("🔄 [Animate] Recaptured toBounds after freeze", {
+            newToBoundsY: toBounds.y,
+            shouldMatch: currentVisualY,
           });
         }
       }
