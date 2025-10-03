@@ -57,18 +57,6 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     const capturedPosition = capturedPositionsRef.current.get(id);
     const fromBounds = capturedPosition || fromBoundsRef.current;
 
-    // Debug logging for one specific cell
-    if (id === "1-name") {
-      console.log("📍 [Animate useLayoutEffect] 1-name:", {
-        hasCapturedPosition: !!capturedPosition,
-        capturedY: capturedPosition?.y,
-        fromBoundsRefY: fromBoundsRef.current?.y,
-        fromBoundsY: fromBounds?.y,
-        toBoundsY: toBounds.y,
-        delta: fromBounds ? toBounds.y - fromBounds.y : null,
-      });
-    }
-
     // If we're currently scrolling, don't animate and don't update bounds
     if (isScrolling) {
       return;
@@ -83,7 +71,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     // If resizing just ended, update the previous bounds without animating
     if (previousResizingState && !isResizing) {
       fromBoundsRef.current = toBounds;
-      capturedPositionsRef.current.delete(id); // Clear captured position
+      capturedPositionsRef.current.delete(id);
       return;
     }
 
@@ -93,9 +81,6 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     // Clear captured position after using it (it's been consumed)
     if (capturedPosition) {
       capturedPositionsRef.current.delete(id);
-      if (id === "1-name") {
-        console.log("🧹 [Animate] Cleared captured position for 1-name");
-      }
     }
 
     // If there's no previous bound data, don't animate (prevents first render animations)
@@ -123,23 +108,9 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     hasPositionChanged = hasDOMPositionChanged;
 
     if (hasPositionChanged) {
-      if (id === "1-name") {
-        console.log("🎬 [Animate] Starting animation for 1-name", {
-          deltaX,
-          deltaY,
-          fromY: fromBounds.y,
-          toY: toBounds.y,
-          currentTransform: elementRef.current.style.transform,
-          currentTransition: elementRef.current.style.transition,
-        });
-      }
-
       // CRITICAL: Cancel any pending cleanup from the previous animation
       // This prevents the old animation's cleanup from interfering with the new one
       if (cleanupCallbackRef.current) {
-        if (id === "1-name") {
-          console.log("🚫 [Animate] Cancelling old animation cleanup for 1-name");
-        }
         cleanupCallbackRef.current();
         cleanupCallbackRef.current = null;
       }
@@ -149,17 +120,8 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
       if (elementRef.current.style.transition) {
         // Get current visual position (with transform applied)
         const currentVisualY = elementRef.current.getBoundingClientRect().y;
-        const oldTransform = elementRef.current.style.transform;
-        const oldTransition = elementRef.current.style.transition;
 
-        if (id === "1-name") {
-          console.log("⏸️ [Animate] Stopping in-progress animation for 1-name", {
-            beforeStopVisualY: currentVisualY,
-            currentTransform: oldTransform,
-          });
-        }
-
-        // CRITICAL: Get the pure DOM position without any transforms
+        // Get the pure DOM position without any transforms
         // Temporarily remove transform to get true DOM position
         elementRef.current.style.transform = "none";
         elementRef.current.style.transition = "none";
@@ -175,26 +137,9 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         elementRef.current.offsetHeight;
 
-        if (id === "1-name") {
-          console.log("⏸️ [Animate] After stopping animation for 1-name", {
-            afterStopVisualY: elementRef.current.getBoundingClientRect().y,
-            frozenTransform: elementRef.current.style.transform,
-            pureDOMY,
-            currentVisualY,
-            offsetY,
-          });
-        }
-
         // CRITICAL: Recapture toBounds after freezing the element
         // The DOM position has changed (it's now at pureDOMY), so we need to update toBounds
         toBounds = elementRef.current.getBoundingClientRect();
-
-        if (id === "1-name") {
-          console.log("🔄 [Animate] Recaptured toBounds after freeze", {
-            newToBoundsY: toBounds.y,
-            shouldMatch: currentVisualY,
-          });
-        }
       }
 
       // Merge animation config with defaults

@@ -307,14 +307,6 @@ const SimpleTableComp = ({
       if (id && el instanceof HTMLElement) {
         const rect = el.getBoundingClientRect();
         capturedPositionsRef.current.set(id, rect);
-
-        // Debug logging for one specific cell
-        if (id === "1-name") {
-          console.log("🎯 [captureAllPositions] Capturing position for 1-name:", {
-            y: rect.y,
-            top: rect.top,
-          });
-        }
       }
     });
   }, []);
