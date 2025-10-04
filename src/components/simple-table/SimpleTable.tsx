@@ -325,6 +325,8 @@ const SimpleTableComp = ({
   const {
     currentTableRows,
     rowsToRender,
+    alreadyRenderedRows,
+    enteringDomRows,
     prepareForFilterChange,
     prepareForSortChange,
     isAnimating,
@@ -386,9 +388,12 @@ const SimpleTableComp = ({
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
       // Note: Position capture happens in updateSort via onBeforeSort callback
-      setTimeout(() => {
-        updateSort(accessor);
-      }, 0);
+      // Use double RAF to ensure browser has completed layout before capturing positions
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          updateSort(accessor);
+        });
+      });
     },
     [prepareForSortChange, updateSort]
   );
@@ -424,13 +429,16 @@ const SimpleTableComp = ({
       prepareForFilterChange(filter);
 
       // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
-      setTimeout(() => {
-        // Capture positions right before filter state change
-        captureAllPositions();
+      // Use double RAF to ensure browser has completed layout before capturing positions
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Capture positions right before filter state change
+          captureAllPositions();
 
-        // Update internal state and call external handler if provided
-        internalHandleApplyFilter(filter);
-      }, 0);
+          // Update internal state and call external handler if provided
+          internalHandleApplyFilter(filter);
+        });
+      });
     },
     [prepareForFilterChange, internalHandleApplyFilter, captureAllPositions]
   );
@@ -549,6 +557,8 @@ const SimpleTableComp = ({
                 sort={sort}
                 tableRows={currentTableRows}
                 rowsToRender={rowsToRender}
+                alreadyRenderedRows={alreadyRenderedRows}
+                enteringDomRows={enteringDomRows}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

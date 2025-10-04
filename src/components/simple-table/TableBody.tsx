@@ -18,6 +18,8 @@ const TableBody = ({
   pinnedRightTemplateColumns,
   pinnedRightWidth,
   rowsToRender,
+  alreadyRenderedRows,
+  enteringDomRows,
   setScrollTop,
   tableRows,
 }: TableBodyProps) => {
@@ -161,6 +163,8 @@ const TableBody = ({
     rowHeight,
     rowIndices,
     rowsToRender,
+    alreadyRenderedRows,
+    enteringDomRows,
     setHoveredIndex,
   };
 

@@ -1,4 +1,4 @@
-import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useLayoutEffect, useCallback, useRef, useEffect } from "react";
 import { BUFFER_ROW_COUNT } from "../consts/general-consts";
 import { getVisibleRows } from "../utils/infiniteScrollUtils";
 import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
@@ -48,6 +48,13 @@ const useTableRowProcessing = ({
   const [extendedRows, setExtendedRows] = useState<any[]>([]);
   const previousTableRowsRef = useRef<any[]>([]); // Track ALL processed rows, not just visible
   const previousVisibleRowsRef = useRef<any[]>([]); // Track only visible rows for animation
+
+  // Debug: Monitor when extendedRows state changes
+  useEffect(() => {
+    if (extendedRows.length > 0) {
+      // Animation state is now active
+    }
+  }, [extendedRows]);
 
   // Track original positions of all rows (before any sort/filter applied)
   const originalPositionsRef = useRef<Map<string, number>>(new Map());
@@ -375,7 +382,13 @@ const useTableRowProcessing = ({
         .filter(Boolean);
 
       if (enteringFromCurrentState.length > 0) {
-        setExtendedRows([...targetVisibleRows, ...enteringFromCurrentState]);
+        const newExtendedRows = [...targetVisibleRows, ...enteringFromCurrentState];
+        setExtendedRows(newExtendedRows);
+
+        // CRITICAL: Update previousVisibleRowsRef to reflect what's NOW on screen
+        // This ensures if another sort comes in mid-animation, we split based on
+        // the rows that are ACTUALLY rendered, not stale rows from before the first sort
+        previousVisibleRowsRef.current = targetVisibleRows;
       }
     },
     [
@@ -393,6 +406,53 @@ const useTableRowProcessing = ({
     ]
   );
 
+  // Split rows into already rendered (stable) and entering (new) for separate rendering
+  const { alreadyRenderedRows, enteringDomRows } = useMemo(() => {
+    if (!allowAnimations || shouldPaginate || extendedRows.length === 0) {
+      // No animation or no extended rows: all rows are "already rendered"
+      return {
+        alreadyRenderedRows: rowsToRender,
+        enteringDomRows: [],
+      };
+    }
+
+    // During animation with extended rows:
+    // CRITICAL: Maintain ORIGINAL array order for already rendered rows
+    // Create a map of current rows by ID for quick lookup
+    const currentRowsById = new Map(
+      rowsToRender.map((row) => [String(getRowId({ row: row.row, rowIdAccessor })), row])
+    );
+
+    // Start with previousVisibleRows in their ORIGINAL order
+    const alreadyRendered: any[] = [];
+    const previousRowIds = new Set<string>();
+
+    previousVisibleRowsRef.current.forEach((prevRow) => {
+      const id = String(getRowId({ row: prevRow.row, rowIdAccessor }));
+      previousRowIds.add(id);
+
+      // If this row still exists in current rowsToRender, add it (with updated position)
+      const currentRow = currentRowsById.get(id);
+      if (currentRow) {
+        alreadyRendered.push(currentRow);
+      }
+    });
+
+    // Find entering rows (rows in current but not in previous)
+    const entering: any[] = [];
+    rowsToRender.forEach((row) => {
+      const id = String(getRowId({ row: row.row, rowIdAccessor }));
+      if (!previousRowIds.has(id)) {
+        entering.push(row);
+      }
+    });
+
+    return {
+      alreadyRenderedRows: alreadyRendered,
+      enteringDomRows: entering,
+    };
+  }, [rowsToRender, extendedRows.length, allowAnimations, shouldPaginate, rowIdAccessor]);
+
   return {
     currentTableRows,
     currentVisibleRows: targetVisibleRows,
@@ -400,6 +460,8 @@ const useTableRowProcessing = ({
     prepareForFilterChange,
     prepareForSortChange,
     rowsToRender,
+    alreadyRenderedRows,
+    enteringDomRows,
   };
 };
 

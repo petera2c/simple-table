@@ -342,7 +342,9 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     } else {
     }
   }, [
+    id,
     allowAnimations,
+    capturedPositionsRef,
     isResizing,
     isScrolling,
     parentRef,

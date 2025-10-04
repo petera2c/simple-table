@@ -13,6 +13,8 @@ interface TableBodyProps {
   pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
   rowsToRender: TableRow[];
+  alreadyRenderedRows: TableRow[];
+  enteringDomRows: TableRow[];
   setScrollTop: Dispatch<SetStateAction<number>>;
   tableRows: TableRow[];
 }

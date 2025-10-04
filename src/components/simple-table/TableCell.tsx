@@ -95,6 +95,8 @@ const TableCell = ({
 
   // Get row ID and check if row has children
   const rowId = getRowId({ row, rowIdAccessor });
+  const cellId = getCellId({ accessor: header.accessor, rowId });
+
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   const isRowExpanded = !unexpandedRows.has(String(rowId));
@@ -132,7 +134,7 @@ const TableCell = ({
   const throttle = useThrottle();
 
   // Cell focus id (used for keyboard navigation)
-  const cellId = getCellId({ accessor: header.accessor, rowId });
+  // const cellId = getCellId({ accessor: header.accessor, rowId });
 
   // Generate a unique key that includes the content value to force re-render when it changes
   const cellKey = getCellKey({ rowId, accessor: header.accessor });

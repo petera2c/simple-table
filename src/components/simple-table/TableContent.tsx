@@ -16,6 +16,8 @@ interface TableContentLocalProps {
   sort: SortColumn | null;
   tableRows: TableRow[];
   rowsToRender: TableRow[];
+  alreadyRenderedRows: TableRow[];
+  enteringDomRows: TableRow[];
 }
 
 const TableContent = ({
@@ -25,6 +27,8 @@ const TableContent = ({
   sort,
   tableRows,
   rowsToRender,
+  alreadyRenderedRows,
+  enteringDomRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
   const { columnResizing, editColumns, headers, collapsedHeaders } = useTableContext();
@@ -72,6 +76,8 @@ const TableContent = ({
     pinnedRightWidth,
     setScrollTop,
     rowsToRender,
+    alreadyRenderedRows,
+    enteringDomRows,
   };
 
   return (
