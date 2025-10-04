@@ -38,7 +38,6 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         filterable: true,
         isEditable: true,
-        summaryColumn: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
@@ -50,7 +49,6 @@ export const HEADERS: HeaderObject[] = [
         },
       },
       {
-        summaryColumn: true,
         accessor: "priceChangePercent",
         label: "Change %",
         width: 160,
@@ -81,7 +79,6 @@ export const HEADERS: HeaderObject[] = [
     label: "Fundamentals",
     width: 380,
     isSortable: false,
-    collapsible: true,
     children: [
       {
         accessor: "marketCap",
@@ -90,7 +87,6 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         filterable: true,
         isEditable: true,
-        summaryColumn: true,
         align: "right",
         type: "number",
       },
@@ -138,7 +134,6 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         isEditable: true,
         filterable: true,
-        summaryColumn: true,
         align: "center",
         type: "enum",
         enumOptions: [

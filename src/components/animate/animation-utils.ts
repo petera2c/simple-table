@@ -7,7 +7,7 @@ import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from ".
 export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    duration: 500,
+    duration: 9000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
