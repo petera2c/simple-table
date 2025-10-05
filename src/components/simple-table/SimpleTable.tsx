@@ -333,7 +333,6 @@ const SimpleTableComp = ({
   } = useTableRowProcessing({
     allowAnimations,
     sortedRows,
-    originalRows: aggregatedRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
