@@ -22,14 +22,14 @@ import { useTableContext } from "../../context/TableContext";
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
   columnIndices: ColumnIndices;
+  currentVisibleRows: TableRowType[];
+  rowsEnteringTheDom: TableRowType[];
+  rowsLeavingTheDom: TableRowType[];
   headers: HeaderObject[];
   hoveredIndex: number | null;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
-  rowsToRender: TableRowType[];
-  alreadyRenderedRows: TableRowType[];
-  enteringDomRows: TableRowType[];
   setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
@@ -41,6 +41,9 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     {
       columnIndexStart,
       columnIndices,
+      currentVisibleRows,
+      rowsEnteringTheDom,
+      rowsLeavingTheDom,
       headers,
       hoveredIndex,
       pinned,
@@ -49,9 +52,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       setHoveredIndex,
       templateColumns,
       totalHeight,
-      rowsToRender,
-      alreadyRenderedRows,
-      enteringDomRows,
       width,
     },
     ref
@@ -84,8 +84,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             ...(!pinned && { flexGrow: 1 }),
           }}
         >
-          {/* Render already rendered rows first - keeps array indices stable */}
-          {alreadyRenderedRows.map((tableRow, index) => {
+          {currentVisibleRows.map((tableRow, index) => {
             const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
             return (
               <Fragment key={rowId}>
@@ -116,20 +115,18 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
               </Fragment>
             );
           })}
-          {/* Render entering rows after - appends at end without affecting existing indices */}
-          {enteringDomRows.map((tableRow, index) => {
+          {rowsEnteringTheDom.map((tableRow, index) => {
             const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
-            const actualIndex = alreadyRenderedRows.length + index;
             return (
               <Fragment key={rowId}>
-                {actualIndex !== 0 && (
+                {index !== 0 && (
                   <TableRowSeparator
                     // Is last row group and it is open
                     displayStrongBorder={tableRow.isLastGroupRow}
                     position={tableRow.position}
                     rowHeight={rowHeight}
                     templateColumns={templateColumns}
-                    rowIndex={actualIndex - 1}
+                    rowIndex={index - 1}
                   />
                 )}
                 <TableRow
@@ -138,7 +135,38 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                   gridTemplateColumns={templateColumns}
                   headers={headers}
                   hoveredIndex={hoveredIndex}
-                  index={actualIndex}
+                  index={index}
+                  key={rowId}
+                  pinned={pinned}
+                  rowHeight={rowHeight}
+                  rowIndices={rowIndices}
+                  setHoveredIndex={setHoveredIndex}
+                  tableRow={tableRow}
+                />
+              </Fragment>
+            );
+          })}
+          {rowsLeavingTheDom.map((tableRow, index) => {
+            const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+            return (
+              <Fragment key={rowId}>
+                {index !== 0 && (
+                  <TableRowSeparator
+                    // Is last row group and it is open
+                    displayStrongBorder={tableRow.isLastGroupRow}
+                    position={tableRow.position}
+                    rowHeight={rowHeight}
+                    templateColumns={templateColumns}
+                    rowIndex={index - 1}
+                  />
+                )}
+                <TableRow
+                  columnIndexStart={columnIndexStart}
+                  columnIndices={columnIndices}
+                  gridTemplateColumns={templateColumns}
+                  headers={headers}
+                  hoveredIndex={hoveredIndex}
+                  index={index}
                   key={rowId}
                   pinned={pinned}
                   rowHeight={rowHeight}

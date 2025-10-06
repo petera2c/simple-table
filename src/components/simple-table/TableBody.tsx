@@ -10,6 +10,9 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { getRowId } from "../../utils/rowUtils";
 
 const TableBody = ({
+  currentVisibleRows,
+  rowsEnteringTheDom,
+  rowsLeavingTheDom,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -17,9 +20,6 @@ const TableBody = ({
   pinnedRightColumns,
   pinnedRightTemplateColumns,
   pinnedRightWidth,
-  rowsToRender,
-  alreadyRenderedRows,
-  enteringDomRows,
   setScrollTop,
   tableRows,
 }: TableBodyProps) => {
@@ -90,13 +90,13 @@ const TableBody = ({
     const indices: RowIndices = {};
 
     // Map each row's ID to its index in the visible rows array
-    rowsToRender.forEach((rowsToRender, index) => {
+    currentVisibleRows.forEach((rowsToRender, index) => {
       const rowId = String(getRowId({ row: rowsToRender.row, rowIdAccessor }));
       indices[rowId] = index;
     });
 
     return indices;
-  }, [rowsToRender, rowIdAccessor]);
+  }, [currentVisibleRows, rowIdAccessor]);
 
   // Check if we should load more data
   const checkForLoadMore = useCallback(
@@ -157,14 +157,14 @@ const TableBody = ({
   // Create all props needed for TableSection
   const commonProps = {
     columnIndices,
+    currentVisibleRows,
+    rowsEnteringTheDom,
+    rowsLeavingTheDom,
     headerContainerRef,
     headers,
     hoveredIndex,
     rowHeight,
     rowIndices,
-    rowsToRender,
-    alreadyRenderedRows,
-    enteringDomRows,
     setHoveredIndex,
   };
 

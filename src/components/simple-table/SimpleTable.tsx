@@ -324,9 +324,9 @@ const SimpleTableComp = ({
   // Process rows through pagination, grouping, and virtualization
   const {
     currentTableRows,
-    rowsToRender,
-    alreadyRenderedRows,
-    enteringDomRows,
+    currentVisibleRows,
+    rowsEnteringTheDom,
+    rowsLeavingTheDom,
     prepareForFilterChange,
     prepareForSortChange,
     isAnimating,
@@ -383,7 +383,7 @@ const SimpleTableComp = ({
   const onSort = useCallback(
     (accessor: Accessor) => {
       // STAGE 1: Prepare animation by adding entering rows before applying sort
-      prepareForSortChange(accessor);
+      prepareForSortChange(accessor, currentVisibleRows);
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
       // Note: Position capture happens in updateSort via onBeforeSort callback
@@ -394,7 +394,7 @@ const SimpleTableComp = ({
         });
       });
     },
-    [prepareForSortChange, updateSort]
+    [prepareForSortChange, updateSort, currentVisibleRows]
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
@@ -550,14 +550,14 @@ const SimpleTableComp = ({
               onMouseLeave={handleMouseUp}
             >
               <TableContent
+                currentVisibleRows={currentVisibleRows}
+                rowsEnteringTheDom={rowsEnteringTheDom}
+                rowsLeavingTheDom={rowsLeavingTheDom}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}
                 sort={sort}
                 tableRows={currentTableRows}
-                rowsToRender={rowsToRender}
-                alreadyRenderedRows={alreadyRenderedRows}
-                enteringDomRows={enteringDomRows}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}
