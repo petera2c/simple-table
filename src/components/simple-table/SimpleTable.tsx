@@ -326,7 +326,6 @@ const SimpleTableComp = ({
     currentTableRows,
     currentVisibleRows,
     rowsEnteringTheDom,
-    rowsLeavingTheDom,
     prepareForFilterChange,
     prepareForSortChange,
     isAnimating,
@@ -552,7 +551,6 @@ const SimpleTableComp = ({
               <TableContent
                 currentVisibleRows={currentVisibleRows}
                 rowsEnteringTheDom={rowsEnteringTheDom}
-                rowsLeavingTheDom={rowsLeavingTheDom}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}

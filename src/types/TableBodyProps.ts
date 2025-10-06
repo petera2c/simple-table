@@ -6,7 +6,6 @@ import TableRow from "./TableRow";
 interface TableBodyProps {
   currentVisibleRows: TableRow[];
   rowsEnteringTheDom: TableRow[];
-  rowsLeavingTheDom: TableRow[];
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftTemplateColumns: string;

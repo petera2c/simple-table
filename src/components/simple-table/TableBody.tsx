@@ -12,7 +12,6 @@ import { getRowId } from "../../utils/rowUtils";
 const TableBody = ({
   currentVisibleRows,
   rowsEnteringTheDom,
-  rowsLeavingTheDom,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -159,7 +158,6 @@ const TableBody = ({
     columnIndices,
     currentVisibleRows,
     rowsEnteringTheDom,
-    rowsLeavingTheDom,
     headerContainerRef,
     headers,
     hoveredIndex,

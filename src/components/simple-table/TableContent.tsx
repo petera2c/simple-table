@@ -12,7 +12,6 @@ import TableRow from "../../types/TableRow";
 interface TableContentLocalProps {
   currentVisibleRows: TableRow[];
   rowsEnteringTheDom: TableRow[];
-  rowsLeavingTheDom: TableRow[];
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: Dispatch<SetStateAction<number>>;
@@ -23,7 +22,6 @@ interface TableContentLocalProps {
 const TableContent = ({
   currentVisibleRows,
   rowsEnteringTheDom,
-  rowsLeavingTheDom,
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
@@ -68,7 +66,6 @@ const TableContent = ({
   const tableBodyProps: TableBodyProps = {
     currentVisibleRows,
     rowsEnteringTheDom,
-    rowsLeavingTheDom,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,

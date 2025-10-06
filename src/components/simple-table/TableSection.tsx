@@ -24,7 +24,6 @@ interface TableSectionProps {
   columnIndices: ColumnIndices;
   currentVisibleRows: TableRowType[];
   rowsEnteringTheDom: TableRowType[];
-  rowsLeavingTheDom: TableRowType[];
   headers: HeaderObject[];
   hoveredIndex: number | null;
   pinned?: Pinned;
@@ -43,7 +42,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       columnIndices,
       currentVisibleRows,
       rowsEnteringTheDom,
-      rowsLeavingTheDom,
       headers,
       hoveredIndex,
       pinned,
@@ -116,37 +114,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             );
           })}
           {rowsEnteringTheDom.map((tableRow, index) => {
-            const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
-            return (
-              <Fragment key={rowId}>
-                {index !== 0 && (
-                  <TableRowSeparator
-                    // Is last row group and it is open
-                    displayStrongBorder={tableRow.isLastGroupRow}
-                    position={tableRow.position}
-                    rowHeight={rowHeight}
-                    templateColumns={templateColumns}
-                    rowIndex={index - 1}
-                  />
-                )}
-                <TableRow
-                  columnIndexStart={columnIndexStart}
-                  columnIndices={columnIndices}
-                  gridTemplateColumns={templateColumns}
-                  headers={headers}
-                  hoveredIndex={hoveredIndex}
-                  index={index}
-                  key={rowId}
-                  pinned={pinned}
-                  rowHeight={rowHeight}
-                  rowIndices={rowIndices}
-                  setHoveredIndex={setHoveredIndex}
-                  tableRow={tableRow}
-                />
-              </Fragment>
-            );
-          })}
-          {rowsLeavingTheDom.map((tableRow, index) => {
             const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
             return (
               <Fragment key={rowId}>

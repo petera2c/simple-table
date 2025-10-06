@@ -100,6 +100,23 @@ const useTableRowProcessing = ({
     });
   }, [currentTableRows, contentHeight, rowHeight, scrollTop]);
 
+  // Combine target visible rows with leaving rows for rendering
+  const visibleRowsWithLeaving = useMemo(() => {
+    // Create a set of IDs from rowsLeavingTheDom
+    const leavingRowIds = new Set(
+      rowsLeavingTheDom.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
+    );
+
+    // Filter out any rows from targetVisibleRows that are already in rowsLeavingTheDom
+    const uniqueTargetRows = targetVisibleRows.filter((row) => {
+      const id = String(getRowId({ row: row.row, rowIdAccessor }));
+      return !leavingRowIds.has(id);
+    });
+
+    // Combine unique target rows with leaving rows (leaving rows take precedence)
+    return [...uniqueTargetRows, ...rowsLeavingTheDom];
+  }, [targetVisibleRows, rowsLeavingTheDom, rowIdAccessor]);
+
   // Animation handlers for filter/sort changes
   const prepareForFilterChange = useCallback(
     (filter: any) => {
@@ -166,12 +183,22 @@ const useTableRowProcessing = ({
         );
 
         // Find rows currently visible but won't be visible after filter
-        const leavingRows = targetVisibleRows.filter((row) => {
-          const id = String(getRowId({ row: row.row, rowIdAccessor }));
-          return !newVisibleIds.has(id) && !existingRowIds.has(id);
-        });
+        const leavingRows = targetVisibleRows
+          .filter((row) => {
+            const id = String(getRowId({ row: row.row, rowIdAccessor }));
+            return !newVisibleIds.has(id) && !existingRowIds.has(id);
+          })
+          .map((leavingRow) => {
+            const id = String(getRowId({ row: leavingRow.row, rowIdAccessor }));
+            // Find this row in the NEW processed rows to get its NEW position (after filter)
+            const rowInNewState = newProcessedRows.find(
+              (newRow) => String(getRowId({ row: newRow.row, rowIdAccessor })) === id
+            );
+            // Use the new position if found, otherwise keep current position
+            return rowInNewState || leavingRow;
+          });
 
-        // Add unique leaving rows to existing rows
+        // Add unique leaving rows with their new positions
         return [...existingRows, ...leavingRows];
       });
     },
@@ -254,12 +281,22 @@ const useTableRowProcessing = ({
         );
 
         // Find rows currently visible but won't be visible after sort
-        const leavingRows = targetVisibleRows.filter((row) => {
-          const id = String(getRowId({ row: row.row, rowIdAccessor }));
-          return !newVisibleIds.has(id) && !existingRowIds.has(id);
-        });
+        const leavingRows = targetVisibleRows
+          .filter((row) => {
+            const id = String(getRowId({ row: row.row, rowIdAccessor }));
+            return !newVisibleIds.has(id) && !existingRowIds.has(id);
+          })
+          .map((leavingRow) => {
+            const id = String(getRowId({ row: leavingRow.row, rowIdAccessor }));
+            // Find this row in the NEW processed rows to get its NEW position (after sort)
+            const rowInNewState = newProcessedRows.find(
+              (newRow) => String(getRowId({ row: newRow.row, rowIdAccessor })) === id
+            );
+            // Use the new position if found, otherwise keep current position
+            return rowInNewState || leavingRow;
+          });
 
-        // Add unique leaving rows to existing rows
+        // Add unique leaving rows with their new positions
         return [...existingRows, ...leavingRows];
       });
     },
@@ -276,14 +313,39 @@ const useTableRowProcessing = ({
     ]
   );
 
+  console.log("\n");
+  console.log(
+    "rowsLeavingTheDom",
+    rowsLeavingTheDom.map((row) => ({
+      companyName: row.row.companyName,
+      id: row.row.id,
+      position: row.position,
+    }))
+  );
+  console.log(
+    "targetVisibleRows",
+    targetVisibleRows.map((row) => ({
+      companyName: row.row.companyName,
+      id: row.row.id,
+      position: row.position,
+    }))
+  );
+  console.log(
+    "rowsEnteringTheDom",
+    rowsEnteringTheDom.map((row) => ({
+      companyName: row.row.companyName,
+      id: row.row.id,
+      position: row.position,
+    }))
+  );
+
   return {
     currentTableRows,
-    currentVisibleRows: targetVisibleRows,
+    currentVisibleRows: visibleRowsWithLeaving,
     isAnimating,
     prepareForFilterChange,
     prepareForSortChange,
     rowsEnteringTheDom,
-    rowsLeavingTheDom,
   };
 };
 
