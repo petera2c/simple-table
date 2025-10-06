@@ -127,8 +127,14 @@ const useTableRowProcessing = ({
 
   // Animation handlers for filter/sort changes
   const prepareForFilterChange = useCallback(
-    (filter: any) => {
+    (filter: any, capturePositions?: () => void) => {
       if (!allowAnimations || shouldPaginate) return;
+
+      // CRITICAL: Capture positions of existing leaving rows BEFORE updating them
+      // This prevents teleporting when their positions change
+      if (capturePositions) {
+        capturePositions();
+      }
 
       // Calculate what rows would be after filter
       const newFilteredRows = computeFilteredRowsPreview(filter);
@@ -186,29 +192,49 @@ const useTableRowProcessing = ({
           newVisibleRows.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
         );
 
-        // Create set of IDs already in existingRows
-        const existingRowIds = new Set(
-          existingRows.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
+        // Create map of existing leaving rows for quick lookup
+        const existingRowsMap = new Map(
+          existingRows.map((row) => [String(getRowId({ row: row.row, rowIdAccessor })), row])
         );
 
-        // Find rows currently visible but won't be visible after filter
-        const leavingRows = targetVisibleRows
-          .filter((row) => {
-            const id = String(getRowId({ row: row.row, rowIdAccessor }));
-            return !newVisibleIds.has(id) && !existingRowIds.has(id);
-          })
-          .map((leavingRow) => {
-            const id = String(getRowId({ row: leavingRow.row, rowIdAccessor }));
-            // Find this row in the NEW processed rows to get its NEW position (after filter)
-            const rowInNewState = newProcessedRows.find(
-              (newRow) => String(getRowId({ row: newRow.row, rowIdAccessor })) === id
-            );
-            // Use the new position if found, otherwise keep current position
-            return rowInNewState || leavingRow;
-          });
+        // Find rows from targetVisibleRows that won't be visible after filter
+        const candidateLeavingRows = targetVisibleRows.filter((row) => {
+          const id = String(getRowId({ row: row.row, rowIdAccessor }));
+          return !newVisibleIds.has(id);
+        });
 
-        // Add unique leaving rows with their new positions
-        return [...existingRows, ...leavingRows];
+        // Separate into rows that need position updates vs truly new leaving rows
+        const rowsToUpdate: TableRow[] = [];
+        const newLeavingRows: TableRow[] = [];
+
+        candidateLeavingRows.forEach((leavingRow) => {
+          const id = String(getRowId({ row: leavingRow.row, rowIdAccessor }));
+          // Find this row in the NEW processed rows to get its NEW position (after filter)
+          const rowInNewState = newProcessedRows.find(
+            (newRow) => String(getRowId({ row: newRow.row, rowIdAccessor })) === id
+          );
+          const rowWithNewPosition = rowInNewState || leavingRow;
+
+          if (existingRowsMap.has(id)) {
+            // Row is already leaving, update its position
+            rowsToUpdate.push(rowWithNewPosition);
+          } else {
+            // Row is newly leaving
+            newLeavingRows.push(rowWithNewPosition);
+          }
+        });
+
+        // Update existing rows with new positions, keep rows not in update list unchanged
+        const updatedExistingRows = existingRows.map((row) => {
+          const id = String(getRowId({ row: row.row, rowIdAccessor }));
+          const updatedRow = rowsToUpdate.find(
+            (r) => String(getRowId({ row: r.row, rowIdAccessor })) === id
+          );
+          return updatedRow || row;
+        });
+
+        // Combine updated existing rows with new leaving rows
+        return [...updatedExistingRows, ...newLeavingRows];
       });
     },
     [
@@ -226,8 +252,14 @@ const useTableRowProcessing = ({
   );
 
   const prepareForSortChange = useCallback(
-    (accessor: Accessor, targetVisibleRows: TableRow[]) => {
+    (accessor: Accessor, targetVisibleRows: TableRow[], capturePositions?: () => void) => {
       if (!allowAnimations || shouldPaginate) return;
+
+      // CRITICAL: Capture positions of existing leaving rows BEFORE updating them
+      // This prevents teleporting when their positions change
+      if (capturePositions) {
+        capturePositions();
+      }
 
       // Calculate what rows would be after sort
       const newSortedRows = computeSortedRowsPreview(accessor);
@@ -285,29 +317,49 @@ const useTableRowProcessing = ({
           newVisibleRows.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
         );
 
-        // Create set of IDs already in existingRows
-        const existingRowIds = new Set(
-          existingRows.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
+        // Create map of existing leaving rows for quick lookup
+        const existingRowsMap = new Map(
+          existingRows.map((row) => [String(getRowId({ row: row.row, rowIdAccessor })), row])
         );
 
-        // Find rows currently visible but won't be visible after sort
-        const leavingRows = targetVisibleRows
-          .filter((row) => {
-            const id = String(getRowId({ row: row.row, rowIdAccessor }));
-            return !newVisibleIds.has(id) && !existingRowIds.has(id);
-          })
-          .map((leavingRow) => {
-            const id = String(getRowId({ row: leavingRow.row, rowIdAccessor }));
-            // Find this row in the NEW processed rows to get its NEW position (after sort)
-            const rowInNewState = newProcessedRows.find(
-              (newRow) => String(getRowId({ row: newRow.row, rowIdAccessor })) === id
-            );
-            // Use the new position if found, otherwise keep current position
-            return rowInNewState || leavingRow;
-          });
+        // Find rows from targetVisibleRows that won't be visible after sort
+        const candidateLeavingRows = targetVisibleRows.filter((row) => {
+          const id = String(getRowId({ row: row.row, rowIdAccessor }));
+          return !newVisibleIds.has(id);
+        });
 
-        // Add unique leaving rows with their new positions
-        return [...existingRows, ...leavingRows];
+        // Separate into rows that need position updates vs truly new leaving rows
+        const rowsToUpdate: TableRow[] = [];
+        const newLeavingRows: TableRow[] = [];
+
+        candidateLeavingRows.forEach((leavingRow) => {
+          const id = String(getRowId({ row: leavingRow.row, rowIdAccessor }));
+          // Find this row in the NEW processed rows to get its NEW position (after sort)
+          const rowInNewState = newProcessedRows.find(
+            (newRow) => String(getRowId({ row: newRow.row, rowIdAccessor })) === id
+          );
+          const rowWithNewPosition = rowInNewState || leavingRow;
+
+          if (existingRowsMap.has(id)) {
+            // Row is already leaving, update its position
+            rowsToUpdate.push(rowWithNewPosition);
+          } else {
+            // Row is newly leaving
+            newLeavingRows.push(rowWithNewPosition);
+          }
+        });
+
+        // Update existing rows with new positions, keep rows not in update list unchanged
+        const updatedExistingRows = existingRows.map((row) => {
+          const id = String(getRowId({ row: row.row, rowIdAccessor }));
+          const updatedRow = rowsToUpdate.find(
+            (r) => String(getRowId({ row: r.row, rowIdAccessor })) === id
+          );
+          return updatedRow || row;
+        });
+
+        // Combine updated existing rows with new leaving rows
+        return [...updatedExistingRows, ...newLeavingRows];
       });
     },
     [
@@ -321,38 +373,6 @@ const useTableRowProcessing = ({
       currentTableRows,
       rowIdAccessor,
     ]
-  );
-
-  console.log("\n");
-  console.log(
-    "rowsLeavingTheDom",
-    JSON.stringify(
-      rowsLeavingTheDom.map((row) => ({
-        companyName: row.row.companyName,
-        id: row.row.id,
-        position: row.position,
-      }))
-    )
-  );
-  console.log(
-    "targetVisibleRows",
-    JSON.stringify(
-      targetVisibleRows.map((row) => ({
-        companyName: row.row.companyName,
-        id: row.row.id,
-        position: row.position,
-      }))
-    )
-  );
-  console.log(
-    "rowsEnteringTheDom",
-    JSON.stringify(
-      rowsEnteringTheDom.map((row) => ({
-        companyName: row.row.companyName,
-        id: row.row.id,
-        position: row.position,
-      }))
-    )
   );
 
   return {

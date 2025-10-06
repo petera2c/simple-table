@@ -397,7 +397,8 @@ const SimpleTableComp = ({
   const onSort = useCallback(
     (accessor: Accessor) => {
       // STAGE 1: Prepare animation by adding entering rows before applying sort
-      prepareForSortChange(accessor, currentVisibleRows);
+      // Pass captureAllPositions so it can capture leaving rows before updating their positions
+      prepareForSortChange(accessor, currentVisibleRows, captureAllPositions);
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
       // Note: Position capture happens in updateSort via onBeforeSort callback
@@ -408,7 +409,7 @@ const SimpleTableComp = ({
         });
       });
     },
-    [prepareForSortChange, updateSort, currentVisibleRows]
+    [prepareForSortChange, updateSort, currentVisibleRows, captureAllPositions]
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
@@ -439,7 +440,8 @@ const SimpleTableComp = ({
   const handleApplyFilter = useCallback(
     (filter: FilterCondition) => {
       // STAGE 1: Prepare animation by adding entering rows before applying filter
-      prepareForFilterChange(filter);
+      // Pass captureAllPositions so it can capture leaving rows before updating their positions
+      prepareForFilterChange(filter, captureAllPositions);
 
       // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
       // Use double RAF to ensure browser has completed layout before capturing positions

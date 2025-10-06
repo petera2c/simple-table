@@ -52,24 +52,58 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
 
     let toBounds = elementRef.current.getBoundingClientRect();
 
+    // DEBUG: Track specific cell
+    const isDebugCell = id === "3-companyName";
+    if (isDebugCell) {
+      console.log("🔍 [Animate] Cell 3-companyName - Start of useLayoutEffect", {
+        id,
+        toBounds: { x: toBounds.x, y: toBounds.y, top: toBounds.top, left: toBounds.left },
+        currentTransform: elementRef.current.style.transform,
+        currentTransition: elementRef.current.style.transition,
+      });
+    }
+
     // CRITICAL: Check if we have a captured position for this element (react-flip-move pattern)
     // This allows animations to continue smoothly even when interrupted by rapid clicks
     const capturedPosition = capturedPositionsRef.current.get(id);
     const fromBounds = capturedPosition || fromBoundsRef.current;
 
+    if (isDebugCell) {
+      console.log("🔍 [Animate] Cell 3-companyName - Position sources", {
+        hasCapturedPosition: !!capturedPosition,
+        capturedPosition: capturedPosition
+          ? { x: capturedPosition.x, y: capturedPosition.y }
+          : null,
+        hasFromBoundsRef: !!fromBoundsRef.current,
+        fromBoundsRef: fromBoundsRef.current
+          ? { x: fromBoundsRef.current.x, y: fromBoundsRef.current.y }
+          : null,
+        fromBounds: fromBounds ? { x: fromBounds.x, y: fromBounds.y } : null,
+      });
+    }
+
     // If we're currently scrolling, don't animate and don't update bounds
     if (isScrolling) {
+      if (isDebugCell) {
+        console.log("🔍 [Animate] Cell 3-companyName - Scrolling, skipping");
+      }
       return;
     }
 
     // If scrolling just ended, update the previous bounds without animating
     if (previousScrollingState && !isScrolling) {
+      if (isDebugCell) {
+        console.log("🔍 [Animate] Cell 3-companyName - Scrolling just ended, updating bounds");
+      }
       fromBoundsRef.current = toBounds;
       return;
     }
 
     // If resizing just ended, update the previous bounds without animating
     if (previousResizingState && !isResizing) {
+      if (isDebugCell) {
+        console.log("🔍 [Animate] Cell 3-companyName - Resizing just ended, updating bounds");
+      }
       fromBoundsRef.current = toBounds;
       capturedPositionsRef.current.delete(id);
       return;
@@ -85,6 +119,9 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
 
     // If there's no previous bound data, don't animate (prevents first render animations)
     if (!fromBounds) {
+      if (isDebugCell) {
+        console.log("🔍 [Animate] Cell 3-companyName - No fromBounds, skipping (first render)");
+      }
       return;
     }
 
@@ -93,8 +130,21 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     const deltaY = toBounds.y - fromBounds.y;
     const positionDelta = Math.abs(deltaX);
 
+    if (isDebugCell) {
+      console.log("🔍 [Animate] Cell 3-companyName - Position deltas", {
+        deltaX,
+        deltaY,
+        positionDelta,
+        fromBounds: { x: fromBounds.x, y: fromBounds.y },
+        toBounds: { x: toBounds.x, y: toBounds.y },
+      });
+    }
+
     // Only animate if position change is significant (indicates column/row reordering)
     if (positionDelta < COLUMN_REORDER_THRESHOLD && Math.abs(deltaY) <= ROW_REORDER_THRESHOLD) {
+      if (isDebugCell) {
+        console.log("🔍 [Animate] Cell 3-companyName - Position change too small, skipping");
+      }
       return;
     }
 
@@ -108,9 +158,20 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     hasPositionChanged = hasDOMPositionChanged;
 
     if (hasPositionChanged) {
+      if (isDebugCell) {
+        console.log("🔍 [Animate] Cell 3-companyName - Position changed, starting animation", {
+          hasDOMPositionChanged,
+          deltaX,
+          deltaY,
+        });
+      }
+
       // CRITICAL: Cancel any pending cleanup from the previous animation
       // This prevents the old animation's cleanup from interfering with the new one
       if (cleanupCallbackRef.current) {
+        if (isDebugCell) {
+          console.log("🔍 [Animate] Cell 3-companyName - Canceling previous cleanup");
+        }
         cleanupCallbackRef.current();
         cleanupCallbackRef.current = null;
       }
@@ -118,6 +179,10 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
       // CRITICAL: Immediately stop any in-progress animation before starting a new one
       // This prevents the old animation from interfering with position calculations
       if (elementRef.current.style.transition) {
+        if (isDebugCell) {
+          console.log("🔍 [Animate] Cell 3-companyName - Animation in progress, freezing element");
+        }
+
         // Get current visual position (with transform applied)
         const currentVisualY = elementRef.current.getBoundingClientRect().y;
 
@@ -130,6 +195,14 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         // Calculate offset needed to keep element at current visual position
         const offsetY = currentVisualY - pureDOMY;
 
+        if (isDebugCell) {
+          console.log("🔍 [Animate] Cell 3-companyName - Freeze details", {
+            currentVisualY,
+            pureDOMY,
+            offsetY,
+          });
+        }
+
         // Set the frozen transform to keep element at current visual position
         elementRef.current.style.transform = `translate3d(0px, ${offsetY}px, 0px)`;
 
@@ -140,6 +213,12 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         // CRITICAL: Recapture toBounds after freezing the element
         // The DOM position has changed (it's now at pureDOMY), so we need to update toBounds
         toBounds = elementRef.current.getBoundingClientRect();
+
+        if (isDebugCell) {
+          console.log("🔍 [Animate] Cell 3-companyName - toBounds after freeze", {
+            toBounds: { x: toBounds.x, y: toBounds.y },
+          });
+        }
       }
 
       // Merge animation config with defaults
@@ -225,6 +304,18 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           const animationEndY =
             parentScrollTop + clientHeight + dynamicDistance + leavingStagger + positionVariance;
 
+          if (isDebugCell) {
+            console.log("🔍 [Animate] Cell 3-companyName - ANIMATING: Moving below viewport", {
+              startY: fromBounds.y,
+              endY: animationEndY,
+              finalY: toBounds.y,
+              dynamicDistance,
+              leavingStagger,
+              positionVariance,
+              elementPosition,
+            });
+          }
+
           animateWithCustomCoordinates({
             element: elementRef.current,
             options: {
@@ -256,6 +347,18 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
             (rowHeight * POSITION_VARIANCE_MULTIPLIER);
           const animationEndY =
             parentScrollTop - dynamicDistance - leavingStagger - positionVariance;
+
+          if (isDebugCell) {
+            console.log("🔍 [Animate] Cell 3-companyName - ANIMATING: Moving above viewport", {
+              startY: fromBounds.y,
+              endY: animationEndY,
+              finalY: toBounds.y,
+              dynamicDistance,
+              leavingStagger,
+              positionVariance,
+              elementPosition,
+            });
+          }
 
           animateWithCustomCoordinates({
             element: elementRef.current,
@@ -289,6 +392,19 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           const animationStartY =
             parentScrollTop + clientHeight + dynamicDistance + enteringStagger;
 
+          if (isDebugCell) {
+            console.log(
+              "🔍 [Animate] Cell 3-companyName - ANIMATING: Entering from below viewport",
+              {
+                startY: animationStartY,
+                endY: toBounds.y,
+                dynamicDistance,
+                enteringStagger,
+                elementPosition,
+              }
+            );
+          }
+
           animateWithCustomCoordinates({
             element: elementRef.current,
             options: {
@@ -315,6 +431,19 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
             (elementPosition % ENTERING_STAGGER_CYCLE) * baseStagger * ENTERING_STAGGER_MULTIPLIER;
           const animationStartY = parentScrollTop - dynamicDistance - enteringStagger;
 
+          if (isDebugCell) {
+            console.log(
+              "🔍 [Animate] Cell 3-companyName - ANIMATING: Entering from above viewport",
+              {
+                startY: animationStartY,
+                endY: toBounds.y,
+                dynamicDistance,
+                enteringStagger,
+                elementPosition,
+              }
+            );
+          }
+
           animateWithCustomCoordinates({
             element: elementRef.current,
             options: {
@@ -328,6 +457,14 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
 
           return;
         }
+      }
+
+      if (isDebugCell) {
+        console.log("🔍 [Animate] Cell 3-companyName - ANIMATING: Regular flip animation", {
+          fromBounds: { x: fromBounds.x, y: fromBounds.y },
+          toBounds: { x: toBounds.x, y: toBounds.y },
+          deltaY: toBounds.y - fromBounds.y,
+        });
       }
 
       // Start the animation and store the cleanup function
