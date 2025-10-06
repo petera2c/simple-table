@@ -42,8 +42,16 @@ const useTableRowProcessing = ({
   computeSortedRowsPreview,
 }: UseTableRowProcessingProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [animationStartTime, setAnimationStartTime] = useState(0);
   const [rowsEnteringTheDom, setRowsEnteringTheDom] = useState<any[]>([]);
   const [rowsLeavingTheDom, setRowsLeavingTheDom] = useState<any[]>([]);
+
+  // Cleanup function to reset animation states
+  const cleanupAnimationRows = useCallback(() => {
+    setRowsEnteringTheDom([]);
+    setRowsLeavingTheDom([]);
+    setIsAnimating(false);
+  }, []);
 
   // Process rows through pagination and grouping
   const processRowSet = useCallback(
@@ -147,6 +155,7 @@ const useTableRowProcessing = ({
         .filter(Boolean);
 
       setIsAnimating(true);
+      setAnimationStartTime(Date.now());
 
       // Add unique rows to rowsEnteringTheDom (don't add duplicates from targetVisibleRows or existing rowsEnteringTheDom)
       setRowsEnteringTheDom((existingRows) => {
@@ -245,6 +254,7 @@ const useTableRowProcessing = ({
         .filter(Boolean);
 
       setIsAnimating(true);
+      setAnimationStartTime(Date.now());
 
       // Add unique rows to rowsEnteringTheDom (don't add duplicates from targetVisibleRows or existing rowsEnteringTheDom)
       setRowsEnteringTheDom((existingRows) => {
@@ -316,35 +326,43 @@ const useTableRowProcessing = ({
   console.log("\n");
   console.log(
     "rowsLeavingTheDom",
-    rowsLeavingTheDom.map((row) => ({
-      companyName: row.row.companyName,
-      id: row.row.id,
-      position: row.position,
-    }))
+    JSON.stringify(
+      rowsLeavingTheDom.map((row) => ({
+        companyName: row.row.companyName,
+        id: row.row.id,
+        position: row.position,
+      }))
+    )
   );
   console.log(
     "targetVisibleRows",
-    targetVisibleRows.map((row) => ({
-      companyName: row.row.companyName,
-      id: row.row.id,
-      position: row.position,
-    }))
+    JSON.stringify(
+      targetVisibleRows.map((row) => ({
+        companyName: row.row.companyName,
+        id: row.row.id,
+        position: row.position,
+      }))
+    )
   );
   console.log(
     "rowsEnteringTheDom",
-    rowsEnteringTheDom.map((row) => ({
-      companyName: row.row.companyName,
-      id: row.row.id,
-      position: row.position,
-    }))
+    JSON.stringify(
+      rowsEnteringTheDom.map((row) => ({
+        companyName: row.row.companyName,
+        id: row.row.id,
+        position: row.position,
+      }))
+    )
   );
 
   return {
     currentTableRows,
     currentVisibleRows: visibleRowsWithLeaving,
     isAnimating,
+    animationStartTime,
     prepareForFilterChange,
     prepareForSortChange,
+    cleanupAnimationRows,
     rowsEnteringTheDom,
   };
 };

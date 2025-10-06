@@ -50,6 +50,7 @@ import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
 import { RowButton } from "../../types/RowButton";
 import { HeaderDropdown } from "../../types/HeaderDropdownProps";
+import { ANIMATION_CONFIGS } from "../animate/animation-utils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -328,7 +329,9 @@ const SimpleTableComp = ({
     rowsEnteringTheDom,
     prepareForFilterChange,
     prepareForSortChange,
+    cleanupAnimationRows,
     isAnimating,
+    animationStartTime,
   } = useTableRowProcessing({
     allowAnimations,
     sortedRows,
@@ -377,6 +380,18 @@ const SimpleTableComp = ({
     cellRegistry: cellRegistryRef.current,
     collapsedHeaders,
   });
+
+  // Cleanup animation rows after animation completes
+  useEffect(() => {
+    if (isAnimating && animationStartTime > 0) {
+      // Animation duration is 9000ms, add buffer for safety
+      const timeoutId = setTimeout(() => {
+        cleanupAnimationRows();
+      }, ANIMATION_CONFIGS.ROW_REORDER.duration + 50);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isAnimating, animationStartTime, cleanupAnimationRows]);
 
   // Memoize handlers
   const onSort = useCallback(
