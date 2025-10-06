@@ -1407,9 +1407,6 @@ input {
   align-items: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 .st-checkbox-input {
@@ -2071,15 +2068,20 @@ input {
   display: flex;
   flex-direction: column;
   gap: var(--st-spacing-small);
-  overflow: auto;
   flex-grow: 1;
-  max-height: 200px;
+  height: 200px;
+  overflow: auto;
 }
 
 /* Select All checkbox styling */
 .st-enum-select-all {
   padding-bottom: var(--st-spacing-small);
-  margin-bottom: var(--st-spacing-small);
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+/* Search input container */
+.st-enum-search {
+  padding-bottom: var(--st-spacing-small);
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 
@@ -2093,6 +2095,15 @@ input {
   font-size: 14px;
   color: var(--st-cell-color);
   user-select: none;
+}
+
+/* No results message */
+.st-enum-no-results {
+  padding: var(--st-spacing-medium);
+  text-align: center;
+  font-size: 14px;
+  color: var(--st-slate-400);
+  font-style: italic;
 }
 
 /* ===========================
