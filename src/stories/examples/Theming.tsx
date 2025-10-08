@@ -19,7 +19,7 @@ export const themingDefaults = {
 const EXAMPLE_DATA = generateSpaceData();
 const HEADERS = SPACE_HEADERS;
 
-const THEME_OPTIONS: Theme[] = ["sky", "funky", "neutral", "light", "dark"];
+const THEME_OPTIONS: Theme[] = ["sky", "violet", "neutral", "light", "dark"];
 
 const ThemingExample = (props: UniversalTableProps) => {
   const [rows, setRows] = useState(EXAMPLE_DATA);

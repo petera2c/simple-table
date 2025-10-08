@@ -634,8 +634,8 @@
   --st-filter-button-disabled-text-color: var(--st-blue-500);
 }
 
-/* Funky Theme */
-.theme-funky {
+/* Violet Theme */
+.theme-violet {
   /* Layout/Structure variables */
   --st-border-radius: 8px;
   --st-cell-padding: 12px;

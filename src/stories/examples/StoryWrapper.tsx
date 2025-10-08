@@ -83,7 +83,7 @@ export const defaultUniversalArgs: UniversalTableProps = {
 export const universalArgTypes = {
   theme: {
     control: { type: "select" as const },
-    options: ["sky", "funky", "neutral", "light", "dark"],
+    options: ["sky", "violet", "neutral", "light", "dark"],
     description: "Select the theme for the table",
   },
   useOddColumnBackground: {
