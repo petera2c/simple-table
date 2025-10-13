@@ -14,7 +14,6 @@ interface TableRowProps {
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
   headers: HeaderObject[];
-  hoveredIndex: number | null;
   index: number;
   pinned?: Pinned;
   rowHeight: number;
@@ -28,7 +27,6 @@ const TableRow = ({
   columnIndexStart,
   gridTemplateColumns,
   headers,
-  hoveredIndex,
   index,
   pinned,
   rowHeight,
@@ -57,11 +55,12 @@ const TableRow = ({
   return (
     <div
       className={`st-row ${useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""} ${
-        hoveredIndex === index && useHoverRowBackground ? "hovered" : ""
-      } ${isSelected ? "selected" : ""}`}
+        isSelected ? "selected" : ""
+      }`}
+      data-index={index}
       onMouseEnter={() => {
         // Don't apply hover effects during animations
-        if (!isAnimating) {
+        if (!isAnimating && useHoverRowBackground) {
           setHoveredIndex(index);
         }
       }}

@@ -23,7 +23,6 @@ interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
-  hoveredIndex: number | null;
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
@@ -40,7 +39,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       columnIndexStart,
       columnIndices,
       headers,
-      hoveredIndex,
       pinned,
       rowHeight,
       rowIndices,
@@ -99,7 +97,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                   columnIndices={columnIndices}
                   gridTemplateColumns={templateColumns}
                   headers={headers}
-                  hoveredIndex={hoveredIndex}
                   index={index}
                   key={rowId}
                   pinned={pinned}
