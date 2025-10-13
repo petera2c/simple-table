@@ -397,7 +397,14 @@ const SimpleTableComp = ({
     setScrollbarWidth,
   });
   useOnGridReady({ onGridReady });
-  useTableAPI({ cellRegistryRef, headerRegistryRef, rowIdAccessor, rows, tableRef });
+  useTableAPI({
+    cellRegistryRef,
+    headerRegistryRef,
+    rowIdAccessor,
+    rows,
+    tableRef,
+    visibleRows: rowsToRender,
+  });
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
 
