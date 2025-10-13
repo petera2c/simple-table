@@ -2069,7 +2069,7 @@ input {
   flex-direction: column;
   gap: var(--st-spacing-small);
   flex-grow: 1;
-  height: 200px;
+  max-height: 200px;
   overflow: auto;
 }
 

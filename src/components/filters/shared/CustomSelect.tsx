@@ -127,7 +127,7 @@ const CustomSelect = ({
         <div className="st-custom-select-options" role="listbox">
           {options.map((option, index) => (
             <div
-              key={option.value}
+              key={index}
               className={`st-custom-select-option ${
                 option.value === value ? "st-custom-select-option-selected" : ""
               } ${index === focusedIndex ? "st-custom-select-option-focused" : ""}`.trim()}

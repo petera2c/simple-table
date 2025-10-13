@@ -250,11 +250,11 @@ const TableHeaderCell = ({
   );
 
   // Handle header dropdown toggle
-  const handleHeaderDropdownToggle = useCallback(() => {
-    if (setActiveHeaderDropdown) {
-      setActiveHeaderDropdown(isDropdownOpen ? null : header);
-    }
-  }, [setActiveHeaderDropdown, isDropdownOpen, header]);
+  // const handleHeaderDropdownToggle = useCallback(() => {
+  //   if (setActiveHeaderDropdown) {
+  //     setActiveHeaderDropdown(isDropdownOpen ? null : header);
+  //   }
+  // }, [setActiveHeaderDropdown, isDropdownOpen, header]);
 
   // Close header dropdown
   const handleHeaderDropdownClose = useCallback(() => {

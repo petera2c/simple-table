@@ -125,9 +125,9 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
             </div>
           )}
           {/* Individual option checkboxes */}
-          {filteredOptions.map((option) => (
+          {filteredOptions.map((option, index) => (
             <Checkbox
-              key={option.value}
+              key={index}
               checked={selectedValues.includes(option.value)}
               onChange={() => handleValueToggle(option.value)}
             >

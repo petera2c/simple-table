@@ -1,10 +1,10 @@
 {
-  "version": "1.4.2",
+  "version": "1.4.3",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "publish-fast": "git add . && git commit -m \"$npm_config_message\" && git push && npm run build && npm publish",
+    "publish-fast": "npm i && git add . && git commit -m \"$npm_config_message\" && git push && npm run build && npm publish",
     "build": "rollup -c",
     "start": "storybook dev -p 6006",
     "build-storybook": "storybook build",

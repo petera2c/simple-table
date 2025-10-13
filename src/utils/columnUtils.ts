@@ -1,5 +1,4 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import { findLeafHeaders } from "./headerWidthUtils";
 
 const getColumnWidth = (header: HeaderObject) => {
   let { minWidth, width } = header;
