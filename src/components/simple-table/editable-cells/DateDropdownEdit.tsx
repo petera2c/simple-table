@@ -2,18 +2,12 @@ import React, { useEffect } from "react";
 import Dropdown from "../../dropdown/Dropdown";
 import DatePicker from "../../date-picker/DatePicker";
 import CellValue from "../../../types/CellValue";
+import { parseDateString } from "../../../utils/dateUtils";
 
 // Convert the input value to a Date object
 const parseDate = (value: CellValue): Date => {
   if (!value) return new Date();
-  const [year, month, day] = value.toString().split("-").map(Number);
-
-  const parsedDate = new Date();
-  parsedDate.setFullYear(year);
-  parsedDate.setMonth(month - 1);
-  parsedDate.setDate(day);
-
-  return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+  return parseDateString(value.toString());
 };
 interface DateDropdownEditProps {
   onBlur: () => void;

@@ -1,11 +1,5 @@
 import { FilterCondition } from "../types/FilterTypes";
-
-/**
- * Normalizes a date to remove time component for accurate date-only comparison
- */
-const normalizeDate = (date: Date): Date => {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-};
+import { normalizeDate, createSafeDate } from "./dateUtils";
 
 /**
  * Applies a filter condition to a cell value
@@ -92,8 +86,8 @@ export const applyFilterToValue = (cellValue: any, filter: FilterCondition): boo
 
   // Date operations
   if (cellValue instanceof Date || !isNaN(Date.parse(cellValue))) {
-    const cellDate = new Date(cellValue);
-    const filterDate = new Date(String(value || ""));
+    const cellDate = createSafeDate(cellValue);
+    const filterDate = createSafeDate(String(value || ""));
 
     const normalizedCellDate = normalizeDate(cellDate);
     const normalizedFilterDate = normalizeDate(filterDate);
@@ -109,13 +103,17 @@ export const applyFilterToValue = (cellValue: any, filter: FilterCondition): boo
         return normalizedCellDate > normalizedFilterDate;
       case "between":
         if (values && values.length === 2) {
-          const [startDate, endDate] = values.map((d) => normalizeDate(new Date(String(d || ""))));
+          const [startDate, endDate] = values.map((d) =>
+            normalizeDate(createSafeDate(String(d || "")))
+          );
           return normalizedCellDate >= startDate && normalizedCellDate <= endDate;
         }
         return false;
       case "notBetween":
         if (values && values.length === 2) {
-          const [startDate, endDate] = values.map((d) => normalizeDate(new Date(String(d || ""))));
+          const [startDate, endDate] = values.map((d) =>
+            normalizeDate(createSafeDate(String(d || "")))
+          );
           return normalizedCellDate < startDate || normalizedCellDate > endDate;
         }
         return true;

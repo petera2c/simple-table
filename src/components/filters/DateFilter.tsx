@@ -13,6 +13,7 @@ import OperatorSelector from "./shared/OperatorSelector";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 import DatePicker from "../date-picker/DatePicker";
+import { createSafeDate } from "../../utils/dateUtils";
 import Dropdown from "../dropdown/Dropdown";
 
 interface DateFilterProps {
@@ -105,7 +106,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
     // Update display value when value changes
     useEffect(() => {
       if (value) {
-        const date = new Date(value);
+        const date = createSafeDate(value);
         if (!isNaN(date.getTime())) {
           setDisplayValue(
             date.toLocaleDateString("en-US", {
@@ -150,7 +151,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
       setIsOpen(false);
     };
 
-    const currentDate = value ? new Date(value) : new Date();
+    const currentDate = value ? createSafeDate(value) : new Date();
 
     return (
       <div className="st-date-input-container" style={{ position: "relative" }}>
