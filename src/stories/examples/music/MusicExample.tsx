@@ -36,6 +36,7 @@ export default function MusicExample({
       selectableCells
       tableRef={tableRef}
       theme={theme}
+      headerHeight={40}
     />
   );
 }

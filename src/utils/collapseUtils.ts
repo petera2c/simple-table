@@ -38,11 +38,11 @@ export const shouldHideWhenParentCollapsed = (
     const isParentCollapsed = collapsedHeaders.has(parentHeader.accessor);
 
     if (isParentCollapsed) {
-      // If parent is collapsed, only show if summaryColumn is true
-      return !header.summaryColumn;
+      // If parent is collapsed, hide if showWhen is 'parentExpanded'
+      return header.showWhen === "parentExpanded";
     } else {
-      // If parent is NOT collapsed, only show if summaryColumn is false/undefined
-      return header.summaryColumn === true;
+      // If parent is NOT collapsed, hide if showWhen is 'parentCollapsed'
+      return header.showWhen === "parentCollapsed";
     }
   }
 
@@ -82,5 +82,7 @@ export const getVisibleLeafHeadersWhenCollapsed = (header: HeaderObject): Header
   const leafHeaders = flattenHeaders(header.children);
 
   // Return only those marked as visible when collapsed
-  return leafHeaders.filter((leafHeader) => leafHeader.summaryColumn);
+  return leafHeaders.filter(
+    (leafHeader) => leafHeader.showWhen === "parentCollapsed" || leafHeader.showWhen === "always"
+  );
 };

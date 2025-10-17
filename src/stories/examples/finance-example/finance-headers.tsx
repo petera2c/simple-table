@@ -88,7 +88,7 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         filterable: true,
         isEditable: true,
-        summaryColumn: true,
+        showWhen: "parentCollapsed",
         align: "right",
         type: "number",
       },

@@ -189,6 +189,7 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "center",
     type: "number",
+    pinned: "left",
   },
   {
     accessor: "artistName",
@@ -294,7 +295,7 @@ export const HEADERS: HeaderObject[] = [
         accessor: "followers",
         label: "Total Followers",
         width: 180,
-        summaryColumn: true,
+        showWhen: "always",
         isSortable: true,
         isEditable: false,
         align: "right",
@@ -336,6 +337,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.followers7DayGrowth as number;
           const growthPercent = row.followers7DayGrowthPercent as number;
@@ -356,6 +358,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.followers28DayGrowth as number;
           const growthPercent = row.followers28DayGrowthPercent as number;
@@ -376,6 +379,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.followers60DayGrowth as number;
           const growthPercent = row.followers60DayGrowthPercent as number;
@@ -442,7 +446,7 @@ export const HEADERS: HeaderObject[] = [
         accessor: "playlistReach",
         label: "Total Reach",
         width: 180,
-        summaryColumn: true,
+        showWhen: "parentCollapsed",
         isSortable: true,
         isEditable: false,
         align: "right",
@@ -486,6 +490,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistReach7DayGrowth as number;
           const growthPercent = row.playlistReach7DayGrowthPercent as number;
@@ -508,6 +513,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistReach28DayGrowth as number;
           const growthPercent = row.playlistReach28DayGrowthPercent as number;
@@ -530,6 +536,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistReach60DayGrowth as number;
           const growthPercent = row.playlistReach60DayGrowthPercent as number;
@@ -556,7 +563,7 @@ export const HEADERS: HeaderObject[] = [
         accessor: "playlistCount",
         label: "Total Count",
         width: 180,
-        summaryColumn: true,
+        showWhen: "parentCollapsed",
         isSortable: true,
         isEditable: false,
         align: "right",
@@ -598,6 +605,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistCount7DayGrowth as number;
           const growthPercent = row.playlistCount7DayGrowthPercent as number;
@@ -618,6 +626,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistCount28DayGrowth as number;
           const growthPercent = row.playlistCount28DayGrowthPercent as number;
@@ -638,6 +647,7 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistCount60DayGrowth as number;
           const growthPercent = row.playlistCount60DayGrowthPercent as number;
@@ -662,7 +672,7 @@ export const HEADERS: HeaderObject[] = [
         accessor: "monthlyListeners",
         label: "Total Listeners",
         width: 180,
-        summaryColumn: true,
+        showWhen: "parentCollapsed",
         isSortable: true,
         isEditable: false,
         align: "right",

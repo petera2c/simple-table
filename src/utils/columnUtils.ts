@@ -39,9 +39,11 @@ export const createGridTemplateColumns = ({
       if (header.hide) return;
 
       if (header.children && header.children.length > 0) {
-        // If this header is collapsed, only show children marked as summaryColumn
+        // If this header is collapsed, show children based on showWhen property
         if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
-          const visibleChildren = header.children.filter((child) => child.summaryColumn);
+          const visibleChildren = header.children.filter(
+            (child) => child.showWhen === "parentCollapsed" || child.showWhen === "always"
+          );
           if (visibleChildren.length > 0) {
             flattenHeaders({ headers: visibleChildren, flattenedHeaders });
           } else {
@@ -49,8 +51,11 @@ export const createGridTemplateColumns = ({
             flattenedHeaders.push(header);
           }
         } else {
-          // If not collapsed, show only children that are NOT marked as summaryColumn
-          const childrenToShow = header.children.filter((child) => !child.summaryColumn);
+          // If not collapsed, show children based on showWhen property (parentExpanded or always)
+          const childrenToShow = header.children.filter(
+            (child) =>
+              child.showWhen === "parentExpanded" || child.showWhen === "always" || !child.showWhen
+          );
           flattenHeaders({ headers: childrenToShow, flattenedHeaders });
         }
       } else {

@@ -80,7 +80,7 @@ const TableHeaderCell = ({
     onHeaderEdit,
     onSort,
     onTableHeaderDragEnd,
-    rowHeight,
+    headerHeight,
     selectColumns,
     selectableColumns,
     selectedColumns,
@@ -155,7 +155,9 @@ const TableHeaderCell = ({
 
     // If collapsed, check if any children are visible when collapsed
     if (isCollapsed) {
-      return header.children.some((child) => child.summaryColumn);
+      return header.children.some(
+        (child) => child.showWhen === "parentCollapsed" || child.showWhen === "always"
+      );
     }
 
     // If not collapsed, has visible children if it has any children
@@ -533,7 +535,7 @@ const TableHeaderCell = ({
         gridRowEnd,
         gridColumnStart,
         gridColumnEnd,
-        ...(gridRowEnd - gridRowStart > 1 ? {} : { height: rowHeight }),
+        ...(gridRowEnd - gridRowStart > 1 ? {} : { height: headerHeight }),
       }}
     >
       {reverse && ResizeHandle}

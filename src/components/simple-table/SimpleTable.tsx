@@ -483,6 +483,7 @@ const SimpleTableComp = ({
         rowButtons,
         rowGrouping,
         rowHeight,
+        headerHeight: headerHeight ?? rowHeight,
         rowIdAccessor,
         scrollbarWidth,
         selectColumns,
