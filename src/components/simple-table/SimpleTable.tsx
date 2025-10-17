@@ -72,6 +72,7 @@ interface SimpleTableProps {
   headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
   headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
+  headerHeight?: number; // Height of the header
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -136,6 +137,7 @@ const SimpleTableComp = ({
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
   headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
   headerDropdown,
+  headerHeight,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
