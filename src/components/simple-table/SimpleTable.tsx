@@ -268,17 +268,30 @@ const SimpleTableComp = ({
   }, []);
 
   // Calculate the width of the sections
-  const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
+  const {
+    mainBodyWidth,
+    pinnedLeftWidth,
+    pinnedRightWidth,
+    pinnedLeftContentWidth,
+    pinnedRightContentWidth,
+  } = useMemo(() => {
     // Get responsive max pinned percent based on viewport width for better mobile compatibility
     const maxPinnedWidthPercent = getResponsiveMaxPinnedPercent(window.innerWidth);
 
-    const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
-      headers: effectiveHeaders,
-      containerWidth,
-      maxPinnedWidthPercent,
-      collapsedHeaders,
-    });
-    return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
+    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
+      recalculateAllSectionWidths({
+        headers: effectiveHeaders,
+        containerWidth,
+        maxPinnedWidthPercent,
+        collapsedHeaders,
+      });
+    return {
+      mainBodyWidth: mainWidth,
+      pinnedLeftWidth: leftWidth,
+      pinnedRightWidth: rightWidth,
+      pinnedLeftContentWidth: leftContentWidth,
+      pinnedRightContentWidth: rightContentWidth,
+    };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
   // Calculate content height using hook
@@ -558,6 +571,8 @@ const SimpleTableComp = ({
               mainBodyWidth={mainBodyWidth}
               pinnedLeftWidth={pinnedLeftWidth}
               pinnedRightWidth={pinnedRightWidth}
+              pinnedLeftContentWidth={pinnedLeftContentWidth}
+              pinnedRightContentWidth={pinnedRightContentWidth}
               tableBodyContainerRef={tableBodyContainerRef}
             />
             <TableFooter

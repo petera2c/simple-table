@@ -7,6 +7,7 @@ import {
   getHeaderMinWidth,
 } from "./headerWidthUtils";
 import { MAX_PINNED_WIDTH_PERCENT, getResponsiveMaxPinnedPercent } from "../consts/general-consts";
+import { calculatePinnedWidth } from "./headerUtils";
 
 /**
  * Calculate the maximum allowable width for a header based on container constraints
@@ -215,6 +216,7 @@ const handleParentHeaderResize = ({
 
 /**
  * Recalculate widths for all sections (left, right, main)
+ * Returns both constrained widths (for display) and raw content widths (for scrolling)
  */
 export const recalculateAllSectionWidths = ({
   headers,
@@ -226,11 +228,7 @@ export const recalculateAllSectionWidths = ({
   containerWidth?: number;
   maxPinnedWidthPercent?: number;
   collapsedHeaders?: Set<string>;
-}): {
-  leftWidth: number;
-  rightWidth: number;
-  mainWidth: number;
-} => {
+}) => {
   let leftWidth = 0;
   let rightWidth = 0;
   let mainWidth = 0;
@@ -255,6 +253,10 @@ export const recalculateAllSectionWidths = ({
     }
   });
 
+  // Store the raw content widths before applying constraints (needed for scrolling)
+  const leftContentWidth = leftWidth;
+  const rightContentWidth = rightWidth;
+
   // Apply width limits if container width is provided
   if (containerWidth && containerWidth > 0) {
     const maxPinnedWidth = containerWidth * maxPinnedWidthPercent;
@@ -269,8 +271,10 @@ export const recalculateAllSectionWidths = ({
   }
 
   return {
-    leftWidth,
-    rightWidth,
+    leftWidth: calculatePinnedWidth(leftWidth),
+    rightWidth: calculatePinnedWidth(rightWidth),
     mainWidth,
+    leftContentWidth,
+    rightContentWidth,
   };
 };

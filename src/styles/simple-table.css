@@ -907,7 +907,10 @@ input {
 }
 .st-header-main,
 .st-header-pinned-left,
-.st-header-pinned-right {
+.st-header-pinned-right,
+.st-body-main,
+.st-body-pinned-left,
+.st-body-pinned-right {
   scrollbar-width: none;
 }
 
@@ -1332,8 +1335,10 @@ input {
   flex-grow: 1;
   min-height: 11px;
 }
+.st-horizontal-scrollbar-left > div,
+.st-horizontal-scrollbar-right > div,
 .st-horizontal-scrollbar-middle > div {
-  height: 1px;
+  height: 0.3px;
 }
 
 .st-footer {

@@ -105,6 +105,7 @@ const TableHeaderSection = ({
         style={{
           gridTemplateColumns,
           width,
+          position: "relative",
         }}
       >
         <>

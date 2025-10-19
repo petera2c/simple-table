@@ -1,3 +1,4 @@
+import { PINNED_BORDER_WIDTH } from "../consts/general-consts";
 import HeaderObject from "../types/HeaderObject";
 
 /**
@@ -77,4 +78,8 @@ export const getColumnRange = (startColIndex: number, endColIndex: number): numb
   const start = Math.min(startColIndex, endColIndex);
   const end = Math.max(startColIndex, endColIndex);
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+};
+
+export const calculatePinnedWidth = (width = 0): number => {
+  return width ? width + PINNED_BORDER_WIDTH : 0;
 };
