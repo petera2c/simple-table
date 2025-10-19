@@ -44,66 +44,60 @@ const getThemeColors = (theme?: string) => {
   return themes[theme as keyof typeof themes] || themes.light;
 };
 
-// Custom cell renderer for artist avatar (circle with first letter)
-const ArtistAvatarCell = ({ row, theme }: { row: any; theme?: string }) => {
-  const name = row.artistName as string;
-  const firstLetter = name?.charAt(0).toUpperCase() || "?";
-
-  // Generate a consistent color based on the name
-  const getColorFromName = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const hue = hash % 360;
-    return `hsl(${hue}, 65%, 55%)`;
+// Color mapping functions
+const getMoodColor = (mood: string): string => {
+  const moodColors: Record<string, string> = {
+    Heartbroken: "red",
+    Melancholic: "blue",
+    Dark: "red",
+    Empowering: "yellow",
+    Energetic: "green",
+    Uplifting: "yellow",
+    Romantic: "red",
+    Hopeful: "blue",
+    Celebratory: "yellow",
+    Chill: "blue",
+    Affectionate: "red",
+    Aggressive: "red",
   };
+  return moodColors[mood] || "default";
+};
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-      }}
-    >
-      <div
-        style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "50%",
-          backgroundColor: getColorFromName(name),
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-          fontSize: "16px",
-          fontWeight: "600",
-          flexShrink: 0,
-        }}
-      >
-        {firstLetter}
-      </div>
-      <span style={{ fontWeight: "500" }}>{name}</span>
-    </div>
-  );
+const getGenreColor = (genre: string): string => {
+  const genreColors: Record<string, string> = {
+    alternative: "blue",
+    country: "yellow",
+    punjabi: "yellow",
+    latin: "red",
+    reggaeton: "red",
+    "k-pop": "red",
+    rock: "red",
+    "r&b/soul": "blue",
+    "indie pop": "blue",
+    "electronic/dance": "green",
+    bollywood: "yellow",
+    pop: "green",
+    "hip-hop/rap": "yellow",
+    afrobeat: "green",
+  };
+  return genreColors[genre] || "default";
 };
 
 // Custom Tag component
 const Tag = ({ children, color }: { children: React.ReactNode; color?: string }) => {
   const getColorStyles = (color?: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      green: { bg: "#f6ffed", text: "#2a6a0d" },
-      blue: { bg: "#e6f7ff", text: "#0050b3" },
-      yellow: { bg: "#fffbe6", text: "#ad6800" },
-      red: { bg: "#fff1f0", text: "#a8071a" },
-      default: { bg: "#f0f0f0", text: "rgba(0, 0, 0, 0.85)" },
+    const colors: Record<string, { bg: string; text: string; border?: string }> = {
+      green: { bg: "#f0fdf4", text: "#16a34a" },
+      blue: { bg: "#eff6ff", text: "#2563eb" },
+      yellow: { bg: "#fefce8", text: "#ca8a04" },
+      red: { bg: "#fef2f2", text: "#dc2626" },
+      default: { bg: "#ffffff", text: "#374151", border: "#d1d5db" },
     };
 
     return colors[color || "default"];
   };
 
-  const { bg, text } = getColorStyles(color);
+  const { bg, text, border } = getColorStyles(color);
 
   return (
     <span
@@ -115,6 +109,7 @@ const Tag = ({ children, color }: { children: React.ReactNode; color?: string })
         lineHeight: "20px",
         borderRadius: "2px",
         display: "inline-block",
+        ...(border && { border: `1px solid ${border}` }),
       }}
     >
       {children}
@@ -122,60 +117,41 @@ const Tag = ({ children, color }: { children: React.ReactNode; color?: string })
   );
 };
 
-// Custom Progress component
-const Progress = ({
-  percent,
-  size,
-  showInfo = true,
-  strokeColor,
+// Custom Growth Metric component
+const GrowthMetric = ({
+  value,
+  growthPercent,
+  isPositive = true,
+  theme,
+  align = "left",
+  showSign = true,
 }: {
-  percent: number;
-  size?: string;
-  showInfo?: boolean;
-  strokeColor?: string;
+  value: string | number;
+  growthPercent: number;
+  isPositive?: boolean;
+  theme?: string;
+  align?: "left" | "right";
+  showSign?: boolean;
 }) => {
-  const height = size === "small" ? 6 : 8;
-  const color = strokeColor || "#1890ff";
+  const colors = getThemeColors(theme);
+  const displayValue = typeof value === "number" ? value.toLocaleString() : value;
 
   return (
     <div
       style={{
-        width: "100%",
-        position: "relative",
-        marginRight: showInfo ? "50px" : "0",
         display: "flex",
-        alignItems: "center",
+        flexDirection: "column",
+        gap: "4px",
+        alignItems: align === "right" ? "flex-end" : "flex-start",
       }}
     >
-      <div
-        style={{
-          backgroundColor: "#f5f5f5",
-          height: `${height}px`,
-          width: "100%",
-          borderRadius: "100px",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            height: "100%",
-            width: `${percent}%`,
-            backgroundColor: color,
-            borderRadius: "100px",
-          }}
-        />
+      <div style={{ fontWeight: "600", fontSize: "14px", color: colors.gray }}>
+        {showSign && (isPositive ? "+" : "")}
+        {displayValue}
       </div>
-      {showInfo && (
-        <span
-          style={{
-            marginLeft: "8px",
-            fontSize: "14px",
-            color: "rgba(0, 0, 0, 0.65)",
-          }}
-        >
-          {`${percent}%`}
-        </span>
-      )}
+      <Tag color={isPositive ? "green" : "red"}>
+        {isPositive ? "↑" : "↓"} {growthPercent}%
+      </Tag>
     </div>
   );
 };
@@ -194,7 +170,7 @@ export const HEADERS: HeaderObject[] = [
   {
     accessor: "artistName",
     label: "Artist",
-    width: 250,
+    width: 320,
     isSortable: true,
     isEditable: false,
     align: "left",
@@ -248,9 +224,9 @@ export const HEADERS: HeaderObject[] = [
           <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
             <span style={{ fontWeight: "500", fontSize: "14px" }}>{name}</span>
             <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-              <Tag color={statusColorMap[growthStatus] || "default"}>{growthStatus}</Tag>
-              <span style={{ fontSize: "12px", color: colors.grayMuted }}>{mood}</span>
-              <span style={{ fontSize: "12px", color: colors.grayMuted }}>{genre}</span>
+              <Tag color="default">{growthStatus}</Tag>
+              <Tag color="default">{mood}</Tag>
+              <Tag color="default">{genre}</Tag>
             </div>
           </div>
         </div>
@@ -277,10 +253,8 @@ export const HEADERS: HeaderObject[] = [
           <div style={{ fontSize: "13px", color: colors.gray }}>
             {artistType}, {pronouns}
           </div>
-          <div style={{ fontSize: "12px", color: colors.grayMuted }}>{recordLabel}</div>
-          <div style={{ fontSize: "12px", color: colors.grayMuted }}>
-            Lyrics Language: {language}
-          </div>
+          <div style={{ fontSize: "12px", color: colors.gray }}>{recordLabel}</div>
+          <div style={{ fontSize: "12px", color: colors.gray }}>Lyrics Language: {language}</div>
         </div>
       );
     },
@@ -298,7 +272,6 @@ export const HEADERS: HeaderObject[] = [
         showWhen: "always",
         isSortable: true,
         isEditable: false,
-        align: "right",
         type: "number",
         cellRenderer: ({ row, theme }) => {
           const formatted = row.followersFormatted as string;
@@ -341,12 +314,13 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.followers7DayGrowth as number;
           const growthPercent = row.followers7DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
-
           return (
-            <div style={{ color: colors.gray }}>
-              +{growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -362,12 +336,13 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.followers28DayGrowth as number;
           const growthPercent = row.followers28DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
-
           return (
-            <div style={{ color: colors.gray }}>
-              +{growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -383,12 +358,13 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.followers60DayGrowth as number;
           const growthPercent = row.followers60DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
-
           return (
-            <div style={{ color: colors.gray }}>
-              +{growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -402,36 +378,20 @@ export const HEADERS: HeaderObject[] = [
     isEditable: false,
     align: "center",
     type: "number",
-    cellRenderer: ({ row }) => {
+    cellRenderer: ({ row, theme }) => {
       const score = row.popularity as number;
-      const getColor = (val: number) => {
-        if (val >= 90) return "#22c55e";
-        if (val >= 75) return "#3b82f6";
-        if (val >= 50) return "#f59e0b";
-        return "#ef4444";
-      };
+      const changePercent = row.popularityChangePercent as number;
+      const isPositive = changePercent >= 0;
 
       return (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div
-            style={{
-              flex: 1,
-              height: "8px",
-              backgroundColor: "#e5e7eb",
-              borderRadius: "4px",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                width: `${score}%`,
-                height: "100%",
-                backgroundColor: getColor(score),
-                transition: "width 0.3s ease",
-              }}
-            />
-          </div>
-          <span style={{ fontWeight: "600", minWidth: "45px" }}>{score}/100</span>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <GrowthMetric
+            value={`${score}/100`}
+            growthPercent={changePercent}
+            isPositive={isPositive}
+            theme={theme}
+            showSign={false}
+          />
         </div>
       );
     },
@@ -494,14 +454,15 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistReach7DayGrowth as number;
           const growthPercent = row.playlistReach7DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
           const isPositive = growth >= 0;
-
           return (
-            <div style={{ color: isPositive ? "#16a34a" : "#dc2626" }}>
-              {isPositive ? "+" : ""}
-              {growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              isPositive={isPositive}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -517,14 +478,15 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistReach28DayGrowth as number;
           const growthPercent = row.playlistReach28DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
           const isPositive = growth >= 0;
-
           return (
-            <div style={{ color: isPositive ? "#16a34a" : "#dc2626" }}>
-              {isPositive ? "+" : ""}
-              {growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              isPositive={isPositive}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -540,14 +502,15 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistReach60DayGrowth as number;
           const growthPercent = row.playlistReach60DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
           const isPositive = growth >= 0;
-
           return (
-            <div style={{ color: isPositive ? "#16a34a" : "#dc2626" }}>
-              {isPositive ? "+" : ""}
-              {growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              isPositive={isPositive}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -609,12 +572,13 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistCount7DayGrowth as number;
           const growthPercent = row.playlistCount7DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
-
           return (
-            <div style={{ color: colors.gray }}>
-              +{growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -630,12 +594,13 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistCount28DayGrowth as number;
           const growthPercent = row.playlistCount28DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
-
           return (
-            <div style={{ color: colors.gray }}>
-              +{growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -651,12 +616,13 @@ export const HEADERS: HeaderObject[] = [
         cellRenderer: ({ row, theme }) => {
           const growth = row.playlistCount60DayGrowth as number;
           const growthPercent = row.playlistCount60DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
-
           return (
-            <div style={{ color: colors.gray }}>
-              +{growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -716,17 +682,19 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.monthlyListeners7DayGrowth as number;
           const growthPercent = row.monthlyListeners7DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
           const isPositive = growth >= 0;
-
           return (
-            <div style={{ color: isPositive ? "#16a34a" : "#dc2626" }}>
-              {isPositive ? "+" : ""}
-              {growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              isPositive={isPositive}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -738,17 +706,19 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.monthlyListeners28DayGrowth as number;
           const growthPercent = row.monthlyListeners28DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
           const isPositive = growth >= 0;
-
           return (
-            <div style={{ color: isPositive ? "#16a34a" : "#dc2626" }}>
-              {isPositive ? "+" : ""}
-              {growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              isPositive={isPositive}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -760,17 +730,19 @@ export const HEADERS: HeaderObject[] = [
         isEditable: false,
         align: "right",
         type: "number",
+        showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }) => {
           const growth = row.monthlyListeners60DayGrowth as number;
           const growthPercent = row.monthlyListeners60DayGrowthPercent as number;
-          const colors = getThemeColors(theme);
           const isPositive = growth >= 0;
-
           return (
-            <div style={{ color: isPositive ? "#16a34a" : "#dc2626" }}>
-              {isPositive ? "+" : ""}
-              {growth.toLocaleString()} ({growthPercent}%)
-            </div>
+            <GrowthMetric
+              value={growth}
+              growthPercent={growthPercent}
+              isPositive={isPositive}
+              theme={theme}
+              align="right"
+            />
           );
         },
       },
@@ -801,7 +773,7 @@ export const HEADERS: HeaderObject[] = [
     cellRenderer: ({ row, theme }) => {
       const percent = row.reachFollowersRatio as number;
       const colors = getThemeColors(theme);
-      return <span style={{ fontWeight: "600", color: colors.gray }}>{percent.toFixed(1)}%</span>;
+      return <span style={{ fontWeight: "600", color: colors.gray }}>{percent.toFixed(1)}x</span>;
     },
   },
 ];

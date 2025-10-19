@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 import { HEADERS } from "./music-headers";
 import Theme from "../../../types/Theme";
 import TableRefType from "../../../types/TableRefType";
-import Row from "../../../types/Row";
 import SimpleTable from "../../../components/simple-table/SimpleTable";
 
 import data from "./music-data.json";
