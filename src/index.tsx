@@ -14,7 +14,7 @@ import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
 import TableCellProps from "./types/TableCellProps";
 import TableHeaderProps from "./types/TableHeaderProps";
-import TableRefType, { SetHeaderRenameProps } from "./types/TableRefType";
+import TableRefType, { SetHeaderRenameProps, ExportToCSVProps } from "./types/TableRefType";
 import TableRowProps from "./types/TableRowProps";
 import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
@@ -42,6 +42,7 @@ export type {
   ColumnType,
   DragHandlerProps,
   EnumOption,
+  ExportToCSVProps,
   FilterCondition,
   HeaderDropdown,
   HeaderDropdownProps,

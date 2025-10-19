@@ -2,6 +2,8 @@ import SimpleTable from "../../components/simple-table/SimpleTable";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { generateRetailSalesData } from "../data/retail-data";
 import { UniversalTableProps } from "./StoryWrapper";
+import TableRefType from "../../types/TableRefType";
+import { useRef } from "react";
 
 const EXAMPLE_DATA = generateRetailSalesData();
 const HEADERS = RETAIL_SALES_HEADERS;
@@ -17,15 +19,20 @@ export const alignmentExampleDefaults = {
 };
 
 const AlignmentExample = (props: UniversalTableProps) => {
+  const tableRef = useRef<TableRefType>(null);
   return (
-    <SimpleTable
-      {...props}
-      defaultHeaders={HEADERS}
-      rows={EXAMPLE_DATA}
-      rowGrouping={["stores"]}
-      rowIdAccessor="id"
-      height={props.height ?? "calc(100dvh - 112px)"}
-    />
+    <>
+      <button onClick={() => tableRef.current?.exportToCSV()}>Export to CSV</button>
+      <SimpleTable
+        {...props}
+        defaultHeaders={HEADERS}
+        rows={EXAMPLE_DATA}
+        rowGrouping={["stores"]}
+        rowIdAccessor="id"
+        height={props.height ?? "calc(100dvh - 112px)"}
+        tableRef={tableRef}
+      />
+    </>
   );
 };
 

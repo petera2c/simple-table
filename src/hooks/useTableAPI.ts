@@ -4,22 +4,28 @@ import { getRowId } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry, HeaderRegistryEntry } from "../context/TableContext";
 import { Accessor } from "../types/HeaderObject";
-import { SetHeaderRenameProps } from "../types/TableRefType";
+import { SetHeaderRenameProps, ExportToCSVProps } from "../types/TableRefType";
 import TableRow from "../types/TableRow";
+import { exportTableToCSV } from "../utils/csvExportUtils";
+import HeaderObject from "../types/HeaderObject";
 
 const useTableAPI = ({
-  tableRef,
-  rows,
-  rowIdAccessor,
   cellRegistryRef,
+  currentTableRows,
   headerRegistryRef,
+  headers,
+  rowIdAccessor,
+  rows,
+  tableRef,
   visibleRows,
 }: {
-  tableRef?: MutableRefObject<TableRefType | null>;
-  rows: Row[];
-  rowIdAccessor: Accessor;
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
+  currentTableRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
+  headers: HeaderObject[];
+  rowIdAccessor: Accessor;
+  rows: Row[];
+  tableRef?: MutableRefObject<TableRefType | null>;
   visibleRows: TableRow[];
 }) => {
   // Set up API methods on the ref if provided
@@ -55,9 +61,12 @@ const useTableAPI = ({
         getVisibleRows: () => {
           return visibleRows;
         },
+        exportToCSV: ({ filename }: ExportToCSVProps = {}) => {
+          exportTableToCSV(currentTableRows, headers, filename);
+        },
       };
     }
-  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef, visibleRows]);
+  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef, visibleRows, headers]);
 };
 
 export default useTableAPI;

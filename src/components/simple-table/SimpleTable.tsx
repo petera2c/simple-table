@@ -419,7 +419,9 @@ const SimpleTableComp = ({
   useOnGridReady({ onGridReady });
   useTableAPI({
     cellRegistryRef,
+    currentTableRows: currentTableRows,
     headerRegistryRef,
+    headers: effectiveHeaders,
     rowIdAccessor,
     rows,
     tableRef,
