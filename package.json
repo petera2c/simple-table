@@ -19,7 +19,7 @@
     },
     "./styles.css": "./dist/styles.css"
   },
-  "license": "MIT",
+  "license": "SEE LICENSE IN EULA.txt",
   "files": [
     "dist"
   ],
