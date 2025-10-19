@@ -1,0 +1,52 @@
+End-User License Agreement (EULA) for Simple TableEffective Date: October 19, 2025This End-User License Agreement ("Agreement") is a legal contract between you ("Licensee," "you," or "your") and Simple Table Software ("Licensor," "we," "us," or "our"), the developer and owner of Simple Table ("Software"). By downloading, installing, copying, accessing, or using the Software (including updates or modifications), you agree to be bound by this Agreement. If you do not agree, do not use the Software.1. DefinitionsFree License: The no-cost license under the "FREE" tier at https://www.simple-table.com/pricing.
+Pro License: The paid subscription license under the "PRO" tier at https://www.simple-table.com/pricing.
+Product: A single software application, website, or service developed by you that incorporates the Software.
+Users: Individuals accessing or using the Product, including employees, contractors, or end-users.
+
+2. Grant of LicenseSubject to compliance with this Agreement and payment of applicable fees, Licensor grants you a non-exclusive, non-transferable, revocable license to use the Software:2.1 Free License  Scope: Use in one (1) Product for non-commercial purposes or commercial purposes if your company has no revenue (pre-revenue). Unlimited Users per Product.  
+Permissions: Full access to the Simple Table library (sorting, filtering, editing), themes, and TypeScript support. Governed by the MIT License (see LICENSE file in repository), allowing modification and distribution subject to MIT terms.  
+Support: Community support only (e.g., GitHub issues).  
+Limitations: No access to Pro features (e.g., priority support, early access). Commercial use is permitted only for pre-revenue companies.
+
+2.2 Pro License  Scope: Use in one (1) Product for commercial or non-commercial purposes. Unlimited Users per Product.  
+Permissions: All Free License features, plus priority email/Discord support, direct developer access, feature request prioritization, early access to new features, and custom implementation guidance.  
+License Type: Proprietary license under this Agreement, supplementing MIT License for core features.  
+Fees: $85/month (or annual equivalent) per Product. First 50 customers receive 50% off ($42.50/month) with code "first_50" (limited time). Fees are non-refundable except as per Section 7.  
+Support: Priority support (24-48 hour response), up to 4 hours/month custom guidance (additional hours at $100/hour).  
+Limitations: Additional Products require separate licenses. You may not redistribute the Software or make it available as a standalone product or service.
+
+General Restrictions:  You may not: (i) reverse engineer, decompile, or disassemble the Software beyond MIT License permissions; (ii) remove proprietary notices; (iii) sublicense, rent, or lease the Software outside your Product; (iv) violate laws; or (v) create competing products.  
+Licensor retains all intellectual property rights.
+
+3. Pricing and PaymentPricing is fixed per Product, regardless of revenue or team size. See https://www.simple-table.com/pricing for details.  
+Pro License fees recur automatically. Manage billing at https://www.simple-table.com/pricing.  
+Payments in USD. Late payments may suspend Pro features. Taxes are your responsibility.
+
+4. UpdatesFree Licensees receive updates via the MIT-licensed repository. Pro Licensees get early access to new features.  
+Continued use after updates accepts any revised terms.
+
+5. SupportFree License: Community forums only.  
+Pro License: Priority email/Discord support, direct developer access, and custom guidance.  
+Contact: peter@peteryng.com.
+
+6. Intellectual PropertyThe Software is protected by copyright and other laws. Feedback you provide becomes Licensor’s property without compensation.
+
+7. Money-Back GuaranteePro License offers a 30-day refund for the initial subscription fee. Contact peter@peteryng.com within 30 days.
+
+8. TerminationBreaches or non-payment terminate this Agreement. You must cease use and destroy copies.  
+Sections 2 (restrictions), 6, 9, 10, and 12 survive termination.
+
+9. WarrantiesSoftware is "as is." Licensor warrants ownership and basic functionality for 30 days.  
+NO OTHER WARRANTIES, INCLUDING MERCHANTABILITY OR FITNESS FOR PURPOSE, ARE PROVIDED.
+
+10. LiabilityLICENSOR’S LIABILITY IS LIMITED TO FEES PAID IN THE PRIOR 12 MONTHS ($0 FOR FREE LICENSE). NO LIABILITY FOR INDIRECT OR CONSEQUENTIAL DAMAGES.
+
+11. IndemnificationYou indemnify Licensor against claims from your use of the Software.
+
+12. GeneralGoverning Law: Laws of British Columbia, Canada, with disputes in Vancouver courts.  
+Entire Agreement: This Agreement supersedes prior agreements.  
+Changes: Updates posted at https://www.simple-table.com/eula or in the repository.  
+Contact: peter@peteryng.com.
+
+Licensor: Simple Table Software, c/o peter@peteryng.com
+
