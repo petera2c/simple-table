@@ -959,7 +959,10 @@ input {
   min-width: 100%;
 }
 .st-row.hovered .st-cell-editing,
-.st-row.hovered .st-cell:not(.st-cell-selected) {
+.st-row.hovered
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 .st-row.even {
@@ -976,7 +979,10 @@ input {
 
 /* Selected row hover state - should override selected background when hovering */
 .st-row.selected.hovered .st-cell-editing,
-.st-row.selected.hovered .st-cell:not(.st-cell-selected) {
+.st-row.selected.hovered
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 
@@ -2315,11 +2321,19 @@ input {
 }
 
 /* Maintain column borders on hover */
-.st-column-borders .st-row.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+.st-column-borders
+  .st-row.hovered
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 
 /* Maintain column borders on selected row hover */
-.st-column-borders .st-row.selected.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+.st-column-borders
+  .st-row.selected.hovered
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
