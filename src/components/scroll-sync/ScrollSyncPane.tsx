@@ -2,23 +2,27 @@ import { cloneElement, FC, ReactElement, MutableRefObject, useEffect } from "rea
 
 import { useScrollSyncContext } from "../../context/useScrollSyncContext";
 
-const GROUPS = ["default"];
-
 interface ScrollSyncPaneProps {
   childRef: MutableRefObject<HTMLElement | null>;
   children: ReactElement<any>;
+  group?: string; // Optional group name for sync (defaults to "default")
 }
 
-export const ScrollSyncPane: FC<ScrollSyncPaneProps> = ({ childRef, children }) => {
+export const ScrollSyncPane: FC<ScrollSyncPaneProps> = ({
+  childRef,
+  children,
+  group = "default",
+}) => {
   const { registerPane, unregisterPane } = useScrollSyncContext();
+  const groups = [group];
 
   useEffect(() => {
-    if (childRef.current) registerPane(childRef.current, GROUPS);
+    if (childRef.current) registerPane(childRef.current, groups);
 
     return () => {
-      if (childRef.current) unregisterPane(childRef.current, GROUPS);
+      if (childRef.current) unregisterPane(childRef.current, groups);
     };
-  }, [childRef, registerPane, unregisterPane]);
+  }, [childRef, registerPane, unregisterPane, group]);
 
   return cloneElement(children, {
     ref: (node: HTMLElement | null) => {
