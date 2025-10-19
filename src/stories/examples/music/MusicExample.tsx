@@ -10,6 +10,7 @@ import data from "./music-data.json";
 export const musicExampleDefaults = {
   columnResizing: true,
   height: "70dvh",
+  theme: "frost",
 };
 
 export default function MusicExample({
@@ -29,7 +30,7 @@ export default function MusicExample({
       columnResizing
       defaultHeaders={HEADERS}
       height={height ? height : "70dvh"}
-      rowHeight={100}
+      rowHeight={85}
       rowIdAccessor="id"
       rows={data}
       selectableCells
