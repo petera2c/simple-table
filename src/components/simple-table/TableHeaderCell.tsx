@@ -26,6 +26,7 @@ import Checkbox from "../Checkbox";
 import StringEdit from "./editable-cells/StringEdit";
 import useDropdownPosition from "../../hooks/useDropdownPosition";
 import { hasCollapsibleChildren } from "../../utils/collapseUtils";
+import Tooltip from "../Tooltip";
 
 interface HeaderCellProps {
   colIndex: number;
@@ -563,32 +564,34 @@ const TableHeaderCell = ({
         onDragEnd={!isSelectionColumn ? handleDragEndWrapper : undefined}
         onDragStart={!isSelectionColumn ? onDragStart : undefined}
       >
-        <span
-          className={`st-header-label-text ${
-            header.align === "right"
-              ? "right-aligned"
-              : header.align === "center"
-              ? "center-aligned"
-              : "left-aligned"
-          }`}
-        >
-          {isSelectionColumn ? (
-            <Checkbox
-              checked={areAllRowsSelected ? areAllRowsSelected() : false}
-              onChange={handleSelectAllChange}
-            />
-          ) : isEditing ? (
-            <StringEdit
-              defaultValue={localLabel}
-              onBlur={() => setIsEditing(false)}
-              onChange={updateHeaderLabel}
-            />
-          ) : header.headerRenderer ? (
-            header.headerRenderer({ accessor: header.accessor, colIndex, header })
-          ) : (
-            localLabel || header?.label
-          )}
-        </span>
+        <Tooltip content={header.tooltip || ""}>
+          <span
+            className={`st-header-label-text ${
+              header.align === "right"
+                ? "right-aligned"
+                : header.align === "center"
+                ? "center-aligned"
+                : "left-aligned"
+            }`}
+          >
+            {isSelectionColumn ? (
+              <Checkbox
+                checked={areAllRowsSelected ? areAllRowsSelected() : false}
+                onChange={handleSelectAllChange}
+              />
+            ) : isEditing ? (
+              <StringEdit
+                defaultValue={localLabel}
+                onBlur={() => setIsEditing(false)}
+                onChange={updateHeaderLabel}
+              />
+            ) : header.headerRenderer ? (
+              header.headerRenderer({ accessor: header.accessor, colIndex, header })
+            ) : (
+              localLabel || header?.label
+            )}
+          </span>
+        </Tooltip>
       </div>
       {header.align !== "right" && SortIcon}
       {header.align !== "right" && FilterIconComponent}

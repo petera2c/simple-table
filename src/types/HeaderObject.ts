@@ -30,6 +30,7 @@ type HeaderObject = {
   label: string;
   minWidth?: number | string;
   pinned?: Pinned;
+  tooltip?: string; // Optional tooltip text to display on hover
   type?: ColumnType;
   showWhen?: ShowWhen; // Controls when child column is visible based on parent's collapsed state
   width: number | string;

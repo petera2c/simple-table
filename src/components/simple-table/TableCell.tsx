@@ -243,6 +243,17 @@ const TableCell = ({
 
   const updateContent = useCallback(
     (newValue: CellValue) => {
+      if (newValue === undefined || newValue === null) {
+        // Use type-appropriate defaults
+        if (header.type === "number") {
+          newValue = 0;
+        } else if (header.type === "boolean") {
+          newValue = false;
+        } else {
+          newValue = "";
+        }
+      }
+
       setLocalContent(newValue);
       row[header.accessor] = newValue;
 
