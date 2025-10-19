@@ -1,5 +1,5 @@
 {
-  "version": "1.5.1",
+  "version": "1.5.2",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
     },
     "./styles.css": "./dist/styles.css"
   },
-  "license": "SEE LICENSE IN EULA.txt",
+  "license": "MIT",
   "files": [
     "dist",
     "LICENSE",
