@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 interface UseContentHeightProps {
-  height?: string;
+  height?: string | number;
   rowHeight: number;
 }
 
@@ -15,22 +15,25 @@ export const useContentHeight = ({ height, rowHeight }: UseContentHeightProps): 
 
     // Convert height string to pixels
     let totalHeightPx = 0;
-
-    if (height.endsWith("px")) {
-      // Direct pixel value
-      totalHeightPx = parseInt(height, 10);
-    } else if (height.endsWith("vh")) {
-      // Viewport height percentage
-      const vh = parseInt(height, 10);
-      totalHeightPx = (window.innerHeight * vh) / 100;
-    } else if (height.endsWith("%")) {
-      // Percentage of parent
-      const percentage = parseInt(height, 10);
-      const parentHeight = container?.parentElement?.clientHeight || window.innerHeight;
-      totalHeightPx = (parentHeight * percentage) / 100;
+    if (typeof height === "string") {
+      if (height.endsWith("px")) {
+        // Direct pixel value
+        totalHeightPx = parseInt(height, 10);
+      } else if (height.endsWith("vh")) {
+        // Viewport height percentage
+        const vh = parseInt(height, 10);
+        totalHeightPx = (window.innerHeight * vh) / 100;
+      } else if (height.endsWith("%")) {
+        // Percentage of parent
+        const percentage = parseInt(height, 10);
+        const parentHeight = container?.parentElement?.clientHeight || window.innerHeight;
+        totalHeightPx = (parentHeight * percentage) / 100;
+      } else {
+        // Fall back to inner height if format is unknown
+        totalHeightPx = window.innerHeight;
+      }
     } else {
-      // Fall back to inner height if format is unknown
-      totalHeightPx = window.innerHeight;
+      totalHeightPx = height as number;
     }
 
     // Subtract header height

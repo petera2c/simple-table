@@ -74,7 +74,7 @@ interface SimpleTableProps {
   headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
   headerHeight?: number; // Height of the header
-  height?: string; // Height of the table
+  height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
