@@ -1,6 +1,6 @@
 import { RefObject, useRef, useState, useEffect } from "react";
 import { useTableContext } from "../../context/TableContext";
-import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../../consts/general-consts";
+import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 
 const TableHorizontalScrollbar = ({
@@ -23,7 +23,9 @@ const TableHorizontalScrollbar = ({
   const [isScrollable, setIsScrollable] = useState(false);
 
   // Refs
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRefMainBody = useRef<HTMLDivElement>(null);
+  const scrollRefPinnedLeft = useRef<HTMLDivElement>(null);
+  const scrollRefPinnedRight = useRef<HTMLDivElement>(null);
 
   // Derived state
   // Check if the content is scrollable
@@ -37,8 +39,7 @@ const TableHorizontalScrollbar = ({
   const editorWidth = editColumns ? COLUMN_EDIT_WIDTH : 0;
   // If edit columns is enabled, add the width of the editor to the right section
   // If the content is scrollable, add the width of the scrollbar to the right section
-  const rightSectionWidth =
-    (editColumns ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
+  const rightSectionWidth = (editColumns ? pinnedRightWidth : pinnedRightWidth) + scrollbarWidth;
 
   useEffect(() => {
     const updateIsScrollable = () => {
@@ -63,18 +64,25 @@ const TableHorizontalScrollbar = ({
   return (
     <div className="st-horizontal-scrollbar-container">
       {pinnedLeftWidth > 0 && (
-        <div
-          className="st-horizontal-scrollbar-left"
-          style={{
-            flexShrink: 0,
-            width: pinnedLeftWidth,
-            height: scrollRef.current?.offsetHeight,
-          }}
-        />
+        <ScrollSyncPane childRef={scrollRefPinnedLeft}>
+          <div
+            className="st-horizontal-scrollbar-left"
+            ref={scrollRefPinnedLeft}
+            style={{
+              width: pinnedLeftWidth,
+            }}
+          >
+            <div
+              style={{
+                height: ".3px",
+              }}
+            />
+          </div>
+        </ScrollSyncPane>
       )}
       {mainBodyWidth > 0 && (
-        <ScrollSyncPane childRef={scrollRef}>
-          <div className="st-horizontal-scrollbar-middle" ref={scrollRef} style={{ flexGrow: 1 }}>
+        <ScrollSyncPane childRef={scrollRefMainBody}>
+          <div className="st-horizontal-scrollbar-middle" ref={scrollRefMainBody}>
             <div
               style={{
                 width: mainBodyWidth,
@@ -85,14 +93,21 @@ const TableHorizontalScrollbar = ({
         </ScrollSyncPane>
       )}
       {pinnedRightWidth > 0 && (
-        <div
-          className="st-horizontal-scrollbar-right"
-          style={{
-            flexShrink: 0,
-            minWidth: rightSectionWidth,
-            height: scrollRef.current?.offsetHeight,
-          }}
-        />
+        <ScrollSyncPane childRef={scrollRefPinnedRight}>
+          <div
+            className="st-horizontal-scrollbar-right"
+            ref={scrollRefPinnedRight}
+            style={{
+              width: rightSectionWidth,
+            }}
+          >
+            <div
+              style={{
+                height: ".3px",
+              }}
+            />
+          </div>
+        </ScrollSyncPane>
       )}
       {editorWidth > 0 && (
         <div style={{ width: editorWidth - 1.5, height: "100%", flexShrink: 0 }} />

@@ -37,6 +37,7 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
+import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
 import SortColumn from "../../types/SortColumn";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
@@ -268,9 +269,13 @@ const SimpleTableComp = ({
 
   // Calculate the width of the sections
   const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
+    // Get responsive max pinned percent based on viewport width for better mobile compatibility
+    const maxPinnedWidthPercent = getResponsiveMaxPinnedPercent(window.innerWidth);
+
     const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
       headers: effectiveHeaders,
       containerWidth,
+      maxPinnedWidthPercent,
       collapsedHeaders,
     });
     return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };

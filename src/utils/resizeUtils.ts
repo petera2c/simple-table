@@ -1,13 +1,12 @@
 import { HeaderObject } from "..";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
-import { calculatePinnedWidth } from "./headerUtils";
 import {
   findLeafHeaders,
   getHeaderWidthInPixels,
   removeAllFractionalWidths,
   getHeaderMinWidth,
 } from "./headerWidthUtils";
-import { MAX_PINNED_WIDTH_PERCENT } from "../consts/general-consts";
+import { MAX_PINNED_WIDTH_PERCENT, getResponsiveMaxPinnedPercent } from "../consts/general-consts";
 
 /**
  * Calculate the maximum allowable width for a header based on container constraints
@@ -29,7 +28,9 @@ const calculateMaxHeaderWidth = ({
   }
 
   const containerWidth = tableContainer.clientWidth;
-  const maxPinnedSectionWidth = containerWidth * MAX_PINNED_WIDTH_PERCENT;
+  // Use responsive max pinned percent based on viewport width for better mobile compatibility
+  const maxPinnedPercent = getResponsiveMaxPinnedPercent(window.innerWidth);
+  const maxPinnedSectionWidth = containerWidth * maxPinnedPercent;
 
   // If this is not a pinned header, use a more generous limit for main columns
   if (!header.pinned) {
@@ -267,13 +268,9 @@ export const recalculateAllSectionWidths = ({
     }
   }
 
-  // Calculate pinned widths with any additional styling
-  const totalPinnedLeftWidth = calculatePinnedWidth(leftWidth);
-  const totalPinnedRightWidth = calculatePinnedWidth(rightWidth);
-
   return {
-    leftWidth: totalPinnedLeftWidth,
-    rightWidth: totalPinnedRightWidth,
+    leftWidth,
+    rightWidth,
     mainWidth,
   };
 };

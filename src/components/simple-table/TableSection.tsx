@@ -14,7 +14,6 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
-import ConditionalWrapper from "../ConditionalWrapper";
 import { canDisplaySection } from "../../utils/generalUtils";
 import { getRowId } from "../../utils/rowUtils";
 import { useTableContext } from "../../context/TableContext";
@@ -59,14 +58,13 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
     if (!canDisplay) return null;
 
+    // Determine scroll sync group based on pinned state
+    const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
+
     return (
-      <ConditionalWrapper
-        condition={!pinned}
-        wrapper={(children) => (
-          <ScrollSyncPane childRef={internalRef as MutableRefObject<HTMLElement | null>}>
-            {children}
-          </ScrollSyncPane>
-        )}
+      <ScrollSyncPane
+        childRef={internalRef as MutableRefObject<HTMLElement | null>}
+        group={scrollSyncGroup}
       >
         <div
           className={className}
@@ -109,7 +107,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             );
           })}
         </div>
-      </ConditionalWrapper>
+      </ScrollSyncPane>
     );
   }
 );

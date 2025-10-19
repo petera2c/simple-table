@@ -4,7 +4,6 @@ import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
-import ConditionalWrapper from "../ConditionalWrapper";
 import { useTableContext } from "../../context/TableContext";
 
 // Define a type for grid cell position
@@ -94,19 +93,17 @@ const TableHeaderSection = ({
     return cells;
   }, [headers, maxDepth, pinned, columnIndices, collapsedHeaders]);
 
+  // Determine scroll sync group based on pinned state
+  const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
+
   return (
-    <ConditionalWrapper
-      condition={!pinned}
-      wrapper={(children) => <ScrollSyncPane childRef={sectionRef}>{children}</ScrollSyncPane>}
-    >
+    <ScrollSyncPane childRef={sectionRef} group={scrollSyncGroup}>
       <div
         className={`st-header-${pinned ? `pinned-${pinned}` : "main"}`}
         {...(handleScroll && { onScroll: handleScroll })}
         ref={sectionRef}
         style={{
           gridTemplateColumns,
-          display: "grid",
-          position: "relative",
           width,
         }}
       >
@@ -126,7 +123,7 @@ const TableHeaderSection = ({
           ))}
         </>
       </div>
-    </ConditionalWrapper>
+    </ScrollSyncPane>
   );
 };
 
