@@ -4,8 +4,10 @@ import { getRowId } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry, HeaderRegistryEntry } from "../context/TableContext";
 import { Accessor } from "../types/HeaderObject";
-import { SetHeaderRenameProps } from "../types/TableRefType";
+import { SetHeaderRenameProps, ExportToCSVProps } from "../types/TableRefType";
 import TableRow from "../types/TableRow";
+import { exportTableToCSV } from "../utils/csvExportUtils";
+import HeaderObject from "../types/HeaderObject";
 
 const useTableAPI = ({
   tableRef,
@@ -14,6 +16,7 @@ const useTableAPI = ({
   cellRegistryRef,
   headerRegistryRef,
   visibleRows,
+  headers,
 }: {
   tableRef?: MutableRefObject<TableRefType | null>;
   rows: Row[];
@@ -21,6 +24,7 @@ const useTableAPI = ({
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   visibleRows: TableRow[];
+  headers: HeaderObject[];
 }) => {
   // Set up API methods on the ref if provided
   useEffect(() => {
@@ -55,9 +59,12 @@ const useTableAPI = ({
         getVisibleRows: () => {
           return visibleRows;
         },
+        exportToCSV: ({ filename }: ExportToCSVProps = {}) => {
+          exportTableToCSV(visibleRows, headers, filename);
+        },
       };
     }
-  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef, visibleRows]);
+  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef, visibleRows, headers]);
 };
 
 export default useTableAPI;

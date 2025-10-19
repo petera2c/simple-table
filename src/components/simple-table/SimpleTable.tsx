@@ -424,6 +424,7 @@ const SimpleTableComp = ({
     rows,
     tableRef,
     visibleRows: rowsToRender,
+    headers: effectiveHeaders,
   });
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
