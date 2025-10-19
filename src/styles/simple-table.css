@@ -335,6 +335,14 @@
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-300);
 
+  /* Tooltip variables */
+  --st-tooltip-background-color: var(--st-slate-900);
+  --st-tooltip-text-color: var(--st-white);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 8px 12px;
+  --st-tooltip-font-size: 13px;
+  --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
   /* Header selection colors */
   --st-header-selected-background-color: var(--st-blue-600);
   --st-header-selected-label-color: var(--st-white);
@@ -422,6 +430,14 @@
   --st-cell-flash-color: var(--st-gray-500);
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-400);
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: var(--st-gray-100);
+  --st-tooltip-text-color: var(--st-gray-900);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 8px 12px;
+  --st-tooltip-font-size: 13px;
+  --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
   /* Header selection colors */
   --st-header-selected-background-color: var(--st-blue-500);
@@ -511,6 +527,14 @@
   --st-copy-flash-color: var(--st-neutral-600);
   --st-warning-flash-color: var(--st-red-400);
 
+  /* Tooltip variables */
+  --st-tooltip-background-color: var(--st-neutral-800);
+  --st-tooltip-text-color: var(--st-white);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 8px 12px;
+  --st-tooltip-font-size: 13px;
+  --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
   /* Header selection colors */
   --st-header-selected-background-color: var(--st-neutral-600);
   --st-header-selected-label-color: var(--st-white);
@@ -598,6 +622,14 @@
   --st-cell-flash-color: var(--st-sky-200);
   --st-copy-flash-color: var(--st-blue-600);
   --st-warning-flash-color: var(--st-orange-400);
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: var(--st-blue-900);
+  --st-tooltip-text-color: var(--st-white);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 8px 12px;
+  --st-tooltip-font-size: 13px;
+  --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   /* Header selection colors */
   --st-header-selected-background-color: var(--st-blue-600);
@@ -688,6 +720,14 @@
   --st-copy-flash-color: var(--st-violet-600);
   --st-warning-flash-color: var(--st-red-400);
 
+  /* Tooltip variables */
+  --st-tooltip-background-color: var(--st-violet-800);
+  --st-tooltip-text-color: var(--st-white);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 8px 12px;
+  --st-tooltip-font-size: 13px;
+  --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
   /* Header selection colors */
   --st-header-selected-background-color: var(--st-violet-600);
   --st-header-selected-label-color: var(--st-white);
@@ -775,6 +815,14 @@
   --st-cell-flash-color: #d0dce8;
   --st-copy-flash-color: #5a9cf8;
   --st-warning-flash-color: #f87171;
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: #0b1215;
+  --st-tooltip-text-color: #ffffff;
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 8px 12px;
+  --st-tooltip-font-size: 13px;
+  --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   /* Header selection colors */
   --st-header-selected-background-color: #5a9cf8;
@@ -2348,4 +2396,33 @@ input {
     .st-cell-column-selected
   ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
+}
+
+/* ========================================== */
+/* Tooltip Styles */
+/* ========================================== */
+
+.st-tooltip {
+  background-color: var(--st-tooltip-background-color);
+  color: var(--st-tooltip-text-color);
+  padding: var(--st-tooltip-padding);
+  border-radius: var(--st-tooltip-border-radius);
+  font-size: var(--st-tooltip-font-size);
+  line-height: 1.4;
+  max-width: 300px;
+  word-wrap: break-word;
+  box-shadow: var(--st-tooltip-shadow);
+  pointer-events: none;
+  animation: st-tooltip-fade-in 0.2s ease-out;
+}
+
+@keyframes st-tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

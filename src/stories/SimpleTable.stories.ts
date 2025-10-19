@@ -62,6 +62,10 @@ import RowSelectionExample, { rowSelectionExampleDefaults } from "./examples/Row
 import RowButtonsExample, { rowButtonsExampleDefaults } from "./examples/RowButtonsExample";
 import ClayExampleComponent, { clayExampleDefaults } from "./examples/ClayExample";
 import MusicExampleComponent, { musicExampleDefaults } from "./examples/music/MusicExample";
+import TooltipExample, { tooltipExampleDefaults } from "./examples/TooltipExample";
+import InfrastructureExampleComponent, {
+  infrastructureExampleDefaults,
+} from "./examples/infrastructure/InfrastructureExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -246,6 +250,18 @@ export const InfiniteScroll: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: InfiniteScrollExample, ...args }),
 };
+export const InfrastructureExample: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...infrastructureExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: InfrastructureExampleComponent,
+      ...args,
+    }),
+};
 export const LiveUpdates: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -383,6 +399,24 @@ export const Theming: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: ThemingExample, ...args }),
+};
+
+export const Tooltip: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...tooltipExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: TooltipExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates header tooltip functionality. Hover over any column header to see helpful tooltip text explaining what the column contains. Tooltips appear after a short delay and are positioned automatically to stay within the viewport.",
+      },
+    },
+  },
 };
 
 export default meta;
