@@ -87,6 +87,7 @@ export const HEADERS: HeaderObject[] = [
         isSortable: true,
         filterable: true,
         isEditable: true,
+        showWhen: "parentCollapsed",
         align: "right",
         type: "number",
       },
@@ -125,7 +126,6 @@ export const HEADERS: HeaderObject[] = [
     label: "Analyst Information",
     width: 380,
     isSortable: false,
-    collapsible: true,
     children: [
       {
         accessor: "analystRating",

@@ -61,6 +61,7 @@ import ManufacturingExampleComponent, {
 import RowSelectionExample, { rowSelectionExampleDefaults } from "./examples/RowSelectionExample";
 import RowButtonsExample, { rowButtonsExampleDefaults } from "./examples/RowButtonsExample";
 import ClayExampleComponent, { clayExampleDefaults } from "./examples/ClayExample";
+import MusicExampleComponent, { musicExampleDefaults } from "./examples/music/MusicExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -265,6 +266,23 @@ export const ManufacturingExample: StoryObj<UniversalTableProps> = {
     React.createElement(StoryWrapper, { ExampleComponent: ManufacturingExampleComponent, ...args }),
 };
 
+export const MusicExample: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...musicExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: MusicExampleComponent, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates music example functionality. This story is used as a base for comprehensive music testing.",
+      },
+    },
+  },
+};
 export const Pagination: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,

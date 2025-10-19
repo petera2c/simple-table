@@ -5,6 +5,7 @@ import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry, HeaderRegistryEntry } from "../context/TableContext";
 import { Accessor } from "../types/HeaderObject";
 import { SetHeaderRenameProps } from "../types/TableRefType";
+import TableRow from "../types/TableRow";
 
 const useTableAPI = ({
   tableRef,
@@ -12,12 +13,14 @@ const useTableAPI = ({
   rowIdAccessor,
   cellRegistryRef,
   headerRegistryRef,
+  visibleRows,
 }: {
   tableRef?: MutableRefObject<TableRefType | null>;
   rows: Row[];
   rowIdAccessor: Accessor;
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
+  visibleRows: TableRow[];
 }) => {
   // Set up API methods on the ref if provided
   useEffect(() => {
@@ -49,9 +52,12 @@ const useTableAPI = ({
             headerCell.setEditing(true);
           }
         },
+        getVisibleRows: () => {
+          return visibleRows;
+        },
       };
     }
-  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef]);
+  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef, visibleRows]);
 };
 
 export default useTableAPI;

@@ -9,6 +9,7 @@ import { HeaderRenderer } from "./HeaderRendererProps";
 
 export type Accessor = keyof Row;
 export type ColumnType = "string" | "number" | "boolean" | "date" | "enum" | "other";
+export type ShowWhen = "parentCollapsed" | "parentExpanded" | "always";
 
 type HeaderObject = {
   accessor: Accessor;
@@ -30,7 +31,7 @@ type HeaderObject = {
   minWidth?: number | string;
   pinned?: Pinned;
   type?: ColumnType;
-  summaryColumn?: boolean; // Shows this child column when parent is collapsed
+  showWhen?: ShowWhen; // Controls when child column is visible based on parent's collapsed state
   width: number | string;
   maxWidth?: number | string;
 };

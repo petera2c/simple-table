@@ -1,3 +1,3 @@
-type Theme = "light" | "dark" | "sky" | "funky" | "neutral" | "custom";
+type Theme = "light" | "dark" | "sky" | "violet" | "neutral" | "custom" | "frost";
 
 export default Theme;

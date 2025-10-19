@@ -37,6 +37,7 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
+import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
 import SortColumn from "../../types/SortColumn";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
@@ -73,6 +74,7 @@ interface SimpleTableProps {
   headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
   headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
+  headerHeight?: number; // Height of the header
   height?: string; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   nextIcon?: ReactNode; // Next icon
@@ -137,6 +139,7 @@ const SimpleTableComp = ({
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
   headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
   headerDropdown,
+  headerHeight,
   height,
   hideFooter = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
@@ -267,13 +270,30 @@ const SimpleTableComp = ({
   }, []);
 
   // Calculate the width of the sections
-  const { mainBodyWidth, pinnedLeftWidth, pinnedRightWidth } = useMemo(() => {
-    const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
-      headers: effectiveHeaders,
-      containerWidth,
-      collapsedHeaders,
-    });
-    return { mainBodyWidth: mainWidth, pinnedLeftWidth: leftWidth, pinnedRightWidth: rightWidth };
+  const {
+    mainBodyWidth,
+    pinnedLeftWidth,
+    pinnedRightWidth,
+    pinnedLeftContentWidth,
+    pinnedRightContentWidth,
+  } = useMemo(() => {
+    // Get responsive max pinned percent based on viewport width for better mobile compatibility
+    const maxPinnedWidthPercent = getResponsiveMaxPinnedPercent(window.innerWidth);
+
+    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
+      recalculateAllSectionWidths({
+        headers: effectiveHeaders,
+        containerWidth,
+        maxPinnedWidthPercent,
+        collapsedHeaders,
+      });
+    return {
+      mainBodyWidth: mainWidth,
+      pinnedLeftWidth: leftWidth,
+      pinnedRightWidth: rightWidth,
+      pinnedLeftContentWidth: leftContentWidth,
+      pinnedRightContentWidth: rightContentWidth,
+    };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
   // Calculate content height using hook
@@ -432,7 +452,14 @@ const SimpleTableComp = ({
     setScrollbarWidth,
   });
   useOnGridReady({ onGridReady });
-  useTableAPI({ cellRegistryRef, headerRegistryRef, rowIdAccessor, rows, tableRef });
+  useTableAPI({
+    cellRegistryRef,
+    headerRegistryRef,
+    rowIdAccessor,
+    rows,
+    tableRef,
+    visibleRows: currentVisibleRows,
+  });
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
 
@@ -517,6 +544,7 @@ const SimpleTableComp = ({
         rowButtons,
         rowGrouping,
         rowHeight,
+        headerHeight: headerHeight ?? rowHeight,
         rowIdAccessor,
         scrollbarWidth,
         selectColumns,
@@ -587,6 +615,8 @@ const SimpleTableComp = ({
               mainBodyWidth={mainBodyWidth}
               pinnedLeftWidth={pinnedLeftWidth}
               pinnedRightWidth={pinnedRightWidth}
+              pinnedLeftContentWidth={pinnedLeftContentWidth}
+              pinnedRightContentWidth={pinnedRightContentWidth}
               tableBodyContainerRef={tableBodyContainerRef}
             />
             <TableFooter

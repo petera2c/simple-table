@@ -444,14 +444,14 @@ const headers: HeaderObject[] = [
         accessor: "totalSales",
         label: "Total Sales",
         width: 140,
-        summaryColumn: true, // Summary view
+        showWhen: "parentCollapsed", // Shows only when parent is collapsed
         isSortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => `$${(row.totalSales as number).toLocaleString()}`,
       },
       {
-        summaryColumn: false, // Summary view
+        showWhen: "parentExpanded", // Shows only when parent is expanded
         accessor: "q1Sales",
         label: "Q1",
         width: 120,
@@ -501,7 +501,7 @@ const headers: HeaderObject[] = [
         accessor: "avgMonthly",
         label: "Avg Monthly",
         width: 130,
-        summaryColumn: true, // Summary view
+        showWhen: "parentCollapsed", // Shows only when parent is collapsed
         isSortable: true,
         align: "right",
         type: "number",
@@ -511,7 +511,7 @@ const headers: HeaderObject[] = [
         accessor: "bestMonth",
         label: "Best Month",
         width: 130,
-        summaryColumn: true, // Summary view
+        showWhen: "parentCollapsed", // Shows only when parent is collapsed
         isSortable: true,
         align: "right",
         type: "number",
@@ -639,7 +639,7 @@ const headers: HeaderObject[] = [
         accessor: "topCategory",
         label: "Top Category",
         width: 140,
-        summaryColumn: true, // Summary view
+        showWhen: "parentCollapsed", // Shows only when parent is collapsed
         isSortable: true,
         type: "string",
       },

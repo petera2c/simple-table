@@ -88,6 +88,7 @@ interface TableContextType {
   rowButtons?: RowButton[];
   rowGrouping?: Accessor[];
   rowHeight: number;
+  headerHeight: number;
   rowIdAccessor: Accessor;
   scrollbarWidth: number;
   selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;

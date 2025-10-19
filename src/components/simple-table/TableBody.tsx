@@ -39,15 +39,33 @@ const TableBody = ({
   } = useTableContext();
 
   // Local state
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // Track hovered row elements for direct DOM manipulation
+  const hoveredRowRefs = useRef<Set<HTMLElement>>(new Set());
+
+  // Direct DOM manipulation for hover - no React re-renders
+  const setHoveredIndex = useCallback((index: number | null) => {
+    // Clear previous hover
+    hoveredRowRefs.current.forEach((el) => el.classList.remove("hovered"));
+    hoveredRowRefs.current.clear();
+
+    if (index !== null) {
+      // Find all rows with this index and add class directly
+      const rows = document.querySelectorAll(`.st-body-container .st-row[data-index="${index}"]`);
+      rows.forEach((row) => {
+        (row as HTMLElement).classList.add("hovered");
+        hoveredRowRefs.current.add(row as HTMLElement);
+      });
+    }
+  }, []);
 
   // Clear hover state when animations start
   useEffect(() => {
-    if (isAnimating && hoveredIndex !== null) {
+    if (isAnimating) {
       setHoveredIndex(null);
     }
-  }, [isAnimating, hoveredIndex]);
+  }, [isAnimating, setHoveredIndex]);
 
   // Add state for section widths
   useScrollbarVisibility({
@@ -160,7 +178,6 @@ const TableBody = ({
     rowsEnteringTheDom,
     headerContainerRef,
     headers,
-    hoveredIndex,
     rowHeight,
     rowIndices,
     setHoveredIndex,

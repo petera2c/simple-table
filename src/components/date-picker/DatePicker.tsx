@@ -46,21 +46,26 @@ const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
   };
 
   const handleDateSelect = (day: number) => {
-    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    // Create date at noon to avoid timezone edge cases
+    const newDate = new Date(year, month, day, 12, 0, 0);
     setCurrentDate(newDate);
     onChange(newDate);
     onClose?.();
   };
 
   const handlePrevMonthDateSelect = (day: number) => {
-    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, day);
+    // Create date at noon to avoid timezone edge cases
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, day, 12, 0, 0);
     setCurrentDate(newDate);
     onChange(newDate);
     onClose?.();
   };
 
   const handleNextMonthDateSelect = (day: number) => {
-    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, day);
+    // Create date at noon to avoid timezone edge cases
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, day, 12, 0, 0);
     setCurrentDate(newDate);
     onChange(newDate);
     onClose?.();
@@ -108,10 +113,11 @@ const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
         month === new Date().getMonth() &&
         year === new Date().getFullYear();
 
+      const valueDate = new Date(value);
       const isSelected =
-        day === new Date(value).getDate() &&
-        month === new Date(value).getMonth() &&
-        year === new Date(value).getFullYear();
+        day === valueDate.getDate() &&
+        month === valueDate.getMonth() &&
+        year === valueDate.getFullYear();
 
       days.push(
         <div
@@ -224,8 +230,17 @@ const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
           className="st-datepicker-today-btn"
           onClick={() => {
             const today = new Date();
-            setCurrentDate(today);
-            onChange(today);
+            // Create today's date at noon to avoid timezone edge cases
+            const todayAtNoon = new Date(
+              today.getFullYear(),
+              today.getMonth(),
+              today.getDate(),
+              12,
+              0,
+              0
+            );
+            setCurrentDate(todayAtNoon);
+            onChange(todayAtNoon);
             onClose?.();
           }}
         >

@@ -4,6 +4,7 @@ import { FilterCondition, EnumFilterOperator } from "../../types/FilterTypes";
 import FilterContainer from "./shared/FilterContainer";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
+import FilterInput from "./shared/FilterInput";
 import Checkbox from "../Checkbox";
 
 interface EnumFilterProps {
@@ -29,8 +30,18 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
     currentFilter?.values ? currentFilter.values.map(String) : allValues
   );
 
+  // Search state for filtering options
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
   // Always use "in" operator for enum filters since it's the most logical
   const selectedOperator: EnumFilterOperator = "in";
+
+  // Filter options based on search term
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm) return enumOptions;
+    const lowerSearch = searchTerm.toLowerCase();
+    return enumOptions.filter((option) => option.label.toLowerCase().includes(lowerSearch));
+  }, [enumOptions, searchTerm]);
 
   // Reset form when current filter changes
   useEffect(() => {
@@ -49,6 +60,7 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   };
 
   const handleSelectAllToggle = (checked: boolean) => {
+    // Always select or deselect all values, regardless of search filter
     if (checked) {
       setSelectedValues(allValues);
     } else {
@@ -87,6 +99,9 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
   // Check if all options are selected
   const isAllSelected = selectedValues.length === allValues.length;
 
+  // Show search input if there are more than 10 options
+  const showSearch = enumOptions.length > 10;
+
   return (
     <FilterContainer>
       <FilterSection>
@@ -98,16 +113,32 @@ const EnumFilter: React.FC<EnumFilterProps> = ({
             </Checkbox>
           </div>
 
+          {/* Search input for large lists */}
+          {showSearch && (
+            <div className="st-enum-search">
+              <FilterInput
+                type="text"
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Search..."
+              />
+            </div>
+          )}
           {/* Individual option checkboxes */}
-          {enumOptions.map((option) => (
+          {filteredOptions.map((option, index) => (
             <Checkbox
-              key={option.value}
+              key={index}
               checked={selectedValues.includes(option.value)}
               onChange={() => handleValueToggle(option.value)}
             >
               <span className="st-enum-option-label">{option.label}</span>
             </Checkbox>
           ))}
+
+          {/* No results message */}
+          {searchTerm && filteredOptions.length === 0 && (
+            <div className="st-enum-no-results">No matching options</div>
+          )}
         </div>
       </FilterSection>
 

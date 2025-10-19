@@ -390,12 +390,12 @@
   --st-even-row-background-color: var(--st-gray-900);
   --st-odd-column-background-color: var(--st-gray-800);
   --st-even-column-background-color: var(--st-gray-900);
-  --st-hover-row-background-color: var(--st-gray-700);
+  --st-hover-row-background-color: var(--st-gray-600);
   --st-selected-row-background-color: var(--st-blue-950);
   --st-header-background-color: var(--st-gray-800);
   --st-header-label-color: var(--st-gray-100);
   --st-header-icon-color: var(--st-gray-400);
-  --st-dragging-background-color: var(--st-gray-600);
+  --st-dragging-background-color: var(--st-gray-500);
   --st-selected-cell-background-color: var(--st-blue-900);
   --st-selected-first-cell-background-color: var(--st-blue-800);
   --st-footer-background-color: var(--st-gray-900);
@@ -417,9 +417,9 @@
   --st-checkbox-checked-border-color: var(--st-blue-500);
   --st-column-editor-background-color: var(--st-gray-800);
   --st-column-editor-popout-background-color: var(--st-gray-800);
-  --st-button-hover-background-color: var(--st-gray-700);
+  --st-button-hover-background-color: var(--st-gray-600);
   --st-button-active-background-color: var(--st-blue-500);
-  --st-cell-flash-color: var(--st-gray-600);
+  --st-cell-flash-color: var(--st-gray-500);
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-400);
 
@@ -433,12 +433,12 @@
   --st-selection-highlight-indicator-color: var(--st-gray-600);
 
   /* Navigation button colors */
-  --st-next-prev-btn-color: var(--st-gray-400);
+  --st-next-prev-btn-color: var(--st-gray-300);
   --st-next-prev-btn-disabled-color: var(--st-gray-600);
 
   /* Page button colors */
-  --st-page-btn-color: var(--st-gray-400);
-  --st-page-btn-hover-background-color: var(--st-gray-700);
+  --st-page-btn-color: var(--st-gray-300);
+  --st-page-btn-hover-background-color: var(--st-gray-600);
 
   /* Column editor colors */
   --st-column-editor-text-color: var(--st-gray-400);
@@ -454,8 +454,8 @@
   --st-datepicker-other-month-color: var(--st-gray-600);
 
   /* Filter button disabled colors */
-  --st-filter-button-disabled-background-color: var(--st-gray-600);
-  --st-filter-button-disabled-text-color: var(--st-gray-400);
+  --st-filter-button-disabled-background-color: var(--st-gray-700);
+  --st-filter-button-disabled-text-color: var(--st-gray-500);
 }
 
 /* Neutral Theme */
@@ -571,7 +571,7 @@
   --st-header-background-color: var(--st-blue-200);
   --st-header-label-color: var(--st-blue-900);
   --st-header-icon-color: var(--st-blue-600);
-  --st-dragging-background-color: var(--st-blue-300);
+  --st-dragging-background-color: var(--st-sky-200);
   --st-selected-cell-background-color: var(--st-blue-400);
   --st-selected-first-cell-background-color: var(--st-blue-300);
   --st-footer-background-color: var(--st-blue-50);
@@ -595,7 +595,7 @@
   --st-column-editor-popout-background-color: var(--st-blue-50);
   --st-button-hover-background-color: var(--st-blue-200);
   --st-button-active-background-color: var(--st-blue-600);
-  --st-cell-flash-color: var(--st-blue-300);
+  --st-cell-flash-color: var(--st-sky-200);
   --st-copy-flash-color: var(--st-blue-600);
   --st-warning-flash-color: var(--st-orange-400);
 
@@ -634,8 +634,8 @@
   --st-filter-button-disabled-text-color: var(--st-blue-500);
 }
 
-/* Funky Theme */
-.theme-funky {
+/* Violet Theme */
+.theme-violet {
   /* Layout/Structure variables */
   --st-border-radius: 8px;
   --st-cell-padding: 12px;
@@ -723,6 +723,94 @@
   --st-filter-button-disabled-text-color: var(--st-stone-500);
 }
 
+/* Frost Theme */
+.theme-frost {
+  /* Layout/Structure variables */
+  --st-border-radius: 0px;
+  --st-cell-padding: 8px;
+
+  /* Spacing variables */
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+
+  /* Scrollbar variables */
+  --st-scrollbar-bg-color: #f8faff;
+  --st-scrollbar-thumb-color: #c5d1dd;
+
+  /* Color variables */
+  --st-border-color: #e1e7ea;
+  --st-odd-row-background-color: #ffffff;
+  --st-even-row-background-color: #ffffff;
+  --st-odd-column-background-color: #ffffff;
+  --st-even-column-background-color: #ffffff;
+  --st-hover-row-background-color: #e5effe;
+  --st-selected-row-background-color: #d4e4fd;
+  --st-header-background-color: #f8faff;
+  --st-header-label-color: #0b1215;
+  --st-header-icon-color: #5a6c7d;
+  --st-dragging-background-color: #d0dce8;
+  --st-selected-cell-background-color: #c9dcfb;
+  --st-selected-first-cell-background-color: #d4e4fd;
+  --st-footer-background-color: #f8faff;
+  --st-cell-color: #0b1215;
+  --st-cell-odd-row-color: #0b1215;
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(11, 18, 21, 0.05);
+  --st-selected-cell-color: #0b1215;
+  --st-selected-first-cell-color: #0b1215;
+  --st-resize-handle-color: #c5d1dd;
+  --st-resize-handle-selected-color: #5a6c7d;
+  --st-last-group-row-separator-border-color: #c5d1dd;
+
+  /* Border colors */
+  --st-selected-border-color: #5a9cf8;
+  --st-editable-cell-focus-border-color: #5a9cf8;
+
+  /* Component-specific colors */
+  --st-checkbox-checked-background-color: #5a9cf8;
+  --st-checkbox-checked-border-color: #4a8ce8;
+  --st-column-editor-background-color: #ffffff;
+  --st-column-editor-popout-background-color: #ffffff;
+  --st-button-hover-background-color: #e5effe;
+  --st-button-active-background-color: #5a9cf8;
+  --st-cell-flash-color: #d0dce8;
+  --st-copy-flash-color: #5a9cf8;
+  --st-warning-flash-color: #f87171;
+
+  /* Header selection colors */
+  --st-header-selected-background-color: #5a9cf8;
+  --st-header-selected-label-color: #ffffff;
+  --st-header-selected-icon-color: #ffffff;
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: #e1e7ea;
+  --st-selection-highlight-indicator-color: #e1e7ea;
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: #5a6c7d;
+  --st-next-prev-btn-disabled-color: #c5d1dd;
+
+  /* Page button colors */
+  --st-page-btn-color: #5a6c7d;
+  --st-page-btn-hover-background-color: #e5effe;
+
+  /* Column editor colors */
+  --st-column-editor-text-color: #5a6c7d;
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: #e1e7ea;
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: #5a6c7d;
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: #5a6c7d;
+  --st-datepicker-other-month-color: #c5d1dd;
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: #e1e7ea;
+  --st-filter-button-disabled-text-color: #5a6c7d;
+}
+
 .simple-table-root * {
   box-sizing: border-box;
   /* Scrollbar thumb color */
@@ -804,21 +892,44 @@ input {
   display: grid;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
-.st-header-pinned-left {
-  flex-shrink: 0;
 
+.st-horizontal-scrollbar-middle,
+.st-horizontal-scrollbar-left,
+.st-horizontal-scrollbar-right,
+.st-header-main,
+.st-header-pinned-left,
+.st-header-pinned-right,
+.st-body-main,
+.st-body-pinned-left,
+.st-body-pinned-right {
+  overflow: auto;
+  touch-action: auto;
+}
+.st-header-main,
+.st-header-pinned-left,
+.st-header-pinned-right,
+.st-body-main,
+.st-body-pinned-left,
+.st-body-pinned-right {
+  scrollbar-width: none;
+}
+
+.st-header-pinned-left,
+.st-header-pinned-right,
+.st-body-pinned-left,
+.st-body-pinned-right {
+  flex-shrink: 0;
+}
+
+.st-header-pinned-left,
+.st-body-pinned-left {
   border-right: var(--st-border-width) solid var(--st-border-color);
 }
-.st-header-pinned-right {
-  flex-shrink: 0;
-
+.st-header-pinned-right,
+.st-body-pinned-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
 .st-header-main {
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: auto;
-  scrollbar-width: none;
   flex-grow: 1;
 }
 .st-header-main::-webkit-scrollbar {
@@ -836,6 +947,7 @@ input {
   height: max-content;
   background-color: var(--st-even-row-background-color);
 }
+
 .st-body-main,
 .st-body-pinned-left,
 .st-body-pinned-right {
@@ -843,25 +955,9 @@ input {
   height: max-content;
   min-height: 100%;
 }
-.st-body-pinned-left {
-  flex-shrink: 0;
 
-  border-right: var(--st-border-width) solid var(--st-border-color);
-}
-.st-body-main {
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: auto;
-  scrollbar-width: none;
-}
 .st-body-main::-webkit-scrollbar {
   display: none;
-}
-
-.st-body-pinned-right {
-  flex-shrink: 0;
-
-  border-left: var(--st-border-width) solid var(--st-border-color);
 }
 
 .st-row {
@@ -871,7 +967,10 @@ input {
   min-width: 100%;
 }
 .st-row.hovered .st-cell-editing,
-.st-row.hovered .st-cell:not(.st-cell-selected) {
+.st-row.hovered
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 .st-row.even {
@@ -888,7 +987,10 @@ input {
 
 /* Selected row hover state - should override selected background when hovering */
 .st-row.selected.hovered .st-cell-editing,
-.st-row.selected.hovered .st-cell:not(.st-cell-selected) {
+.st-row.selected.hovered
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 
@@ -1214,6 +1316,10 @@ input {
   width: 100%;
   background-color: var(--st-scrollbar-bg-color);
 }
+.st-horizontal-scrollbar-left,
+.st-horizontal-scrollbar-right {
+  flex-shrink: 0;
+}
 
 .st-horizontal-scrollbar-left {
   border-right: var(--st-border-width) solid var(--st-border-color);
@@ -1226,13 +1332,13 @@ input {
   height: 100%;
 }
 .st-horizontal-scrollbar-middle {
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: auto;
+  flex-grow: 1;
   min-height: 11px;
 }
+.st-horizontal-scrollbar-left > div,
+.st-horizontal-scrollbar-right > div,
 .st-horizontal-scrollbar-middle > div {
-  height: 1px;
+  height: 0.3px;
 }
 
 .st-footer {
@@ -1407,9 +1513,6 @@ input {
   align-items: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 .st-checkbox-input {
@@ -2071,15 +2174,20 @@ input {
   display: flex;
   flex-direction: column;
   gap: var(--st-spacing-small);
-  overflow: auto;
   flex-grow: 1;
   max-height: 200px;
+  overflow: auto;
 }
 
 /* Select All checkbox styling */
 .st-enum-select-all {
   padding-bottom: var(--st-spacing-small);
-  margin-bottom: var(--st-spacing-small);
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+/* Search input container */
+.st-enum-search {
+  padding-bottom: var(--st-spacing-small);
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 
@@ -2093,6 +2201,15 @@ input {
   font-size: 14px;
   color: var(--st-cell-color);
   user-select: none;
+}
+
+/* No results message */
+.st-enum-no-results {
+  padding: var(--st-spacing-medium);
+  text-align: center;
+  font-size: 14px;
+  color: var(--st-slate-400);
+  font-style: italic;
 }
 
 /* ===========================
@@ -2216,11 +2333,19 @@ input {
 }
 
 /* Maintain column borders on hover */
-.st-column-borders .st-row.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+.st-column-borders
+  .st-row.hovered
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 
 /* Maintain column borders on selected row hover */
-.st-column-borders .st-row.selected.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+.st-column-borders
+  .st-row.selected.hovered
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
