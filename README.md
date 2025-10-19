@@ -153,4 +153,11 @@ Join our growing community to ask questions or share feedback:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Dual Licensed:**
+
+- **Free Tier**: MIT License for individuals, startups, and pre-revenue companies - see [LICENSE](LICENSE) file
+- **Pro Tier**: Proprietary license for commercial use by revenue-generating companies - see [EULA.txt](EULA.txt) for complete terms
+
+By using Simple Table, you agree to the terms in [EULA.txt](EULA.txt).
+
+**[View Detailed Pricing & Licensing](https://www.simple-table.com/pricing)**
