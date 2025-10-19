@@ -6,7 +6,7 @@ import CellValue from "./types/CellValue";
 import ColumnEditorPosition from "./types/ColumnEditorPosition";
 import DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
-import HeaderObject, { Accessor, ColumnType } from "./types/HeaderObject";
+import HeaderObject, { Accessor, ColumnType, ShowWhen } from "./types/HeaderObject";
 import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import OnSortProps from "./types/OnSortProps";
 import Row from "./types/Row";
@@ -54,6 +54,7 @@ export type {
   RowSelectionChangeProps,
   SetHeaderRenameProps,
   SharedTableProps,
+  ShowWhen,
   SortColumn,
   TableCellProps,
   TableFilterState,

@@ -723,6 +723,94 @@
   --st-filter-button-disabled-text-color: var(--st-stone-500);
 }
 
+/* Frost Theme */
+.theme-frost {
+  /* Layout/Structure variables */
+  --st-border-radius: 0px;
+  --st-cell-padding: 8px;
+
+  /* Spacing variables */
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+
+  /* Scrollbar variables */
+  --st-scrollbar-bg-color: #f8faff;
+  --st-scrollbar-thumb-color: #c5d1dd;
+
+  /* Color variables */
+  --st-border-color: #e1e7ea;
+  --st-odd-row-background-color: #ffffff;
+  --st-even-row-background-color: #ffffff;
+  --st-odd-column-background-color: #ffffff;
+  --st-even-column-background-color: #ffffff;
+  --st-hover-row-background-color: #e5effe;
+  --st-selected-row-background-color: #d4e4fd;
+  --st-header-background-color: #f8faff;
+  --st-header-label-color: #0b1215;
+  --st-header-icon-color: #5a6c7d;
+  --st-dragging-background-color: #e1e7ea;
+  --st-selected-cell-background-color: #c9dcfb;
+  --st-selected-first-cell-background-color: #d4e4fd;
+  --st-footer-background-color: #f8faff;
+  --st-cell-color: #0b1215;
+  --st-cell-odd-row-color: #0b1215;
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(11, 18, 21, 0.05);
+  --st-selected-cell-color: #0b1215;
+  --st-selected-first-cell-color: #0b1215;
+  --st-resize-handle-color: #c5d1dd;
+  --st-resize-handle-selected-color: #5a6c7d;
+  --st-last-group-row-separator-border-color: #c5d1dd;
+
+  /* Border colors */
+  --st-selected-border-color: #5a9cf8;
+  --st-editable-cell-focus-border-color: #5a9cf8;
+
+  /* Component-specific colors */
+  --st-checkbox-checked-background-color: #5a9cf8;
+  --st-checkbox-checked-border-color: #4a8ce8;
+  --st-column-editor-background-color: #ffffff;
+  --st-column-editor-popout-background-color: #ffffff;
+  --st-button-hover-background-color: #e5effe;
+  --st-button-active-background-color: #5a9cf8;
+  --st-cell-flash-color: #e1e7ea;
+  --st-copy-flash-color: #5a9cf8;
+  --st-warning-flash-color: #f87171;
+
+  /* Header selection colors */
+  --st-header-selected-background-color: #5a9cf8;
+  --st-header-selected-label-color: #ffffff;
+  --st-header-selected-icon-color: #ffffff;
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: #e1e7ea;
+  --st-selection-highlight-indicator-color: #e1e7ea;
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: #5a6c7d;
+  --st-next-prev-btn-disabled-color: #c5d1dd;
+
+  /* Page button colors */
+  --st-page-btn-color: #5a6c7d;
+  --st-page-btn-hover-background-color: #e5effe;
+
+  /* Column editor colors */
+  --st-column-editor-text-color: #5a6c7d;
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: #e1e7ea;
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: #5a6c7d;
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: #5a6c7d;
+  --st-datepicker-other-month-color: #c5d1dd;
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: #e1e7ea;
+  --st-filter-button-disabled-text-color: #5a6c7d;
+}
+
 .simple-table-root * {
   box-sizing: border-box;
   /* Scrollbar thumb color */
@@ -871,7 +959,10 @@ input {
   min-width: 100%;
 }
 .st-row.hovered .st-cell-editing,
-.st-row.hovered .st-cell:not(.st-cell-selected) {
+.st-row.hovered
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 .st-row.even {
@@ -888,7 +979,10 @@ input {
 
 /* Selected row hover state - should override selected background when hovering */
 .st-row.selected.hovered .st-cell-editing,
-.st-row.selected.hovered .st-cell:not(.st-cell-selected) {
+.st-row.selected.hovered
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 
@@ -2227,11 +2321,19 @@ input {
 }
 
 /* Maintain column borders on hover */
-.st-column-borders .st-row.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+.st-column-borders
+  .st-row.hovered
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 
 /* Maintain column borders on selected row hover */
-.st-column-borders .st-row.selected.hovered .st-cell:not(.st-last-column):not(.st-cell-selected) {
+.st-column-borders
+  .st-row.selected.hovered
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }

@@ -80,7 +80,7 @@ const TableHeaderCell = ({
     onHeaderEdit,
     onSort,
     onTableHeaderDragEnd,
-    rowHeight,
+    headerHeight,
     selectColumns,
     selectableColumns,
     selectedColumns,
@@ -141,13 +141,17 @@ const TableHeaderCell = ({
     return columnsToSelect.some((columnIndex) => selectedColumns.has(columnIndex));
   }, [selectableColumns, isSelectionColumn, header, colIndex, selectedColumns]);
 
-  // Check if this header has any highlighted cells in its column (O(1) lookup)
+  // Check if this header has any highlighted cells in its column(s)
+  // For parent headers, this checks all descendant columns
   const hasHighlightedCell = useMemo(() => {
     if (isSelectionColumn) return false;
 
-    // Efficient lookup: check if this column has any selected cells
-    return columnsWithSelectedCells.has(colIndex);
-  }, [isSelectionColumn, columnsWithSelectedCells, colIndex]);
+    // Get all leaf column indices for this header (includes descendants for parent headers)
+    const columnsToCheck = getHeaderLeafIndices(header, colIndex);
+
+    // Check if ANY of those columns have selected cells
+    return columnsToCheck.some((columnIndex) => columnsWithSelectedCells.has(columnIndex));
+  }, [isSelectionColumn, header, colIndex, columnsWithSelectedCells]);
 
   // Check if header has visible children (considering collapsed state)
   const hasVisibleChildren = useMemo(() => {
@@ -155,7 +159,9 @@ const TableHeaderCell = ({
 
     // If collapsed, check if any children are visible when collapsed
     if (isCollapsed) {
-      return header.children.some((child) => child.summaryColumn);
+      return header.children.some(
+        (child) => child.showWhen === "parentCollapsed" || child.showWhen === "always"
+      );
     }
 
     // If not collapsed, has visible children if it has any children
@@ -533,7 +539,7 @@ const TableHeaderCell = ({
         gridRowEnd,
         gridColumnStart,
         gridColumnEnd,
-        ...(gridRowEnd - gridRowStart > 1 ? {} : { height: rowHeight }),
+        ...(gridRowEnd - gridRowStart > 1 ? {} : { height: headerHeight }),
       }}
     >
       {reverse && ResizeHandle}
