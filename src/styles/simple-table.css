@@ -902,7 +902,7 @@ input {
 .st-body-main,
 .st-body-pinned-left,
 .st-body-pinned-right {
-  overflow: scroll;
+  overflow: auto;
   touch-action: auto;
 }
 .st-header-main,
