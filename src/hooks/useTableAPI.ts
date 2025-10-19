@@ -10,21 +10,23 @@ import { exportTableToCSV } from "../utils/csvExportUtils";
 import HeaderObject from "../types/HeaderObject";
 
 const useTableAPI = ({
-  tableRef,
-  rows,
-  rowIdAccessor,
   cellRegistryRef,
+  currentTableRows,
   headerRegistryRef,
-  visibleRows,
   headers,
+  rowIdAccessor,
+  rows,
+  tableRef,
+  visibleRows,
 }: {
-  tableRef?: MutableRefObject<TableRefType | null>;
-  rows: Row[];
-  rowIdAccessor: Accessor;
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
+  currentTableRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
-  visibleRows: TableRow[];
   headers: HeaderObject[];
+  rowIdAccessor: Accessor;
+  rows: Row[];
+  tableRef?: MutableRefObject<TableRefType | null>;
+  visibleRows: TableRow[];
 }) => {
   // Set up API methods on the ref if provided
   useEffect(() => {
@@ -60,7 +62,7 @@ const useTableAPI = ({
           return visibleRows;
         },
         exportToCSV: ({ filename }: ExportToCSVProps = {}) => {
-          exportTableToCSV(visibleRows, headers, filename);
+          exportTableToCSV(currentTableRows, headers, filename);
         },
       };
     }

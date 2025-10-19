@@ -419,12 +419,13 @@ const SimpleTableComp = ({
   useOnGridReady({ onGridReady });
   useTableAPI({
     cellRegistryRef,
+    currentTableRows: currentTableRows,
     headerRegistryRef,
+    headers: effectiveHeaders,
     rowIdAccessor,
     rows,
     tableRef,
     visibleRows: rowsToRender,
-    headers: effectiveHeaders,
   });
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
