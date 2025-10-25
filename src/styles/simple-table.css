@@ -295,6 +295,7 @@
   /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-slate-50);
   --st-scrollbar-thumb-color: var(--st-slate-300);
+  --st-scrollbar-width: thin;
 
   /* Color variables */
   --st-border-color: var(--st-slate-300);
@@ -391,6 +392,8 @@
   /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-gray-900);
   --st-scrollbar-thumb-color: var(--st-gray-600);
+  --st-scrollbar-width: thin;
+  --st-scrollbar-thumb-border-radius: 4px;
 
   /* Color variables */
   --st-border-color: var(--st-gray-700);
@@ -487,6 +490,8 @@
   /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-neutral-100);
   --st-scrollbar-thumb-color: var(--st-neutral-400);
+  --st-scrollbar-width: thin;
+  --st-scrollbar-thumb-border-radius: 4px;
 
   /* Color variables */
   --st-border-color: var(--st-neutral-300);
@@ -583,6 +588,8 @@
   /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-blue-50);
   --st-scrollbar-thumb-color: var(--st-blue-300);
+  --st-scrollbar-width: thin;
+  --st-scrollbar-thumb-border-radius: 4px;
 
   /* Color variables */
   --st-border-color: var(--st-blue-300);
@@ -679,6 +686,8 @@
   /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-stone-100);
   --st-scrollbar-thumb-color: var(--st-violet-500);
+  --st-scrollbar-width: thin;
+  --st-scrollbar-thumb-border-radius: 4px;
 
   /* Color variables */
   --st-border-color: var(--st-stone-200);
@@ -776,6 +785,8 @@
   /* Scrollbar variables */
   --st-scrollbar-bg-color: #f8faff;
   --st-scrollbar-thumb-color: #c5d1dd;
+  --st-scrollbar-width: thin;
+  --st-scrollbar-thumb-border-radius: 4px;
 
   /* Color variables */
   --st-border-color: #e1e7ea;
@@ -863,7 +874,8 @@
   box-sizing: border-box;
   /* Scrollbar thumb color */
   scrollbar-color: var(--st-scrollbar-thumb-color) var(--st-scrollbar-bg-color);
-  scrollbar-width: thin;
+  scrollbar-width: var(--st-scrollbar-width);
+  scrollbar-thumb-border-radius: var(--st-scrollbar-thumb-border-radius);
   font-family: inherit;
 }
 
