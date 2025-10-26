@@ -1092,9 +1092,11 @@ input {
 }
 .st-header-cell.st-header-selected .st-header-icon {
   fill: var(--st-header-selected-icon-color);
+  background-color: var(--st-header-selected-icon-color);
 }
 .st-header-cell.st-header-selected .st-icon-container * {
   fill: var(--st-header-selected-icon-color);
+  background-color: var(--st-header-selected-icon-color);
 }
 .st-header-cell.st-header-selected .st-icon-container {
   color: var(--st-header-selected-icon-color);
@@ -1158,6 +1160,7 @@ input {
   align-items: center;
   height: 100%;
   min-width: 0;
+  overflow: hidden;
 }
 
 .st-header-label-text,
@@ -1176,6 +1179,9 @@ input {
   padding-left: var(--st-cell-padding);
   padding-right: var(--st-cell-padding);
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .st-cell-content.left-aligned,
@@ -1890,6 +1896,7 @@ input {
 }
 .st-datepicker-nav-btn > * {
   fill: var(--st-cell-color) !important;
+  background-color: var(--st-cell-color) !important;
 }
 
 .st-datepicker-nav-btn:hover {
