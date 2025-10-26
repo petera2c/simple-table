@@ -44,45 +44,6 @@ const getThemeColors = (theme?: string) => {
   return themes[theme as keyof typeof themes] || themes.light;
 };
 
-// Color mapping functions
-const getMoodColor = (mood: string): string => {
-  const moodColors: Record<string, string> = {
-    Heartbroken: "red",
-    Melancholic: "blue",
-    Dark: "red",
-    Empowering: "yellow",
-    Energetic: "green",
-    Uplifting: "yellow",
-    Romantic: "red",
-    Hopeful: "blue",
-    Celebratory: "yellow",
-    Chill: "blue",
-    Affectionate: "red",
-    Aggressive: "red",
-  };
-  return moodColors[mood] || "default";
-};
-
-const getGenreColor = (genre: string): string => {
-  const genreColors: Record<string, string> = {
-    alternative: "blue",
-    country: "yellow",
-    punjabi: "yellow",
-    latin: "red",
-    reggaeton: "red",
-    "k-pop": "red",
-    rock: "red",
-    "r&b/soul": "blue",
-    "indie pop": "blue",
-    "electronic/dance": "green",
-    bollywood: "yellow",
-    pop: "green",
-    "hip-hop/rap": "yellow",
-    afrobeat: "green",
-  };
-  return genreColors[genre] || "default";
-};
-
 // Custom Tag component
 const Tag = ({ children, color }: { children: React.ReactNode; color?: string }) => {
   const getColorStyles = (color?: string) => {
@@ -182,7 +143,6 @@ export const HEADERS: HeaderObject[] = [
       const growthStatus = row.growthStatus as string;
       const mood = row.mood as string;
       const genre = row.genre as string;
-      const colors = getThemeColors(theme);
 
       // Generate a consistent color based on the name
       const getColorFromName = (str: string) => {
@@ -192,14 +152,6 @@ export const HEADERS: HeaderObject[] = [
         }
         const hue = hash % 360;
         return `hsl(${hue}, 65%, 55%)`;
-      };
-
-      // Status color mapping
-      const statusColorMap: Record<string, string> = {
-        Growth: "green",
-        Trending: "blue",
-        Steady: "yellow",
-        Declining: "red",
       };
 
       return (

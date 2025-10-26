@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import "simple-table-core/styles.css";
 import { HEADERS } from "./infrastructure-headers";
 import Theme from "../../../types/Theme";
 import TableRefType from "../../../types/TableRefType";

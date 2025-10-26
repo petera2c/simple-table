@@ -66,7 +66,16 @@ const useTableAPI = ({
         },
       };
     }
-  }, [cellRegistryRef, headerRegistryRef, rows, rowIdAccessor, tableRef, visibleRows, headers]);
+  }, [
+    cellRegistryRef,
+    currentTableRows,
+    headerRegistryRef,
+    headers,
+    rowIdAccessor,
+    rows,
+    tableRef,
+    visibleRows,
+  ]);
 };
 
 export default useTableAPI;

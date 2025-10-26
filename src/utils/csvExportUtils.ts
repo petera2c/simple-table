@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import HeaderObject from "../types/HeaderObject";
 import TableRow from "../types/TableRow";
 
 /**

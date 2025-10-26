@@ -1,6 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=BBH+Sans+Hegarty&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 .custom-theme-container .theme-custom {
   /* Layout/Structure variables */
-  --st-border-radius: 8px;
+  --st-border-radius: 4px;
   --st-cell-padding: 12px;
 
   /* Spacing variables */
@@ -12,16 +13,16 @@
   --st-scrollbar-thumb-color: #cbd5e1;
 
   /* Color variables */
-  --st-border-color: var(--st-stone-200);
+  --st-border-color: none;
   --st-odd-row-background-color: white;
   --st-even-row-background-color: white;
   --st-odd-column-background-color: var(--st-white);
   --st-even-column-background-color: var(--st-stone-50);
   --st-hover-row-background-color: var(--st-stone-100);
   --st-selected-row-background-color: var(--st-stone-100);
-  --st-header-background-color: oklch(98.5% 0.002 247.839);
-  --st-header-label-color: #6a7282;
-  --st-header-icon-color: #6a7282;
+  --st-header-background-color: rgb(249 250 251);
+  --st-header-label-color: oklch(55.1% 0.027 264.364);
+  --st-header-icon-color: oklch(55.1% 0.027 264.364);
   --st-dragging-background-color: var(--st-stone-100);
   --st-selected-cell-background-color: var(--st-stone-100);
   --st-selected-first-cell-background-color: var(--st-stone-200);
@@ -32,8 +33,7 @@
     0 2px 4px -1px rgba(106, 114, 130, 0.06);
   --st-selected-cell-color: var(--st-stone-800);
   --st-selected-first-cell-color: var(--st-stone-800);
-  --st-resize-handle-color: #6a7282;
-  --st-resize-handle-selected-color: var(--st-white);
+  --st-resize-handle-color: oklch(96.7% 0.003 264.542);
   --st-separator-border-color: var(--st-stone-200);
   --st-last-group-row-separator-border-color: var(--st-stone-300);
 
@@ -89,4 +89,28 @@
 
 .custom-theme-container .st-wrapper {
   background-color: white;
+  border-radius: 0;
+}
+.custom-theme-container .st-header-label-text {
+  font-size: 12px;
+}
+
+.custom-theme-container * {
+  font-family: Plus Jakarta Sans, sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+.custom-theme-container .st-header-resize-handle {
+  height: 100%;
+  background-color: oklch(96.7% 0.003 264.542);
+  width: 4px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -14,9 +14,9 @@ export const ScrollSyncPane: FC<ScrollSyncPaneProps> = ({
   group = "default",
 }) => {
   const { registerPane, unregisterPane } = useScrollSyncContext();
-  const groups = [group];
 
   useEffect(() => {
+    const groups = [group];
     if (childRef.current) registerPane(childRef.current, groups);
 
     return () => {

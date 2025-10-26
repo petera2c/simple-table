@@ -1,6 +1,6 @@
 import { LEADS_HEADERS } from "./leads-headers";
-import { useState, useEffect } from "react";
-import "simple-table-core/styles.css";
+import { useState } from "react";
+
 import "./CustomTheme.css";
 import Theme from "../../../types/Theme";
 import Row from "../../../types/Row";
@@ -292,9 +292,9 @@ const LeadsExampleComponent = ({
         rows={data}
         rowHeight={92}
         theme="custom"
-        selectableCells
         onCellEdit={handleCellEdit}
         height={"70dvh"}
+        headerHeight={48}
       />
     </div>
   );
