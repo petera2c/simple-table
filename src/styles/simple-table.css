@@ -1093,7 +1093,7 @@ input {
 .st-header-cell.st-header-selected .st-header-icon {
   fill: var(--st-header-selected-icon-color);
 }
-.st-header-cell.st-header-selected .st-icon-container svg {
+.st-header-cell.st-header-selected .st-icon-container * {
   fill: var(--st-header-selected-icon-color);
 }
 .st-header-cell.st-header-selected .st-icon-container {
