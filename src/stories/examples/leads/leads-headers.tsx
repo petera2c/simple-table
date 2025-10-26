@@ -102,6 +102,64 @@ const EmailEnrich = ({ rowId }: { rowId: string }) => {
   );
 };
 
+// Custom Fit Buttons component
+const FitButtons = ({ rowId }: { rowId: string }) => {
+  const [selected, setSelected] = useState<string | null>(null);
+
+  const buttonStyle = {
+    flex: 1,
+    padding: "4px 8px",
+    fontSize: "0.75rem",
+    fontWeight: 500,
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background-color 0.2s",
+    color: "oklch(70.7% .022 261.325)",
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <button
+        onClick={() => setSelected(selected === "fit" ? null : "fit")}
+        style={{
+          ...buttonStyle,
+          backgroundColor:
+            selected === "fit" ? "oklch(87.1% .15 154.449)" : "oklch(92.5% .084 155.995)",
+          borderTopLeftRadius: "6px",
+          borderBottomLeftRadius: "6px",
+        }}
+      >
+        ✓
+      </button>
+      <button
+        onClick={() => setSelected(selected === "partial" ? null : "partial")}
+        style={{
+          ...buttonStyle,
+          backgroundColor:
+            selected === "partial" ? "oklch(87.2% .01 258.338)" : "oklch(92.8% .006 264.531)",
+        }}
+      >
+        ?
+      </button>
+      <button
+        onClick={() => setSelected(selected === "no" ? null : "no")}
+        style={{
+          ...buttonStyle,
+          backgroundColor:
+            selected === "no" ? "oklch(83.7% .128 66.29)" : "oklch(90.1% .076 70.697)",
+          borderTopRightRadius: "6px",
+          borderBottomRightRadius: "6px",
+        }}
+      >
+        X
+      </button>
+    </div>
+  );
+};
+
 // Custom Tag component for status badges
 const Tag = ({ children, color }: { children: React.ReactNode; color?: string }) => {
   const getColorStyles = (color?: string) => {
@@ -327,36 +385,31 @@ export const LEADS_HEADERS: HeaderObject[] = [
     ],
     cellRenderer: ({ row }) => {
       const listName = row.list as string;
-      let color = "default";
 
-      switch (listName) {
-        case "Hot Leads":
-          color = "error";
-          break;
-        case "Warm Leads":
-          color = "warning";
-          break;
-        case "Leads":
-          color = "success";
-          break;
-        case "Enterprise":
-          color = "purple";
-          break;
-        default:
-          color = "info";
-          break;
-      }
-
-      return <Tag color={color}>{listName}</Tag>;
+      return (
+        <a
+          href="#"
+          onClick={(e) => e.preventDefault()}
+          style={{
+            cursor: "pointer",
+            fontSize: "0.875rem",
+            color: "oklch(64.6% .222 41.116)",
+            textDecoration: "none",
+            fontWeight: "600",
+          }}
+        >
+          {listName}
+        </a>
+      );
     },
   },
   {
     accessor: "_fit",
-    label: "",
+    label: "Fit",
     width: 120,
     minWidth: 120,
     cellRenderer: ({ row }) => {
-      return null;
+      return <FitButtons rowId={row.id as string} />;
     },
   },
   {
@@ -365,7 +418,21 @@ export const LEADS_HEADERS: HeaderObject[] = [
     width: 160,
     minWidth: 160,
     cellRenderer: () => {
-      return <div style={{ fontSize: "13px" }}>Contact Now</div>;
+      return (
+        <a
+          href="#"
+          onClick={(e) => e.preventDefault()}
+          style={{
+            cursor: "pointer",
+            fontSize: "0.875rem",
+            color: "oklch(64.6% .222 41.116)",
+            textDecoration: "none",
+            fontWeight: "600",
+          }}
+        >
+          Contact Now
+        </a>
+      );
     },
   },
 ];

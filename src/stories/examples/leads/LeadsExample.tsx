@@ -295,6 +295,7 @@ const LeadsExampleComponent = ({
         onCellEdit={handleCellEdit}
         height={"70dvh"}
         headerHeight={48}
+        shouldPaginate
       />
     </div>
   );
