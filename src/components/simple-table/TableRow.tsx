@@ -41,7 +41,7 @@ const TableRow = ({
     isRowSelected,
     useOddEvenRowBackground,
   } = useTableContext();
-  const { position } = tableRow;
+  const { position, displayPosition } = tableRow;
   // Get row index from rowIndices using the row's ID
 
   const isOdd = position % 2 === 0;
@@ -73,6 +73,7 @@ const TableRow = ({
       <RenderCells
         columnIndexStart={columnIndexStart}
         columnIndices={columnIndices}
+        displayRowNumber={displayPosition}
         headers={headers}
         key={rowId}
         pinned={pinned}

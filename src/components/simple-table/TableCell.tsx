@@ -46,6 +46,7 @@ const displayContent = ({ content, header }: { content: CellValue; header: Heade
 const TableCell = ({
   borderClass,
   colIndex,
+  displayRowNumber,
   header,
   isHighlighted,
   isInitialFocused,
@@ -438,7 +439,7 @@ const TableCell = ({
                     onChange={handleRowCheckboxChange}
                   />
                 ) : (
-                  <span className="st-row-number">{rowIndex + 1}</span>
+                  <span className="st-row-number">{displayRowNumber + 1}</span>
                 )}
               </div>
               {/* Show row buttons to the right of checkbox/row number */}

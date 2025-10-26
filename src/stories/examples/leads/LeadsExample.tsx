@@ -25,12 +25,12 @@ const LeadsCustomFooter = ({
   onPrevPage,
   hasNextPage,
   hasPrevPage,
-}: FooterRendererProps) => {
-  const [pageSize, setPageSize] = useState(rowsPerPage);
-
+  setRowsPerPage,
+}: FooterRendererProps & { setRowsPerPage: (size: number) => void }) => {
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newSize = parseInt(event.target.value, 10);
-    setPageSize(newSize);
+    setRowsPerPage(newSize);
+
     // Note: In a real implementation, you'd need to pass onRowsPerPageChange callback
     console.log("Page size changed to:", newSize);
   };
@@ -65,7 +65,7 @@ const LeadsCustomFooter = ({
           </label>
           <select
             id="itemsPerPage"
-            value={pageSize}
+            value={rowsPerPage}
             onChange={handlePageSizeChange}
             style={{
               border: "1px solid #d1d5db",
@@ -76,10 +76,9 @@ const LeadsCustomFooter = ({
               cursor: "pointer",
             }}
           >
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
             <option value="10000">all</option>
           </select>
           <span style={{ fontSize: "14px", color: "#374151" }}>per page</span>
@@ -419,6 +418,7 @@ const LeadsExampleComponent = ({
   rowCount?: number;
 }) => {
   const [data, setData] = useState<Row[]>(BACKUP_LEADS_DATA);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
     setData((prevData) =>
@@ -450,8 +450,8 @@ const LeadsExampleComponent = ({
         height={"70dvh"}
         headerHeight={48}
         shouldPaginate
-        rowsPerPage={100}
-        footerRenderer={(props) => <LeadsCustomFooter {...props} />}
+        rowsPerPage={rowsPerPage}
+        footerRenderer={(props) => <LeadsCustomFooter {...props} setRowsPerPage={setRowsPerPage} />}
       />
     </div>
   );

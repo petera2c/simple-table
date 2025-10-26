@@ -15,6 +15,7 @@ interface RenderCellsProps {
   headers: HeaderObject[];
   pinned?: Pinned;
   rowIndex: number;
+  displayRowNumber: number;
   rowIndices: RowIndices;
   tableRow: TableRowType;
 }
@@ -25,6 +26,7 @@ const RenderCells = ({
   headers,
   pinned,
   rowIndex,
+  displayRowNumber,
   rowIndices,
   tableRow,
 }: RenderCellsProps) => {
@@ -42,6 +44,7 @@ const RenderCells = ({
         return (
           <RecursiveRenderCells
             columnIndices={columnIndices}
+            displayRowNumber={displayRowNumber}
             header={header}
             headers={headers}
             key={cellKey}
@@ -59,6 +62,7 @@ const RenderCells = ({
 
 const RecursiveRenderCells = ({
   columnIndices,
+  displayRowNumber,
   header,
   headers,
   nestedIndex,
@@ -68,6 +72,7 @@ const RecursiveRenderCells = ({
   tableRow,
 }: {
   columnIndices: ColumnIndices;
+  displayRowNumber: number;
   header: HeaderObject;
   headers: HeaderObject[];
   nestedIndex: number;
@@ -98,6 +103,7 @@ const RecursiveRenderCells = ({
           return (
             <RecursiveRenderCells
               columnIndices={columnIndices}
+              displayRowNumber={displayRowNumber}
               header={child}
               headers={headers}
               key={childCellKey}
@@ -125,6 +131,7 @@ const RecursiveRenderCells = ({
     <TableCell
       borderClass={borderClass}
       colIndex={colIndex}
+      displayRowNumber={displayRowNumber}
       header={header}
       isHighlighted={isHighlighted}
       isInitialFocused={isInitialFocused}

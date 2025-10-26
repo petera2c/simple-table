@@ -66,16 +66,17 @@ const useTableRowProcessing = ({
         ? rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
         : rows;
 
-      // Calculate the starting position offset for pagination
-      const startingPosition = shouldPaginate ? (currentPage - 1) * rowsPerPage : 0;
+      // Calculate the display position offset for pagination
+      const displayPositionOffset = shouldPaginate ? (currentPage - 1) * rowsPerPage : 0;
 
       // Apply grouping
       if (!rowGrouping || rowGrouping.length === 0) {
         return paginatedRows.map((row, index) => ({
           row,
           depth: 0,
+          displayPosition: displayPositionOffset + index,
           groupingKey: undefined,
-          position: startingPosition + index,
+          position: index,
           isLastGroupRow: false,
         }));
       }
@@ -86,7 +87,7 @@ const useTableRowProcessing = ({
         rowIdAccessor,
         unexpandedRows,
         expandAll,
-        startingPosition,
+        displayPositionOffset,
       });
     },
     [
@@ -264,20 +265,23 @@ const useTableRowProcessing = ({
       // Create a map of ALL positions from currentTableRows (not just visible ones)
       // This ensures we have positions for existing rows AND entering rows
       const positionMap = new Map<string, number>();
+      const displayPositionMap = new Map<string, number>();
       currentTableRows.forEach((row) => {
         const id = String(getRowId({ row: row.row, rowIdAccessor }));
         positionMap.set(id, row.position);
+        displayPositionMap.set(id, row.displayPosition);
       });
 
       // Update ALL rows in extendedRows with their new positions
       const updatedExtendedRows = extendedRows.map((row) => {
         const id = String(getRowId({ row: row.row, rowIdAccessor }));
         const newPosition = positionMap.get(id);
+        const newDisplayPosition = displayPositionMap.get(id);
 
         // If this row exists in the new sorted state, use its new position
         // Otherwise keep the original position (for leaving rows that are no longer in the sorted data)
-        if (newPosition !== undefined) {
-          return { ...row, position: newPosition };
+        if (newPosition !== undefined && newDisplayPosition !== undefined) {
+          return { ...row, position: newPosition, displayPosition: newDisplayPosition };
         }
         return row;
       });

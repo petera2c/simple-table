@@ -49,7 +49,7 @@ export const flattenRowsWithGrouping = ({
   rowGrouping = [],
   rowIdAccessor,
   rows,
-  startingPosition = 0,
+  displayPositionOffset = 0,
 }: {
   depth?: number;
   expandAll?: boolean;
@@ -57,12 +57,18 @@ export const flattenRowsWithGrouping = ({
   rowGrouping?: Accessor[];
   rowIdAccessor: Accessor;
   rows: Row[];
-  startingPosition?: number;
+  displayPositionOffset?: number;
 }): TableRow[] => {
   const result: TableRow[] = [];
 
-  const processRows = (currentRows: Row[], currentDepth: number, parentPosition = 0): number => {
+  const processRows = (
+    currentRows: Row[],
+    currentDepth: number,
+    parentPosition = 0,
+    parentDisplayPosition = displayPositionOffset
+  ): number => {
     let position = parentPosition;
+    let displayPosition = parentDisplayPosition;
 
     currentRows.forEach((row, index) => {
       const rowId = getRowId({ row, rowIdAccessor });
@@ -75,12 +81,14 @@ export const flattenRowsWithGrouping = ({
       result.push({
         row,
         depth: currentDepth,
+        displayPosition,
         groupingKey: currentGroupingKey,
         position,
         isLastGroupRow,
       });
 
       position++;
+      displayPosition++;
 
       // Check if row should be expanded
       const rowIdStr = String(rowId);
@@ -94,7 +102,7 @@ export const flattenRowsWithGrouping = ({
 
         if (nestedRows.length > 0) {
           // Recursively process nested rows and update position
-          position = processRows(nestedRows, currentDepth + 1, position);
+          position = processRows(nestedRows, currentDepth + 1, position, displayPosition);
         }
       }
     });
@@ -102,6 +110,6 @@ export const flattenRowsWithGrouping = ({
     return position;
   };
 
-  processRows(rows, depth, startingPosition);
+  processRows(rows, depth, 0, displayPositionOffset);
   return result;
 };
