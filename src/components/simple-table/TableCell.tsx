@@ -264,7 +264,7 @@ const TableCell = ({
         rowIndex,
       });
     },
-    [header.accessor, onCellEdit, row, rowIndex]
+    [header.accessor, header.type, onCellEdit, row, rowIndex]
   );
 
   // Handle row expansion

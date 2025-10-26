@@ -51,6 +51,7 @@ import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
 import { RowButton } from "../../types/RowButton";
 import { HeaderDropdown } from "../../types/HeaderDropdownProps";
+import FooterRendererProps from "../../types/FooterRendererProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -70,6 +71,7 @@ interface SimpleTableProps {
   expandIcon?: ReactNode; // Icon for expanded state (used in expandable rows)
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
+  footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
   headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
   headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
@@ -135,6 +137,7 @@ const SimpleTableComp = ({
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   externalFilterHandling = false,
   externalSortHandling = false,
+  footerRenderer,
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
   headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
   headerDropdown,
@@ -579,11 +582,14 @@ const SimpleTableComp = ({
             />
             <TableFooter
               currentPage={currentPage}
+              footerRenderer={footerRenderer}
               hideFooter={hideFooter}
               onPageChange={setCurrentPage}
               onNextPage={onNextPage}
+              rowsPerPage={rowsPerPage}
               shouldPaginate={shouldPaginate}
               totalPages={Math.ceil(sortedRows.length / rowsPerPage)}
+              totalRows={sortedRows.length}
             />
           </div>
         </ScrollSync>

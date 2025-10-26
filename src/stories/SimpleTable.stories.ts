@@ -66,6 +66,7 @@ import TooltipExample, { tooltipExampleDefaults } from "./examples/TooltipExampl
 import InfrastructureExampleComponent, {
   infrastructureExampleDefaults,
 } from "./examples/infrastructure/InfrastructureExample";
+import LeadsExampleComponent, { leadsExampleDefaults } from "./examples/leads/LeadsExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -261,6 +262,15 @@ export const InfrastructureExample: StoryObj<UniversalTableProps> = {
       ExampleComponent: InfrastructureExampleComponent,
       ...args,
     }),
+};
+export const LeadsExample: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...leadsExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: LeadsExampleComponent, ...args }),
 };
 export const LiveUpdates: StoryObj<UniversalTableProps> = {
   args: {

@@ -25,6 +25,7 @@ import CellRendererProps, { CellRenderer } from "./types/CellRendererProps";
 import HeaderRendererProps, { HeaderRenderer } from "./types/HeaderRendererProps";
 import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps";
 import { RowButtonProps } from "./types/RowButton";
+import FooterRendererProps from "./types/FooterRendererProps";
 
 export { SimpleTable };
 export type {
@@ -44,6 +45,7 @@ export type {
   EnumOption,
   ExportToCSVProps,
   FilterCondition,
+  FooterRendererProps,
   HeaderDropdown,
   HeaderDropdownProps,
   HeaderObject,
