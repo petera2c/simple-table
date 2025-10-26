@@ -28,6 +28,7 @@ import OnNextPage from "../../types/OnNextPage";
 import "../../styles/simple-table.css";
 import DescIcon from "../../icons/DescIcon";
 import AscIcon from "../../icons/AscIcon";
+import FilterIcon from "../../icons/FilterIcon";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import FilterBar from "../filters/FilterBar";
 import useFilterableData from "../../hooks/useFilterableData";
@@ -71,6 +72,7 @@ interface SimpleTableProps {
   expandIcon?: ReactNode; // Icon for expanded state (used in expandable rows)
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
+  filterIcon?: ReactNode; // Icon for filter button
   footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
   headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
   headerExpandIcon?: ReactNode; // Icon for expanded column headers
@@ -137,6 +139,7 @@ const SimpleTableComp = ({
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   externalFilterHandling = false,
   externalSortHandling = false,
+  filterIcon = <FilterIcon className="st-header-icon" />,
   footerRenderer,
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
   headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
@@ -465,6 +468,7 @@ const SimpleTableComp = ({
         enableHeaderEditing,
         enableRowSelection,
         expandIcon,
+        filterIcon,
         filters,
         forceUpdate,
         getBorderClass,

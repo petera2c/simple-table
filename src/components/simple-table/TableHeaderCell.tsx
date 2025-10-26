@@ -1,4 +1,5 @@
 import {
+  cloneElement,
   DragEvent,
   useEffect,
   MouseEvent,
@@ -17,7 +18,6 @@ import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
 import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
-import FilterIcon from "../../icons/FilterIcon";
 import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
@@ -66,6 +66,7 @@ const TableHeaderCell = ({
     draggedHeaderRef,
     enableHeaderEditing,
     enableRowSelection,
+    filterIcon,
     filters,
     handleApplyFilter,
     handleClearFilter,
@@ -482,16 +483,15 @@ const TableHeaderCell = ({
     </div>
   );
 
-  const FilterIconComponent = filterable && (
+  const FilterIconComponent = filterable && filterIcon && (
     <div className="st-icon-container" onClick={handleFilterIconClick}>
-      <FilterIcon
-        className="st-header-icon"
-        style={{
+      {cloneElement(filterIcon as React.ReactElement, {
+        style: {
           fill: currentFilter
             ? "var(--st-button-active-background-color)"
             : "var(--st-header-icon-color)",
-        }}
-      />
+        },
+      })}
 
       <Dropdown
         open={isFilterDropdownOpen}

@@ -45,6 +45,7 @@ interface TableContextType {
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   expandIcon?: ReactNode;
+  filterIcon?: ReactNode;
   filters: TableFilterState;
   forceUpdate: () => void;
   getBorderClass: (cell: Cell) => string;

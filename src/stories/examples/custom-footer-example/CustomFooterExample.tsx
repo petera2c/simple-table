@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SimpleTable, FooterRendererProps } from "../../../index";
-import { generateSimpleData } from "../../data/generate-data";
+import { generateSaaSData } from "../../data/saas-data";
 
 // Example custom footer component similar to the Angular example
 const CustomFooter = ({
@@ -175,7 +175,7 @@ const CustomFooterExample = () => {
     { accessor: "status", label: "Status", width: 120 },
   ];
 
-  const rows = generateSimpleData(316); // Generate 316 rows to match the example
+  const rows = generateSaaSData(); // Generate 316 rows to match the example
 
   return (
     <div style={{ padding: "2rem" }}>
