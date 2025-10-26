@@ -49,6 +49,7 @@ export const flattenRowsWithGrouping = ({
   rowGrouping = [],
   rowIdAccessor,
   rows,
+  startingPosition = 0,
 }: {
   depth?: number;
   expandAll?: boolean;
@@ -56,6 +57,7 @@ export const flattenRowsWithGrouping = ({
   rowGrouping?: Accessor[];
   rowIdAccessor: Accessor;
   rows: Row[];
+  startingPosition?: number;
 }): TableRow[] => {
   const result: TableRow[] = [];
 
@@ -100,6 +102,6 @@ export const flattenRowsWithGrouping = ({
     return position;
   };
 
-  processRows(rows, depth);
+  processRows(rows, depth, startingPosition);
   return result;
 };

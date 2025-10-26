@@ -66,13 +66,16 @@ const useTableRowProcessing = ({
         ? rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
         : rows;
 
+      // Calculate the starting position offset for pagination
+      const startingPosition = shouldPaginate ? (currentPage - 1) * rowsPerPage : 0;
+
       // Apply grouping
       if (!rowGrouping || rowGrouping.length === 0) {
         return paginatedRows.map((row, index) => ({
           row,
           depth: 0,
           groupingKey: undefined,
-          position: index,
+          position: startingPosition + index,
           isLastGroupRow: false,
         }));
       }
@@ -83,6 +86,7 @@ const useTableRowProcessing = ({
         rowIdAccessor,
         unexpandedRows,
         expandAll,
+        startingPosition,
       });
     },
     [
