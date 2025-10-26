@@ -1,25 +1,33 @@
 import { ReactNode, useState } from "react";
 import OnNextPage from "../../types/OnNextPage";
 import { useTableContext } from "../../context/TableContext";
+import FooterRendererProps from "../../types/FooterRendererProps";
+
 interface TableFooterProps {
   currentPage: number;
+  footerRenderer?: (props: FooterRendererProps) => ReactNode;
   hideFooter?: boolean;
   nextIcon?: ReactNode;
   onPageChange: (page: number) => void;
   onNextPage?: OnNextPage;
   onPreviousPage?: OnNextPage;
   prevIcon?: ReactNode;
+  rowsPerPage: number;
   shouldPaginate?: boolean;
   totalPages: number;
+  totalRows: number;
 }
 
 const TableFooter = ({
   currentPage,
+  footerRenderer,
   hideFooter,
   onPageChange,
   onNextPage,
+  rowsPerPage,
   shouldPaginate,
   totalPages,
+  totalRows,
 }: TableFooterProps) => {
   const { nextIcon, prevIcon } = useTableContext();
   const [hasMoreData, setHasMoreData] = useState(true);
@@ -114,6 +122,33 @@ const TableFooter = ({
 
   if (hideFooter || !shouldPaginate) return null;
 
+  // Use custom footer renderer if provided
+  if (footerRenderer) {
+    const startRow = Math.min((currentPage - 1) * rowsPerPage + 1, totalRows);
+    const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+
+    return (
+      <>
+        {footerRenderer({
+          currentPage,
+          totalPages,
+          rowsPerPage,
+          totalRows,
+          startRow,
+          endRow,
+          onPageChange,
+          onNextPage: handleNextPage,
+          onPrevPage: handlePrevPage,
+          hasNextPage: !isNextDisabled,
+          hasPrevPage: !isPrevDisabled,
+          nextIcon,
+          prevIcon,
+        })}
+      </>
+    );
+  }
+
+  // Default footer
   const visiblePages = getVisiblePages();
 
   return (
