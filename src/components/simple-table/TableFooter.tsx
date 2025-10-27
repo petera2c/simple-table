@@ -34,6 +34,8 @@ const TableFooter = ({
   const hasPrevPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
   const isOnLastPage = currentPage === totalPages;
+  const startRow = Math.min((currentPage - 1) * rowsPerPage + 1, totalRows);
+  const endRow = Math.min(currentPage * rowsPerPage, totalRows);
 
   const isPrevDisabled = !hasPrevPage;
 
@@ -124,9 +126,6 @@ const TableFooter = ({
 
   // Use custom footer renderer if provided
   if (footerRenderer) {
-    const startRow = Math.min((currentPage - 1) * rowsPerPage + 1, totalRows);
-    const endRow = Math.min(currentPage * rowsPerPage, totalRows);
-
     return (
       <>
         {footerRenderer({
@@ -153,39 +152,46 @@ const TableFooter = ({
 
   return (
     <div className="st-footer">
-      <button
-        className={`st-next-prev-btn ${isPrevDisabled ? "disabled" : ""}`}
-        onClick={handlePrevPage}
-        disabled={isPrevDisabled}
-      >
-        {prevIcon}
-      </button>
+      <div className="st-footer-info">
+        <span className="st-footer-results-text">
+          Showing {startRow} to {endRow} of {totalRows.toLocaleString()} results
+        </span>
+      </div>
 
-      <button
-        className={`st-next-prev-btn ${isNextDisabled ? "disabled" : ""}`}
-        onClick={handleNextPage}
-        disabled={isNextDisabled}
-      >
-        {nextIcon}
-      </button>
+      <div className="st-footer-pagination">
+        {visiblePages.map((page, index) =>
+          page < 0 ? (
+            // Render ellipsis
+            <span key={index} className="st-page-ellipsis">
+              ...
+            </span>
+          ) : (
+            // Render page button
+            <button
+              key={index}
+              onClick={() => handlePageChange(page)}
+              className={`st-page-btn ${currentPage === page ? "active" : ""}`}
+            >
+              {page}
+            </button>
+          )
+        )}
+        <button
+          className={`st-next-prev-btn ${isPrevDisabled ? "disabled" : ""}`}
+          onClick={handlePrevPage}
+          disabled={isPrevDisabled}
+        >
+          {prevIcon}
+        </button>
 
-      {visiblePages.map((page, index) =>
-        page < 0 ? (
-          // Render ellipsis
-          <span key={`ellipsis-${page}`} className="st-page-ellipsis">
-            ...
-          </span>
-        ) : (
-          // Render page button
-          <button
-            key={`page-${page}`}
-            onClick={() => handlePageChange(page)}
-            className={`st-page-btn ${currentPage === page ? "active" : ""}`}
-          >
-            {page}
-          </button>
-        )
-      )}
+        <button
+          className={`st-next-prev-btn ${isNextDisabled ? "disabled" : ""}`}
+          onClick={handleNextPage}
+          disabled={isNextDisabled}
+        >
+          {nextIcon}
+        </button>
+      </div>
     </div>
   );
 };

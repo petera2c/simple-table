@@ -1408,10 +1408,30 @@ input {
 
 .st-footer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   background-color: var(--st-footer-background-color);
   padding: var(--st-spacing-medium);
   border-top: var(--st-border-width) solid var(--st-border-color);
+  flex-shrink: 0;
+  gap: var(--st-spacing-medium);
+}
+
+.st-footer-info {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.st-footer-results-text {
+  color: var(--st-cell-color);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.st-footer-pagination {
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
 }
 
@@ -1439,7 +1459,7 @@ input {
 }
 
 .st-page-btn {
-  margin-left: var(--st-spacing-small);
+  margin-right: var(--st-spacing-small);
   padding: var(--st-spacing-small);
   cursor: pointer;
   background-color: transparent;
