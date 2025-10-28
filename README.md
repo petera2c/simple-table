@@ -7,12 +7,22 @@
 
 Simple Table is a **lightweight**, **high-performance** React data grid component for building modern, scalable applications. With a **simple API**, **completely free features**, and a focus on developer experience, Simple Table makes it easy to create powerful, responsive tables.
 
+<div align="center">
+  <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-dark-screenshot.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
+</div>
+
 ## Why Simple Table?
 
 - **Developer-Friendly Pricing**: Free for individuals & startups, affordable PRO tier for growing businesses - never scales with revenue or team size
 - **Lightweight**: Only 16 kB (minified + gzipped) for fast loading
 - **Intuitive**: Minimal boilerplate with a clean, React-first API
 - **TypeScript-ready**: Full TypeScript support for type-safe development
+
+## Live Demo
+
+<div align="center">
+    <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" width="600" />
+</div>
 
 ## 🚀 Quick Start
 
@@ -72,42 +82,33 @@ Explore Simple Table's capabilities with these focused examples:
 - **[Themes](https://www.simple-table.com/docs/themes)** - Apply built-in themes or create your own
 - **[Custom Icons](https://www.simple-table.com/docs/custom-icons)** - Replace default icons with your own
 
-## Features
+## 🎯 Examples & Use Cases
 
-- **Data Management**
+### Real-World Examples
 
-  - Sorting, filtering, and grouping
-  - Pagination and infinite scrolling
-  - Row and column virtualization for large datasets
-  - Export to CSV/Excel
-
-- **Customization**
-  - Custom cell rendering and editors
-  - Responsive design
-  - Flexible styling options
-  - TypeScript support
-
-## Live Demo
+See Simple Table in action across different industries:
 
 <div align="center">
-    <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" width="600" />
+
+**Infrastructure Monitoring**
+
+<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light-screenshot.png?raw=true" alt="Infrastructure Dashboard" width="800" />
+
+**CRM Dashboard**
+
+<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-dark-screenshot.png?raw=true" alt="CRM Dashboard - Dark Theme" width="800" />
+
+<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light-screenshot.png?raw=true" alt="CRM Dashboard - Light Theme" width="800" />
+
 </div>
 
-## 🎯 Live Examples
+### Interactive Examples
 
 Explore our interactive examples with complete source code:
 
-### 📊 **[Finance Dashboard](https://www.simple-table.com/examples/finance)**
-
-Complete financial data table with advanced filtering and sorting
-
-### 💰 **[Sales Dashboard](https://www.simple-table.com/examples/sales)**
-
-Sales analytics table with custom cell renderers and grouping
-
-### 📘 **[Documentation & More Examples](https://www.simple-table.com/docs/installation)**
-
-Browse all available examples and comprehensive documentation
+- 📊 **[Finance Dashboard](https://www.simple-table.com/examples/finance)** - Complete financial data table with advanced filtering and sorting
+- 💰 **[Sales Dashboard](https://www.simple-table.com/examples/sales)** - Sales analytics table with custom cell renderers and grouping
+- 📘 **[View All Examples](https://www.simple-table.com/docs/installation)** - Browse all available examples and comprehensive documentation
 
 ## 🏢 Real-World Examples
 
@@ -132,9 +133,8 @@ See Simple Table in action across different industries and use cases:
 
 ## 📚 Resources
 
-- **🌐 Website**: [Simple Table](https://www.simple-table.com/)
+- **🌐 Website**: [simple-table.com](https://www.simple-table.com/)
 - **📖 Documentation**: [Complete Documentation](https://www.simple-table.com/docs/installation)
-- **🚀 Quick Start**: [Get Started Now](https://www.simple-table.com/docs/quick-start)
 
 ## 💰 Pricing
 
