@@ -94,9 +94,17 @@ See Simple Table in action across different industries:
 
 <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light-screenshot.png?raw=true" alt="Infrastructure Dashboard" width="800" />
 
-**CRM Dashboard**
+<br />
+<br />
+
+**CRM Dashboard - Dark Theme**
 
 <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-dark-screenshot.png?raw=true" alt="CRM Dashboard - Dark Theme" width="800" />
+
+<br />
+<br />
+
+**CRM Dashboard - Light Theme**
 
 <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light-screenshot.png?raw=true" alt="CRM Dashboard - Light Theme" width="800" />
 
@@ -109,27 +117,6 @@ Explore our interactive examples with complete source code:
 - 📊 **[Finance Dashboard](https://www.simple-table.com/examples/finance)** - Complete financial data table with advanced filtering and sorting
 - 💰 **[Sales Dashboard](https://www.simple-table.com/examples/sales)** - Sales analytics table with custom cell renderers and grouping
 - 📘 **[View All Examples](https://www.simple-table.com/docs/installation)** - Browse all available examples and comprehensive documentation
-
-## 🏢 Real-World Examples
-
-See Simple Table in action across different industries and use cases:
-
-<div align="center">
-  
-### Infrastructure Monitoring
-<div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-  <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-dark-screenshot.png?raw=true" alt="Infrastructure - Dark" width="400" />
-  <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light-screenshot.png?raw=true" alt="Infrastructure - Light" width="400" />
-</div>
-
-### CRM Dashboard
-
-<div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-  <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-dark-screenshot.png?raw=true" alt="CRM Dashboard - Dark" width="400" />
-  <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light-screenshot.png?raw=true" alt="CRM Dashboard - Light" width="400" />
-</div>
-
-</div>
 
 ## 📚 Resources
 
