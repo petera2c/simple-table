@@ -8,7 +8,7 @@
 Simple Table is a **lightweight**, **high-performance** React data grid component for building modern, scalable applications. With a **simple API**, **completely free features**, and a focus on developer experience, Simple Table makes it easy to create powerful, responsive tables.
 
 <div align="center">
-  <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-dark-screenshot.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
+  <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
 </div>
 
 ## Why Simple Table?
@@ -17,12 +17,6 @@ Simple Table is a **lightweight**, **high-performance** React data grid componen
 - **Lightweight**: Only 16 kB (minified + gzipped) for fast loading
 - **Intuitive**: Minimal boilerplate with a clean, React-first API
 - **TypeScript-ready**: Full TypeScript support for type-safe development
-
-## Live Demo
-
-<div align="center">
-    <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/simple-table-demo-fast.gif?raw=true" alt="Simple Table Demo" width="600" />
-</div>
 
 ## 🚀 Quick Start
 
@@ -90,23 +84,23 @@ See Simple Table in action across different industries:
 
 <div align="center">
 
-**Infrastructure Monitoring**
-
-<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light-screenshot.png?raw=true" alt="Infrastructure Dashboard" width="800" />
+**CRM Leads**
 
 <br />
 <br />
 
-**CRM Dashboard - Dark Theme**
+<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light.png?raw=true" alt="CRM Leads" width="800" />
 
-<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-dark-screenshot.png?raw=true" alt="CRM Dashboard - Dark Theme" width="800" />
+**HR Dashboard**
+
+<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/HR-dark.png?raw=true" alt="HR Dashboard" width="800" />
 
 <br />
 <br />
 
-**CRM Dashboard - Light Theme**
+**Manufacturing**
 
-<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light-screenshot.png?raw=true" alt="CRM Dashboard - Light Theme" width="800" />
+<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/manufacturing-light.png?raw=true" alt="Manufacturing Dashboard" width="800" />
 
 </div>
 
