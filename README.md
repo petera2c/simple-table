@@ -84,33 +84,32 @@ See Simple Table in action across different industries:
 
 <div align="center">
 
-**CRM Leads**
+**[CRM Leads](https://www.simple-table.com/examples/crm)**
 
 <br />
 <br />
 
-<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light.png?raw=true" alt="CRM Leads" width="800" />
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light.png?raw=true" alt="CRM Leads" width="800">](https://www.simple-table.com/examples/crm)
 
-**HR Dashboard**
+**[Infrastructure](https://www.simple-table.com/examples/infrastructure)**
 
-<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/HR-dark.png?raw=true" alt="HR Dashboard" width="800" />
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Infrastructure Dashboard" width="800">](https://www.simple-table.com/examples/infrastructure)
 
 <br />
 <br />
 
-**Manufacturing**
+**[HR Dashboard](https://www.simple-table.com/examples/hr)**
 
-<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/manufacturing-light.png?raw=true" alt="Manufacturing Dashboard" width="800" />
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/HR-dark.png?raw=true" alt="HR Dashboard" width="800">](https://www.simple-table.com/examples/hr)
+
+<br />
+<br />
+
+**[Manufacturing](https://www.simple-table.com/examples/manufacturing)**
+
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/manufacturing-light.png?raw=true" alt="Manufacturing Dashboard" width="800">](https://www.simple-table.com/examples/manufacturing)
 
 </div>
-
-### Interactive Examples
-
-Explore our interactive examples with complete source code:
-
-- 📊 **[Finance Dashboard](https://www.simple-table.com/examples/finance)** - Complete financial data table with advanced filtering and sorting
-- 💰 **[Sales Dashboard](https://www.simple-table.com/examples/sales)** - Sales analytics table with custom cell renderers and grouping
-- 📘 **[View All Examples](https://www.simple-table.com/docs/installation)** - Browse all available examples and comprehensive documentation
 
 ## 📚 Resources
 
@@ -134,7 +133,7 @@ Simple, transparent pricing that never changes based on your revenue or team siz
 
 ### PRO - For Growing Businesses
 
-**$85/month** (50% off for first 50 customers - use code: `first_50`)
+**$85/month**
 
 - Everything in FREE
 - Priority email & Discord support
