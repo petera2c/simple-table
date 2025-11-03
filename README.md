@@ -11,13 +11,6 @@ Simple Table is a **lightweight**, **high-performance** React data grid componen
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
 </div>
 
-## Why Simple Table?
-
-- **Developer-Friendly Pricing**: Free for individuals & startups, affordable PRO tier for growing businesses - never scales with revenue or team size
-- **Lightweight**: Only 16 kB (minified + gzipped) for fast loading
-- **Intuitive**: Minimal boilerplate with a clean, React-first API
-- **TypeScript-ready**: Full TypeScript support for type-safe development
-
 ## 🚀 Quick Start
 
 Get started with Simple Table in just a few lines of code!
@@ -122,26 +115,15 @@ Simple, transparent pricing that never changes based on your revenue or team siz
 
 ### FREE - For Individuals & Startups
 
-**$0/forever** - Perfect for fun projects, bootstrapped startups, and pre-revenue companies
+**$0/forever**
 
-- Full Simple Table library access
-- Unlimited users per product
-- All core features (sorting, filtering, editing)
-- Built-in themes & TypeScript support
-- MIT License & commercial use
-- Community support
+Perfect for fun projects, bootstrapped startups, and pre-revenue companies. Unlimited users per product license with full access to all core features, built-in themes, TypeScript support, and MIT License for commercial use.
 
 ### PRO - For Growing Businesses
 
 **$85/month**
 
-- Everything in FREE
-- Priority email & Discord support
-- Direct developer access
-- Feature request prioritization
-- Early access to new features
-- Custom implementation guidance
-- 30-day money-back guarantee
+Enhanced support and priority access to new features. Unlimited users per product license with priority email & Discord support, direct developer access, feature request prioritization, and custom implementation guidance.
 
 **[View Detailed Pricing](https://www.simple-table.com/pricing)**
 
