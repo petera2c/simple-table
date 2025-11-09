@@ -24,7 +24,7 @@ import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../con
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import TableRefType from "../../types/TableRefType";
 import OnNextPage from "../../types/OnNextPage";
-import "../../styles/simple-table.css";
+import "../../styles/all-themes.css";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import FilterBar from "../filters/FilterBar";
 import useFilterableData from "../../hooks/useFilterableData";

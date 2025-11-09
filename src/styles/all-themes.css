@@ -1,0 +1,16 @@
+/**
+ * All-in-one CSS file including base styles and all themes.
+ * For smaller bundle size, consider importing only what you need:
+ * 
+ * @example
+ * import 'simple-table-core/styles/base.css';
+ * import 'simple-table-core/styles/themes/light.css';
+ */
+
+@import "./base.css";
+@import "./themes/light.css";
+@import "./themes/dark.css";
+@import "./themes/neutral.css";
+@import "./themes/sky.css";
+@import "./themes/violet.css";
+@import "./themes/frost.css";

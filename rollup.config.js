@@ -16,12 +16,14 @@ export default {
     del({ targets: "dist/*" }),
     peerDepsExternal(),
     postcss({
-      extract: "styles.css",
+      extract: "styles.css", // All-in-one file for backward compatibility
       inject: false,
       minimize: true,
       modules: false,
       config: false,
+      extensions: [".css"],
       plugins: [
+        require("postcss-import")(), // Resolve @import statements first
         require("postcss-preset-env")({
           browsers: "last 2 versions",
           stage: 3,
@@ -33,6 +35,19 @@ export default {
             "custom-media-queries": true,
             "media-query-ranges": true,
           },
+        }),
+        require("cssnano")({
+          preset: [
+            "default",
+            {
+              discardComments: { removeAll: true },
+              normalizeWhitespace: true,
+              colormin: true,
+              minifyFontValues: true,
+              minifySelectors: true,
+              calc: { precision: 5 },
+            },
+          ],
         }),
       ],
     }),
@@ -47,7 +62,24 @@ export default {
       rollupCommonJSResolveHack: false,
       clean: true,
     }),
-    terser(),
+    terser({
+      compress: {
+        passes: 2, // Run compression twice for better results
+        pure_getters: true, // Assume getters have no side effects
+        unsafe: true, // Enable unsafe optimizations
+        unsafe_comps: true, // Optimize comparisons
+        unsafe_math: true, // Optimize math operations
+        drop_console: false, // Keep console logs (users may want them)
+      },
+      mangle: {
+        properties: {
+          regex: /^_private_/, // Only mangle explicitly private properties
+        },
+      },
+      format: {
+        comments: false, // Remove all comments
+      },
+    }),
   ],
   external: ["react", "react/jsx-runtime"],
 };

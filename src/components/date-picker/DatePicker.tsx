@@ -9,7 +9,6 @@ interface DatePickerProps {
 
 const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
   const { nextIcon, prevIcon } = useTableContext();
-  console.log("nextIcon", nextIcon);
   const [currentDate, setCurrentDate] = useState(value || new Date());
   const [currentView, setCurrentView] = useState<"days" | "months" | "years">("days");
 
