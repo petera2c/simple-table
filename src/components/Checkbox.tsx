@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import CheckIcon from "../icons/CheckIcon";
+import { CheckIcon } from "../icons";
 
 interface CheckboxProps {
   checked?: boolean;

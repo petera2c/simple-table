@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 import { useTableContext } from "../../context/TableContext";
 
 interface DatePickerProps {
@@ -9,6 +9,7 @@ interface DatePickerProps {
 
 const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
   const { nextIcon, prevIcon } = useTableContext();
+  console.log("nextIcon", nextIcon);
   const [currentDate, setCurrentDate] = useState(value || new Date());
   const [currentView, setCurrentView] = useState<"days" | "months" | "years">("days");
 
