@@ -1,6 +1,6 @@
 {
-  "version": "1.6.7",
-  "main": "dist/index.js",
+  "version": "1.6.8",
+  "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -18,7 +18,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
-      "require": "./dist/index.js",
+      "require": "./dist/cjs/index.js",
       "types": "./dist/index.d.ts"
     },
     "./styles.css": "./dist/styles.css",
@@ -95,7 +95,7 @@
   },
   "size-limit": [
     {
-      "path": "dist/index.js"
+      "path": "dist/cjs/index.js"
     }
   ],
   "name": "simple-table-core",

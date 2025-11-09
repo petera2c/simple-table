@@ -26,7 +26,6 @@ import TableRefType from "../../types/TableRefType";
 import OnNextPage from "../../types/OnNextPage";
 import "../../styles/all-themes.css";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
-import FilterBar from "../filters/FilterBar";
 import useFilterableData from "../../hooks/useFilterableData";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
@@ -548,7 +547,6 @@ const SimpleTableComp = ({
       >
         <ScrollSync>
           <div className="st-wrapper-container">
-            <FilterBar />
             <div className="st-content-wrapper">
               <TableContent
                 pinnedLeftWidth={pinnedLeftWidth}

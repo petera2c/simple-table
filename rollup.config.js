@@ -9,8 +9,22 @@ import peerDepsExternal from "rollup-plugin-peer-deps-external";
 export default {
   input: "src/index.tsx",
   output: [
-    { file: "dist/index.js", format: "cjs", sourcemap: true },
-    { file: "dist/index.es.js", format: "esm", sourcemap: true },
+    {
+      dir: "dist/cjs",
+      format: "cjs",
+      sourcemap: true,
+      entryFileNames: "[name].js",
+      chunkFileNames: "[name]-[hash].js",
+      exports: "named",
+    },
+    {
+      dir: "dist",
+      format: "esm",
+      sourcemap: true,
+      entryFileNames: "index.es.js",
+      chunkFileNames: "[name]-[hash].js",
+      preserveModules: false, // Bundle chunks together
+    },
   ],
   plugins: [
     del({ targets: "dist/*" }),

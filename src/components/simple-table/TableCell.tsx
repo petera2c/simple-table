@@ -10,7 +10,7 @@ import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows } from "../../utils/rowUtils";
-import Animate from "../animate/Animate";
+import { Animate } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
 

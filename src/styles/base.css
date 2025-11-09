@@ -1249,19 +1249,6 @@ input {
   background-color: var(--st-button-hover-background-color);
 }
 
-/* ===========================
-   FILTER COMPONENT STYLES
-   =========================== */
-
-.st-filter-bar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--st-spacing-medium);
-  background-color: var(--st-header-background-color);
-  padding: var(--st-spacing-medium);
-  border-bottom: var(--st-border-width) solid var(--st-border-color);
-}
-
 /* Filter Container */
 .st-filter-container {
   display: flex;
@@ -1518,79 +1505,6 @@ input {
   font-size: 14px;
   color: var(--st-slate-400);
   font-style: italic;
-}
-
-/* ===========================
-   FILTER BAR STYLES
-   =========================== */
-
-/* Filter bar container */
-.st-filter-bar {
-  background-color: var(--st-header-background-color);
-  border-bottom: var(--st-border-width) solid var(--st-border-color);
-  padding: var(--st-spacing-medium);
-}
-
-.st-filter-bar-content {
-  display: flex;
-  align-items: center;
-  gap: var(--st-spacing-medium);
-  flex-wrap: wrap;
-}
-
-/* Filter chips container */
-.st-filter-chips {
-  display: flex;
-  gap: var(--st-spacing-small);
-  flex-wrap: wrap;
-}
-
-/* Individual filter chip */
-.st-filter-chip {
-  display: flex;
-  align-items: center;
-  background-color: var(--st-selected-cell-background-color);
-  color: var(--st-selected-cell-color);
-  border-radius: calc(var(--st-border-radius) * 2);
-  padding: var(--st-spacing-small) var(--st-spacing-medium);
-  font-size: 13px;
-  border: var(--st-border-width) solid var(--st-selected-border-color);
-}
-
-.st-filter-chip-text {
-  margin-right: var(--st-spacing-small);
-  white-space: nowrap;
-}
-
-/* Remove button */
-.st-filter-chip-remove {
-  background: none;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  line-height: 1;
-  padding: 0;
-  margin-left: var(--st-spacing-small);
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
-}
-
-.st-filter-chip-remove:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.st-filter-bar-label {
-  font-weight: 600;
-  color: var(--st-header-label-color);
-  font-size: 14px;
-  flex-shrink: 0;
 }
 
 /* Row number styling */

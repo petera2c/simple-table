@@ -12,7 +12,7 @@ import FilterContainer from "./shared/FilterContainer";
 import OperatorSelector from "./shared/OperatorSelector";
 import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
-import DatePicker from "../date-picker/DatePicker";
+import { DatePicker } from "../LazyComponents";
 import { createSafeDate } from "../../utils/dateUtils";
 import Dropdown from "../dropdown/Dropdown";
 

@@ -21,7 +21,7 @@ import { handleResizeStart } from "../../utils/resizeUtils";
 import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
-import Animate from "../animate/Animate";
+import { Animate } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import StringEdit from "./editable-cells/StringEdit";
 import useDropdownPosition from "../../hooks/useDropdownPosition";
