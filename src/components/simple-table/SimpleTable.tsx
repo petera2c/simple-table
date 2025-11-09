@@ -366,7 +366,6 @@ const SimpleTableComp = ({
     getBorderClass,
     handleMouseDown,
     handleMouseOver,
-    handleMouseUp,
     isCopyFlashing,
     isInitialFocusedCell,
     isSelected,
@@ -554,11 +553,7 @@ const SimpleTableComp = ({
         <ScrollSync>
           <div className="st-wrapper-container">
             <FilterBar />
-            <div
-              className="st-content-wrapper"
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-            >
+            <div className="st-content-wrapper">
               <TableContent
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
