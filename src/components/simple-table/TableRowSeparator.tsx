@@ -17,63 +17,60 @@ const TableRowSeparator = ({
   const targetCellRef = useRef<HTMLElement | null>(null);
 
   const handleSeparatorMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (rowIndex === undefined) return;
+    // Use elementFromPoint to find which cell is underneath the click position
+    // Temporarily disable pointer events on the separator so we can see through it
+    const separatorElement = event.currentTarget as HTMLElement;
+    const originalPointerEvents = separatorElement.style.pointerEvents;
+    separatorElement.style.pointerEvents = "none";
 
-    const separatorElement = event.currentTarget;
-    const rect = separatorElement.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
+    // Find the element at the click position (should be a cell)
+    const elementUnderClick = document.elementFromPoint(event.clientX, event.clientY);
 
-    // Parse the grid template columns to get column widths
-    const columnWidths = templateColumns.split(" ").map((width) => {
-      if (width.includes("px")) {
-        return parseFloat(width);
-      } else if (width.includes("fr")) {
-        // For fractional units, estimate equal width
-        const frCount = templateColumns.split(" ").filter((w) => w.includes("fr")).length;
-        return rect.width / frCount;
-      }
-      return 100; // fallback width
-    });
+    // Restore pointer events
+    separatorElement.style.pointerEvents = originalPointerEvents;
 
-    // Calculate which column was clicked
-    let accumulatedWidth = 0;
-    let targetColumnIndex = 0;
+    if (!elementUnderClick) return;
 
-    for (let i = 0; i < columnWidths.length; i++) {
-      if (clickX <= accumulatedWidth + columnWidths[i]) {
-        targetColumnIndex = i;
-        break;
-      }
-      accumulatedWidth += columnWidths[i];
-      targetColumnIndex = i;
-    }
+    // Find the closest cell element
+    const cellElement = elementUnderClick.closest(".st-cell");
 
-    // Generate the cell ID and dispatch mousedown
-    const cellId = `cell-${rowIndex + 1}-${targetColumnIndex + 1}`;
-    const cellElement = document.getElementById(cellId);
-
-    if (cellElement) {
+    if (cellElement instanceof HTMLElement) {
       targetCellRef.current = cellElement;
 
-      // Dispatch mousedown event
+      // Get the actual bounding rect of the target cell for accurate positioning
+      const cellRect = cellElement.getBoundingClientRect();
+
+      // Calculate the mouse position - use the original X position
+      // and a Y position in the middle of the cell for reliable detection
+      const clientX = event.clientX;
+      const clientY = cellRect.top + cellRect.height / 2;
+
+      // Dispatch mousedown event with proper coordinates to the cell
       const mouseDownEvent = new MouseEvent("mousedown", {
         bubbles: true,
         cancelable: true,
         view: window,
         button: 0, // Left click
+        clientX: clientX,
+        clientY: clientY,
       });
       cellElement.dispatchEvent(mouseDownEvent);
     }
   };
 
-  const handleSeparatorMouseUp = () => {
+  const handleSeparatorMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
     // Only dispatch mouseup if we have a target cell from the mousedown
     if (targetCellRef.current) {
+      // Get the cell's position for accurate coordinates
+      const cellRect = targetCellRef.current.getBoundingClientRect();
+
       const mouseUpEvent = new MouseEvent("mouseup", {
         bubbles: true,
         cancelable: true,
         view: window,
         button: 0, // Left click
+        clientX: event.clientX,
+        clientY: cellRect.top + cellRect.height / 2,
       });
       targetCellRef.current.dispatchEvent(mouseUpEvent);
       targetCellRef.current = null; // Clear the reference

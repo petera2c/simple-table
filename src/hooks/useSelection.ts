@@ -33,6 +33,7 @@ const useSelection = ({
   const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(null);
   const [copyFlashCells, setCopyFlashCells] = useState<Set<string>>(new Set());
   const [warningFlashCells, setWarningFlashCells] = useState<Set<string>>(new Set());
+  const [isSelectingState, setIsSelectingState] = useState(false);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
 
@@ -535,31 +536,14 @@ const useSelection = ({
     deleteSelectedCells,
   ]);
 
-  const handleMouseDown = ({ colIndex, rowIndex, rowId }: Cell) => {
-    if (!selectableCells) return;
-    isSelecting.current = true;
-    startCell.current = { rowIndex, colIndex, rowId };
-
-    // Defer state updates to allow the current event cycle to complete
-    // This prevents interference with useHandleOutsideClick
-    setTimeout(() => {
-      // When directly selecting cells, clear any selected columns
-      setSelectedColumns(new Set());
-      setLastSelectedColumnIndex(null);
-      const cellId = createSetString({ colIndex, rowIndex, rowId });
-      setSelectedCells(new Set([cellId]));
-      setInitialFocusedCell({ rowIndex, colIndex, rowId });
-    }, 0);
-  };
-
-  const handleMouseOver = ({ colIndex, rowIndex, rowId }: Cell) => {
-    if (!selectableCells) return;
-    if (isSelecting.current && startCell.current) {
+  // Helper function to update selection range between two cells
+  const updateSelectionRange = useCallback(
+    (startCell: Cell, endCell: Cell) => {
       const newSelectedCells = new Set<string>();
-      const startRow = Math.min(startCell.current.rowIndex, rowIndex);
-      const endRow = Math.max(startCell.current.rowIndex, rowIndex);
-      const startCol = Math.min(startCell.current.colIndex, colIndex);
-      const endCol = Math.max(startCell.current.colIndex, colIndex);
+      const startRow = Math.min(startCell.rowIndex, endCell.rowIndex);
+      const endRow = Math.max(startCell.rowIndex, endCell.rowIndex);
+      const startCol = Math.min(startCell.colIndex, endCell.colIndex);
+      const endCol = Math.max(startCell.colIndex, endCell.colIndex);
 
       for (let row = startRow; row <= endRow; row++) {
         for (let col = startCol; col <= endCol; col++) {
@@ -572,11 +556,197 @@ const useSelection = ({
       }
 
       setSelectedCells(newSelectedCells);
+    },
+    [tableRows, rowIdAccessor]
+  );
+
+  // Helper function to calculate nearest cell when mouse is outside table
+  const calculateNearestCell = useCallback((clientX: number, clientY: number): Cell | null => {
+    // Get table container boundaries
+    const tableContainer = document.querySelector(".st-body-container");
+    if (!tableContainer) return null;
+
+    const rect = tableContainer.getBoundingClientRect();
+
+    // Find all visible cells
+    const cells = Array.from(document.querySelectorAll(".st-cell[data-row-index][data-col-index]"));
+
+    if (cells.length === 0) return null;
+
+    // Clamp mouse position to table boundaries (for edge extension)
+    const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
+    const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
+
+    // Find the cell closest to the mouse position
+    let closestCell: HTMLElement | null = null;
+    let minDistance = Infinity;
+
+    cells.forEach((cell) => {
+      if (!(cell instanceof HTMLElement)) return;
+      const htmlCell = cell as HTMLElement;
+
+      const cellRect = htmlCell.getBoundingClientRect();
+      const cellCenterX = cellRect.left + cellRect.width / 2;
+      const cellCenterY = cellRect.top + cellRect.height / 2;
+
+      const distance = Math.sqrt(
+        Math.pow(cellCenterX - clampedX, 2) + Math.pow(cellCenterY - clampedY, 2)
+      );
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestCell = htmlCell;
+      }
+    });
+
+    if (closestCell !== null) {
+      const cellElement: HTMLElement = closestCell;
+      const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
+      const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
+      const rowId = cellElement.getAttribute("data-row-id");
+
+      if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
+        return { rowIndex, colIndex, rowId };
+      }
     }
+
+    return null;
+  }, []);
+
+  // Helper function to get cell from mouse position
+  const getCellFromMousePosition = useCallback(
+    (clientX: number, clientY: number): Cell | null => {
+      // Use elementFromPoint to find what's under the cursor
+      const element = document.elementFromPoint(clientX, clientY);
+
+      if (!element) return null;
+
+      // Check if we're over a table cell
+      const cellElement = element.closest(".st-cell");
+
+      if (cellElement instanceof HTMLElement) {
+        // Extract cell data from data attributes
+        const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
+        const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
+        const rowId = cellElement.getAttribute("data-row-id");
+
+        if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
+          return { rowIndex, colIndex, rowId };
+        }
+      }
+
+      // If not directly over a cell, calculate which cell we're nearest to
+      return calculateNearestCell(clientX, clientY);
+    },
+    [calculateNearestCell]
+  );
+
+  // Helper function to handle auto-scrolling when near table edges
+  const handleAutoScroll = useCallback((clientX: number, clientY: number) => {
+    const tableContainer = document.querySelector(".st-body-container");
+    if (!tableContainer) return;
+
+    const rect = tableContainer.getBoundingClientRect();
+    const scrollMargin = 50; // pixels from edge to trigger scroll
+    const scrollSpeed = 10; // pixels to scroll per frame
+
+    // Vertical scrolling - scroll if cursor is above or below the table
+    if (clientY < rect.top + scrollMargin) {
+      // Scroll up - increase speed the further away the cursor is
+      const distance = Math.max(0, rect.top - clientY);
+      const speedMultiplier = Math.min(3, 1 + distance / 100);
+      tableContainer.scrollTop -= scrollSpeed * speedMultiplier;
+    } else if (clientY > rect.bottom - scrollMargin) {
+      // Scroll down - increase speed the further away the cursor is
+      const distance = Math.max(0, clientY - rect.bottom);
+      const speedMultiplier = Math.min(3, 1 + distance / 100);
+      tableContainer.scrollTop += scrollSpeed * speedMultiplier;
+    }
+
+    // Horizontal scrolling - scroll the main body section (not the container)
+    const mainBody = document.querySelector(".st-body-main");
+    if (mainBody) {
+      if (clientX < rect.left + scrollMargin) {
+        // Scroll left - increase speed the further away the cursor is
+        const distance = Math.max(0, rect.left - clientX);
+        const speedMultiplier = Math.min(3, 1 + distance / 100);
+        mainBody.scrollLeft -= scrollSpeed * speedMultiplier;
+      } else if (clientX > rect.right - scrollMargin) {
+        // Scroll right - increase speed the further away the cursor is
+        const distance = Math.max(0, clientX - rect.right);
+        const speedMultiplier = Math.min(3, 1 + distance / 100);
+        mainBody.scrollLeft += scrollSpeed * speedMultiplier;
+      }
+    }
+  }, []);
+
+  const handleMouseDown = ({ colIndex, rowIndex, rowId }: Cell) => {
+    if (!selectableCells) return;
+    isSelecting.current = true;
+    setIsSelectingState(true);
+    startCell.current = { rowIndex, colIndex, rowId };
+
+    // Defer state updates to allow the current event cycle to complete
+    // This prevents interference with useHandleOutsideClick
+    setTimeout(() => {
+      // When directly selecting cells, clear any selected columns
+      setSelectedColumns(new Set());
+      setLastSelectedColumnIndex(null);
+      const cellId = createSetString({ colIndex, rowIndex, rowId });
+      setSelectedCells(new Set([cellId]));
+      setInitialFocusedCell({ rowIndex, colIndex, rowId });
+    }, 0);
+
+    // Track last update time for throttling selection updates
+    let lastSelectionUpdate = 0;
+    const selectionThrottleMs = 16; // ~60fps for selection updates
+
+    // Track last scroll update separately (no throttle for smoother scrolling)
+    let lastScrollUpdate = 0;
+    const scrollThrottleMs = 8; // Faster updates for scrolling
+
+    // Add global mouse move handler
+    const handleGlobalMouseMove = (event: MouseEvent) => {
+      if (!isSelecting.current || !startCell.current) return;
+
+      const now = Date.now();
+
+      // Handle auto-scrolling with minimal throttling for smooth scrolling
+      if (now - lastScrollUpdate >= scrollThrottleMs) {
+        handleAutoScroll(event.clientX, event.clientY);
+        lastScrollUpdate = now;
+      }
+
+      // Throttle selection updates for performance
+      if (now - lastSelectionUpdate < selectionThrottleMs) return;
+      lastSelectionUpdate = now;
+
+      // Get the cell at the current mouse position
+      const cellAtPosition = getCellFromMousePosition(event.clientX, event.clientY);
+
+      if (cellAtPosition) {
+        // Update selection range
+        updateSelectionRange(startCell.current!, cellAtPosition);
+      }
+    };
+
+    // Add global mouse up handler
+    const handleGlobalMouseUp = () => {
+      isSelecting.current = false;
+      setIsSelectingState(false);
+      document.removeEventListener("mousemove", handleGlobalMouseMove);
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+
+    document.addEventListener("mousemove", handleGlobalMouseMove);
+    document.addEventListener("mouseup", handleGlobalMouseUp);
   };
 
-  const handleMouseUp = () => {
-    isSelecting.current = false;
+  const handleMouseOver = ({ colIndex, rowIndex, rowId }: Cell) => {
+    if (!selectableCells) return;
+    if (isSelecting.current && startCell.current) {
+      updateSelectionRange(startCell.current, { colIndex, rowIndex, rowId });
+    }
   };
 
   const isSelected = useCallback(
@@ -596,6 +766,11 @@ const useSelection = ({
 
   const getBorderClass = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
+      // Don't show borders while actively selecting
+      if (isSelectingState) {
+        return "";
+      }
+
       const classes = [];
       const topRowId = tableRows[rowIndex - 1]
         ? getRowId({ row: tableRows[rowIndex - 1].row, rowIdAccessor })
@@ -625,7 +800,7 @@ const useSelection = ({
 
       return classes.join(" ");
     },
-    [isSelected, tableRows, selectedColumns, rowIdAccessor]
+    [isSelectingState, isSelected, tableRows, selectedColumns, rowIdAccessor]
   );
 
   const isInitialFocusedCell = useMemo(() => {
@@ -658,7 +833,6 @@ const useSelection = ({
     getBorderClass,
     handleMouseDown,
     handleMouseOver,
-    handleMouseUp,
     isCopyFlashing,
     isWarningFlashing,
     isInitialFocusedCell,
