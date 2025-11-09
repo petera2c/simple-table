@@ -1,0 +1,98 @@
+/* Neutral Theme */
+.theme-neutral {
+  /* Layout/Structure variables */
+  --st-border-radius: 4px;
+  --st-cell-padding: 8px;
+
+  /* Spacing variables */
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+
+  /* Scrollbar variables */
+  --st-scrollbar-bg-color: var(--st-neutral-100);
+  --st-scrollbar-thumb-color: var(--st-neutral-400);
+  --st-scrollbar-width: thin;
+  --st-scrollbar-thumb-border-radius: 4px;
+
+  /* Color variables */
+  --st-border-color: var(--st-neutral-300);
+  --st-odd-row-background-color: var(--st-neutral-50);
+  --st-even-row-background-color: var(--st-neutral-100);
+  --st-odd-column-background-color: var(--st-neutral-50);
+  --st-even-column-background-color: var(--st-neutral-100);
+  --st-hover-row-background-color: var(--st-neutral-200);
+  --st-selected-row-background-color: var(--st-neutral-200);
+  --st-header-background-color: var(--st-neutral-200);
+  --st-header-label-color: var(--st-neutral-900);
+  --st-header-icon-color: var(--st-neutral-500);
+  --st-dragging-background-color: var(--st-neutral-300);
+  --st-selected-cell-background-color: var(--st-neutral-400);
+  --st-selected-first-cell-background-color: var(--st-neutral-300);
+  --st-footer-background-color: var(--st-neutral-50);
+  --st-cell-color: var(--st-neutral-900);
+  --st-cell-odd-row-color: var(--st-neutral-800);
+  --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --st-selected-cell-color: var(--st-neutral-900);
+  --st-selected-first-cell-color: var(--st-neutral-900);
+  --st-resize-handle-color: var(--st-neutral-400);
+  --st-resize-handle-selected-color: var(--st-white);
+  --st-last-group-row-separator-border-color: var(--st-neutral-400);
+
+  /* Border colors */
+  --st-selected-border-color: var(--st-neutral-600);
+  --st-editable-cell-focus-border-color: var(--st-neutral-500);
+
+  /* Component-specific colors */
+  --st-checkbox-checked-background-color: var(--st-neutral-600);
+  --st-checkbox-checked-border-color: var(--st-neutral-600);
+  --st-column-editor-background-color: var(--st-neutral-50);
+  --st-column-editor-popout-background-color: var(--st-neutral-50);
+  --st-button-hover-background-color: var(--st-neutral-200);
+  --st-button-active-background-color: var(--st-neutral-600);
+  --st-cell-flash-color: var(--st-neutral-400);
+  --st-copy-flash-color: var(--st-neutral-600);
+  --st-warning-flash-color: var(--st-red-400);
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: var(--st-neutral-800);
+  --st-tooltip-text-color: var(--st-white);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 8px 12px;
+  --st-tooltip-font-size: 13px;
+  --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: var(--st-neutral-600);
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+
+  /* Header/selection highlight indicator colors */
+  --st-header-highlight-indicator-color: var(--st-neutral-400);
+  --st-selection-highlight-indicator-color: var(--st-neutral-400);
+
+  /* Navigation button colors */
+  --st-next-prev-btn-color: var(--st-neutral-600);
+  --st-next-prev-btn-disabled-color: var(--st-neutral-400);
+
+  /* Page button colors */
+  --st-page-btn-color: var(--st-neutral-600);
+  --st-page-btn-hover-background-color: var(--st-neutral-200);
+
+  /* Column editor colors */
+  --st-column-editor-text-color: var(--st-neutral-500);
+
+  /* Checkbox colors */
+  --st-checkbox-border-color: var(--st-neutral-300);
+
+  /* Dropdown colors */
+  --st-dropdown-group-label-color: var(--st-neutral-500);
+
+  /* Datepicker colors */
+  --st-datepicker-weekday-color: var(--st-neutral-500);
+  --st-datepicker-other-month-color: var(--st-neutral-400);
+
+  /* Filter button disabled colors */
+  --st-filter-button-disabled-background-color: var(--st-neutral-300);
+  --st-filter-button-disabled-text-color: var(--st-neutral-500);
+}
+

@@ -12,8 +12,7 @@ import {
 import useSelection from "../../hooks/useSelection";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
-import AngleLeftIcon from "../../icons/AngleLeftIcon";
-import AngleRightIcon from "../../icons/AngleRightIcon";
+import { AngleLeftIcon, AngleRightIcon, DescIcon, AscIcon, FilterIcon } from "../../icons";
 import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
@@ -25,10 +24,7 @@ import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../con
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import TableRefType from "../../types/TableRefType";
 import OnNextPage from "../../types/OnNextPage";
-import "../../styles/simple-table.css";
-import DescIcon from "../../icons/DescIcon";
-import AscIcon from "../../icons/AscIcon";
-import FilterIcon from "../../icons/FilterIcon";
+import "../../styles/all-themes.css";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import FilterBar from "../filters/FilterBar";
 import useFilterableData from "../../hooks/useFilterableData";

@@ -28,6 +28,10 @@ import { RowButtonProps } from "./types/RowButton";
 import FooterRendererProps from "./types/FooterRendererProps";
 
 export { SimpleTable };
+
+// Tree-shakeable icon exports (imported separately to reduce bundle size)
+export * from "./icons";
+
 export type {
   Accessor,
   AggregationConfig,

@@ -1,5 +1,5 @@
 {
-  "version": "1.6.6",
+  "version": "1.6.7",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -11,17 +11,24 @@
     "preview": "rollup -c -w",
     "test-storybook": "test-storybook"
   },
+  "sideEffects": [
+    "*.css",
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./styles/base.css": "./src/styles/base.css",
+    "./styles/themes/*.css": "./src/styles/themes/*.css"
   },
   "license": "MIT",
   "files": [
     "dist",
+    "src/styles",
     "LICENSE",
     "EULA.txt",
     "README.md"
