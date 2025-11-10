@@ -181,11 +181,12 @@ const Dropdown: React.FC<DropdownProps> = ({
     };
 
     if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
+      // Use capture phase to ensure this runs before other handlers
+      document.addEventListener("mousedown", handleClickOutside, true);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside, true);
     };
   }, [onClose, open, setOpen]);
 
