@@ -408,8 +408,8 @@ const useSelection = ({
       setInitialFocusedCell({ rowIndex, colIndex, rowId });
     }, 0);
 
-    let currentMouseX = 0;
-    let currentMouseY = 0;
+    let currentMouseX: number | null = null;
+    let currentMouseY: number | null = null;
     let scrollAnimationFrame: number | null = null;
     let lastSelectionUpdate = 0;
     const selectionThrottleMs = 16;
@@ -423,15 +423,18 @@ const useSelection = ({
         return;
       }
 
-      handleAutoScroll(currentMouseX, currentMouseY);
+      // Only process if mouse position has been captured
+      if (currentMouseX !== null && currentMouseY !== null) {
+        handleAutoScroll(currentMouseX, currentMouseY);
 
-      const now = Date.now();
-      if (now - lastSelectionUpdate >= selectionThrottleMs) {
-        const cellAtPosition = getCellFromMousePosition(currentMouseX, currentMouseY);
-        if (cellAtPosition) {
-          updateSelectionRange(startCell.current, cellAtPosition);
+        const now = Date.now();
+        if (now - lastSelectionUpdate >= selectionThrottleMs) {
+          const cellAtPosition = getCellFromMousePosition(currentMouseX, currentMouseY);
+          if (cellAtPosition) {
+            updateSelectionRange(startCell.current, cellAtPosition);
+          }
+          lastSelectionUpdate = now;
         }
-        lastSelectionUpdate = now;
       }
 
       scrollAnimationFrame = requestAnimationFrame(continuousScroll);
