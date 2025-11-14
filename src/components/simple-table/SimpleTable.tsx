@@ -388,6 +388,7 @@ const SimpleTableComp = ({
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
     collapsedHeaders,
+    rowHeight,
   });
 
   // Memoize handlers
