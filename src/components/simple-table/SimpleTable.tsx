@@ -302,7 +302,7 @@ const SimpleTableComp = ({
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
   // Calculate content height using hook
-  const contentHeight = useContentHeight({ height, rowHeight });
+  const contentHeight = useContentHeight({ height, rowHeight, shouldPaginate, rowsPerPage });
 
   const aggregatedRows = useAggregatedRows({
     rows,
@@ -550,7 +550,7 @@ const SimpleTableComp = ({
         className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
           columnBorders ? "st-column-borders" : ""
         }`}
-        style={height ? { height } : {}}
+        style={{ height }}
       >
         <ScrollSync>
           <div className="st-wrapper-container">

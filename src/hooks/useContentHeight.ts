@@ -3,10 +3,23 @@ import { useMemo } from "react";
 interface UseContentHeightProps {
   height?: string | number;
   rowHeight: number;
+  shouldPaginate?: boolean;
+  rowsPerPage?: number;
 }
 
-export const useContentHeight = ({ height, rowHeight }: UseContentHeightProps): number => {
+export const useContentHeight = ({
+  height,
+  rowHeight,
+  shouldPaginate,
+  rowsPerPage,
+}: UseContentHeightProps): number => {
   return useMemo(() => {
+    // When pagination is enabled and no height is specified, use content-based height
+    if (!height && shouldPaginate && rowsPerPage) {
+      // Calculate height based on rows per page (plus header row)
+      return rowHeight * (rowsPerPage + 1);
+    }
+
     // Default height if none provided
     if (!height) return window.innerHeight - rowHeight;
 
@@ -38,5 +51,5 @@ export const useContentHeight = ({ height, rowHeight }: UseContentHeightProps): 
 
     // Subtract header height
     return Math.max(0, totalHeightPx - rowHeight);
-  }, [height, rowHeight]);
+  }, [height, rowHeight, shouldPaginate, rowsPerPage]);
 };

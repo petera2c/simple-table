@@ -30,7 +30,7 @@ const generateLargeDataset = () => {
 };
 
 const TOTAL_SERVER_DATA = generateLargeDataset(); // 500+ total rows
-const ROWS_PER_PAGE = 10;
+const ROWS_PER_PAGE = 50;
 
 // Simulate API call to fetch paginated data
 const fetchPageData = async (page: number, pageSize: number) => {
