@@ -196,11 +196,14 @@ const useSelection = ({
 
   const selectSingleCell = useCallback(
     (cell: Cell) => {
+      // Maximum valid colIndex: if selection enabled, it's leafHeaders.length, otherwise leafHeaders.length - 1
+      const maxColIndex = enableRowSelection ? leafHeaders.length : leafHeaders.length - 1;
+
       if (
         cell.rowIndex >= 0 &&
         cell.rowIndex < tableRows.length &&
         cell.colIndex >= 0 &&
-        cell.colIndex < leafHeaders.length
+        cell.colIndex <= maxColIndex
       ) {
         const cellId = createSetString(cell);
 
@@ -213,7 +216,7 @@ const useSelection = ({
         setTimeout(() => scrollCellIntoView(cell, rowHeight), 0);
       }
     },
-    [leafHeaders.length, tableRows.length, rowHeight]
+    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection]
   );
 
   const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {

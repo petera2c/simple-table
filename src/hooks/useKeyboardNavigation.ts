@@ -70,12 +70,10 @@ export const useKeyboardNavigation = ({
         const newSelectedCells = new Set<string>();
         for (let row = 0; row < tableRows.length; row++) {
           for (let col = 0; col < leafHeaders.length; col++) {
-            // Skip selection column (always at index 0 when enabled)
-            if (enableRowSelection && col === 0) {
-              continue;
-            }
+            // leafHeaders doesn't include selection column, so we need to offset colIndex by 1 when selection is enabled
+            const colIndex = enableRowSelection ? col + 1 : col;
             const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
-            newSelectedCells.add(`${row}-${col}-${rowId}`);
+            newSelectedCells.add(`${row}-${colIndex}-${rowId}`);
           }
         }
         setSelectedCells(newSelectedCells);
@@ -102,30 +100,6 @@ export const useKeyboardNavigation = ({
         } else return;
       }
 
-      // Helper function to check if a column is a selection column
-      // Selection column is always at index 0 when enableRowSelection is true
-      const isSelectionColumn = (colIndex: number): boolean => {
-        return enableRowSelection && colIndex === 0;
-      };
-
-      // Helper function to find the next non-selection column to the right
-      const findNextSelectableColumn = (startCol: number): number => {
-        let col = startCol;
-        while (col < leafHeaders.length && isSelectionColumn(col)) {
-          col++;
-        }
-        return col < leafHeaders.length ? col : -1;
-      };
-
-      // Helper function to find the next non-selection column to the left
-      const findPrevSelectableColumn = (startCol: number): number => {
-        let col = startCol;
-        while (col >= 0 && isSelectionColumn(col)) {
-          col--;
-        }
-        return col;
-      };
-
       // Helper function to find the edge of data in a direction
       const findEdgeInDirection = (
         startRow: number,
@@ -140,14 +114,13 @@ export const useKeyboardNavigation = ({
         } else if (direction === "down") {
           targetRow = tableRows.length - 1;
         } else if (direction === "left") {
-          targetCol = 0;
-          // Skip selection column when going left
-          targetCol = findNextSelectableColumn(targetCol);
-          if (targetCol === -1) targetCol = 0;
+          // First data column: if selection enabled, it's at index 1, otherwise 0
+          targetCol = enableRowSelection ? 1 : 0;
         } else if (direction === "right") {
-          targetCol = leafHeaders.length - 1;
-          // Skip selection column when going right
-          targetCol = findPrevSelectableColumn(targetCol);
+          // Last data column: leafHeaders.length gives us the count of data columns
+          // If selection enabled, indices are offset by 1, so last column is at leafHeaders.length
+          // If selection disabled, last column is at leafHeaders.length - 1
+          targetCol = enableRowSelection ? leafHeaders.length : leafHeaders.length - 1;
         }
 
         return { rowIndex: targetRow, colIndex: targetCol };
@@ -272,16 +245,6 @@ export const useKeyboardNavigation = ({
       colIndex: number,
       findEdgeInDirection: Function
     ) => {
-      // Helper to skip selection column (always at index 0 when enabled)
-      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
-      const findPrevSelectableColumn = (startCol: number): number => {
-        let col = startCol;
-        while (col >= 0 && isSelectionColumn(col)) {
-          col--;
-        }
-        return col;
-      };
-
       if (event.shiftKey && event.key === "ArrowLeft") {
         if (!startCell.current) {
           startCell.current = initialFocusedCell!;
@@ -292,10 +255,12 @@ export const useKeyboardNavigation = ({
         if (event.ctrlKey || event.metaKey) {
           const edge = findEdgeInDirection(rowIndex, colIndex, "left");
           targetCol = edge.colIndex;
+        } else {
+          // For regular arrow left, skip selection column if we land on it
+          if (enableRowSelection && targetCol === 0) {
+            return; // Can't go further left
+          }
         }
-
-        // Skip selection column
-        targetCol = findPrevSelectableColumn(targetCol);
 
         if (targetCol >= 0) {
           const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
@@ -309,10 +274,12 @@ export const useKeyboardNavigation = ({
           if ((event.ctrlKey || event.metaKey) && event.key === "ArrowLeft") {
             const edge = findEdgeInDirection(rowIndex, colIndex, "left");
             targetCol = edge.colIndex;
+          } else {
+            // For regular arrow left, skip selection column if we land on it
+            if (enableRowSelection && targetCol === 0) {
+              return; // Can't go further left
+            }
           }
-
-          // Skip selection column
-          targetCol = findPrevSelectableColumn(targetCol);
 
           if (targetCol >= 0) {
             const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
@@ -330,15 +297,8 @@ export const useKeyboardNavigation = ({
       colIndex: number,
       findEdgeInDirection: Function
     ) => {
-      // Helper to skip selection column (always at index 0 when enabled)
-      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
-      const findNextSelectableColumn = (startCol: number): number => {
-        let col = startCol;
-        while (col < leafHeaders.length && isSelectionColumn(col)) {
-          col++;
-        }
-        return col < leafHeaders.length ? col : -1;
-      };
+      // Calculate the maximum valid colIndex (accounts for selection column offset)
+      const maxColIndex = enableRowSelection ? leafHeaders.length : leafHeaders.length - 1;
 
       if (event.shiftKey && event.key === "ArrowRight") {
         if (!startCell.current) {
@@ -352,16 +312,13 @@ export const useKeyboardNavigation = ({
           targetCol = edge.colIndex;
         }
 
-        // Skip selection column
-        targetCol = findNextSelectableColumn(targetCol);
-
-        if (targetCol >= 0 && targetCol < leafHeaders.length) {
+        if (targetCol <= maxColIndex) {
           const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
           const endCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
           selectCellRange(startCell.current, endCell);
         }
       } else {
-        if (colIndex < leafHeaders.length - 1) {
+        if (colIndex < maxColIndex) {
           let targetCol = colIndex + 1;
 
           if ((event.ctrlKey || event.metaKey) && event.key === "ArrowRight") {
@@ -369,10 +326,7 @@ export const useKeyboardNavigation = ({
             targetCol = edge.colIndex;
           }
 
-          // Skip selection column
-          targetCol = findNextSelectableColumn(targetCol);
-
-          if (targetCol >= 0 && targetCol < leafHeaders.length) {
+          if (targetCol <= maxColIndex) {
             const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
             const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
             selectSingleCell(newCell);
@@ -383,104 +337,68 @@ export const useKeyboardNavigation = ({
     };
 
     const handleHome = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
-      // Helper to skip selection column (always at index 0 when enabled)
-      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
-      const findNextSelectableColumn = (startCol: number): number => {
-        let col = startCol;
-        while (col < leafHeaders.length && isSelectionColumn(col)) {
-          col++;
-        }
-        return col < leafHeaders.length ? col : -1;
-      };
-
       if (event.shiftKey) {
         if (!startCell.current) {
           startCell.current = initialFocusedCell!;
         }
 
         let targetRow = rowIndex;
-        let targetCol = 0;
+        // First data column: if selection enabled, it's at index 1, otherwise 0
+        const targetCol = enableRowSelection ? 1 : 0;
 
         if (event.ctrlKey || event.metaKey) {
           targetRow = 0;
         }
 
-        // Skip selection column
-        targetCol = findNextSelectableColumn(targetCol);
-
-        if (targetCol >= 0) {
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-          const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-          selectCellRange(startCell.current, endCell);
-        }
+        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+        selectCellRange(startCell.current, endCell);
       } else {
         let targetRow = rowIndex;
-        let targetCol = 0;
+        // First data column: if selection enabled, it's at index 1, otherwise 0
+        const targetCol = enableRowSelection ? 1 : 0;
 
         if (event.ctrlKey || event.metaKey) {
           targetRow = 0;
         }
 
-        // Skip selection column
-        targetCol = findNextSelectableColumn(targetCol);
-
-        if (targetCol >= 0) {
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-          const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-          selectSingleCell(newCell);
-          startCell.current = null;
-        }
+        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+        selectSingleCell(newCell);
+        startCell.current = null;
       }
     };
 
     const handleEnd = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
-      // Helper to skip selection column (always at index 0 when enabled)
-      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
-      const findPrevSelectableColumn = (startCol: number): number => {
-        let col = startCol;
-        while (col >= 0 && isSelectionColumn(col)) {
-          col--;
-        }
-        return col;
-      };
-
       if (event.shiftKey) {
         if (!startCell.current) {
           startCell.current = initialFocusedCell!;
         }
 
         let targetRow = rowIndex;
-        let targetCol = leafHeaders.length - 1;
+        // Last data column: if selection enabled, it's at leafHeaders.length, otherwise leafHeaders.length - 1
+        const targetCol = enableRowSelection ? leafHeaders.length : leafHeaders.length - 1;
 
         if (event.ctrlKey || event.metaKey) {
           targetRow = tableRows.length - 1;
         }
 
-        // Skip selection column
-        targetCol = findPrevSelectableColumn(targetCol);
-
-        if (targetCol >= 0) {
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-          const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-          selectCellRange(startCell.current, endCell);
-        }
+        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+        selectCellRange(startCell.current, endCell);
       } else {
         let targetRow = rowIndex;
-        let targetCol = leafHeaders.length - 1;
+        // Last data column: if selection enabled, it's at leafHeaders.length, otherwise leafHeaders.length - 1
+        const targetCol = enableRowSelection ? leafHeaders.length : leafHeaders.length - 1;
 
         if (event.ctrlKey || event.metaKey) {
           targetRow = tableRows.length - 1;
         }
 
-        // Skip selection column
-        targetCol = findPrevSelectableColumn(targetCol);
-
-        if (targetCol >= 0) {
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-          const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-          selectSingleCell(newCell);
-          startCell.current = null;
-        }
+        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+        selectSingleCell(newCell);
+        startCell.current = null;
       }
     };
 
