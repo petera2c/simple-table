@@ -444,6 +444,22 @@ const useSelection = ({
         return;
       }
 
+      // Select All functionality (Ctrl/Cmd + A)
+      if ((event.ctrlKey || event.metaKey) && event.key === "a") {
+        event.preventDefault();
+        const newSelectedCells = new Set<string>();
+        for (let row = 0; row < tableRows.length; row++) {
+          for (let col = 0; col < leafHeaders.length; col++) {
+            const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
+            newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
+          }
+        }
+        setSelectedCells(newSelectedCells);
+        setSelectedColumns(new Set());
+        setLastSelectedColumnIndex(null);
+        return;
+      }
+
       // Delete functionality
       if (event.key === "Delete" || event.key === "Backspace") {
         event.preventDefault();
@@ -464,50 +480,372 @@ const useSelection = ({
         } else return;
       }
 
-      // Handle keyboard navigation - only show one cell at a time
+      // Helper function to find the edge of data in a direction
+      const findEdgeInDirection = (
+        startRow: number,
+        startCol: number,
+        direction: "up" | "down" | "left" | "right"
+      ): { rowIndex: number; colIndex: number } => {
+        let targetRow = startRow;
+        let targetCol = startCol;
+
+        if (direction === "up") {
+          targetRow = 0;
+        } else if (direction === "down") {
+          targetRow = tableRows.length - 1;
+        } else if (direction === "left") {
+          targetCol = 0;
+        } else if (direction === "right") {
+          targetCol = leafHeaders.length - 1;
+        }
+
+        return { rowIndex: targetRow, colIndex: targetCol };
+      };
+
+      // Handle keyboard navigation with Shift for range selection
       if (event.key === "ArrowUp") {
         event.preventDefault();
-        if (rowIndex > 0) {
-          const newRowId = getRowId({ row: tableRows[rowIndex - 1].row, rowIdAccessor });
-          const newCell = {
-            rowIndex: rowIndex - 1,
-            colIndex,
-            rowId: newRowId,
-          };
-          selectSingleCell(newCell);
+
+        if (event.shiftKey) {
+          // Shift + Arrow: Extend selection
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          let targetRow = rowIndex - 1;
+
+          // Ctrl/Cmd + Shift + Arrow: Extend to edge
+          if (event.ctrlKey || event.metaKey) {
+            const edge = findEdgeInDirection(rowIndex, colIndex, "up");
+            targetRow = edge.rowIndex;
+          }
+
+          if (targetRow >= 0) {
+            const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+            const endCell = {
+              rowIndex: targetRow,
+              colIndex,
+              rowId: newRowId,
+            };
+            selectCellRange(startCell.current, endCell);
+            setInitialFocusedCell(endCell);
+          }
+        } else {
+          // Regular arrow navigation
+          if (rowIndex > 0) {
+            let targetRow = rowIndex - 1;
+
+            // Ctrl/Cmd + Arrow: Jump to edge
+            if (event.ctrlKey || event.metaKey) {
+              const edge = findEdgeInDirection(rowIndex, colIndex, "up");
+              targetRow = edge.rowIndex;
+            }
+
+            const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+            const newCell = {
+              rowIndex: targetRow,
+              colIndex,
+              rowId: newRowId,
+            };
+            selectSingleCell(newCell);
+            startCell.current = null;
+          }
         }
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
-        if (rowIndex < tableRows.length - 1) {
-          const newRowId = getRowId({ row: tableRows[rowIndex + 1].row, rowIdAccessor });
+
+        if (event.shiftKey) {
+          // Shift + Arrow: Extend selection
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          let targetRow = rowIndex + 1;
+
+          // Ctrl/Cmd + Shift + Arrow: Extend to edge
+          if (event.ctrlKey || event.metaKey) {
+            const edge = findEdgeInDirection(rowIndex, colIndex, "down");
+            targetRow = edge.rowIndex;
+          }
+
+          if (targetRow < tableRows.length) {
+            const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+            const endCell = {
+              rowIndex: targetRow,
+              colIndex,
+              rowId: newRowId,
+            };
+            selectCellRange(startCell.current, endCell);
+            setInitialFocusedCell(endCell);
+          }
+        } else {
+          // Regular arrow navigation
+          if (rowIndex < tableRows.length - 1) {
+            let targetRow = rowIndex + 1;
+
+            // Ctrl/Cmd + Arrow: Jump to edge
+            if (event.ctrlKey || event.metaKey) {
+              const edge = findEdgeInDirection(rowIndex, colIndex, "down");
+              targetRow = edge.rowIndex;
+            }
+
+            const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+            const newCell = {
+              rowIndex: targetRow,
+              colIndex,
+              rowId: newRowId,
+            };
+            selectSingleCell(newCell);
+            startCell.current = null;
+          }
+        }
+      } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
+        event.preventDefault();
+
+        if (event.shiftKey && event.key === "ArrowLeft") {
+          // Shift + Arrow: Extend selection
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          let targetCol = colIndex - 1;
+
+          // Ctrl/Cmd + Shift + Arrow: Extend to edge
+          if (event.ctrlKey || event.metaKey) {
+            const edge = findEdgeInDirection(rowIndex, colIndex, "left");
+            targetCol = edge.colIndex;
+          }
+
+          if (targetCol >= 0) {
+            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const endCell = {
+              rowIndex,
+              colIndex: targetCol,
+              rowId: newRowId,
+            };
+            selectCellRange(startCell.current, endCell);
+            setInitialFocusedCell(endCell);
+          }
+        } else {
+          // Regular arrow/tab navigation
+          if (colIndex > 0) {
+            let targetCol = colIndex - 1;
+
+            // Ctrl/Cmd + Arrow: Jump to edge (not for Tab)
+            if ((event.ctrlKey || event.metaKey) && event.key === "ArrowLeft") {
+              const edge = findEdgeInDirection(rowIndex, colIndex, "left");
+              targetCol = edge.colIndex;
+            }
+
+            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const newCell = {
+              rowIndex,
+              colIndex: targetCol,
+              rowId: newRowId,
+            };
+            selectSingleCell(newCell);
+            startCell.current = null;
+          }
+        }
+      } else if (event.key === "ArrowRight" || event.key === "Tab") {
+        event.preventDefault();
+
+        if (event.shiftKey && event.key === "ArrowRight") {
+          // Shift + Arrow: Extend selection
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          let targetCol = colIndex + 1;
+
+          // Ctrl/Cmd + Shift + Arrow: Extend to edge
+          if (event.ctrlKey || event.metaKey) {
+            const edge = findEdgeInDirection(rowIndex, colIndex, "right");
+            targetCol = edge.colIndex;
+          }
+
+          if (targetCol < leafHeaders.length) {
+            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const endCell = {
+              rowIndex,
+              colIndex: targetCol,
+              rowId: newRowId,
+            };
+            selectCellRange(startCell.current, endCell);
+            setInitialFocusedCell(endCell);
+          }
+        } else {
+          // Regular arrow/tab navigation
+          if (colIndex < leafHeaders.length - 1) {
+            let targetCol = colIndex + 1;
+
+            // Ctrl/Cmd + Arrow: Jump to edge (not for Tab)
+            if ((event.ctrlKey || event.metaKey) && event.key === "ArrowRight") {
+              const edge = findEdgeInDirection(rowIndex, colIndex, "right");
+              targetCol = edge.colIndex;
+            }
+
+            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const newCell = {
+              rowIndex,
+              colIndex: targetCol,
+              rowId: newRowId,
+            };
+            selectSingleCell(newCell);
+            startCell.current = null;
+          }
+        }
+      } else if (event.key === "Home") {
+        event.preventDefault();
+
+        if (event.shiftKey) {
+          // Shift + Home: Extend selection to first column
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          let targetRow = rowIndex;
+          let targetCol = 0;
+
+          // Ctrl/Cmd + Shift + Home: Extend to first cell in table
+          if (event.ctrlKey || event.metaKey) {
+            targetRow = 0;
+          }
+
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const endCell = {
+            rowIndex: targetRow,
+            colIndex: targetCol,
+            rowId: newRowId,
+          };
+          selectCellRange(startCell.current, endCell);
+          setInitialFocusedCell(endCell);
+        } else {
+          // Home: Navigate to first column
+          let targetRow = rowIndex;
+          let targetCol = 0;
+
+          // Ctrl/Cmd + Home: Navigate to first cell in table
+          if (event.ctrlKey || event.metaKey) {
+            targetRow = 0;
+          }
+
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
           const newCell = {
-            rowIndex: rowIndex + 1,
+            rowIndex: targetRow,
+            colIndex: targetCol,
+            rowId: newRowId,
+          };
+          selectSingleCell(newCell);
+          startCell.current = null;
+        }
+      } else if (event.key === "End") {
+        event.preventDefault();
+
+        if (event.shiftKey) {
+          // Shift + End: Extend selection to last column
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          let targetRow = rowIndex;
+          let targetCol = leafHeaders.length - 1;
+
+          // Ctrl/Cmd + Shift + End: Extend to last cell in table
+          if (event.ctrlKey || event.metaKey) {
+            targetRow = tableRows.length - 1;
+          }
+
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const endCell = {
+            rowIndex: targetRow,
+            colIndex: targetCol,
+            rowId: newRowId,
+          };
+          selectCellRange(startCell.current, endCell);
+          setInitialFocusedCell(endCell);
+        } else {
+          // End: Navigate to last column
+          let targetRow = rowIndex;
+          let targetCol = leafHeaders.length - 1;
+
+          // Ctrl/Cmd + End: Navigate to last cell in table
+          if (event.ctrlKey || event.metaKey) {
+            targetRow = tableRows.length - 1;
+          }
+
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const newCell = {
+            rowIndex: targetRow,
+            colIndex: targetCol,
+            rowId: newRowId,
+          };
+          selectSingleCell(newCell);
+          startCell.current = null;
+        }
+      } else if (event.key === "PageUp") {
+        event.preventDefault();
+
+        // Calculate how many rows to jump (approximate based on viewport)
+        const pageSize = 10; // Default page size
+        let targetRow = Math.max(0, rowIndex - pageSize);
+
+        if (event.shiftKey) {
+          // Shift + PageUp: Extend selection
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const endCell = {
+            rowIndex: targetRow,
+            colIndex,
+            rowId: newRowId,
+          };
+          selectCellRange(startCell.current, endCell);
+          setInitialFocusedCell(endCell);
+        } else {
+          // PageUp: Navigate up by page
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const newCell = {
+            rowIndex: targetRow,
             colIndex,
             rowId: newRowId,
           };
           selectSingleCell(newCell);
+          startCell.current = null;
         }
-      } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
+      } else if (event.key === "PageDown") {
         event.preventDefault();
-        if (colIndex > 0) {
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+
+        // Calculate how many rows to jump (approximate based on viewport)
+        const pageSize = 10; // Default page size
+        let targetRow = Math.min(tableRows.length - 1, rowIndex + pageSize);
+
+        if (event.shiftKey) {
+          // Shift + PageDown: Extend selection
+          if (!startCell.current) {
+            startCell.current = initialFocusedCell;
+          }
+
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const endCell = {
+            rowIndex: targetRow,
+            colIndex,
+            rowId: newRowId,
+          };
+          selectCellRange(startCell.current, endCell);
+          setInitialFocusedCell(endCell);
+        } else {
+          // PageDown: Navigate down by page
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
           const newCell = {
-            rowIndex,
-            colIndex: colIndex - 1,
+            rowIndex: targetRow,
+            colIndex,
             rowId: newRowId,
           };
           selectSingleCell(newCell);
-        }
-      } else if (event.key === "ArrowRight" || event.key === "Tab") {
-        event.preventDefault();
-        if (colIndex < leafHeaders.length - 1) {
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
-          const newCell = {
-            rowIndex,
-            colIndex: colIndex + 1,
-            rowId: newRowId,
-          };
-          selectSingleCell(newCell);
+          startCell.current = null;
         }
       } else if (event.key === "Escape") {
         // Clear all selections
