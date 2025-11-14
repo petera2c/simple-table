@@ -552,7 +552,7 @@ const SimpleTableComp = ({
         className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
           columnBorders ? "st-column-borders" : ""
         }`}
-        style={{ height }}
+        style={height ? { height } : {}}
       >
         <ScrollSync>
           <div className="st-wrapper-container">
