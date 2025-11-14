@@ -878,14 +878,32 @@ const useSelection = ({
   const updateSelectionRange = useCallback(
     (startCell: Cell, endCell: Cell) => {
       const newSelectedCells = new Set<string>();
-      const startRow = Math.min(startCell.rowIndex, endCell.rowIndex);
-      const endRow = Math.max(startCell.rowIndex, endCell.rowIndex);
-      const startCol = Math.min(startCell.colIndex, endCell.colIndex);
-      const endCol = Math.max(startCell.colIndex, endCell.colIndex);
 
-      for (let row = startRow; row <= endRow; row++) {
-        for (let col = startCol; col <= endCol; col++) {
-          // Ensure the row exists
+      // Build a map of rowId to current rowIndex for fast lookup
+      const rowIdToIndexMap = new Map<string, number>();
+      tableRows.forEach((tableRow, index) => {
+        const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+        rowIdToIndexMap.set(String(rowId), index);
+      });
+
+      // Find current indices for start and end cells
+      const startRowCurrentIndex = rowIdToIndexMap.get(String(startCell.rowId));
+      const endRowCurrentIndex = rowIdToIndexMap.get(String(endCell.rowId));
+
+      // If either cell is not in the current visible rows, fall back to using the provided indices
+      const startRow =
+        startRowCurrentIndex !== undefined ? startRowCurrentIndex : startCell.rowIndex;
+      const endRow = endRowCurrentIndex !== undefined ? endRowCurrentIndex : endCell.rowIndex;
+
+      const minRow = Math.min(startRow, endRow);
+      const maxRow = Math.max(startRow, endRow);
+      const minCol = Math.min(startCell.colIndex, endCell.colIndex);
+      const maxCol = Math.max(startCell.colIndex, endCell.colIndex);
+
+      // Select all cells in the range
+      for (let row = minRow; row <= maxRow; row++) {
+        for (let col = minCol; col <= maxCol; col++) {
+          // Ensure the row exists in current visible rows
           if (row >= 0 && row < tableRows.length) {
             const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
@@ -906,8 +924,10 @@ const useSelection = ({
 
     const rect = tableContainer.getBoundingClientRect();
 
-    // Find all visible cells
-    const cells = Array.from(document.querySelectorAll(".st-cell[data-row-index][data-col-index]"));
+    // Find all visible cells (excluding selection column cells)
+    const cells = Array.from(
+      document.querySelectorAll(".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)")
+    );
 
     if (cells.length === 0) return null;
 
@@ -1035,49 +1055,69 @@ const useSelection = ({
       setInitialFocusedCell({ rowIndex, colIndex, rowId });
     }, 0);
 
-    // Track last update time for throttling selection updates
+    // Track current mouse position for continuous scrolling
+    let currentMouseX = 0;
+    let currentMouseY = 0;
+    let scrollAnimationFrame: number | null = null;
     let lastSelectionUpdate = 0;
     const selectionThrottleMs = 16; // ~60fps for selection updates
 
-    // Track last scroll update separately (no throttle for smoother scrolling)
-    let lastScrollUpdate = 0;
-    const scrollThrottleMs = 8; // Faster updates for scrolling
+    // Continuous scroll loop using requestAnimationFrame
+    const continuousScroll = () => {
+      if (!isSelecting.current || !startCell.current) {
+        if (scrollAnimationFrame !== null) {
+          cancelAnimationFrame(scrollAnimationFrame);
+          scrollAnimationFrame = null;
+        }
+        return;
+      }
+
+      // Perform auto-scroll based on current mouse position
+      handleAutoScroll(currentMouseX, currentMouseY);
+
+      // Update selection based on current mouse position
+      const now = Date.now();
+      if (now - lastSelectionUpdate >= selectionThrottleMs) {
+        const cellAtPosition = getCellFromMousePosition(currentMouseX, currentMouseY);
+        if (cellAtPosition) {
+          updateSelectionRange(startCell.current, cellAtPosition);
+        }
+        lastSelectionUpdate = now;
+      }
+
+      // Continue the loop
+      scrollAnimationFrame = requestAnimationFrame(continuousScroll);
+    };
 
     // Add global mouse move handler
     const handleGlobalMouseMove = (event: MouseEvent) => {
       if (!isSelecting.current || !startCell.current) return;
 
-      const now = Date.now();
-
-      // Handle auto-scrolling with minimal throttling for smooth scrolling
-      if (now - lastScrollUpdate >= scrollThrottleMs) {
-        handleAutoScroll(event.clientX, event.clientY);
-        lastScrollUpdate = now;
-      }
-
-      // Throttle selection updates for performance
-      if (now - lastSelectionUpdate < selectionThrottleMs) return;
-      lastSelectionUpdate = now;
-
-      // Get the cell at the current mouse position
-      const cellAtPosition = getCellFromMousePosition(event.clientX, event.clientY);
-
-      if (cellAtPosition) {
-        // Update selection range
-        updateSelectionRange(startCell.current!, cellAtPosition);
-      }
+      // Update current mouse position
+      currentMouseX = event.clientX;
+      currentMouseY = event.clientY;
     };
 
     // Add global mouse up handler
     const handleGlobalMouseUp = () => {
       isSelecting.current = false;
       setIsSelectingState(false);
+
+      // Cancel scroll animation
+      if (scrollAnimationFrame !== null) {
+        cancelAnimationFrame(scrollAnimationFrame);
+        scrollAnimationFrame = null;
+      }
+
       document.removeEventListener("mousemove", handleGlobalMouseMove);
       document.removeEventListener("mouseup", handleGlobalMouseUp);
     };
 
     document.addEventListener("mousemove", handleGlobalMouseMove);
     document.addEventListener("mouseup", handleGlobalMouseUp);
+
+    // Start the continuous scroll loop
+    scrollAnimationFrame = requestAnimationFrame(continuousScroll);
   };
 
   const handleMouseOver = ({ colIndex, rowIndex, rowId }: Cell) => {
