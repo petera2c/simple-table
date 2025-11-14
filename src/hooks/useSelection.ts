@@ -24,6 +24,7 @@ interface UseSelectionProps {
   cellRegistry?: Map<string, any>;
   collapsedHeaders?: Set<Accessor>;
   rowHeight: number;
+  enableRowSelection?: boolean;
 }
 
 const useSelection = ({
@@ -35,6 +36,7 @@ const useSelection = ({
   cellRegistry,
   collapsedHeaders,
   rowHeight,
+  enableRowSelection = false,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
@@ -171,6 +173,10 @@ const useSelection = ({
       for (let row = minRow; row <= maxRow; row++) {
         for (let col = minCol; col <= maxCol; col++) {
           if (row >= 0 && row < tableRows.length) {
+            // Skip selection column (always at index 0 when enabled)
+            if (enableRowSelection && col === 0) {
+              continue;
+            }
             const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
@@ -185,7 +191,7 @@ const useSelection = ({
       // Scroll the end cell into view
       setTimeout(() => scrollCellIntoView(endCell, rowHeight), 0);
     },
-    [tableRows, rowIdAccessor, rowHeight]
+    [tableRows, rowIdAccessor, rowHeight, enableRowSelection]
   );
 
   const selectSingleCell = useCallback(
@@ -210,23 +216,20 @@ const useSelection = ({
     [leafHeaders.length, tableRows.length, rowHeight]
   );
 
-  const selectColumns = useCallback(
-    (columnIndices: number[], isShiftKey = false) => {
-      setSelectedCells(new Set());
-      setInitialFocusedCell(null);
+  const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
+    setSelectedCells(new Set());
+    setInitialFocusedCell(null);
 
-      setSelectedColumns((prev) => {
-        const newSelection = new Set(isShiftKey ? prev : []);
-        columnIndices.forEach((idx) => newSelection.add(idx));
-        return newSelection;
-      });
+    setSelectedColumns((prev) => {
+      const newSelection = new Set(isShiftKey ? prev : []);
+      columnIndices.forEach((idx) => newSelection.add(idx));
+      return newSelection;
+    });
 
-      if (columnIndices.length > 0) {
-        setLastSelectedColumnIndex(columnIndices[columnIndices.length - 1]);
-      }
-    },
-    []
-  );
+    if (columnIndices.length > 0) {
+      setLastSelectedColumnIndex(columnIndices[columnIndices.length - 1]);
+    }
+  }, []);
 
   // Keyboard navigation
   useKeyboardNavigation({
@@ -244,6 +247,7 @@ const useSelection = ({
     pasteFromClipboard,
     deleteSelectedCells,
     startCell,
+    enableRowSelection,
   });
 
   // Mouse selection helpers
@@ -272,6 +276,10 @@ const useSelection = ({
       for (let row = minRow; row <= maxRow; row++) {
         for (let col = minCol; col <= maxCol; col++) {
           if (row >= 0 && row < tableRows.length) {
+            // Skip selection column (always at index 0 when enabled)
+            if (enableRowSelection && col === 0) {
+              continue;
+            }
             const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
@@ -280,7 +288,7 @@ const useSelection = ({
 
       setSelectedCells(newSelectedCells);
     },
-    [tableRows, rowIdAccessor]
+    [tableRows, rowIdAccessor, enableRowSelection]
   );
 
   const calculateNearestCell = useCallback((clientX: number, clientY: number): Cell | null => {
@@ -557,4 +565,3 @@ const useSelection = ({
 };
 
 export default useSelection;
-

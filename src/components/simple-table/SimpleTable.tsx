@@ -389,6 +389,7 @@ const SimpleTableComp = ({
     cellRegistry: cellRegistryRef.current,
     collapsedHeaders,
     rowHeight,
+    enableRowSelection,
   });
 
   // Memoize handlers

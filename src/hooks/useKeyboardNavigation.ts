@@ -20,6 +20,7 @@ interface UseKeyboardNavigationProps {
   pasteFromClipboard: () => void;
   deleteSelectedCells: () => void;
   startCell: React.MutableRefObject<Cell | null>;
+  enableRowSelection?: boolean;
 }
 
 /**
@@ -40,6 +41,7 @@ export const useKeyboardNavigation = ({
   pasteFromClipboard,
   deleteSelectedCells,
   startCell,
+  enableRowSelection = false,
 }: UseKeyboardNavigationProps) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -68,6 +70,10 @@ export const useKeyboardNavigation = ({
         const newSelectedCells = new Set<string>();
         for (let row = 0; row < tableRows.length; row++) {
           for (let col = 0; col < leafHeaders.length; col++) {
+            // Skip selection column (always at index 0 when enabled)
+            if (enableRowSelection && col === 0) {
+              continue;
+            }
             const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(`${row}-${col}-${rowId}`);
           }
@@ -96,6 +102,30 @@ export const useKeyboardNavigation = ({
         } else return;
       }
 
+      // Helper function to check if a column is a selection column
+      // Selection column is always at index 0 when enableRowSelection is true
+      const isSelectionColumn = (colIndex: number): boolean => {
+        return enableRowSelection && colIndex === 0;
+      };
+
+      // Helper function to find the next non-selection column to the right
+      const findNextSelectableColumn = (startCol: number): number => {
+        let col = startCol;
+        while (col < leafHeaders.length && isSelectionColumn(col)) {
+          col++;
+        }
+        return col < leafHeaders.length ? col : -1;
+      };
+
+      // Helper function to find the next non-selection column to the left
+      const findPrevSelectableColumn = (startCol: number): number => {
+        let col = startCol;
+        while (col >= 0 && isSelectionColumn(col)) {
+          col--;
+        }
+        return col;
+      };
+
       // Helper function to find the edge of data in a direction
       const findEdgeInDirection = (
         startRow: number,
@@ -111,8 +141,13 @@ export const useKeyboardNavigation = ({
           targetRow = tableRows.length - 1;
         } else if (direction === "left") {
           targetCol = 0;
+          // Skip selection column when going left
+          targetCol = findNextSelectableColumn(targetCol);
+          if (targetCol === -1) targetCol = 0;
         } else if (direction === "right") {
           targetCol = leafHeaders.length - 1;
+          // Skip selection column when going right
+          targetCol = findPrevSelectableColumn(targetCol);
         }
 
         return { rowIndex: targetRow, colIndex: targetCol };
@@ -237,6 +272,16 @@ export const useKeyboardNavigation = ({
       colIndex: number,
       findEdgeInDirection: Function
     ) => {
+      // Helper to skip selection column (always at index 0 when enabled)
+      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
+      const findPrevSelectableColumn = (startCol: number): number => {
+        let col = startCol;
+        while (col >= 0 && isSelectionColumn(col)) {
+          col--;
+        }
+        return col;
+      };
+
       if (event.shiftKey && event.key === "ArrowLeft") {
         if (!startCell.current) {
           startCell.current = initialFocusedCell!;
@@ -248,6 +293,9 @@ export const useKeyboardNavigation = ({
           const edge = findEdgeInDirection(rowIndex, colIndex, "left");
           targetCol = edge.colIndex;
         }
+
+        // Skip selection column
+        targetCol = findPrevSelectableColumn(targetCol);
 
         if (targetCol >= 0) {
           const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
@@ -263,10 +311,15 @@ export const useKeyboardNavigation = ({
             targetCol = edge.colIndex;
           }
 
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
-          const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
-          selectSingleCell(newCell);
-          startCell.current = null;
+          // Skip selection column
+          targetCol = findPrevSelectableColumn(targetCol);
+
+          if (targetCol >= 0) {
+            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
+            selectSingleCell(newCell);
+            startCell.current = null;
+          }
         }
       }
     };
@@ -277,6 +330,16 @@ export const useKeyboardNavigation = ({
       colIndex: number,
       findEdgeInDirection: Function
     ) => {
+      // Helper to skip selection column (always at index 0 when enabled)
+      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
+      const findNextSelectableColumn = (startCol: number): number => {
+        let col = startCol;
+        while (col < leafHeaders.length && isSelectionColumn(col)) {
+          col++;
+        }
+        return col < leafHeaders.length ? col : -1;
+      };
+
       if (event.shiftKey && event.key === "ArrowRight") {
         if (!startCell.current) {
           startCell.current = initialFocusedCell!;
@@ -289,7 +352,10 @@ export const useKeyboardNavigation = ({
           targetCol = edge.colIndex;
         }
 
-        if (targetCol < leafHeaders.length) {
+        // Skip selection column
+        targetCol = findNextSelectableColumn(targetCol);
+
+        if (targetCol >= 0 && targetCol < leafHeaders.length) {
           const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
           const endCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
           selectCellRange(startCell.current, endCell);
@@ -303,46 +369,81 @@ export const useKeyboardNavigation = ({
             targetCol = edge.colIndex;
           }
 
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
-          const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
+          // Skip selection column
+          targetCol = findNextSelectableColumn(targetCol);
+
+          if (targetCol >= 0 && targetCol < leafHeaders.length) {
+            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
+            selectSingleCell(newCell);
+            startCell.current = null;
+          }
+        }
+      }
+    };
+
+    const handleHome = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
+      // Helper to skip selection column (always at index 0 when enabled)
+      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
+      const findNextSelectableColumn = (startCol: number): number => {
+        let col = startCol;
+        while (col < leafHeaders.length && isSelectionColumn(col)) {
+          col++;
+        }
+        return col < leafHeaders.length ? col : -1;
+      };
+
+      if (event.shiftKey) {
+        if (!startCell.current) {
+          startCell.current = initialFocusedCell!;
+        }
+
+        let targetRow = rowIndex;
+        let targetCol = 0;
+
+        if (event.ctrlKey || event.metaKey) {
+          targetRow = 0;
+        }
+
+        // Skip selection column
+        targetCol = findNextSelectableColumn(targetCol);
+
+        if (targetCol >= 0) {
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+          selectCellRange(startCell.current, endCell);
+        }
+      } else {
+        let targetRow = rowIndex;
+        let targetCol = 0;
+
+        if (event.ctrlKey || event.metaKey) {
+          targetRow = 0;
+        }
+
+        // Skip selection column
+        targetCol = findNextSelectableColumn(targetCol);
+
+        if (targetCol >= 0) {
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
           selectSingleCell(newCell);
           startCell.current = null;
         }
       }
     };
 
-    const handleHome = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
-      if (event.shiftKey) {
-        if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
-        }
-
-        let targetRow = rowIndex;
-        let targetCol = 0;
-
-        if (event.ctrlKey || event.metaKey) {
-          targetRow = 0;
-        }
-
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-        const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-        selectCellRange(startCell.current, endCell);
-      } else {
-        let targetRow = rowIndex;
-        let targetCol = 0;
-
-        if (event.ctrlKey || event.metaKey) {
-          targetRow = 0;
-        }
-
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-        const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-        selectSingleCell(newCell);
-        startCell.current = null;
-      }
-    };
-
     const handleEnd = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
+      // Helper to skip selection column (always at index 0 when enabled)
+      const isSelectionColumn = (col: number) => enableRowSelection && col === 0;
+      const findPrevSelectableColumn = (startCol: number): number => {
+        let col = startCol;
+        while (col >= 0 && isSelectionColumn(col)) {
+          col--;
+        }
+        return col;
+      };
+
       if (event.shiftKey) {
         if (!startCell.current) {
           startCell.current = initialFocusedCell!;
@@ -355,9 +456,14 @@ export const useKeyboardNavigation = ({
           targetRow = tableRows.length - 1;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-        const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-        selectCellRange(startCell.current, endCell);
+        // Skip selection column
+        targetCol = findPrevSelectableColumn(targetCol);
+
+        if (targetCol >= 0) {
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+          selectCellRange(startCell.current, endCell);
+        }
       } else {
         let targetRow = rowIndex;
         let targetCol = leafHeaders.length - 1;
@@ -366,10 +472,15 @@ export const useKeyboardNavigation = ({
           targetRow = tableRows.length - 1;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
-        const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
-        selectSingleCell(newCell);
-        startCell.current = null;
+        // Skip selection column
+        targetCol = findPrevSelectableColumn(targetCol);
+
+        if (targetCol >= 0) {
+          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+          selectSingleCell(newCell);
+          startCell.current = null;
+        }
       }
     };
 
