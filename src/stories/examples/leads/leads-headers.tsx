@@ -160,55 +160,6 @@ const FitButtons = ({ rowId }: { rowId: string }) => {
   );
 };
 
-// Custom Tag component for status badges
-const Tag = ({ children, color }: { children: React.ReactNode; color?: string }) => {
-  const getColorStyles = (color?: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      success: {
-        bg: "color-mix(in srgb, oklch(72.3% .219 149.579) 10%, transparent)",
-        text: "oklch(27.8% .033 256.848)",
-      },
-      warning: {
-        bg: "color-mix(in srgb, oklch(70.5% .213 47.604) 10%, transparent)",
-        text: "oklch(27.8% .033 256.848)",
-      },
-      info: {
-        bg: "color-mix(in srgb, oklch(62.3% .214 259.815) 10%, transparent)",
-        text: "oklch(27.8% .033 256.848)",
-      },
-      error: {
-        bg: "color-mix(in srgb, oklch(63.7% .237 25.331) 10%, transparent)",
-        text: "oklch(27.8% .033 256.848)",
-      },
-      purple: {
-        bg: "color-mix(in srgb, oklch(62.7% .265 303.9) 10%, transparent)",
-        text: "oklch(27.8% .033 256.848)",
-      },
-      default: { bg: "oklch(96.7% .003 264.542)", text: "oklch(21% .034 264.665)" },
-    };
-
-    return colors[color || "default"];
-  };
-
-  const { bg, text } = getColorStyles(color);
-
-  return (
-    <span
-      style={{
-        backgroundColor: bg,
-        color: text,
-        padding: "4px 8px",
-        fontSize: "12px",
-        borderRadius: "9999px",
-        display: "inline-flex",
-        fontWeight: 500,
-      }}
-    >
-      {children}
-    </span>
-  );
-};
-
 export const LEADS_HEADERS: HeaderObject[] = [
   {
     accessor: "name",
@@ -387,8 +338,7 @@ export const LEADS_HEADERS: HeaderObject[] = [
       const listName = row.list as string;
 
       return (
-        <a
-          href="#"
+        <button
           onClick={(e) => e.preventDefault()}
           style={{
             cursor: "pointer",
@@ -396,10 +346,13 @@ export const LEADS_HEADERS: HeaderObject[] = [
             color: "oklch(64.6% .222 41.116)",
             textDecoration: "none",
             fontWeight: "600",
+            background: "transparent",
+            border: "none",
+            padding: 0,
           }}
         >
           {listName}
-        </a>
+        </button>
       );
     },
   },
@@ -419,8 +372,7 @@ export const LEADS_HEADERS: HeaderObject[] = [
     minWidth: 160,
     cellRenderer: () => {
       return (
-        <a
-          href="#"
+        <button
           onClick={(e) => e.preventDefault()}
           style={{
             cursor: "pointer",
@@ -428,10 +380,13 @@ export const LEADS_HEADERS: HeaderObject[] = [
             color: "oklch(64.6% .222 41.116)",
             textDecoration: "none",
             fontWeight: "600",
+            background: "transparent",
+            border: "none",
+            padding: 0,
           }}
         >
           Contact Now
-        </a>
+        </button>
       );
     },
   },

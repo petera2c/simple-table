@@ -85,6 +85,7 @@ interface SimpleTableProps {
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void; // Callback when a header is edited
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
+  onPageChange?: (page: number) => void | Promise<void>; // Callback when page changes (for server-side pagination)
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
@@ -97,11 +98,13 @@ interface SimpleTableProps {
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
+  serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
   tableRef?: MutableRefObject<TableRefType | null>;
   theme?: Theme; // Theme
+  totalRowCount?: number; // Total number of rows on server (for server-side pagination)
   useOddColumnBackground?: boolean; // Flag for using column background
   useHoverRowBackground?: boolean; // Flag for using hover row background
   useOddEvenRowBackground?: boolean; // Flag for using odd/even row background
@@ -152,6 +155,7 @@ const SimpleTableComp = ({
   onHeaderEdit,
   onLoadMore,
   onNextPage,
+  onPageChange,
   onRowSelectionChange,
   onSortChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
@@ -164,11 +168,13 @@ const SimpleTableComp = ({
   rowsPerPage = 10,
   selectableCells = false,
   selectableColumns = false,
+  serverSidePagination = false,
   shouldPaginate = false,
   sortDownIcon = <DescIcon className="st-header-icon" />,
   sortUpIcon = <AscIcon className="st-header-icon" />,
   tableRef,
   theme = "light",
+  totalRowCount,
   useHoverRowBackground = true,
   useOddEvenRowBackground = false,
   useOddColumnBackground = false,
@@ -296,7 +302,7 @@ const SimpleTableComp = ({
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
   // Calculate content height using hook
-  const contentHeight = useContentHeight({ height, rowHeight });
+  const contentHeight = useContentHeight({ height, rowHeight, shouldPaginate, rowsPerPage });
 
   const aggregatedRows = useAggregatedRows({
     rows,
@@ -341,6 +347,7 @@ const SimpleTableComp = ({
     currentPage,
     rowsPerPage,
     shouldPaginate,
+    serverSidePagination,
     rowGrouping,
     rowIdAccessor,
     unexpandedRows,
@@ -381,6 +388,8 @@ const SimpleTableComp = ({
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
     collapsedHeaders,
+    rowHeight,
+    enableRowSelection,
   });
 
   // Memoize handlers
@@ -543,7 +552,7 @@ const SimpleTableComp = ({
         className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
           columnBorders ? "st-column-borders" : ""
         }`}
-        style={height ? { height } : {}}
+        style={{ height }}
       >
         <ScrollSync>
           <div className="st-wrapper-container">
@@ -579,10 +588,11 @@ const SimpleTableComp = ({
               hideFooter={hideFooter}
               onPageChange={setCurrentPage}
               onNextPage={onNextPage}
+              onUserPageChange={onPageChange}
               rowsPerPage={rowsPerPage}
               shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil(sortedRows.length / rowsPerPage)}
-              totalRows={sortedRows.length}
+              totalPages={Math.ceil((totalRowCount ?? sortedRows.length) / rowsPerPage)}
+              totalRows={totalRowCount ?? sortedRows.length}
             />
           </div>
         </ScrollSync>

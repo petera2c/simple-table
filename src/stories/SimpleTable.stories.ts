@@ -20,6 +20,7 @@ import HiddenColumnsExample from "./examples/HiddenColumnsExample";
 import InfiniteScrollExample from "./examples/InfiniteScroll";
 import LiveUpdatesExample from "./examples/LiveUpdates";
 import PaginationExample from "./examples/Pagination";
+import ServerSidePaginationExample from "./examples/ServerSidePaginationExample";
 import PinnedColumnsExample from "./examples/pinned-columns/PinnedColumns";
 import RowGroupingExample from "./examples/row-grouping/RowGrouping";
 import RowHeightExample from "./examples/RowHeightExample";
@@ -319,6 +320,19 @@ export const Pagination: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: PaginationExample, ...args }),
 };
+
+export const ServerSidePagination: StoryObj = {
+  render: () => React.createElement(ServerSidePaginationExample),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates true server-side pagination where the API returns only the rows for the requested page (using offset/limit pattern). The table uses serverSidePagination flag to disable internal slicing, totalRowCount to show correct totals, and onPageChange callback to fetch new data. Perfect for working with paginated REST APIs.",
+      },
+    },
+  },
+};
+
 export const PinnedColumns: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,

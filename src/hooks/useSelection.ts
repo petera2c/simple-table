@@ -1,9 +1,16 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
 import Cell from "../types/Cell";
 import { findLeafHeaders } from "../utils/headerWidthUtils";
 import { getRowId } from "../utils/rowUtils";
+import { scrollCellIntoView } from "../utils/cellScrollUtils";
+import {
+  copySelectedCellsToClipboard,
+  pasteClipboardDataToCells,
+  deleteSelectedCellsContent,
+} from "../utils/cellClipboardUtils";
+import { useKeyboardNavigation } from "./useKeyboardNavigation";
 
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
@@ -16,6 +23,8 @@ interface UseSelectionProps {
   onCellEdit?: (props: any) => void;
   cellRegistry?: Map<string, any>;
   collapsedHeaders?: Set<Accessor>;
+  rowHeight: number;
+  enableRowSelection?: boolean;
 }
 
 const useSelection = ({
@@ -26,6 +35,8 @@ const useSelection = ({
   onCellEdit,
   cellRegistry,
   collapsedHeaders,
+  rowHeight,
+  enableRowSelection = false,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
@@ -37,11 +48,10 @@ const useSelection = ({
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
 
-  // Derived state for efficient lookups - tracks which columns and rows have selected cells
+  // Derived state for efficient lookups
   const columnsWithSelectedCells = useMemo(() => {
     const columns = new Set<number>();
 
-    // Add columns that have individually selected cells
     selectedCells.forEach((cellId) => {
       const parts = cellId.split("-");
       if (parts.length >= 2) {
@@ -52,7 +62,6 @@ const useSelection = ({
       }
     });
 
-    // Add columns that are entirely selected
     selectedColumns.forEach((colIndex) => {
       columns.add(colIndex);
     });
@@ -63,17 +72,14 @@ const useSelection = ({
   const rowsWithSelectedCells = useMemo(() => {
     const rows = new Set<string>();
 
-    // Add rows that have individually selected cells
     selectedCells.forEach((cellId) => {
       const parts = cellId.split("-");
       if (parts.length >= 3) {
-        // rowId is everything after the second dash
         const rowId = parts.slice(2).join("-");
         rows.add(rowId);
       }
     });
 
-    // Add rows that have cells in selected columns
     if (selectedColumns.size > 0) {
       tableRows.forEach((tableRow) => {
         const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
@@ -84,67 +90,22 @@ const useSelection = ({
     return rows;
   }, [selectedCells, selectedColumns, tableRows, rowIdAccessor]);
 
-  // Get flattened leaf headers (actual navigable columns) for proper boundary checking
+  // Get flattened leaf headers
   const leafHeaders = useMemo(() => {
     return headers.flatMap((header) => findLeafHeaders(header, collapsedHeaders));
   }, [headers, collapsedHeaders]);
 
+  // Clipboard operations
   const copyToClipboard = useCallback(() => {
-    // Use the already flattened leaf headers
-    const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
+    if (selectedCells.size === 0) return;
 
-    // Create a mapping of column indices to accessors for quick lookup
-    // Example: {0: "name", 1: "age", 2: "email"}
-    const colIndexToAccessor = new Map<number, string>();
-    flattenedLeafHeaders.forEach((header, index) => {
-      colIndexToAccessor.set(index, header.accessor);
-    });
+    const text = copySelectedCellsToClipboard(selectedCells, leafHeaders, tableRows);
+    navigator.clipboard.writeText(text);
 
-    // Convert selectedCells (Set of "row-col-depth" strings) to a text format suitable for clipboard
-    // Example: selectedCells = new Set(["0-0-0", "0-1-0", "1-0-0"])
-    const rowsText = Array.from(selectedCells).reduce((acc, cellKey) => {
-      // Parse the row and column indices from the cell key
-      // Example: "0-2-1" → row=0, col=2 (depth is ignored)
-      const [row, col] = cellKey.split("-").map(Number);
-
-      // Initialize row array if this is the first cell in this row
-      // Example: if row=2 and acc={0:[...], 1:[...]}, then create acc[2]=[]
-      if (!acc[row]) acc[row] = [];
-
-      // Get the accessor for this column using our mapping
-      // Example: for col=2, might get accessor="email"
-      const accessor = colIndexToAccessor.get(col);
-
-      if (accessor && tableRows[row]?.row) {
-        // Use the accessor to get the cell value directly from the row
-        // Example: if accessor="name", get row.name
-        acc[row][col] = tableRows[row].row[accessor];
-      } else {
-        // If no accessor found (shouldn't happen), use empty string
-        acc[row][col] = "";
-      }
-
-      return acc;
-    }, {} as { [key: number]: { [key: number]: any } });
-
-    // Convert the structured data to a tab-separated string
-    // Example: {0: ["John", 25], 1: ["Mary", 30]} → "John\t25\nMary\t30"
-    const text = Object.values(rowsText)
-      .map((row) => Object.values(row).join("\t"))
-      .join("\n");
-
-    if (selectedCells.size > 0) {
-      navigator.clipboard.writeText(text);
-
-      // Trigger copy flash effect for selected cells
-      setCopyFlashCells(new Set(selectedCells));
-
-      // Clear the flash effect after animation duration
-      setTimeout(() => {
-        setCopyFlashCells(new Set());
-      }, 800);
-    }
-  }, [leafHeaders, selectedCells, tableRows]);
+    // Trigger copy flash effect
+    setCopyFlashCells(new Set(selectedCells));
+    setTimeout(() => setCopyFlashCells(new Set()), 800);
+  }, [selectedCells, leafHeaders, tableRows]);
 
   const pasteFromClipboard = useCallback(async () => {
     if (!initialFocusedCell) return;
@@ -153,105 +114,24 @@ const useSelection = ({
       const clipboardText = await navigator.clipboard.readText();
       if (!clipboardText) return;
 
-      // Parse clipboard data (tab-separated values, newline-separated rows)
-      const rows = clipboardText.split("\n").filter((row) => row.length > 0);
-      if (rows.length === 0) return;
+      const { updatedCells, warningCells } = pasteClipboardDataToCells(
+        clipboardText,
+        initialFocusedCell,
+        leafHeaders,
+        tableRows,
+        rowIdAccessor,
+        onCellEdit,
+        cellRegistry
+      );
 
-      const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
-      const updatedCells = new Set<string>();
-      const warningCells = new Set<string>();
-
-      // Starting position
-      const startRowIndex = initialFocusedCell.rowIndex;
-      const startColIndex = initialFocusedCell.colIndex;
-
-      rows.forEach((rowText, rowOffset) => {
-        const cellValues = rowText.split("\t");
-
-        cellValues.forEach((cellValue, colOffset) => {
-          const targetRowIndex = startRowIndex + rowOffset;
-          const targetColIndex = startColIndex + colOffset;
-
-          // Check boundaries
-          if (targetRowIndex >= tableRows.length || targetColIndex >= flattenedLeafHeaders.length) {
-            return;
-          }
-
-          const targetRow = tableRows[targetRowIndex];
-          const targetHeader = flattenedLeafHeaders[targetColIndex];
-          const targetRowId = getRowId({ row: targetRow.row, rowIdAccessor });
-
-          // Track warning flash for non-editable cells
-          if (!targetHeader?.isEditable) {
-            const cellId = createSetString({
-              colIndex: targetColIndex,
-              rowIndex: targetRowIndex,
-              rowId: targetRowId,
-            });
-            warningCells.add(cellId);
-            return;
-          }
-
-          // Convert value to appropriate type based on header type
-          let convertedValue: any = cellValue;
-          if (targetHeader.type === "number") {
-            const numValue = Number(cellValue);
-            if (!isNaN(numValue)) {
-              convertedValue = numValue;
-            }
-          } else if (targetHeader.type === "boolean") {
-            convertedValue = cellValue.toLowerCase() === "true" || cellValue === "1";
-          } else if (targetHeader.type === "date") {
-            const dateValue = new Date(cellValue);
-            if (!isNaN(dateValue.getTime())) {
-              convertedValue = dateValue;
-            }
-          }
-
-          // Update the data
-          targetRow.row[targetHeader.accessor] = convertedValue;
-
-          // Use cell registry for direct update if available
-          if (cellRegistry) {
-            const key = `${targetRowId}-${targetHeader.accessor}`;
-            const cell = cellRegistry.get(key);
-            if (cell) {
-              cell.updateContent(convertedValue);
-            }
-          }
-
-          // Call onCellEdit callback
-          onCellEdit?.({
-            accessor: targetHeader.accessor,
-            newValue: convertedValue,
-            row: targetRow.row,
-            rowIndex: targetRowIndex,
-          });
-
-          // Track updated cell for flash effect
-          const cellId = createSetString({
-            colIndex: targetColIndex,
-            rowIndex: targetRowIndex,
-            rowId: targetRowId,
-          });
-          updatedCells.add(cellId);
-        });
-      });
-
-      // Trigger flash effect for updated cells
       if (updatedCells.size > 0) {
         setCopyFlashCells(updatedCells);
-        setTimeout(() => {
-          setCopyFlashCells(new Set());
-        }, 800);
+        setTimeout(() => setCopyFlashCells(new Set()), 800);
       }
 
-      // Trigger warning flash for warning cells
       if (warningCells.size > 0) {
         setWarningFlashCells(warningCells);
-        setTimeout(() => {
-          setWarningFlashCells(new Set());
-        }, 800);
+        setTimeout(() => setWarningFlashCells(new Set()), 800);
       }
     } catch (error) {
       console.warn("Failed to paste from clipboard:", error);
@@ -261,91 +141,27 @@ const useSelection = ({
   const deleteSelectedCells = useCallback(() => {
     if (selectedCells.size === 0) return;
 
-    const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
-    const colIndexToAccessor = new Map<number, string>();
-    flattenedLeafHeaders.forEach((header, index) => {
-      colIndexToAccessor.set(index, header.accessor);
-    });
+    const { deletedCells, warningCells } = deleteSelectedCellsContent(
+      selectedCells,
+      leafHeaders,
+      tableRows,
+      rowIdAccessor,
+      onCellEdit,
+      cellRegistry
+    );
 
-    const deletedCells = new Set<string>();
-    const warningCells = new Set<string>();
-
-    Array.from(selectedCells).forEach((cellKey) => {
-      const [rowIndex, colIndex] = cellKey.split("-").map(Number);
-
-      // Check boundaries
-      if (rowIndex >= tableRows.length || colIndex >= flattenedLeafHeaders.length) {
-        return;
-      }
-
-      const targetRow = tableRows[rowIndex];
-      const targetHeader = flattenedLeafHeaders[colIndex];
-      const targetRowId = getRowId({ row: targetRow.row, rowIdAccessor });
-
-      // Track warning flash for non-editable cells
-      if (!targetHeader?.isEditable) {
-        warningCells.add(cellKey);
-        return;
-      }
-
-      // Determine appropriate empty value based on type
-      let emptyValue: any = null;
-      if (targetHeader.type === "string") {
-        emptyValue = "";
-      } else if (targetHeader.type === "number") {
-        emptyValue = null;
-      } else if (targetHeader.type === "boolean") {
-        emptyValue = false;
-      } else if (targetHeader.type === "date") {
-        emptyValue = null;
-      } else if (Array.isArray(targetRow.row[targetHeader.accessor])) {
-        // If the current value is an array, set it to an empty array
-        emptyValue = [];
-      } else {
-        emptyValue = "";
-      }
-
-      // Update the data
-      targetRow.row[targetHeader.accessor] = emptyValue;
-
-      // Use cell registry for direct update if available
-      if (cellRegistry) {
-        const key = `${targetRowId}-${targetHeader.accessor}`;
-        const cell = cellRegistry.get(key);
-        if (cell) {
-          cell.updateContent(emptyValue);
-        }
-      }
-
-      // Call onCellEdit callback
-      onCellEdit?.({
-        accessor: targetHeader.accessor,
-        newValue: emptyValue,
-        row: targetRow.row,
-        rowIndex: rowIndex,
-      });
-
-      deletedCells.add(cellKey);
-    });
-
-    // Trigger flash effect for deleted cells
     if (deletedCells.size > 0) {
       setCopyFlashCells(deletedCells);
-      setTimeout(() => {
-        setCopyFlashCells(new Set());
-      }, 800);
+      setTimeout(() => setCopyFlashCells(new Set()), 800);
     }
 
-    // Trigger warning flash for non-editable cells
     if (warningCells.size > 0) {
       setWarningFlashCells(warningCells);
-      setTimeout(() => {
-        setWarningFlashCells(new Set());
-      }, 800);
+      setTimeout(() => setWarningFlashCells(new Set()), 800);
     }
   }, [selectedCells, leafHeaders, tableRows, rowIdAccessor, onCellEdit, cellRegistry]);
 
-  // Select cells from start to end coordinates
+  // Selection operations
   const selectCellRange = useCallback(
     (startCell: Cell, endCell: Cell) => {
       const newSelectedCells = new Set<string>();
@@ -356,199 +172,117 @@ const useSelection = ({
 
       for (let row = minRow; row <= maxRow; row++) {
         for (let col = minCol; col <= maxCol; col++) {
-          // Check if the row exists in the visible rows
           if (row >= 0 && row < tableRows.length) {
+            // Skip selection column (always at index 0 when enabled)
+            if (enableRowSelection && col === 0) {
+              continue;
+            }
             const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
       }
 
-      // Clear column selections when selecting cells
       setSelectedColumns(new Set());
       setLastSelectedColumnIndex(null);
-
       setSelectedCells(newSelectedCells);
+      setInitialFocusedCell(endCell);
+
+      // Scroll the end cell into view
+      setTimeout(() => scrollCellIntoView(endCell, rowHeight), 0);
     },
-    [tableRows, rowIdAccessor, setSelectedColumns, setLastSelectedColumnIndex, setSelectedCells]
+    [tableRows, rowIdAccessor, rowHeight, enableRowSelection]
   );
 
-  // Select a single cell
   const selectSingleCell = useCallback(
     (cell: Cell) => {
+      // Maximum valid colIndex: if selection enabled, it's leafHeaders.length, otherwise leafHeaders.length - 1
+      const maxColIndex = enableRowSelection ? leafHeaders.length : leafHeaders.length - 1;
+
       if (
         cell.rowIndex >= 0 &&
         cell.rowIndex < tableRows.length &&
         cell.colIndex >= 0 &&
-        cell.colIndex < leafHeaders.length
+        cell.colIndex <= maxColIndex
       ) {
         const cellId = createSetString(cell);
 
-        // Clear column selections when selecting a single cell
         setSelectedColumns(new Set());
         setLastSelectedColumnIndex(null);
-
         setSelectedCells(new Set([cellId]));
         setInitialFocusedCell(cell);
+
+        // Scroll the cell into view
+        setTimeout(() => scrollCellIntoView(cell, rowHeight), 0);
       }
     },
-    [
-      leafHeaders.length,
-      tableRows.length,
-      setSelectedColumns,
-      setLastSelectedColumnIndex,
-      setSelectedCells,
-      setInitialFocusedCell,
-    ]
+    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection]
   );
 
-  // Helper to select columns and update last selected index
-  const selectColumns = useCallback(
-    (columnIndices: number[], isShiftKey = false) => {
-      // Clear cell selections when selecting columns
-      setSelectedCells(new Set());
-      setInitialFocusedCell(null);
+  const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
+    setSelectedCells(new Set());
+    setInitialFocusedCell(null);
 
-      setSelectedColumns((prev) => {
-        const newSelection = new Set(isShiftKey ? prev : []);
-        columnIndices.forEach((idx) => newSelection.add(idx));
-        return newSelection;
-      });
+    setSelectedColumns((prev) => {
+      const newSelection = new Set(isShiftKey ? prev : []);
+      columnIndices.forEach((idx) => newSelection.add(idx));
+      return newSelection;
+    });
 
-      // Update last selected column if applicable
-      if (columnIndices.length > 0) {
-        setLastSelectedColumnIndex(columnIndices[columnIndices.length - 1]);
-      }
-    },
-    [setSelectedCells, setInitialFocusedCell, setSelectedColumns, setLastSelectedColumnIndex]
-  );
+    if (columnIndices.length > 0) {
+      setLastSelectedColumnIndex(columnIndices[columnIndices.length - 1]);
+    }
+  }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!selectableCells) return;
-
-      // We will navigate based on the initial focused cell
-      if (!initialFocusedCell) return;
-      let { rowIndex, colIndex, rowId } = initialFocusedCell;
-
-      // Copy functionality
-      if ((event.ctrlKey || event.metaKey) && event.key === "c") {
-        copyToClipboard();
-        return;
-      }
-
-      // Paste functionality
-      if ((event.ctrlKey || event.metaKey) && event.key === "v") {
-        event.preventDefault();
-        pasteFromClipboard();
-        return;
-      }
-
-      // Delete functionality
-      if (event.key === "Delete" || event.key === "Backspace") {
-        event.preventDefault();
-        deleteSelectedCells();
-        return;
-      }
-
-      // Check if the visible rows have changed
-      // If the rowId has changed, and we can't find the rowId in the visible rows, do nothing
-      // If the rowId has changed, and we can find the rowId in the visible rows, update the rowIndex
-      const currentRowId = getRowId({ row: tableRows[rowIndex]?.row, rowIdAccessor });
-      if (currentRowId !== rowId) {
-        const currentRowIndex = tableRows.findIndex(
-          (visibleRow, index) => getRowId({ row: visibleRow.row, rowIdAccessor }) === rowId
-        );
-        if (currentRowIndex !== -1) {
-          rowIndex = currentRowIndex;
-        } else return;
-      }
-
-      // Handle keyboard navigation - only show one cell at a time
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        if (rowIndex > 0) {
-          const newRowId = getRowId({ row: tableRows[rowIndex - 1].row, rowIdAccessor });
-          const newCell = {
-            rowIndex: rowIndex - 1,
-            colIndex,
-            rowId: newRowId,
-          };
-          selectSingleCell(newCell);
-        }
-      } else if (event.key === "ArrowDown") {
-        event.preventDefault();
-        if (rowIndex < tableRows.length - 1) {
-          const newRowId = getRowId({ row: tableRows[rowIndex + 1].row, rowIdAccessor });
-          const newCell = {
-            rowIndex: rowIndex + 1,
-            colIndex,
-            rowId: newRowId,
-          };
-          selectSingleCell(newCell);
-        }
-      } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
-        event.preventDefault();
-        if (colIndex > 0) {
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
-          const newCell = {
-            rowIndex,
-            colIndex: colIndex - 1,
-            rowId: newRowId,
-          };
-          selectSingleCell(newCell);
-        }
-      } else if (event.key === "ArrowRight" || event.key === "Tab") {
-        event.preventDefault();
-        if (colIndex < leafHeaders.length - 1) {
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
-          const newCell = {
-            rowIndex,
-            colIndex: colIndex + 1,
-            rowId: newRowId,
-          };
-          selectSingleCell(newCell);
-        }
-      } else if (event.key === "Escape") {
-        // Clear all selections
-        setSelectedCells(new Set());
-        setSelectedColumns(new Set());
-        setLastSelectedColumnIndex(null);
-        startCell.current = null;
-        setInitialFocusedCell(null);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [
-    copyToClipboard,
-    leafHeaders.length,
-    initialFocusedCell,
-    rowIdAccessor,
-    selectCellRange,
-    selectSingleCell,
+  // Keyboard navigation
+  useKeyboardNavigation({
     selectableCells,
+    initialFocusedCell,
     tableRows,
+    leafHeaders,
+    rowIdAccessor,
+    selectSingleCell,
+    selectCellRange,
+    setSelectedCells,
+    setSelectedColumns,
+    setLastSelectedColumnIndex,
+    copyToClipboard,
     pasteFromClipboard,
     deleteSelectedCells,
-  ]);
+    startCell,
+    enableRowSelection,
+  });
 
-  // Helper function to update selection range between two cells
+  // Mouse selection helpers
   const updateSelectionRange = useCallback(
     (startCell: Cell, endCell: Cell) => {
       const newSelectedCells = new Set<string>();
-      const startRow = Math.min(startCell.rowIndex, endCell.rowIndex);
-      const endRow = Math.max(startCell.rowIndex, endCell.rowIndex);
-      const startCol = Math.min(startCell.colIndex, endCell.colIndex);
-      const endCol = Math.max(startCell.colIndex, endCell.colIndex);
 
-      for (let row = startRow; row <= endRow; row++) {
-        for (let col = startCol; col <= endCol; col++) {
-          // Ensure the row exists
+      const rowIdToIndexMap = new Map<string, number>();
+      tableRows.forEach((tableRow, index) => {
+        const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+        rowIdToIndexMap.set(String(rowId), index);
+      });
+
+      const startRowCurrentIndex = rowIdToIndexMap.get(String(startCell.rowId));
+      const endRowCurrentIndex = rowIdToIndexMap.get(String(endCell.rowId));
+
+      const startRow =
+        startRowCurrentIndex !== undefined ? startRowCurrentIndex : startCell.rowIndex;
+      const endRow = endRowCurrentIndex !== undefined ? endRowCurrentIndex : endCell.rowIndex;
+
+      const minRow = Math.min(startRow, endRow);
+      const maxRow = Math.max(startRow, endRow);
+      const minCol = Math.min(startCell.colIndex, endCell.colIndex);
+      const maxCol = Math.max(startCell.colIndex, endCell.colIndex);
+
+      for (let row = minRow; row <= maxRow; row++) {
+        for (let col = minCol; col <= maxCol; col++) {
           if (row >= 0 && row < tableRows.length) {
+            // Skip selection column (always at index 0 when enabled)
+            if (enableRowSelection && col === 0) {
+              continue;
+            }
             const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
@@ -557,27 +291,23 @@ const useSelection = ({
 
       setSelectedCells(newSelectedCells);
     },
-    [tableRows, rowIdAccessor]
+    [tableRows, rowIdAccessor, enableRowSelection]
   );
 
-  // Helper function to calculate nearest cell when mouse is outside table
   const calculateNearestCell = useCallback((clientX: number, clientY: number): Cell | null => {
-    // Get table container boundaries
     const tableContainer = document.querySelector(".st-body-container");
     if (!tableContainer) return null;
 
     const rect = tableContainer.getBoundingClientRect();
-
-    // Find all visible cells
-    const cells = Array.from(document.querySelectorAll(".st-cell[data-row-index][data-col-index]"));
+    const cells = Array.from(
+      document.querySelectorAll(".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)")
+    );
 
     if (cells.length === 0) return null;
 
-    // Clamp mouse position to table boundaries (for edge extension)
     const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
     const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
 
-    // Find the cell closest to the mouse position
     let closestCell: HTMLElement | null = null;
     let minDistance = Infinity;
 
@@ -613,19 +343,14 @@ const useSelection = ({
     return null;
   }, []);
 
-  // Helper function to get cell from mouse position
   const getCellFromMousePosition = useCallback(
     (clientX: number, clientY: number): Cell | null => {
-      // Use elementFromPoint to find what's under the cursor
       const element = document.elementFromPoint(clientX, clientY);
-
       if (!element) return null;
 
-      // Check if we're over a table cell
       const cellElement = element.closest(".st-cell");
 
       if (cellElement instanceof HTMLElement) {
-        // Extract cell data from data attributes
         const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
         const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
         const rowId = cellElement.getAttribute("data-row-id");
@@ -635,44 +360,36 @@ const useSelection = ({
         }
       }
 
-      // If not directly over a cell, calculate which cell we're nearest to
       return calculateNearestCell(clientX, clientY);
     },
     [calculateNearestCell]
   );
 
-  // Helper function to handle auto-scrolling when near table edges
   const handleAutoScroll = useCallback((clientX: number, clientY: number) => {
     const tableContainer = document.querySelector(".st-body-container");
     if (!tableContainer) return;
 
     const rect = tableContainer.getBoundingClientRect();
-    const scrollMargin = 50; // pixels from edge to trigger scroll
-    const scrollSpeed = 10; // pixels to scroll per frame
+    const scrollMargin = 50;
+    const scrollSpeed = 10;
 
-    // Vertical scrolling - scroll if cursor is above or below the table
     if (clientY < rect.top + scrollMargin) {
-      // Scroll up - increase speed the further away the cursor is
       const distance = Math.max(0, rect.top - clientY);
       const speedMultiplier = Math.min(3, 1 + distance / 100);
       tableContainer.scrollTop -= scrollSpeed * speedMultiplier;
     } else if (clientY > rect.bottom - scrollMargin) {
-      // Scroll down - increase speed the further away the cursor is
       const distance = Math.max(0, clientY - rect.bottom);
       const speedMultiplier = Math.min(3, 1 + distance / 100);
       tableContainer.scrollTop += scrollSpeed * speedMultiplier;
     }
 
-    // Horizontal scrolling - scroll the main body section (not the container)
     const mainBody = document.querySelector(".st-body-main");
     if (mainBody) {
       if (clientX < rect.left + scrollMargin) {
-        // Scroll left - increase speed the further away the cursor is
         const distance = Math.max(0, rect.left - clientX);
         const speedMultiplier = Math.min(3, 1 + distance / 100);
         mainBody.scrollLeft -= scrollSpeed * speedMultiplier;
       } else if (clientX > rect.right - scrollMargin) {
-        // Scroll right - increase speed the further away the cursor is
         const distance = Math.max(0, clientX - rect.right);
         const speedMultiplier = Math.min(3, 1 + distance / 100);
         mainBody.scrollLeft += scrollSpeed * speedMultiplier;
@@ -686,10 +403,7 @@ const useSelection = ({
     setIsSelectingState(true);
     startCell.current = { rowIndex, colIndex, rowId };
 
-    // Defer state updates to allow the current event cycle to complete
-    // This prevents interference with useHandleOutsideClick
     setTimeout(() => {
-      // When directly selecting cells, clear any selected columns
       setSelectedColumns(new Set());
       setLastSelectedColumnIndex(null);
       const cellId = createSetString({ colIndex, rowIndex, rowId });
@@ -697,49 +411,62 @@ const useSelection = ({
       setInitialFocusedCell({ rowIndex, colIndex, rowId });
     }, 0);
 
-    // Track last update time for throttling selection updates
+    let currentMouseX: number | null = null;
+    let currentMouseY: number | null = null;
+    let scrollAnimationFrame: number | null = null;
     let lastSelectionUpdate = 0;
-    const selectionThrottleMs = 16; // ~60fps for selection updates
+    const selectionThrottleMs = 16;
 
-    // Track last scroll update separately (no throttle for smoother scrolling)
-    let lastScrollUpdate = 0;
-    const scrollThrottleMs = 8; // Faster updates for scrolling
+    const continuousScroll = () => {
+      if (!isSelecting.current || !startCell.current) {
+        if (scrollAnimationFrame !== null) {
+          cancelAnimationFrame(scrollAnimationFrame);
+          scrollAnimationFrame = null;
+        }
+        return;
+      }
 
-    // Add global mouse move handler
+      // Only process if mouse position has been captured
+      if (currentMouseX !== null && currentMouseY !== null) {
+        handleAutoScroll(currentMouseX, currentMouseY);
+
+        const now = Date.now();
+        if (now - lastSelectionUpdate >= selectionThrottleMs) {
+          const cellAtPosition = getCellFromMousePosition(currentMouseX, currentMouseY);
+          if (cellAtPosition) {
+            updateSelectionRange(startCell.current, cellAtPosition);
+          }
+          lastSelectionUpdate = now;
+        }
+      }
+
+      scrollAnimationFrame = requestAnimationFrame(continuousScroll);
+    };
+
     const handleGlobalMouseMove = (event: MouseEvent) => {
       if (!isSelecting.current || !startCell.current) return;
 
-      const now = Date.now();
-
-      // Handle auto-scrolling with minimal throttling for smooth scrolling
-      if (now - lastScrollUpdate >= scrollThrottleMs) {
-        handleAutoScroll(event.clientX, event.clientY);
-        lastScrollUpdate = now;
-      }
-
-      // Throttle selection updates for performance
-      if (now - lastSelectionUpdate < selectionThrottleMs) return;
-      lastSelectionUpdate = now;
-
-      // Get the cell at the current mouse position
-      const cellAtPosition = getCellFromMousePosition(event.clientX, event.clientY);
-
-      if (cellAtPosition) {
-        // Update selection range
-        updateSelectionRange(startCell.current!, cellAtPosition);
-      }
+      currentMouseX = event.clientX;
+      currentMouseY = event.clientY;
     };
 
-    // Add global mouse up handler
     const handleGlobalMouseUp = () => {
       isSelecting.current = false;
       setIsSelectingState(false);
+
+      if (scrollAnimationFrame !== null) {
+        cancelAnimationFrame(scrollAnimationFrame);
+        scrollAnimationFrame = null;
+      }
+
       document.removeEventListener("mousemove", handleGlobalMouseMove);
       document.removeEventListener("mouseup", handleGlobalMouseUp);
     };
 
     document.addEventListener("mousemove", handleGlobalMouseMove);
     document.addEventListener("mouseup", handleGlobalMouseUp);
+
+    scrollAnimationFrame = requestAnimationFrame(continuousScroll);
   };
 
   const handleMouseOver = ({ colIndex, rowIndex, rowId }: Cell) => {
@@ -751,14 +478,10 @@ const useSelection = ({
 
   const isSelected = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
-      // Check if the cell is in the selectedCells set
       const cellId = createSetString({ colIndex, rowIndex, rowId });
       const isCellSelected = selectedCells.has(cellId);
-
-      // Also check if the column is in the selectedColumns set
       const isColumnSelected = selectedColumns.has(colIndex);
 
-      // Return true if either the cell or its column is selected
       return isCellSelected || isColumnSelected;
     },
     [selectedCells, selectedColumns]
@@ -766,7 +489,6 @@ const useSelection = ({
 
   const getBorderClass = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
-      // Don't show borders while actively selecting
       if (isSelectingState) {
         return "";
       }
@@ -786,7 +508,6 @@ const useSelection = ({
       const leftCell = { colIndex: colIndex - 1, rowIndex, rowId };
       const rightCell = { colIndex: colIndex + 1, rowIndex, rowId };
 
-      // Check if neighboring cells are selected
       if (!topCell || !isSelected(topCell) || (selectedColumns.has(colIndex) && rowIndex === 0))
         classes.push("st-selected-top-border");
       if (
@@ -811,7 +532,6 @@ const useSelection = ({
       rowId === initialFocusedCell.rowId;
   }, [initialFocusedCell]);
 
-  // Helper function to check if a cell is currently flashing from copy
   const isCopyFlashing = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
       const cellId = createSetString({ colIndex, rowIndex, rowId });
@@ -820,7 +540,6 @@ const useSelection = ({
     [copyFlashCells]
   );
 
-  // Helper function to check if a cell is currently showing warning flash
   const isWarningFlashing = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
       const cellId = createSetString({ colIndex, rowIndex, rowId });
@@ -846,7 +565,6 @@ const useSelection = ({
     setSelectedCells,
     setSelectedColumns,
     deleteSelectedCells,
-    // Efficient lookup sets
     columnsWithSelectedCells,
     rowsWithSelectedCells,
   };

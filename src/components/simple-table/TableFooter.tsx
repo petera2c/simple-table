@@ -11,6 +11,7 @@ interface TableFooterProps {
   onPageChange: (page: number) => void;
   onNextPage?: OnNextPage;
   onPreviousPage?: OnNextPage;
+  onUserPageChange?: (page: number) => void | Promise<void>;
   prevIcon?: ReactNode;
   rowsPerPage: number;
   shouldPaginate?: boolean;
@@ -24,6 +25,7 @@ const TableFooter = ({
   hideFooter,
   onPageChange,
   onNextPage,
+  onUserPageChange,
   rowsPerPage,
   shouldPaginate,
   totalPages,
@@ -41,12 +43,16 @@ const TableFooter = ({
 
   const isNextDisabled = (!hasNextPage && !onNextPage) || (!hasMoreData && isOnLastPage);
 
-  const handlePrevPage = () => {
+  const handlePrevPage = async () => {
     const prevPage = currentPage - 1;
 
-    // Then update the internal page state
+    // Update the internal page state
     if (prevPage >= 1) {
       onPageChange(prevPage);
+      // Call user's page change callback if provided
+      if (onUserPageChange) {
+        await onUserPageChange(prevPage);
+      }
     }
   };
 
@@ -66,14 +72,22 @@ const TableFooter = ({
     // Then update the internal page state
     if (nextPage <= totalPages || onNextPage) {
       onPageChange(nextPage);
+      // Call user's page change callback if provided
+      if (onUserPageChange) {
+        await onUserPageChange(nextPage);
+      }
     }
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = async (page: number) => {
     // Only update page if within valid range
     if (page >= 1 && page <= totalPages) {
       // Update internal state
       onPageChange(page);
+      // Call user's page change callback if provided
+      if (onUserPageChange) {
+        await onUserPageChange(page);
+      }
     }
   };
 

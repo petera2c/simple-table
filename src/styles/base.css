@@ -131,7 +131,6 @@ input {
   position: relative;
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  max-height: 100dvh;
   overflow: hidden;
 }
 

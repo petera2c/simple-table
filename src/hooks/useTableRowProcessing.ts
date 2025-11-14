@@ -15,6 +15,7 @@ interface UseTableRowProcessingProps {
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
+  serverSidePagination: boolean;
   rowGrouping?: Accessor[];
   rowIdAccessor: Accessor;
   unexpandedRows: Set<string>;
@@ -34,6 +35,7 @@ const useTableRowProcessing = ({
   currentPage,
   rowsPerPage,
   shouldPaginate,
+  serverSidePagination,
   rowGrouping,
   rowIdAccessor,
   unexpandedRows,
@@ -61,10 +63,11 @@ const useTableRowProcessing = ({
   // Process rows through pagination and grouping
   const processRowSet = useCallback(
     (rows: Row[]) => {
-      // Apply pagination
-      const paginatedRows = shouldPaginate
-        ? rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-        : rows;
+      // Apply pagination (skip slicing for server-side pagination)
+      const paginatedRows =
+        shouldPaginate && !serverSidePagination
+          ? rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+          : rows;
 
       // Calculate the display position offset for pagination
       const displayPositionOffset = shouldPaginate ? (currentPage - 1) * rowsPerPage : 0;
@@ -94,6 +97,7 @@ const useTableRowProcessing = ({
       currentPage,
       rowsPerPage,
       shouldPaginate,
+      serverSidePagination,
       rowGrouping,
       rowIdAccessor,
       unexpandedRows,
