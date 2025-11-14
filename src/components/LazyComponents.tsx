@@ -19,11 +19,16 @@ type DatePickerProps = React.ComponentProps<typeof DatePickerComponent>;
  * Animate component with Suspense
  * Fallback renders a plain div to prevent layout shift
  */
-export const Animate = (props: AnimateProps) => (
-  <Suspense fallback={<div {...(props as any)} />}>
-    <AnimateLazy {...props} />
-  </Suspense>
-);
+export const Animate = (props: AnimateProps) => {
+  // Destructure React-specific props that shouldn't be passed to DOM elements
+  const { parentRef, tableRow, ...domProps } = props;
+
+  return (
+    <Suspense fallback={<div {...domProps} />}>
+      <AnimateLazy {...props} />
+    </Suspense>
+  );
+};
 
 /**
  * DatePicker component with Suspense

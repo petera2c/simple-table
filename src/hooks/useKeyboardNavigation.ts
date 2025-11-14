@@ -461,5 +461,6 @@ export const useKeyboardNavigation = ({
     pasteFromClipboard,
     deleteSelectedCells,
     startCell,
+    enableRowSelection,
   ]);
 };

@@ -17,12 +17,12 @@ import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 const generateLargeDataset = () => {
   const baseData = generateSaaSData();
   const largeDataset: typeof baseData = [];
-  let id = 0;
 
   // Generate 500 rows by repeating and modifying the base data
   for (let i = 0; i < 3; i++) {
-    baseData.forEach((row) => {
-      largeDataset.push({ ...row, id: id++ });
+    baseData.forEach((row, index) => {
+      const id = i * baseData.length + index;
+      largeDataset.push({ ...row, id });
     });
   }
 
