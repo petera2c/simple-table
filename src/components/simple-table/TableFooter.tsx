@@ -149,7 +149,7 @@ const TableFooter = ({
           totalRows,
           startRow,
           endRow,
-          onPageChange,
+          onPageChange: handlePageChange,
           onNextPage: handleNextPage,
           onPrevPage: handlePrevPage,
           hasNextPage: !isNextDisabled,
