@@ -67,6 +67,7 @@ interface TableContextType {
   isAnimating: boolean;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
+  isLoading?: boolean;
   isResizing: boolean;
   isRowSelected?: (rowId: string) => boolean;
   isScrolling: boolean;

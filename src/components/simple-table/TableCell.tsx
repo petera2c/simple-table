@@ -68,6 +68,7 @@ const TableCell = ({
     headers,
     hoveredHeaderRef,
     isCopyFlashing,
+    isLoading,
     isRowSelected,
     isWarningFlashing,
     onCellEdit,
@@ -428,32 +429,36 @@ const TableCell = ({
             : "left-aligned"
         }`}
       >
-        <span>
-          {isSelectionColumn ? (
-            <div className="st-selection-cell-content">
-              <div className="st-selection-control">
-                {/* Show checkbox if hovered or selected, otherwise show row number */}
-                {isHovered || (isRowSelected && isRowSelected(String(rowId))) ? (
-                  <Checkbox
-                    checked={isRowSelected ? isRowSelected(String(rowId)) : false}
-                    onChange={handleRowCheckboxChange}
-                  />
-                ) : (
-                  <span className="st-row-number">{displayRowNumber + 1}</span>
-                )}
+        {isLoading ? (
+          <div className="st-loading-skeleton" />
+        ) : (
+          <span>
+            {isSelectionColumn ? (
+              <div className="st-selection-cell-content">
+                <div className="st-selection-control">
+                  {/* Show checkbox if hovered or selected, otherwise show row number */}
+                  {isHovered || (isRowSelected && isRowSelected(String(rowId))) ? (
+                    <Checkbox
+                      checked={isRowSelected ? isRowSelected(String(rowId)) : false}
+                      onChange={handleRowCheckboxChange}
+                    />
+                  ) : (
+                    <span className="st-row-number">{displayRowNumber + 1}</span>
+                  )}
+                </div>
+                {/* Show row buttons to the right of checkbox/row number */}
+                {renderRowButtons()}
               </div>
-              {/* Show row buttons to the right of checkbox/row number */}
-              {renderRowButtons()}
-            </div>
-          ) : header.cellRenderer ? (
-            header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
-          ) : (
-            displayContent({ content: localContent, header })
-          )}
-        </span>
+            ) : header.cellRenderer ? (
+              header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
+            ) : (
+              displayContent({ content: localContent, header })
+            )}
+          </span>
+        )}
       </span>
 
-      {isEditing && isEditInDropdown && !isSelectionColumn && (
+      {!isLoading && isEditing && isEditInDropdown && !isSelectionColumn && (
         <EditableCell
           enumOptions={header.enumOptions}
           onChange={updateContent}

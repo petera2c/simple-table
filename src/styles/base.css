@@ -544,6 +544,25 @@ input {
   background-color: var(--st-dragging-background-color);
 }
 
+/* Loading skeleton styles */
+.st-loading-skeleton {
+  height: 16px;
+  width: 80%;
+  background-color: var(--st-loading-skeleton-bg-color);
+  border-radius: 4px;
+  animation: st-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes st-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 /* Style for selected table cells */
 .st-cell-selected {
   background-color: var(--st-selected-cell-background-color);

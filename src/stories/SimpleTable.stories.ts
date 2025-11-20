@@ -68,6 +68,7 @@ import InfrastructureExampleComponent, {
   infrastructureExampleDefaults,
 } from "./examples/infrastructure/InfrastructureExample";
 import LeadsExampleComponent, { leadsExampleDefaults } from "./examples/leads/LeadsExample";
+import LoadingStateExample from "./examples/LoadingStateExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -438,6 +439,18 @@ export const Tooltip: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates header tooltip functionality. Hover over any column header to see helpful tooltip text explaining what the column contains. Tooltips appear after a short delay and are positioned automatically to stay within the viewport.",
+      },
+    },
+  },
+};
+
+export const LoadingState: StoryObj = {
+  render: () => React.createElement(LoadingStateExample),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the loading state functionality. Toggle between loading and loaded states to see skeleton loaders displayed in place of actual cell content. Perfect for showing feedback while data is being fetched.",
       },
     },
   },
