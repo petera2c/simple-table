@@ -95,5 +95,7 @@
   /* Filter button disabled colors */
   --st-filter-button-disabled-background-color: var(--st-stone-200);
   --st-filter-button-disabled-text-color: var(--st-stone-500);
-}
 
+  /* Loading skeleton colors */
+  --st-loading-skeleton-bg-color: var(--st-stone-200);
+}

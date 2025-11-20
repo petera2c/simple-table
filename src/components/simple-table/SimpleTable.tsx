@@ -75,6 +75,7 @@ interface SimpleTableProps {
   headerHeight?: number; // Height of the header
   height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
+  isLoading?: boolean; // Flag for showing loading skeleton state
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onCellClick?: (props: CellClickProps) => void;
@@ -145,6 +146,7 @@ const SimpleTableComp = ({
   headerHeight,
   height,
   hideFooter = false,
+  isLoading = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
   onCellClick,
@@ -493,6 +495,7 @@ const SimpleTableComp = ({
         isAnimating,
         isCopyFlashing,
         isInitialFocusedCell,
+        isLoading,
         isResizing,
         isRowSelected,
         isScrolling,
