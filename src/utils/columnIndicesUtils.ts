@@ -41,8 +41,10 @@ export function calculateColumnIndices({
       header.children
         .filter((child) => displayCell({ header: child, headers: allHeaders, collapsedHeaders }))
         .forEach((child, index) => {
-          // The first child shares the column index with its parent
-          processHeader(child, index === 0);
+          // With singleRowChildren, children are siblings (each gets their own column)
+          // In normal tree mode, the first child shares the column index with its parent
+          const childIsFirst = header.singleRowChildren ? false : index === 0;
+          processHeader(child, childIsFirst);
         });
     }
   };

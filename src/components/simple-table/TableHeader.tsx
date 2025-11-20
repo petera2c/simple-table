@@ -8,6 +8,10 @@ import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import { canDisplaySection } from "../../utils/generalUtils";
 
 const getHeaderDepth = (header: HeaderObject): number => {
+  // If singleRowChildren is true, don't add depth for immediate children
+  if (header.singleRowChildren && header.children?.length) {
+    return 1;
+  }
   return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
 };
 

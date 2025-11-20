@@ -28,6 +28,7 @@ type HeaderObject = {
   label: string;
   minWidth?: number | string;
   pinned?: Pinned;
+  singleRowChildren?: boolean; // When true, renders parent and children on the same row instead of tree hierarchy
   tooltip?: string; // Optional tooltip text to display on hover
   type?: ColumnType;
   showWhen?: ShowWhen; // Controls when child column is visible based on parent's collapsed state

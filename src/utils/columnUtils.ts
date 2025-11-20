@@ -44,10 +44,16 @@ export const createGridTemplateColumns = ({
           const visibleChildren = header.children.filter(
             (child) => child.showWhen === "parentCollapsed" || child.showWhen === "always"
           );
+
+          // With singleRowChildren, parent always takes up a column
+          if (header.singleRowChildren) {
+            flattenedHeaders.push(header);
+          }
+
           if (visibleChildren.length > 0) {
             flattenHeaders({ headers: visibleChildren, flattenedHeaders });
-          } else {
-            // No visible children when collapsed - use the parent header itself with its own width
+          } else if (!header.singleRowChildren) {
+            // No visible children when collapsed and NOT singleRowChildren - use the parent header itself with its own width
             flattenedHeaders.push(header);
           }
         } else {
@@ -56,6 +62,12 @@ export const createGridTemplateColumns = ({
             (child) =>
               child.showWhen === "parentExpanded" || child.showWhen === "always" || !child.showWhen
           );
+
+          // If singleRowChildren is true, the parent also takes up a column
+          if (header.singleRowChildren) {
+            flattenedHeaders.push(header);
+          }
+
           flattenHeaders({ headers: childrenToShow, flattenedHeaders });
         }
       } else {

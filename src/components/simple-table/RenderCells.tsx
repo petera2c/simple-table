@@ -66,6 +66,7 @@ const RecursiveRenderCells = ({
   header,
   headers,
   nestedIndex,
+  parentHeader,
   pinned,
   rowIndex,
   rowIndices,
@@ -76,6 +77,7 @@ const RecursiveRenderCells = ({
   header: HeaderObject;
   headers: HeaderObject[];
   nestedIndex: number;
+  parentHeader?: HeaderObject;
   pinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
@@ -96,6 +98,53 @@ const RecursiveRenderCells = ({
       displayCell({ header: child, pinned, headers, collapsedHeaders })
     );
 
+    // With singleRowChildren, we render both parent and children as siblings
+    if (header.singleRowChildren) {
+      // Render parent cell first
+      const parentCellData = { rowIndex, colIndex, rowId };
+      const parentBorderClass = getBorderClass(parentCellData);
+      const parentIsHighlighted = isSelected(parentCellData);
+      const parentIsInitialFocused = isInitialFocusedCell(parentCellData);
+      const parentCellKey = getCellId({ accessor: header.accessor, rowId });
+
+      return (
+        <Fragment>
+          <TableCell
+            borderClass={parentBorderClass}
+            colIndex={colIndex}
+            displayRowNumber={displayRowNumber}
+            header={header}
+            isHighlighted={parentIsHighlighted}
+            isInitialFocused={parentIsInitialFocused}
+            key={parentCellKey}
+            nestedIndex={nestedIndex}
+            parentHeader={parentHeader}
+            rowIndex={rowIndex}
+            tableRow={tableRow}
+          />
+          {filteredChildren.map((child) => {
+            const childCellKey = getCellId({ accessor: child.accessor, rowId });
+            return (
+              <RecursiveRenderCells
+                columnIndices={columnIndices}
+                displayRowNumber={displayRowNumber}
+                header={child}
+                headers={headers}
+                key={childCellKey}
+                nestedIndex={nestedIndex}
+                parentHeader={header}
+                pinned={pinned}
+                rowIndex={rowIndex}
+                rowIndices={rowIndices}
+                tableRow={tableRow}
+              />
+            );
+          })}
+        </Fragment>
+      );
+    }
+
+    // Normal tree mode: only render children, not parent
     return (
       <Fragment>
         {filteredChildren.map((child) => {
@@ -108,6 +157,7 @@ const RecursiveRenderCells = ({
               headers={headers}
               key={childCellKey}
               nestedIndex={nestedIndex}
+              parentHeader={header}
               pinned={pinned}
               rowIndex={rowIndex}
               rowIndices={rowIndices}
@@ -137,6 +187,7 @@ const RecursiveRenderCells = ({
       isInitialFocused={isInitialFocused}
       key={tableCellKey}
       nestedIndex={nestedIndex}
+      parentHeader={parentHeader}
       rowIndex={rowIndex}
       tableRow={tableRow}
     />

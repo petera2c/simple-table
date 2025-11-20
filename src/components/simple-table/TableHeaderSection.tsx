@@ -14,6 +14,7 @@ type GridCell = {
   gridRowStart: number;
   gridRowEnd: number;
   colIndex: number;
+  parentHeader?: HeaderObject; // Reference to parent header for styling purposes
 };
 
 const TableHeaderSection = ({
@@ -35,7 +36,12 @@ const TableHeaderSection = ({
     let columnCounter = 1;
 
     // Helper function to process a header and its children
-    const processHeader = (header: HeaderObject, depth: number, isFirst = false) => {
+    const processHeader = (
+      header: HeaderObject,
+      depth: number,
+      isFirst = false,
+      parentHeader?: HeaderObject
+    ) => {
       if (!displayCell({ header, pinned, headers, collapsedHeaders })) return 0;
 
       // Only increment for non-first siblings
@@ -48,14 +54,28 @@ const TableHeaderSection = ({
           displayCell({ header: child, pinned, headers, collapsedHeaders })
         ).length ?? 0;
 
-      // Calculate grid position
       const gridColumnStart = columnCounter;
-      const gridColumnEnd =
-        childrenLength > 0 ? gridColumnStart + childrenLength : gridColumnStart + 1;
       const gridRowStart = depth;
-      const gridRowEnd = childrenLength > 0 ? depth + 1 : maxDepth + 1;
 
-      // Add cell to our flat array
+      // With singleRowChildren, parent and children are all on the same row
+      let gridColumnEnd: number;
+      let gridRowEnd: number;
+
+      if (header.singleRowChildren && childrenLength > 0) {
+        // Parent takes up just 1 column, spans to bottom
+        gridColumnEnd = gridColumnStart + 1;
+        gridRowEnd = maxDepth + 1;
+      } else if (childrenLength > 0) {
+        // Normal tree mode: parent spans all children columns, only 1 row
+        gridColumnEnd = gridColumnStart + childrenLength;
+        gridRowEnd = depth + 1;
+      } else {
+        // Leaf node: 1 column, spans to bottom
+        gridColumnEnd = gridColumnStart + 1;
+        gridRowEnd = maxDepth + 1;
+      }
+
+      // Add parent cell to grid
       cells.push({
         header,
         gridColumnStart,
@@ -63,14 +83,23 @@ const TableHeaderSection = ({
         gridRowStart,
         gridRowEnd,
         colIndex: columnIndices[header.accessor],
+        parentHeader, // Pass parent reference for styling
       });
 
       // Process children if any
       if (header.children && header.children.length > 0) {
-        let isFirstChild = true;
+        // If singleRowChildren is true, render children at the same depth as parent
+        const childDepth = header.singleRowChildren ? depth : depth + 1;
+
+        // For singleRowChildren, we need to continue incrementing columns
+        // But for normal mode, children start at the same column as parent
+        const shouldIncrementForChildren = header.singleRowChildren;
+
+        let isFirstChild = !shouldIncrementForChildren; // If we increment, first child is not "first"
         header.children.forEach((child) => {
           if (displayCell({ header: child, pinned, headers, collapsedHeaders })) {
-            processHeader(child, depth + 1, isFirstChild);
+            // Pass current header as parent for children
+            processHeader(child, childDepth, isFirstChild, header);
             isFirstChild = false;
           }
         });
@@ -118,6 +147,7 @@ const TableHeaderSection = ({
               gridRowStart={cell.gridRowStart}
               header={cell.header}
               key={cell.header.accessor}
+              parentHeader={cell.parentHeader}
               reverse={pinned === "right"}
               sort={sort}
             />

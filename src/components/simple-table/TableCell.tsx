@@ -51,6 +51,7 @@ const TableCell = ({
   isHighlighted,
   isInitialFocused,
   nestedIndex,
+  parentHeader,
   rowIndex,
   tableRow,
 }: TableCellProps) => {
@@ -213,6 +214,9 @@ const TableCell = ({
     return rowsWithSelectedCells.has(String(rowId));
   }, [isSelectionColumn, rowsWithSelectedCells, rowId]);
 
+  // Check if this is a sub-cell (child of a parent with singleRowChildren)
+  const isSubCell = parentHeader?.singleRowChildren;
+
   const cellClassName = `st-cell ${
     depth > 0 && header.expandable ? `st-cell-depth-${depth}` : ""
   } ${
@@ -241,7 +245,7 @@ const TableCell = ({
     isSelectionColumn ? "st-selection-cell" : ""
   } ${hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : ""} ${
     isLastColumnInSection ? "st-last-column" : ""
-  }`;
+  } ${isSubCell ? "st-sub-cell" : ""}`;
 
   const updateContent = useCallback(
     (newValue: CellValue) => {
