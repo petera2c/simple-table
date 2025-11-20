@@ -1,5 +1,5 @@
-import { HeaderObject, Accessor } from "..";
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
+import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { getCellId } from "./cellUtils";
 
 /**
@@ -23,16 +23,19 @@ export const findLeafHeaders = (
   // If this header is collapsed, only return children that are visible when collapsed
   if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
     return header.children
-      .filter((child) => child.showWhen === "parentCollapsed" || child.showWhen === "always")
+      .filter((child) => {
+        const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+        return showWhen === "parentCollapsed" || showWhen === "always";
+      })
       .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
   }
 
   // If not collapsed, return leaf headers that are visible when parent is expanded
   return header.children
-    .filter(
-      (child) =>
-        child.showWhen === "parentExpanded" || child.showWhen === "always" || !child.showWhen
-    )
+    .filter((child) => {
+      const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+      return showWhen === "parentExpanded" || showWhen === "always";
+    })
     .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
 };
 

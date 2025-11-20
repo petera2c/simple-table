@@ -10,7 +10,7 @@ import {
 } from "react";
 import useDragHandler from "../../hooks/useDragHandler";
 import { useThrottle } from "../../utils/performanceUtils";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { DEFAULT_SHOW_WHEN } from "../../types/HeaderObject";
 import SortColumn from "../../types/SortColumn";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
@@ -163,9 +163,10 @@ const TableHeaderCell = ({
 
     // If collapsed, check if any children are visible when collapsed
     if (isCollapsed) {
-      return header.children.some(
-        (child) => child.showWhen === "parentCollapsed" || child.showWhen === "always"
-      );
+      return header.children.some((child) => {
+        const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+        return showWhen === "parentCollapsed" || showWhen === "always";
+      });
     }
 
     // If not collapsed, has visible children if it has any children

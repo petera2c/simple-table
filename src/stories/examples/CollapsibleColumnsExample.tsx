@@ -445,7 +445,7 @@ const headers: HeaderObject[] = [
         accessor: "totalSales",
         label: "Total Sales",
         width: 140,
-        showWhen: "parentCollapsed", // Shows only when parent is collapsed
+        // showWhen: "parentCollapsed", // Shows only when parent is collapsed - Default is "always" when not specified
         isSortable: true,
         align: "right",
         type: "number",

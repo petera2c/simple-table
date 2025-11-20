@@ -9,6 +9,9 @@ export type Accessor = keyof Row;
 export type ColumnType = "string" | "number" | "boolean" | "date" | "enum" | "other";
 export type ShowWhen = "parentCollapsed" | "parentExpanded" | "always";
 
+// Default showWhen value for child columns when not specified
+export const DEFAULT_SHOW_WHEN: ShowWhen = "parentExpanded";
+
 type HeaderObject = {
   accessor: Accessor;
   aggregation?: AggregationConfig;

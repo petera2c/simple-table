@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 
 const getColumnWidth = (header: HeaderObject) => {
   let { minWidth, width } = header;
@@ -41,9 +41,10 @@ export const createGridTemplateColumns = ({
       if (header.children && header.children.length > 0) {
         // If this header is collapsed, show children based on showWhen property
         if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
-          const visibleChildren = header.children.filter(
-            (child) => child.showWhen === "parentCollapsed" || child.showWhen === "always"
-          );
+          const visibleChildren = header.children.filter((child) => {
+            const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+            return showWhen === "parentCollapsed" || showWhen === "always";
+          });
 
           // With singleRowChildren, parent always takes up a column
           if (header.singleRowChildren) {
@@ -58,10 +59,10 @@ export const createGridTemplateColumns = ({
           }
         } else {
           // If not collapsed, show children based on showWhen property (parentExpanded or always)
-          const childrenToShow = header.children.filter(
-            (child) =>
-              child.showWhen === "parentExpanded" || child.showWhen === "always" || !child.showWhen
-          );
+          const childrenToShow = header.children.filter((child) => {
+            const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+            return showWhen === "parentExpanded" || showWhen === "always";
+          });
 
           // If singleRowChildren is true, the parent also takes up a column
           if (header.singleRowChildren) {
