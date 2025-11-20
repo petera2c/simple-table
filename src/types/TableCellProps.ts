@@ -10,6 +10,7 @@ export interface TableCellProps {
   isHighlighted?: boolean;
   isInitialFocused?: boolean;
   nestedIndex: number;
+  parentHeader?: HeaderObject;
   rowIndex: number;
   tableRow: TableRow;
 }

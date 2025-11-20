@@ -23,6 +23,8 @@
   --st-hover-row-background-color: var(--st-gray-600);
   --st-selected-row-background-color: var(--st-blue-950);
   --st-header-background-color: var(--st-gray-800);
+  --st-sub-header-background-color: var(--st-gray-700);
+  --st-sub-cell-background-color: var(--st-gray-800);
   --st-header-label-color: var(--st-gray-100);
   --st-header-icon-color: var(--st-gray-400);
   --st-dragging-background-color: var(--st-gray-500);

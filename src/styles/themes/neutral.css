@@ -23,6 +23,8 @@
   --st-hover-row-background-color: var(--st-neutral-200);
   --st-selected-row-background-color: var(--st-neutral-200);
   --st-header-background-color: var(--st-neutral-200);
+  --st-sub-header-background-color: var(--st-neutral-300);
+  --st-sub-cell-background-color: var(--st-neutral-200);
   --st-header-label-color: var(--st-neutral-900);
   --st-header-icon-color: var(--st-neutral-500);
   --st-dragging-background-color: var(--st-neutral-300);

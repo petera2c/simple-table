@@ -297,6 +297,12 @@ input {
 .st-header-cell.parent {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
+.st-header-cell.st-sub-header {
+  background-color: var(--st-sub-header-background-color);
+}
+.st-cell.st-sub-cell {
+  background-color: var(--st-sub-cell-background-color);
+}
 .st-header-cell.clickable {
   cursor: pointer;
 }

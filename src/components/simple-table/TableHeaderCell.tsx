@@ -35,6 +35,7 @@ interface HeaderCellProps {
   gridRowEnd: number;
   gridRowStart: number;
   header: HeaderObject;
+  parentHeader?: HeaderObject;
   reverse?: boolean;
   sort: SortColumn | null;
 }
@@ -46,6 +47,7 @@ const TableHeaderCell = ({
   gridRowEnd,
   gridRowStart,
   header,
+  parentHeader,
   reverse,
   sort,
 }: HeaderCellProps) => {
@@ -170,18 +172,25 @@ const TableHeaderCell = ({
     return true;
   }, [header.children, isCollapsed]);
 
+  // Check if this is a sub-header (child of a parent with singleRowChildren)
+  const isSubHeader = parentHeader?.singleRowChildren;
+
+  // Don't apply "parent" class if the parent has singleRowChildren (to remove bottom border)
+  const shouldApplyParentClass = hasVisibleChildren && !header.singleRowChildren;
+
   const className = `st-header-cell ${
     header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
   } ${draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : ""} ${
     clickable ? "clickable" : ""
   } ${columnReordering && !clickable ? "columnReordering" : ""} ${
-    hasVisibleChildren ? "parent" : ""
-  } ${isLastColumnInSection ? "st-last-column" : ""} ${
+    shouldApplyParentClass ? "parent" : ""
+  } ${isSubHeader ? "st-sub-header" : ""} ${isLastColumnInSection ? "st-last-column" : ""} ${
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : ""
   } ${isHeaderSelected ? "st-header-selected" : ""} ${
     hasHighlightedCell && !isHeaderSelected ? "st-header-has-highlighted-cell" : ""
   }`;
 
+  console.log("parentHeader", parentHeader);
   // Hooks
   const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
     draggedHeaderRef,

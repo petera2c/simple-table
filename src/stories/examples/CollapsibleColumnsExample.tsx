@@ -435,10 +435,11 @@ const headers: HeaderObject[] = [
 
   // Quarterly Sales - Show total when collapsed, breakdown when expanded
   {
-    accessor: "quarterlySales",
+    accessor: "totalSales",
     label: "Quarterly Sales",
-    width: 500,
+    width: 200,
     collapsible: true,
+    singleRowChildren: true, // Render children on same row instead of tree hierarchy
     children: [
       {
         accessor: "totalSales",
@@ -461,6 +462,7 @@ const headers: HeaderObject[] = [
         cellRenderer: ({ row }) => `$${(row.q1Sales as number).toLocaleString()}`,
       },
       {
+        showWhen: "parentExpanded",
         accessor: "q2Sales",
         label: "Q2",
         width: 120,
@@ -470,6 +472,7 @@ const headers: HeaderObject[] = [
         cellRenderer: ({ row }) => `$${(row.q2Sales as number).toLocaleString()}`,
       },
       {
+        showWhen: "parentExpanded",
         accessor: "q3Sales",
         label: "Q3",
         width: 120,
@@ -479,6 +482,7 @@ const headers: HeaderObject[] = [
         cellRenderer: ({ row }) => `$${(row.q3Sales as number).toLocaleString()}`,
       },
       {
+        showWhen: "parentExpanded",
         accessor: "q4Sales",
         label: "Q4",
         width: 120,
