@@ -4,6 +4,7 @@ import HeaderObject from "../../types/HeaderObject";
 
 const LoadingStateExample = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [showEmptyState, setShowEmptyState] = useState(false);
 
   // Sample headers
   const headers: HeaderObject[] = [
@@ -15,7 +16,7 @@ const LoadingStateExample = () => {
   ];
 
   // Sample data
-  const rows = [
+  const sampleRows = [
     { id: 1, name: "John Doe", email: "john@example.com", role: "Developer", status: "Active" },
     { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Designer", status: "Active" },
     { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "Manager", status: "Inactive" },
@@ -38,13 +39,19 @@ const LoadingStateExample = () => {
     { id: 8, name: "Frank Miller", email: "frank@example.com", role: "Manager", status: "Active" },
   ];
 
+  const rows = showEmptyState ? [] : sampleRows;
+
   const handleToggleLoading = () => {
     setIsLoading(!isLoading);
   };
 
+  const handleToggleEmptyState = () => {
+    setShowEmptyState(!showEmptyState);
+  };
+
   return (
     <div style={{ padding: "20px" }}>
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: "20px", display: "flex", gap: "10px", alignItems: "center" }}>
         <button
           onClick={handleToggleLoading}
           style={{
@@ -59,8 +66,22 @@ const LoadingStateExample = () => {
         >
           {isLoading ? "Show Data" : "Show Loading"}
         </button>
-        <span style={{ marginLeft: "15px", fontSize: "14px" }}>
-          Current state: {isLoading ? "Loading..." : "Data Loaded"}
+        <button
+          onClick={handleToggleEmptyState}
+          style={{
+            padding: "10px 20px",
+            fontSize: "14px",
+            cursor: "pointer",
+            backgroundColor: "#8b5cf6",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
+        >
+          {showEmptyState ? "Show Sample Data" : "Show Empty Data"}
+        </button>
+        <span style={{ fontSize: "14px" }}>
+          State: {isLoading ? "Loading..." : "Loaded"} | Data: {showEmptyState ? "Empty" : "8 rows"}
         </span>
       </div>
       <SimpleTable

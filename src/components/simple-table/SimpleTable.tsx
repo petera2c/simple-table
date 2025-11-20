@@ -306,8 +306,42 @@ const SimpleTableComp = ({
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight, shouldPaginate, rowsPerPage });
 
-  const aggregatedRows = useAggregatedRows({
+  // Generate loading skeleton rows if loading and no data
+  const effectiveRows = useMemo(() => {
+    if (isLoading && rows.length === 0) {
+      // Calculate how many rows can fit in the visible area
+      const rowsToShow = shouldPaginate
+        ? rowsPerPage
+        : Math.max(Math.floor(contentHeight / rowHeight), 5); // Show at least 5 rows
+
+      // Create dummy rows with empty data
+      return Array.from({ length: rowsToShow }, (_, index) => {
+        const dummyRow: Record<string, any> = {
+          [rowIdAccessor]: `loading-${index}`,
+        };
+        // Add empty values for each header
+        effectiveHeaders.forEach((header) => {
+          if (!header.isSelectionColumn) {
+            dummyRow[header.accessor] = "";
+          }
+        });
+        return dummyRow;
+      });
+    }
+    return rows;
+  }, [
+    isLoading,
     rows,
+    rowIdAccessor,
+    effectiveHeaders,
+    shouldPaginate,
+    rowsPerPage,
+    contentHeight,
+    rowHeight,
+  ]);
+
+  const aggregatedRows = useAggregatedRows({
+    rows: effectiveRows,
     headers,
     rowGrouping,
   });
