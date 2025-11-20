@@ -185,6 +185,23 @@ const SimpleTableComp = ({
   // Disable hover row background when column borders are enabled to prevent visual conflicts
   if (columnBorders) useHoverRowBackground = false;
 
+  const effectiveRows = useMemo(() => {
+    if (isLoading) {
+      // Calculate how many rows can fit in the visible area
+      const rowsToShow = shouldPaginate ? rowsPerPage : 10; // Default to 10 rows for loading state
+
+      // Create dummy rows with empty data
+      const dummyRows = Array.from({ length: rowsToShow }, (_, index) => {
+        const dummyRow: Record<string, any> = {
+          [rowIdAccessor]: `loading-${index}`,
+        };
+        return dummyRow;
+      });
+      return dummyRows;
+    }
+    return rows;
+  }, [isLoading, rows, rowIdAccessor, rowsPerPage]);
+
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
@@ -224,7 +241,7 @@ const SimpleTableComp = ({
     handleToggleRow,
     clearSelection,
   } = useRowSelection({
-    rows,
+    rows: effectiveRows,
     rowIdAccessor,
     onRowSelectionChange,
     enableRowSelection,
@@ -305,40 +322,6 @@ const SimpleTableComp = ({
 
   // Calculate content height using hook
   const contentHeight = useContentHeight({ height, rowHeight, shouldPaginate, rowsPerPage });
-
-  // Generate loading skeleton rows if loading and no data
-  const effectiveRows = useMemo(() => {
-    if (isLoading && rows.length === 0) {
-      // Calculate how many rows can fit in the visible area
-      const rowsToShow = shouldPaginate
-        ? rowsPerPage
-        : Math.max(Math.floor(contentHeight / rowHeight), 5); // Show at least 5 rows
-
-      // Create dummy rows with empty data
-      return Array.from({ length: rowsToShow }, (_, index) => {
-        const dummyRow: Record<string, any> = {
-          [rowIdAccessor]: `loading-${index}`,
-        };
-        // Add empty values for each header
-        effectiveHeaders.forEach((header) => {
-          if (!header.isSelectionColumn) {
-            dummyRow[header.accessor] = "";
-          }
-        });
-        return dummyRow;
-      });
-    }
-    return rows;
-  }, [
-    isLoading,
-    rows,
-    rowIdAccessor,
-    effectiveHeaders,
-    shouldPaginate,
-    rowsPerPage,
-    contentHeight,
-    rowHeight,
-  ]);
 
   const aggregatedRows = useAggregatedRows({
     rows: effectiveRows,
@@ -468,7 +451,7 @@ const SimpleTableComp = ({
     headerRegistryRef,
     headers: effectiveHeaders,
     rowIdAccessor,
-    rows,
+    rows: effectiveRows,
     tableRef,
     visibleRows: rowsToRender,
   });
