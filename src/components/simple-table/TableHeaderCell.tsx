@@ -190,7 +190,6 @@ const TableHeaderCell = ({
     hasHighlightedCell && !isHeaderSelected ? "st-header-has-highlighted-cell" : ""
   }`;
 
-  console.log("parentHeader", parentHeader);
   // Hooks
   const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
     draggedHeaderRef,
