@@ -361,6 +361,24 @@ const TableCell = ({
     );
   };
 
+  if (isLoading) {
+    return (
+      <div className={cellClassName}>
+        <span
+          className={`st-cell-content ${
+            header.align === "right"
+              ? "right-aligned"
+              : header.align === "center"
+              ? "center-aligned"
+              : "left-aligned"
+          }`}
+        >
+          <div className="st-loading-skeleton" />
+        </span>
+      </div>
+    );
+  }
+
   // Don't handle cell editing for selection column
   if (isEditing && !isEditInDropdown && !isSelectionColumn) {
     return (

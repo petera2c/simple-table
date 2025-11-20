@@ -48,6 +48,7 @@ import CellClickProps from "../../types/CellClickProps";
 import { RowButton } from "../../types/RowButton";
 import { HeaderDropdown } from "../../types/HeaderDropdownProps";
 import FooterRendererProps from "../../types/FooterRendererProps";
+import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -185,10 +186,32 @@ const SimpleTableComp = ({
   // Disable hover row background when column borders are enabled to prevent visual conflicts
   if (columnBorders) useHoverRowBackground = false;
 
+  // Refs
+  const draggedHeaderRef = useRef<HeaderObject | null>(null);
+  const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+
+  const mainBodyRef = useRef<HTMLDivElement>(null);
+  const pinnedLeftRef = useRef<HTMLDivElement>(null);
+  const pinnedRightRef = useRef<HTMLDivElement>(null);
+  const tableBodyContainerRef = useRef<HTMLDivElement>(null);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
+
+  // Apply aggregation to current rows
+  const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
+
+  // Track vertical scrollbar visibility
+  const { isMainSectionScrollable } = useScrollbarVisibility({
+    headerContainerRef,
+    mainSectionRef: tableBodyContainerRef,
+    scrollbarWidth,
+  });
   const effectiveRows = useMemo(() => {
-    if (isLoading) {
+    if (isLoading && rows.length === 0) {
       // Calculate how many rows can fit in the visible area
-      const rowsToShow = shouldPaginate ? rowsPerPage : 10; // Default to 10 rows for loading state
+      let rowsToShow = shouldPaginate ? rowsPerPage : 10; // Default to 10 rows for loading state
+      if (isMainSectionScrollable) {
+        rowsToShow += 1;
+      }
 
       // Create dummy rows with empty data
       const dummyRows = Array.from({ length: rowsToShow }, (_, index) => {
@@ -204,16 +227,6 @@ const SimpleTableComp = ({
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
-
-  // Refs
-  const draggedHeaderRef = useRef<HeaderObject | null>(null);
-  const hoveredHeaderRef = useRef<HeaderObject | null>(null);
-
-  const mainBodyRef = useRef<HTMLDivElement>(null);
-  const pinnedLeftRef = useRef<HTMLDivElement>(null);
-  const pinnedRightRef = useRef<HTMLDivElement>(null);
-  const tableBodyContainerRef = useRef<HTMLDivElement>(null);
-  const headerContainerRef = useRef<HTMLDivElement>(null);
 
   // Local state
   const [currentPage, setCurrentPage] = useState(1);
@@ -262,9 +275,6 @@ const SimpleTableComp = ({
 
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
-
-  // Apply aggregation to current rows
-  const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
 
   // Track container width changes to ensure proper recalculation of pinned section limits
   const [containerWidth, setContainerWidth] = useState<number>(0);

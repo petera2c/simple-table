@@ -58,6 +58,8 @@ const useScrollbarVisibility = ({
       }
     };
   }, [headerContainerRef, mainSectionRef]);
+
+  return { isMainSectionScrollable };
 };
 
 export default useScrollbarVisibility;
