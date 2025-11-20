@@ -3,6 +3,7 @@ import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
+import { getNestedValue } from "../utils/rowUtils";
 
 // Helper function to compute filtered rows for a given filter state
 const computeFilteredRows = ({
@@ -20,7 +21,7 @@ const computeFilteredRows = ({
   return tableRows.filter((row) => {
     return Object.values(filterState).every((filter) => {
       try {
-        const cellValue = row[filter.accessor];
+        const cellValue = getNestedValue(row, filter.accessor);
         return applyFilterToValue(cellValue, filter);
       } catch (error) {
         console.warn(`Filter error for accessor ${filter.accessor}:`, error);

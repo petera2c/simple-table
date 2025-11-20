@@ -1,5 +1,6 @@
 import HeaderObject from "../types/HeaderObject";
 import TableRow from "../types/TableRow";
+import { getNestedValue } from "./rowUtils";
 
 /**
  * Escapes a value for CSV format
@@ -69,7 +70,7 @@ export const convertToCSV = (visibleRows: TableRow[], headers: HeaderObject[]): 
     const row = tableRow.row;
     return visibleHeaders
       .map((header) => {
-        const value = row[header.accessor];
+        const value = getNestedValue(row, header.accessor);
         return escapeCSVValue(value);
       })
       .join(",");

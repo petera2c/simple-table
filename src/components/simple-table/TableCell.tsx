@@ -9,7 +9,7 @@ import TableCellProps from "../../types/TableCellProps";
 import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
-import { getRowId, hasNestedRows } from "../../utils/rowUtils";
+import { getRowId, hasNestedRows, getNestedValue, setNestedValue } from "../../utils/rowUtils";
 import { Animate } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
@@ -89,7 +89,7 @@ const TableCell = ({
   const { depth, row } = tableRow;
 
   // Local state
-  const [localContent, setLocalContent] = useState<CellValue>(row[header.accessor] as CellValue);
+  const [localContent, setLocalContent] = useState<CellValue>(getNestedValue(row, header.accessor));
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -193,7 +193,7 @@ const TableCell = ({
 
   // Update local content when row data changes
   useEffect(() => {
-    setLocalContent(row[header.accessor] as CellValue);
+    setLocalContent(getNestedValue(row, header.accessor));
   }, [row, header.accessor]);
 
   // Derived state
@@ -257,7 +257,7 @@ const TableCell = ({
       }
 
       setLocalContent(newValue);
-      row[header.accessor] = newValue;
+      setNestedValue(row, header.accessor, newValue);
 
       onCellEdit?.({
         accessor: header.accessor,

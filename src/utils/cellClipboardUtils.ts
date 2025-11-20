@@ -2,7 +2,7 @@ import Cell from "../types/Cell";
 import HeaderObject from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
 import { Accessor } from "../types/HeaderObject";
-import { getRowId } from "./rowUtils";
+import { getRowId, getNestedValue, setNestedValue } from "./rowUtils";
 
 interface CellRegistryEntry {
   updateContent: (newValue: any) => void;
@@ -34,7 +34,7 @@ export const copySelectedCellsToClipboard = (
     const accessor = colIndexToAccessor.get(col);
 
     if (accessor && tableRows[row]?.row) {
-      acc[row][col] = tableRows[row].row[accessor];
+      acc[row][col] = getNestedValue(tableRows[row].row, accessor);
     } else {
       acc[row][col] = "";
     }
@@ -115,7 +115,7 @@ export const pasteClipboardDataToCells = (
       }
 
       // Update the data
-      targetRow.row[targetHeader.accessor] = convertedValue;
+      setNestedValue(targetRow.row, targetHeader.accessor, convertedValue);
 
       // Use cell registry for direct update if available
       if (cellRegistry) {
@@ -191,14 +191,14 @@ export const deleteSelectedCellsContent = (
       emptyValue = false;
     } else if (targetHeader.type === "date") {
       emptyValue = null;
-    } else if (Array.isArray(targetRow.row[targetHeader.accessor])) {
+    } else if (Array.isArray(getNestedValue(targetRow.row, targetHeader.accessor))) {
       emptyValue = [];
     } else {
       emptyValue = "";
     }
 
     // Update the data
-    targetRow.row[targetHeader.accessor] = emptyValue;
+    setNestedValue(targetRow.row, targetHeader.accessor, emptyValue);
 
     // Use cell registry for direct update if available
     if (cellRegistry) {

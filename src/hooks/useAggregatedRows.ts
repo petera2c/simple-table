@@ -3,7 +3,7 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { AggregationConfig } from "../types/AggregationTypes";
 import Row from "../types/Row";
 import { flattenAllHeaders } from "../utils/headerUtils";
-import { isRowArray } from "../utils/rowUtils";
+import { isRowArray, getNestedValue, setNestedValue } from "../utils/rowUtils";
 
 interface UseAggregatedRowsProps {
   rows: Row[];
@@ -65,7 +65,7 @@ export const useAggregatedRows = ({ rows, headers, rowGrouping }: UseAggregatedR
             );
 
             if (aggregatedValue !== undefined) {
-              aggregatedRow[header.accessor] = aggregatedValue;
+              setNestedValue(aggregatedRow, header.accessor, aggregatedValue);
             }
           });
 
@@ -100,8 +100,9 @@ const calculateAggregation = (
         collectValues(nextGroupValue);
       } else {
         // This is a leaf row, collect its value
-        if (row[accessor] !== undefined && row[accessor] !== null) {
-          allValues.push(row[accessor]);
+        const value = getNestedValue(row, accessor);
+        if (value !== undefined && value !== null) {
+          allValues.push(value);
         }
       }
     });

@@ -69,6 +69,7 @@ import InfrastructureExampleComponent, {
 } from "./examples/infrastructure/InfrastructureExample";
 import LeadsExampleComponent, { leadsExampleDefaults } from "./examples/leads/LeadsExample";
 import LoadingStateExample from "./examples/LoadingStateExample";
+import NestedAccessorExample from "./examples/NestedAccessorExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -307,6 +308,22 @@ export const MusicExample: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates music example functionality. This story is used as a base for comprehensive music testing.",
+      },
+    },
+  },
+};
+export const NestedAccessor: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: NestedAccessorExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates nested accessor functionality using dot notation to access deeply nested object properties. Examples include stats.points, latest.rank, and latest.performance.rating. Supports sorting, filtering, and editing of nested data.",
       },
     },
   },

@@ -2,6 +2,53 @@ import TableRow from "../types/TableRow";
 import Row from "../types/Row";
 import { RowId } from "../types/RowId";
 import { Accessor } from "../types/HeaderObject";
+import CellValue from "../types/CellValue";
+
+/**
+ * Get a nested property value from an object using dot notation
+ * Example: getNestedValue(row, "latest.rank") returns row.latest.rank
+ */
+export const getNestedValue = (obj: Row, path: Accessor): CellValue => {
+  // If the accessor is a simple property (no dots), use direct access for performance
+  if (!path.includes(".")) {
+    return obj[path] as CellValue;
+  }
+
+  // For nested paths, split by dots and traverse the object using reduce
+  const keys = String(path).split(".");
+  return keys.reduce((current: any, key: string) => {
+    return current?.[key];
+  }, obj) as CellValue;
+};
+
+/**
+ * Set a nested property value in an object using dot notation
+ * Example: setNestedValue(row, "latest.rank", 5) sets row.latest.rank = 5
+ */
+export const setNestedValue = (obj: Row, path: Accessor, value: CellValue): void => {
+  // If the accessor is a simple property (no dots), use direct access for performance
+  if (typeof path === "string" && !path.includes(".")) {
+    obj[path] = value;
+    return;
+  }
+
+  // For nested paths, split by dots and traverse/create the object structure
+  const keys = String(path).split(".");
+  let current: any = obj;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    // Create intermediate objects if they don't exist
+    if (current[key] === null || current[key] === undefined || typeof current[key] !== "object") {
+      current[key] = {};
+    }
+    current = current[key];
+  }
+
+  // Set the final value
+  const lastKey = keys[keys.length - 1];
+  current[lastKey] = value;
+};
 
 /**
  * Check if an array contains Row objects (vs primitive arrays like string[] or number[])

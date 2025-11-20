@@ -1,6 +1,7 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
 import SortColumn from "../types/SortColumn";
+import { getNestedValue } from "./rowUtils";
 
 // Type-specific comparators for different data types
 const comparators = {
@@ -159,8 +160,8 @@ const sortFlatRows = ({
 
   return [...rows].sort((a, b) => {
     const accessor = sortColumn.key.accessor;
-    const aValue = a[accessor];
-    const bValue = b[accessor];
+    const aValue = getNestedValue(a, accessor);
+    const bValue = getNestedValue(b, accessor);
 
     return compareValues(aValue, bValue, type, direction);
   });

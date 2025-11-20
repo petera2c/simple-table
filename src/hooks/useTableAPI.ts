@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect } from "react";
 import { Row, TableRefType, UpdateDataProps } from "..";
-import { getRowId } from "../utils/rowUtils";
+import { getRowId, getNestedValue, setNestedValue } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry, HeaderRegistryEntry } from "../context/TableContext";
 import { Accessor } from "../types/HeaderObject";
@@ -46,8 +46,9 @@ const useTableAPI = ({
             }
 
             // Always update the data source - now directly on the row
-            if (row[accessor] !== undefined) {
-              row[accessor] = newValue;
+            // Support nested accessors by using getNestedValue to check existence
+            if (getNestedValue(row, accessor) !== undefined) {
+              setNestedValue(row, accessor, newValue);
             }
           }
         },
