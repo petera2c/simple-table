@@ -18,6 +18,18 @@ export type ColumnType =
   | "other";
 export type ShowWhen = "parentCollapsed" | "parentExpanded" | "always";
 
+export interface ChartOptions {
+  min?: number; // Custom minimum value for chart scaling
+  max?: number; // Custom maximum value for chart scaling
+  width?: number; // Custom chart width (default: 100)
+  height?: number; // Custom chart height (default: 30)
+  color?: string; // Custom chart color (overrides theme color)
+  fillColor?: string; // Custom fill color for area charts (overrides theme color)
+  fillOpacity?: number; // Fill opacity for area charts (default: 0.2)
+  strokeWidth?: number; // Line stroke width (default: 2)
+  gap?: number; // Gap between bars in bar charts (default: 2)
+}
+
 export interface ValueFormatterProps {
   accessor: Accessor;
   colIndex: number;
@@ -36,6 +48,7 @@ type HeaderObject = {
   aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
   cellRenderer?: CellRenderer;
+  chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
   children?: HeaderObject[];
   collapsible?: boolean; // This is used to determine if the column is collapsible
   disableReorder?: boolean;

@@ -45,7 +45,7 @@ const displayContent = ({
       (item: any) => typeof item === "number"
     ) as number[];
     if (numericData.length > 0) {
-      return <LineAreaChart data={numericData} />;
+      return <LineAreaChart data={numericData} {...header.chartOptions} />;
     }
     return null;
   } else if (header.type === "barChart" && Array.isArray(content)) {
@@ -54,7 +54,7 @@ const displayContent = ({
       (item: any) => typeof item === "number"
     ) as number[];
     if (numericData.length > 0) {
-      return <BarChart data={numericData} />;
+      return <BarChart data={numericData} {...header.chartOptions} />;
     }
     return null;
   }

@@ -7,6 +7,8 @@ export interface BarChartProps {
   color?: string;
   gap?: number;
   className?: string;
+  min?: number; // Custom minimum value for scaling
+  max?: number; // Custom maximum value for scaling
 }
 
 /**
@@ -20,15 +22,17 @@ const BarChart: React.FC<BarChartProps> = ({
   color,
   gap = 2,
   className = "",
+  min: customMin,
+  max: customMax,
 }) => {
   // Handle empty or invalid data
   if (!data || data.length === 0) {
     return null;
   }
 
-  // Calculate min and max for scaling
-  const min = Math.min(...data);
-  const max = Math.max(...data);
+  // Calculate min and max for scaling (use custom values if provided)
+  const min = customMin !== undefined ? customMin : Math.min(...data);
+  const max = customMax !== undefined ? customMax : Math.max(...data);
   const range = max - min || 1; // Avoid division by zero
 
   // Calculate bar width

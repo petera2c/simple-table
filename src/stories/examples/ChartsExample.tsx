@@ -151,16 +151,24 @@ const ChartsExample = (props: UniversalTableProps) => {
       label: "Daily Views (30d)",
       width: 150,
       type: "lineAreaChart",
-      tooltip: "Daily page views for the past 30 days",
+      tooltip: "Daily page views for the past 30 days (scaled 0-2000)",
       align: "center",
+      chartOptions: {
+        min: 0,
+        max: 2000,
+      },
     },
     {
       accessor: "quarterlyRevenue",
       label: "Quarterly Revenue",
       width: 140,
       type: "barChart",
-      tooltip: "Revenue by quarter",
+      tooltip: "Revenue by quarter (scaled 0-70k)",
       align: "center",
+      chartOptions: {
+        min: 0,
+        max: 70000,
+      },
     },
     {
       accessor: "weeklyOrders",

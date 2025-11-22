@@ -10,6 +10,7 @@ import DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
 import HeaderObject, {
   Accessor,
+  ChartOptions,
   ColumnType,
   ShowWhen,
   ValueFormatter,
@@ -51,6 +52,7 @@ export type {
   CellRenderer,
   CellRendererProps,
   CellValue,
+  ChartOptions,
   ColumnEditorPosition,
   ColumnType,
   DragHandlerProps,
