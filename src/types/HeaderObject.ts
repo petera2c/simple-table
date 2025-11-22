@@ -7,7 +7,15 @@ import { HeaderRenderer } from "./HeaderRendererProps";
 import CellValue from "./CellValue";
 
 export type Accessor = keyof Row;
-export type ColumnType = "string" | "number" | "boolean" | "date" | "enum" | "other";
+export type ColumnType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "date"
+  | "enum"
+  | "lineAreaChart"
+  | "barChart"
+  | "other";
 export type ShowWhen = "parentCollapsed" | "parentExpanded" | "always";
 
 export interface ValueFormatterProps {

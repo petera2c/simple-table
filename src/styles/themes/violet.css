@@ -70,7 +70,7 @@
   --st-header-selected-icon-color: var(--st-white);
 
   /* Header/selection highlight indicator colors */
-  --st-header-highlight-indicator-color: var(--st-violet-50);
+  --st-header-highlight-indicator-color: var(--st-violet-800);
   --st-selection-highlight-indicator-color: var(--st-stone-400);
 
   /* Navigation button colors */
@@ -100,4 +100,8 @@
 
   /* Loading skeleton colors */
   --st-loading-skeleton-bg-color: var(--st-stone-200);
+
+  /* Chart colors */
+  --st-chart-color: var(--st-violet-400);
+  --st-chart-fill-color: var(--st-violet-400);
 }

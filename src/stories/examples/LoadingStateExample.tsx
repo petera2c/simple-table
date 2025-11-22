@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import "simple-table-core/styles.css";
 import HeaderObject from "../../types/HeaderObject";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import Theme from "../../types/Theme";

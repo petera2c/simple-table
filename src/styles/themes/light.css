@@ -98,4 +98,8 @@
 
   /* Loading skeleton colors */
   --st-loading-skeleton-bg-color: var(--st-slate-200);
+
+  /* Chart colors */
+  --st-chart-color: var(--st-blue-300);
+  --st-chart-fill-color: var(--st-blue-300);
 }

@@ -7,6 +7,7 @@ import BasicExampleComponent from "./examples/BasicExample";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";
 import CellRendererExample from "./examples/CellRenderer";
+import ChartsExample, { chartsExampleDefaults } from "./examples/ChartsExample";
 import CollapsibleColumnsExample, {
   collapsibleColumnsExampleDefaults,
 } from "./examples/CollapsibleColumnsExample";
@@ -141,6 +142,23 @@ export const CellHighlighting: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: CellHighlightingDemo, ...args }),
+};
+
+export const Charts: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...chartsExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) => React.createElement(StoryWrapper, { ExampleComponent: ChartsExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates inline chart visualization with LineAreaChart and BarChart components. Shows how to display data trends directly within table cells without axes or labels, perfect for sparkline-style visualizations.",
+      },
+    },
+  },
 };
 
 export const CellRenderer: StoryObj<UniversalTableProps> = {

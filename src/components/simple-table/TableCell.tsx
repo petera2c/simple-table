@@ -10,7 +10,7 @@ import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import { getRowId, hasNestedRows, getNestedValue, setNestedValue } from "../../utils/rowUtils";
-import { Animate } from "../LazyComponents";
+import { Animate, LineAreaChart, BarChart } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
 
@@ -36,6 +36,27 @@ const displayContent = ({
       rowIndex,
       value: content,
     });
+  }
+
+  // Handle chart types - render chart components
+  if (header.type === "lineAreaChart" && Array.isArray(content)) {
+    // Ensure all values are numbers
+    const numericData = (content as any[]).filter(
+      (item: any) => typeof item === "number"
+    ) as number[];
+    if (numericData.length > 0) {
+      return <LineAreaChart data={numericData} />;
+    }
+    return null;
+  } else if (header.type === "barChart" && Array.isArray(content)) {
+    // Ensure all values are numbers
+    const numericData = (content as any[]).filter(
+      (item: any) => typeof item === "number"
+    ) as number[];
+    if (numericData.length > 0) {
+      return <BarChart data={numericData} />;
+    }
+    return null;
   }
 
   // Fall back to default display logic

@@ -19,10 +19,12 @@ export const copySelectedCellsToClipboard = (
   // Filter out hidden headers
   const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
 
-  // Create a mapping of column indices to accessors for quick lookup
+  // Create a mapping of column indices to accessors and headers for quick lookup
   const colIndexToAccessor = new Map<number, string>();
+  const colIndexToHeader = new Map<number, HeaderObject>();
   flattenedLeafHeaders.forEach((header, index) => {
     colIndexToAccessor.set(index, header.accessor);
+    colIndexToHeader.set(index, header);
   });
 
   // Convert selectedCells to a text format suitable for clipboard
@@ -32,9 +34,21 @@ export const copySelectedCellsToClipboard = (
     if (!acc[row]) acc[row] = [];
 
     const accessor = colIndexToAccessor.get(col);
+    const header = colIndexToHeader.get(col);
 
     if (accessor && tableRows[row]?.row) {
-      acc[row][col] = getNestedValue(tableRows[row].row, accessor);
+      const value = getNestedValue(tableRows[row].row, accessor);
+
+      // Format chart data as comma-separated values for better usability
+      if (header && (header.type === "lineAreaChart" || header.type === "barChart")) {
+        if (Array.isArray(value)) {
+          acc[row][col] = value.join(", ");
+        } else {
+          acc[row][col] = "";
+        }
+      } else {
+        acc[row][col] = value;
+      }
     } else {
       acc[row][col] = "";
     }
@@ -112,6 +126,13 @@ export const pasteClipboardDataToCells = (
         if (!isNaN(dateValue.getTime())) {
           convertedValue = dateValue;
         }
+      } else if (targetHeader.type === "lineAreaChart" || targetHeader.type === "barChart") {
+        // Parse comma-separated values back into number array for charts
+        const values = cellValue.split(",").map((v) => {
+          const num = Number(v.trim());
+          return isNaN(num) ? 0 : num;
+        });
+        convertedValue = values;
       }
 
       // Update the data
@@ -191,6 +212,8 @@ export const deleteSelectedCellsContent = (
       emptyValue = false;
     } else if (targetHeader.type === "date") {
       emptyValue = null;
+    } else if (targetHeader.type === "lineAreaChart" || targetHeader.type === "barChart") {
+      emptyValue = [];
     } else if (Array.isArray(getNestedValue(targetRow.row, targetHeader.accessor))) {
       emptyValue = [];
     } else {

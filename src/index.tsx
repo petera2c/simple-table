@@ -1,4 +1,6 @@
 import SimpleTable from "./components/simple-table/SimpleTable";
+import LineAreaChart from "./components/charts/LineAreaChart";
+import BarChart from "./components/charts/BarChart";
 import BoundingBox from "./types/BoundingBox";
 import Cell from "./types/Cell";
 import CellChangeProps from "./types/CellChangeProps";
@@ -33,7 +35,7 @@ import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps
 import { RowButtonProps } from "./types/RowButton";
 import FooterRendererProps from "./types/FooterRendererProps";
 
-export { SimpleTable };
+export { SimpleTable, LineAreaChart, BarChart };
 
 // Tree-shakeable icon exports (imported separately to reduce bundle size)
 export * from "./icons";
