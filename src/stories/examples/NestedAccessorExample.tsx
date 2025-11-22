@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { ValueFormatterProps } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
 const headers: HeaderObject[] = [
@@ -33,6 +33,7 @@ const headers: HeaderObject[] = [
     isSortable: true,
     filterable: true,
     align: "right",
+    valueFormatter: ({ value }) => Number(value).toFixed(1), // Format to 1 decimal place
   },
   {
     accessor: "stats.assists",
@@ -42,6 +43,7 @@ const headers: HeaderObject[] = [
     isSortable: true,
     filterable: true,
     align: "right",
+    valueFormatter: ({ value }) => Number(value).toFixed(1), // Format to 1 decimal place
   },
   {
     accessor: "stats.rebounds",
@@ -50,6 +52,7 @@ const headers: HeaderObject[] = [
     type: "number",
     isSortable: true,
     align: "right",
+    valueFormatter: ({ value }) => Number(value).toFixed(1), // Format to 1 decimal place
   },
   {
     accessor: "latest.rank",
@@ -59,6 +62,7 @@ const headers: HeaderObject[] = [
     isSortable: true,
     filterable: true,
     align: "right",
+    valueFormatter: ({ value }) => `#${value}`, // Add # prefix for rank
   },
   {
     accessor: "latest.performance.rating",
@@ -67,6 +71,7 @@ const headers: HeaderObject[] = [
     type: "number",
     isSortable: true,
     align: "right",
+    valueFormatter: ({ value }) => `${Number(value).toFixed(1)}%`, // Format as percentage
   },
   {
     accessor: "contract.salary",
@@ -75,6 +80,15 @@ const headers: HeaderObject[] = [
     type: "number",
     isSortable: true,
     align: "right",
+    valueFormatter: ({ value }) => {
+      // Format as currency with millions abbreviation
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(Number(value));
+    },
   },
   {
     accessor: "contract.yearsRemaining",
@@ -83,6 +97,8 @@ const headers: HeaderObject[] = [
     type: "number",
     isSortable: true,
     align: "center",
+    valueFormatter: ({ value }: ValueFormatterProps) =>
+      `${value} ${value === 1 ? "year" : "years"}`, // Add "year(s)" suffix
   },
 ];
 
@@ -259,7 +275,7 @@ const initialRows = [
 ];
 
 const NestedAccessorExample = (props: UniversalTableProps) => {
-  const [rows, setRows] = useState(initialRows);
+  const [rows] = useState(initialRows);
 
   return (
     <div style={{ padding: "20px" }}>
@@ -278,6 +294,13 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
         <li>Sorting and filtering work with nested accessors</li>
         <li>Custom cell renderers can access nested data</li>
         <li>Editable cells support nested accessors (if enabled)</li>
+        <li>
+          <strong>
+            Value formatting with <code>valueFormatter</code>:
+          </strong>{" "}
+          Salary displays as currency, stats show decimals, rank has "#" prefix, years have
+          "year(s)" suffix
+        </li>
       </ul>
 
       <SimpleTable

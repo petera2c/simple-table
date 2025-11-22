@@ -16,8 +16,7 @@ const headers: HeaderObject[] = [
     width: 120,
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }) => {
-      const value = row.followers;
+    valueFormatter: ({ value }) => {
       if (typeof value === "number") {
         return value >= 1000000
           ? `${(value / 1000000).toFixed(1)}M`
@@ -60,8 +59,7 @@ const headers: HeaderObject[] = [
     width: 100,
     type: "number",
     aggregation: { type: "average" },
-    cellRenderer: ({ row }) => {
-      const value = row.rating;
+    valueFormatter: ({ value }) => {
       if (typeof value === "number") {
         return `${value.toFixed(1)} ⭐`;
       }
@@ -81,8 +79,7 @@ const headers: HeaderObject[] = [
     width: 130,
     type: "number",
     aggregation: { type: "average" },
-    cellRenderer: ({ row }) => {
-      const value = row.avgViewTime;
+    valueFormatter: ({ value }) => {
       if (typeof value === "number") {
         return `${Math.round(value)}min`;
       }

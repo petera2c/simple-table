@@ -74,7 +74,7 @@ const HEADERS: HeaderObject[] = [
     isSortable: true,
     align: "right",
     tooltip: "Current retail price in USD",
-    cellRenderer: ({ row }) => `$${(row.price as number).toFixed(2)}`,
+    valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}`,
   },
   {
     accessor: "stock",
@@ -91,7 +91,7 @@ const HEADERS: HeaderObject[] = [
     isSortable: true,
     align: "center",
     tooltip: "Average customer rating (1-5 stars)",
-    cellRenderer: ({ row }) => `${row.rating}/5`,
+    valueFormatter: ({ value }) => `${value}/5`,
   },
   {
     accessor: "lastUpdated",

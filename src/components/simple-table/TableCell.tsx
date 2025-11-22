@@ -14,7 +14,31 @@ import { Animate } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
 
-const displayContent = ({ content, header }: { content: CellValue; header: HeaderObject }) => {
+const displayContent = ({
+  content,
+  header,
+  colIndex,
+  row,
+  rowIndex,
+}: {
+  content: CellValue;
+  header: HeaderObject;
+  colIndex: number;
+  row: any;
+  rowIndex: number;
+}) => {
+  // Apply valueFormatter first if it exists
+  if (header.valueFormatter) {
+    return header.valueFormatter({
+      accessor: header.accessor,
+      colIndex,
+      row,
+      rowIndex,
+      value: content,
+    });
+  }
+
+  // Fall back to default display logic
   if (typeof content === "boolean") {
     return content ? "True" : "False";
   } else if (Array.isArray(content)) {
@@ -474,7 +498,7 @@ const TableCell = ({
             ) : header.cellRenderer ? (
               header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
             ) : (
-              displayContent({ content: localContent, header })
+              displayContent({ content: localContent, header, colIndex, row, rowIndex })
             )}
           </span>
         )}

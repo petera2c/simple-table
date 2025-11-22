@@ -17,8 +17,8 @@ export const headers: HeaderObject[] = [
     label: "Price",
     width: "1fr",
     type: "number",
-    cellRenderer: ({ row }) => {
-      const price = row.price;
+    valueFormatter: ({ value }) => {
+      const price = value;
       if (typeof price === "number") {
         return `$${price.toFixed(2)}`;
       }
