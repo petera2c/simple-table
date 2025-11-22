@@ -182,7 +182,7 @@ const headers: HeaderObject[] = [
     width: 80,
     type: "boolean",
     filterable: true,
-    cellRenderer: ({ row }) => (row.active ? "✓ Yes" : "✗ No"),
+    valueFormatter: ({ value }) => (value ? "✓ Yes" : "✗ No"),
     align: "center",
   },
   {
@@ -198,7 +198,7 @@ const headers: HeaderObject[] = [
     width: 120,
     type: "number",
     filterable: true,
-    cellRenderer: ({ row }) => `$${(row.salary || 0).toLocaleString()}`,
+    valueFormatter: ({ value }) => `$${(value || 0).toLocaleString()}`,
     align: "right",
   },
 ];

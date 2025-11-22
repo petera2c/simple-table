@@ -40,9 +40,9 @@ export const HEADERS: HeaderObject[] = [
         isEditable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => {
-          if (row.price === "—") return "—";
-          return `$${(row.price as number).toLocaleString("en-US", {
+        valueFormatter: ({ value }) => {
+          if (value === "—") return "—";
+          return `$${(value as number).toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}`;
@@ -101,9 +101,9 @@ export const HEADERS: HeaderObject[] = [
         isEditable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => {
-          if (row.peRatio === "—" || row.peRatio === null) return "—";
-          return (row.peRatio as number).toFixed(1);
+        valueFormatter: ({ value }) => {
+          if (value === "—" || value === null) return "—";
+          return (value as number).toFixed(1);
         },
       },
       {
@@ -115,9 +115,9 @@ export const HEADERS: HeaderObject[] = [
         isEditable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => {
-          if (row.dividendYield === "—" || row.dividendYield === null) return "—";
-          return `${(row.dividendYield as number).toFixed(2)}%`;
+        valueFormatter: ({ value }) => {
+          if (value === "—" || value === null) return "—";
+          return `${(value as number).toFixed(2)}%`;
         },
       },
     ],

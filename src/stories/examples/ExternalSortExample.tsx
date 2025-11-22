@@ -108,7 +108,7 @@ const headers: HeaderObject[] = [
     width: 120,
     isSortable: true,
     type: "number",
-    cellRenderer: ({ row }) => `$${(row.salary || 0).toLocaleString()}`,
+    valueFormatter: ({ value }) => `$${(value || 0).toLocaleString()}`,
     align: "right",
   },
 ];

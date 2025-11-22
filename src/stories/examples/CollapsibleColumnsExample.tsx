@@ -449,7 +449,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.totalSales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         showWhen: "parentExpanded", // Shows only when parent is expanded
@@ -459,7 +459,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.q1Sales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         showWhen: "parentExpanded",
@@ -469,7 +469,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.q2Sales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         showWhen: "parentExpanded",
@@ -479,7 +479,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.q3Sales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         showWhen: "parentExpanded",
@@ -489,7 +489,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.q4Sales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
     ],
   },
@@ -509,7 +509,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.avgMonthly as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "bestMonth",
@@ -519,7 +519,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.bestMonth as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "jan",
@@ -528,7 +528,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.jan as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "feb",
@@ -537,7 +537,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.feb as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "mar",
@@ -546,7 +546,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.mar as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "apr",
@@ -555,7 +555,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.apr as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "may",
@@ -564,7 +564,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.may as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "jun",
@@ -573,7 +573,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.jun as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "jul",
@@ -582,7 +582,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.jul as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "aug",
@@ -591,7 +591,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.aug as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "sep",
@@ -600,7 +600,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.sep as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "oct",
@@ -609,7 +609,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.oct as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "nov",
@@ -618,7 +618,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.nov as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "dec",
@@ -627,7 +627,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.dec as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
     ],
   },
@@ -654,7 +654,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.softwareSales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "hardwareSales",
@@ -663,7 +663,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.hardwareSales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
       {
         accessor: "servicesSales",
@@ -672,7 +672,7 @@ const headers: HeaderObject[] = [
         isSortable: true,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }) => `$${(row.servicesSales as number).toLocaleString()}`,
+        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
       },
     ],
   },

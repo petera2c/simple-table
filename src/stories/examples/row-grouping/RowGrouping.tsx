@@ -30,8 +30,7 @@ const headers: HeaderObject[] = [
         return isNaN(numericValue) ? 0 : numericValue;
       },
     },
-    cellRenderer: ({ row }) => {
-      const value = row.budget;
+    valueFormatter: ({ value }) => {
       if (typeof value === "number") {
         // This is an aggregated value, format as currency
         return `$${value.toFixed(1)}M`;
@@ -49,8 +48,7 @@ const headers: HeaderObject[] = [
     width: 100,
     type: "number",
     aggregation: { type: "average" },
-    cellRenderer: ({ row }) => {
-      const value = row.rating;
+    valueFormatter: ({ value }) => {
       if (typeof value === "number") {
         return `${value.toFixed(1)} ⭐`;
       }
@@ -95,8 +93,7 @@ const headers: HeaderObject[] = [
         return Math.round((sum / values.length) * 10) / 10; // Round to 1 decimal
       },
     },
-    cellRenderer: ({ row }) => {
-      const value = row.weightedScore;
+    valueFormatter: ({ value }) => {
       if (typeof value === "number" || typeof value === "string") {
         return `${value}/100`;
       }

@@ -30,8 +30,8 @@ const generateMonthHeaders = () => {
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
-          cellRenderer: ({ row, accessor }) => {
-            const balance = row[accessor] as number;
+          valueFormatter: ({ value }) => {
+            const balance = value as number;
             if (balance === undefined || balance === null || balance === 0) return "—";
 
             return `$${balance.toLocaleString("en-US", {
@@ -50,8 +50,8 @@ const generateMonthHeaders = () => {
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
-          cellRenderer: ({ row, accessor }) => {
-            const revenue = row[accessor] as number;
+          valueFormatter: ({ value }) => {
+            const revenue = value as number;
             if (revenue === undefined || revenue === null || revenue === 0) return "—";
 
             return `$${revenue.toLocaleString("en-US", {
@@ -94,8 +94,8 @@ export const HEADERS: HeaderObject[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }) => {
-      const amount = row.amount as number;
+    valueFormatter: ({ value }) => {
+      const amount = value as number;
       if (amount === undefined || amount === null || amount === 0) return "—";
 
       return `$${amount.toLocaleString("en-US", {

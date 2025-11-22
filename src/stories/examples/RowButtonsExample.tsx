@@ -305,9 +305,7 @@ const RowButtonsExample = (props: UniversalTableProps) => {
       width: 100,
       isSortable: true,
       filterable: true,
-      cellRenderer: ({ accessor, colIndex, row, theme }) => (
-        <span style={{ fontWeight: "500" }}>${Number(row.salary).toLocaleString()}</span>
-      ),
+      valueFormatter: ({ value }) => `$${Number(value).toLocaleString()}`,
     },
   ];
 

@@ -223,7 +223,7 @@ const SimpleTableComp = ({
       return dummyRows;
     }
     return rows;
-  }, [isLoading, rows, rowIdAccessor, rowsPerPage]);
+  }, [isLoading, rows, rowIdAccessor, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
