@@ -67,6 +67,16 @@
   --st-amber-100: #fef3c7;
   --st-amber-200: #fde68a;
 
+  /* Emerald colors - used for charts */
+  --st-emerald-400: #34d399;
+  --st-emerald-500: #10b981;
+  --st-emerald-600: #059669;
+
+  /* Teal colors - used for charts */
+  --st-teal-400: #2dd4bf;
+  --st-teal-500: #14b8a6;
+  --st-teal-600: #0d9488;
+
   /* Sky colors - used in sky theme */
   --st-sky-100: #e0f2fe;
   --st-sky-200: #bae6fd;
