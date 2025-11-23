@@ -294,6 +294,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     }
   }, [
     allowAnimations,
+    bufferRowCount,
     isResizing,
     isScrolling,
     parentRef,
