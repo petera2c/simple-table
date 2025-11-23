@@ -1,9 +1,9 @@
-import React, { useRef, useLayoutEffect, ReactNode, MutableRefObject } from "react";
+import React, { useRef, useLayoutEffect, ReactNode, MutableRefObject, useMemo } from "react";
 import usePrevious from "../../hooks/usePrevious";
 import { flipElement, ANIMATION_CONFIGS, animateWithCustomCoordinates } from "./animation-utils";
 import TableRow from "../../types/TableRow";
 import { useTableContext } from "../../context/TableContext";
-import { BUFFER_ROW_COUNT } from "../../consts/general-consts";
+import { calculateBufferRowCount, ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 
 // Animation thresholds
 const COLUMN_REORDER_THRESHOLD = 50; // px - minimum horizontal movement to trigger column reorder animation
@@ -36,7 +36,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
   const fromBoundsRef = useRef<DOMRect | null>(null);
   const previousScrollingState = usePrevious(isScrolling);
   const previousResizingState = usePrevious(isResizing);
-
+  const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
   useLayoutEffect(() => {
     // Early exit if animations are disabled - don't do any work at all
     if (!allowAnimations) {
@@ -120,7 +120,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         parentScrollHeight !== undefined
       ) {
         // Calculate buffered viewport to include rows slightly outside the actual viewport
-        const bufferHeight = BUFFER_ROW_COUNT * rowHeight;
+        const bufferHeight = bufferRowCount * (rowHeight + ROW_SEPARATOR_WIDTH);
         const calculatedViewportTop = parentScrollTop - bufferHeight;
         const calculatedViewportBottom = parentScrollTop + clientHeight + bufferHeight;
 
