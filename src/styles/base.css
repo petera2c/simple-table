@@ -247,6 +247,13 @@ input {
   position: absolute;
   transition: background 0.2s ease;
   min-width: 100%;
+
+  /* Performance optimizations for virtual scrolling */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32px;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered

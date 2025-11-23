@@ -2,7 +2,17 @@ export const DRAG_THROTTLE_LIMIT = 50;
 export const ROW_SEPARATOR_WIDTH = 1;
 
 export const PAGE_SIZE = 20;
-export const BUFFER_ROW_COUNT = 5;
+
+// Overscan configuration for virtualization
+// Target overscan in pixels (above and below viewport)
+export const OVERSCAN_PIXELS = 800;
+
+// Calculate buffer row count based on actual row height
+// This ensures consistent overscan regardless of row size
+export const calculateBufferRowCount = (rowHeight: number): number => {
+  const rowHeightWithSeparator = rowHeight + ROW_SEPARATOR_WIDTH;
+  return Math.ceil(OVERSCAN_PIXELS / rowHeightWithSeparator);
+};
 
 export const COLUMN_EDIT_WIDTH = 28;
 export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;

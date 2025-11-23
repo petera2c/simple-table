@@ -84,7 +84,7 @@ const TableRowSeparator = ({
       onMouseUp={handleSeparatorMouseUp}
       style={{
         gridTemplateColumns: templateColumns,
-        top: calculateSeparatorTopPosition({ position, rowHeight }),
+        transform: `translate3d(0, ${calculateSeparatorTopPosition({ position, rowHeight })}px, 0)`,
       }}
     >
       <div style={{ gridColumn: "1 / -1" }} />

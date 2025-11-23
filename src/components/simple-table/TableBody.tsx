@@ -19,6 +19,7 @@ const TableBody = ({
   pinnedRightWidth,
   rowsToRender,
   setScrollTop,
+  setScrollDirection,
   tableRows,
 }: TableBodyProps) => {
   // Get stable props from context
@@ -160,7 +161,18 @@ const TableBody = ({
     }
 
     scrollTimeoutRef.current = requestAnimationFrame(() => {
+      // Detect scroll direction
+      const previousScrollTop = lastScrollTopRef.current;
+      const direction: "up" | "down" | "none" =
+        newScrollTop > previousScrollTop
+          ? "down"
+          : newScrollTop < previousScrollTop
+          ? "up"
+          : "none";
+
+      // Update scroll position and direction for asymmetric buffering
       setScrollTop(newScrollTop);
+      setScrollDirection(direction);
 
       // Check if we should load more data
       checkForLoadMore(element, newScrollTop);

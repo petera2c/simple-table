@@ -274,6 +274,7 @@ const SimpleTableComp = ({
   }, [enableRowSelection, headers, selectionColumnWidth]);
 
   const [scrollTop, setScrollTop] = useState<number>(0);
+  const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
   // Track container width changes to ensure proper recalculation of pinned section limits
@@ -384,6 +385,7 @@ const SimpleTableComp = ({
     contentHeight,
     rowHeight,
     scrollTop,
+    scrollDirection,
     computeFilteredRowsPreview,
     computeSortedRowsPreview,
   });
@@ -591,6 +593,7 @@ const SimpleTableComp = ({
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}
+                setScrollDirection={setScrollDirection}
                 sort={sort}
                 tableRows={currentTableRows}
                 rowsToRender={rowsToRender}
