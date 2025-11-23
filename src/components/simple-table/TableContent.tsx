@@ -1,4 +1,4 @@
-import { useMemo, useRef, Dispatch, SetStateAction } from "react";
+import { useMemo, useRef } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
@@ -12,7 +12,8 @@ import TableRow from "../../types/TableRow";
 interface TableContentLocalProps {
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
-  setScrollTop: Dispatch<SetStateAction<number>>;
+  setScrollTop: (scrollTop: number) => void;
+  setScrollDirection: (direction: "up" | "down" | "none") => void;
   sort: SortColumn | null;
   tableRows: TableRow[];
   rowsToRender: TableRow[];
@@ -22,6 +23,7 @@ const TableContent = ({
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
+  setScrollDirection,
   sort,
   tableRows,
   rowsToRender,
@@ -71,6 +73,7 @@ const TableContent = ({
     pinnedRightTemplateColumns,
     pinnedRightWidth,
     setScrollTop,
+    setScrollDirection,
     rowsToRender,
   };
 

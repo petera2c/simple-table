@@ -8,25 +8,45 @@ export const getTotalRowCount = (tableRows: TableRow[]): number => {
   return tableRows.length;
 };
 
-// Get visible rows with simple array slicing
+// Get visible rows with pixel-based overscan
 export const getVisibleRows = ({
   bufferRowCount,
   contentHeight,
   rowHeight,
   scrollTop,
   tableRows,
+  scrollDirection,
 }: {
   bufferRowCount: number;
   contentHeight: number;
   rowHeight: number;
   scrollTop: number;
   tableRows: TableRow[];
+  scrollDirection?: "up" | "down" | "none";
 }): TableRow[] => {
   const rowHeightWithSeparator = rowHeight + SEPARATOR_HEIGHT;
 
-  // Calculate start and end indices directly
-  const startOffset = Math.max(0, scrollTop - rowHeightWithSeparator * bufferRowCount);
-  const endOffset = scrollTop + contentHeight + rowHeightWithSeparator * bufferRowCount;
+  // Convert row buffer to pixels (this is the base overscan)
+  const baseOverscanPixels = bufferRowCount * rowHeightWithSeparator;
+
+  // Asymmetric pixel-based overscan based on scroll direction
+  // This preloads more content in the direction of motion for smoother scrolling
+  let topOverscanPixels = baseOverscanPixels;
+  let bottomOverscanPixels = baseOverscanPixels;
+
+  if (scrollDirection === "down") {
+    // Scrolling down: render more pixels below, fewer above
+    topOverscanPixels = Math.max(rowHeightWithSeparator, baseOverscanPixels * 0.1); // 10% above
+    bottomOverscanPixels = baseOverscanPixels * 0.9; // 90% below
+  } else if (scrollDirection === "up") {
+    // Scrolling up: render more pixels above, fewer below
+    topOverscanPixels = baseOverscanPixels * 0.9; // 90% above
+    bottomOverscanPixels = Math.max(rowHeightWithSeparator, baseOverscanPixels * 0.1); // 10% below
+  }
+
+  // Calculate visible range with pixel-based overscan
+  const startOffset = Math.max(0, scrollTop - topOverscanPixels);
+  const endOffset = scrollTop + contentHeight + bottomOverscanPixels;
 
   const startIndex = Math.max(0, Math.floor(startOffset / rowHeightWithSeparator));
   const endIndex = Math.min(tableRows.length, Math.ceil(endOffset / rowHeightWithSeparator));

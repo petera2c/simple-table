@@ -2,7 +2,7 @@ import React from "react";
 
 export interface LineAreaChartProps {
   data: number[];
-  width?: number;
+  width?: number | string;
   height?: number;
   color?: string;
   fillColor?: string;
@@ -19,7 +19,7 @@ export interface LineAreaChartProps {
  */
 const LineAreaChart: React.FC<LineAreaChartProps> = ({
   data,
-  width = 100,
+  width = "100%",
   height = 30,
   color,
   fillColor,
@@ -39,10 +39,15 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
   const max = customMax !== undefined ? customMax : Math.max(...data);
   const range = max - min || 1; // Avoid division by zero
 
-  // Calculate points for the line
+  // For path calculations, we need a numeric width
+  // Use viewBox with a standard coordinate system
+  const viewBoxWidth = 100;
+  const viewBoxHeight = height;
+
+  // Calculate points for the line using viewBox coordinates
   const points = data.map((value, index) => {
-    const x = (index / (data.length - 1)) * width;
-    const y = height - ((value - min) / range) * height;
+    const x = (index / (data.length - 1)) * viewBoxWidth;
+    const y = viewBoxHeight - ((value - min) / range) * viewBoxHeight;
     return { x, y };
   });
 
@@ -56,8 +61,8 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
   // Create path for area (line + bottom)
   const areaPath = `
     ${linePath}
-    L ${width},${height}
-    L 0,${height}
+    L ${viewBoxWidth},${viewBoxHeight}
+    L 0,${viewBoxHeight}
     Z
   `;
 
@@ -65,6 +70,8 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
     <svg
       width={width}
       height={height}
+      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      preserveAspectRatio="none"
       className={`st-line-area-chart ${className}`}
       style={{ display: "block" }}
     >
@@ -74,6 +81,7 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
         fill={fillColor || "var(--st-chart-fill-color)"}
         fillOpacity={fillOpacity}
         stroke="none"
+        vectorEffect="non-scaling-stroke"
       />
       {/* Line stroke */}
       <path
@@ -83,6 +91,7 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

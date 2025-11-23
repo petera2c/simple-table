@@ -1,5 +1,5 @@
 import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
-import { BUFFER_ROW_COUNT } from "../consts/general-consts";
+import { calculateBufferRowCount } from "../consts/general-consts";
 import { getVisibleRows } from "../utils/infiniteScrollUtils";
 import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
@@ -23,6 +23,7 @@ interface UseTableRowProcessingProps {
   contentHeight: number;
   rowHeight: number;
   scrollTop: number;
+  scrollDirection?: "up" | "down" | "none";
   // Functions to preview what rows would be after changes
   computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
   computeSortedRowsPreview: (accessor: Accessor) => Row[];
@@ -43,6 +44,7 @@ const useTableRowProcessing = ({
   contentHeight,
   rowHeight,
   scrollTop,
+  scrollDirection = "none",
   computeFilteredRowsPreview,
   computeSortedRowsPreview,
 }: UseTableRowProcessingProps) => {
@@ -50,6 +52,10 @@ const useTableRowProcessing = ({
   const [extendedRows, setExtendedRows] = useState<any[]>([]);
   const previousTableRowsRef = useRef<any[]>([]); // Track ALL processed rows, not just visible
   const previousVisibleRowsRef = useRef<any[]>([]); // Track only visible rows for animation
+
+  // Calculate buffer row count based on actual row height
+  // This ensures consistent ~800px overscan regardless of row size
+  const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
 
   // Track original positions of all rows (before any sort/filter applied)
   const originalPositionsRef = useRef<Map<string, number>>(new Map());
@@ -129,13 +135,14 @@ const useTableRowProcessing = ({
   // Calculate target visible rows (what should be visible)
   const targetVisibleRows = useMemo(() => {
     return getVisibleRows({
-      bufferRowCount: BUFFER_ROW_COUNT,
+      bufferRowCount,
       contentHeight,
       tableRows: currentTableRows,
       rowHeight,
       scrollTop,
+      scrollDirection,
     });
-  }, [currentTableRows, contentHeight, rowHeight, scrollTop]);
+  }, [currentTableRows, contentHeight, rowHeight, scrollTop, scrollDirection, bufferRowCount]);
 
   // Categorize rows based on ID changes
   const categorizeRows = useCallback(
@@ -313,11 +320,12 @@ const useTableRowProcessing = ({
       const newFilteredRows = computeFilteredRowsPreview(filter);
       const newProcessedRows = processRowSet(newFilteredRows);
       const newVisibleRows = getVisibleRows({
-        bufferRowCount: BUFFER_ROW_COUNT,
+        bufferRowCount,
         contentHeight,
         tableRows: newProcessedRows,
         rowHeight,
         scrollTop,
+        scrollDirection,
       });
 
       // CRITICAL: Compare VISIBLE rows (before filter) vs what WILL BE visible (after filter)
@@ -348,10 +356,12 @@ const useTableRowProcessing = ({
       contentHeight,
       rowHeight,
       scrollTop,
+      scrollDirection,
       categorizeRows,
       currentTableRows,
       targetVisibleRows,
       rowIdAccessor,
+      bufferRowCount,
     ]
   );
 
@@ -363,11 +373,12 @@ const useTableRowProcessing = ({
       const newSortedRows = computeSortedRowsPreview(accessor);
       const newProcessedRows = processRowSet(newSortedRows);
       const newVisibleRows = getVisibleRows({
-        bufferRowCount: BUFFER_ROW_COUNT,
+        bufferRowCount,
         contentHeight,
         tableRows: newProcessedRows,
         rowHeight,
         scrollTop,
+        scrollDirection,
       });
 
       // CRITICAL: Compare VISIBLE rows (before sort) vs what WILL BE visible (after sort)
@@ -398,10 +409,12 @@ const useTableRowProcessing = ({
       contentHeight,
       rowHeight,
       scrollTop,
+      scrollDirection,
       categorizeRows,
       currentTableRows,
       targetVisibleRows,
       rowIdAccessor,
+      bufferRowCount,
     ]
   );
 

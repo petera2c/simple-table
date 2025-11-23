@@ -2,7 +2,7 @@ import React from "react";
 
 export interface BarChartProps {
   data: number[];
-  width?: number;
+  width?: number | string;
   height?: number;
   color?: string;
   gap?: number;
@@ -17,7 +17,7 @@ export interface BarChartProps {
  */
 const BarChart: React.FC<BarChartProps> = ({
   data,
-  width = 100,
+  width = "100%",
   height = 30,
   color,
   gap = 2,
@@ -35,18 +35,25 @@ const BarChart: React.FC<BarChartProps> = ({
   const max = customMax !== undefined ? customMax : Math.max(...data);
   const range = max - min || 1; // Avoid division by zero
 
+  // For path calculations, we need a numeric width
+  // Use viewBox with a standard coordinate system
+  const viewBoxWidth = 100;
+  const viewBoxHeight = height;
+
   // Calculate bar width
   const totalGapWidth = gap * (data.length - 1);
-  const barWidth = (width - totalGapWidth) / data.length;
+  const barWidth = (viewBoxWidth - totalGapWidth) / data.length;
 
   // Handle negative values - find zero line position
   const hasNegative = min < 0;
-  const zeroY = hasNegative ? height * (max / range) : height;
+  const zeroY = hasNegative ? viewBoxHeight * (max / range) : viewBoxHeight;
 
   return (
     <svg
       width={width}
       height={height}
+      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      preserveAspectRatio="none"
       className={`st-bar-chart ${className}`}
       style={{ display: "block" }}
     >
@@ -55,8 +62,8 @@ const BarChart: React.FC<BarChartProps> = ({
 
         // Calculate bar height and position
         const normalizedValue = (value - min) / range;
-        const barHeight = normalizedValue * height;
-        const y = height - barHeight;
+        const barHeight = normalizedValue * viewBoxHeight;
+        const y = viewBoxHeight - barHeight;
 
         // For charts with negative values, adjust positioning
         let adjustedY = y;
@@ -64,10 +71,10 @@ const BarChart: React.FC<BarChartProps> = ({
 
         if (hasNegative) {
           if (value >= 0) {
-            adjustedHeight = (value / range) * height;
+            adjustedHeight = (value / range) * viewBoxHeight;
             adjustedY = zeroY - adjustedHeight;
           } else {
-            adjustedHeight = (Math.abs(value) / range) * height;
+            adjustedHeight = (Math.abs(value) / range) * viewBoxHeight;
             adjustedY = zeroY;
           }
         }
