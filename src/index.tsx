@@ -12,9 +12,15 @@ import HeaderObject, {
   Accessor,
   ChartOptions,
   ColumnType,
+  Comparator,
+  ComparatorProps,
+  ExportValueGetter,
+  ExportValueProps,
   ShowWhen,
   ValueFormatter,
   ValueFormatterProps,
+  ValueGetter,
+  ValueGetterProps,
 } from "./types/HeaderObject";
 import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import OnSortProps from "./types/OnSortProps";
@@ -55,9 +61,13 @@ export type {
   ChartOptions,
   ColumnEditorPosition,
   ColumnType,
+  Comparator,
+  ComparatorProps,
   DragHandlerProps,
   EnumOption,
   ExportToCSVProps,
+  ExportValueGetter,
+  ExportValueProps,
   FilterCondition,
   FooterRendererProps,
   HeaderDropdown,
@@ -82,4 +92,6 @@ export type {
   UpdateDataProps,
   ValueFormatter,
   ValueFormatterProps,
+  ValueGetter,
+  ValueGetterProps,
 };

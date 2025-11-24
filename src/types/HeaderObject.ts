@@ -40,6 +40,33 @@ export interface ValueFormatterProps {
 
 export type ValueFormatter = (props: ValueFormatterProps) => string | number;
 
+export interface ValueGetterProps {
+  accessor: Accessor;
+  row: Row;
+  rowIndex: number;
+}
+
+export type ValueGetter = (props: ValueGetterProps) => CellValue;
+
+export interface ComparatorProps {
+  rowA: Row;
+  rowB: Row;
+  direction: "ascending" | "descending";
+}
+
+export type Comparator = (props: ComparatorProps) => number;
+
+export interface ExportValueProps {
+  accessor: Accessor;
+  colIndex: number;
+  row: Row;
+  rowIndex: number;
+  value: CellValue;
+  formattedValue?: string | number;
+}
+
+export type ExportValueGetter = (props: ExportValueProps) => string | number;
+
 // Default showWhen value for child columns when not specified
 export const DEFAULT_SHOW_WHEN: ShowWhen = "parentExpanded";
 
@@ -51,9 +78,11 @@ type HeaderObject = {
   chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
   children?: HeaderObject[];
   collapsible?: boolean; // This is used to determine if the column is collapsible
+  comparator?: Comparator; // Custom sorting function based on row-level metadata
   disableReorder?: boolean;
   enumOptions?: EnumOption[];
   expandable?: boolean;
+  exportValueGetter?: ExportValueGetter; // Custom function for CSV export values
   filterable?: boolean;
   headerRenderer?: HeaderRenderer;
   hide?: boolean;
@@ -66,7 +95,10 @@ type HeaderObject = {
   singleRowChildren?: boolean; // When true, renders parent and children on the same row instead of tree hierarchy
   tooltip?: string; // Optional tooltip text to display on hover
   type?: ColumnType;
+  useFormattedValueForClipboard?: boolean; // When true, uses valueFormatter output for clipboard copy
+  useFormattedValueForCSV?: boolean; // When true, uses valueFormatter output for CSV export (unless exportValueGetter is provided)
   valueFormatter?: ValueFormatter; // Function to format the cell value for display (does not affect underlying data)
+  valueGetter?: ValueGetter; // Function to get the value for sorting and operations
   showWhen?: ShowWhen; // Controls when child column is visible based on parent's collapsed state
   width: number | string;
   maxWidth?: number | string;
