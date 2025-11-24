@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 import HeaderObject from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
@@ -194,4 +194,51 @@ const RecursiveRenderCells = ({
   );
 };
 
-export default RenderCells;
+/**
+ * Custom comparison function for RenderCells memoization
+ * Checks if row/column data or indices have changed
+ * Prevents re-rendering cells when their underlying data hasn't changed
+ */
+const arePropsEqual = (prevProps: RenderCellsProps, nextProps: RenderCellsProps): boolean => {
+  // Check row and column indices
+  if (
+    prevProps.rowIndex !== nextProps.rowIndex ||
+    prevProps.displayRowNumber !== nextProps.displayRowNumber ||
+    prevProps.columnIndexStart !== nextProps.columnIndexStart
+  ) {
+    return false;
+  }
+
+  // Check if the actual row data changed
+  if (prevProps.tableRow !== nextProps.tableRow) {
+    if (prevProps.tableRow.row !== nextProps.tableRow.row) {
+      return false;
+    }
+  }
+
+  // Check pinned state
+  if (prevProps.pinned !== nextProps.pinned) {
+    return false;
+  }
+
+  // Check if headers array changed (by reference)
+  if (prevProps.headers !== nextProps.headers) {
+    return false;
+  }
+
+  // Check if column/row indices changed (by reference)
+  if (prevProps.columnIndices !== nextProps.columnIndices) {
+    return false;
+  }
+
+  if (prevProps.rowIndices !== nextProps.rowIndices) {
+    return false;
+  }
+
+  // All checks passed
+  return true;
+};
+
+// Export memoized RenderCells component with custom comparison
+// Optimizes rendering performance for cell groups
+export default React.memo(RenderCells, arePropsEqual);

@@ -1,4 +1,4 @@
-import { useEffect, useState, KeyboardEvent, useCallback, useRef, useMemo } from "react";
+import React, { useEffect, useState, KeyboardEvent, useCallback, useRef, useMemo } from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -538,4 +538,71 @@ const TableCell = ({
   );
 };
 
-export default TableCell;
+/**
+ * Custom comparison function for React.memo optimization
+ * Checks if props have actually changed to prevent unnecessary re-renders
+ * Only re-renders when essential props that affect display have changed
+ */
+const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): boolean => {
+  // Quick reference checks for props that change frequently
+  if (
+    prevProps.rowIndex !== nextProps.rowIndex ||
+    prevProps.colIndex !== nextProps.colIndex ||
+    prevProps.isHighlighted !== nextProps.isHighlighted ||
+    prevProps.isInitialFocused !== nextProps.isInitialFocused ||
+    prevProps.borderClass !== nextProps.borderClass
+  ) {
+    return false;
+  }
+
+  // Check if the actual row data changed (compare by reference first)
+  if (prevProps.tableRow !== nextProps.tableRow) {
+    // If references differ, check if the underlying row data is the same
+    if (prevProps.tableRow.row !== nextProps.tableRow.row) {
+      return false;
+    }
+    // If row data is same but position changed, need to re-render for animations
+    if (
+      prevProps.tableRow.position !== nextProps.tableRow.position ||
+      prevProps.tableRow.displayPosition !== nextProps.tableRow.displayPosition
+    ) {
+      return false;
+    }
+  }
+
+  // Header comparison - compare by reference and key properties
+  if (prevProps.header !== nextProps.header) {
+    // Check critical header properties that affect rendering
+    if (
+      prevProps.header.accessor !== nextProps.header.accessor ||
+      prevProps.header.isEditable !== nextProps.header.isEditable ||
+      prevProps.header.type !== nextProps.header.type ||
+      prevProps.header.cellRenderer !== nextProps.header.cellRenderer ||
+      prevProps.header.valueFormatter !== nextProps.header.valueFormatter
+    ) {
+      return false;
+    }
+  }
+
+  // Parent header reference check
+  if (prevProps.parentHeader !== nextProps.parentHeader) {
+    return false;
+  }
+
+  // Display row number check
+  if (prevProps.displayRowNumber !== nextProps.displayRowNumber) {
+    return false;
+  }
+
+  // Nested index check
+  if (prevProps.nestedIndex !== nextProps.nestedIndex) {
+    return false;
+  }
+
+  // If all checks pass, props are equal - skip re-render
+  return true;
+};
+
+// Export memoized component with custom comparison function
+// Significantly reduces re-renders during virtual scrolling operations
+export default React.memo(TableCell, arePropsEqual);

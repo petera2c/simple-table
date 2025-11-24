@@ -1,3 +1,4 @@
+import React from "react";
 import type TableRowType from "../../types/TableRow";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import RenderCells from "./RenderCells";
@@ -85,4 +86,64 @@ const TableRow = ({
   );
 };
 
-export default TableRow;
+/**
+ * Custom comparison function for TableRow memoization
+ * Compares row props to determine if re-render is needed
+ * Prevents unnecessary re-renders when scrolling through virtualized list
+ */
+const arePropsEqual = (prevProps: TableRowProps, nextProps: TableRowProps): boolean => {
+  // Check index and row position
+  if (
+    prevProps.index !== nextProps.index ||
+    prevProps.tableRow.position !== nextProps.tableRow.position ||
+    prevProps.tableRow.displayPosition !== nextProps.tableRow.displayPosition
+  ) {
+    return false;
+  }
+
+  // Check if the actual row data changed
+  if (prevProps.tableRow.row !== nextProps.tableRow.row) {
+    return false;
+  }
+
+  // Check row height
+  if (prevProps.rowHeight !== nextProps.rowHeight) {
+    return false;
+  }
+
+  // Check grid template columns
+  if (prevProps.gridTemplateColumns !== nextProps.gridTemplateColumns) {
+    return false;
+  }
+
+  // Check pinned state
+  if (prevProps.pinned !== nextProps.pinned) {
+    return false;
+  }
+
+  // Check if headers array changed (by reference)
+  if (prevProps.headers !== nextProps.headers) {
+    return false;
+  }
+
+  // Check if column/row indices changed (by reference)
+  if (prevProps.columnIndices !== nextProps.columnIndices) {
+    return false;
+  }
+
+  if (prevProps.rowIndices !== nextProps.rowIndices) {
+    return false;
+  }
+
+  // Column index start
+  if (prevProps.columnIndexStart !== nextProps.columnIndexStart) {
+    return false;
+  }
+
+  // All checks passed - props are equal
+  return true;
+};
+
+// Export memoized TableRow component with custom comparison
+// Reduces re-renders of rows that haven't changed during virtual scrolling
+export default React.memo(TableRow, arePropsEqual);
