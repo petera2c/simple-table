@@ -71,6 +71,15 @@ import InfrastructureExampleComponent, {
 import LeadsExampleComponent, { leadsExampleDefaults } from "./examples/leads/LeadsExample";
 import LoadingStateExample from "./examples/LoadingStateExample";
 import NestedAccessorExample from "./examples/NestedAccessorExample";
+import AdvancedSortingExample, {
+  advancedSortingExampleDefaults,
+} from "./examples/AdvancedSortingExample";
+import ClipboardFormattingExample, {
+  clipboardFormattingExampleDefaults,
+} from "./examples/ClipboardFormattingExample";
+import CSVExportFormattingExample, {
+  csvExportFormattingExampleDefaults,
+} from "./examples/CSVExportFormattingExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -486,6 +495,60 @@ export const LoadingState: StoryObj = {
       description: {
         story:
           "Demonstrates the loading state functionality. Toggle between loading and loaded states to see skeleton loaders displayed in place of actual cell content. Perfect for showing feedback while data is being fetched.",
+      },
+    },
+  },
+};
+
+export const AdvancedSorting: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...advancedSortingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AdvancedSortingExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates advanced sorting features including custom comparators for row-level metadata sorting and valueGetter for extracting nested values. The Priority column uses a custom comparator to sort by priority first, then by performance score. The Seniority Level column uses valueGetter to extract nested metadata for sorting while displaying formatted text.",
+      },
+    },
+  },
+};
+
+export const ClipboardFormatting: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...clipboardFormattingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: ClipboardFormattingExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates clipboard copy behavior with useFormattedValueForClipboard option. When enabled, cells copy their formatted values (with currency symbols, percentages, etc.) instead of raw data. Select cells and press Ctrl+C (Cmd+C on Mac) to test. Compare the Unit Price column (formatted copy) with the Quantity column (raw copy).",
+      },
+    },
+  },
+};
+
+export const CSVExportFormatting: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...csvExportFormattingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CSVExportFormattingExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates CSV export customization with useFormattedValueForCSV and exportValueGetter options. Columns can export formatted values (e.g., '$85K'), raw values, or completely custom values. The exportValueGetter function provides full control over export output, useful for adding codes, custom formatting, or transforming data specifically for CSV export.",
       },
     },
   },

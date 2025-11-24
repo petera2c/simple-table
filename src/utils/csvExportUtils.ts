@@ -66,11 +66,48 @@ export const convertToCSV = (visibleRows: TableRow[], headers: HeaderObject[]): 
   const headerRow = visibleHeaders.map((header) => escapeCSVValue(header.label)).join(",");
 
   // Create data rows
-  const dataRows = visibleRows.map((tableRow) => {
+  const dataRows = visibleRows.map((tableRow, rowIndex) => {
     const row = tableRow.row;
     return visibleHeaders
-      .map((header) => {
+      .map((header, colIndex) => {
         const value = getNestedValue(row, header.accessor);
+
+        // Priority 1: Use exportValueGetter if provided
+        if (header.exportValueGetter) {
+          const formattedValue = header.valueFormatter
+            ? header.valueFormatter({
+                accessor: header.accessor,
+                colIndex,
+                row,
+                rowIndex,
+                value,
+              })
+            : undefined;
+
+          const exportValue = header.exportValueGetter({
+            accessor: header.accessor,
+            colIndex,
+            row,
+            rowIndex,
+            value,
+            formattedValue,
+          });
+          return escapeCSVValue(exportValue);
+        }
+
+        // Priority 2: Use valueFormatter if useFormattedValueForCSV is true
+        if (header.useFormattedValueForCSV && header.valueFormatter) {
+          const formattedValue = header.valueFormatter({
+            accessor: header.accessor,
+            colIndex,
+            row,
+            rowIndex,
+            value,
+          });
+          return escapeCSVValue(formattedValue);
+        }
+
+        // Priority 3: Use raw value
         return escapeCSVValue(value);
       })
       .join(",");

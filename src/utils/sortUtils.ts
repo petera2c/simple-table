@@ -159,9 +159,38 @@ const sortFlatRows = ({
   const direction = sortColumn.direction;
 
   return [...rows].sort((a, b) => {
+    // If custom comparator is provided, use it
+    if (headerObject?.comparator) {
+      return headerObject.comparator({
+        rowA: a,
+        rowB: b,
+        direction,
+      });
+    }
+
     const accessor = sortColumn.key.accessor;
-    const aValue = getNestedValue(a, accessor);
-    const bValue = getNestedValue(b, accessor);
+
+    // Use valueGetter if provided, otherwise use direct accessor
+    let aValue: any;
+    let bValue: any;
+
+    if (headerObject?.valueGetter) {
+      const rowIndexA = rows.indexOf(a);
+      const rowIndexB = rows.indexOf(b);
+      aValue = headerObject.valueGetter({
+        accessor,
+        row: a,
+        rowIndex: rowIndexA,
+      });
+      bValue = headerObject.valueGetter({
+        accessor,
+        row: b,
+        rowIndex: rowIndexB,
+      });
+    } else {
+      aValue = getNestedValue(a, accessor);
+      bValue = getNestedValue(b, accessor);
+    }
 
     return compareValues(aValue, bValue, type, direction);
   });

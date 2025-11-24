@@ -37,16 +37,30 @@ export const copySelectedCellsToClipboard = (
     const header = colIndexToHeader.get(col);
 
     if (accessor && tableRows[row]?.row) {
-      const value = getNestedValue(tableRows[row].row, accessor);
+      const rowData = tableRows[row].row;
+      const value = getNestedValue(rowData, accessor);
 
-      // Format chart data as comma-separated values for better usability
-      if (header && (header.type === "lineAreaChart" || header.type === "barChart")) {
+      // Priority 1: Check if we should use formatted value for clipboard
+      if (header?.useFormattedValueForClipboard && header.valueFormatter) {
+        const formattedValue = header.valueFormatter({
+          accessor,
+          colIndex: col,
+          row: rowData,
+          rowIndex: row,
+          value,
+        });
+        acc[row][col] = formattedValue;
+      }
+      // Priority 2: Format chart data as comma-separated values for better usability
+      else if (header && (header.type === "lineAreaChart" || header.type === "barChart")) {
         if (Array.isArray(value)) {
           acc[row][col] = value.join(", ");
         } else {
           acc[row][col] = "";
         }
-      } else {
+      }
+      // Priority 3: Use raw value
+      else {
         acc[row][col] = value;
       }
     } else {
