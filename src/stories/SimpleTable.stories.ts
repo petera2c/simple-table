@@ -89,19 +89,19 @@ const meta = {
   },
 } satisfies Meta<typeof ThemingExample>;
 
-export const Alignment: StoryObj<UniversalTableProps> = {
+export const AdvancedSorting: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
-    ...alignmentExampleDefaults,
+    ...advancedSortingExampleDefaults,
   },
   argTypes: universalArgTypes,
   render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
+    React.createElement(StoryWrapper, { ExampleComponent: AdvancedSortingExample, ...args }),
   parameters: {
     docs: {
       description: {
         story:
-          "Demonstrates column alignment functionality with left, right, and center-aligned columns. This story is used as a base for comprehensive alignment testing.",
+          "Demonstrates advanced sorting features including custom comparators for row-level metadata sorting and valueGetter for extracting nested values. The Priority column uses a custom comparator to sort by priority first, then by performance score. The Seniority Level column uses valueGetter to extract nested metadata for sorting while displaying formatted text.",
       },
     },
   },
@@ -125,6 +125,24 @@ export const AggregateExample: StoryObj<UniversalTableProps> = {
   },
 };
 
+export const Alignment: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...alignmentExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AlignmentExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates column alignment functionality with left, right, and center-aligned columns. This story is used as a base for comprehensive alignment testing.",
+      },
+    },
+  },
+};
+
 export const BasicExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -134,6 +152,7 @@ export const BasicExample: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: BasicExampleComponent, ...args }),
 };
+
 export const BillingExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -143,6 +162,7 @@ export const BillingExample: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: BillingExampleComponent, ...args }),
 };
+
 export const CellHighlighting: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -151,6 +171,16 @@ export const CellHighlighting: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: CellHighlightingDemo, ...args }),
+};
+
+export const CellRenderer: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...cellRendererDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CellRendererExample, ...args }),
 };
 
 export const Charts: StoryObj<UniversalTableProps> = {
@@ -170,16 +200,6 @@ export const Charts: StoryObj<UniversalTableProps> = {
   },
 };
 
-export const CellRenderer: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...cellRendererDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: CellRendererExample, ...args }),
-};
-
 export const ClayExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -188,6 +208,24 @@ export const ClayExample: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: ClayExampleComponent, ...args }),
+};
+
+export const ClipboardFormatting: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...clipboardFormattingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: ClipboardFormattingExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates clipboard copy behavior with useFormattedValueForClipboard option. When enabled, cells copy their formatted values (with currency symbols, percentages, etc.) instead of raw data. Select cells and press Ctrl+C (Cmd+C on Mac) to test. Compare the Unit Price column (formatted copy) with the Quantity column (raw copy).",
+      },
+    },
+  },
 };
 
 export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
@@ -200,6 +238,24 @@ export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
     React.createElement(StoryWrapper, { ExampleComponent: CollapsibleColumnsExample, ...args }),
 };
 
+export const CSVExportFormatting: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...csvExportFormattingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CSVExportFormattingExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates CSV export customization with useFormattedValueForCSV and exportValueGetter options. Columns can export formatted values (e.g., '$85K'), raw values, or completely custom values. The exportValueGetter function provides full control over export output, useful for adding codes, custom formatting, or transforming data specifically for CSV export.",
+      },
+    },
+  },
+};
+
 export const DynamicHeaders: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -209,6 +265,7 @@ export const DynamicHeaders: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: DynamicHeadersExample, ...args }),
 };
+
 export const EditableCells: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -217,19 +274,6 @@ export const EditableCells: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: EditableCellsExample, ...args }),
-};
-
-export const ExternalSort: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...externalSortExampleDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, {
-      ExampleComponent: ExternalSortExample,
-      ...args,
-    }),
 };
 
 export const ExternalFilter: StoryObj<UniversalTableProps> = {
@@ -245,6 +289,19 @@ export const ExternalFilter: StoryObj<UniversalTableProps> = {
     }),
 };
 
+export const ExternalSort: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...externalSortExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: ExternalSortExample,
+      ...args,
+    }),
+};
+
 export const FilterExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -254,6 +311,7 @@ export const FilterExample: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: FilterExampleComponent, ...args }),
 };
+
 export const FinanceExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -263,6 +321,7 @@ export const FinanceExample: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: FinancialExample, ...args }),
 };
+
 export const HiddenColumns: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -272,6 +331,7 @@ export const HiddenColumns: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: HiddenColumnsExample, ...args }),
 };
+
 export const InfiniteScroll: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -281,6 +341,7 @@ export const InfiniteScroll: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: InfiniteScrollExample, ...args }),
 };
+
 export const InfrastructureExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -293,6 +354,7 @@ export const InfrastructureExample: StoryObj<UniversalTableProps> = {
       ...args,
     }),
 };
+
 export const LeadsExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -302,6 +364,7 @@ export const LeadsExample: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: LeadsExampleComponent, ...args }),
 };
+
 export const LiveUpdates: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -310,6 +373,18 @@ export const LiveUpdates: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: LiveUpdatesExample, ...args }),
+};
+
+export const LoadingState: StoryObj = {
+  render: () => React.createElement(LoadingStateExample),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the loading state functionality. Toggle between loading and loaded states to see skeleton loaders displayed in place of actual cell content. Perfect for showing feedback while data is being fetched.",
+      },
+    },
+  },
 };
 
 export const ManufacturingExample: StoryObj<UniversalTableProps> = {
@@ -339,6 +414,7 @@ export const MusicExample: StoryObj<UniversalTableProps> = {
     },
   },
 };
+
 export const NestedAccessor: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -355,6 +431,7 @@ export const NestedAccessor: StoryObj<UniversalTableProps> = {
     },
   },
 };
+
 export const Pagination: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -366,18 +443,6 @@ export const Pagination: StoryObj<UniversalTableProps> = {
     React.createElement(StoryWrapper, { ExampleComponent: PaginationExample, ...args }),
 };
 
-export const ServerSidePagination: StoryObj = {
-  render: () => React.createElement(ServerSidePaginationExample),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates true server-side pagination where the API returns only the rows for the requested page (using offset/limit pattern). The table uses serverSidePagination flag to disable internal slicing, totalRowCount to show correct totals, and onPageChange callback to fetch new data. Perfect for working with paginated REST APIs.",
-      },
-    },
-  },
-};
-
 export const PinnedColumns: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -386,24 +451,6 @@ export const PinnedColumns: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: PinnedColumnsExample, ...args }),
-};
-export const RowGrouping: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...rowGroupingDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: RowGroupingExample, ...args }),
-};
-export const RowSelection: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...rowSelectionExampleDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: RowSelectionExample, ...args }),
 };
 
 export const RowButtons: StoryObj<UniversalTableProps> = {
@@ -424,6 +471,16 @@ export const RowButtons: StoryObj<UniversalTableProps> = {
   },
 };
 
+export const RowGrouping: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...rowGroupingDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: RowGroupingExample, ...args }),
+};
+
 export const RowHeight: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -442,6 +499,16 @@ export const RowHeight: StoryObj<UniversalTableProps> = {
   },
 };
 
+export const RowSelection: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...rowSelectionExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: RowSelectionExample, ...args }),
+};
+
 export const SalesExample: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -451,6 +518,7 @@ export const SalesExample: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: SalesExampleComponent, ...args }),
 };
+
 export const SelectableCells: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -460,6 +528,19 @@ export const SelectableCells: StoryObj<UniversalTableProps> = {
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: SelectableCellsExample, ...args }),
 };
+
+export const ServerSidePagination: StoryObj = {
+  render: () => React.createElement(ServerSidePaginationExample),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates true server-side pagination where the API returns only the rows for the requested page (using offset/limit pattern). The table uses serverSidePagination flag to disable internal slicing, totalRowCount to show correct totals, and onPageChange callback to fetch new data. Perfect for working with paginated REST APIs.",
+      },
+    },
+  },
+};
+
 export const Theming: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -483,72 +564,6 @@ export const Tooltip: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates header tooltip functionality. Hover over any column header to see helpful tooltip text explaining what the column contains. Tooltips appear after a short delay and are positioned automatically to stay within the viewport.",
-      },
-    },
-  },
-};
-
-export const LoadingState: StoryObj = {
-  render: () => React.createElement(LoadingStateExample),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates the loading state functionality. Toggle between loading and loaded states to see skeleton loaders displayed in place of actual cell content. Perfect for showing feedback while data is being fetched.",
-      },
-    },
-  },
-};
-
-export const AdvancedSorting: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...advancedSortingExampleDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: AdvancedSortingExample, ...args }),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates advanced sorting features including custom comparators for row-level metadata sorting and valueGetter for extracting nested values. The Priority column uses a custom comparator to sort by priority first, then by performance score. The Seniority Level column uses valueGetter to extract nested metadata for sorting while displaying formatted text.",
-      },
-    },
-  },
-};
-
-export const ClipboardFormatting: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...clipboardFormattingExampleDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: ClipboardFormattingExample, ...args }),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates clipboard copy behavior with useFormattedValueForClipboard option. When enabled, cells copy their formatted values (with currency symbols, percentages, etc.) instead of raw data. Select cells and press Ctrl+C (Cmd+C on Mac) to test. Compare the Unit Price column (formatted copy) with the Quantity column (raw copy).",
-      },
-    },
-  },
-};
-
-export const CSVExportFormatting: StoryObj<UniversalTableProps> = {
-  args: {
-    ...defaultUniversalArgs,
-    ...csvExportFormattingExampleDefaults,
-  },
-  argTypes: universalArgTypes,
-  render: (args) =>
-    React.createElement(StoryWrapper, { ExampleComponent: CSVExportFormattingExample, ...args }),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates CSV export customization with useFormattedValueForCSV and exportValueGetter options. Columns can export formatted values (e.g., '$85K'), raw values, or completely custom values. The exportValueGetter function provides full control over export output, useful for adding codes, custom formatting, or transforming data specifically for CSV export.",
       },
     },
   },
