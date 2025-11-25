@@ -36,7 +36,7 @@ export const createGridTemplateColumns = ({
     flattenedHeaders: HeaderObject[];
   }): HeaderObject[] => {
     headers.forEach((header) => {
-      if (header.hide) return;
+      if (header.hide || header.excludeFromRender) return;
 
       if (header.children && header.children.length > 0) {
         // If this header is collapsed, show children based on showWhen property

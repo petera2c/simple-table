@@ -18,8 +18,8 @@ export const displayCell = ({
   headers?: HeaderObject[];
   collapsedHeaders?: Set<Accessor>;
 }) => {
-  // Check if manually hidden
-  if (header.hide) return null;
+  // Check if manually hidden or excluded from render
+  if (header.hide || header.excludeFromRender) return null;
 
   // Check pinning
   if ((pinned || header.pinned) && header.pinned !== pinned) return null;

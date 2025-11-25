@@ -37,8 +37,8 @@ const getVisibleHeaders = (headers: HeaderObject[]): HeaderObject[] => {
 
   const processHeaders = (headerList: HeaderObject[]) => {
     for (const header of headerList) {
-      // Skip hidden headers and selection columns
-      if (header.hide || header.isSelectionColumn) {
+      // Skip hidden headers, selection columns, and columns excluded from CSV
+      if (header.hide || header.isSelectionColumn || header.excludeFromCsv) {
         continue;
       }
 
@@ -95,8 +95,9 @@ export const convertToCSV = (visibleRows: TableRow[], headers: HeaderObject[]): 
           return escapeCSVValue(exportValue);
         }
 
-        // Priority 2: Use valueFormatter if useFormattedValueForCSV is true
-        if (header.useFormattedValueForCSV && header.valueFormatter) {
+        // Priority 2: Use valueFormatter if useFormattedValueForCSV is not explicitly false
+        // Auto-enable if valueFormatter exists, unless explicitly disabled
+        if (header.useFormattedValueForCSV !== false && header.valueFormatter) {
           const formattedValue = header.valueFormatter({
             accessor: header.accessor,
             colIndex,

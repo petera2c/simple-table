@@ -78,6 +78,7 @@ type HeaderObject = {
   chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
   children?: HeaderObject[];
   collapsible?: boolean; // This is used to determine if the column is collapsible
+  collapseDefault?: boolean; // When true, this column starts collapsed (only applies if collapsible or expandable is true)
   comparator?: Comparator; // Custom sorting function based on row-level metadata
   disableReorder?: boolean;
   enumOptions?: EnumOption[];
@@ -87,6 +88,8 @@ type HeaderObject = {
   headerRenderer?: HeaderRenderer;
   hide?: boolean;
   isEditable?: boolean; // This is used to determine if the column is editable
+  excludeFromRender?: boolean; // When true, excludes this column from the rendered table (e.g., use only for CSV export)
+  excludeFromCsv?: boolean; // When true, excludes this column from the exported CSV file
   isSelectionColumn?: boolean; // This is a flag for the checkbox select row column
   isSortable?: boolean;
   label: string;

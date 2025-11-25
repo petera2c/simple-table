@@ -80,6 +80,8 @@
   /* Sky colors - used in sky theme */
   --st-sky-100: #e0f2fe;
   --st-sky-200: #bae6fd;
+  --st-sky-300: #7dd3fc;
+  --st-sky-400: #38bdf8;
 
   /* Blue colors - used across multiple themes */
   --st-blue-50: #eff6ff;
@@ -272,6 +274,13 @@ input {
   ) {
   background-color: var(--st-hover-row-background-color);
 }
+/* Separate hover background for sub-cells */
+.st-row.hovered
+  .st-cell.st-sub-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
+  background-color: var(--st-sub-cell-hover-background-color);
+}
 .st-row.even {
   background-color: var(--st-even-row-background-color);
 }
@@ -292,7 +301,6 @@ input {
   ) {
   background-color: var(--st-hover-row-background-color);
 }
-
 .st-row.odd .st-cell-content {
   color: var(--st-cell-odd-row-color);
 }
@@ -563,8 +571,12 @@ input {
 }
 
 /* Style for a cell when it is being dragged */
-.st-dragging {
+.st-dragging:not(.st-sub-header) {
   background-color: var(--st-dragging-background-color);
+}
+/* Separate dragging background for sub-headers */
+.st-dragging.st-sub-header {
+  background-color: var(--st-dragging-sub-header-background-color);
 }
 
 /* Loading skeleton styles */
@@ -603,6 +615,22 @@ input {
   color: var(--st-selected-first-cell-color) !important;
 }
 
+/* Style for selected sub-cells */
+.st-cell-selected.st-sub-cell {
+  background-color: var(--st-selected-sub-cell-background-color);
+}
+.st-cell-selected.st-sub-cell .st-cell-content {
+  color: var(--st-selected-sub-cell-color) !important;
+}
+
+/* Style for first selected sub-cell */
+.st-cell-selected-first.st-sub-cell {
+  background-color: var(--st-selected-sub-cell-background-color);
+}
+.st-cell-selected-first.st-sub-cell .st-cell-content {
+  color: var(--st-selected-sub-cell-color) !important;
+}
+
 /* Style for column selected cells (no borders) */
 .st-cell-column-selected {
   background-color: var(--st-selected-cell-background-color);
@@ -617,6 +645,22 @@ input {
 }
 .st-cell-column-selected-first .st-cell-content {
   color: var(--st-selected-first-cell-color) !important;
+}
+
+/* Style for column selected sub-cells */
+.st-cell-column-selected.st-sub-cell {
+  background-color: var(--st-selected-sub-cell-background-color);
+}
+.st-cell-column-selected.st-sub-cell .st-cell-content {
+  color: var(--st-selected-sub-cell-color) !important;
+}
+
+/* Style for first column selected sub-cell */
+.st-cell-column-selected-first.st-sub-cell {
+  background-color: var(--st-selected-sub-cell-background-color);
+}
+.st-cell-column-selected-first.st-sub-cell .st-cell-content {
+  color: var(--st-selected-sub-cell-color) !important;
 }
 
 /* Border for selected cells */

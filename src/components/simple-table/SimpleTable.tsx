@@ -76,6 +76,8 @@ interface SimpleTableProps {
   headerHeight?: number; // Height of the header
   height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
+  initialSortColumn?: string; // Accessor of the column to sort by on initial load
+  initialSortDirection?: "ascending" | "descending"; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
@@ -147,6 +149,8 @@ const SimpleTableComp = ({
   headerHeight,
   height,
   hideFooter = false,
+  initialSortColumn,
+  initialSortDirection = "ascending",
   isLoading = false,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
@@ -234,7 +238,27 @@ const SimpleTableComp = ({
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
-  const [collapsedHeaders, setCollapsedHeaders] = useState<Set<Accessor>>(new Set());
+
+  // Initialize collapsed headers with columns that have collapsedByDefault set
+  const getInitialCollapsedHeaders = useCallback(() => {
+    const collapsed = new Set<Accessor>();
+    const processHeaders = (hdrs: HeaderObject[]) => {
+      hdrs.forEach((header) => {
+        if (header.collapseDefault && (header.collapsible || header.expandable)) {
+          collapsed.add(header.accessor);
+        }
+        if (header.children) {
+          processHeaders(header.children);
+        }
+      });
+    };
+    processHeaders(defaultHeaders);
+    return collapsed;
+  }, [defaultHeaders]);
+
+  const [collapsedHeaders, setCollapsedHeaders] = useState<Set<Accessor>>(
+    getInitialCollapsedHeaders
+  );
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
@@ -361,6 +385,8 @@ const SimpleTableComp = ({
     externalSortHandling,
     onSortChange,
     rowGrouping,
+    initialSortColumn,
+    initialSortDirection,
   });
 
   // Process rows through pagination, grouping, and virtualization
