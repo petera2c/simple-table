@@ -14,45 +14,78 @@
   --st-scrollbar-width: thin;
   --st-scrollbar-thumb-border-radius: 4px;
 
-  /* Color variables */
+  /* Base/Structural colors */
   --st-border-color: var(--st-gray-700);
+  --st-footer-background-color: var(--st-gray-900);
+  --st-last-group-row-separator-border-color: var(--st-gray-500);
+
+  /* Row colors */
   --st-odd-row-background-color: var(--st-gray-800);
   --st-even-row-background-color: var(--st-gray-900);
-  --st-odd-column-background-color: var(--st-gray-800);
-  --st-even-column-background-color: var(--st-gray-900);
   --st-hover-row-background-color: var(--st-gray-600);
   --st-selected-row-background-color: var(--st-blue-950);
+
+  /* Column colors */
+  --st-odd-column-background-color: var(--st-gray-800);
+  --st-even-column-background-color: var(--st-gray-900);
+
+  /* Header colors */
   --st-header-background-color: var(--st-gray-800);
   --st-sub-header-background-color: var(--st-gray-700);
   --st-sub-cell-background-color: var(--st-gray-800);
   --st-sub-cell-hover-background-color: var(--st-gray-700);
-  --st-dragging-sub-cell-background-color: var(--st-gray-600);
   --st-header-label-color: var(--st-gray-100);
   --st-header-icon-color: var(--st-gray-400);
-  --st-dragging-background-color: var(--st-gray-500);
-  --st-selected-cell-background-color: var(--st-blue-900);
-  --st-selected-first-cell-background-color: var(--st-blue-800);
-  --st-footer-background-color: var(--st-gray-900);
+
+  /* Cell colors */
   --st-cell-color: var(--st-gray-100);
   --st-cell-odd-row-color: var(--st-gray-200);
   --st-edit-cell-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1);
+
+  /* Selection colors */
+  --st-selected-cell-background-color: var(--st-blue-900);
+  --st-selected-first-cell-background-color: var(--st-blue-800);
   --st-selected-cell-color: var(--st-white);
   --st-selected-first-cell-color: var(--st-white);
+  --st-selected-sub-cell-background-color: var(--st-blue-800);
+  --st-selected-sub-cell-color: var(--st-white);
+  --st-dragging-background-color: var(--st-gray-500);
+  --st-dragging-sub-header-background-color: var(--st-gray-600);
+
+  /* Interactive element colors */
   --st-resize-handle-color: var(--st-gray-500);
   --st-resize-handle-selected-color: var(--st-white);
-  --st-last-group-row-separator-border-color: var(--st-gray-500);
 
   /* Border colors */
   --st-selected-border-color: var(--st-blue-400);
   --st-editable-cell-focus-border-color: var(--st-blue-400);
 
-  /* Component-specific colors */
-  --st-checkbox-checked-background-color: var(--st-blue-500);
-  --st-checkbox-checked-border-color: var(--st-blue-500);
-  --st-column-editor-background-color: var(--st-gray-800);
-  --st-column-editor-popout-background-color: var(--st-gray-800);
+  /* Button colors */
   --st-button-hover-background-color: var(--st-gray-600);
   --st-button-active-background-color: var(--st-blue-500);
+  --st-next-prev-btn-color: var(--st-gray-300);
+  --st-next-prev-btn-disabled-color: var(--st-gray-600);
+  --st-page-btn-color: var(--st-gray-300);
+  --st-page-btn-hover-background-color: var(--st-gray-600);
+
+  /* Checkbox colors */
+  --st-checkbox-checked-background-color: var(--st-blue-500);
+  --st-checkbox-checked-border-color: var(--st-blue-500);
+  --st-checkbox-border-color: var(--st-gray-600);
+
+  /* Column editor colors */
+  --st-column-editor-background-color: var(--st-gray-800);
+  --st-column-editor-popout-background-color: var(--st-gray-800);
+  --st-column-editor-text-color: var(--st-gray-400);
+
+  /* Form element colors */
+  --st-dropdown-group-label-color: var(--st-gray-400);
+  --st-datepicker-weekday-color: var(--st-gray-400);
+  --st-datepicker-other-month-color: var(--st-gray-600);
+  --st-filter-button-disabled-background-color: var(--st-gray-700);
+  --st-filter-button-disabled-text-color: var(--st-gray-500);
+
+  /* Flash/Animation colors */
   --st-cell-flash-color: var(--st-gray-500);
   --st-copy-flash-color: var(--st-blue-500);
   --st-warning-flash-color: var(--st-red-400);
@@ -69,40 +102,11 @@
   --st-header-selected-background-color: var(--st-blue-500);
   --st-header-selected-label-color: var(--st-white);
   --st-header-selected-icon-color: var(--st-white);
-
-  /* Header/selection highlight indicator colors */
   --st-header-highlight-indicator-color: var(--st-blue-900);
   --st-selection-highlight-indicator-color: var(--st-gray-600);
 
-  /* Navigation button colors */
-  --st-next-prev-btn-color: var(--st-gray-300);
-  --st-next-prev-btn-disabled-color: var(--st-gray-600);
-
-  /* Page button colors */
-  --st-page-btn-color: var(--st-gray-300);
-  --st-page-btn-hover-background-color: var(--st-gray-600);
-
-  /* Column editor colors */
-  --st-column-editor-text-color: var(--st-gray-400);
-
-  /* Checkbox colors */
-  --st-checkbox-border-color: var(--st-gray-600);
-
-  /* Dropdown colors */
-  --st-dropdown-group-label-color: var(--st-gray-400);
-
-  /* Datepicker colors */
-  --st-datepicker-weekday-color: var(--st-gray-400);
-  --st-datepicker-other-month-color: var(--st-gray-600);
-
-  /* Filter button disabled colors */
-  --st-filter-button-disabled-background-color: var(--st-gray-700);
-  --st-filter-button-disabled-text-color: var(--st-gray-500);
-
-  /* Loading skeleton colors */
+  /* Utility colors */
   --st-loading-skeleton-bg-color: var(--st-gray-700);
-
-  /* Chart colors */
   --st-chart-color: var(--st-blue-400);
   --st-chart-fill-color: var(--st-blue-400);
 }

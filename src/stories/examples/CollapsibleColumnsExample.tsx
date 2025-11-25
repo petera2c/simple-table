@@ -442,16 +442,6 @@ const headers: HeaderObject[] = [
     singleRowChildren: true, // Render children on same row instead of tree hierarchy
     children: [
       {
-        accessor: "totalSales",
-        label: "Total Sales",
-        width: 140,
-        // showWhen: "parentCollapsed", // Shows only when parent is collapsed - Default is "always" when not specified
-        isSortable: true,
-        align: "right",
-        type: "number",
-        valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
-      },
-      {
         showWhen: "parentExpanded", // Shows only when parent is expanded
         accessor: "q1Sales",
         label: "Q1",
