@@ -517,7 +517,22 @@ const TableCell = ({
                 {renderRowButtons()}
               </div>
             ) : header.cellRenderer ? (
-              header.cellRenderer({ accessor: header.accessor, colIndex, row, theme })
+              (() => {
+                return header.cellRenderer({
+                  accessor: header.accessor,
+                  colIndex,
+                  row,
+                  theme,
+                  value: localContent,
+                  formattedValue: header?.valueFormatter?.({
+                    accessor: header.accessor,
+                    colIndex,
+                    row,
+                    rowIndex,
+                    value: localContent,
+                  }),
+                });
+              })()
             ) : (
               displayContent({ content: localContent, header, colIndex, row, rowIndex })
             )}

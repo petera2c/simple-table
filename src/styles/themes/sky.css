@@ -25,6 +25,8 @@
   --st-header-background-color: var(--st-blue-200);
   --st-sub-header-background-color: var(--st-blue-300);
   --st-sub-cell-background-color: var(--st-sky-100);
+  --st-sub-cell-hover-background-color: var(--st-sky-200);
+  --st-dragging-sub-cell-background-color: var(--st-sky-300);
   --st-header-label-color: var(--st-blue-900);
   --st-header-icon-color: var(--st-blue-600);
   --st-dragging-background-color: var(--st-sky-200);

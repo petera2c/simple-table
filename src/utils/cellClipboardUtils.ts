@@ -41,8 +41,12 @@ export const copySelectedCellsToClipboard = (
       const value = getNestedValue(rowData, accessor);
 
       // Priority 1: Check if we should use formatted value for clipboard
-      if (header?.useFormattedValueForClipboard && header.valueFormatter) {
-        const formattedValue = header.valueFormatter({
+      // Auto-enable if valueFormatter exists, unless explicitly disabled
+      const shouldUseFormattedValue =
+        header?.useFormattedValueForClipboard !== false && header?.valueFormatter;
+
+      if (shouldUseFormattedValue) {
+        const formattedValue = header.valueFormatter!({
           accessor,
           colIndex: col,
           row: rowData,

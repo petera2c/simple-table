@@ -48,15 +48,45 @@ const useSortableData = ({
   externalSortHandling,
   onSortChange,
   rowGrouping,
+  initialSortColumn,
+  initialSortDirection,
 }: {
   headers: HeaderObject[];
   tableRows: Row[];
   externalSortHandling: boolean;
   onSortChange?: (sort: SortColumn | null) => void;
   rowGrouping?: string[];
+  initialSortColumn?: string;
+  initialSortDirection?: "ascending" | "descending";
 }) => {
+  // Initialize sort state with initial values if provided
+  const getInitialSort = useCallback((): SortColumn | null => {
+    if (!initialSortColumn) return null;
+
+    const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+      for (const header of headers) {
+        if (header.accessor === initialSortColumn) {
+          return header;
+        }
+        if (header.children && header.children.length > 0) {
+          const found = findHeaderRecursively(header.children);
+          if (found) return found;
+        }
+      }
+      return undefined;
+    };
+
+    const targetHeader = findHeaderRecursively(headers);
+    if (!targetHeader) return null;
+
+    return {
+      key: targetHeader,
+      direction: initialSortDirection || "ascending",
+    };
+  }, [headers, initialSortColumn, initialSortDirection]);
+
   // Single sort state instead of complex 3-state system
-  const [sort, setSort] = useState<SortColumn | null>(null);
+  const [sort, setSort] = useState<SortColumn | null>(getInitialSort);
 
   // Recursive sort function for nested data
   const sortNestedRows = useCallback(

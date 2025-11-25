@@ -272,6 +272,13 @@ input {
   ) {
   background-color: var(--st-hover-row-background-color);
 }
+/* Separate hover background for sub-cells */
+.st-row.hovered
+  .st-cell.st-sub-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
+  background-color: var(--st-sub-cell-hover-background-color);
+}
 .st-row.even {
   background-color: var(--st-even-row-background-color);
 }
@@ -291,6 +298,13 @@ input {
     .st-cell-column-selected-first
   ) {
   background-color: var(--st-hover-row-background-color);
+}
+/* Separate hover background for sub-cells in selected rows */
+.st-row.selected.hovered
+  .st-cell.st-sub-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
+  background-color: var(--st-sub-cell-hover-background-color);
 }
 
 .st-row.odd .st-cell-content {
@@ -565,6 +579,10 @@ input {
 /* Style for a cell when it is being dragged */
 .st-dragging {
   background-color: var(--st-dragging-background-color);
+}
+/* Separate dragging background for sub-cells */
+.st-dragging.st-sub-cell {
+  background-color: var(--st-dragging-sub-cell-background-color);
 }
 
 /* Loading skeleton styles */
