@@ -31,8 +31,6 @@
   /* Header colors */
   --st-header-background-color: var(--st-slate-100);
   --st-sub-header-background-color: var(--st-slate-200);
-  --st-sub-cell-background-color: var(--st-slate-100);
-  --st-sub-cell-hover-background-color: var(--st-slate-200);
   --st-header-label-color: var(--st-slate-900);
   --st-header-icon-color: var(--st-slate-500);
 
@@ -40,6 +38,8 @@
   --st-cell-color: var(--st-slate-900);
   --st-cell-odd-row-color: var(--st-slate-800);
   --st-edit-cell-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --st-sub-cell-background-color: var(--st-slate-100);
+  --st-sub-cell-hover-background-color: var(--st-slate-200);
 
   /* Selection colors */
   --st-selected-cell-background-color: var(--st-blue-100);

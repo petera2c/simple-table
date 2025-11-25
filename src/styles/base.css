@@ -301,14 +301,6 @@ input {
   ) {
   background-color: var(--st-hover-row-background-color);
 }
-/* Separate hover background for sub-cells in selected rows */
-.st-row.selected.hovered
-  .st-cell.st-sub-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
-    .st-cell-column-selected
-  ):not(.st-cell-column-selected-first) {
-  background-color: var(--st-sub-cell-hover-background-color);
-}
-
 .st-row.odd .st-cell-content {
   color: var(--st-cell-odd-row-color);
 }
