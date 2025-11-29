@@ -126,7 +126,7 @@ const TableCell = ({
     isWarningFlashing,
     onCellEdit,
     onCellClick,
-    onRowExpand,
+    onRowGroupExpand,
     onTableHeaderDragEnd,
     rowButtons,
     rowGrouping,
@@ -349,9 +349,9 @@ const TableCell = ({
         return newSet;
       });
 
-      // Call the onRowExpand callback if provided
-      if (onRowExpand) {
-        onRowExpand({
+      // Call the onRowGroupExpand callback if provided
+      if (onRowGroupExpand) {
+        onRowGroupExpand({
           row,
           rowIndex,
           depth,
@@ -371,7 +371,7 @@ const TableCell = ({
       expandAll,
       unexpandedRows,
       setUnexpandedRows,
-      onRowExpand,
+      onRowGroupExpand,
     ]
   );
 
@@ -519,7 +519,7 @@ const TableCell = ({
       parentRef={tableBodyContainerRef}
       tableRow={tableRow}
     >
-      {header.expandable && canExpandFurther && (cellHasChildren || onRowExpand) ? (
+      {header.expandable && canExpandFurther && (cellHasChildren || onRowGroupExpand) ? (
         <div
           className={`st-icon-container st-expand-icon-container ${
             isRowExpanded ? "expanded" : "collapsed"

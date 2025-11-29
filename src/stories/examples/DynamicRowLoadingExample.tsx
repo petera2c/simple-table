@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import SimpleTable from "../../components/simple-table/SimpleTable";
 import { UniversalTableProps } from "./StoryWrapper";
-import OnRowExpandProps from "../../types/OnRowExpandProps";
+import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
 
@@ -409,7 +409,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
   ]);
 
   const handleRowExpand = useCallback(
-    async ({ row, rowId, depth, groupingKey, isExpanded }: OnRowExpandProps) => {
+    async ({ row, rowId, depth, groupingKey, isExpanded }: OnRowGroupExpandProps) => {
       // Don't fetch if collapsing
       if (!isExpanded) {
         return;
@@ -490,7 +490,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         editColumns
         expandAll={false}
         height={props.height ?? "calc(100dvh - 200px)"}
-        onRowExpand={handleRowExpand}
+        onRowGroupExpand={handleRowExpand}
         rowGrouping={["teams", "employees"]}
         rowIdAccessor="id"
         rows={rows}

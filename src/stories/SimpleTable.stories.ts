@@ -281,7 +281,7 @@ export const DynamicRowLoading: StoryObj<UniversalTableProps> = {
     docs: {
       description: {
         story:
-          "Demonstrates the onRowExpand callback for lazy-loading hierarchical data on demand. Departments load immediately without children. When you expand a department, teams are fetched from a simulated API. When you expand a team, employees are fetched. This pattern is perfect for large datasets where loading all nested data upfront would be too expensive. Open the browser console to see the simulated API calls!",
+          "Demonstrates the onRowGroupExpand callback for lazy-loading hierarchical data on demand. Departments load immediately without children. When you expand a department, teams are fetched from a simulated API. When you expand a team, employees are fetched. This pattern is perfect for large datasets where loading all nested data upfront would be too expensive. Open the browser console to see the simulated API calls!",
       },
     },
   },

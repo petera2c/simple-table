@@ -1,7 +1,7 @@
 import { MouseEvent } from "react";
 import Row from "./Row";
 
-interface OnRowExpandProps {
+interface OnRowGroupExpandProps {
   row: Row;
   rowIndex: number;
   depth: number;
@@ -11,4 +11,4 @@ interface OnRowExpandProps {
   isExpanded: boolean;
 }
 
-export default OnRowExpandProps;
+export default OnRowGroupExpandProps;
