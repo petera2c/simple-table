@@ -45,7 +45,7 @@ interface TableContextType {
   editColumns?: boolean;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
-  expandAll?: boolean;
+  expandAll: boolean;
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;

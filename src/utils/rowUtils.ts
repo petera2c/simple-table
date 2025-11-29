@@ -86,6 +86,24 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
 };
 
 /**
+ * Determine if a row is expanded based on expandAll setting and unexpandedRows set
+ * @param rowId - The ID of the row to check
+ * @param expandAll - Whether all rows are expanded by default
+ * @param unexpandedRows - Set of row IDs that are in the opposite state of expandAll
+ * @returns true if the row is expanded, false otherwise
+ */
+export const isRowExpanded = (
+  rowId: string | number,
+  expandAll: boolean,
+  unexpandedRows: Set<string>
+): boolean => {
+  const rowIdStr = String(rowId);
+  return expandAll
+    ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expanded unless explicitly collapsed
+    : unexpandedRows.has(rowIdStr); // If expandAll=false, only expanded if explicitly expanded
+};
+
+/**
  * Flatten rows recursively based on row grouping configuration
  * Now calculates ALL properties including position and isLastGroupRow
  */
@@ -138,10 +156,7 @@ export const flattenRowsWithGrouping = ({
       displayPosition++;
 
       // Check if row should be expanded
-      const rowIdStr = String(rowId);
-      const isExpanded = expandAll
-        ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expand unless explicitly collapsed
-        : unexpandedRows.has(rowIdStr); // If expandAll=false, only expand if explicitly expanded
+      const isExpanded = isRowExpanded(rowId, expandAll, unexpandedRows);
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {

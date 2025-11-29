@@ -9,7 +9,13 @@ import TableCellProps from "../../types/TableCellProps";
 import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
-import { getRowId, hasNestedRows, getNestedValue, setNestedValue } from "../../utils/rowUtils";
+import {
+  getRowId,
+  hasNestedRows,
+  getNestedValue,
+  setNestedValue,
+  isRowExpanded as getIsRowExpanded,
+} from "../../utils/rowUtils";
 import { Animate, LineAreaChart, BarChart } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
@@ -150,10 +156,7 @@ const TableCell = ({
   // Check if we can expand further (depth must be less than rowGrouping length)
   const canExpandFurther = rowGrouping && depth < rowGrouping.length;
   // Determine if row is expanded based on expandAll setting
-  const rowIdStr = String(rowId);
-  const isRowExpanded = expandAll
-    ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expanded unless explicitly collapsed
-    : unexpandedRows.has(rowIdStr); // If expandAll=false, only expanded if explicitly expanded
+  const isRowExpanded = getIsRowExpanded(rowId, expandAll, unexpandedRows);
 
   // Check if this cell is currently flashing from copy operation
   const isCellCopyFlashing = isCopyFlashing({ rowIndex, colIndex, rowId });
@@ -331,13 +334,11 @@ const TableCell = ({
     (event: React.MouseEvent) => {
       event.stopPropagation(); // Prevent event bubbling
 
-      const rowIdStr = String(rowId);
       // Calculate current expansion state based on expandAll setting
-      const wasExpanded = expandAll
-        ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expanded unless explicitly collapsed
-        : unexpandedRows.has(rowIdStr); // If expandAll=false, only expanded if explicitly expanded
+      const wasExpanded = getIsRowExpanded(rowId, expandAll, unexpandedRows);
 
       // Update the internal expansion state
+      const rowIdStr = String(rowId);
       setUnexpandedRows((prev) => {
         const newSet = new Set(prev);
         if (newSet.has(rowIdStr)) {
