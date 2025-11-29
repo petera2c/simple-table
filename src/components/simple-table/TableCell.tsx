@@ -107,6 +107,7 @@ const TableCell = ({
     columnBorders,
     draggedHeaderRef,
     enableRowSelection,
+    expandAll,
     expandIcon,
     handleMouseDown,
     handleMouseOver,
@@ -119,6 +120,7 @@ const TableCell = ({
     isWarningFlashing,
     onCellEdit,
     onCellClick,
+    onRowExpand,
     onTableHeaderDragEnd,
     rowButtons,
     rowGrouping,
@@ -145,7 +147,13 @@ const TableCell = ({
   const rowId = getRowId({ row, rowIdAccessor });
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
-  const isRowExpanded = !unexpandedRows.has(String(rowId));
+  // Check if we can expand further (depth must be less than rowGrouping length)
+  const canExpandFurther = rowGrouping && depth < rowGrouping.length;
+  // Determine if row is expanded based on expandAll setting
+  const rowIdStr = String(rowId);
+  const isRowExpanded = expandAll
+    ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expanded unless explicitly collapsed
+    : unexpandedRows.has(rowIdStr); // If expandAll=false, only expanded if explicitly expanded
 
   // Check if this cell is currently flashing from copy operation
   const isCellCopyFlashing = isCopyFlashing({ rowIndex, colIndex, rowId });
@@ -319,18 +327,52 @@ const TableCell = ({
   );
 
   // Handle row expansion
-  const handleRowExpansion = useCallback(() => {
-    setUnexpandedRows((prev) => {
-      const newSet = new Set(prev);
+  const handleRowExpansion = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation(); // Prevent event bubbling
+
       const rowIdStr = String(rowId);
-      if (newSet.has(rowIdStr)) {
-        newSet.delete(rowIdStr);
-      } else {
-        newSet.add(rowIdStr);
+      // Calculate current expansion state based on expandAll setting
+      const wasExpanded = expandAll
+        ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expanded unless explicitly collapsed
+        : unexpandedRows.has(rowIdStr); // If expandAll=false, only expanded if explicitly expanded
+
+      // Update the internal expansion state
+      setUnexpandedRows((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(rowIdStr)) {
+          newSet.delete(rowIdStr);
+        } else {
+          newSet.add(rowIdStr);
+        }
+        return newSet;
+      });
+
+      // Call the onRowExpand callback if provided
+      if (onRowExpand) {
+        onRowExpand({
+          row,
+          rowIndex,
+          depth,
+          event,
+          rowId,
+          groupingKey: currentGroupingKey,
+          isExpanded: !wasExpanded, // The new state (opposite of current)
+        });
       }
-      return newSet;
-    });
-  }, [rowId, setUnexpandedRows]);
+    },
+    [
+      rowId,
+      row,
+      rowIndex,
+      depth,
+      currentGroupingKey,
+      expandAll,
+      unexpandedRows,
+      setUnexpandedRows,
+      onRowExpand,
+    ]
+  );
 
   // Handle keyboard events when cell is focused
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -476,7 +518,7 @@ const TableCell = ({
       parentRef={tableBodyContainerRef}
       tableRow={tableRow}
     >
-      {header.expandable && cellHasChildren ? (
+      {header.expandable && canExpandFurther && (cellHasChildren || onRowExpand) ? (
         <div
           className={`st-icon-container st-expand-icon-container ${
             isRowExpanded ? "expanded" : "collapsed"

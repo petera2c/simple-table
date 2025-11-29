@@ -17,6 +17,7 @@ import CellValue from "../types/CellValue";
 import CellClickProps from "../types/CellClickProps";
 import { RowButton } from "../types/RowButton";
 import { HeaderDropdown } from "../types/HeaderDropdownProps";
+import OnRowExpandProps from "../types/OnRowExpandProps";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -44,6 +45,7 @@ interface TableContextType {
   editColumns?: boolean;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
+  expandAll?: boolean;
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;
@@ -81,6 +83,7 @@ interface TableContextType {
   onColumnSelect?: (header: HeaderObject) => void;
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
   onLoadMore?: () => void;
+  onRowExpand?: (props: OnRowExpandProps) => void | Promise<void>;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftRef: RefObject<HTMLDivElement>;

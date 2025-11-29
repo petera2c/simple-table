@@ -24,6 +24,7 @@ import HeaderObject, {
 } from "./types/HeaderObject";
 import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import OnSortProps from "./types/OnSortProps";
+import OnRowExpandProps from "./types/OnRowExpandProps";
 import Row from "./types/Row";
 import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
@@ -75,6 +76,7 @@ export type {
   HeaderObject,
   HeaderRenderer,
   HeaderRendererProps,
+  OnRowExpandProps,
   OnSortProps,
   Row,
   RowButtonProps,
