@@ -261,8 +261,6 @@ input {
   min-width: 100%;
 
   /* Performance optimizations for virtual scrolling */
-  content-visibility: auto;
-  contain-intrinsic-size: auto 32px;
   will-change: transform;
   backface-visibility: hidden;
   transform: translateZ(0);

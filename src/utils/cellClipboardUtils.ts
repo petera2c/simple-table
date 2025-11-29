@@ -16,8 +16,10 @@ export const copySelectedCellsToClipboard = (
   leafHeaders: HeaderObject[],
   tableRows: TableRowType[]
 ): string => {
-  // Filter out hidden headers
-  const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
+  // Filter out hidden headers and columns excluded from render
+  const flattenedLeafHeaders = leafHeaders.filter(
+    (header) => !header.hide && !header.excludeFromRender
+  );
 
   // Create a mapping of column indices to accessors and headers for quick lookup
   const colIndexToAccessor = new Map<number, string>();
@@ -101,7 +103,9 @@ export const pasteClipboardDataToCells = (
   const rows = clipboardText.split("\n").filter((row) => row.length > 0);
   if (rows.length === 0) return { updatedCells, warningCells };
 
-  const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
+  const flattenedLeafHeaders = leafHeaders.filter(
+    (header) => !header.hide && !header.excludeFromRender
+  );
 
   // Starting position
   const startRowIndex = initialFocusedCell.rowIndex;
@@ -196,7 +200,9 @@ export const deleteSelectedCellsContent = (
   const deletedCells = new Set<string>();
   const warningCells = new Set<string>();
 
-  const flattenedLeafHeaders = leafHeaders.filter((header) => !header.hide);
+  const flattenedLeafHeaders = leafHeaders.filter(
+    (header) => !header.hide && !header.excludeFromRender
+  );
   const colIndexToAccessor = new Map<number, string>();
   flattenedLeafHeaders.forEach((header, index) => {
     colIndexToAccessor.set(index, header.accessor);

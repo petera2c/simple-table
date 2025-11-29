@@ -113,8 +113,8 @@ export const HEADERS: HeaderObject[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }) => {
-      const deferred = row.deferredRevenue as number;
+    valueFormatter: ({ value }) => {
+      const deferred = value as number;
       if (deferred === undefined || deferred === null || deferred === 0) return "—";
 
       return `$${deferred.toLocaleString("en-US", {
@@ -132,8 +132,8 @@ export const HEADERS: HeaderObject[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }) => {
-      const recognized = row.recognizedRevenue as number;
+    valueFormatter: ({ value }) => {
+      const recognized = value as number;
       if (recognized === undefined || recognized === null || recognized === 0) return "—";
 
       return `$${recognized.toLocaleString("en-US", {

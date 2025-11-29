@@ -17,15 +17,21 @@ export const billingExampleDefaults = {
 const BillingExample = (props: UniversalTableProps) => {
   return (
     <SimpleTable
-      {...props}
+      columnReordering
+      columnResizing
       defaultHeaders={HEADERS}
+      editColumns
+      height={"70dvh"}
+      initialSortColumn="amount" // Show highest amounts first
+      initialSortDirection="descending"
+      onGridReady={() => {}}
       rowGrouping={["invoices", "charges"]}
       rowIdAccessor="id"
+      // @ts-ignore
       rows={billingData}
-      // Default settings for this example, but allow override
-      useOddColumnBackground={props.useOddColumnBackground ?? true}
-      useHoverRowBackground={props.useHoverRowBackground ?? false}
-      height={props.height ?? "90dvh"}
+      selectableCells
+      theme={props.theme}
+      useOddColumnBackground
     />
   );
 };
