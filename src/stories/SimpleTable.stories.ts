@@ -12,6 +12,9 @@ import CollapsibleColumnsExample, {
   collapsibleColumnsExampleDefaults,
 } from "./examples/CollapsibleColumnsExample";
 import DynamicHeadersExample from "./examples/DynamicHeadersExample";
+import DynamicRowLoadingExample, {
+  dynamicRowLoadingDefaults,
+} from "./examples/DynamicRowLoadingExample";
 import EditableCellsExample from "./examples/EditableCells";
 import ExternalSortExample, { externalSortExampleDefaults } from "./examples/ExternalSortExample";
 import ExternalFilterExample, {
@@ -264,6 +267,24 @@ export const DynamicHeaders: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: DynamicHeadersExample, ...args }),
+};
+
+export const DynamicRowLoading: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...dynamicRowLoadingDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: DynamicRowLoadingExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the onRowGroupExpand callback for lazy-loading hierarchical data on demand. Departments load immediately without children. When you expand a department, teams are fetched from a simulated API. When you expand a team, employees are fetched. This pattern is perfect for large datasets where loading all nested data upfront would be too expensive. Open the browser console to see the simulated API calls!",
+      },
+    },
+  },
 };
 
 export const EditableCells: StoryObj<UniversalTableProps> = {

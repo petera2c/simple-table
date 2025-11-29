@@ -49,6 +49,7 @@ import { RowButton } from "../../types/RowButton";
 import { HeaderDropdown } from "../../types/HeaderDropdownProps";
 import FooterRendererProps from "../../types/FooterRendererProps";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
+import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -90,6 +91,7 @@ interface SimpleTableProps {
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
   onPageChange?: (page: number) => void | Promise<void>; // Callback when page changes (for server-side pagination)
+  onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>; // Callback when a row is expanded/collapsed
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
@@ -163,6 +165,7 @@ const SimpleTableComp = ({
   onLoadMore,
   onNextPage,
   onPageChange,
+  onRowGroupExpand,
   onRowSelectionChange,
   onSortChange,
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
@@ -527,6 +530,7 @@ const SimpleTableComp = ({
         editColumns,
         enableHeaderEditing,
         enableRowSelection,
+        expandAll,
         expandIcon,
         filterIcon,
         filters,
@@ -563,6 +567,7 @@ const SimpleTableComp = ({
         onColumnOrderChange,
         onColumnSelect,
         onLoadMore,
+        onRowGroupExpand,
         onSort,
         onTableHeaderDragEnd,
         pinnedLeftRef,
