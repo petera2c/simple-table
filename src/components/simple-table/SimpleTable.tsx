@@ -244,7 +244,7 @@ const SimpleTableComp = ({
     const collapsed = new Set<Accessor>();
     const processHeaders = (hdrs: HeaderObject[]) => {
       hdrs.forEach((header) => {
-        if (header.collapseDefault && (header.collapsible || header.expandable)) {
+        if (header.collapseDefault && header.collapsible) {
           collapsed.add(header.accessor);
         }
         if (header.children) {

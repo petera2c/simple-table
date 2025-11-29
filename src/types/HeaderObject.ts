@@ -78,11 +78,11 @@ type HeaderObject = {
   chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
   children?: HeaderObject[];
   collapsible?: boolean; // This is used to determine if the column is collapsible
-  collapseDefault?: boolean; // When true, this column starts collapsed (only applies if collapsible or expandable is true)
+  collapseDefault?: boolean; // When true, this column starts collapsed
   comparator?: Comparator; // Custom sorting function based on row-level metadata
   disableReorder?: boolean;
   enumOptions?: EnumOption[];
-  expandable?: boolean;
+  expandable?: boolean; // This is for row grouping
   exportValueGetter?: ExportValueGetter; // Custom function for CSV export values
   filterable?: boolean;
   headerRenderer?: HeaderRenderer;
