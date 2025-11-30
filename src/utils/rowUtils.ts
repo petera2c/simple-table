@@ -172,44 +172,25 @@ export const flattenRowsWithGrouping = ({
         const rowState = rowStateMap?.get(rowId);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
-        // Inject loading row if loading state is active
-        if (rowState?.loading) {
+        // Show state indicator row if loading/error/empty state is active
+        if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
           result.push({
-            row: {
-              _isLoadingRow: true,
-              _parentRowId: rowId,
-              _groupingKey: currentGroupingKey,
-            },
+            row: {}, // Empty row object, content will be rendered by state indicator
             depth: currentDepth + 1,
             displayPosition,
             groupingKey: currentGroupingKey,
             position,
             isLastGroupRow: false,
             rowPath: [...rowPath, currentGroupingKey],
-          });
-          position++;
-          displayPosition++;
-        }
-        // Inject error row if error state is active
-        else if (rowState?.error) {
-          result.push({
-            row: {
-              _isErrorRow: true,
-              _parentRowId: rowId,
-              _error: rowState.error,
-              _groupingKey: currentGroupingKey,
+            stateIndicator: {
+              parentRowId: rowId,
+              state: rowState,
             },
-            depth: currentDepth + 1,
-            displayPosition,
-            groupingKey: currentGroupingKey,
-            position,
-            isLastGroupRow: false,
-            rowPath: [...rowPath, currentGroupingKey],
           });
           position++;
           displayPosition++;
         }
-        // Process actual nested rows if they exist
+        // Process actual nested rows if they exist and no state is active
         else if (nestedRows.length > 0) {
           // Build path for nested rows (parent path + grouping key)
           const nestedPath = [...rowPath, currentGroupingKey];
@@ -221,25 +202,6 @@ export const flattenRowsWithGrouping = ({
             displayPosition,
             nestedPath
           );
-        }
-        // Inject empty row if expanded but no children and empty state is active
-        else if (rowState?.isEmpty) {
-          result.push({
-            row: {
-              _isEmptyRow: true,
-              _parentRowId: rowId,
-              _emptyMessage: rowState.emptyMessage,
-              _groupingKey: currentGroupingKey,
-            },
-            depth: currentDepth + 1,
-            displayPosition,
-            groupingKey: currentGroupingKey,
-            position,
-            isLastGroupRow: false,
-            rowPath: [...rowPath, currentGroupingKey],
-          });
-          position++;
-          displayPosition++;
         }
       }
     });

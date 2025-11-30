@@ -19,11 +19,6 @@ import {
 import { Animate, LineAreaChart, BarChart } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
-import {
-  defaultLoadingRowRenderer,
-  defaultErrorRowRenderer,
-  defaultEmptyRowRenderer,
-} from "./DefaultStateRowRenderers";
 import Row from "../../types/Row";
 
 const displayContent = ({
@@ -150,12 +145,6 @@ const TableCell = ({
   } = useTableContext();
 
   const { depth, row } = tableRow;
-
-  // Check if this is a special state row (loading/error/empty)
-  const isLoadingRow = row._isLoadingRow === true;
-  const isErrorRow = row._isErrorRow === true;
-  const isEmptyRow = row._isEmptyRow === true;
-  const isSpecialStateRow = isLoadingRow || isErrorRow || isEmptyRow;
 
   // Local state
   const [localContent, setLocalContent] = useState<CellValue>(getNestedValue(row, header.accessor));
@@ -552,36 +541,6 @@ const TableCell = ({
         />
       </div>
     );
-  }
-
-  // Special rendering for state rows (loading/error/empty)
-  // Only render content in the first cell, and span full width
-  if (isSpecialStateRow) {
-    // Only the first cell renders the state content
-    if (colIndex === 0) {
-      let stateContent;
-      if (isLoadingRow) {
-        stateContent = defaultLoadingRowRenderer(row);
-      } else if (isErrorRow) {
-        stateContent = defaultErrorRowRenderer(row, row._error as string);
-      } else if (isEmptyRow) {
-        stateContent = defaultEmptyRowRenderer(row, row._emptyMessage as string | undefined);
-      }
-
-      return (
-        <div
-          className={`st-cell ${borderClass} st-state-row-cell`}
-          style={{
-            gridColumn: `1 / -1`, // Span all columns
-            padding: 0,
-          }}
-        >
-          {stateContent}
-        </div>
-      );
-    }
-    // Other cells in state rows render nothing
-    return null;
   }
 
   return (
