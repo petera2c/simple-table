@@ -3,6 +3,7 @@ import Row from "../types/Row";
 import { RowId } from "../types/RowId";
 import { Accessor } from "../types/HeaderObject";
 import CellValue from "../types/CellValue";
+import RowState from "../types/RowState";
 
 /**
  * Get a nested property value from an object using dot notation
@@ -106,6 +107,7 @@ export const isRowExpanded = (
 /**
  * Flatten rows recursively based on row grouping configuration
  * Now calculates ALL properties including position and isLastGroupRow
+ * Also injects special state rows for loading/error/empty states
  */
 export const flattenRowsWithGrouping = ({
   depth = 0,
@@ -115,6 +117,7 @@ export const flattenRowsWithGrouping = ({
   rowIdAccessor,
   rows,
   displayPositionOffset = 0,
+  rowStateMap,
 }: {
   depth?: number;
   expandAll?: boolean;
@@ -123,6 +126,7 @@ export const flattenRowsWithGrouping = ({
   rowIdAccessor: Accessor;
   rows: Row[];
   displayPositionOffset?: number;
+  rowStateMap?: Map<string | number, RowState>;
 }): TableRow[] => {
   const result: TableRow[] = [];
 
@@ -130,7 +134,8 @@ export const flattenRowsWithGrouping = ({
     currentRows: Row[],
     currentDepth: number,
     parentPosition = 0,
-    parentDisplayPosition = displayPositionOffset
+    parentDisplayPosition = displayPositionOffset,
+    parentPath: (string | number)[] = []
   ): number => {
     let position = parentPosition;
     let displayPosition = parentDisplayPosition;
@@ -139,10 +144,13 @@ export const flattenRowsWithGrouping = ({
       const rowId = getRowId({ row, rowIdAccessor });
       const currentGroupingKey = rowGrouping[currentDepth];
 
+      // Build the path to this row (e.g., [0, 'teams', 2])
+      const rowPath = [...parentPath, index];
+
       // Determine if this is the last row in a group
       const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
 
-      // Add the main row with calculated position
+      // Add the main row with calculated position and path
       result.push({
         row,
         depth: currentDepth,
@@ -150,6 +158,7 @@ export const flattenRowsWithGrouping = ({
         groupingKey: currentGroupingKey,
         position,
         isLastGroupRow,
+        rowPath,
       });
 
       position++;
@@ -160,11 +169,77 @@ export const flattenRowsWithGrouping = ({
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {
+        const rowState = rowStateMap?.get(rowId);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
-        if (nestedRows.length > 0) {
+        // Inject loading row if loading state is active
+        if (rowState?.loading) {
+          result.push({
+            row: {
+              _isLoadingRow: true,
+              _parentRowId: rowId,
+              _groupingKey: currentGroupingKey,
+            },
+            depth: currentDepth + 1,
+            displayPosition,
+            groupingKey: currentGroupingKey,
+            position,
+            isLastGroupRow: false,
+            rowPath: [...rowPath, currentGroupingKey],
+          });
+          position++;
+          displayPosition++;
+        }
+        // Inject error row if error state is active
+        else if (rowState?.error) {
+          result.push({
+            row: {
+              _isErrorRow: true,
+              _parentRowId: rowId,
+              _error: rowState.error,
+              _groupingKey: currentGroupingKey,
+            },
+            depth: currentDepth + 1,
+            displayPosition,
+            groupingKey: currentGroupingKey,
+            position,
+            isLastGroupRow: false,
+            rowPath: [...rowPath, currentGroupingKey],
+          });
+          position++;
+          displayPosition++;
+        }
+        // Process actual nested rows if they exist
+        else if (nestedRows.length > 0) {
+          // Build path for nested rows (parent path + grouping key)
+          const nestedPath = [...rowPath, currentGroupingKey];
           // Recursively process nested rows and update position
-          position = processRows(nestedRows, currentDepth + 1, position, displayPosition);
+          position = processRows(
+            nestedRows,
+            currentDepth + 1,
+            position,
+            displayPosition,
+            nestedPath
+          );
+        }
+        // Inject empty row if expanded but no children and empty state is active
+        else if (rowState?.isEmpty) {
+          result.push({
+            row: {
+              _isEmptyRow: true,
+              _parentRowId: rowId,
+              _emptyMessage: rowState.emptyMessage,
+              _groupingKey: currentGroupingKey,
+            },
+            depth: currentDepth + 1,
+            displayPosition,
+            groupingKey: currentGroupingKey,
+            position,
+            isLastGroupRow: false,
+            rowPath: [...rowPath, currentGroupingKey],
+          });
+          position++;
+          displayPosition++;
         }
       }
     });

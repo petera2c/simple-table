@@ -14,8 +14,6 @@ interface Department extends Row {
   budget?: string;
   manager?: string;
   teams?: Team[];
-  _loading?: boolean;
-  _error?: string | null;
 }
 
 interface Team extends Row {
@@ -26,8 +24,6 @@ interface Team extends Row {
   budget?: string;
   lead?: string;
   employees?: Employee[];
-  _loading?: boolean;
-  _error?: string | null;
 }
 
 interface Employee extends Row {
@@ -320,59 +316,6 @@ const fetchEmployeesForTeam = async (teamId: string): Promise<Employee[]> => {
   return employeesData[teamId] || [];
 };
 
-// Helper to update row children (nested data)
-const updateRowChildren = (
-  rows: Department[],
-  rowId: string,
-  groupingKey: string,
-  children: any[]
-): Department[] => {
-  return rows.map((row) => {
-    // Check if this is the row we're looking for
-    if (row.id === rowId) {
-      return { ...row, [groupingKey]: children, _loading: false };
-    }
-
-    // Recursively check nested rows if they exist
-    if (row.teams && Array.isArray(row.teams)) {
-      return {
-        ...row,
-        teams: row.teams.map((team) => {
-          if (team.id === rowId) {
-            return { ...team, [groupingKey]: children, _loading: false };
-          }
-          return team;
-        }),
-      };
-    }
-
-    return row;
-  });
-};
-
-// Helper to set loading state
-const setRowLoading = (rows: Department[], rowId: string, isLoading: boolean): Department[] => {
-  return rows.map((row) => {
-    if (row.id === rowId) {
-      return { ...row, _loading: isLoading };
-    }
-
-    if (row.teams && Array.isArray(row.teams)) {
-      return {
-        ...row,
-        teams: row.teams.map((team) => {
-          if (team.id === rowId) {
-            return { ...team, _loading: isLoading };
-          }
-          return team;
-        }),
-      };
-    }
-
-    return row;
-  });
-};
-
 export const dynamicRowLoadingDefaults = {
   height: "calc(100dvh - 112px)",
   columnResizing: true,
@@ -409,7 +352,17 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
   ]);
 
   const handleRowExpand = useCallback(
-    async ({ row, rowId, depth, groupingKey, isExpanded }: OnRowGroupExpandProps) => {
+    async ({
+      row,
+      rowId,
+      depth,
+      groupingKey,
+      isExpanded,
+      setLoading,
+      setError,
+      setEmpty,
+      updateRow,
+    }: OnRowGroupExpandProps) => {
       // Don't fetch if collapsing
       if (!isExpanded) {
         return;
@@ -422,25 +375,42 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
 
       try {
         if (depth === 0 && groupingKey === "teams") {
-          // Set loading state
-          setRows((prevRows) => setRowLoading(prevRows, String(rowId), true));
+          // Set loading state using the helper
+          setLoading(true);
 
           const teams = await fetchTeamsForDepartment(String(rowId));
 
-          // Update with fetched data
-          setRows((prevRows) => updateRowChildren(prevRows, String(rowId), "teams", teams));
+          // Library handles the update internally - NO MAP!
+          updateRow({ teams });
+
+          // Clear loading state
+          setLoading(false);
+
+          // Show empty state if no teams
+          if (teams.length === 0) {
+            setEmpty(true, "No teams found for this department");
+          }
         } else if (depth === 1 && groupingKey === "employees") {
           // Set loading state
-          setRows((prevRows) => setRowLoading(prevRows, String(rowId), true));
+          setLoading(true);
 
           const employees = await fetchEmployeesForTeam(String(rowId));
 
-          // Update with fetched data
-          setRows((prevRows) => updateRowChildren(prevRows, String(rowId), "employees", employees));
+          // Library handles the update - NO MAP!
+          updateRow({ employees });
+
+          // Clear loading state
+          setLoading(false);
+
+          // Show empty state if no employees
+          if (employees.length === 0) {
+            setEmpty(true, "No employees found for this team");
+          }
         }
       } catch (error) {
         console.error("❌ Error fetching data:", error);
-        setRows((prevRows) => setRowLoading(prevRows, String(rowId), false));
+        setLoading(false);
+        setError(error instanceof Error ? error.message : "Failed to load data");
       }
     },
     []
@@ -491,6 +461,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         expandAll={false}
         height={props.height ?? "calc(100dvh - 200px)"}
         onRowGroupExpand={handleRowExpand}
+        onRowsChange={(newRows) => setRows(newRows as Department[])}
         rowGrouping={["teams", "employees"]}
         rowIdAccessor="id"
         rows={rows}
