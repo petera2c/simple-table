@@ -48,27 +48,46 @@ const TableRow = ({
 
   // If this is a state indicator row, render it differently
   if (stateIndicator) {
-    // Get the parent row from rowsRef using the parentRowId
-    const parentRow = rowsRef.current.find(
-      (r) => getRowId({ row: r, rowIdAccessor }) === stateIndicator.parentRowId
-    );
+    // Determine which section should show the indicator
+    // triggerSection indicates where the expansion was initiated
+    const shouldShowIndicator = stateIndicator.state.triggerSection === pinned;
 
+    if (shouldShowIndicator) {
+      // Get the parent row from rowsRef using the parentRowId
+      const parentRow = rowsRef.current.find(
+        (r) => getRowId({ row: r, rowIdAccessor }) === stateIndicator.parentRowId
+      );
+
+      return (
+        <div
+          className="st-row st-state-row"
+          data-index={index}
+          style={{
+            gridTemplateColumns,
+            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+            height: `${rowHeight}px`,
+          }}
+        >
+          <RowStateIndicator
+            parentRow={parentRow || {}}
+            rowState={stateIndicator.state}
+            gridTemplateColumns={gridTemplateColumns}
+          />
+        </div>
+      );
+    }
+
+    // For other sections, render an empty row to maintain scroll alignment
     return (
       <div
-        className="st-row st-state-row"
+        className="st-row st-state-row-spacer"
         data-index={index}
         style={{
           gridTemplateColumns,
           transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
           height: `${rowHeight}px`,
         }}
-      >
-        <RowStateIndicator
-          parentRow={parentRow || {}}
-          rowState={stateIndicator.state}
-          gridTemplateColumns={gridTemplateColumns}
-        />
-      </div>
+      />
     );
   }
 
@@ -131,6 +150,11 @@ const arePropsEqual = (prevProps: TableRowProps, nextProps: TableRowProps): bool
 
   // Check if the actual row data changed
   if (prevProps.tableRow.row !== nextProps.tableRow.row) {
+    return false;
+  }
+
+  // Check if state indicator changed (for loading/error/empty rows)
+  if (prevProps.tableRow.stateIndicator !== nextProps.tableRow.stateIndicator) {
     return false;
   }
 

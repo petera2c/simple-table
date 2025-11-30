@@ -1683,3 +1683,30 @@ input {
     transform: translateY(0);
   }
 }
+
+/* ========================================== */
+/* Row State Indicator Styles */
+/* ========================================== */
+
+/* State indicator rows (loading/error/empty) */
+.st-row.st-state-row {
+  display: grid;
+  position: absolute;
+  width: 100%;
+}
+
+/* Empty spacer for pinned sections when state row is shown */
+.st-row.st-state-row-spacer {
+  display: block;
+  position: absolute;
+  width: 100%;
+  background-color: transparent;
+}
+
+/* The cell within state row that spans full width */
+.st-state-row-cell {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  background-color: var(--st-body-background-color);
+}

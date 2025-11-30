@@ -361,10 +361,19 @@ const TableCell = ({
 
       // Call the onRowGroupExpand callback if provided
       if (onRowGroupExpand) {
+        // Capture which section this cell is in (for showing state indicator in correct section)
+        const triggerSection = header.pinned;
+
         // Create helper functions for managing row state
         const setLoading = (loading: boolean) => {
           const currentState = rowStateMap.current.get(rowId) || {};
-          rowStateMap.current.set(rowId, { ...currentState, loading, error: null, isEmpty: false });
+          rowStateMap.current.set(rowId, {
+            ...currentState,
+            loading,
+            error: null,
+            isEmpty: false,
+            triggerSection,
+          });
           forceUpdate(); // Trigger re-render to show/hide loading row
         };
 
@@ -375,6 +384,7 @@ const TableCell = ({
             error,
             loading: false,
             isEmpty: false,
+            triggerSection,
           });
           forceUpdate(); // Trigger re-render to show/hide error row
         };
@@ -387,6 +397,7 @@ const TableCell = ({
             emptyMessage,
             loading: false,
             error: null,
+            triggerSection,
           });
           forceUpdate(); // Trigger re-render to show/hide empty row
         };
