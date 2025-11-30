@@ -1,4 +1,4 @@
-import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useLayoutEffect, useCallback, useRef, MutableRefObject } from "react";
 import { calculateBufferRowCount } from "../consts/general-consts";
 import { getVisibleRows } from "../utils/infiniteScrollUtils";
 import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
@@ -6,6 +6,7 @@ import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
+import RowState from "../types/RowState";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
@@ -27,6 +28,7 @@ interface UseTableRowProcessingProps {
   // Functions to preview what rows would be after changes
   computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
   computeSortedRowsPreview: (accessor: Accessor) => Row[];
+  rowStateMap: MutableRefObject<Map<string | number, RowState>>;
 }
 
 const useTableRowProcessing = ({
@@ -47,6 +49,7 @@ const useTableRowProcessing = ({
   scrollDirection = "none",
   computeFilteredRowsPreview,
   computeSortedRowsPreview,
+  rowStateMap,
 }: UseTableRowProcessingProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [extendedRows, setExtendedRows] = useState<any[]>([]);
@@ -97,6 +100,7 @@ const useTableRowProcessing = ({
         unexpandedRows,
         expandAll,
         displayPositionOffset,
+        rowStateMap: rowStateMap.current,
       });
     },
     [
@@ -108,6 +112,7 @@ const useTableRowProcessing = ({
       rowIdAccessor,
       unexpandedRows,
       expandAll,
+      rowStateMap,
     ]
   );
 

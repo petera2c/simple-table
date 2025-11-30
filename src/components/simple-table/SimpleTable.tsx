@@ -50,6 +50,7 @@ import { HeaderDropdown } from "../../types/HeaderDropdownProps";
 import FooterRendererProps from "../../types/FooterRendererProps";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
+import RowState from "../../types/RowState";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -196,12 +197,19 @@ const SimpleTableComp = ({
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const rowStateMapRef = useRef<Map<string | number, RowState>>(new Map());
+  const rowsRef = useRef<Row[]>(rows);
 
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
   const pinnedRightRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
   const headerContainerRef = useRef<HTMLDivElement>(null);
+
+  // Keep rowsRef in sync with rows prop
+  useEffect(() => {
+    rowsRef.current = rows;
+  }, [rows]);
 
   // Apply aggregation to current rows
   const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
@@ -417,6 +425,7 @@ const SimpleTableComp = ({
     scrollDirection,
     computeFilteredRowsPreview,
     computeSortedRowsPreview,
+    rowStateMap: rowStateMapRef,
   });
 
   // Create a registry for cells to enable direct updates
@@ -493,6 +502,7 @@ const SimpleTableComp = ({
     headers: effectiveHeaders,
     rowIdAccessor,
     rows: effectiveRows,
+    rowsRef,
     tableRef,
     visibleRows: rowsToRender,
   });
@@ -535,6 +545,8 @@ const SimpleTableComp = ({
         filterIcon,
         filters,
         forceUpdate,
+        rowStateMap: rowStateMapRef,
+        rowsRef,
         getBorderClass,
         handleApplyFilter,
         handleClearAllFilters,
