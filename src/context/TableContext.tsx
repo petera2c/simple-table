@@ -18,6 +18,13 @@ import CellClickProps from "../types/CellClickProps";
 import { RowButton } from "../types/RowButton";
 import { HeaderDropdown } from "../types/HeaderDropdownProps";
 import OnRowGroupExpandProps from "../types/OnRowGroupExpandProps";
+import RowState from "../types/RowState";
+import Row from "../types/Row";
+import {
+  LoadingStateRenderer,
+  ErrorStateRenderer,
+  EmptyStateRenderer,
+} from "../types/RowStateRendererProps";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -49,7 +56,13 @@ interface TableContextType {
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;
+  loadingStateRenderer?: LoadingStateRenderer;
+  errorStateRenderer?: ErrorStateRenderer;
+  emptyStateRenderer?: EmptyStateRenderer;
   forceUpdate: () => void;
+  rowStateMap: Map<string | number, RowState>;
+  setRowStateMap: Dispatch<SetStateAction<Map<string | number, RowState>>>;
+  rows: Row[];
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearAllFilters: () => void;

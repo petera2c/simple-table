@@ -15,7 +15,9 @@ const useTableAPI = ({
   headerRegistryRef,
   headers,
   rowIdAccessor,
+  rowIndexMap,
   rows,
+  setRows,
   tableRef,
   visibleRows,
 }: {
@@ -24,7 +26,9 @@ const useTableAPI = ({
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   rowIdAccessor: Accessor;
+  rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
+  setRows: (rows: Row[]) => void;
   tableRef?: MutableRefObject<TableRefType | null>;
   visibleRows: TableRow[];
 }) => {
@@ -73,7 +77,9 @@ const useTableAPI = ({
     headerRegistryRef,
     headers,
     rowIdAccessor,
+    rowIndexMap,
     rows,
+    setRows,
     tableRef,
     visibleRows,
   ]);

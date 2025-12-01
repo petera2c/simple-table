@@ -26,6 +26,7 @@ import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import OnSortProps from "./types/OnSortProps";
 import OnRowGroupExpandProps from "./types/OnRowGroupExpandProps";
 import Row from "./types/Row";
+import RowState from "./types/RowState";
 import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
 import TableCellProps from "./types/TableCellProps";
@@ -42,6 +43,14 @@ import HeaderRendererProps, { HeaderRenderer } from "./types/HeaderRendererProps
 import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps";
 import { RowButtonProps } from "./types/RowButton";
 import FooterRendererProps from "./types/FooterRendererProps";
+import {
+  LoadingStateRenderer,
+  ErrorStateRenderer,
+  EmptyStateRenderer,
+  LoadingStateRendererProps,
+  ErrorStateRendererProps,
+  EmptyStateRendererProps,
+} from "./types/RowStateRendererProps";
 
 export { SimpleTable, LineAreaChart, BarChart };
 
@@ -65,12 +74,18 @@ export type {
   Comparator,
   ComparatorProps,
   DragHandlerProps,
+  EmptyStateRenderer,
+  EmptyStateRendererProps,
   EnumOption,
+  ErrorStateRenderer,
+  ErrorStateRendererProps,
   ExportToCSVProps,
   ExportValueGetter,
   ExportValueProps,
   FilterCondition,
   FooterRendererProps,
+  LoadingStateRenderer,
+  LoadingStateRendererProps,
   HeaderDropdown,
   HeaderDropdownProps,
   HeaderObject,
@@ -81,6 +96,7 @@ export type {
   Row,
   RowButtonProps,
   RowSelectionChangeProps,
+  RowState,
   SetHeaderRenameProps,
   SharedTableProps,
   ShowWhen,

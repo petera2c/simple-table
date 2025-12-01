@@ -6,6 +6,8 @@ import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
+import RowState from "../types/RowState";
+import TableRow from "../types/TableRow";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
@@ -27,6 +29,10 @@ interface UseTableRowProcessingProps {
   // Functions to preview what rows would be after changes
   computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
   computeSortedRowsPreview: (accessor: Accessor) => Row[];
+  rowStateMap: Map<string | number, RowState>;
+  hasLoadingRenderer: boolean;
+  hasErrorRenderer: boolean;
+  hasEmptyRenderer: boolean;
 }
 
 const useTableRowProcessing = ({
@@ -47,6 +53,10 @@ const useTableRowProcessing = ({
   scrollDirection = "none",
   computeFilteredRowsPreview,
   computeSortedRowsPreview,
+  rowStateMap,
+  hasLoadingRenderer,
+  hasErrorRenderer,
+  hasEmptyRenderer,
 }: UseTableRowProcessingProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [extendedRows, setExtendedRows] = useState<any[]>([]);
@@ -80,14 +90,17 @@ const useTableRowProcessing = ({
 
       // Apply grouping
       if (!rowGrouping || rowGrouping.length === 0) {
-        return paginatedRows.map((row, index) => ({
-          row,
-          depth: 0,
-          displayPosition: displayPositionOffset + index,
-          groupingKey: undefined,
-          position: index,
-          isLastGroupRow: false,
-        }));
+        return paginatedRows.map(
+          (row, index) =>
+            ({
+              row,
+              depth: 0,
+              displayPosition: displayPositionOffset + index,
+              groupingKey: undefined,
+              position: index,
+              isLastGroupRow: false,
+            } as TableRow)
+        );
       }
 
       return flattenRowsWithGrouping({
@@ -97,17 +110,25 @@ const useTableRowProcessing = ({
         unexpandedRows,
         expandAll,
         displayPositionOffset,
+        rowStateMap,
+        hasLoadingRenderer,
+        hasErrorRenderer,
+        hasEmptyRenderer,
       });
     },
     [
       currentPage,
-      rowsPerPage,
-      shouldPaginate,
-      serverSidePagination,
+      expandAll,
+      hasEmptyRenderer,
+      hasErrorRenderer,
+      hasLoadingRenderer,
       rowGrouping,
       rowIdAccessor,
+      rowStateMap,
+      rowsPerPage,
+      serverSidePagination,
+      shouldPaginate,
       unexpandedRows,
-      expandAll,
     ]
   );
 

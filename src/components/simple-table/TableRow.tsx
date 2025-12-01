@@ -8,6 +8,7 @@ import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
 import { getRowId } from "../../utils/rowUtils";
+import RowStateIndicator from "./RowStateIndicator";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -41,10 +42,83 @@ const TableRow = ({
     isAnimating,
     isRowSelected,
     useOddEvenRowBackground,
+    rows,
+    loadingStateRenderer,
+    errorStateRenderer,
+    emptyStateRenderer,
   } = useTableContext();
-  const { position, displayPosition } = tableRow;
-  // Get row index from rowIndices using the row's ID
+  const { position, displayPosition, stateIndicator } = tableRow;
 
+  // If this is a state indicator row, render it differently
+  if (stateIndicator) {
+    // Determine which section should show the indicator
+    // triggerSection indicates where the expansion was initiated
+    const shouldShowIndicator = stateIndicator.state.triggerSection === pinned;
+
+    if (shouldShowIndicator) {
+      // Check if any renderer is defined for the current state
+      const hasRenderer =
+        (stateIndicator.state.loading && loadingStateRenderer) ||
+        (stateIndicator.state.error && errorStateRenderer) ||
+        (stateIndicator.state.isEmpty && emptyStateRenderer);
+
+      // If no renderer is defined, render an empty spacer row
+      if (!hasRenderer) {
+        return (
+          <div
+            className="st-row st-state-row-spacer"
+            data-index={index}
+            style={{
+              gridTemplateColumns,
+              transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+              height: `${rowHeight}px`,
+            }}
+          />
+        );
+      }
+
+      // Get the parent row from rows using the parentRowId
+      const parentRow = rows.find(
+        (r) => getRowId({ row: r, rowIdAccessor }) === stateIndicator.parentRowId
+      );
+
+      return (
+        <div
+          className="st-row st-state-row"
+          data-index={index}
+          style={{
+            gridTemplateColumns,
+            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+            height: `${rowHeight}px`,
+          }}
+        >
+          <RowStateIndicator
+            parentRow={parentRow || {}}
+            rowState={stateIndicator.state}
+            gridTemplateColumns={gridTemplateColumns}
+            loadingStateRenderer={loadingStateRenderer}
+            errorStateRenderer={errorStateRenderer}
+            emptyStateRenderer={emptyStateRenderer}
+          />
+        </div>
+      );
+    }
+
+    // For other sections, render an empty row to maintain scroll alignment
+    return (
+      <div
+        className="st-row st-state-row-spacer"
+        data-index={index}
+        style={{
+          gridTemplateColumns,
+          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+          height: `${rowHeight}px`,
+        }}
+      />
+    );
+  }
+
+  // For regular rows, calculate row properties
   const isOdd = position % 2 === 0;
 
   // Get stable row ID for key
@@ -103,6 +177,11 @@ const arePropsEqual = (prevProps: TableRowProps, nextProps: TableRowProps): bool
 
   // Check if the actual row data changed
   if (prevProps.tableRow.row !== nextProps.tableRow.row) {
+    return false;
+  }
+
+  // Check if state indicator changed (for loading/error/empty rows)
+  if (prevProps.tableRow.stateIndicator !== nextProps.tableRow.stateIndicator) {
     return false;
   }
 

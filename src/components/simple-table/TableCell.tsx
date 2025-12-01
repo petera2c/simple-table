@@ -131,6 +131,7 @@ const TableCell = ({
     rowButtons,
     rowGrouping,
     rowIdAccessor,
+    setRowStateMap,
     rowsWithSelectedCells,
     selectedColumns,
     setUnexpandedRows,
@@ -140,7 +141,7 @@ const TableCell = ({
     useOddColumnBackground,
   } = useTableContext();
 
-  const { depth, row } = tableRow;
+  const { depth, row, rowPath } = tableRow;
 
   // Local state
   const [localContent, setLocalContent] = useState<CellValue>(getNestedValue(row, header.accessor));
@@ -349,29 +350,95 @@ const TableCell = ({
         return newSet;
       });
 
+      // If collapsing, clear the row state (loading/error/empty)
+      if (wasExpanded) {
+        setRowStateMap((prevMap) => {
+          const newMap = new Map(prevMap);
+          newMap.delete(rowId);
+          return newMap;
+        });
+      }
+
       // Call the onRowGroupExpand callback if provided
       if (onRowGroupExpand) {
+        // Capture which section this cell is in (for showing state indicator in correct section)
+        const triggerSection = header.pinned;
+
+        // Create helper functions for managing row state
+        const setLoading = (loading: boolean) => {
+          setRowStateMap((prevMap) => {
+            const newMap = new Map(prevMap);
+            const currentState = newMap.get(rowId) || {};
+            newMap.set(rowId, {
+              ...currentState,
+              loading,
+              error: null,
+              isEmpty: false,
+              triggerSection,
+            });
+            return newMap;
+          });
+        };
+
+        const setError = (error: string | null) => {
+          setRowStateMap((prevMap) => {
+            const newMap = new Map(prevMap);
+            const currentState = newMap.get(rowId) || {};
+            newMap.set(rowId, {
+              ...currentState,
+              error,
+              loading: false,
+              isEmpty: false,
+              triggerSection,
+            });
+            return newMap;
+          });
+        };
+
+        const setEmpty = (isEmpty: boolean, emptyMessage?: string) => {
+          setRowStateMap((prevMap) => {
+            const newMap = new Map(prevMap);
+            const currentState = newMap.get(rowId) || {};
+            newMap.set(rowId, {
+              ...currentState,
+              isEmpty,
+              emptyMessage,
+              loading: false,
+              error: null,
+              triggerSection,
+            });
+            return newMap;
+          });
+        };
+
         onRowGroupExpand({
-          row,
-          rowIndex,
           depth,
           event,
-          rowId,
           groupingKey: currentGroupingKey,
+          groupingKeys: rowGrouping || [],
           isExpanded: !wasExpanded, // The new state (opposite of current)
+          row,
+          rowId,
+          rowIndexPath: rowPath || [],
+          setEmpty,
+          setError,
+          setLoading,
         });
       }
     },
     [
-      rowId,
-      row,
-      rowIndex,
-      depth,
       currentGroupingKey,
+      depth,
       expandAll,
-      unexpandedRows,
-      setUnexpandedRows,
+      header.pinned,
       onRowGroupExpand,
+      row,
+      rowGrouping,
+      rowId,
+      rowPath,
+      setRowStateMap,
+      setUnexpandedRows,
+      unexpandedRows,
     ]
   );
 

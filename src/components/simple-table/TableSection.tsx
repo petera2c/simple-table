@@ -77,7 +77,10 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
           }}
         >
           {rowsToRender.map((tableRow, index) => {
-            const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+            // Generate unique key - use stateIndicator parentRowId for state rows
+            const rowId = tableRow.stateIndicator
+              ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
+              : getRowId({ row: tableRow.row, rowIdAccessor });
             return (
               <Fragment key={rowId}>
                 {index !== 0 && (
@@ -96,7 +99,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                   gridTemplateColumns={templateColumns}
                   headers={headers}
                   index={index}
-                  key={rowId}
                   pinned={pinned}
                   rowHeight={rowHeight}
                   rowIndices={rowIndices}

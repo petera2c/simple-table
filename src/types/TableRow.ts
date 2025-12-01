@@ -1,4 +1,5 @@
 import Row from "./Row";
+import RowState from "./RowState";
 
 type TableRow = {
   depth: number;
@@ -7,6 +8,13 @@ type TableRow = {
   isLastGroupRow: boolean;
   position: number;
   row: Row;
+  // Path to reach this row in the nested structure (e.g., [0, 'teams', 2] means rows[0].teams[2])
+  rowPath?: (string | number)[];
+  // If this row is a state indicator (loading/error/empty), this contains the state info and parent row ID
+  stateIndicator?: {
+    parentRowId: string | number;
+    state: RowState;
+  };
 };
 
 export default TableRow;

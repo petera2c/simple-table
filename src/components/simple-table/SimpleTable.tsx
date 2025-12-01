@@ -50,6 +50,13 @@ import { HeaderDropdown } from "../../types/HeaderDropdownProps";
 import FooterRendererProps from "../../types/FooterRendererProps";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
+import RowState from "../../types/RowState";
+import { getRowId } from "../../utils/rowUtils";
+import {
+  LoadingStateRenderer,
+  ErrorStateRenderer,
+  EmptyStateRenderer,
+} from "../../types/RowStateRendererProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -80,6 +87,9 @@ interface SimpleTableProps {
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
   initialSortDirection?: "ascending" | "descending"; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
+  loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
+  errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
+  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onCellClick?: (props: CellClickProps) => void;
@@ -154,6 +164,9 @@ const SimpleTableComp = ({
   initialSortColumn,
   initialSortDirection = "ascending",
   isLoading = false,
+  loadingStateRenderer,
+  errorStateRenderer,
+  emptyStateRenderer,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
   onCellClick,
@@ -203,6 +216,33 @@ const SimpleTableComp = ({
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
   const headerContainerRef = useRef<HTMLDivElement>(null);
 
+  // Force update function - needed early for header updates
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  // Row state map for managing loading/error/empty states
+  const [rowStateMap, setRowStateMap] = useState<Map<string | number, RowState>>(new Map());
+
+  // Local state
+  // Manage rows internally to allow imperative API mutations to trigger re-renders
+  const [localRows, setLocalRows] = useState<Row[]>(rows);
+
+  // Create a mapping of rowId -> absolute index for O(1) lookups
+  // This maps each row to its position in the original localRows array
+  const rowIndexMapRef = useRef<Map<string | number, number>>(new Map());
+
+  // Sync local rows when prop changes and rebuild index map
+  useEffect(() => {
+    setLocalRows(rows);
+
+    // Rebuild the index map
+    const newIndexMap = new Map<string | number, number>();
+    rows.forEach((row, index) => {
+      const rowId = getRowId({ row, rowIdAccessor });
+      newIndexMap.set(rowId, index);
+    });
+    rowIndexMapRef.current = newIndexMap;
+  }, [rows, rowIdAccessor]);
+
   // Apply aggregation to current rows
   const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
 
@@ -213,7 +253,7 @@ const SimpleTableComp = ({
     scrollbarWidth,
   });
   const effectiveRows = useMemo(() => {
-    if (isLoading && rows.length === 0) {
+    if (isLoading && localRows.length === 0) {
       // Calculate how many rows can fit in the visible area
       let rowsToShow = shouldPaginate ? rowsPerPage : 10; // Default to 10 rows for loading state
       if (isMainSectionScrollable) {
@@ -229,13 +269,9 @@ const SimpleTableComp = ({
       });
       return dummyRows;
     }
-    return rows;
-  }, [isLoading, rows, rowIdAccessor, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
+    return localRows;
+  }, [isLoading, localRows, rowIdAccessor, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
 
-  // Force update function - needed early for header updates
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
-
-  // Local state
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
   const [isResizing, setIsResizing] = useState(false);
@@ -417,6 +453,10 @@ const SimpleTableComp = ({
     scrollDirection,
     computeFilteredRowsPreview,
     computeSortedRowsPreview,
+    rowStateMap,
+    hasLoadingRenderer: Boolean(loadingStateRenderer),
+    hasErrorRenderer: Boolean(errorStateRenderer),
+    hasEmptyRenderer: Boolean(emptyStateRenderer),
   });
 
   // Create a registry for cells to enable direct updates
@@ -492,7 +532,9 @@ const SimpleTableComp = ({
     headerRegistryRef,
     headers: effectiveHeaders,
     rowIdAccessor,
+    rowIndexMap: rowIndexMapRef,
     rows: effectiveRows,
+    setRows: setLocalRows,
     tableRef,
     visibleRows: rowsToRender,
   });
@@ -534,7 +576,13 @@ const SimpleTableComp = ({
         expandIcon,
         filterIcon,
         filters,
+        loadingStateRenderer,
+        errorStateRenderer,
+        emptyStateRenderer,
         forceUpdate,
+        rowStateMap,
+        setRowStateMap,
+        rows: localRows,
         getBorderClass,
         handleApplyFilter,
         handleClearAllFilters,
