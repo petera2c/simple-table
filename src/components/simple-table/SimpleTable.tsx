@@ -209,7 +209,6 @@ const SimpleTableComp = ({
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
-  const rowStateMapRef = useRef<Map<string | number, RowState>>(new Map());
 
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
@@ -219,6 +218,9 @@ const SimpleTableComp = ({
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  // Row state map for managing loading/error/empty states
+  const [rowStateMap, setRowStateMap] = useState<Map<string | number, RowState>>(new Map());
 
   // Local state
   // Manage rows internally to allow imperative API mutations to trigger re-renders
@@ -451,7 +453,7 @@ const SimpleTableComp = ({
     scrollDirection,
     computeFilteredRowsPreview,
     computeSortedRowsPreview,
-    rowStateMap: rowStateMapRef,
+    rowStateMap,
   });
 
   // Create a registry for cells to enable direct updates
@@ -575,7 +577,8 @@ const SimpleTableComp = ({
         errorStateRenderer,
         emptyStateRenderer,
         forceUpdate,
-        rowStateMap: rowStateMapRef,
+        rowStateMap,
+        setRowStateMap,
         rows: localRows,
         getBorderClass,
         handleApplyFilter,

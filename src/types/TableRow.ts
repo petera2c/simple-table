@@ -1,12 +1,7 @@
 import Row from "./Row";
-import { Accessor } from "./HeaderObject";
 import RowState from "./RowState";
 
 type TableRow = {
-  // Index in the original rows array (before sorting/filtering/grouping)
-  // Used for O(1) lookup in imperative API operations
-  // Optional because not all TableRow objects need it (e.g., state indicator rows)
-  absoluteIndex?: number;
   depth: number;
   displayPosition: number;
   groupingKey?: string;

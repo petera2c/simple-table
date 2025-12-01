@@ -7,6 +7,7 @@ import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
 import RowState from "../types/RowState";
+import TableRow from "../types/TableRow";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
@@ -28,7 +29,7 @@ interface UseTableRowProcessingProps {
   // Functions to preview what rows would be after changes
   computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
   computeSortedRowsPreview: (accessor: Accessor) => Row[];
-  rowStateMap: MutableRefObject<Map<string | number, RowState>>;
+  rowStateMap: Map<string | number, RowState>;
 }
 
 const useTableRowProcessing = ({
@@ -83,14 +84,17 @@ const useTableRowProcessing = ({
 
       // Apply grouping
       if (!rowGrouping || rowGrouping.length === 0) {
-        return paginatedRows.map((row, index) => ({
-          row,
-          depth: 0,
-          displayPosition: displayPositionOffset + index,
-          groupingKey: undefined,
-          position: index,
-          isLastGroupRow: false,
-        }));
+        return paginatedRows.map(
+          (row, index) =>
+            ({
+              row,
+              depth: 0,
+              displayPosition: displayPositionOffset + index,
+              groupingKey: undefined,
+              position: index,
+              isLastGroupRow: false,
+            } as TableRow)
+        );
       }
 
       return flattenRowsWithGrouping({
@@ -100,7 +104,7 @@ const useTableRowProcessing = ({
         unexpandedRows,
         expandAll,
         displayPositionOffset,
-        rowStateMap: rowStateMap.current,
+        rowStateMap,
       });
     },
     [

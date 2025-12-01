@@ -116,7 +116,6 @@ const TableCell = ({
     enableRowSelection,
     expandAll,
     expandIcon,
-    forceUpdate,
     handleMouseDown,
     handleMouseOver,
     handleRowSelect,
@@ -134,6 +133,7 @@ const TableCell = ({
     rowGrouping,
     rowIdAccessor,
     rowStateMap,
+    setRowStateMap,
     rowsWithSelectedCells,
     selectedColumns,
     setUnexpandedRows,
@@ -354,8 +354,11 @@ const TableCell = ({
 
       // If collapsing, clear the row state (loading/error/empty)
       if (wasExpanded) {
-        rowStateMap.current.delete(rowId);
-        forceUpdate(); // Trigger re-render to remove state rows
+        setRowStateMap((prevMap) => {
+          const newMap = new Map(prevMap);
+          newMap.delete(rowId);
+          return newMap;
+        });
       }
 
       // Call the onRowGroupExpand callback if provided
@@ -365,40 +368,49 @@ const TableCell = ({
 
         // Create helper functions for managing row state
         const setLoading = (loading: boolean) => {
-          const currentState = rowStateMap.current.get(rowId) || {};
-          rowStateMap.current.set(rowId, {
-            ...currentState,
-            loading,
-            error: null,
-            isEmpty: false,
-            triggerSection,
+          setRowStateMap((prevMap) => {
+            const newMap = new Map(prevMap);
+            const currentState = newMap.get(rowId) || {};
+            newMap.set(rowId, {
+              ...currentState,
+              loading,
+              error: null,
+              isEmpty: false,
+              triggerSection,
+            });
+            return newMap;
           });
-          forceUpdate(); // Trigger re-render to show/hide loading row
         };
 
         const setError = (error: string | null) => {
-          const currentState = rowStateMap.current.get(rowId) || {};
-          rowStateMap.current.set(rowId, {
-            ...currentState,
-            error,
-            loading: false,
-            isEmpty: false,
-            triggerSection,
+          setRowStateMap((prevMap) => {
+            const newMap = new Map(prevMap);
+            const currentState = newMap.get(rowId) || {};
+            newMap.set(rowId, {
+              ...currentState,
+              error,
+              loading: false,
+              isEmpty: false,
+              triggerSection,
+            });
+            return newMap;
           });
-          forceUpdate(); // Trigger re-render to show/hide error row
         };
 
         const setEmpty = (isEmpty: boolean, emptyMessage?: string) => {
-          const currentState = rowStateMap.current.get(rowId) || {};
-          rowStateMap.current.set(rowId, {
-            ...currentState,
-            isEmpty,
-            emptyMessage,
-            loading: false,
-            error: null,
-            triggerSection,
+          setRowStateMap((prevMap) => {
+            const newMap = new Map(prevMap);
+            const currentState = newMap.get(rowId) || {};
+            newMap.set(rowId, {
+              ...currentState,
+              isEmpty,
+              emptyMessage,
+              loading: false,
+              error: null,
+              triggerSection,
+            });
+            return newMap;
           });
-          forceUpdate(); // Trigger re-render to show/hide empty row
         };
 
         onRowGroupExpand({
@@ -420,13 +432,12 @@ const TableCell = ({
       currentGroupingKey,
       depth,
       expandAll,
-      forceUpdate,
       header.pinned,
       onRowGroupExpand,
       row,
       rowId,
       rowIndex,
-      rowStateMap,
+      setRowStateMap,
       setUnexpandedRows,
       unexpandedRows,
     ]

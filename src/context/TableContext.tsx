@@ -60,7 +60,8 @@ interface TableContextType {
   errorStateRenderer?: ErrorStateRenderer;
   emptyStateRenderer?: EmptyStateRenderer;
   forceUpdate: () => void;
-  rowStateMap: MutableRefObject<Map<string | number, RowState>>;
+  rowStateMap: Map<string | number, RowState>;
+  setRowStateMap: Dispatch<SetStateAction<Map<string | number, RowState>>>;
   rows: Row[];
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;
