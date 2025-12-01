@@ -31,13 +31,7 @@ import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
 import TableCellProps from "./types/TableCellProps";
 import TableHeaderProps from "./types/TableHeaderProps";
-import TableRefType, {
-  SetHeaderRenameProps,
-  ExportToCSVProps,
-  AddRowProps,
-  UpdateRowProps,
-  DeleteRowProps,
-} from "./types/TableRefType";
+import TableRefType, { SetHeaderRenameProps, ExportToCSVProps } from "./types/TableRefType";
 import TableRowProps from "./types/TableRowProps";
 import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
@@ -57,7 +51,6 @@ export * from "./icons";
 
 export type {
   Accessor,
-  AddRowProps,
   AggregationConfig,
   AggregationType,
   BoundingBox,
@@ -72,7 +65,6 @@ export type {
   ColumnType,
   Comparator,
   ComparatorProps,
-  DeleteRowProps,
   DragHandlerProps,
   EnumOption,
   ExportToCSVProps,
@@ -102,7 +94,6 @@ export type {
   TableRowProps,
   Theme,
   UpdateDataProps,
-  UpdateRowProps,
   ValueFormatter,
   ValueFormatterProps,
   ValueGetter,

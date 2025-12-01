@@ -42,7 +42,7 @@ const TableRow = ({
     isAnimating,
     isRowSelected,
     useOddEvenRowBackground,
-    rowsRef,
+    rows,
   } = useTableContext();
   const { position, displayPosition, stateIndicator } = tableRow;
 
@@ -53,8 +53,8 @@ const TableRow = ({
     const shouldShowIndicator = stateIndicator.state.triggerSection === pinned;
 
     if (shouldShowIndicator) {
-      // Get the parent row from rowsRef using the parentRowId
-      const parentRow = rowsRef.current.find(
+      // Get the parent row from rows using the parentRowId
+      const parentRow = rows.find(
         (r) => getRowId({ row: r, rowIdAccessor }) === stateIndicator.parentRowId
       );
 

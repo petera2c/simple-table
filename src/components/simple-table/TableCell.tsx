@@ -134,7 +134,6 @@ const TableCell = ({
     rowGrouping,
     rowIdAccessor,
     rowStateMap,
-    rowsRef,
     rowsWithSelectedCells,
     selectedColumns,
     setUnexpandedRows,
@@ -144,7 +143,7 @@ const TableCell = ({
     useOddColumnBackground,
   } = useTableContext();
 
-  const { depth, row } = tableRow;
+  const { depth, row, rowPath } = tableRow;
 
   // Local state
   const [localContent, setLocalContent] = useState<CellValue>(getNestedValue(row, header.accessor));
@@ -402,39 +401,34 @@ const TableCell = ({
           forceUpdate(); // Trigger re-render to show/hide empty row
         };
 
-        // Create updateRow helper that directly mutates the row reference
-        // No deep cloning, no path navigation - just direct mutation!
-        const updateRow = (updates: Partial<Row>) => {
-          Object.assign(row, updates);
-        };
-
         onRowGroupExpand({
-          row,
-          rowIndex,
           depth,
           event,
-          rowId,
           groupingKey: currentGroupingKey,
+          groupingKeys: rowGrouping || [],
           isExpanded: !wasExpanded, // The new state (opposite of current)
-          setLoading,
-          setError,
+          row,
+          rowId,
+          rowIndexPath: rowPath || [],
           setEmpty,
-          updateRow,
+          setError,
+          setLoading,
         });
       }
     },
     [
-      rowId,
-      row,
-      rowIndex,
-      depth,
       currentGroupingKey,
+      depth,
       expandAll,
-      unexpandedRows,
-      setUnexpandedRows,
-      onRowGroupExpand,
-      rowStateMap,
       forceUpdate,
+      header.pinned,
+      onRowGroupExpand,
+      row,
+      rowId,
+      rowIndex,
+      rowStateMap,
+      setUnexpandedRows,
+      unexpandedRows,
     ]
   );
 

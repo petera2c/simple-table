@@ -53,7 +53,7 @@ interface TableContextType {
   filters: TableFilterState;
   forceUpdate: () => void;
   rowStateMap: MutableRefObject<Map<string | number, RowState>>;
-  rowsRef: MutableRefObject<Row[]>;
+  rows: Row[];
   getBorderClass: (cell: Cell) => string;
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearAllFilters: () => void;

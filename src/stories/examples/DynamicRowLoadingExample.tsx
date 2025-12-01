@@ -361,7 +361,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
       setLoading,
       setError,
       setEmpty,
-      updateRow,
+      rowIndexPath,
     }: OnRowGroupExpandProps) => {
       // Don't fetch if collapsing
       if (!isExpanded) {
@@ -380,24 +380,27 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
 
           const teams = await fetchTeamsForDepartment(String(rowId));
 
-          // Library handles the update internally - NO MAP!
-          updateRow({ teams });
-
           // Clear loading state
           setLoading(false);
 
           // Show empty state if no teams
           if (teams.length === 0) {
             setEmpty(true, "No teams found for this department");
+            return;
           }
+
+          // Update nested data using rowIndexPath
+          // rowIndexPath = [0] means rows[0]
+          setRows((prevRows) => {
+            const newRows = [...prevRows];
+            newRows[rowIndexPath[0] as number].teams = teams;
+            return newRows;
+          });
         } else if (depth === 1 && groupingKey === "employees") {
           // Set loading state
           setLoading(true);
 
           const employees = await fetchEmployeesForTeam(String(rowId));
-
-          // Library handles the update - NO MAP!
-          updateRow({ employees });
 
           // Clear loading state
           setLoading(false);
@@ -405,7 +408,23 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
           // Show empty state if no employees
           if (employees.length === 0) {
             setEmpty(true, "No employees found for this team");
+            return;
           }
+
+          // Update nested data using rowIndexPath
+          // rowIndexPath = [0, 'teams', 1] means rows[0].teams[1]
+          setRows((prevRows) => {
+            const newRows = [...prevRows];
+            const deptIndex = rowIndexPath[0] as number;
+            const teamIndex = rowIndexPath[2] as number;
+            const department = newRows[deptIndex];
+
+            if (department.teams && department.teams[teamIndex]) {
+              department.teams[teamIndex].employees = employees;
+            }
+
+            return newRows;
+          });
         }
       } catch (error) {
         console.error("❌ Error fetching data:", error);
@@ -413,7 +432,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         setError(error instanceof Error ? error.message : "Failed to load data");
       }
     },
-    []
+    [rows]
   );
 
   return (
@@ -461,7 +480,6 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         expandAll={false}
         height={props.height ?? "calc(100dvh - 200px)"}
         onRowGroupExpand={handleRowExpand}
-        onRowsChange={(newRows) => setRows(newRows as Department[])}
         rowGrouping={["teams", "employees"]}
         rowIdAccessor="id"
         rows={rows}
