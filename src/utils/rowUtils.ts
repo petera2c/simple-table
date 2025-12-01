@@ -107,7 +107,7 @@ export const isRowExpanded = (
 /**
  * Flatten rows recursively based on row grouping configuration
  * Now calculates ALL properties including position and isLastGroupRow
- * Also injects special state rows for loading/error/empty states
+ * Also injects special state rows for loading/error/empty states (only if renderers are available)
  */
 export const flattenRowsWithGrouping = ({
   depth = 0,
@@ -118,6 +118,9 @@ export const flattenRowsWithGrouping = ({
   rows,
   displayPositionOffset = 0,
   rowStateMap,
+  hasLoadingRenderer = false,
+  hasErrorRenderer = false,
+  hasEmptyRenderer = false,
 }: {
   depth?: number;
   expandAll?: boolean;
@@ -127,6 +130,9 @@ export const flattenRowsWithGrouping = ({
   rows: Row[];
   displayPositionOffset?: number;
   rowStateMap?: Map<string | number, RowState>;
+  hasLoadingRenderer?: boolean;
+  hasErrorRenderer?: boolean;
+  hasEmptyRenderer?: boolean;
 }): TableRow[] => {
   const result: TableRow[] = [];
 
@@ -172,23 +178,30 @@ export const flattenRowsWithGrouping = ({
         const rowState = rowStateMap?.get(rowId);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
-        // Show state indicator row if loading/error/empty state is active
+        // Show state indicator row if loading/error/empty state is active AND a corresponding renderer exists
         if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
-          result.push({
-            row: {}, // Empty row object, content will be rendered by state indicator
-            depth: currentDepth + 1,
-            displayPosition,
-            groupingKey: currentGroupingKey,
-            position,
-            isLastGroupRow: false,
-            rowPath: [...rowPath, currentGroupingKey],
-            stateIndicator: {
-              parentRowId: rowId,
-              state: rowState,
-            },
-          });
-          position++;
-          displayPosition++;
+          const shouldShowState =
+            (rowState.loading && hasLoadingRenderer) ||
+            (rowState.error && hasErrorRenderer) ||
+            (rowState.isEmpty && hasEmptyRenderer);
+
+          if (shouldShowState) {
+            result.push({
+              row: {}, // Empty row object, content will be rendered by state indicator
+              depth: currentDepth + 1,
+              displayPosition,
+              groupingKey: currentGroupingKey,
+              position,
+              isLastGroupRow: false,
+              rowPath: [...rowPath, currentGroupingKey],
+              stateIndicator: {
+                parentRowId: rowId,
+                state: rowState,
+              },
+            });
+            position++;
+            displayPosition++;
+          }
         }
         // Process actual nested rows if they exist and no state is active
         else if (nestedRows.length > 0) {

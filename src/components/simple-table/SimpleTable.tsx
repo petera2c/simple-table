@@ -454,6 +454,9 @@ const SimpleTableComp = ({
     computeFilteredRowsPreview,
     computeSortedRowsPreview,
     rowStateMap,
+    hasLoadingRenderer: Boolean(loadingStateRenderer),
+    hasErrorRenderer: Boolean(errorStateRenderer),
+    hasEmptyRenderer: Boolean(emptyStateRenderer),
   });
 
   // Create a registry for cells to enable direct updates
@@ -530,7 +533,7 @@ const SimpleTableComp = ({
     headers: effectiveHeaders,
     rowIdAccessor,
     rowIndexMap: rowIndexMapRef,
-    rows: localRows,
+    rows: effectiveRows,
     setRows: setLocalRows,
     tableRef,
     visibleRows: rowsToRender,

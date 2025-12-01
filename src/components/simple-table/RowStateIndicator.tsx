@@ -17,78 +17,28 @@ interface RowStateIndicatorProps {
 }
 
 /**
- * Default renderer for loading state rows
- */
-export const defaultLoadingRenderer: LoadingStateRenderer = () => {
-  return (
-    <div
-      style={{
-        padding: "12px 16px",
-        color: "#666",
-        fontSize: "14px",
-        fontStyle: "italic",
-      }}
-    >
-      Loading...
-    </div>
-  );
-};
-
-/**
- * Default renderer for error state rows
- */
-export const defaultErrorRenderer: ErrorStateRenderer = ({ error }) => {
-  return (
-    <div
-      style={{
-        padding: "12px 16px",
-        color: "#dc2626",
-        fontSize: "14px",
-      }}
-    >
-      Error: {error}
-    </div>
-  );
-};
-
-/**
- * Default renderer for empty state rows
- */
-export const defaultEmptyRenderer: EmptyStateRenderer = ({ message }) => {
-  return (
-    <div
-      style={{
-        padding: "12px 16px",
-        color: "#666",
-        fontSize: "14px",
-        fontStyle: "italic",
-      }}
-    >
-      {message || "No items found"}
-    </div>
-  );
-};
-
-/**
  * Component that renders loading/error/empty states for a row
  * Spans the full width of the table (grid column 1 / -1)
  */
 const RowStateIndicator: React.FC<RowStateIndicatorProps> = ({
-  parentRow,
   rowState,
-  gridTemplateColumns,
-  loadingStateRenderer = defaultLoadingRenderer,
-  errorStateRenderer = defaultErrorRenderer,
-  emptyStateRenderer = defaultEmptyRenderer,
+  loadingStateRenderer,
+  errorStateRenderer,
+  emptyStateRenderer,
 }) => {
   let content: ReactNode = null;
 
-  if (rowState.loading) {
-    content = loadingStateRenderer({ parentRow });
-  } else if (rowState.error) {
-    content = errorStateRenderer({ error: rowState.error, parentRow });
-  } else if (rowState.isEmpty) {
-    content = emptyStateRenderer({ message: rowState.emptyMessage, parentRow });
+  if (rowState.loading && loadingStateRenderer) {
+    content = loadingStateRenderer;
+  } else if (rowState.error && errorStateRenderer) {
+    content = errorStateRenderer;
+  } else if (rowState.isEmpty && emptyStateRenderer) {
+    content = emptyStateRenderer;
+  }
+
+  // If no content to render, return null
+  if (!content) {
+    return null;
   }
 
   return (

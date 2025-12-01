@@ -56,6 +56,27 @@ const TableRow = ({
     const shouldShowIndicator = stateIndicator.state.triggerSection === pinned;
 
     if (shouldShowIndicator) {
+      // Check if any renderer is defined for the current state
+      const hasRenderer =
+        (stateIndicator.state.loading && loadingStateRenderer) ||
+        (stateIndicator.state.error && errorStateRenderer) ||
+        (stateIndicator.state.isEmpty && emptyStateRenderer);
+
+      // If no renderer is defined, render an empty spacer row
+      if (!hasRenderer) {
+        return (
+          <div
+            className="st-row st-state-row-spacer"
+            data-index={index}
+            style={{
+              gridTemplateColumns,
+              transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+              height: `${rowHeight}px`,
+            }}
+          />
+        );
+      }
+
       // Get the parent row from rows using the parentRowId
       const parentRow = rows.find(
         (r) => getRowId({ row: r, rowIdAccessor }) === stateIndicator.parentRowId

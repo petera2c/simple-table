@@ -54,13 +54,6 @@ import {
 
 export { SimpleTable, LineAreaChart, BarChart };
 
-// Export default row state renderers
-export {
-  defaultLoadingRenderer,
-  defaultErrorRenderer,
-  defaultEmptyRenderer,
-} from "./components/simple-table/RowStateIndicator";
-
 // Tree-shakeable icon exports (imported separately to reduce bundle size)
 export * from "./icons";
 

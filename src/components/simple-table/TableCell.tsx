@@ -19,7 +19,6 @@ import {
 import { Animate, LineAreaChart, BarChart } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
-import Row from "../../types/Row";
 
 const displayContent = ({
   content,

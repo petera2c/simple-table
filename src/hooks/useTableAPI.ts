@@ -9,11 +9,6 @@ import TableRow from "../types/TableRow";
 import { exportTableToCSV } from "../utils/csvExportUtils";
 import HeaderObject from "../types/HeaderObject";
 
-// Helper to navigate nested structure using a path
-const navigatePath = (root: any, path: (string | number)[]): any => {
-  return path.reduce((acc, key) => acc?.[key], root);
-};
-
 const useTableAPI = ({
   cellRegistryRef,
   currentTableRows,

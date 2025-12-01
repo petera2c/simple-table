@@ -39,16 +39,16 @@ export interface EmptyStateRendererProps {
 }
 
 /**
- * Function type for rendering loading state
+ * Loading state renderer can be a function, string, or ReactNode
  */
-export type LoadingStateRenderer = (props: LoadingStateRendererProps) => ReactNode;
+export type LoadingStateRenderer = string | ReactNode;
 
 /**
- * Function type for rendering error state
+ * Error state renderer can be a function, string, or ReactNode
  */
-export type ErrorStateRenderer = (props: ErrorStateRendererProps) => ReactNode;
+export type ErrorStateRenderer = string | ReactNode;
 
 /**
- * Function type for rendering empty state
+ * Empty state renderer can be a function, string, or ReactNode
  */
-export type EmptyStateRenderer = (props: EmptyStateRendererProps) => ReactNode;
+export type EmptyStateRenderer = string | ReactNode;
