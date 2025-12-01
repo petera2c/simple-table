@@ -43,6 +43,9 @@ const TableRow = ({
     isRowSelected,
     useOddEvenRowBackground,
     rows,
+    loadingStateRenderer,
+    errorStateRenderer,
+    emptyStateRenderer,
   } = useTableContext();
   const { position, displayPosition, stateIndicator } = tableRow;
 
@@ -72,6 +75,9 @@ const TableRow = ({
             parentRow={parentRow || {}}
             rowState={stateIndicator.state}
             gridTemplateColumns={gridTemplateColumns}
+            loadingStateRenderer={loadingStateRenderer}
+            errorStateRenderer={errorStateRenderer}
+            emptyStateRenderer={emptyStateRenderer}
           />
         </div>
       );

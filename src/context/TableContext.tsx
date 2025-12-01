@@ -20,6 +20,11 @@ import { HeaderDropdown } from "../types/HeaderDropdownProps";
 import OnRowGroupExpandProps from "../types/OnRowGroupExpandProps";
 import RowState from "../types/RowState";
 import Row from "../types/Row";
+import {
+  LoadingStateRenderer,
+  ErrorStateRenderer,
+  EmptyStateRenderer,
+} from "../types/RowStateRendererProps";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -51,6 +56,9 @@ interface TableContextType {
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;
+  loadingStateRenderer?: LoadingStateRenderer;
+  errorStateRenderer?: ErrorStateRenderer;
+  emptyStateRenderer?: EmptyStateRenderer;
   forceUpdate: () => void;
   rowStateMap: MutableRefObject<Map<string | number, RowState>>;
   rows: Row[];

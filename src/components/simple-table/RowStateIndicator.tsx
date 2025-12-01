@@ -1,17 +1,25 @@
 import React, { ReactNode } from "react";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
+import {
+  LoadingStateRenderer,
+  ErrorStateRenderer,
+  EmptyStateRenderer,
+} from "../../types/RowStateRendererProps";
 
 interface RowStateIndicatorProps {
   parentRow: Row;
   rowState: RowState;
   gridTemplateColumns: string;
+  loadingStateRenderer?: LoadingStateRenderer;
+  errorStateRenderer?: ErrorStateRenderer;
+  emptyStateRenderer?: EmptyStateRenderer;
 }
 
 /**
  * Default renderer for loading state rows
  */
-const defaultLoadingRenderer = (): ReactNode => {
+export const defaultLoadingRenderer: LoadingStateRenderer = () => {
   return (
     <div
       style={{
@@ -29,7 +37,7 @@ const defaultLoadingRenderer = (): ReactNode => {
 /**
  * Default renderer for error state rows
  */
-const defaultErrorRenderer = (error: string): ReactNode => {
+export const defaultErrorRenderer: ErrorStateRenderer = ({ error }) => {
   return (
     <div
       style={{
@@ -46,7 +54,7 @@ const defaultErrorRenderer = (error: string): ReactNode => {
 /**
  * Default renderer for empty state rows
  */
-const defaultEmptyRenderer = (message?: string): ReactNode => {
+export const defaultEmptyRenderer: EmptyStateRenderer = ({ message }) => {
   return (
     <div
       style={{
@@ -69,15 +77,18 @@ const RowStateIndicator: React.FC<RowStateIndicatorProps> = ({
   parentRow,
   rowState,
   gridTemplateColumns,
+  loadingStateRenderer = defaultLoadingRenderer,
+  errorStateRenderer = defaultErrorRenderer,
+  emptyStateRenderer = defaultEmptyRenderer,
 }) => {
   let content: ReactNode = null;
 
   if (rowState.loading) {
-    content = defaultLoadingRenderer();
+    content = loadingStateRenderer({ parentRow });
   } else if (rowState.error) {
-    content = defaultErrorRenderer(rowState.error);
+    content = errorStateRenderer({ error: rowState.error, parentRow });
   } else if (rowState.isEmpty) {
-    content = defaultEmptyRenderer(rowState.emptyMessage);
+    content = emptyStateRenderer({ message: rowState.emptyMessage, parentRow });
   }
 
   return (

@@ -52,6 +52,11 @@ import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import RowState from "../../types/RowState";
 import { getRowId } from "../../utils/rowUtils";
+import {
+  LoadingStateRenderer,
+  ErrorStateRenderer,
+  EmptyStateRenderer,
+} from "../../types/RowStateRendererProps";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -82,6 +87,9 @@ interface SimpleTableProps {
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
   initialSortDirection?: "ascending" | "descending"; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
+  loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
+  errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
+  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onCellClick?: (props: CellClickProps) => void;
@@ -156,6 +164,9 @@ const SimpleTableComp = ({
   initialSortColumn,
   initialSortDirection = "ascending",
   isLoading = false,
+  loadingStateRenderer,
+  errorStateRenderer,
+  emptyStateRenderer,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
   onCellEdit,
   onCellClick,
@@ -560,6 +571,9 @@ const SimpleTableComp = ({
         expandIcon,
         filterIcon,
         filters,
+        loadingStateRenderer,
+        errorStateRenderer,
+        emptyStateRenderer,
         forceUpdate,
         rowStateMap: rowStateMapRef,
         rows: localRows,
