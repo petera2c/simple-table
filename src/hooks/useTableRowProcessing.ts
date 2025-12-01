@@ -118,14 +118,17 @@ const useTableRowProcessing = ({
     },
     [
       currentPage,
-      rowsPerPage,
-      shouldPaginate,
-      serverSidePagination,
+      expandAll,
+      hasEmptyRenderer,
+      hasErrorRenderer,
+      hasLoadingRenderer,
       rowGrouping,
       rowIdAccessor,
-      unexpandedRows,
-      expandAll,
       rowStateMap,
+      rowsPerPage,
+      serverSidePagination,
+      shouldPaginate,
+      unexpandedRows,
     ]
   );
 

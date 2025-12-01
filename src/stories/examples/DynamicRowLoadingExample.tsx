@@ -432,7 +432,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         setError(error instanceof Error ? error.message : "Failed to load data");
       }
     },
-    [rows]
+    []
   );
 
   return (
@@ -486,6 +486,9 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         selectableCells
         theme={props.theme}
         useOddEvenRowBackground
+        loadingStateRenderer={<div>Loading...</div>}
+        errorStateRenderer={<div>Error loading data</div>}
+        emptyStateRenderer={<div>No data found</div>}
       />
     </div>
   );
