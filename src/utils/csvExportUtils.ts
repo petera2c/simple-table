@@ -44,6 +44,10 @@ const getVisibleHeaders = (headers: HeaderObject[]): HeaderObject[] => {
 
       // If header has children, process them
       if (header.children && header.children.length > 0) {
+        // With singleRowChildren, parent header should be included in CSV export
+        if (header.singleRowChildren) {
+          visible.push(header);
+        }
         processHeaders(header.children);
       } else {
         // Leaf header - add to visible list

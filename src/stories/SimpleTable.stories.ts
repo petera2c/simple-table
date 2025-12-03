@@ -83,6 +83,9 @@ import ClipboardFormattingExample, {
 import CSVExportFormattingExample, {
   csvExportFormattingExampleDefaults,
 } from "./examples/CSVExportFormattingExample";
+import CSVExportSingleRowChildrenExample, {
+  csvExportSingleRowChildrenExampleDefaults,
+} from "./examples/CSVExportSingleRowChildrenExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -254,6 +257,27 @@ export const CSVExportFormatting: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates CSV export customization with useFormattedValueForCSV and exportValueGetter options. Columns can export formatted values (e.g., '$85K'), raw values, or completely custom values. The exportValueGetter function provides full control over export output, useful for adding codes, custom formatting, or transforming data specifically for CSV export.",
+      },
+    },
+  },
+};
+
+export const CSVExportSingleRowChildren: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...csvExportSingleRowChildrenExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: CSVExportSingleRowChildrenExample,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates CSV export behavior with singleRowChildren columns. When a parent column has singleRowChildren=true, both the parent and child columns are rendered on the same row (not in a tree hierarchy) and both are included in CSV exports. This is useful for columns where the parent represents aggregate data and children show breakdowns (e.g., Total Score with 7-day and 30-day growth).",
       },
     },
   },
