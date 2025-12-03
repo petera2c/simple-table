@@ -153,6 +153,7 @@ input {
   height: 100%;
   width: 100%;
 }
+
 .st-content-wrapper {
   flex: 1;
   position: relative;
@@ -240,6 +241,25 @@ input {
   touch-action: auto;
   height: max-content;
   background-color: var(--st-even-row-background-color);
+}
+
+.st-empty-state-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
+  flex: 1;
+}
+
+.st-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: var(--st-header-text-color);
+  opacity: 0.6;
+  font-size: 14px;
 }
 
 .st-body-main,

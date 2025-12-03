@@ -132,6 +132,7 @@ interface TableContextType {
   sortDownIcon: ReactNode;
   sortUpIcon: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement>;
+  tableEmptyStateRenderer?: ReactNode;
   tableRows: TableRow[];
   theme: Theme;
   unexpandedRows: Set<string>;

@@ -57,6 +57,7 @@ import {
   ErrorStateRenderer,
   EmptyStateRenderer,
 } from "../../types/RowStateRendererProps";
+import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -91,7 +92,7 @@ interface SimpleTableProps {
   isLoading?: boolean; // Flag for showing loading skeleton state
   loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
-  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states
+  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
   nextIcon?: ReactNode; // Next icon
   onCellEdit?: (props: CellChangeProps) => void;
   onCellClick?: (props: CellClickProps) => void;
@@ -120,6 +121,7 @@ interface SimpleTableProps {
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
   sortUpIcon?: ReactNode; // Sort up icon
+  tableEmptyStateRenderer?: ReactNode; // Custom empty state component when table has no rows
   tableRef?: MutableRefObject<TableRefType | null>;
   theme?: Theme; // Theme
   totalRowCount?: number; // Total number of rows on server (for server-side pagination)
@@ -191,20 +193,21 @@ const SimpleTableComp = ({
   rowHeight = 32,
   rowIdAccessor,
   rows,
-  selectionColumnWidth = 42,
   rowsPerPage = 10,
   selectableCells = false,
   selectableColumns = false,
+  selectionColumnWidth = 42,
   serverSidePagination = false,
   shouldPaginate = false,
   sortDownIcon = <DescIcon className="st-header-icon" />,
   sortUpIcon = <AscIcon className="st-header-icon" />,
+  tableEmptyStateRenderer = <DefaultEmptyState />,
   tableRef,
   theme = "light",
   totalRowCount,
   useHoverRowBackground = true,
-  useOddEvenRowBackground = false,
   useOddColumnBackground = false,
+  useOddEvenRowBackground = false,
 }: SimpleTableProps) => {
   if (useOddColumnBackground) useOddEvenRowBackground = false;
   // Disable hover row background when column borders are enabled to prevent visual conflicts
@@ -565,6 +568,7 @@ const SimpleTableComp = ({
   return (
     <TableProvider
       value={{
+        activeHeaderDropdown,
         allowAnimations,
         areAllRowsSelected,
         cellRegistry: cellRegistryRef.current,
@@ -574,23 +578,19 @@ const SimpleTableComp = ({
         columnBorders,
         columnReordering,
         columnResizing,
+        columnsWithSelectedCells,
         copyHeadersToClipboard,
         draggedHeaderRef,
         editColumns,
+        emptyStateRenderer,
         enableHeaderEditing,
         enableRowSelection,
+        errorStateRenderer,
         expandAll,
         expandIcon,
         filterIcon,
         filters,
-        includeHeadersInCSVExport,
-        loadingStateRenderer,
-        errorStateRenderer,
-        emptyStateRenderer,
         forceUpdate,
-        rowStateMap,
-        setRowStateMap,
-        rows: localRows,
         getBorderClass,
         handleApplyFilter,
         handleClearAllFilters,
@@ -604,9 +604,11 @@ const SimpleTableComp = ({
         headerContainerRef,
         headerDropdown,
         headerExpandIcon,
+        headerHeight: headerHeight ?? rowHeight,
         headerRegistry: headerRegistryRef.current,
         headers: effectiveHeaders,
         hoveredHeaderRef,
+        includeHeadersInCSVExport,
         isAnimating,
         isCopyFlashing,
         isInitialFocusedCell,
@@ -616,12 +618,14 @@ const SimpleTableComp = ({
         isScrolling,
         isSelected,
         isWarningFlashing,
+        loadingStateRenderer,
         mainBodyRef,
         nextIcon,
-        onCellEdit,
         onCellClick,
+        onCellEdit,
         onColumnOrderChange,
         onColumnSelect,
+        onHeaderEdit,
         onLoadMore,
         onRowGroupExpand,
         onSort,
@@ -632,22 +636,24 @@ const SimpleTableComp = ({
         rowButtons,
         rowGrouping,
         rowHeight,
-        headerHeight: headerHeight ?? rowHeight,
         rowIdAccessor,
+        rowStateMap,
+        rows: localRows,
+        rowsWithSelectedCells,
         scrollbarWidth,
         selectColumns,
         selectableColumns,
         selectedColumns,
-        columnsWithSelectedCells,
-        rowsWithSelectedCells,
-        selectedRows,
         selectedRowCount,
+        selectedRows,
         selectedRowsData,
+        setActiveHeaderDropdown,
         setCollapsedHeaders,
         setHeaders,
         setInitialFocusedCell,
         setIsResizing,
         setIsScrolling,
+        setRowStateMap,
         setSelectedCells,
         setSelectedColumns,
         setSelectedRows,
@@ -656,15 +662,13 @@ const SimpleTableComp = ({
         sortDownIcon,
         sortUpIcon,
         tableBodyContainerRef,
+        tableEmptyStateRenderer,
         tableRows: currentTableRows,
         theme,
         unexpandedRows,
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,
-        activeHeaderDropdown,
-        setActiveHeaderDropdown,
-        onHeaderEdit,
       }}
     >
       <div

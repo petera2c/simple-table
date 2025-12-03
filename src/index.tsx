@@ -1,6 +1,7 @@
 import SimpleTable from "./components/simple-table/SimpleTable";
 import LineAreaChart from "./components/charts/LineAreaChart";
 import BarChart from "./components/charts/BarChart";
+import DefaultEmptyState from "./components/empty-state/DefaultEmptyState";
 import BoundingBox from "./types/BoundingBox";
 import Cell from "./types/Cell";
 import CellChangeProps from "./types/CellChangeProps";
@@ -52,7 +53,7 @@ import {
   EmptyStateRendererProps,
 } from "./types/RowStateRendererProps";
 
-export { SimpleTable, LineAreaChart, BarChart };
+export { SimpleTable, LineAreaChart, BarChart, DefaultEmptyState };
 
 // Tree-shakeable icon exports (imported separately to reduce bundle size)
 export * from "./icons";

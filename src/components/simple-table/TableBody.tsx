@@ -28,6 +28,7 @@ const TableBody = ({
     headerContainerRef,
     headers,
     isAnimating,
+    isLoading,
     mainBodyRef,
     onLoadMore,
     rowHeight,
@@ -36,6 +37,7 @@ const TableBody = ({
     setIsScrolling,
     shouldPaginate,
     tableBodyContainerRef,
+    tableEmptyStateRenderer,
   } = useTableContext();
 
   // Local state
@@ -193,6 +195,9 @@ const TableBody = ({
     setHoveredIndex,
   };
 
+  // Check if we should show the empty state (no rows after filtering and not loading)
+  const shouldShowEmptyState = !isLoading && tableRows.length === 0;
+
   return (
     <div
       className="st-body-container"
@@ -200,28 +205,34 @@ const TableBody = ({
       onScroll={handleScroll}
       ref={tableBodyContainerRef}
     >
-      <TableSection
-        {...commonProps}
-        pinned="left"
-        templateColumns={pinnedLeftTemplateColumns}
-        totalHeight={totalHeight}
-        width={pinnedLeftWidth}
-      />
-      <TableSection
-        {...commonProps}
-        columnIndexStart={pinnedLeftColumns.length}
-        ref={mainBodyRef}
-        templateColumns={mainTemplateColumns}
-        totalHeight={totalHeight}
-      />
-      <TableSection
-        {...commonProps}
-        columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
-        pinned="right"
-        templateColumns={pinnedRightTemplateColumns}
-        totalHeight={totalHeight}
-        width={pinnedRightWidth}
-      />
+      {shouldShowEmptyState ? (
+        <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
+      ) : (
+        <>
+          <TableSection
+            {...commonProps}
+            pinned="left"
+            templateColumns={pinnedLeftTemplateColumns}
+            totalHeight={totalHeight}
+            width={pinnedLeftWidth}
+          />
+          <TableSection
+            {...commonProps}
+            columnIndexStart={pinnedLeftColumns.length}
+            ref={mainBodyRef}
+            templateColumns={mainTemplateColumns}
+            totalHeight={totalHeight}
+          />
+          <TableSection
+            {...commonProps}
+            columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
+            pinned="right"
+            templateColumns={pinnedRightTemplateColumns}
+            totalHeight={totalHeight}
+            width={pinnedRightWidth}
+          />
+        </>
+      )}
     </div>
   );
 };
