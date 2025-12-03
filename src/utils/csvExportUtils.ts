@@ -63,7 +63,11 @@ const getVisibleHeaders = (headers: HeaderObject[]): HeaderObject[] => {
 /**
  * Converts table data to CSV format
  */
-export const convertToCSV = (visibleRows: TableRow[], headers: HeaderObject[]): string => {
+export const convertToCSV = (
+  visibleRows: TableRow[],
+  headers: HeaderObject[],
+  includeHeadersInCSVExport: boolean = true
+): string => {
   const visibleHeaders = getVisibleHeaders(headers);
 
   // Create header row
@@ -119,7 +123,8 @@ export const convertToCSV = (visibleRows: TableRow[], headers: HeaderObject[]): 
   });
 
   // Combine header and data rows
-  return [headerRow, ...dataRows].join("\n");
+  const rows = includeHeadersInCSVExport ? [headerRow, ...dataRows] : dataRows;
+  return rows.join("\n");
 };
 
 /**
@@ -152,8 +157,9 @@ export const downloadCSV = (csvContent: string, filename: string = "table-export
 export const exportTableToCSV = (
   visibleRows: TableRow[],
   headers: HeaderObject[],
-  filename?: string
+  filename?: string,
+  includeHeadersInCSVExport: boolean = true
 ): void => {
-  const csvContent = convertToCSV(visibleRows, headers);
+  const csvContent = convertToCSV(visibleRows, headers, includeHeadersInCSVExport);
   downloadCSV(csvContent, filename);
 };

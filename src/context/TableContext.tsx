@@ -48,6 +48,7 @@ interface TableContextType {
   columnBorders: boolean;
   columnReordering: boolean;
   columnResizing: boolean;
+  copyHeadersToClipboard: boolean;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   editColumns?: boolean;
   enableHeaderEditing?: boolean;
@@ -56,6 +57,7 @@ interface TableContextType {
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;
+  includeHeadersInCSVExport: boolean;
   loadingStateRenderer?: LoadingStateRenderer;
   errorStateRenderer?: ErrorStateRenderer;
   emptyStateRenderer?: EmptyStateRenderer;

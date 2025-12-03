@@ -25,6 +25,7 @@ interface UseSelectionProps {
   collapsedHeaders?: Set<Accessor>;
   rowHeight: number;
   enableRowSelection?: boolean;
+  copyHeadersToClipboard?: boolean;
 }
 
 const useSelection = ({
@@ -37,6 +38,7 @@ const useSelection = ({
   collapsedHeaders,
   rowHeight,
   enableRowSelection = false,
+  copyHeadersToClipboard = false,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
@@ -99,13 +101,18 @@ const useSelection = ({
   const copyToClipboard = useCallback(() => {
     if (selectedCells.size === 0) return;
 
-    const text = copySelectedCellsToClipboard(selectedCells, leafHeaders, tableRows);
+    const text = copySelectedCellsToClipboard(
+      selectedCells,
+      leafHeaders,
+      tableRows,
+      copyHeadersToClipboard
+    );
     navigator.clipboard.writeText(text);
 
     // Trigger copy flash effect
     setCopyFlashCells(new Set(selectedCells));
     setTimeout(() => setCopyFlashCells(new Set()), 800);
-  }, [selectedCells, leafHeaders, tableRows]);
+  }, [selectedCells, leafHeaders, tableRows, copyHeadersToClipboard]);
 
   const pasteFromClipboard = useCallback(async () => {
     if (!initialFocusedCell) return;

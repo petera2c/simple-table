@@ -14,6 +14,7 @@ const useTableAPI = ({
   currentTableRows,
   headerRegistryRef,
   headers,
+  includeHeadersInCSVExport,
   rowIdAccessor,
   rowIndexMap,
   rows,
@@ -25,6 +26,7 @@ const useTableAPI = ({
   currentTableRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
+  includeHeadersInCSVExport: boolean;
   rowIdAccessor: Accessor;
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
@@ -67,7 +69,7 @@ const useTableAPI = ({
           return visibleRows;
         },
         exportToCSV: ({ filename }: ExportToCSVProps = {}) => {
-          exportTableToCSV(currentTableRows, headers, filename);
+          exportTableToCSV(currentTableRows, headers, filename, includeHeadersInCSVExport);
         },
       };
     }
@@ -76,6 +78,7 @@ const useTableAPI = ({
     currentTableRows,
     headerRegistryRef,
     headers,
+    includeHeadersInCSVExport,
     rowIdAccessor,
     rowIndexMap,
     rows,

@@ -14,7 +14,8 @@ interface CellRegistryEntry {
 export const copySelectedCellsToClipboard = (
   selectedCells: Set<string>,
   leafHeaders: HeaderObject[],
-  tableRows: TableRowType[]
+  tableRows: TableRowType[],
+  copyHeadersToClipboard: boolean = false
 ): string => {
   // Filter out hidden headers and columns excluded from render
   const flattenedLeafHeaders = leafHeaders.filter(
@@ -76,10 +77,37 @@ export const copySelectedCellsToClipboard = (
     return acc;
   }, {} as { [key: number]: { [key: number]: any } });
 
+  // Determine which columns have selected cells for header generation
+  const selectedColumnIndices = new Set<number>();
+  if (copyHeadersToClipboard) {
+    Array.from(selectedCells).forEach((cellKey) => {
+      const [, col] = cellKey.split("-").map(Number);
+      selectedColumnIndices.add(col);
+    });
+  }
+
+  // Create header row if enabled
+  let headerRow = "";
+  if (copyHeadersToClipboard && selectedColumnIndices.size > 0) {
+    // Sort column indices to maintain order
+    const sortedColIndices = Array.from(selectedColumnIndices).sort((a, b) => a - b);
+
+    // Map column indices to their header labels
+    const headerLabels = sortedColIndices.map((colIndex) => {
+      const header = colIndexToHeader.get(colIndex);
+      return header?.label ?? "";
+    });
+
+    headerRow = headerLabels.join("\t");
+  }
+
   // Convert the structured data to a tab-separated string
-  const text = Object.values(rowsText)
+  const dataText = Object.values(rowsText)
     .map((row) => Object.values(row).join("\t"))
     .join("\n");
+
+  // Combine header and data rows
+  const text = copyHeadersToClipboard && headerRow ? `${headerRow}\n${dataText}` : dataText;
 
   return text;
 };

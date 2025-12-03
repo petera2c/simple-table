@@ -67,6 +67,7 @@ interface SimpleTableProps {
   columnEditorText?: string; // Text for the column editor
   columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
+  copyHeadersToClipboard?: boolean; // Flag for including column headers when copying cells to clipboard (default: false)
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
@@ -84,6 +85,7 @@ interface SimpleTableProps {
   headerHeight?: number; // Height of the header
   height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
+  includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
   initialSortDirection?: "ascending" | "descending"; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
@@ -144,6 +146,7 @@ const SimpleTableComp = ({
   columnEditorText = "Columns",
   columnReordering = false,
   columnResizing = false,
+  copyHeadersToClipboard = false,
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
@@ -161,6 +164,7 @@ const SimpleTableComp = ({
   headerHeight,
   height,
   hideFooter = false,
+  includeHeadersInCSVExport = true,
   initialSortColumn,
   initialSortDirection = "ascending",
   isLoading = false,
@@ -490,6 +494,7 @@ const SimpleTableComp = ({
     collapsedHeaders,
     rowHeight,
     enableRowSelection,
+    copyHeadersToClipboard,
   });
 
   // Memoize handlers
@@ -531,6 +536,7 @@ const SimpleTableComp = ({
     currentTableRows: currentTableRows,
     headerRegistryRef,
     headers: effectiveHeaders,
+    includeHeadersInCSVExport,
     rowIdAccessor,
     rowIndexMap: rowIndexMapRef,
     rows: effectiveRows,
@@ -568,6 +574,7 @@ const SimpleTableComp = ({
         columnBorders,
         columnReordering,
         columnResizing,
+        copyHeadersToClipboard,
         draggedHeaderRef,
         editColumns,
         enableHeaderEditing,
@@ -576,6 +583,7 @@ const SimpleTableComp = ({
         expandIcon,
         filterIcon,
         filters,
+        includeHeadersInCSVExport,
         loadingStateRenderer,
         errorStateRenderer,
         emptyStateRenderer,

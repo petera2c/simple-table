@@ -86,6 +86,9 @@ import CSVExportFormattingExample, {
 import CSVExportSingleRowChildrenExample, {
   csvExportSingleRowChildrenExampleDefaults,
 } from "./examples/CSVExportSingleRowChildrenExample";
+import HeaderInclusionExample, {
+  headerInclusionExampleDefaults,
+} from "./examples/HeaderInclusionExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -278,6 +281,24 @@ export const CSVExportSingleRowChildren: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates CSV export behavior with singleRowChildren columns. When a parent column has singleRowChildren=true, both the parent and child columns are rendered on the same row (not in a tree hierarchy) and both are included in CSV exports. This is useful for columns where the parent represents aggregate data and children show breakdowns (e.g., Total Score with 7-day and 30-day growth).",
+      },
+    },
+  },
+};
+
+export const HeaderInclusion: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...headerInclusionExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: HeaderInclusionExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates control over including column headers in clipboard copy and CSV export. The copyHeadersToClipboard prop (default: false) determines whether headers are included when copying selected cells. The includeHeadersInCSVExport prop (default: true) controls whether headers appear in CSV exports. This is similar to AG Grid's copyGroupHeadersToClipboard option and provides flexibility for different data sharing workflows.",
       },
     },
   },
