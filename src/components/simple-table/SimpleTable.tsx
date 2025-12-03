@@ -565,6 +565,9 @@ const SimpleTableComp = ({
     [prepareForFilterChange, internalHandleApplyFilter]
   );
 
+  // Check if we should show the empty state (no rows after filtering and not loading)
+  const shouldShowEmptyState = !isLoading && currentTableRows.length === 0;
+
   return (
     <TableProvider
       value={{
@@ -685,6 +688,7 @@ const SimpleTableComp = ({
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}
                 setScrollDirection={setScrollDirection}
+                shouldShowEmptyState={shouldShowEmptyState}
                 sort={sort}
                 tableRows={currentTableRows}
                 rowsToRender={rowsToRender}
@@ -697,27 +701,31 @@ const SimpleTableComp = ({
                 position={columnEditorPosition}
               />
             </div>
-            <TableHorizontalScrollbar
-              mainBodyRef={mainBodyRef}
-              mainBodyWidth={mainBodyWidth}
-              pinnedLeftWidth={pinnedLeftWidth}
-              pinnedRightWidth={pinnedRightWidth}
-              pinnedLeftContentWidth={pinnedLeftContentWidth}
-              pinnedRightContentWidth={pinnedRightContentWidth}
-              tableBodyContainerRef={tableBodyContainerRef}
-            />
-            <TableFooter
-              currentPage={currentPage}
-              footerRenderer={footerRenderer}
-              hideFooter={hideFooter}
-              onPageChange={setCurrentPage}
-              onNextPage={onNextPage}
-              onUserPageChange={onPageChange}
-              rowsPerPage={rowsPerPage}
-              shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil((totalRowCount ?? sortedRows.length) / rowsPerPage)}
-              totalRows={totalRowCount ?? sortedRows.length}
-            />
+            {!shouldShowEmptyState && (
+              <TableHorizontalScrollbar
+                mainBodyRef={mainBodyRef}
+                mainBodyWidth={mainBodyWidth}
+                pinnedLeftWidth={pinnedLeftWidth}
+                pinnedRightWidth={pinnedRightWidth}
+                pinnedLeftContentWidth={pinnedLeftContentWidth}
+                pinnedRightContentWidth={pinnedRightContentWidth}
+                tableBodyContainerRef={tableBodyContainerRef}
+              />
+            )}
+            {!shouldShowEmptyState && (
+              <TableFooter
+                currentPage={currentPage}
+                footerRenderer={footerRenderer}
+                hideFooter={hideFooter}
+                onPageChange={setCurrentPage}
+                onNextPage={onNextPage}
+                onUserPageChange={onPageChange}
+                rowsPerPage={rowsPerPage}
+                shouldPaginate={shouldPaginate}
+                totalPages={Math.ceil((totalRowCount ?? sortedRows.length) / rowsPerPage)}
+                totalRows={totalRowCount ?? sortedRows.length}
+              />
+            )}
           </div>
         </ScrollSync>
       </div>

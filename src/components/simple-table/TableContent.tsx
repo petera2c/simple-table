@@ -14,6 +14,7 @@ interface TableContentLocalProps {
   pinnedRightWidth: number;
   setScrollTop: (scrollTop: number) => void;
   setScrollDirection: (direction: "up" | "down" | "none") => void;
+  shouldShowEmptyState: boolean;
   sort: SortColumn | null;
   tableRows: TableRow[];
   rowsToRender: TableRow[];
@@ -24,6 +25,7 @@ const TableContent = ({
   pinnedRightWidth,
   setScrollTop,
   setScrollDirection,
+  shouldShowEmptyState,
   sort,
   tableRows,
   rowsToRender,
@@ -74,6 +76,7 @@ const TableContent = ({
     pinnedRightWidth,
     setScrollTop,
     setScrollDirection,
+    shouldShowEmptyState,
     rowsToRender,
   };
 

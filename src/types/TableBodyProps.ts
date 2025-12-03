@@ -12,6 +12,7 @@ interface TableBodyProps {
   rowsToRender: TableRow[];
   setScrollTop: (scrollTop: number) => void;
   setScrollDirection: (direction: "up" | "down" | "none") => void;
+  shouldShowEmptyState: boolean;
   tableRows: TableRow[];
 }
 

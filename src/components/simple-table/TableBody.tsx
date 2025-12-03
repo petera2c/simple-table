@@ -20,6 +20,7 @@ const TableBody = ({
   rowsToRender,
   setScrollTop,
   setScrollDirection,
+  shouldShowEmptyState,
   tableRows,
 }: TableBodyProps) => {
   // Get stable props from context
@@ -194,9 +195,6 @@ const TableBody = ({
     rowsToRender,
     setHoveredIndex,
   };
-
-  // Check if we should show the empty state (no rows after filtering and not loading)
-  const shouldShowEmptyState = !isLoading && tableRows.length === 0;
 
   return (
     <div
