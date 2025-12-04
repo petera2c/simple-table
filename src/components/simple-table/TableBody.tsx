@@ -29,7 +29,6 @@ const TableBody = ({
     headerContainerRef,
     headers,
     isAnimating,
-    isLoading,
     mainBodyRef,
     onLoadMore,
     rowHeight,

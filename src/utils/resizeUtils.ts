@@ -33,9 +33,10 @@ const calculateMaxHeaderWidth = ({
   const maxPinnedPercent = getResponsiveMaxPinnedPercent(window.innerWidth);
   const maxPinnedSectionWidth = containerWidth * maxPinnedPercent;
 
-  // If this is not a pinned header, use a more generous limit for main columns
+  // If this is not a pinned header, don't impose a maximum width constraint
+  // Main section columns can grow as needed since they have horizontal scroll
   if (!header.pinned) {
-    return Math.max(containerWidth * 0.6, 600); // Allow main headers to be up to 60% of container width
+    return Infinity; // No max width limit for main section columns
   }
 
   // For pinned headers, calculate the current width of the pinned section (excluding the header being resized)
