@@ -216,6 +216,8 @@ const Dropdown: React.FC<DropdownProps> = ({
       ref={dropdownRef}
       className={`st-dropdown-content st-dropdown-${calculatedPosition}`}
       onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
       style={{
         position: positioning,
         width: width ? `${width}px` : "auto",

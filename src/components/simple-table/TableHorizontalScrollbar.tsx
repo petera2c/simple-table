@@ -50,9 +50,16 @@ const TableHorizontalScrollbar = ({
     const updateIsScrollable = () => {
       if (!mainBodyRef.current) return;
 
+      // Directly check if the main body element has horizontal overflow
+      // scrollWidth > clientWidth means the content is wider than the visible area
       const clientWidth = mainBodyRef.current.clientWidth;
+      const scrollWidth = mainBodyRef.current.scrollWidth;
 
-      setIsScrollable(mainBodyWidth > clientWidth);
+      // Use a small threshold to account for subpixel rounding
+      const threshold = 1;
+      const needsHorizontalScroll = scrollWidth - clientWidth > threshold;
+
+      setIsScrollable(needsHorizontalScroll);
     };
 
     // This is a hack to ensure the scrollbar is rendered
