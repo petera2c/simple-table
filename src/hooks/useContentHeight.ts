@@ -12,7 +12,7 @@ export const useContentHeight = ({
   rowHeight,
   shouldPaginate,
   rowsPerPage,
-}: UseContentHeightProps): number => {
+}: UseContentHeightProps): number | undefined => {
   return useMemo(() => {
     // When pagination is enabled and no height is specified, use content-based height
     if (!height && shouldPaginate && rowsPerPage) {
@@ -20,8 +20,8 @@ export const useContentHeight = ({
       return rowHeight * (rowsPerPage + 1);
     }
 
-    // Default height if none provided
-    if (!height) return window.innerHeight - rowHeight;
+    // When no height is specified and not paginating, return undefined to disable virtualization
+    if (!height) return undefined;
 
     // Get the container element for measurement
     const container = document.querySelector(".simple-table-root");
@@ -39,7 +39,14 @@ export const useContentHeight = ({
       } else if (height.endsWith("%")) {
         // Percentage of parent
         const percentage = parseInt(height, 10);
-        const parentHeight = container?.parentElement?.clientHeight || window.innerHeight;
+        const parentHeight = container?.parentElement?.clientHeight;
+
+        // If parent has no defined height (or very small height), disable virtualization
+        // This allows the table to naturally expand to fit all content
+        if (!parentHeight || parentHeight < 50) {
+          return undefined;
+        }
+
         totalHeightPx = (parentHeight * percentage) / 100;
       } else {
         // Fall back to inner height if format is unknown

@@ -22,7 +22,7 @@ interface UseTableRowProcessingProps {
   rowIdAccessor: Accessor;
   unexpandedRows: Set<string>;
   expandAll: boolean;
-  contentHeight: number;
+  contentHeight: number | undefined;
   rowHeight: number;
   scrollTop: number;
   scrollDirection?: "up" | "down" | "none";
@@ -154,7 +154,12 @@ const useTableRowProcessing = ({
   }, [sortedRows, processRowSet]);
 
   // Calculate target visible rows (what should be visible)
+  // If contentHeight is undefined, we skip virtualization and render all rows
   const targetVisibleRows = useMemo(() => {
+    if (contentHeight === undefined) {
+      // No virtualization - return all rows
+      return currentTableRows;
+    }
     return getVisibleRows({
       bufferRowCount,
       contentHeight,
@@ -335,7 +340,7 @@ const useTableRowProcessing = ({
   // Animation handlers for filter/sort changes
   const prepareForFilterChange = useCallback(
     (filter: any) => {
-      if (!allowAnimations || shouldPaginate) return;
+      if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
 
       // Calculate what rows would be after filter
       const newFilteredRows = computeFilteredRowsPreview(filter);
@@ -388,7 +393,7 @@ const useTableRowProcessing = ({
 
   const prepareForSortChange = useCallback(
     (accessor: Accessor) => {
-      if (!allowAnimations || shouldPaginate) return;
+      if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
 
       // Calculate what rows would be after sort
       const newSortedRows = computeSortedRowsPreview(accessor);
