@@ -51,6 +51,8 @@ export type ValueGetter = (props: ValueGetterProps) => CellValue;
 export interface ComparatorProps {
   rowA: Row;
   rowB: Row;
+  valueA: CellValue;
+  valueB: CellValue;
   direction: "ascending" | "descending";
 }
 
