@@ -201,6 +201,20 @@ export const flattenRowsWithGrouping = ({
             });
             position++;
             displayPosition++;
+          } else if (rowState.loading && !hasLoadingRenderer) {
+            // If loading but no custom renderer, add a dummy skeleton row
+            result.push({
+              row: { [rowIdAccessor]: `${rowId}-loading-skeleton` },
+              depth: currentDepth + 1,
+              displayPosition,
+              groupingKey: currentGroupingKey,
+              position,
+              isLastGroupRow: false,
+              rowPath: [...rowPath, currentGroupingKey],
+              isLoadingSkeleton: true,
+            });
+            position++;
+            displayPosition++;
           }
         }
         // Process actual nested rows if they exist and no state is active

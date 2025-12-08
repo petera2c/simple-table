@@ -110,6 +110,19 @@ const useFlattenedRows = ({
                   state: rowState,
                 },
               });
+            } else if (rowState.loading && !hasLoadingRenderer) {
+              // If loading but no custom renderer, add a dummy skeleton row
+              const skeletonPosition = result.length;
+              result.push({
+                row: { [rowIdAccessor]: `${rowId}-loading-skeleton` },
+                depth: currentDepth + 1,
+                displayPosition: skeletonPosition,
+                groupingKey: currentGroupingKey,
+                position: skeletonPosition,
+                isLastGroupRow: false,
+                rowPath: [...rowPath, currentGroupingKey],
+                isLoadingSkeleton: true,
+              });
             }
           }
           // Process actual nested rows if they exist and no state is active

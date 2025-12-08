@@ -486,7 +486,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         selectableCells
         theme={props.theme}
         useOddEvenRowBackground
-        loadingStateRenderer={<div>Loading...</div>}
+        // loadingStateRenderer={<div>Loading...</div>}
         errorStateRenderer={<div>Error loading data</div>}
         emptyStateRenderer={<div>No data found</div>}
       />

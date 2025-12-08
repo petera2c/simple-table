@@ -520,7 +520,7 @@ const TableCell = ({
     );
   };
 
-  if (isLoading) {
+  if (isLoading || tableRow.isLoadingSkeleton) {
     return (
       <div className={cellClassName}>
         <span
@@ -606,7 +606,7 @@ const TableCell = ({
             : "left-aligned"
         }`}
       >
-        {isLoading ? (
+        {isLoading || tableRow.isLoadingSkeleton ? (
           <div className="st-loading-skeleton" />
         ) : (
           <span>
@@ -650,15 +650,19 @@ const TableCell = ({
         )}
       </span>
 
-      {!isLoading && isEditing && isEditInDropdown && !isSelectionColumn && (
-        <EditableCell
-          enumOptions={header.enumOptions}
-          onChange={updateContent}
-          setIsEditing={setIsEditing}
-          type={header.type}
-          value={localContent}
-        />
-      )}
+      {!isLoading &&
+        !tableRow.isLoadingSkeleton &&
+        isEditing &&
+        isEditInDropdown &&
+        !isSelectionColumn && (
+          <EditableCell
+            enumOptions={header.enumOptions}
+            onChange={updateContent}
+            setIsEditing={setIsEditing}
+            type={header.type}
+            value={localContent}
+          />
+        )}
     </Animate>
   );
 };
