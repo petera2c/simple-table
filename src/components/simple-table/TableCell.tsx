@@ -108,6 +108,7 @@ const TableCell = ({
 }: TableCellProps) => {
   // Get shared props from context
   const {
+    canExpandRowGroup,
     cellRegistry,
     cellUpdateFlash,
     columnBorders,
@@ -156,6 +157,8 @@ const TableCell = ({
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   // Check if we can expand further (depth must be less than rowGrouping length)
   const canExpandFurther = rowGrouping && depth < rowGrouping.length;
+  // Check if this specific row can be expanded (if canExpandRowGroup is provided)
+  const isRowExpandable = canExpandRowGroup ? canExpandRowGroup(row) : true;
   // Determine if row is expanded based on expandAll setting
   const isRowExpanded = getIsRowExpanded(rowId, expandAll, unexpandedRows);
 
@@ -520,7 +523,7 @@ const TableCell = ({
     );
   };
 
-  if (isLoading) {
+  if (isLoading || tableRow.isLoadingSkeleton) {
     return (
       <div className={cellClassName}>
         <span
@@ -586,7 +589,10 @@ const TableCell = ({
       parentRef={tableBodyContainerRef}
       tableRow={tableRow}
     >
-      {header.expandable && canExpandFurther && (cellHasChildren || onRowGroupExpand) ? (
+      {header.expandable &&
+      canExpandFurther &&
+      isRowExpandable &&
+      (cellHasChildren || onRowGroupExpand) ? (
         <div
           className={`st-icon-container st-expand-icon-container ${
             isRowExpanded ? "expanded" : "collapsed"
@@ -606,7 +612,7 @@ const TableCell = ({
             : "left-aligned"
         }`}
       >
-        {isLoading ? (
+        {isLoading || tableRow.isLoadingSkeleton ? (
           <div className="st-loading-skeleton" />
         ) : (
           <span>
@@ -650,15 +656,19 @@ const TableCell = ({
         )}
       </span>
 
-      {!isLoading && isEditing && isEditInDropdown && !isSelectionColumn && (
-        <EditableCell
-          enumOptions={header.enumOptions}
-          onChange={updateContent}
-          setIsEditing={setIsEditing}
-          type={header.type}
-          value={localContent}
-        />
-      )}
+      {!isLoading &&
+        !tableRow.isLoadingSkeleton &&
+        isEditing &&
+        isEditInDropdown &&
+        !isSelectionColumn && (
+          <EditableCell
+            enumOptions={header.enumOptions}
+            onChange={updateContent}
+            setIsEditing={setIsEditing}
+            type={header.type}
+            value={localContent}
+          />
+        )}
     </Animate>
   );
 };

@@ -15,6 +15,8 @@ type TableRow = {
     parentRowId: string | number;
     state: RowState;
   };
+  // If this row is a loading skeleton (used when expanding rows without a custom loadingStateRenderer)
+  isLoadingSkeleton?: boolean;
 };
 
 export default TableRow;

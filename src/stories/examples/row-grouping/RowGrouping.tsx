@@ -1,6 +1,7 @@
 import SimpleTable from "../../../components/simple-table/SimpleTable";
-import { HeaderObject } from "../../..";
+import { HeaderObject, TableRefType } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
+import { useRef } from "react";
 
 // Default args specific to RowGrouping - exported for reuse in stories and tests
 export const rowGroupingDefaults = {
@@ -701,17 +702,24 @@ const rows = [
 ];
 
 const RowGroupingExample = (props: UniversalTableProps) => {
+  const tableRef = useRef<TableRefType>(null);
   return (
-    <SimpleTable
-      {...props}
-      defaultHeaders={headers}
-      rows={rows}
-      rowGrouping={["divisions", "teams"]}
-      rowIdAccessor="id"
-      // Default settings for this example
-      columnResizing={props.columnResizing ?? true}
-      height={props.height ?? "calc(100dvh - 112px)"}
-    />
+    <>
+      <button onClick={() => tableRef.current?.exportToCSV()}>Export to CSV</button>
+      <SimpleTable
+        {...props}
+        tableRef={tableRef}
+        defaultHeaders={headers}
+        rows={rows}
+        rowGrouping={["divisions", "teams"]}
+        rowIdAccessor="id"
+        // Default settings for this example
+        columnResizing={props.columnResizing ?? true}
+        height={props.height ?? "calc(100dvh - 112px)"}
+        shouldPaginate
+        rowsPerPage={10}
+      />
+    </>
   );
 };
 

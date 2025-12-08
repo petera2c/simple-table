@@ -1,67 +1,52 @@
 import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
 import { calculateBufferRowCount } from "../consts/general-consts";
 import { getVisibleRows } from "../utils/infiniteScrollUtils";
-import { flattenRowsWithGrouping, getRowId } from "../utils/rowUtils";
+import { getRowId } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
-import Row from "../types/Row";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
-import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
-  sortedRows: Row[];
-  // Original unfiltered rows for establishing baseline positions
-  originalRows: Row[];
+  /** Already flattened rows from useFlattenedRows */
+  flattenedRows: TableRow[];
+  /** Original flattened rows for establishing baseline positions */
+  originalFlattenedRows: TableRow[];
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
   serverSidePagination: boolean;
-  rowGrouping?: Accessor[];
   rowIdAccessor: Accessor;
-  unexpandedRows: Set<string>;
-  expandAll: boolean;
   contentHeight: number | undefined;
   rowHeight: number;
   scrollTop: number;
   scrollDirection?: "up" | "down" | "none";
-  // Functions to preview what rows would be after changes
-  computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
-  computeSortedRowsPreview: (accessor: Accessor) => Row[];
-  rowStateMap: Map<string | number, RowState>;
-  hasLoadingRenderer: boolean;
-  hasErrorRenderer: boolean;
-  hasEmptyRenderer: boolean;
+  // Functions to preview what rows would be after changes (now return TableRow[])
+  computeFilteredRowsPreview: (filter: FilterCondition) => TableRow[];
+  computeSortedRowsPreview: (accessor: Accessor) => TableRow[];
 }
 
 const useTableRowProcessing = ({
   allowAnimations,
-  sortedRows,
-  originalRows,
+  flattenedRows,
+  originalFlattenedRows,
   currentPage,
   rowsPerPage,
   shouldPaginate,
   serverSidePagination,
-  rowGrouping,
   rowIdAccessor,
-  unexpandedRows,
-  expandAll,
   contentHeight,
   rowHeight,
   scrollTop,
   scrollDirection = "none",
   computeFilteredRowsPreview,
   computeSortedRowsPreview,
-  rowStateMap,
-  hasLoadingRenderer,
-  hasErrorRenderer,
-  hasEmptyRenderer,
 }: UseTableRowProcessingProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
-  const [extendedRows, setExtendedRows] = useState<any[]>([]);
-  const previousTableRowsRef = useRef<any[]>([]); // Track ALL processed rows, not just visible
-  const previousVisibleRowsRef = useRef<any[]>([]); // Track only visible rows for animation
+  const [extendedRows, setExtendedRows] = useState<TableRow[]>([]);
+  const previousTableRowsRef = useRef<TableRow[]>([]); // Track ALL processed rows, not just visible
+  const previousVisibleRowsRef = useRef<TableRow[]>([]); // Track only visible rows for animation
 
   // Calculate buffer row count based on actual row height
   // This ensures consistent ~800px overscan regardless of row size
@@ -72,86 +57,48 @@ const useTableRowProcessing = ({
 
   // Capture values when animation starts to avoid dependency issues in timeout effect
   const animationCaptureRef = useRef<{
-    tableRows: any[];
-    visibleRows: any[];
+    tableRows: TableRow[];
+    visibleRows: TableRow[];
   } | null>(null);
 
-  // Process rows through pagination and grouping
-  const processRowSet = useCallback(
-    (rows: Row[]) => {
+  // Apply pagination to already-flattened rows and recalculate positions
+  const applyPagination = useCallback(
+    (rows: TableRow[]): TableRow[] => {
       // Apply pagination (skip slicing for server-side pagination)
       const paginatedRows =
         shouldPaginate && !serverSidePagination
           ? rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
           : rows;
 
-      // Calculate the display position offset for pagination
-      const displayPositionOffset = shouldPaginate ? (currentPage - 1) * rowsPerPage : 0;
-
-      // Apply grouping
-      if (!rowGrouping || rowGrouping.length === 0) {
-        return paginatedRows.map(
-          (row, index) =>
-            ({
-              row,
-              depth: 0,
-              displayPosition: displayPositionOffset + index,
-              groupingKey: undefined,
-              position: index,
-              isLastGroupRow: false,
-            } as TableRow)
-        );
-      }
-
-      return flattenRowsWithGrouping({
-        rows: paginatedRows,
-        rowGrouping,
-        rowIdAccessor,
-        unexpandedRows,
-        expandAll,
-        displayPositionOffset,
-        rowStateMap,
-        hasLoadingRenderer,
-        hasErrorRenderer,
-        hasEmptyRenderer,
-      });
+      // Recalculate positions after pagination
+      return paginatedRows.map((tableRow, index) => ({
+        ...tableRow,
+        position: index,
+        displayPosition: index,
+      }));
     },
-    [
-      currentPage,
-      expandAll,
-      hasEmptyRenderer,
-      hasErrorRenderer,
-      hasLoadingRenderer,
-      rowGrouping,
-      rowIdAccessor,
-      rowStateMap,
-      rowsPerPage,
-      serverSidePagination,
-      shouldPaginate,
-      unexpandedRows,
-    ]
+    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate]
   );
 
   // Establish original positions from unfiltered/unsorted data
   useMemo(() => {
     // Only set original positions once when component first loads
-    if (originalPositionsRef.current.size === 0) {
-      const originalProcessedRows = processRowSet(originalRows);
+    if (originalPositionsRef.current.size === 0 && originalFlattenedRows.length > 0) {
       const newOriginalPositions = new Map<string, number>();
-      originalProcessedRows.forEach((tableRow) => {
+      originalFlattenedRows.forEach((tableRow, index) => {
         const id = String(getRowId({ row: tableRow.row, rowIdAccessor }));
-        newOriginalPositions.set(id, tableRow.position);
+        newOriginalPositions.set(id, index);
       });
 
       originalPositionsRef.current = newOriginalPositions;
     }
-  }, [originalRows, processRowSet, rowIdAccessor]);
+  }, [originalFlattenedRows, rowIdAccessor]);
 
-  // Current table rows (processed for display)
+  // Current table rows (paginated for display)
+  // Now pagination happens on FLATTENED rows, so rowsPerPage correctly counts all visible rows
   const currentTableRows = useMemo(() => {
-    // Use sortedRows which already have filters applied
-    return processRowSet(sortedRows);
-  }, [sortedRows, processRowSet]);
+    return applyPagination(flattenedRows);
+  }, [flattenedRows, applyPagination]);
 
   // Calculate target visible rows (what should be visible)
   // If contentHeight is undefined, we skip virtualization and render all rows
@@ -172,7 +119,7 @@ const useTableRowProcessing = ({
 
   // Categorize rows based on ID changes
   const categorizeRows = useCallback(
-    (previousRows: any[], currentRows: any[]) => {
+    (previousRows: TableRow[], currentRows: TableRow[]) => {
       const previousIds = new Set(
         previousRows.map((row) => String(getRowId({ row: row.row, rowIdAccessor })))
       );
@@ -227,9 +174,17 @@ const useTableRowProcessing = ({
       return;
     }
 
+    // Helper to clear extended rows only if needed (avoid unnecessary state updates
+    // that would cause infinite re-renders)
+    const clearExtendedRowsIfNeeded = () => {
+      if (extendedRows.length > 0) {
+        setExtendedRows([]);
+      }
+    };
+
     // Always sync when not animating
     if (!allowAnimations || shouldPaginate) {
-      setExtendedRows([]); // Clear extended rows to use normal virtualization
+      clearExtendedRowsIfNeeded();
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
       return;
@@ -237,7 +192,7 @@ const useTableRowProcessing = ({
 
     // Initialize on first render
     if (previousTableRowsRef.current.length === 0) {
-      setExtendedRows([]); // Clear extended rows to use normal virtualization
+      clearExtendedRowsIfNeeded();
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
       return;
@@ -245,7 +200,7 @@ const useTableRowProcessing = ({
 
     // Check if rows actually changed - this detects STAGE 2 (after sort/filter applied)
     if (!hasRowChanges) {
-      setExtendedRows([]); // Clear extended rows to use normal virtualization
+      clearExtendedRowsIfNeeded();
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
       return;
@@ -266,6 +221,7 @@ const useTableRowProcessing = ({
   }, [
     allowAnimations,
     currentTableRows,
+    extendedRows.length,
     hasRowChanges,
     isAnimating,
     shouldPaginate,
@@ -339,16 +295,16 @@ const useTableRowProcessing = ({
 
   // Animation handlers for filter/sort changes
   const prepareForFilterChange = useCallback(
-    (filter: any) => {
+    (filter: FilterCondition) => {
       if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
 
-      // Calculate what rows would be after filter
-      const newFilteredRows = computeFilteredRowsPreview(filter);
-      const newProcessedRows = processRowSet(newFilteredRows);
+      // Calculate what rows would be after filter (already flattened from preview function)
+      const newFlattenedRows = computeFilteredRowsPreview(filter);
+      const newPaginatedRows = applyPagination(newFlattenedRows);
       const newVisibleRows = getVisibleRows({
         bufferRowCount,
         contentHeight,
-        tableRows: newProcessedRows,
+        tableRows: newPaginatedRows,
         rowHeight,
         scrollTop,
         scrollDirection,
@@ -368,7 +324,7 @@ const useTableRowProcessing = ({
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
-        .filter(Boolean);
+        .filter(Boolean) as TableRow[];
 
       if (enteringFromCurrentState.length > 0) {
         setExtendedRows([...targetVisibleRows, ...enteringFromCurrentState]);
@@ -378,7 +334,7 @@ const useTableRowProcessing = ({
       allowAnimations,
       shouldPaginate,
       computeFilteredRowsPreview,
-      processRowSet,
+      applyPagination,
       contentHeight,
       rowHeight,
       scrollTop,
@@ -395,13 +351,13 @@ const useTableRowProcessing = ({
     (accessor: Accessor) => {
       if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
 
-      // Calculate what rows would be after sort
-      const newSortedRows = computeSortedRowsPreview(accessor);
-      const newProcessedRows = processRowSet(newSortedRows);
+      // Calculate what rows would be after sort (already flattened from preview function)
+      const newFlattenedRows = computeSortedRowsPreview(accessor);
+      const newPaginatedRows = applyPagination(newFlattenedRows);
       const newVisibleRows = getVisibleRows({
         bufferRowCount,
         contentHeight,
-        tableRows: newProcessedRows,
+        tableRows: newPaginatedRows,
         rowHeight,
         scrollTop,
         scrollDirection,
@@ -421,7 +377,7 @@ const useTableRowProcessing = ({
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
-        .filter(Boolean);
+        .filter(Boolean) as TableRow[];
 
       if (enteringFromCurrentState.length > 0) {
         setExtendedRows([...targetVisibleRows, ...enteringFromCurrentState]);
@@ -431,7 +387,7 @@ const useTableRowProcessing = ({
       allowAnimations,
       shouldPaginate,
       computeSortedRowsPreview,
-      processRowSet,
+      applyPagination,
       contentHeight,
       rowHeight,
       scrollTop,

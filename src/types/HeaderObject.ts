@@ -6,7 +6,11 @@ import { CellRenderer } from "./CellRendererProps";
 import { HeaderRenderer } from "./HeaderRendererProps";
 import CellValue from "./CellValue";
 
-export type Accessor = keyof Row;
+// Accessor can be:
+// - A simple key of Row (e.g., "name")
+// - A nested path with dots (e.g., "latest.score")
+// - A path with array indices (e.g., "albums[0].title" or "releaseDate[0]")
+export type Accessor = keyof Row | string;
 export type ColumnType =
   | "string"
   | "number"
@@ -38,7 +42,7 @@ export interface ValueFormatterProps {
   value: CellValue;
 }
 
-export type ValueFormatter = (props: ValueFormatterProps) => string | number;
+export type ValueFormatter = (props: ValueFormatterProps) => string | number | string[] | number[];
 
 export interface ValueGetterProps {
   accessor: Accessor;
@@ -51,6 +55,8 @@ export type ValueGetter = (props: ValueGetterProps) => CellValue;
 export interface ComparatorProps {
   rowA: Row;
   rowB: Row;
+  valueA: CellValue;
+  valueB: CellValue;
   direction: "ascending" | "descending";
 }
 
@@ -62,7 +68,7 @@ export interface ExportValueProps {
   row: Row;
   rowIndex: number;
   value: CellValue;
-  formattedValue?: string | number;
+  formattedValue?: string | number | string[] | number[];
 }
 
 export type ExportValueGetter = (props: ExportValueProps) => string | number;

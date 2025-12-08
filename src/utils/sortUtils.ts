@@ -158,18 +158,9 @@ const sortFlatRows = ({
   const type = headerObject?.type || "string";
   const direction = sortColumn.direction;
 
+  const accessor = sortColumn.key.accessor;
+
   return [...rows].sort((a, b) => {
-    // If custom comparator is provided, use it
-    if (headerObject?.comparator) {
-      return headerObject.comparator({
-        rowA: a,
-        rowB: b,
-        direction,
-      });
-    }
-
-    const accessor = sortColumn.key.accessor;
-
     // Use valueGetter if provided, otherwise use direct accessor
     let aValue: any;
     let bValue: any;
@@ -190,6 +181,17 @@ const sortFlatRows = ({
     } else {
       aValue = getNestedValue(a, accessor);
       bValue = getNestedValue(b, accessor);
+    }
+
+    // If custom comparator is provided, use it
+    if (headerObject?.comparator) {
+      return headerObject.comparator({
+        rowA: a,
+        rowB: b,
+        valueA: aValue,
+        valueB: bValue,
+        direction,
+      });
     }
 
     return compareValues(aValue, bValue, type, direction);

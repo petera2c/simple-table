@@ -319,6 +319,10 @@ input {
   ) {
   background-color: var(--st-hover-row-background-color);
 }
+.st-cell-content {
+  display: flex;
+}
+
 .st-row.odd .st-cell-content {
   color: var(--st-cell-odd-row-color);
 }
@@ -458,14 +462,17 @@ input {
 .st-cell-content.left-aligned,
 .st-header-label-text.left-aligned {
   text-align: left;
+  justify-content: flex-start;
 }
 .st-cell-content.center-aligned,
 .st-header-label-text.center-aligned {
   text-align: center;
+  justify-content: center;
 }
 .st-cell-content.right-aligned,
 .st-header-label-text.right-aligned {
   text-align: right;
+  justify-content: flex-end;
 }
 
 /* If the table is not resizeable then we don't need the extra right padding */
