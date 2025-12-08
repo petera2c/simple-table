@@ -6,49 +6,133 @@ import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
 
 /**
- * Get a nested property value from an object using dot notation
- * Example: getNestedValue(row, "latest.rank") returns row.latest.rank
+ * Parse a path segment that may contain array notation
+ * Example: "albums[0]" returns { key: "albums", index: 0 }
+ *          "name" returns { key: "name", index: null }
+ */
+const parsePathSegment = (segment: string): { key: string; index: number | null } => {
+  const arrayMatch = segment.match(/^(.+?)\[(\d+)\]$/);
+  if (arrayMatch) {
+    return {
+      key: arrayMatch[1],
+      index: parseInt(arrayMatch[2], 10),
+    };
+  }
+  return { key: segment, index: null };
+};
+
+/**
+ * Get a nested property value from an object using dot notation and array bracket notation
+ * Examples:
+ *   getNestedValue(row, "latest.rank") returns row.latest.rank
+ *   getNestedValue(row, "albums[0].title") returns row.albums[0].title
+ *   getNestedValue(row, "releaseDate[0]") returns row.releaseDate[0]
  */
 export const getNestedValue = (obj: Row, path: Accessor): CellValue => {
-  // If the accessor is a simple property (no dots), use direct access for performance
-  if (!path.includes(".")) {
+  const pathStr = String(path);
+
+  // If the accessor is a simple property (no dots or brackets), use direct access for performance
+  if (!pathStr.includes(".") && !pathStr.includes("[")) {
     return obj[path] as CellValue;
   }
 
-  // For nested paths, split by dots and traverse the object using reduce
-  const keys = String(path).split(".");
-  return keys.reduce((current: any, key: string) => {
-    return current?.[key];
+  // For nested paths, split by dots and traverse the object
+  const segments = pathStr.split(".");
+
+  return segments.reduce((current: any, segment: string) => {
+    if (current === null || current === undefined) {
+      return undefined;
+    }
+
+    const { key, index } = parsePathSegment(segment);
+
+    // First access the key
+    let value = current[key];
+
+    // If an array index was specified, access that index
+    if (index !== null && Array.isArray(value)) {
+      value = value[index];
+    }
+
+    return value;
   }, obj) as CellValue;
 };
 
 /**
- * Set a nested property value in an object using dot notation
- * Example: setNestedValue(row, "latest.rank", 5) sets row.latest.rank = 5
+ * Set a nested property value in an object using dot notation and array bracket notation
+ * Examples:
+ *   setNestedValue(row, "latest.rank", 5) sets row.latest.rank = 5
+ *   setNestedValue(row, "albums[0].title", "New Album") sets row.albums[0].title = "New Album"
+ *   setNestedValue(row, "releaseDate[0]", "2024") sets row.releaseDate[0] = "2024"
  */
 export const setNestedValue = (obj: Row, path: Accessor, value: CellValue): void => {
-  // If the accessor is a simple property (no dots), use direct access for performance
-  if (typeof path === "string" && !path.includes(".")) {
+  const pathStr = String(path);
+
+  // If the accessor is a simple property (no dots or brackets), use direct access for performance
+  if (!pathStr.includes(".") && !pathStr.includes("[")) {
     obj[path] = value;
     return;
   }
 
   // For nested paths, split by dots and traverse/create the object structure
-  const keys = String(path).split(".");
+  const segments = pathStr.split(".");
   let current: any = obj;
 
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-    // Create intermediate objects if they don't exist
-    if (current[key] === null || current[key] === undefined || typeof current[key] !== "object") {
-      current[key] = {};
+  for (let i = 0; i < segments.length - 1; i++) {
+    const { key, index } = parsePathSegment(segments[i]);
+
+    // Create intermediate objects/arrays if they don't exist
+    if (current[key] === null || current[key] === undefined) {
+      // Determine if next segment expects an array
+      const nextSegment = segments[i + 1];
+      const nextParsed = parsePathSegment(nextSegment);
+      current[key] = nextParsed.index !== null ? [] : {};
     }
+
+    // Navigate to the key
     current = current[key];
+
+    // If an array index was specified, navigate to that index
+    if (index !== null) {
+      if (!Array.isArray(current)) {
+        throw new Error(
+          `Expected array at ${segments.slice(0, i + 1).join(".")}, but found ${typeof current}`
+        );
+      }
+
+      // Ensure the array has enough elements
+      while (current.length <= index) {
+        current.push(null);
+      }
+
+      // Create object at index if needed
+      if (current[index] === null || current[index] === undefined) {
+        current[index] = {};
+      }
+
+      current = current[index];
+    }
   }
 
-  // Set the final value
-  const lastKey = keys[keys.length - 1];
-  current[lastKey] = value;
+  // Handle the final segment
+  const { key: lastKey, index: lastIndex } = parsePathSegment(segments[segments.length - 1]);
+
+  if (lastIndex !== null) {
+    // Setting a value in an array
+    if (!Array.isArray(current[lastKey])) {
+      current[lastKey] = [];
+    }
+
+    // Ensure the array has enough elements
+    while (current[lastKey].length <= lastIndex) {
+      current[lastKey].push(null);
+    }
+
+    current[lastKey][lastIndex] = value;
+  } else {
+    // Setting a simple property
+    current[lastKey] = value;
+  }
 };
 
 /**

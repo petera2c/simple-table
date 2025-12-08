@@ -74,6 +74,23 @@ const headers: HeaderObject[] = [
     valueFormatter: ({ value }) => `${Number(value).toFixed(1)}%`, // Format as percentage
   },
   {
+    accessor: "recentGames[0].score",
+    label: "Last Game Score",
+    width: 140,
+    type: "number",
+    isSortable: true,
+    align: "right",
+    valueFormatter: ({ value }) => `${value} pts`, // Add points suffix
+  },
+  {
+    accessor: "awards[0]",
+    label: "Top Award",
+    width: 180,
+    type: "string",
+    isSortable: true,
+    filterable: true,
+  },
+  {
     accessor: "contract.salary",
     label: "Salary",
     width: 150,
@@ -102,7 +119,7 @@ const headers: HeaderObject[] = [
   },
 ];
 
-// Sample data with nested structures
+// Sample data with nested structures and arrays
 const initialRows = [
   {
     id: 1,
@@ -120,6 +137,11 @@ const initialRows = [
         trend: "up",
       },
     },
+    recentGames: [
+      { score: 32, opponent: "Warriors" },
+      { score: 28, opponent: "Celtics" },
+    ],
+    awards: ["4× NBA Champion", "4× NBA MVP", "19× NBA All-Star"],
     contract: {
       salary: 44500000,
       yearsRemaining: 2,
@@ -141,6 +163,11 @@ const initialRows = [
         trend: "up",
       },
     },
+    recentGames: [
+      { score: 38, opponent: "Lakers" },
+      { score: 41, opponent: "Nets" },
+    ],
+    awards: ["4× NBA Champion", "2× NBA MVP", "10× NBA All-Star"],
     contract: {
       salary: 51900000,
       yearsRemaining: 3,
@@ -162,6 +189,11 @@ const initialRows = [
         trend: "stable",
       },
     },
+    recentGames: [
+      { score: 45, opponent: "76ers" },
+      { score: 35, opponent: "Heat" },
+    ],
+    awards: ["NBA Champion (2021)", "2× NBA MVP", "8× NBA All-Star"],
     contract: {
       salary: 45640000,
       yearsRemaining: 4,
@@ -183,6 +215,11 @@ const initialRows = [
         trend: "up",
       },
     },
+    recentGames: [
+      { score: 33, opponent: "Mavericks" },
+      { score: 29, opponent: "Clippers" },
+    ],
+    awards: ["2× NBA Champion", "NBA MVP (2014)", "14× NBA All-Star"],
     contract: {
       salary: 47649433,
       yearsRemaining: 2,
@@ -204,6 +241,11 @@ const initialRows = [
         trend: "up",
       },
     },
+    recentGames: [
+      { score: 42, opponent: "Suns" },
+      { score: 36, opponent: "Rockets" },
+    ],
+    awards: ["NBA Rookie of the Year", "5× NBA All-Star", "5× All-NBA First Team"],
     contract: {
       salary: 40064220,
       yearsRemaining: 5,
@@ -225,6 +267,11 @@ const initialRows = [
         trend: "stable",
       },
     },
+    recentGames: [
+      { score: 34, opponent: "Bucks" },
+      { score: 31, opponent: "Knicks" },
+    ],
+    awards: ["NBA MVP (2023)", "7× NBA All-Star", "5× All-NBA"],
     contract: {
       salary: 47607350,
       yearsRemaining: 4,
@@ -246,6 +293,11 @@ const initialRows = [
         trend: "up",
       },
     },
+    recentGames: [
+      { score: 30, opponent: "Lakers" },
+      { score: 28, opponent: "Heat" },
+    ],
+    awards: ["NBA Champion (2024)", "5× NBA All-Star", "4× All-NBA"],
     contract: {
       salary: 32600060,
       yearsRemaining: 3,
@@ -267,6 +319,11 @@ const initialRows = [
         trend: "stable",
       },
     },
+    recentGames: [
+      { score: 27, opponent: "Celtics" },
+      { score: 25, opponent: "Nets" },
+    ],
+    awards: ["NBA Rookie of the Year", "8× NBA All-Star", "7× All-NBA"],
     contract: {
       salary: 45640084,
       yearsRemaining: 3,
@@ -282,8 +339,9 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
       <h2>Nested Accessor Example</h2>
       <p>
         This example demonstrates how to use nested accessors like <code>stats.points</code>,{" "}
-        <code>latest.rank</code>, and <code>latest.performance.rating</code> to access deeply nested
-        data in your row objects.
+        <code>latest.rank</code>, <code>latest.performance.rating</code>, and array accessors like{" "}
+        <code>recentGames[0].score</code> and <code>awards[0]</code> to access deeply nested data
+        and array elements in your row objects.
       </p>
       <p>
         <strong>Features demonstrated:</strong>
@@ -291,7 +349,10 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
       <ul>
         <li>Nested property access using dot notation (e.g., "stats.points")</li>
         <li>Multi-level nesting (e.g., "latest.performance.rating")</li>
-        <li>Sorting and filtering work with nested accessors</li>
+        <li>Array index access (e.g., "awards[0]")</li>
+        <li>Combined nested and array access (e.g., "recentGames[0].score")</li>
+        <li>Sorting and filtering work with nested and array accessors</li>
+        <li>Initial sort by nested accessor (table starts sorted by "latest.rank")</li>
         <li>Custom cell renderers can access nested data</li>
         <li>Editable cells support nested accessors (if enabled)</li>
         <li>
@@ -299,7 +360,7 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
             Value formatting with <code>valueFormatter</code>:
           </strong>{" "}
           Salary displays as currency, stats show decimals, rank has "#" prefix, years have
-          "year(s)" suffix
+          "year(s)" suffix, scores have "pts" suffix
         </li>
       </ul>
 
@@ -307,6 +368,8 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
         {...props}
         defaultHeaders={headers}
         height="500px"
+        initialSortColumn="latest.rank"
+        initialSortDirection="ascending"
         onCellEdit={(props) => {
           console.log("Cell edited:", props);
         }}

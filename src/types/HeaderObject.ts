@@ -6,7 +6,11 @@ import { CellRenderer } from "./CellRendererProps";
 import { HeaderRenderer } from "./HeaderRendererProps";
 import CellValue from "./CellValue";
 
-export type Accessor = keyof Row;
+// Accessor can be:
+// - A simple key of Row (e.g., "name")
+// - A nested path with dots (e.g., "latest.score")
+// - A path with array indices (e.g., "albums[0].title" or "releaseDate[0]")
+export type Accessor = keyof Row | string;
 export type ColumnType =
   | "string"
   | "number"
