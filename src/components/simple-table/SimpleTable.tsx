@@ -41,6 +41,7 @@ import useScrollbarWidth from "../../hooks/useScrollbarWidth";
 import useOnGridReady from "../../hooks/useOnGridReady";
 import useTableAPI from "../../hooks/useTableAPI";
 import useTableRowProcessing from "../../hooks/useTableRowProcessing";
+import useFlattenedRows from "../../hooks/useFlattenedRows";
 import { useRowSelection } from "../../hooks/useRowSelection";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
@@ -51,7 +52,7 @@ import FooterRendererProps from "../../types/FooterRendererProps";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import RowState from "../../types/RowState";
-import { getRowId } from "../../utils/rowUtils";
+import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import {
   LoadingStateRenderer,
   ErrorStateRenderer,
@@ -435,7 +436,115 @@ const SimpleTableComp = ({
     initialSortDirection,
   });
 
-  // Process rows through pagination, grouping, and virtualization
+  // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
+  // Done BEFORE pagination so rowsPerPage correctly counts all visible rows including nested children
+  const flattenedRows = useFlattenedRows({
+    rows: sortedRows,
+    rowGrouping,
+    rowIdAccessor,
+    unexpandedRows,
+    expandAll,
+    rowStateMap,
+    hasLoadingRenderer: Boolean(loadingStateRenderer),
+    hasErrorRenderer: Boolean(errorStateRenderer),
+    hasEmptyRenderer: Boolean(emptyStateRenderer),
+  });
+
+  // Also flatten the original aggregated rows for animation baseline positions
+  const originalFlattenedRows = useFlattenedRows({
+    rows: aggregatedRows,
+    rowGrouping,
+    rowIdAccessor,
+    unexpandedRows,
+    expandAll,
+    rowStateMap,
+    hasLoadingRenderer: Boolean(loadingStateRenderer),
+    hasErrorRenderer: Boolean(errorStateRenderer),
+    hasEmptyRenderer: Boolean(emptyStateRenderer),
+  });
+
+  // Create flattened preview functions for animations
+  const computeFlattenedFilteredRowsPreview = useCallback(
+    (filter: FilterCondition) => {
+      const filteredPreview = computeFilteredRowsPreview(filter);
+      // Flatten the preview using the same logic as useFlattenedRows
+      if (!rowGrouping || rowGrouping.length === 0) {
+        return filteredPreview.map((row, index) => ({
+          row,
+          depth: 0,
+          displayPosition: index,
+          groupingKey: undefined,
+          position: index,
+          isLastGroupRow: index === filteredPreview.length - 1,
+          rowPath: [index],
+        }));
+      }
+      return flattenRowsWithGrouping({
+        rows: filteredPreview,
+        rowGrouping,
+        rowIdAccessor,
+        unexpandedRows,
+        expandAll,
+        rowStateMap,
+        hasLoadingRenderer: Boolean(loadingStateRenderer),
+        hasErrorRenderer: Boolean(errorStateRenderer),
+        hasEmptyRenderer: Boolean(emptyStateRenderer),
+      });
+    },
+    [
+      computeFilteredRowsPreview,
+      rowGrouping,
+      rowIdAccessor,
+      unexpandedRows,
+      expandAll,
+      rowStateMap,
+      loadingStateRenderer,
+      errorStateRenderer,
+      emptyStateRenderer,
+    ]
+  );
+
+  const computeFlattenedSortedRowsPreview = useCallback(
+    (accessor: Accessor) => {
+      const sortedPreview = computeSortedRowsPreview(accessor);
+      // Flatten the preview using the same logic as useFlattenedRows
+      if (!rowGrouping || rowGrouping.length === 0) {
+        return sortedPreview.map((row, index) => ({
+          row,
+          depth: 0,
+          displayPosition: index,
+          groupingKey: undefined,
+          position: index,
+          isLastGroupRow: index === sortedPreview.length - 1,
+          rowPath: [index],
+        }));
+      }
+      return flattenRowsWithGrouping({
+        rows: sortedPreview,
+        rowGrouping,
+        rowIdAccessor,
+        unexpandedRows,
+        expandAll,
+        rowStateMap,
+        hasLoadingRenderer: Boolean(loadingStateRenderer),
+        hasErrorRenderer: Boolean(errorStateRenderer),
+        hasEmptyRenderer: Boolean(emptyStateRenderer),
+      });
+    },
+    [
+      computeSortedRowsPreview,
+      rowGrouping,
+      rowIdAccessor,
+      unexpandedRows,
+      expandAll,
+      rowStateMap,
+      loadingStateRenderer,
+      errorStateRenderer,
+      emptyStateRenderer,
+    ]
+  );
+
+  // Process rows through pagination and virtualization (now operates on flattened rows)
   const {
     currentTableRows,
     rowsToRender,
@@ -444,26 +553,19 @@ const SimpleTableComp = ({
     isAnimating,
   } = useTableRowProcessing({
     allowAnimations,
-    sortedRows,
-    originalRows: aggregatedRows,
+    flattenedRows,
+    originalFlattenedRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
     serverSidePagination,
-    rowGrouping,
     rowIdAccessor,
-    unexpandedRows,
-    expandAll,
     contentHeight,
     rowHeight,
     scrollTop,
     scrollDirection,
-    computeFilteredRowsPreview,
-    computeSortedRowsPreview,
-    rowStateMap,
-    hasLoadingRenderer: Boolean(loadingStateRenderer),
-    hasErrorRenderer: Boolean(errorStateRenderer),
-    hasEmptyRenderer: Boolean(emptyStateRenderer),
+    computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
+    computeSortedRowsPreview: computeFlattenedSortedRowsPreview,
   });
 
   // Create a registry for cells to enable direct updates
@@ -536,7 +638,7 @@ const SimpleTableComp = ({
   useOnGridReady({ onGridReady });
   useTableAPI({
     cellRegistryRef,
-    currentTableRows: currentTableRows,
+    flattenedRows,
     headerRegistryRef,
     headers: effectiveHeaders,
     includeHeadersInCSVExport,
@@ -722,8 +824,8 @@ const SimpleTableComp = ({
                 onUserPageChange={onPageChange}
                 rowsPerPage={rowsPerPage}
                 shouldPaginate={shouldPaginate}
-                totalPages={Math.ceil((totalRowCount ?? sortedRows.length) / rowsPerPage)}
-                totalRows={totalRowCount ?? sortedRows.length}
+                totalPages={Math.ceil((totalRowCount ?? flattenedRows.length) / rowsPerPage)}
+                totalRows={totalRowCount ?? flattenedRows.length}
               />
             )}
           </div>

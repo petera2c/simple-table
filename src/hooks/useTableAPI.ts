@@ -11,7 +11,7 @@ import HeaderObject from "../types/HeaderObject";
 
 const useTableAPI = ({
   cellRegistryRef,
-  currentTableRows,
+  flattenedRows,
   headerRegistryRef,
   headers,
   includeHeadersInCSVExport,
@@ -23,7 +23,7 @@ const useTableAPI = ({
   visibleRows,
 }: {
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
-  currentTableRows: TableRow[];
+  flattenedRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
@@ -69,13 +69,14 @@ const useTableAPI = ({
           return visibleRows;
         },
         exportToCSV: ({ filename }: ExportToCSVProps = {}) => {
-          exportTableToCSV(currentTableRows, headers, filename, includeHeadersInCSVExport);
+          // Use flattenedRows to export ALL rows, not just the current page
+          exportTableToCSV(flattenedRows, headers, filename, includeHeadersInCSVExport);
         },
       };
     }
   }, [
     cellRegistryRef,
-    currentTableRows,
+    flattenedRows,
     headerRegistryRef,
     headers,
     includeHeadersInCSVExport,
