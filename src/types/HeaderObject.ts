@@ -42,7 +42,7 @@ export interface ValueFormatterProps {
   value: CellValue;
 }
 
-export type ValueFormatter = (props: ValueFormatterProps) => string | number;
+export type ValueFormatter = (props: ValueFormatterProps) => string | number | string[] | number[];
 
 export interface ValueGetterProps {
   accessor: Accessor;
@@ -68,7 +68,7 @@ export interface ExportValueProps {
   row: Row;
   rowIndex: number;
   value: CellValue;
-  formattedValue?: string | number;
+  formattedValue?: string | number | string[] | number[];
 }
 
 export type ExportValueGetter = (props: ExportValueProps) => string | number;

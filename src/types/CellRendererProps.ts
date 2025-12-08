@@ -10,7 +10,7 @@ interface CellRendererProps {
   row: Row;
   theme: Theme;
   value: CellValue; // The raw cell value
-  formattedValue?: string | number | null | undefined | boolean; // The formatted cell value (from valueFormatter if present)
+  formattedValue?: string | number | string[] | number[] | null | undefined | boolean; // The formatted cell value (from valueFormatter if present)
 }
 
 export type CellRenderer = (props: CellRendererProps) => ReactNode | string;

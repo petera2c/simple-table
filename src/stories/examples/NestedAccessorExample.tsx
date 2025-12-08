@@ -368,7 +368,7 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
         {...props}
         defaultHeaders={headers}
         height="500px"
-        initialSortColumn="latest.rank"
+        initialSortColumn="awards[0]"
         initialSortDirection="ascending"
         onCellEdit={(props) => {
           console.log("Cell edited:", props);
