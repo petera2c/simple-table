@@ -174,9 +174,17 @@ const useTableRowProcessing = ({
       return;
     }
 
+    // Helper to clear extended rows only if needed (avoid unnecessary state updates
+    // that would cause infinite re-renders)
+    const clearExtendedRowsIfNeeded = () => {
+      if (extendedRows.length > 0) {
+        setExtendedRows([]);
+      }
+    };
+
     // Always sync when not animating
     if (!allowAnimations || shouldPaginate) {
-      setExtendedRows([]); // Clear extended rows to use normal virtualization
+      clearExtendedRowsIfNeeded();
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
       return;
@@ -184,7 +192,7 @@ const useTableRowProcessing = ({
 
     // Initialize on first render
     if (previousTableRowsRef.current.length === 0) {
-      setExtendedRows([]); // Clear extended rows to use normal virtualization
+      clearExtendedRowsIfNeeded();
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
       return;
@@ -192,7 +200,7 @@ const useTableRowProcessing = ({
 
     // Check if rows actually changed - this detects STAGE 2 (after sort/filter applied)
     if (!hasRowChanges) {
-      setExtendedRows([]); // Clear extended rows to use normal virtualization
+      clearExtendedRowsIfNeeded();
       previousTableRowsRef.current = currentTableRows;
       previousVisibleRowsRef.current = targetVisibleRows;
       return;
@@ -213,6 +221,7 @@ const useTableRowProcessing = ({
   }, [
     allowAnimations,
     currentTableRows,
+    extendedRows.length,
     hasRowChanges,
     isAnimating,
     shouldPaginate,
