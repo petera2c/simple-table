@@ -68,6 +68,12 @@ const useTableAPI = ({
         getVisibleRows: () => {
           return visibleRows;
         },
+        getAllRows: () => {
+          return flattenedRows;
+        },
+        getHeaders: () => {
+          return headers;
+        },
         exportToCSV: ({ filename }: ExportToCSVProps = {}) => {
           // Use flattenedRows to export ALL rows, not just the current page
           exportTableToCSV(flattenedRows, headers, filename, includeHeadersInCSVExport);
