@@ -62,6 +62,7 @@ import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
+  canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   className?: string; // Class name for the table
   columnBorders?: boolean; // Flag for showing column borders
@@ -142,6 +143,7 @@ const SimpleTable = (props: SimpleTableProps) => {
 
 const SimpleTableComp = ({
   allowAnimations = false,
+  canExpandRowGroup,
   cellUpdateFlash = false,
   className,
   columnBorders = false,
@@ -676,6 +678,7 @@ const SimpleTableComp = ({
         activeHeaderDropdown,
         allowAnimations,
         areAllRowsSelected,
+        canExpandRowGroup,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
         clearSelection,

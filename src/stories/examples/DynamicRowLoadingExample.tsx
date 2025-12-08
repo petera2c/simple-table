@@ -112,7 +112,7 @@ const fetchTeamsForDepartment = async (departmentId: string): Promise<Team[]> =>
         id: "TEAM-1",
         name: "Frontend Team",
         type: "team",
-        employeeCount: 8,
+        employeeCount: 0,
         budget: "$720,000",
         lead: "Sarah Connor",
       },
@@ -464,6 +464,10 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
               Click to expand a team → <strong>Employees</strong> are fetched from the "API"
             </li>
             <li>
+              The expand icon only shows when <strong>employeeCount &gt; 0</strong> (using{" "}
+              <code>canExpandRowGroup</code> prop)
+            </li>
+            <li>
               Open the <strong>browser console</strong> to see the API simulation in action! 🔍
             </li>
           </ul>
@@ -474,6 +478,12 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
       </div>
 
       <SimpleTable
+        canExpandRowGroup={(row) => {
+          // Only show expand icon if row has employeeCount > 0
+          const typedRow = row as Department | Team | Employee;
+          const employeeCount = typedRow.employeeCount;
+          return typeof employeeCount === "number" && employeeCount > 0;
+        }}
         columnResizing
         defaultHeaders={HEADERS}
         editColumns
