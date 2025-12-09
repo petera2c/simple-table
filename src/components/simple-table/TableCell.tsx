@@ -615,7 +615,7 @@ const TableCell = ({
         {isLoading || tableRow.isLoadingSkeleton ? (
           <div className="st-loading-skeleton" />
         ) : (
-          <span>
+          <>
             {isSelectionColumn ? (
               <div className="st-selection-cell-content">
                 <div className="st-selection-control">
@@ -652,7 +652,7 @@ const TableCell = ({
             ) : (
               displayContent({ content: localContent, header, colIndex, row, rowIndex })
             )}
-          </span>
+          </>
         )}
       </span>
 
