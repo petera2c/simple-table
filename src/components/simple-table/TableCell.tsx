@@ -151,8 +151,8 @@ const TableCell = ({
   const [isHovered, setIsHovered] = useState(false);
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // Get row ID and check if row has children
-  const rowId = getRowId({ row, rowIdAccessor });
+  // Get row ID with path for uniqueness in nested rows
+  const rowId = getRowId({ row, rowIdAccessor, rowPath });
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   // Check if we can expand further (depth must be less than rowGrouping length)

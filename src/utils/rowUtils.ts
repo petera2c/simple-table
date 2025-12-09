@@ -143,10 +143,42 @@ export const isRowArray = (data: any): data is Row[] => {
 };
 
 /**
- * Get the row ID from a row using the specified accessor or fall back to index
+ * Get the row ID from a row using the specified accessor.
+ * For nested/grouped rows, uses the full row path to ensure uniqueness.
+ * This prevents ID collisions when the same ID appears at different nesting levels.
+ *
+ * Examples:
+ * - Company at index 0 (depth 0): "0"
+ * - Division with id=1 under company 0 (depth 1): "0-divisions-0"
+ * - Division with id=1 under company 1 (depth 1): "1-divisions-0"
+ * - Team with id=1 under company 0, division 0 (depth 2): "0-divisions-0-teams-0"
+ *
+ * @param row - The row object
+ * @param rowIdAccessor - The accessor to get the base row ID (used as fallback for root level)
+ * @param rowPath - Optional path to this row in nested structure (e.g., [1, 'divisions', 0])
+ * @returns A unique row ID that accounts for nesting
  */
-export const getRowId = ({ row, rowIdAccessor }: { row: Row; rowIdAccessor: Accessor }): RowId => {
-  return row[rowIdAccessor] as RowId;
+export const getRowId = ({
+  row,
+  rowIdAccessor,
+  rowPath,
+}: {
+  row: Row;
+  rowIdAccessor: Accessor;
+  rowPath?: (string | number)[];
+}): RowId => {
+  const baseId = row[rowIdAccessor] as RowId;
+
+  // If no rowPath or at root level (length 1 = just the index), return the base ID
+  if (!rowPath || rowPath.length <= 1) {
+    return baseId;
+  }
+
+  // For nested rows, create a composite ID using the FULL path
+  // This ensures uniqueness by incorporating all parent indices
+  // Format: "parentIndex-groupKey1-index1-groupKey2-index2-..."
+  // Example: [1, 'divisions', 0] becomes "1-divisions-0"
+  return rowPath.join("-");
 };
 
 /**
@@ -231,11 +263,17 @@ export const flattenRowsWithGrouping = ({
     let displayPosition = parentDisplayPosition;
 
     currentRows.forEach((row, index) => {
-      const rowId = getRowId({ row, rowIdAccessor });
       const currentGroupingKey = rowGrouping[currentDepth];
 
       // Build the path to this row (e.g., [0, 'teams', 2])
       const rowPath = [...parentPath, index];
+
+      // Get unique row ID that accounts for nesting depth
+      const rowId = getRowId({
+        row,
+        rowIdAccessor,
+        rowPath,
+      });
 
       // Determine if this is the last row in a group
       const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;

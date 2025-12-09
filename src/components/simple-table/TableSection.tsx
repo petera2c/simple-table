@@ -80,7 +80,11 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             // Generate unique key - use stateIndicator parentRowId for state rows
             const rowId = tableRow.stateIndicator
               ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
-              : getRowId({ row: tableRow.row, rowIdAccessor });
+              : getRowId({
+                  row: tableRow.row,
+                  rowIdAccessor,
+                  rowPath: tableRow.rowPath,
+                });
             return (
               <Fragment key={rowId}>
                 {index !== 0 && (

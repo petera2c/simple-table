@@ -121,7 +121,7 @@ const rows = [
     established: "2018-01-01",
     divisions: [
       {
-        id: 101,
+        id: 1,
         organization: "Engineering",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Exceeding",
@@ -131,7 +131,7 @@ const rows = [
         established: "2018-01-15",
         teams: [
           {
-            id: 1001,
+            id: 1,
             organization: "Frontend",
             employees: 28,
             budget: "$2.8M",
@@ -145,7 +145,7 @@ const rows = [
             status: "Hiring",
           },
           {
-            id: 1002,
+            id: 2,
             organization: "Backend",
             employees: 32,
             budget: "$3.4M",
@@ -159,7 +159,7 @@ const rows = [
             status: "Stable",
           },
           {
-            id: 1003,
+            id: 3,
             organization: "DevOps",
             employees: 15,
             budget: "$1.9M",
@@ -173,7 +173,7 @@ const rows = [
             status: "Hiring",
           },
           {
-            id: 1004,
+            id: 4,
             organization: "Mobile",
             employees: 22,
             budget: "$2.5M",
@@ -189,7 +189,7 @@ const rows = [
         ],
       },
       {
-        id: 102,
+        id: 2,
         organization: "Product",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
@@ -199,7 +199,7 @@ const rows = [
         established: "2019-01-10",
         teams: [
           {
-            id: 1101,
+            id: 1,
             organization: "Design",
             employees: 17,
             budget: "$1.8M",
@@ -213,7 +213,7 @@ const rows = [
             status: "Stable",
           },
           {
-            id: 1102,
+            id: 2,
             organization: "Research",
             employees: 9,
             budget: "$1.4M",
@@ -227,7 +227,7 @@ const rows = [
             status: "Reviewing",
           },
           {
-            id: 1103,
+            id: 3,
             organization: "QA Testing",
             employees: 14,
             budget: "$1.2M",
@@ -256,7 +256,7 @@ const rows = [
     established: "2010-01-01",
     divisions: [
       {
-        id: 201,
+        id: 1,
         organization: "Hospital Operations",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
@@ -266,7 +266,7 @@ const rows = [
         established: "2010-01-05",
         teams: [
           {
-            id: 2001,
+            id: 1,
             organization: "Emergency",
             employees: 48,
             budget: "$5.2M",
@@ -280,7 +280,7 @@ const rows = [
             status: "Critical",
           },
           {
-            id: 2002,
+            id: 2,
             organization: "Cardiology",
             employees: 32,
             budget: "$4.8M",
@@ -294,7 +294,7 @@ const rows = [
             status: "Expanding",
           },
           {
-            id: 2003,
+            id: 3,
             organization: "Pediatrics",
             employees: 26,
             budget: "$3.1M",
@@ -310,7 +310,7 @@ const rows = [
         ],
       },
       {
-        id: 202,
+        id: 2,
         organization: "Research & Development",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Exceeding",
@@ -320,7 +320,7 @@ const rows = [
         established: "2017-01-10",
         teams: [
           {
-            id: 2101,
+            id: 1,
             organization: "Clinical Trials",
             employees: 18,
             budget: "$4.2M",
@@ -334,7 +334,7 @@ const rows = [
             status: "Expanding",
           },
           {
-            id: 2102,
+            id: 2,
             organization: "Genomics",
             employees: 14,
             budget: "$5.1M",
@@ -363,7 +363,7 @@ const rows = [
     established: "2005-01-01",
     divisions: [
       {
-        id: 301,
+        id: 1,
         organization: "Banking Operations",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
@@ -373,7 +373,7 @@ const rows = [
         established: "2005-01-15",
         teams: [
           {
-            id: 3001,
+            id: 1,
             organization: "Retail Banking",
             employees: 56,
             budget: "$4.8M",
@@ -384,7 +384,7 @@ const rows = [
             established: "2005-11-08",
           },
           {
-            id: 3002,
+            id: 2,
             organization: "Investment",
             employees: 38,
             budget: "$7.2M",
@@ -395,7 +395,7 @@ const rows = [
             established: "2008-05-12",
           },
           {
-            id: 3003,
+            id: 3,
             organization: "Loans",
             employees: 27,
             budget: "$3.5M",
@@ -421,7 +421,7 @@ const rows = [
     established: "1992-01-01",
     divisions: [
       {
-        id: 401,
+        id: 1,
         organization: "Academic Departments",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
@@ -431,7 +431,7 @@ const rows = [
         established: "1992-01-15",
         teams: [
           {
-            id: 4001,
+            id: 1,
             organization: "Computer Science",
             employees: 35,
             budget: "$3.8M",
@@ -442,7 +442,7 @@ const rows = [
             established: "1998-08-24",
           },
           {
-            id: 4002,
+            id: 2,
             organization: "Business",
             employees: 42,
             budget: "$4.5M",
@@ -453,7 +453,7 @@ const rows = [
             established: "1995-09-15",
           },
           {
-            id: 4003,
+            id: 3,
             organization: "Engineering",
             employees: 38,
             budget: "$5.1M",
@@ -479,7 +479,7 @@ const rows = [
     established: "2001-01-01",
     divisions: [
       {
-        id: 501,
+        id: 1,
         organization: "Production",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
@@ -489,7 +489,7 @@ const rows = [
         established: "2001-01-10",
         teams: [
           {
-            id: 5001,
+            id: 1,
             organization: "Assembly",
             employees: 78,
             budget: "$6.2M",
@@ -500,7 +500,7 @@ const rows = [
             established: "2001-05-18",
           },
           {
-            id: 5002,
+            id: 2,
             organization: "Quality Control",
             employees: 32,
             budget: "$2.8M",
@@ -511,7 +511,7 @@ const rows = [
             established: "2003-11-24",
           },
           {
-            id: 5003,
+            id: 3,
             organization: "Logistics",
             employees: 42,
             budget: "$3.9M",
@@ -537,7 +537,7 @@ const rows = [
     established: "2008-01-01",
     divisions: [
       {
-        id: 601,
+        id: 1,
         organization: "Studio Operations",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Exceeding",
@@ -547,7 +547,7 @@ const rows = [
         established: "2008-01-15",
         teams: [
           {
-            id: 6001,
+            id: 1,
             organization: "Production",
             employees: 64,
             budget: "$12.5M",
@@ -558,7 +558,7 @@ const rows = [
             established: "2008-07-22",
           },
           {
-            id: 6002,
+            id: 2,
             organization: "Post-Production",
             employees: 38,
             budget: "$8.2M",
@@ -569,7 +569,7 @@ const rows = [
             established: "2010-04-15",
           },
           {
-            id: 6003,
+            id: 3,
             organization: "Animation",
             employees: 52,
             budget: "$7.8M",
@@ -595,7 +595,7 @@ const rows = [
     established: "2009-01-01",
     divisions: [
       {
-        id: 701,
+        id: 1,
         organization: "Store Operations",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
@@ -605,7 +605,7 @@ const rows = [
         established: "2009-01-05",
         teams: [
           {
-            id: 7001,
+            id: 1,
             organization: "Sales",
             employees: 85,
             budget: "$4.2M",
@@ -616,7 +616,7 @@ const rows = [
             established: "2009-03-14",
           },
           {
-            id: 7002,
+            id: 2,
             organization: "Customer Support",
             employees: 42,
             budget: "$2.8M",
@@ -627,7 +627,7 @@ const rows = [
             established: "2010-11-22",
           },
           {
-            id: 7003,
+            id: 3,
             organization: "Online Store",
             employees: 28,
             budget: "$3.5M",
@@ -653,7 +653,7 @@ const rows = [
     established: "2005-01-01",
     divisions: [
       {
-        id: 801,
+        id: 1,
         organization: "Farming Operations",
         // Removed employees and budget - these should be aggregated from teams
         performance: "Meeting",
@@ -663,7 +663,7 @@ const rows = [
         established: "2005-01-10",
         teams: [
           {
-            id: 8001,
+            id: 1,
             organization: "Crop Division",
             employees: 56,
             budget: "$5.1M",
@@ -674,7 +674,7 @@ const rows = [
             established: "2005-02-18",
           },
           {
-            id: 8002,
+            id: 2,
             organization: "Livestock",
             employees: 42,
             budget: "$4.8M",
@@ -685,7 +685,7 @@ const rows = [
             established: "2007-05-22",
           },
           {
-            id: 8003,
+            id: 3,
             organization: "Research",
             employees: 18,
             budget: "$2.9M",

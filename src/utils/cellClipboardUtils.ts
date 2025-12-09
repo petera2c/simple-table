@@ -153,7 +153,11 @@ export const pasteClipboardDataToCells = (
 
       const targetRow = tableRows[targetRowIndex];
       const targetHeader = flattenedLeafHeaders[targetColIndex];
-      const targetRowId = getRowId({ row: targetRow.row, rowIdAccessor });
+      const targetRowId = getRowId({
+        row: targetRow.row,
+        rowIdAccessor,
+        rowPath: targetRow.rowPath,
+      });
 
       // Track warning flash for non-editable cells
       if (!targetHeader?.isEditable) {
@@ -246,7 +250,11 @@ export const deleteSelectedCellsContent = (
 
     const targetRow = tableRows[rowIndex];
     const targetHeader = flattenedLeafHeaders[colIndex];
-    const targetRowId = getRowId({ row: targetRow.row, rowIdAccessor });
+    const targetRowId = getRowId({
+      row: targetRow.row,
+      rowIdAccessor,
+      rowPath: targetRow.rowPath,
+    });
 
     // Track warning flash for non-editable cells
     if (!targetHeader?.isEditable) {

@@ -121,8 +121,12 @@ const TableRow = ({
   // For regular rows, calculate row properties
   const isOdd = position % 2 === 0;
 
-  // Get stable row ID for key
-  const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+  // Get stable row ID for key (includes path for nested rows)
+  const rowId = getRowId({
+    row: tableRow.row,
+    rowIdAccessor,
+    rowPath: tableRow.rowPath,
+  });
 
   // Check if this row is selected
   const isSelected = isRowSelected ? isRowSelected(String(rowId)) : false;

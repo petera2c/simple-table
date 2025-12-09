@@ -59,12 +59,18 @@ const useFlattenedRows = ({
       parentPath: (string | number)[] = []
     ): void => {
       currentRows.forEach((row, index) => {
-        const rowId = getRowId({ row, rowIdAccessor });
         const currentGroupingKey = rowGrouping[currentDepth];
         const position = result.length;
 
         // Build the path to this row
         const rowPath = [...parentPath, index];
+
+        // Get unique row ID that accounts for nesting depth
+        const rowId = getRowId({
+          row,
+          rowIdAccessor,
+          rowPath,
+        });
 
         // Determine if this is the last row at depth 0
         const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
@@ -80,7 +86,7 @@ const useFlattenedRows = ({
           rowPath,
         });
 
-        // Check if row should be expanded
+        // Check if row should be expanded using the unique ID
         const isExpanded = isRowExpanded(rowId, expandAll, unexpandedRows);
 
         // If row is expanded and has nested data for the current grouping level

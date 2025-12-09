@@ -72,7 +72,12 @@ export const useKeyboardNavigation = ({
           for (let col = 0; col < leafHeaders.length; col++) {
             // leafHeaders doesn't include selection column, so we need to offset colIndex by 1 when selection is enabled
             const colIndex = enableRowSelection ? col + 1 : col;
-            const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
+            const tableRow = tableRows[row];
+            const rowId = getRowId({
+              row: tableRow.row,
+              rowIdAccessor,
+              rowPath: tableRow.rowPath,
+            });
             newSelectedCells.add(`${row}-${colIndex}-${rowId}`);
           }
         }
@@ -90,10 +95,22 @@ export const useKeyboardNavigation = ({
       }
 
       // Check if the visible rows have changed
-      const currentRowId = getRowId({ row: tableRows[rowIndex]?.row, rowIdAccessor });
+      const currentRow = tableRows[rowIndex];
+      const currentRowId = currentRow
+        ? getRowId({
+            row: currentRow.row,
+            rowIdAccessor,
+            rowPath: currentRow.rowPath,
+          })
+        : null;
       if (currentRowId !== rowId) {
         const currentRowIndex = tableRows.findIndex(
-          (visibleRow) => getRowId({ row: visibleRow.row, rowIdAccessor }) === rowId
+          (visibleRow) =>
+            getRowId({
+              row: visibleRow.row,
+              rowIdAccessor,
+              rowPath: visibleRow.rowPath,
+            }) === rowId
         );
         if (currentRowIndex !== -1) {
           rowIndex = currentRowIndex;
@@ -178,7 +195,12 @@ export const useKeyboardNavigation = ({
         }
 
         if (targetRow >= 0) {
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const targetTableRow = tableRows[targetRow];
+          const newRowId = getRowId({
+            row: targetTableRow.row,
+            rowIdAccessor,
+            rowPath: targetTableRow.rowPath,
+          });
           const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
           selectCellRange(startCell.current, endCell);
         }
@@ -191,7 +213,12 @@ export const useKeyboardNavigation = ({
             targetRow = edge.rowIndex;
           }
 
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const targetTableRow = tableRows[targetRow];
+          const newRowId = getRowId({
+            row: targetTableRow.row,
+            rowIdAccessor,
+            rowPath: targetTableRow.rowPath,
+          });
           const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
           selectSingleCell(newCell);
           startCell.current = null;
@@ -218,7 +245,12 @@ export const useKeyboardNavigation = ({
         }
 
         if (targetRow < tableRows.length) {
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const targetTableRow = tableRows[targetRow];
+          const newRowId = getRowId({
+            row: targetTableRow.row,
+            rowIdAccessor,
+            rowPath: targetTableRow.rowPath,
+          });
           const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
           selectCellRange(startCell.current, endCell);
         }
@@ -231,7 +263,12 @@ export const useKeyboardNavigation = ({
             targetRow = edge.rowIndex;
           }
 
-          const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+          const targetTableRow = tableRows[targetRow];
+          const newRowId = getRowId({
+            row: targetTableRow.row,
+            rowIdAccessor,
+            rowPath: targetTableRow.rowPath,
+          });
           const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
           selectSingleCell(newCell);
           startCell.current = null;
@@ -263,7 +300,12 @@ export const useKeyboardNavigation = ({
         }
 
         if (targetCol >= 0) {
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+          const currentTableRow = tableRows[rowIndex];
+          const newRowId = getRowId({
+            row: currentTableRow.row,
+            rowIdAccessor,
+            rowPath: currentTableRow.rowPath,
+          });
           const endCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
           selectCellRange(startCell.current, endCell);
         }
@@ -282,7 +324,12 @@ export const useKeyboardNavigation = ({
           }
 
           if (targetCol >= 0) {
-            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const currentTableRow = tableRows[rowIndex];
+            const newRowId = getRowId({
+              row: currentTableRow.row,
+              rowIdAccessor,
+              rowPath: currentTableRow.rowPath,
+            });
             const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
             selectSingleCell(newCell);
             startCell.current = null;
@@ -313,7 +360,12 @@ export const useKeyboardNavigation = ({
         }
 
         if (targetCol <= maxColIndex) {
-          const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+          const currentTableRow = tableRows[rowIndex];
+          const newRowId = getRowId({
+            row: currentTableRow.row,
+            rowIdAccessor,
+            rowPath: currentTableRow.rowPath,
+          });
           const endCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
           selectCellRange(startCell.current, endCell);
         }
@@ -327,7 +379,12 @@ export const useKeyboardNavigation = ({
           }
 
           if (targetCol <= maxColIndex) {
-            const newRowId = getRowId({ row: tableRows[rowIndex].row, rowIdAccessor });
+            const currentTableRow = tableRows[rowIndex];
+            const newRowId = getRowId({
+              row: currentTableRow.row,
+              rowIdAccessor,
+              rowPath: currentTableRow.rowPath,
+            });
             const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
             selectSingleCell(newCell);
             startCell.current = null;
@@ -350,7 +407,12 @@ export const useKeyboardNavigation = ({
           targetRow = 0;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
         selectCellRange(startCell.current, endCell);
       } else {
@@ -362,7 +424,12 @@ export const useKeyboardNavigation = ({
           targetRow = 0;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
         selectSingleCell(newCell);
         startCell.current = null;
@@ -383,7 +450,12 @@ export const useKeyboardNavigation = ({
           targetRow = tableRows.length - 1;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
         selectCellRange(startCell.current, endCell);
       } else {
@@ -395,7 +467,12 @@ export const useKeyboardNavigation = ({
           targetRow = tableRows.length - 1;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
         selectSingleCell(newCell);
         startCell.current = null;
@@ -411,11 +488,21 @@ export const useKeyboardNavigation = ({
           startCell.current = initialFocusedCell!;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
         selectCellRange(startCell.current, endCell);
       } else {
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
         selectSingleCell(newCell);
         startCell.current = null;
@@ -431,11 +518,21 @@ export const useKeyboardNavigation = ({
           startCell.current = initialFocusedCell!;
         }
 
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
         selectCellRange(startCell.current, endCell);
       } else {
-        const newRowId = getRowId({ row: tableRows[targetRow].row, rowIdAccessor });
+        const targetTableRow = tableRows[targetRow];
+        const newRowId = getRowId({
+          row: targetTableRow.row,
+          rowIdAccessor,
+          rowPath: targetTableRow.rowPath,
+        });
         const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
         selectSingleCell(newCell);
         startCell.current = null;

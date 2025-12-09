@@ -84,7 +84,11 @@ const useSelection = ({
 
     if (selectedColumns.size > 0) {
       tableRows.forEach((tableRow) => {
-        const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+        const rowId = getRowId({
+          row: tableRow.row,
+          rowIdAccessor,
+          rowPath: tableRow.rowPath,
+        });
         rows.add(String(rowId));
       });
     }
@@ -184,7 +188,12 @@ const useSelection = ({
             if (enableRowSelection && col === 0) {
               continue;
             }
-            const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
+            const tableRow = tableRows[row];
+            const rowId = getRowId({
+              row: tableRow.row,
+              rowIdAccessor,
+              rowPath: tableRow.rowPath,
+            });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -267,7 +276,11 @@ const useSelection = ({
 
       const rowIdToIndexMap = new Map<string, number>();
       tableRows.forEach((tableRow, index) => {
-        const rowId = getRowId({ row: tableRow.row, rowIdAccessor });
+        const rowId = getRowId({
+          row: tableRow.row,
+          rowIdAccessor,
+          rowPath: tableRow.rowPath,
+        });
         rowIdToIndexMap.set(String(rowId), index);
       });
 
@@ -290,7 +303,12 @@ const useSelection = ({
             if (enableRowSelection && col === 0) {
               continue;
             }
-            const rowId = getRowId({ row: tableRows[row].row, rowIdAccessor });
+            const tableRow = tableRows[row];
+            const rowId = getRowId({
+              row: tableRow.row,
+              rowIdAccessor,
+              rowPath: tableRow.rowPath,
+            });
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -501,11 +519,21 @@ const useSelection = ({
       }
 
       const classes = [];
-      const topRowId = tableRows[rowIndex - 1]
-        ? getRowId({ row: tableRows[rowIndex - 1].row, rowIdAccessor })
+      const topRow = tableRows[rowIndex - 1];
+      const topRowId = topRow
+        ? getRowId({
+            row: topRow.row,
+            rowIdAccessor,
+            rowPath: topRow.rowPath,
+          })
         : null;
-      const bottomRowId = tableRows[rowIndex + 1]
-        ? getRowId({ row: tableRows[rowIndex + 1].row, rowIdAccessor })
+      const bottomRow = tableRows[rowIndex + 1];
+      const bottomRowId = bottomRow
+        ? getRowId({
+            row: bottomRow.row,
+            rowIdAccessor,
+            rowPath: bottomRow.rowPath,
+          })
         : null;
 
       const topCell =
