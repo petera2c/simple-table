@@ -305,7 +305,7 @@ const TableCell = ({
     isSelectionColumn ? "st-selection-cell" : ""
   } ${hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : ""} ${
     isLastColumnInSection ? "st-last-column" : ""
-  } ${isSubCell ? "st-sub-cell" : ""}`;
+  } ${isSubCell ? "st-sub-cell" : ""} ${isHovered ? "hovered" : ""}`;
 
   const updateContent = useCallback(
     (newValue: CellValue) => {
@@ -473,7 +473,7 @@ const TableCell = ({
     }
   };
 
-  // Handle mouse enter/leave for row hover state (affects selection column and buttons)
+  // Handle mouse enter/leave for hover state (affects selection column, buttons, and hovered class)
   const handleCellMouseEnter = () => {
     setIsHovered(true);
   };
@@ -638,6 +638,8 @@ const TableCell = ({
                   accessor: header.accessor,
                   colIndex,
                   row,
+                  rowIndex,
+                  rowPath,
                   theme,
                   value: localContent,
                   formattedValue: header?.valueFormatter?.({

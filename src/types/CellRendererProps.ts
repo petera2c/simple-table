@@ -8,6 +8,8 @@ interface CellRendererProps {
   accessor: Accessor;
   colIndex: number;
   row: Row;
+  rowIndex: number;
+  rowPath?: (string | number)[];
   theme: Theme;
   value: CellValue; // The raw cell value
   formattedValue?: string | number | string[] | number[] | null | undefined | boolean; // The formatted cell value (from valueFormatter if present)
