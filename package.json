@@ -4,12 +4,15 @@
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "publish-fast": "npm i && git add . && git commit -m \"$npm_config_message\" && git push && npm run build && npm publish",
     "build": "rollup -c",
     "start": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "preview": "rollup -c -w",
-    "test-storybook": "test-storybook"
+    "test-storybook": "test-storybook",
+    "release": "npm run build && npm version",
+    "release:patch": "npm run build && npm version patch -m \"chore(release): v%s\" && git push --follow-tags",
+    "release:minor": "npm run build && npm version minor -m \"chore(release): v%s\" && git push --follow-tags",
+    "release:major": "npm run build && npm version major -m \"chore(release): v%s\" && git push --follow-tags"
   },
   "sideEffects": [
     "*.css",
