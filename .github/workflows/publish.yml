@@ -4,14 +4,14 @@ name: Publish to npm
 on:
   push:
     tags:
-      - "v*"          # triggers only when you push a tag like v1.2.3
+      - "v*" # triggers on v1.9.9, v2.0.0, etc.
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write                  # ← required for Trusted Publishing
+      id-token: write # required for Trusted Publishing
 
     steps:
       - name: Checkout code
@@ -21,14 +21,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm                     # speeds up installs a lot
+          cache: npm
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: npm ci                      # clean, reproducible install
+        run: npm ci
 
       - name: Build
-        run: npm run build               # ← your existing build script
+        run: npm run build
+
+      # THIS LINE FIXES YOUR ISSUE
+      # Forces the package name to simple-table-core even though repo is simple-table
+      - name: Fix package name for Trusted Publishing
+        run: npm pkg set name=simple-table-core
 
       - name: Publish to npm
-        run: npm publish --access public # ← unscoped package = needs this flag
+        run: npm publish --access public
