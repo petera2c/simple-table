@@ -65,9 +65,10 @@ const useTableRowProcessing = ({
   const applyPagination = useCallback(
     (rows: TableRow[]): TableRow[] => {
       // Apply pagination (skip slicing for server-side pagination)
+      const startIndex = (currentPage - 1) * rowsPerPage;
       const paginatedRows =
         shouldPaginate && !serverSidePagination
-          ? rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+          ? rows.slice(startIndex, currentPage * rowsPerPage)
           : rows;
 
       // Recalculate positions after pagination
@@ -75,6 +76,8 @@ const useTableRowProcessing = ({
         ...tableRow,
         position: index,
         displayPosition: index,
+        // Calculate absolute row index accounting for pagination offset
+        absoluteRowIndex: shouldPaginate && !serverSidePagination ? startIndex + index : index,
       }));
     },
     [currentPage, rowsPerPage, serverSidePagination, shouldPaginate]

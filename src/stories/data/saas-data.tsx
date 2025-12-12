@@ -57,6 +57,13 @@ export const SAAS_HEADERS: HeaderObject[] = [
     isEditable: true,
     align: "left",
     pinned: "left",
+    cellRenderer: ({ row, rowIndex, value }) => {
+      return (
+        <div>
+          {rowIndex} {value as string}
+        </div>
+      );
+    },
   },
   {
     accessor: "segment",

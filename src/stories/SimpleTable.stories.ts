@@ -89,6 +89,7 @@ import CSVExportSingleRowChildrenExample, {
 import HeaderInclusionExample, {
   headerInclusionExampleDefaults,
 } from "./examples/HeaderInclusionExample";
+import CustomThemeDemo from "./examples/custom-theme/CustomThemeDemo";
 
 const meta = {
   title: "Docs & Examples",
@@ -284,6 +285,14 @@ export const CSVExportSingleRowChildren: StoryObj<UniversalTableProps> = {
       },
     },
   },
+};
+export const CustomTheme: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CustomThemeDemo, ...args }),
 };
 
 export const HeaderInclusion: StoryObj<UniversalTableProps> = {

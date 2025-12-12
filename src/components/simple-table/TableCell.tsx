@@ -142,7 +142,7 @@ const TableCell = ({
     useOddColumnBackground,
   } = useTableContext();
 
-  const { depth, row, rowPath } = tableRow;
+  const { depth, row, rowPath, absoluteRowIndex } = tableRow;
 
   // Local state
   const [localContent, setLocalContent] = useState<CellValue>(getNestedValue(row, header.accessor));
@@ -638,7 +638,7 @@ const TableCell = ({
                   accessor: header.accessor,
                   colIndex,
                   row,
-                  rowIndex,
+                  rowIndex: absoluteRowIndex,
                   rowPath,
                   theme,
                   value: localContent,

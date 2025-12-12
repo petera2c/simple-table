@@ -17,6 +17,8 @@ type TableRow = {
   };
   // If this row is a loading skeleton (used when expanding rows without a custom loadingStateRenderer)
   isLoadingSkeleton?: boolean;
+  // The absolute row index accounting for pagination (e.g., on page 2 with 10 rows per page, first row has absoluteRowIndex = 10)
+  absoluteRowIndex: number;
 };
 
 export default TableRow;

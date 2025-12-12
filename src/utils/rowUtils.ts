@@ -287,6 +287,7 @@ export const flattenRowsWithGrouping = ({
         position,
         isLastGroupRow,
         rowPath,
+        absoluteRowIndex: position,
       });
 
       position++;
@@ -320,6 +321,7 @@ export const flattenRowsWithGrouping = ({
                 parentRowId: rowId,
                 state: rowState,
               },
+              absoluteRowIndex: position,
             });
             position++;
             displayPosition++;
@@ -334,6 +336,7 @@ export const flattenRowsWithGrouping = ({
               isLastGroupRow: false,
               rowPath: [...rowPath, currentGroupingKey],
               isLoadingSkeleton: true,
+              absoluteRowIndex: position,
             });
             position++;
             displayPosition++;

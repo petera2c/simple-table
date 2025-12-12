@@ -47,6 +47,7 @@ const useFlattenedRows = ({
             position: index,
             isLastGroupRow: index === rows.length - 1,
             rowPath: [index],
+            absoluteRowIndex: index,
           } as TableRow)
       );
     }
@@ -84,6 +85,7 @@ const useFlattenedRows = ({
           position,
           isLastGroupRow,
           rowPath,
+          absoluteRowIndex: position,
         });
 
         // Check if row should be expanded using the unique ID
@@ -115,6 +117,7 @@ const useFlattenedRows = ({
                   parentRowId: rowId,
                   state: rowState,
                 },
+                absoluteRowIndex: statePosition,
               });
             } else if (rowState.loading && !hasLoadingRenderer) {
               // If loading but no custom renderer, add a dummy skeleton row
@@ -128,6 +131,7 @@ const useFlattenedRows = ({
                 isLastGroupRow: false,
                 rowPath: [...rowPath, currentGroupingKey],
                 isLoadingSkeleton: true,
+                absoluteRowIndex: skeletonPosition,
               });
             }
           }

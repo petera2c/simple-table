@@ -479,6 +479,7 @@ const SimpleTableComp = ({
           position: index,
           isLastGroupRow: index === filteredPreview.length - 1,
           rowPath: [index],
+          absoluteRowIndex: index,
         }));
       }
       return flattenRowsWithGrouping({
@@ -519,6 +520,7 @@ const SimpleTableComp = ({
           position: index,
           isLastGroupRow: index === sortedPreview.length - 1,
           rowPath: [index],
+          absoluteRowIndex: index,
         }));
       }
       return flattenRowsWithGrouping({

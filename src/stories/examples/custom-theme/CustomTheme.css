@@ -1,0 +1,12 @@
+.custom-theme-container .theme-custom {
+}
+
+/* Custom styles for table headers */
+.custom-theme-container .theme-custom .st-header-label {
+  font-weight: 600 !important;
+  letter-spacing: 0.025em !important;
+}
+
+.custom-theme-container .st-row.hovered .st-cell {
+  background-color: red !important;
+}
