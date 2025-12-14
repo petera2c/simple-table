@@ -26,6 +26,12 @@ import LiveUpdatesExample from "./examples/LiveUpdates";
 import PaginationExample from "./examples/Pagination";
 import ServerSidePaginationExample from "./examples/ServerSidePaginationExample";
 import PinnedColumnsExample from "./examples/pinned-columns/PinnedColumns";
+import ProgrammaticSortExampleComponent, {
+  programmaticSortExampleDefaults,
+} from "./examples/ProgrammaticSortExample";
+import ProgrammaticFilterExampleComponent, {
+  programmaticFilterExampleDefaults,
+} from "./examples/ProgrammaticFilterExample";
 import RowGroupingExample from "./examples/row-grouping/RowGrouping";
 import RowHeightExample from "./examples/RowHeightExample";
 import SelectableCellsExample from "./examples/SelectableCells";
@@ -526,6 +532,48 @@ export const PinnedColumns: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: PinnedColumnsExample, ...args }),
+};
+
+export const ProgrammaticFilter: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...programmaticFilterExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: ProgrammaticFilterExampleComponent,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates programmatic control of table filtering via the tableRef API. Use getFilterState() to retrieve current filters, applyFilter() to add/update filters on specific columns, clearFilter() to remove a single filter, and clearAllFilters() to remove all filters. Supports all filter operators including equals, contains, greaterThan, between, and more. Perfect for building custom filter UIs, saved filter presets, or automated filtering workflows.",
+      },
+    },
+  },
+};
+
+export const ProgrammaticSort: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...programmaticSortExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: ProgrammaticSortExampleComponent,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates programmatic control of table sorting via the tableRef API. Use getSortState() to retrieve the current sort configuration, and applySortState() to programmatically sort by any column. This example shows how to build custom sort controls outside the table that can read and manipulate the sort state. Perfect for creating custom UIs, dashboards, or automation workflows.",
+      },
+    },
+  },
 };
 
 export const RowButtons: StoryObj<UniversalTableProps> = {

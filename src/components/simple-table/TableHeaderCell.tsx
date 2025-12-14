@@ -487,8 +487,8 @@ const TableHeaderCell = ({
       className="st-icon-container"
       onClick={(event) => handleColumnHeaderClick({ event, header })}
     >
-      {sort.direction === "ascending" && sortUpIcon && sortUpIcon}
-      {sort.direction === "descending" && sortDownIcon && sortDownIcon}
+      {sort.direction === "asc" && sortUpIcon && sortUpIcon}
+      {sort.direction === "desc" && sortDownIcon && sortDownIcon}
     </div>
   );
 

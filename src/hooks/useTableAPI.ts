@@ -1,5 +1,5 @@
 import { MutableRefObject, useEffect } from "react";
-import { Row, TableRefType, UpdateDataProps } from "..";
+import { Row, SortColumn, TableRefType, UpdateDataProps } from "..";
 import { getRowId, getNestedValue, setNestedValue } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry, HeaderRegistryEntry } from "../context/TableContext";
@@ -8,9 +8,29 @@ import { SetHeaderRenameProps, ExportToCSVProps } from "../types/TableRefType";
 import TableRow from "../types/TableRow";
 import { exportTableToCSV } from "../utils/csvExportUtils";
 import HeaderObject from "../types/HeaderObject";
+import { TableFilterState, FilterCondition } from "../types/FilterTypes";
+
+/**
+ * Wraps a function to return a Promise that resolves after the next tick.
+ * This ensures React state updates have completed before the promise resolves.
+ */
+const asyncStateUpdate = <TArgs extends any[]>(
+  fn: (...args: TArgs) => void
+): ((...args: TArgs) => Promise<void>) => {
+  return (...args: TArgs) => {
+    return new Promise<void>((resolve) => {
+      fn(...args);
+      // Wait for next tick to ensure state update completes
+      setTimeout(() => resolve(), 0);
+    });
+  };
+};
 
 const useTableAPI = ({
   cellRegistryRef,
+  clearAllFilters,
+  clearFilter,
+  filters,
   flattenedRows,
   headerRegistryRef,
   headers,
@@ -19,10 +39,16 @@ const useTableAPI = ({
   rowIndexMap,
   rows,
   setRows,
+  sort,
   tableRef,
+  updateFilter,
+  updateSort,
   visibleRows,
 }: {
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
+  clearAllFilters: () => void;
+  clearFilter: (accessor: Accessor) => void;
+  filters: TableFilterState;
   flattenedRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
@@ -31,7 +57,10 @@ const useTableAPI = ({
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
   setRows: (rows: Row[]) => void;
+  sort: SortColumn | null;
   tableRef?: MutableRefObject<TableRefType | null>;
+  updateFilter: (filter: FilterCondition) => void;
+  updateSort: (accessor: Accessor | null) => void;
   visibleRows: TableRow[];
 }) => {
   // Set up API methods on the ref if provided
@@ -78,10 +107,23 @@ const useTableAPI = ({
           // Use flattenedRows to export ALL rows, not just the current page
           exportTableToCSV(flattenedRows, headers, filename, includeHeadersInCSVExport);
         },
+        getSortState: () => {
+          return sort;
+        },
+        applySortState: asyncStateUpdate(updateSort),
+        getFilterState: () => {
+          return filters;
+        },
+        applyFilter: asyncStateUpdate(updateFilter),
+        clearFilter: asyncStateUpdate(clearFilter),
+        clearAllFilters: asyncStateUpdate(clearAllFilters),
       };
     }
   }, [
     cellRegistryRef,
+    clearAllFilters,
+    clearFilter,
+    filters,
     flattenedRows,
     headerRegistryRef,
     headers,
@@ -90,7 +132,10 @@ const useTableAPI = ({
     rowIndexMap,
     rows,
     setRows,
+    sort,
     tableRef,
+    updateFilter,
+    updateSort,
     visibleRows,
   ]);
 };

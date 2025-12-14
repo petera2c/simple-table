@@ -57,7 +57,7 @@ export interface ComparatorProps {
   rowB: Row;
   valueA: CellValue;
   valueB: CellValue;
-  direction: "ascending" | "descending";
+  direction: "asc" | "desc";
 }
 
 export type Comparator = (props: ComparatorProps) => number;

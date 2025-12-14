@@ -194,7 +194,7 @@ const headers: HeaderObject[] = [
       // First compare by priority
       if (priorityA !== priorityB) {
         const result = priorityA - priorityB;
-        return direction === "ascending" ? result : -result;
+        return direction === "asc" ? result : -result;
       }
 
       // If priority is the same, compare by performance score from metadata
@@ -204,7 +204,7 @@ const headers: HeaderObject[] = [
       const scoreB = metadataB?.performanceScore || 0;
 
       const result = scoreB - scoreA; // Higher score comes first
-      return direction === "ascending" ? result : -result;
+      return direction === "asc" ? result : -result;
     },
     valueFormatter: ({ value, row }) => {
       const metadata = row.metadata as Record<string, any>;
