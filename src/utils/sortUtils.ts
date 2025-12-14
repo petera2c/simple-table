@@ -8,25 +8,25 @@ const comparators = {
   string: (a: string, b: string, direction: string): number => {
     if (a === b) return 0;
     const result = a.localeCompare(b);
-    return direction === "ascending" ? result : -result;
+    return direction === "asc" ? result : -result;
   },
   number: (a: number, b: number, direction: string): number => {
     if (a === b) return 0;
     const result = a - b;
-    return direction === "ascending" ? result : -result;
+    return direction === "asc" ? result : -result;
   },
   boolean: (a: boolean, b: boolean, direction: string): number => {
     if (a === b) return 0;
     // For booleans, true comes before false in ascending order
     const result = a === b ? 0 : a ? -1 : 1;
-    return direction === "ascending" ? result : -result;
+    return direction === "asc" ? result : -result;
   },
   date: (a: string, b: string, direction: string): number => {
     const dateA = new Date(a);
     const dateB = new Date(b);
     if (dateA.getTime() === dateB.getTime()) return 0;
     const result = dateA.getTime() - dateB.getTime();
-    return direction === "ascending" ? result : -result;
+    return direction === "asc" ? result : -result;
   },
   enum: (a: string, b: string, direction: string): number => {
     // Basic enum sorting - for advanced enum sorting, define a custom order
@@ -35,8 +35,8 @@ const comparators = {
   // Default comparator for unknown types
   default: (a: any, b: any, direction: string): number => {
     if (a === b) return 0;
-    if (a === null || a === undefined) return direction === "ascending" ? -1 : 1;
-    if (b === null || b === undefined) return direction === "ascending" ? 1 : -1;
+    if (a === null || a === undefined) return direction === "asc" ? -1 : 1;
+    if (b === null || b === undefined) return direction === "asc" ? 1 : -1;
 
     if (typeof a === "string" && typeof b === "string") {
       return comparators.string(a, b, direction);
@@ -58,14 +58,14 @@ const compareValues = (
   aValue: any,
   bValue: any,
   type: string = "string",
-  direction: "ascending" | "descending"
+  direction: "asc" | "desc"
 ): number => {
   // Handle null, undefined, or empty values consistently
   if (aValue === null || aValue === undefined || aValue === "") {
-    return direction === "ascending" ? -1 : 1;
+    return direction === "asc" ? -1 : 1;
   }
   if (bValue === null || bValue === undefined || bValue === "") {
-    return direction === "ascending" ? 1 : -1;
+    return direction === "asc" ? 1 : -1;
   }
 
   // For numeric columns, try to parse values that might be formatted as strings

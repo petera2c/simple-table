@@ -142,7 +142,7 @@ const ExternalSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
         comparison = String(aValue).localeCompare(String(bValue));
       }
 
-      return sortColumn.direction === "ascending" ? comparison : -comparison;
+      return sortColumn.direction === "asc" ? comparison : -comparison;
     });
 
     return sorted;

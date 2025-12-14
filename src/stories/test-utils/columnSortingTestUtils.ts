@@ -155,7 +155,7 @@ export const clickColumnHeader = async (
 export const verifySortIcon = (
   canvasElement: HTMLElement,
   columnLabel: string,
-  direction: "ascending" | "descending"
+  direction: "asc" | "desc"
 ): void => {
   const targetHeaderCell = findHeaderCellByLabel(canvasElement, columnLabel);
   expect(targetHeaderCell).toBeTruthy();
@@ -188,7 +188,7 @@ export const testColumnSorting = async (
   await clickColumnHeader(canvasElement, columnLabel);
 
   // Verify ascending sort
-  verifySortIcon(canvasElement, columnLabel, "ascending");
+  verifySortIcon(canvasElement, columnLabel, "asc");
 
   const ascendingData = getDataRowsColumnData(canvasElement, columnAccessor);
 
@@ -213,7 +213,7 @@ export const testColumnSorting = async (
   await clickColumnHeader(canvasElement, columnLabel);
 
   // Verify descending sort
-  verifySortIcon(canvasElement, columnLabel, "descending");
+  verifySortIcon(canvasElement, columnLabel, "desc");
 
   const descendingData = getDataRowsColumnData(canvasElement, columnAccessor);
 
@@ -299,7 +299,7 @@ export const testSortPersistence = async (
   const secondSortData = getDataRowsColumnData(canvasElement, secondAccessor);
 
   // Verify second column is sorted
-  verifySortIcon(canvasElement, secondColumnLabel, "ascending");
+  verifySortIcon(canvasElement, secondColumnLabel, "asc");
   const isSecondSorted = isArraySortedAscending(secondSortData);
 
   // At minimum, verify we have data and the sort affected the table
@@ -344,7 +344,7 @@ export const testRapidSortClicks = async (
   }
 
   // After 5 clicks (odd number), should be in ascending state
-  verifySortIcon(canvasElement, columnLabel, "ascending");
+  verifySortIcon(canvasElement, columnLabel, "asc");
   const finalData = getDataRowsColumnData(canvasElement, columnAccessor);
 
   // Verify the final data is sorted correctly
@@ -397,11 +397,11 @@ export const testCrossSectionSorting = async (
 
   // Test sorting in pinned left section
   await clickColumnHeader(canvasElement, pinnedLeftColumn);
-  verifySortIcon(canvasElement, pinnedLeftColumn, "ascending");
+  verifySortIcon(canvasElement, pinnedLeftColumn, "asc");
 
   // Test sorting in main section (should clear pinned left sort)
   await clickColumnHeader(canvasElement, mainColumn);
-  verifySortIcon(canvasElement, mainColumn, "ascending");
+  verifySortIcon(canvasElement, mainColumn, "asc");
 
   // Verify pinned left is no longer sorted
   const pinnedLeftHeaderCell = findHeaderCellByLabel(canvasElement, pinnedLeftColumn);
@@ -410,7 +410,7 @@ export const testCrossSectionSorting = async (
 
   // Test sorting in third column (could be pinned right or another main column)
   await clickColumnHeader(canvasElement, pinnedRightColumn);
-  verifySortIcon(canvasElement, pinnedRightColumn, "ascending");
+  verifySortIcon(canvasElement, pinnedRightColumn, "asc");
 
   // Verify main column is no longer sorted
   const mainHeaderCell = findHeaderCellByLabel(canvasElement, mainColumn);

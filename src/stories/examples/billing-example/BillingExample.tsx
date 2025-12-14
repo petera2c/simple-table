@@ -23,7 +23,7 @@ const BillingExample = (props: UniversalTableProps) => {
       editColumns
       height={"70dvh"}
       initialSortColumn="amount" // Show highest amounts first
-      initialSortDirection="descending"
+      initialSortDirection="desc"
       onGridReady={() => {}}
       rowGrouping={["invoices", "charges"]}
       rowIdAccessor="id"

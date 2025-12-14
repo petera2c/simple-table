@@ -34,7 +34,7 @@ import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
-import SortColumn from "../../types/SortColumn";
+import SortColumn, { SortDirection } from "../../types/SortColumn";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
@@ -90,7 +90,7 @@ interface SimpleTableProps {
   hideFooter?: boolean; // Flag for hiding the footer
   includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
-  initialSortDirection?: "ascending" | "descending"; // Sort direction for initial sort
+  initialSortDirection?: SortDirection; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
   loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
@@ -171,7 +171,7 @@ const SimpleTableComp = ({
   hideFooter = false,
   includeHeadersInCSVExport = true,
   initialSortColumn,
-  initialSortDirection = "ascending",
+  initialSortDirection = "asc",
   isLoading = false,
   loadingStateRenderer,
   errorStateRenderer,
@@ -417,9 +417,9 @@ const SimpleTableComp = ({
   const {
     filters,
     filteredRows,
-    updateFilter: internalHandleApplyFilter,
-    clearFilter: handleClearFilter,
-    clearAllFilters: handleClearAllFilters,
+    updateFilter,
+    clearFilter,
+    clearAllFilters,
     computeFilteredRowsPreview,
   } = useFilterableData({
     rows: aggregatedRows,
@@ -642,6 +642,9 @@ const SimpleTableComp = ({
   useOnGridReady({ onGridReady });
   useTableAPI({
     cellRegistryRef,
+    clearAllFilters,
+    clearFilter,
+    filters,
     flattenedRows,
     headerRegistryRef,
     headers: effectiveHeaders,
@@ -650,9 +653,13 @@ const SimpleTableComp = ({
     rowIndexMap: rowIndexMapRef,
     rows: effectiveRows,
     setRows: setLocalRows,
+    sort,
     tableRef,
+    updateFilter,
+    updateSort,
     visibleRows: rowsToRender,
   });
+  console.log("sort", sort);
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
 
@@ -665,10 +672,10 @@ const SimpleTableComp = ({
       // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
       setTimeout(() => {
         // Update internal state and call external handler if provided
-        internalHandleApplyFilter(filter);
+        updateFilter(filter);
       }, 0);
     },
-    [prepareForFilterChange, internalHandleApplyFilter]
+    [prepareForFilterChange, updateFilter]
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)
@@ -703,8 +710,8 @@ const SimpleTableComp = ({
         forceUpdate,
         getBorderClass,
         handleApplyFilter,
-        handleClearAllFilters,
-        handleClearFilter,
+        handleClearAllFilters: clearAllFilters,
+        handleClearFilter: clearFilter,
         handleMouseDown,
         handleMouseOver,
         handleRowSelect,

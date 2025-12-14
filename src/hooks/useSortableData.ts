@@ -1,7 +1,7 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
 import { useCallback, useMemo, useState } from "react";
-import SortColumn from "../types/SortColumn";
+import SortColumn, { SortDirection } from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
 
@@ -57,7 +57,7 @@ const useSortableData = ({
   onSortChange?: (sort: SortColumn | null) => void;
   rowGrouping?: string[];
   initialSortColumn?: string;
-  initialSortDirection?: "ascending" | "descending";
+  initialSortDirection?: SortDirection;
 }) => {
   // Initialize sort state with initial values if provided
   const getInitialSort = useCallback((): SortColumn | null => {
@@ -81,7 +81,7 @@ const useSortableData = ({
 
     return {
       key: targetHeader,
-      direction: initialSortDirection || "ascending",
+      direction: initialSortDirection || "asc",
     };
   }, [headers, initialSortColumn, initialSortDirection]);
 
@@ -150,7 +150,14 @@ const useSortableData = ({
 
   // Simple sort handler
   const updateSort = useCallback(
-    (accessor: Accessor) => {
+    (accessor: Accessor | null) => {
+      // If accessor is null, clear the sort
+      if (accessor === null) {
+        setSort(null);
+        onSortChange?.(null);
+        return;
+      }
+
       const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
         for (const header of headers) {
           if (header.accessor === accessor) {
@@ -175,12 +182,12 @@ const useSortableData = ({
       if (!sort || sort.key.accessor !== accessor) {
         newSortColumn = {
           key: targetHeader,
-          direction: "ascending",
+          direction: "asc",
         };
-      } else if (sort.direction === "ascending") {
+      } else if (sort.direction === "asc") {
         newSortColumn = {
           key: targetHeader,
-          direction: "descending",
+          direction: "desc",
         };
       }
 
@@ -218,12 +225,12 @@ const useSortableData = ({
       if (!sort || sort.key.accessor !== accessor) {
         previewSortColumn = {
           key: targetHeader,
-          direction: "ascending",
+          direction: "asc",
         };
-      } else if (sort.direction === "ascending") {
+      } else if (sort.direction === "asc") {
         previewSortColumn = {
           key: targetHeader,
-          direction: "descending",
+          direction: "desc",
         };
       }
 
