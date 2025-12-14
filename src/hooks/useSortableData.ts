@@ -150,7 +150,7 @@ const useSortableData = ({
 
   // Simple sort handler
   const updateSort = useCallback(
-    (accessor: Accessor | null) => {
+    (accessor: Accessor | null, direction?: SortDirection) => {
       // If accessor is null, clear the sort
       if (accessor === null) {
         setSort(null);
@@ -179,7 +179,15 @@ const useSortableData = ({
 
       let newSortColumn: SortColumn | null = null;
 
-      if (!sort || sort.key.accessor !== accessor) {
+      // If direction is explicitly provided, use it
+      if (direction) {
+        newSortColumn = {
+          key: targetHeader,
+          direction: direction,
+        };
+      }
+      // Otherwise, cycle through: no sort -> asc -> desc -> no sort
+      else if (!sort || sort.key.accessor !== accessor) {
         newSortColumn = {
           key: targetHeader,
           direction: "asc",
@@ -190,6 +198,7 @@ const useSortableData = ({
           direction: "desc",
         };
       }
+      // If currently desc, clear the sort (newSortColumn stays null)
 
       setSort(newSortColumn);
       onSortChange?.(newSortColumn);

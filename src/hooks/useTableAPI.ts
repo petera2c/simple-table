@@ -9,6 +9,7 @@ import TableRow from "../types/TableRow";
 import { exportTableToCSV } from "../utils/csvExportUtils";
 import HeaderObject from "../types/HeaderObject";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
+import { SortDirection } from "../types/SortColumn";
 
 /**
  * Wraps a function to return a Promise that resolves after the next tick.
@@ -60,7 +61,7 @@ const useTableAPI = ({
   sort: SortColumn | null;
   tableRef?: MutableRefObject<TableRefType | null>;
   updateFilter: (filter: FilterCondition) => void;
-  updateSort: (accessor: Accessor | null) => void;
+  updateSort: (accessor: Accessor | null, direction?: SortDirection) => void;
   visibleRows: TableRow[];
 }) => {
   // Set up API methods on the ref if provided

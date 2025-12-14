@@ -1,7 +1,7 @@
 import UpdateDataProps from "./UpdateCellProps";
 import HeaderObject, { Accessor } from "./HeaderObject";
 import TableRow from "./TableRow";
-import SortColumn from "./SortColumn";
+import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
 
 interface SetHeaderRenameProps {
@@ -24,8 +24,8 @@ type TableRefType = {
   exportToCSV: (props?: ExportToCSVProps) => void;
   /** Returns the current sort state */
   getSortState: () => SortColumn | null;
-  /** Applies a new sort state to the table */
-  applySortState: (accessor: Accessor | null) => Promise<void>;
+  /** Applies a new sort state to the table. Pass null to clear sort. Direction defaults to cycling through asc -> desc -> null */
+  applySortState: (accessor: Accessor | null, direction?: SortDirection) => Promise<void>;
   /** Returns the current filter state */
   getFilterState: () => TableFilterState;
   /** Applies a filter to a specific column */

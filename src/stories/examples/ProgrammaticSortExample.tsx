@@ -149,11 +149,7 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
       // Find the header object for the accessor
       const header = headers.find((h) => h.accessor === accessor);
       if (header) {
-        const sortColumn: SortColumn = {
-          key: header,
-          direction: direction,
-        };
-        await tableRef.current.applySortState(sortColumn);
+        await tableRef.current.applySortState(accessor, direction);
         setSortInfo(`Sorted by: ${header.label} (${direction})`);
       }
     }
