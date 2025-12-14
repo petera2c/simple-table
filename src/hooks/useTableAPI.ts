@@ -110,13 +110,7 @@ const useTableAPI = ({
         getSortState: () => {
           return sort;
         },
-        applySortState: asyncStateUpdate((sortColumn: SortColumn | null) => {
-          if (sortColumn === null) {
-            updateSort(null);
-          } else if (sortColumn.key) {
-            updateSort(sortColumn.key.accessor);
-          }
-        }),
+        applySortState: asyncStateUpdate(updateSort),
         getFilterState: () => {
           return filters;
         },
