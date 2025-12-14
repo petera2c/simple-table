@@ -4,7 +4,6 @@ import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import TableRefType from "../../types/TableRefType";
 import { UniversalTableProps } from "./StoryWrapper";
-import SortColumn from "../../types/SortColumn";
 
 // Sample data
 const sampleData: Row[] = [
@@ -144,12 +143,12 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
   };
 
   // Function to apply sort programmatically
-  const handleApplySort = async (accessor: string, direction: "asc" | "desc") => {
+  const handleApplySort = async (accessor: string, direction?: "asc" | "desc") => {
     if (tableRef.current) {
       // Find the header object for the accessor
       const header = headers.find((h) => h.accessor === accessor);
       if (header) {
-        await tableRef.current.applySortState(accessor, direction);
+        await tableRef.current.applySortState({ accessor, direction });
         setSortInfo(`Sorted by: ${header.label} (${direction})`);
       }
     }
@@ -158,7 +157,7 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
   // Clear sort
   const handleClearSort = async () => {
     if (tableRef.current) {
-      await tableRef.current.applySortState(null);
+      await tableRef.current.applySortState();
       setSortInfo("No sort applied");
     }
   };
@@ -180,7 +179,7 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
 
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "15px" }}>
           <button
-            onClick={() => handleApplySort("salary", "desc")}
+            onClick={() => handleApplySort("salary")}
             style={{
               padding: "8px 16px",
               backgroundColor: "#007bff",

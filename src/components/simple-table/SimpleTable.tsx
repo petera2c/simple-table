@@ -614,7 +614,7 @@ const SimpleTableComp = ({
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
       setTimeout(() => {
-        updateSort(accessor);
+        updateSort({ accessor });
       }, 0);
     },
     [prepareForSortChange, updateSort]
@@ -659,7 +659,6 @@ const SimpleTableComp = ({
     updateSort,
     visibleRows: rowsToRender,
   });
-  console.log("sort", sort);
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
 

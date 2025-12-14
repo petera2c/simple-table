@@ -61,7 +61,7 @@ const useTableAPI = ({
   sort: SortColumn | null;
   tableRef?: MutableRefObject<TableRefType | null>;
   updateFilter: (filter: FilterCondition) => void;
-  updateSort: (accessor: Accessor | null, direction?: SortDirection) => void;
+  updateSort: (props?: { accessor: Accessor; direction?: SortDirection }) => void;
   visibleRows: TableRow[];
 }) => {
   // Set up API methods on the ref if provided

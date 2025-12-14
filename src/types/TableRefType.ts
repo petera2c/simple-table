@@ -25,7 +25,7 @@ type TableRefType = {
   /** Returns the current sort state */
   getSortState: () => SortColumn | null;
   /** Applies a new sort state to the table. Pass null to clear sort. Direction defaults to cycling through asc -> desc -> null */
-  applySortState: (accessor: Accessor | null, direction?: SortDirection) => Promise<void>;
+  applySortState: (props?: { accessor: Accessor; direction?: SortDirection }) => Promise<void>;
   /** Returns the current filter state */
   getFilterState: () => TableFilterState;
   /** Applies a filter to a specific column */

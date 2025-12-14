@@ -150,13 +150,15 @@ const useSortableData = ({
 
   // Simple sort handler
   const updateSort = useCallback(
-    (accessor: Accessor | null, direction?: SortDirection) => {
+    (props?: { accessor: Accessor; direction?: SortDirection }) => {
       // If accessor is null, clear the sort
-      if (accessor === null) {
+      if (!props) {
         setSort(null);
         onSortChange?.(null);
         return;
       }
+
+      const { accessor, direction } = props;
 
       const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
         for (const header of headers) {
