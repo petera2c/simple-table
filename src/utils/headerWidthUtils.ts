@@ -88,3 +88,50 @@ export const removeAllFractionalWidths = (header: HeaderObject): void => {
 export const getHeaderMinWidth = (header: HeaderObject): number => {
   return typeof header.minWidth === "number" ? header.minWidth : 40;
 };
+
+/**
+ * Get all visible leaf headers from an array of headers
+ */
+export const getAllVisibleLeafHeaders = (
+  headers: HeaderObject[],
+  collapsedHeaders?: Set<Accessor>
+): HeaderObject[] => {
+  const leafHeaders: HeaderObject[] = [];
+  headers.forEach((header) => {
+    if (!header.hide) {
+      leafHeaders.push(...findLeafHeaders(header, collapsedHeaders));
+    }
+  });
+  return leafHeaders;
+};
+
+/**
+ * Convert pixel-based widths to proportional fr units
+ * This is used when autoExpandColumns is enabled
+ */
+export const convertPixelWidthsToFr = (
+  headers: HeaderObject[],
+  collapsedHeaders?: Set<Accessor>
+): HeaderObject[] => {
+  const processHeader = (header: HeaderObject): HeaderObject => {
+    // Process children recursively first
+    const processedChildren = header.children?.map(processHeader);
+
+    const pixelWidth = getHeaderWidthInPixels(header);
+    const minWidth = header.minWidth || pixelWidth;
+
+    // Convert px to fr (divide by 10 to get reasonable fr values)
+    // e.g., 100px -> 10fr, 150px -> 15fr
+    const frValue = pixelWidth / 10;
+
+    return {
+      ...header,
+      width: `${frValue}fr`,
+      minWidth: typeof minWidth === "number" ? minWidth : parseFloat(minWidth as string),
+      children: processedChildren,
+      __originalPixelWidth: pixelWidth, // Store original for reference
+    } as HeaderObject & { __originalPixelWidth?: number };
+  };
+
+  return headers.map(processHeader);
+};

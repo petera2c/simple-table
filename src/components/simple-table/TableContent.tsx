@@ -43,13 +43,22 @@ const TableContent = ({
   const pinnedRightColumns = headers.filter((header) => header.pinned === "right");
 
   const pinnedLeftTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: pinnedLeftColumns, collapsedHeaders });
+    return createGridTemplateColumns({
+      headers: pinnedLeftColumns,
+      collapsedHeaders,
+    });
   }, [pinnedLeftColumns, collapsedHeaders]);
   const mainTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: currentHeaders, collapsedHeaders });
+    return createGridTemplateColumns({
+      headers: currentHeaders,
+      collapsedHeaders,
+    });
   }, [currentHeaders, collapsedHeaders]);
   const pinnedRightTemplateColumns = useMemo(() => {
-    return createGridTemplateColumns({ headers: pinnedRightColumns, collapsedHeaders });
+    return createGridTemplateColumns({
+      headers: pinnedRightColumns,
+      collapsedHeaders,
+    });
   }, [pinnedRightColumns, collapsedHeaders]);
 
   const tableHeaderProps: TableHeaderProps = {
@@ -80,6 +89,7 @@ const TableContent = ({
     rowsToRender,
   };
 
+  console.log("mainTemplateColumns", mainTemplateColumns);
   return (
     <div
       className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}

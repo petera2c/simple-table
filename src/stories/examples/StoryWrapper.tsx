@@ -15,6 +15,7 @@ export interface UniversalTableProps {
   rowHeight?: number;
 
   // Feature Toggle Props
+  autoExpandColumns?: boolean;
   expandAll?: boolean;
   columnReordering?: boolean;
   columnResizing?: boolean;
@@ -63,6 +64,7 @@ export const defaultUniversalArgs: UniversalTableProps = {
   cellUpdateFlash: false,
   height: undefined,
   rowHeight: 32,
+  autoExpandColumns: false,
   expandAll: true,
   columnReordering: false,
   columnResizing: false,
@@ -113,6 +115,11 @@ export const universalArgTypes = {
   rowHeight: {
     control: { type: "number" as const, min: 20, max: 100, step: 4 },
     description: "Height of each row in pixels",
+  },
+  autoExpandColumns: {
+    control: { type: "boolean" as const },
+    description:
+      "Convert pixel widths to proportional fr units that fill table width with smart resizing",
   },
   expandAll: {
     control: { type: "boolean" as const },

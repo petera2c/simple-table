@@ -15,4 +15,6 @@ export type HandleResizeStartProps = {
   pinnedRightRef: RefObject<HTMLDivElement>;
   startWidth: number;
   collapsedHeaders: Set<Accessor>;
+  autoExpandColumns: boolean;
+  reverse: boolean;
 };

@@ -83,6 +83,9 @@ import NestedAccessorExample from "./examples/NestedAccessorExample";
 import AdvancedSortingExample, {
   advancedSortingExampleDefaults,
 } from "./examples/AdvancedSortingExample";
+import AutoExpandColumnsExample, {
+  autoExpandColumnsExampleDefaults,
+} from "./examples/AutoExpandColumnsExample";
 import ClipboardFormattingExample, {
   clipboardFormattingExampleDefaults,
 } from "./examples/ClipboardFormattingExample";
@@ -154,6 +157,24 @@ export const Alignment: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates column alignment functionality with left, right, and center-aligned columns. This story is used as a base for comprehensive alignment testing.",
+      },
+    },
+  },
+};
+
+export const AutoExpandColumns: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...autoExpandColumnsExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: AutoExpandColumnsExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the autoExpandColumns feature where fixed pixel-width columns are converted to proportional fr units that fill the entire table width. When resizing a column, adjacent columns automatically adjust to maintain 100% width. Columns shrink proportionally based on available headroom above their minimum width. Try resizing any column - the table will always fill the available space!",
       },
     },
   },

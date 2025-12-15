@@ -60,6 +60,7 @@ const TableHeaderCell = ({
   const {
     activeHeaderDropdown,
     areAllRowsSelected,
+    autoExpandColumns,
     collapsedHeaders,
     columnBorders,
     columnReordering,
@@ -451,6 +452,8 @@ const TableHeaderCell = ({
             setIsResizing,
             startWidth,
             collapsedHeaders,
+            autoExpandColumns,
+            reverse,
           } as HandleResizeStartProps,
           limit: 10,
         });
@@ -473,6 +476,8 @@ const TableHeaderCell = ({
             setIsResizing,
             startWidth,
             collapsedHeaders,
+            autoExpandColumns,
+            reverse,
           } as HandleResizeStartProps,
           limit: 10,
         });

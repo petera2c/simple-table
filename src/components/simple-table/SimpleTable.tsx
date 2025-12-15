@@ -62,6 +62,7 @@ import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
+  autoExpandColumns?: boolean; // Flag for converting pixel widths to proportional fr units that fill table width
   canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   className?: string; // Class name for the table
@@ -143,6 +144,7 @@ const SimpleTable = (props: SimpleTableProps) => {
 
 const SimpleTableComp = ({
   allowAnimations = false,
+  autoExpandColumns = false,
   canExpandRowGroup,
   cellUpdateFlash = false,
   className,
@@ -376,6 +378,61 @@ const SimpleTableComp = ({
       }
     };
   }, []);
+
+  // Track the last container width we scaled to
+  const lastScaledWidthRef = useRef<number>(0);
+
+  // Scale columns to fill container width when autoExpandColumns is enabled
+  useEffect(() => {
+    if (!autoExpandColumns || containerWidth === 0 || isResizing) return;
+
+    // Only rescale if container width changed significantly
+    if (Math.abs(containerWidth - lastScaledWidthRef.current) < 10) return;
+
+    setHeaders((currentHeaders) => {
+      // Calculate total width of all columns in pixels
+      const totalCurrentWidth = currentHeaders.reduce((total, header) => {
+        if (header.hide) return total;
+
+        const width =
+          typeof header.width === "number"
+            ? header.width
+            : typeof header.width === "string" && header.width.endsWith("px")
+            ? parseFloat(header.width)
+            : 150;
+
+        return total + width;
+      }, 0);
+
+      if (totalCurrentWidth === 0) return currentHeaders;
+
+      // Calculate scale factor to fill container
+      const scaleFactor = containerWidth / totalCurrentWidth;
+
+      // Only scale if needed (avoid tiny adjustments)
+      if (Math.abs(scaleFactor - 1) < 0.01) {
+        return currentHeaders;
+      }
+
+      lastScaledWidthRef.current = containerWidth;
+
+      return currentHeaders.map((header) => {
+        if (header.hide) return header;
+
+        const currentWidth =
+          typeof header.width === "number"
+            ? header.width
+            : typeof header.width === "string" && header.width.endsWith("px")
+            ? parseFloat(header.width)
+            : 150;
+
+        return {
+          ...header,
+          width: Math.round(currentWidth * scaleFactor),
+        };
+      });
+    });
+  }, [autoExpandColumns, containerWidth, isResizing]);
 
   // Calculate the width of the sections
   const {
@@ -686,6 +743,7 @@ const SimpleTableComp = ({
         activeHeaderDropdown,
         allowAnimations,
         areAllRowsSelected,
+        autoExpandColumns,
         canExpandRowGroup,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
