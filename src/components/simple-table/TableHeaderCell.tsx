@@ -98,6 +98,7 @@ const TableHeaderCell = ({
     setSelectedColumns,
     sortDownIcon,
     sortUpIcon,
+    tableBodyContainerRef,
   } = useTableContext();
 
   // Derived state
@@ -444,12 +445,11 @@ const TableHeaderCell = ({
           callback: handleResizeStart,
           callbackProps: {
             event: event.nativeEvent,
-            gridColumnEnd,
-            gridColumnStart,
             header,
             headers,
             setHeaders,
             setIsResizing,
+            tableBodyContainerRef,
             startWidth,
             collapsedHeaders,
             autoExpandColumns,
@@ -468,12 +468,11 @@ const TableHeaderCell = ({
           callback: handleResizeStart,
           callbackProps: {
             event,
-            gridColumnEnd,
-            gridColumnStart,
             header,
             headers,
             setHeaders,
             setIsResizing,
+            tableBodyContainerRef,
             startWidth,
             collapsedHeaders,
             autoExpandColumns,

@@ -379,28 +379,46 @@ const SimpleTableComp = ({
     };
   }, []);
 
-  // Track the last container width we scaled to
+  // Track the last container width we scaled to and visible column count
   const lastScaledWidthRef = useRef<number>(0);
+  const lastVisibleColumnCountRef = useRef<number>(0);
 
   // Scale columns to fill container width when autoExpandColumns is enabled
   useEffect(() => {
     if (!autoExpandColumns || containerWidth === 0 || isResizing) return;
 
-    // Only rescale if container width changed significantly
-    if (Math.abs(containerWidth - lastScaledWidthRef.current) < 10) return;
+    // Helper to get all leaf headers (actual columns that render)
+    const getLeafHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+      const leaves: HeaderObject[] = [];
+      headers.forEach((header) => {
+        if (header.hide) return;
+        if (header.children && header.children.length > 0) {
+          leaves.push(...getLeafHeaders(header.children));
+        } else {
+          leaves.push(header);
+        }
+      });
+      return leaves;
+    };
+
+    // Count visible columns
+    const visibleColumnCount = getLeafHeaders(headers).length;
+    const visibleColumnCountChanged = visibleColumnCount !== lastVisibleColumnCountRef.current;
+
+    // Only rescale if container width changed significantly OR visible column count changed
+    if (!visibleColumnCountChanged && Math.abs(containerWidth - lastScaledWidthRef.current) < 10)
+      return;
 
     setHeaders((currentHeaders) => {
-      // Calculate total width of all columns in pixels
-      const totalCurrentWidth = currentHeaders.reduce((total, header) => {
-        if (header.hide) return total;
-
+      // Calculate total width based on leaf headers (actual columns)
+      const leafHeaders = getLeafHeaders(currentHeaders);
+      const totalCurrentWidth = leafHeaders.reduce((total, header) => {
         const width =
           typeof header.width === "number"
             ? header.width
             : typeof header.width === "string" && header.width.endsWith("px")
             ? parseFloat(header.width)
             : 150;
-
         return total + width;
       }, 0);
 
@@ -415,24 +433,40 @@ const SimpleTableComp = ({
       }
 
       lastScaledWidthRef.current = containerWidth;
+      lastVisibleColumnCountRef.current = leafHeaders.length;
 
-      return currentHeaders.map((header) => {
+      // Recursively scale all headers (including nested children)
+      const scaleHeader = (header: HeaderObject): HeaderObject => {
         if (header.hide) return header;
 
-        const currentWidth =
-          typeof header.width === "number"
-            ? header.width
-            : typeof header.width === "string" && header.width.endsWith("px")
-            ? parseFloat(header.width)
-            : 150;
+        const scaledChildren = header.children?.map(scaleHeader);
 
+        // Only scale leaf headers (columns without children)
+        if (!header.children || header.children.length === 0) {
+          const currentWidth =
+            typeof header.width === "number"
+              ? header.width
+              : typeof header.width === "string" && header.width.endsWith("px")
+              ? parseFloat(header.width)
+              : 150;
+
+          return {
+            ...header,
+            width: Math.round(currentWidth * scaleFactor),
+            children: scaledChildren,
+          };
+        }
+
+        // For parent headers, just update children
         return {
           ...header,
-          width: Math.round(currentWidth * scaleFactor),
+          children: scaledChildren,
         };
-      });
+      };
+
+      return currentHeaders.map(scaleHeader);
     });
-  }, [autoExpandColumns, containerWidth, isResizing]);
+  }, [autoExpandColumns, containerWidth, isResizing, headers]);
 
   // Calculate the width of the sections
   const {
