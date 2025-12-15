@@ -45,7 +45,6 @@ const useFlattenedRows = ({
             displayPosition: index,
             groupingKey: undefined,
             position: index,
-            isLastGroupRow: index === rows.length - 1,
             rowPath: [index],
             absoluteRowIndex: index,
           } as TableRow)
@@ -74,8 +73,7 @@ const useFlattenedRows = ({
         });
 
         // Determine if this is the last row at depth 0
-        const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
-
+        const isLastGroupRow = currentDepth === 0;
         // Add the main row
         result.push({
           row,

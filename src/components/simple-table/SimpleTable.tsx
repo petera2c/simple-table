@@ -477,7 +477,7 @@ const SimpleTableComp = ({
           displayPosition: index,
           groupingKey: undefined,
           position: index,
-          isLastGroupRow: index === filteredPreview.length - 1,
+          isLastGroupRow: false,
           rowPath: [index],
           absoluteRowIndex: index,
         }));
@@ -518,7 +518,7 @@ const SimpleTableComp = ({
           displayPosition: index,
           groupingKey: undefined,
           position: index,
-          isLastGroupRow: index === sortedPreview.length - 1,
+          isLastGroupRow: false,
           rowPath: [index],
           absoluteRowIndex: index,
         }));

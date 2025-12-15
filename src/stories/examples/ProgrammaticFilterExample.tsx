@@ -4,7 +4,7 @@ import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import TableRefType from "../../types/TableRefType";
 import { UniversalTableProps } from "./StoryWrapper";
-import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
+import { FilterCondition } from "../../types/FilterTypes";
 
 // Sample data
 const sampleData: Row[] = [
