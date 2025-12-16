@@ -96,6 +96,7 @@ import HeaderInclusionExample, {
   headerInclusionExampleDefaults,
 } from "./examples/HeaderInclusionExample";
 import CustomThemeDemo from "./examples/custom-theme/CustomThemeDemo";
+import PaginationAPIExample from "./examples/PaginationAPIExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -522,6 +523,17 @@ export const Pagination: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: PaginationExample, ...args }),
+};
+
+export const PaginationAPI: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...paginationDefaults,
+    theme: "dark",
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: PaginationAPIExample, ...args }),
 };
 
 export const PinnedColumns: StoryObj<UniversalTableProps> = {

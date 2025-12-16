@@ -34,6 +34,10 @@ type TableRefType = {
   clearFilter: (accessor: Accessor) => Promise<void>;
   /** Clears all filters */
   clearAllFilters: () => Promise<void>;
+  /** Returns the current page number (1-indexed) */
+  getCurrentPage: () => number;
+  /** Sets the current page (1-indexed) */
+  setPage: (page: number) => void;
 };
 
 export default TableRefType;
