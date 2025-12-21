@@ -28,6 +28,7 @@ import "../../styles/all-themes.css";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import useFilterableData from "../../hooks/useFilterableData";
 import { useContentHeight } from "../../hooks/useContentHeight";
+import { useElementHeight } from "../../hooks/useElementHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
@@ -87,6 +88,7 @@ interface SimpleTableProps {
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
   headerHeight?: number; // Height of the header
   height?: string | number; // Height of the table
+  maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
   hideFooter?: boolean; // Flag for hiding the footer
   includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
@@ -168,6 +170,7 @@ const SimpleTableComp = ({
   headerDropdown,
   headerHeight,
   height,
+  maxHeight,
   hideFooter = false,
   includeHeadersInCSVExport = true,
   initialSortColumn,
@@ -225,6 +228,7 @@ const SimpleTableComp = ({
   const pinnedRightRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
   const headerContainerRef = useRef<HTMLDivElement>(null);
+  const footerContainerRef = useRef<HTMLDivElement>(null);
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -404,8 +408,28 @@ const SimpleTableComp = ({
     };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
-  // Calculate content height using hook
-  const contentHeight = useContentHeight({ height, rowHeight, shouldPaginate, rowsPerPage });
+  // Calculate header depth for nested columns
+  const getHeaderDepth = useCallback((header: HeaderObject): number => {
+    // If singleRowChildren is true, don't add depth for immediate children
+    if (header.singleRowChildren && header.children?.length) {
+      return 1;
+    }
+    return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
+  }, []);
+
+  const maxHeaderDepth = useMemo(() => {
+    let maxDepth = 0;
+    effectiveHeaders.forEach((header) => {
+      const depth = getHeaderDepth(header);
+      maxDepth = Math.max(maxDepth, depth);
+    });
+    return maxDepth;
+  }, [effectiveHeaders, getHeaderDepth]);
+
+  // Calculate actual header height based on depth and headerHeight prop
+  const calculatedHeaderHeight = useMemo(() => {
+    return maxHeaderDepth * (headerHeight ?? rowHeight);
+  }, [maxHeaderDepth, headerHeight, rowHeight]);
 
   const aggregatedRows = useAggregatedRows({
     rows: effectiveRows,
@@ -547,6 +571,29 @@ const SimpleTableComp = ({
       emptyStateRenderer,
     ]
   );
+
+  // Measure footer height for maxHeight calculations (only footer needs measurement)
+  // We measure when maxHeight is provided and pagination is enabled (footer will be shown)
+  const shouldMeasureFooter = !!maxHeight && shouldPaginate;
+  const measuredFooterHeight = useElementHeight({
+    ref: footerContainerRef,
+    enabled: shouldMeasureFooter,
+  });
+
+  // Determine if we need to wait for measurements before rendering
+  const isWaitingForMeasurements = shouldMeasureFooter && measuredFooterHeight === undefined;
+
+  // Calculate content height using hook (after flattenedRows is available)
+  const contentHeight = useContentHeight({
+    height,
+    maxHeight,
+    rowHeight,
+    shouldPaginate,
+    rowsPerPage,
+    totalRowCount: totalRowCount ?? flattenedRows.length,
+    headerHeight: calculatedHeaderHeight,
+    footerHeight: measuredFooterHeight,
+  });
 
   // Process rows through pagination and virtualization (now operates on flattened rows)
   const {
@@ -796,56 +843,65 @@ const SimpleTableComp = ({
         className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
           columnBorders ? "st-column-borders" : ""
         }`}
-        style={height ? { height } : {}}
+        style={
+          maxHeight
+            ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
+            : height
+            ? { height }
+            : {}
+        }
       >
-        <ScrollSync>
-          <div className="st-wrapper-container">
-            <div className="st-content-wrapper">
-              <TableContent
-                pinnedLeftWidth={pinnedLeftWidth}
-                pinnedRightWidth={pinnedRightWidth}
-                setScrollTop={setScrollTop}
-                setScrollDirection={setScrollDirection}
-                shouldShowEmptyState={shouldShowEmptyState}
-                sort={sort}
-                tableRows={currentTableRows}
-                rowsToRender={rowsToRender}
-              />
-              <TableColumnEditor
-                columnEditorText={columnEditorText}
-                editColumns={editColumns}
-                editColumnsInitOpen={editColumnsInitOpen}
-                headers={headers}
-                position={columnEditorPosition}
-              />
+        {isWaitingForMeasurements ? null : (
+          <ScrollSync>
+            <div className="st-wrapper-container">
+              <div className="st-content-wrapper">
+                <TableContent
+                  pinnedLeftWidth={pinnedLeftWidth}
+                  pinnedRightWidth={pinnedRightWidth}
+                  setScrollTop={setScrollTop}
+                  setScrollDirection={setScrollDirection}
+                  shouldShowEmptyState={shouldShowEmptyState}
+                  sort={sort}
+                  tableRows={currentTableRows}
+                  rowsToRender={rowsToRender}
+                />
+                <TableColumnEditor
+                  columnEditorText={columnEditorText}
+                  editColumns={editColumns}
+                  editColumnsInitOpen={editColumnsInitOpen}
+                  headers={headers}
+                  position={columnEditorPosition}
+                />
+              </div>
+              {!shouldShowEmptyState && (
+                <TableHorizontalScrollbar
+                  mainBodyRef={mainBodyRef}
+                  mainBodyWidth={mainBodyWidth}
+                  pinnedLeftWidth={pinnedLeftWidth}
+                  pinnedRightWidth={pinnedRightWidth}
+                  pinnedLeftContentWidth={pinnedLeftContentWidth}
+                  pinnedRightContentWidth={pinnedRightContentWidth}
+                  tableBodyContainerRef={tableBodyContainerRef}
+                />
+              )}
+              {!shouldShowEmptyState && (
+                <TableFooter
+                  ref={footerContainerRef}
+                  currentPage={currentPage}
+                  footerRenderer={footerRenderer}
+                  hideFooter={hideFooter}
+                  onPageChange={setCurrentPage}
+                  onNextPage={onNextPage}
+                  onUserPageChange={onPageChange}
+                  rowsPerPage={rowsPerPage}
+                  shouldPaginate={shouldPaginate}
+                  totalPages={Math.ceil((totalRowCount ?? flattenedRows.length) / rowsPerPage)}
+                  totalRows={totalRowCount ?? flattenedRows.length}
+                />
+              )}
             </div>
-            {!shouldShowEmptyState && (
-              <TableHorizontalScrollbar
-                mainBodyRef={mainBodyRef}
-                mainBodyWidth={mainBodyWidth}
-                pinnedLeftWidth={pinnedLeftWidth}
-                pinnedRightWidth={pinnedRightWidth}
-                pinnedLeftContentWidth={pinnedLeftContentWidth}
-                pinnedRightContentWidth={pinnedRightContentWidth}
-                tableBodyContainerRef={tableBodyContainerRef}
-              />
-            )}
-            {!shouldShowEmptyState && (
-              <TableFooter
-                currentPage={currentPage}
-                footerRenderer={footerRenderer}
-                hideFooter={hideFooter}
-                onPageChange={setCurrentPage}
-                onNextPage={onNextPage}
-                onUserPageChange={onPageChange}
-                rowsPerPage={rowsPerPage}
-                shouldPaginate={shouldPaginate}
-                totalPages={Math.ceil((totalRowCount ?? flattenedRows.length) / rowsPerPage)}
-                totalRows={totalRowCount ?? flattenedRows.length}
-              />
-            )}
-          </div>
-        </ScrollSync>
+          </ScrollSync>
+        )}
       </div>
     </TableProvider>
   );

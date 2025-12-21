@@ -3,6 +3,9 @@ export const ROW_SEPARATOR_WIDTH = 1;
 
 export const PAGE_SIZE = 20;
 
+// Virtualization threshold - below this row count, virtualization is disabled
+export const VIRTUALIZATION_THRESHOLD = 20;
+
 // Overscan configuration for virtualization
 // Target overscan in pixels (above and below viewport)
 export const OVERSCAN_PIXELS = 800;
