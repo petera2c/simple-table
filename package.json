@@ -1,15 +1,17 @@
 {
-  "version": "2.0.4",
+  "version": "2.0.3",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "publish-fast": "npm i && git add . && git commit -m \"$npm_config_message\" && git push && npm run build && npm publish",
     "build": "rollup -c",
     "start": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "preview": "rollup -c -w",
-    "test-storybook": "test-storybook"
+    "test-storybook": "test-storybook",
+    "version:patch": "npm version patch && git push && git push --tags",
+    "version:minor": "npm version minor && git push && git push --tags",
+    "version:major": "npm version major && git push && git push --tags"
   },
   "sideEffects": [
     "*.css",
@@ -100,6 +102,14 @@
   ],
   "name": "simple-table-core",
   "description": "Simple Table: A lightweight, free React data grid and table component with TypeScript support, sorting, filtering, and virtualization.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petera2c/simple-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/petera2c/simple-table/issues"
+  },
+  "homepage": "https://github.com/petera2c/simple-table#readme",
   "keywords": [
     "simple-table",
     "simple-table-core",
