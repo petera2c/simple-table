@@ -3,6 +3,10 @@ export const ROW_SEPARATOR_WIDTH = 1;
 
 export const PAGE_SIZE = 20;
 
+// CSS variable names
+export const CSS_VAR_BORDER_WIDTH = "--st-border-width";
+export const DEFAULT_BORDER_WIDTH = 1;
+
 // Virtualization threshold - below this row count, virtualization is disabled
 export const VIRTUALIZATION_THRESHOLD = 20;
 
