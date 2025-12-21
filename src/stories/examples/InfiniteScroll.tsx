@@ -154,7 +154,7 @@ const InfiniteScrollExample = (props: UniversalTableProps) => {
         columnResizing={props.columnResizing ?? true}
         columnReordering={props.columnReordering ?? true}
         selectableCells={props.selectableCells ?? true}
-        height={props.height ?? "calc(100dvh - 112px)"}
+        maxHeight={props.height ?? "calc(100dvh - 112px)"}
         shouldPaginate={props.shouldPaginate ?? false} // Disable pagination for infinite scrolling
       />
     </div>

@@ -35,6 +35,7 @@ import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
 import SortColumn, { SortDirection } from "../../types/SortColumn";
+import { useTableDimensions } from "../../hooks/useTableDimensions";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
@@ -81,12 +82,14 @@ interface SimpleTableProps {
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
   filterIcon?: ReactNode; // Icon for filter button
+  footerHeight?: number; // Height of the footer
   footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
   headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
   headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
   headerHeight?: number; // Height of the header
   height?: string | number; // Height of the table
+  maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
   hideFooter?: boolean; // Flag for hiding the footer
   includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
@@ -162,12 +165,14 @@ const SimpleTableComp = ({
   externalFilterHandling = false,
   externalSortHandling = false,
   filterIcon = <FilterIcon className="st-header-icon" />,
+  footerHeight = 49,
   footerRenderer,
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
   headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
   headerDropdown,
   headerHeight,
   height,
+  maxHeight,
   hideFooter = false,
   includeHeadersInCSVExport = true,
   initialSortColumn,
@@ -350,32 +355,13 @@ const SimpleTableComp = ({
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
-  // Track container width changes to ensure proper recalculation of pinned section limits
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
-  // Update container width when the table container changes
-  useLayoutEffect(() => {
-    const updateContainerWidth = () => {
-      if (tableBodyContainerRef.current) {
-        setContainerWidth(tableBodyContainerRef.current.clientWidth);
-      }
-    };
-
-    updateContainerWidth();
-
-    // Set up a ResizeObserver to watch for container size changes
-    let resizeObserver: ResizeObserver | null = null;
-    if (tableBodyContainerRef.current) {
-      resizeObserver = new ResizeObserver(updateContainerWidth);
-      resizeObserver.observe(tableBodyContainerRef.current);
-    }
-
-    return () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-    };
-  }, []);
+  // Calculate table dimensions (container width and header height)
+  const { containerWidth, calculatedHeaderHeight } = useTableDimensions({
+    effectiveHeaders,
+    headerHeight,
+    rowHeight,
+    tableBodyContainerRef,
+  });
 
   // Calculate the width of the sections
   const {
@@ -403,9 +389,6 @@ const SimpleTableComp = ({
       pinnedRightContentWidth: rightContentWidth,
     };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
-
-  // Calculate content height using hook
-  const contentHeight = useContentHeight({ height, rowHeight, shouldPaginate, rowsPerPage });
 
   const aggregatedRows = useAggregatedRows({
     rows: effectiveRows,
@@ -547,6 +530,18 @@ const SimpleTableComp = ({
       emptyStateRenderer,
     ]
   );
+
+  // Calculate content height using hook (after flattenedRows is available)
+  const contentHeight = useContentHeight({
+    height,
+    maxHeight,
+    rowHeight,
+    shouldPaginate,
+    rowsPerPage,
+    totalRowCount: totalRowCount ?? flattenedRows.length,
+    headerHeight: calculatedHeaderHeight,
+    footerHeight: shouldPaginate && !hideFooter ? footerHeight : undefined,
+  });
 
   // Process rows through pagination and virtualization (now operates on flattened rows)
   const {
@@ -796,7 +791,13 @@ const SimpleTableComp = ({
         className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
           columnBorders ? "st-column-borders" : ""
         }`}
-        style={height ? { height } : {}}
+        style={
+          maxHeight
+            ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
+            : height
+            ? { height }
+            : {}
+        }
       >
         <ScrollSync>
           <div className="st-wrapper-container">

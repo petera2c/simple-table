@@ -71,6 +71,7 @@ export const SAAS_HEADERS: HeaderObject[] = [
     width: 250,
     isSortable: true,
     isEditable: true,
+    filterable: true,
     align: "left",
   },
   {

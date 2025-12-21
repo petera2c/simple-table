@@ -151,7 +151,7 @@ const headers: HeaderObject[] = [
 export const programmaticFilterExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
-  height: "600px",
+  maxHeight: "600px",
 };
 
 const ProgrammaticFilterExampleComponent: React.FC<UniversalTableProps> = (props) => {
