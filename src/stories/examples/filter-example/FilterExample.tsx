@@ -11,7 +11,7 @@ export const filterExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,
-  height: "75dvh",
+  maxHeight: "75dvh",
 };
 
 export const FilterExampleComponent = (props: UniversalTableProps) => {

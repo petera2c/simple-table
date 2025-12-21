@@ -732,6 +732,7 @@ const SimpleTableComp = ({
   // Check if we should show the empty state (no rows after filtering and not loading)
   const shouldShowEmptyState = !isLoading && currentTableRows.length === 0;
 
+  console.log(isWaitingForMeasurements);
   return (
     <TableProvider
       value={{

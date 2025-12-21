@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { SimpleTable, TableRefType } from "../../index";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 
@@ -16,26 +16,15 @@ const PaginationAPIExample = () => {
   const [currentPageInfo, setCurrentPageInfo] = useState({ current: 1 });
   const [customPageInput, setCustomPageInput] = useState("1");
 
-  // Update page info display
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (tableRef.current) {
-        setCurrentPageInfo({
-          current: tableRef.current.getCurrentPage(),
-        });
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const jumpToFirstPage = async () => {
     await tableRef.current?.setPage(1);
+    setCurrentPageInfo({ current: 1 });
   };
 
   const jumpToLastPage = async () => {
     const totalPages = EXAMPLE_DATA.length / ROWS_PER_PAGE;
     await tableRef.current?.setPage(totalPages);
+    setCurrentPageInfo({ current: totalPages });
   };
 
   const jumpToNextPage = async () => {
@@ -43,6 +32,7 @@ const PaginationAPIExample = () => {
     const total = EXAMPLE_DATA.length / ROWS_PER_PAGE;
     if (current < total) {
       await tableRef.current?.setPage(current + 1);
+      setCurrentPageInfo({ current: current + 1 });
     }
   };
 
@@ -50,6 +40,7 @@ const PaginationAPIExample = () => {
     const current = tableRef.current?.getCurrentPage() || 1;
     if (current > 1) {
       await tableRef.current?.setPage(current - 1);
+      setCurrentPageInfo({ current: current - 1 });
     }
   };
 
@@ -57,6 +48,7 @@ const PaginationAPIExample = () => {
     const pageNum = parseInt(customPageInput, 10);
     if (!isNaN(pageNum)) {
       await tableRef.current?.setPage(pageNum);
+      setCurrentPageInfo({ current: pageNum });
     }
   };
 
@@ -199,6 +191,7 @@ const PaginationAPIExample = () => {
         selectableCells={true}
         selectableColumns={true}
         theme="dark"
+        maxHeight={"200px"}
       />
 
       <div
