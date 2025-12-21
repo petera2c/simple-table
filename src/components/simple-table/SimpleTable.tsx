@@ -33,12 +33,9 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
-import {
-  getResponsiveMaxPinnedPercent,
-  CSS_VAR_BORDER_WIDTH,
-  DEFAULT_BORDER_WIDTH,
-} from "../../consts/general-consts";
+import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
 import SortColumn, { SortDirection } from "../../types/SortColumn";
+import { useTableDimensions } from "../../hooks/useTableDimensions";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
 import useScrollbarWidth from "../../hooks/useScrollbarWidth";
@@ -358,32 +355,13 @@ const SimpleTableComp = ({
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
-  // Track container width changes to ensure proper recalculation of pinned section limits
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
-  // Update container width when the table container changes
-  useLayoutEffect(() => {
-    const updateContainerWidth = () => {
-      if (tableBodyContainerRef.current) {
-        setContainerWidth(tableBodyContainerRef.current.clientWidth);
-      }
-    };
-
-    updateContainerWidth();
-
-    // Set up a ResizeObserver to watch for container size changes
-    let resizeObserver: ResizeObserver | null = null;
-    if (tableBodyContainerRef.current) {
-      resizeObserver = new ResizeObserver(updateContainerWidth);
-      resizeObserver.observe(tableBodyContainerRef.current);
-    }
-
-    return () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-    };
-  }, []);
+  // Calculate table dimensions (container width and header height)
+  const { containerWidth, calculatedHeaderHeight } = useTableDimensions({
+    effectiveHeaders,
+    headerHeight,
+    rowHeight,
+    tableBodyContainerRef,
+  });
 
   // Calculate the width of the sections
   const {
@@ -411,43 +389,6 @@ const SimpleTableComp = ({
       pinnedRightContentWidth: rightContentWidth,
     };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
-
-  // Calculate header depth for nested columns
-  const getHeaderDepth = useCallback((header: HeaderObject): number => {
-    // If singleRowChildren is true, don't add depth for immediate children
-    if (header.singleRowChildren && header.children?.length) {
-      return 1;
-    }
-    return header.children?.length ? 1 + Math.max(...header.children.map(getHeaderDepth)) : 1;
-  }, []);
-
-  const maxHeaderDepth = useMemo(() => {
-    let maxDepth = 0;
-    effectiveHeaders.forEach((header) => {
-      const depth = getHeaderDepth(header);
-      maxDepth = Math.max(maxDepth, depth);
-    });
-    return maxDepth;
-  }, [effectiveHeaders, getHeaderDepth]);
-
-  // Calculate actual header height based on depth and headerHeight prop
-  // Add border width for the header border-bottom (--st-border-width in CSS)
-  const calculatedHeaderHeight = useMemo(() => {
-    // Get the border width from CSS variable
-    let borderWidth = DEFAULT_BORDER_WIDTH;
-    if (typeof window !== "undefined") {
-      const rootElement = document.documentElement;
-      const computedStyle = getComputedStyle(rootElement);
-      const borderWidthValue = computedStyle.getPropertyValue(CSS_VAR_BORDER_WIDTH).trim();
-      if (borderWidthValue) {
-        const parsed = parseFloat(borderWidthValue);
-        if (!isNaN(parsed)) {
-          borderWidth = parsed;
-        }
-      }
-    }
-    return maxHeaderDepth * (headerHeight ?? rowHeight) + borderWidth;
-  }, [maxHeaderDepth, headerHeight, rowHeight]);
 
   const aggregatedRows = useAggregatedRows({
     rows: effectiveRows,

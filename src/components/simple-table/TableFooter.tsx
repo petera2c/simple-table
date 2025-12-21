@@ -141,7 +141,7 @@ const TableFooter = ({
   // Use custom footer renderer if provided
   if (footerRenderer) {
     return (
-      <div>
+      <>
         {footerRenderer({
           currentPage,
           totalPages,
@@ -157,7 +157,7 @@ const TableFooter = ({
           nextIcon,
           prevIcon,
         })}
-      </div>
+      </>
     );
   }
 
