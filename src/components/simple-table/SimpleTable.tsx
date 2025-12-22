@@ -2,7 +2,6 @@ import {
   useState,
   useRef,
   useEffect,
-  useLayoutEffect,
   useReducer,
   ReactNode,
   useMemo,
@@ -60,7 +59,6 @@ import {
   EmptyStateRenderer,
 } from "../../types/RowStateRendererProps";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
-import { calculatePinnedWidth } from "../../utils/headerUtils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations

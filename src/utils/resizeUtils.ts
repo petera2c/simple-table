@@ -423,16 +423,21 @@ const distributeCompensationProportionally = ({
       const totalHeadroom = columnsWithHeadroom.reduce((sum, h) => sum + h.headroom, 0);
 
       let compensationDistributed = 0;
+      // Store remainingCompensation in a const to avoid no-loop-func warning
+      const compensationToDistribute = remainingCompensation;
       columnsWithHeadroom.forEach((item, index) => {
         const proportion = item.headroom / totalHeadroom;
-        let compensation = remainingCompensation * proportion;
+        let compensation = compensationToDistribute * proportion;
 
         // Don't shrink below minWidth
         compensation = Math.min(compensation, item.headroom);
 
         // Last column takes any remaining to avoid rounding errors
         if (index === columnsWithHeadroom.length - 1) {
-          compensation = Math.min(remainingCompensation - compensationDistributed, item.headroom);
+          compensation = Math.min(
+            compensationToDistribute - compensationDistributed,
+            item.headroom
+          );
         }
 
         // Calculate new width from initial width minus compensation
@@ -450,7 +455,9 @@ const distributeCompensationProportionally = ({
 
       if (columnsAboveAbsoluteMin.length > 0) {
         // Distribute equally among columns that can still shrink
-        const compensationPerColumn = remainingCompensation / columnsAboveAbsoluteMin.length;
+        // Store remainingCompensation in a const to avoid no-loop-func warning
+        const compensationToDistribute = remainingCompensation;
+        const compensationPerColumn = compensationToDistribute / columnsAboveAbsoluteMin.length;
 
         let compensationDistributed = 0;
         columnsAboveAbsoluteMin.forEach((item, index) => {
@@ -459,7 +466,7 @@ const distributeCompensationProportionally = ({
 
           // Last column takes remaining
           if (index === columnsAboveAbsoluteMin.length - 1) {
-            compensation = Math.min(remainingCompensation - compensationDistributed, maxShrink);
+            compensation = Math.min(compensationToDistribute - compensationDistributed, maxShrink);
           }
 
           const newWidth = item.initialWidth - compensation;
@@ -664,10 +671,6 @@ export const handleResizeWithAutoExpand = ({
     }
 
     // We would exceed section width, so we need to shrink others
-    // Calculate how much compensation is actually needed
-    const excessWidth = newTotalWidthIfNoCompensation - sectionWidth;
-    const compensationNeeded = Math.min(delta, excessWidth);
-
     // Calculate how much others can shrink
     const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
