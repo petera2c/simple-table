@@ -516,6 +516,8 @@ const SimpleTableComp = ({
           // Use pre-calculated width from the map
           const newWidth = scaledWidths.get(header.accessor as string);
           if (newWidth !== undefined) {
+            // In autoExpandColumns mode, we don't enforce minWidth to prevent horizontal overflow
+            // The CSS will handle this via the updated getColumnWidth function
             return {
               ...header,
               width: newWidth,

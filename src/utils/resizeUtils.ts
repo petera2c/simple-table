@@ -402,10 +402,11 @@ const distributeCompensationProportionally = ({
   while (remainingCompensation > 0.5) {
     // 0.5px threshold to avoid floating point issues
     // Calculate headroom for each column (initial width - minWidth)
+    // In autoExpandColumns mode, we use ABSOLUTE_MIN_COLUMN_WIDTH instead of header minWidth
     const headrooms = columnsToShrink.map((col) => {
       // Use initial width from the map (captured at drag start)
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-      const minWidth = (col.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+      const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
       return {
         column: col,
         headroom: Math.max(0, initialWidth - minWidth),
@@ -577,7 +578,8 @@ export const handleResizeWithAutoExpand = ({
 
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
-        const minWidth = (child.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+        // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+        const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
       });
 
@@ -603,7 +605,8 @@ export const handleResizeWithAutoExpand = ({
 
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
-        const minWidth = (child.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+        // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+        const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
       });
 
@@ -650,12 +653,14 @@ export const handleResizeWithAutoExpand = ({
   if (columnsToShrink.length === 0) {
     // No columns to compensate - shouldn't happen in autoExpand mode
     // But if it does, just resize normally
-    const minWidth = resizedHeader.minWidth || ABSOLUTE_MIN_COLUMN_WIDTH;
-    resizedHeader.width = Math.max(startWidth + delta, minWidth as number);
+    // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+    const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
+    resizedHeader.width = Math.max(startWidth + delta, minWidth);
     return;
   }
 
-  const minWidth = (resizedHeader.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+  // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+  const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
 
   // Calculate current total width and what it would be after resize
   const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
