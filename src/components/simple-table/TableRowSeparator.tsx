@@ -6,13 +6,11 @@ const TableRowSeparator = ({
   position,
   rowHeight,
   templateColumns,
-  rowIndex,
 }: {
   displayStrongBorder?: boolean;
   position: number;
   rowHeight: number;
   templateColumns: string;
-  rowIndex?: number;
 }) => {
   const targetCellRef = useRef<HTMLElement | null>(null);
 

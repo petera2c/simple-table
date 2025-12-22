@@ -1,0 +1,84 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install latest npm
+        run: npm install -g npm@latest
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+
+          # Get previous version from the last commit
+          git checkout HEAD~1 -- package.json 2>/dev/null || echo "No previous version"
+          PREVIOUS_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          echo "Previous version: $PREVIOUS_VERSION"
+
+          # Restore current package.json
+          git checkout HEAD -- package.json
+
+          # Compare versions
+          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "new_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged"
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: npm ci
+
+      - name: Build package
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: npm run build
+
+      - name: Publish to npm
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: npm publish --access public
+
+      - name: Create Git tag
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${{ steps.version-check.outputs.new_version }}" -m "Release v${{ steps.version-check.outputs.new_version }}"
+          git push origin "v${{ steps.version-check.outputs.new_version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: |
+          echo "✅ Successfully published simple-table-core@${{ steps.version-check.outputs.new_version }} to npm" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Package: https://www.npmjs.com/package/simple-table-core" >> $GITHUB_STEP_SUMMARY
+          echo "🏷️ Version: ${{ steps.version-check.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY

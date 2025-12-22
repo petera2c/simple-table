@@ -31,6 +31,7 @@ const useTableAPI = ({
   cellRegistryRef,
   clearAllFilters,
   clearFilter,
+  currentPage,
   filters,
   flattenedRows,
   headerRegistryRef,
@@ -39,7 +40,11 @@ const useTableAPI = ({
   rowIdAccessor,
   rowIndexMap,
   rows,
+  rowsPerPage,
+  serverSidePagination,
+  setCurrentPage,
   setRows,
+  shouldPaginate,
   sort,
   tableRef,
   updateFilter,
@@ -49,6 +54,7 @@ const useTableAPI = ({
   cellRegistryRef: MutableRefObject<Map<string, CellRegistryEntry>>;
   clearAllFilters: () => void;
   clearFilter: (accessor: Accessor) => void;
+  currentPage: number;
   filters: TableFilterState;
   flattenedRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
@@ -57,7 +63,11 @@ const useTableAPI = ({
   rowIdAccessor: Accessor;
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
+  rowsPerPage: number;
+  serverSidePagination: boolean;
+  setCurrentPage: (page: number) => void;
   setRows: (rows: Row[]) => void;
+  shouldPaginate: boolean;
   sort: SortColumn | null;
   tableRef?: MutableRefObject<TableRefType | null>;
   updateFilter: (filter: FilterCondition) => void;
@@ -118,12 +128,17 @@ const useTableAPI = ({
         applyFilter: asyncStateUpdate(updateFilter),
         clearFilter: asyncStateUpdate(clearFilter),
         clearAllFilters: asyncStateUpdate(clearAllFilters),
+        getCurrentPage: () => {
+          return currentPage;
+        },
+        setPage: (page: number) => setCurrentPage(page),
       };
     }
   }, [
     cellRegistryRef,
     clearAllFilters,
     clearFilter,
+    currentPage,
     filters,
     flattenedRows,
     headerRegistryRef,
@@ -132,7 +147,11 @@ const useTableAPI = ({
     rowIdAccessor,
     rowIndexMap,
     rows,
+    rowsPerPage,
+    serverSidePagination,
+    setCurrentPage,
     setRows,
+    shouldPaginate,
     sort,
     tableRef,
     updateFilter,

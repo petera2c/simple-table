@@ -85,6 +85,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                   rowIdAccessor,
                   rowPath: tableRow.rowPath,
                 });
+
             return (
               <Fragment key={rowId}>
                 {index !== 0 && (
@@ -94,7 +95,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                     position={tableRow.position}
                     rowHeight={rowHeight}
                     templateColumns={templateColumns}
-                    rowIndex={index - 1}
                   />
                 )}
                 <TableRow
