@@ -117,7 +117,7 @@ export const handleResizeStart = ({
 
   // For autoExpandColumns, store the initial widths of all columns at drag start
   const initialWidthsMap = new Map<string, number>();
-  let containerWidth = 0;
+  let sectionWidth = 0;
 
   if (autoExpandColumns) {
     const sectionHeaders = headers.filter((h) => h.pinned === header.pinned);
@@ -132,9 +132,26 @@ export const handleResizeStart = ({
       initialWidthsMap.set(h.accessor as string, width);
     });
 
-    // Get the container width from the ref
+    // Get the appropriate width for the section being resized
     if (tableBodyContainerRef.current) {
-      containerWidth = tableBodyContainerRef.current.clientWidth;
+      const fullContainerWidth = tableBodyContainerRef.current.clientWidth;
+
+      // Calculate widths of pinned sections
+      const { leftWidth, rightWidth } = recalculateAllSectionWidths({
+        headers,
+        containerWidth: fullContainerWidth,
+        collapsedHeaders,
+      });
+
+      // Use the appropriate width based on which section is being resized
+      if (header.pinned === "left") {
+        sectionWidth = leftWidth;
+      } else if (header.pinned === "right") {
+        sectionWidth = rightWidth;
+      } else {
+        // Main section: full width minus pinned sections
+        sectionWidth = Math.max(0, fullContainerWidth - leftWidth - rightWidth);
+      }
     }
   }
 
@@ -159,7 +176,7 @@ export const handleResizeStart = ({
         reverse,
         collapsedHeaders,
         initialWidthsMap,
-        containerWidth,
+        sectionWidth,
         isParentResize: childrenToResize.length > 1,
         childrenToResize,
       });
@@ -472,7 +489,7 @@ export const handleResizeWithAutoExpand = ({
   reverse,
   collapsedHeaders,
   initialWidthsMap,
-  containerWidth,
+  sectionWidth,
   isParentResize = false,
   childrenToResize = [],
 }: {
@@ -483,7 +500,7 @@ export const handleResizeWithAutoExpand = ({
   reverse: boolean;
   collapsedHeaders?: Set<string>;
   initialWidthsMap: Map<string, number>;
-  containerWidth: number;
+  sectionWidth: number;
   isParentResize?: boolean;
   childrenToResize?: HeaderObject[];
 }): void => {
@@ -529,8 +546,8 @@ export const handleResizeWithAutoExpand = ({
       let actualDelta = delta;
       let needsCompensation = false;
 
-      if (newTotalWidthIfNoCompensation > containerWidth) {
-        // We would exceed container width
+      if (newTotalWidthIfNoCompensation > sectionWidth) {
+        // We would exceed section width
         needsCompensation = true;
 
         // Calculate max possible shrinkage
@@ -640,15 +657,15 @@ export const handleResizeWithAutoExpand = ({
     // GROWING: Check if we need to shrink other columns
     const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
 
-    if (newTotalWidthIfNoCompensation <= containerWidth) {
+    if (newTotalWidthIfNoCompensation <= sectionWidth) {
       // We have room to grow without shrinking others
       resizedHeader.width = startWidth + delta;
       return;
     }
 
-    // We would exceed container width, so we need to shrink others
+    // We would exceed section width, so we need to shrink others
     // Calculate how much compensation is actually needed
-    const excessWidth = newTotalWidthIfNoCompensation - containerWidth;
+    const excessWidth = newTotalWidthIfNoCompensation - sectionWidth;
     const compensationNeeded = Math.min(delta, excessWidth);
 
     // Calculate how much others can shrink

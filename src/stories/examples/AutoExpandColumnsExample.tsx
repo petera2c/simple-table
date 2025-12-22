@@ -31,7 +31,7 @@ const AutoExpandColumnsExampleComponent = (props: UniversalTableProps) => {
 
   // Define headers with nested structure and pixel widths
   const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 70, isSortable: true },
+    { accessor: "id", label: "ID", width: 70, isSortable: true, pinned: "left" },
     { accessor: "product", label: "Product", width: 150, isSortable: true },
     { accessor: "price", label: "Price", width: 100, isSortable: true, align: "right" },
     { accessor: "quantity", label: "Quantity", width: 100, isSortable: true, align: "right" },

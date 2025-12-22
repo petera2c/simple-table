@@ -89,7 +89,6 @@ const TableContent = ({
     rowsToRender,
   };
 
-  console.log("mainTemplateColumns", mainTemplateColumns);
   return (
     <div
       className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
