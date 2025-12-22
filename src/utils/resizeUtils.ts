@@ -117,7 +117,7 @@ export const handleResizeStart = ({
 
   // For autoExpandColumns, store the initial widths of all columns at drag start
   const initialWidthsMap = new Map<string, number>();
-  let containerWidth = 0;
+  let sectionWidth = 0;
 
   if (autoExpandColumns) {
     const sectionHeaders = headers.filter((h) => h.pinned === header.pinned);
@@ -132,9 +132,26 @@ export const handleResizeStart = ({
       initialWidthsMap.set(h.accessor as string, width);
     });
 
-    // Get the container width from the ref
+    // Get the appropriate width for the section being resized
     if (tableBodyContainerRef.current) {
-      containerWidth = tableBodyContainerRef.current.clientWidth;
+      const fullContainerWidth = tableBodyContainerRef.current.clientWidth;
+
+      // Calculate widths of pinned sections
+      const { leftWidth, rightWidth } = recalculateAllSectionWidths({
+        headers,
+        containerWidth: fullContainerWidth,
+        collapsedHeaders,
+      });
+
+      // Use the appropriate width based on which section is being resized
+      if (header.pinned === "left") {
+        sectionWidth = leftWidth;
+      } else if (header.pinned === "right") {
+        sectionWidth = rightWidth;
+      } else {
+        // Main section: full width minus pinned sections
+        sectionWidth = Math.max(0, fullContainerWidth - leftWidth - rightWidth);
+      }
     }
   }
 
@@ -159,7 +176,7 @@ export const handleResizeStart = ({
         reverse,
         collapsedHeaders,
         initialWidthsMap,
-        containerWidth,
+        sectionWidth,
         isParentResize: childrenToResize.length > 1,
         childrenToResize,
       });
@@ -385,10 +402,11 @@ const distributeCompensationProportionally = ({
   while (remainingCompensation > 0.5) {
     // 0.5px threshold to avoid floating point issues
     // Calculate headroom for each column (initial width - minWidth)
+    // In autoExpandColumns mode, we use ABSOLUTE_MIN_COLUMN_WIDTH instead of header minWidth
     const headrooms = columnsToShrink.map((col) => {
       // Use initial width from the map (captured at drag start)
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-      const minWidth = (col.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+      const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
       return {
         column: col,
         headroom: Math.max(0, initialWidth - minWidth),
@@ -406,16 +424,21 @@ const distributeCompensationProportionally = ({
       const totalHeadroom = columnsWithHeadroom.reduce((sum, h) => sum + h.headroom, 0);
 
       let compensationDistributed = 0;
+      // Store remainingCompensation in a const to avoid no-loop-func warning
+      const compensationToDistribute = remainingCompensation;
       columnsWithHeadroom.forEach((item, index) => {
         const proportion = item.headroom / totalHeadroom;
-        let compensation = remainingCompensation * proportion;
+        let compensation = compensationToDistribute * proportion;
 
         // Don't shrink below minWidth
         compensation = Math.min(compensation, item.headroom);
 
         // Last column takes any remaining to avoid rounding errors
         if (index === columnsWithHeadroom.length - 1) {
-          compensation = Math.min(remainingCompensation - compensationDistributed, item.headroom);
+          compensation = Math.min(
+            compensationToDistribute - compensationDistributed,
+            item.headroom
+          );
         }
 
         // Calculate new width from initial width minus compensation
@@ -433,7 +456,9 @@ const distributeCompensationProportionally = ({
 
       if (columnsAboveAbsoluteMin.length > 0) {
         // Distribute equally among columns that can still shrink
-        const compensationPerColumn = remainingCompensation / columnsAboveAbsoluteMin.length;
+        // Store remainingCompensation in a const to avoid no-loop-func warning
+        const compensationToDistribute = remainingCompensation;
+        const compensationPerColumn = compensationToDistribute / columnsAboveAbsoluteMin.length;
 
         let compensationDistributed = 0;
         columnsAboveAbsoluteMin.forEach((item, index) => {
@@ -442,7 +467,7 @@ const distributeCompensationProportionally = ({
 
           // Last column takes remaining
           if (index === columnsAboveAbsoluteMin.length - 1) {
-            compensation = Math.min(remainingCompensation - compensationDistributed, maxShrink);
+            compensation = Math.min(compensationToDistribute - compensationDistributed, maxShrink);
           }
 
           const newWidth = item.initialWidth - compensation;
@@ -472,7 +497,7 @@ export const handleResizeWithAutoExpand = ({
   reverse,
   collapsedHeaders,
   initialWidthsMap,
-  containerWidth,
+  sectionWidth,
   isParentResize = false,
   childrenToResize = [],
 }: {
@@ -483,7 +508,7 @@ export const handleResizeWithAutoExpand = ({
   reverse: boolean;
   collapsedHeaders?: Set<string>;
   initialWidthsMap: Map<string, number>;
-  containerWidth: number;
+  sectionWidth: number;
   isParentResize?: boolean;
   childrenToResize?: HeaderObject[];
 }): void => {
@@ -529,8 +554,8 @@ export const handleResizeWithAutoExpand = ({
       let actualDelta = delta;
       let needsCompensation = false;
 
-      if (newTotalWidthIfNoCompensation > containerWidth) {
-        // We would exceed container width
+      if (newTotalWidthIfNoCompensation > sectionWidth) {
+        // We would exceed section width
         needsCompensation = true;
 
         // Calculate max possible shrinkage
@@ -553,7 +578,8 @@ export const handleResizeWithAutoExpand = ({
 
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
-        const minWidth = (child.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+        // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+        const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
       });
 
@@ -579,7 +605,8 @@ export const handleResizeWithAutoExpand = ({
 
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
-        const minWidth = (child.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+        // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+        const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
       });
 
@@ -626,12 +653,14 @@ export const handleResizeWithAutoExpand = ({
   if (columnsToShrink.length === 0) {
     // No columns to compensate - shouldn't happen in autoExpand mode
     // But if it does, just resize normally
-    const minWidth = resizedHeader.minWidth || ABSOLUTE_MIN_COLUMN_WIDTH;
-    resizedHeader.width = Math.max(startWidth + delta, minWidth as number);
+    // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+    const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
+    resizedHeader.width = Math.max(startWidth + delta, minWidth);
     return;
   }
 
-  const minWidth = (resizedHeader.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+  // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
+  const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
 
   // Calculate current total width and what it would be after resize
   const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
@@ -640,17 +669,13 @@ export const handleResizeWithAutoExpand = ({
     // GROWING: Check if we need to shrink other columns
     const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
 
-    if (newTotalWidthIfNoCompensation <= containerWidth) {
+    if (newTotalWidthIfNoCompensation <= sectionWidth) {
       // We have room to grow without shrinking others
       resizedHeader.width = startWidth + delta;
       return;
     }
 
-    // We would exceed container width, so we need to shrink others
-    // Calculate how much compensation is actually needed
-    const excessWidth = newTotalWidthIfNoCompensation - containerWidth;
-    const compensationNeeded = Math.min(delta, excessWidth);
-
+    // We would exceed section width, so we need to shrink others
     // Calculate how much others can shrink
     const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;

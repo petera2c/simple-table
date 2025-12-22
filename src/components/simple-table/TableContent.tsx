@@ -31,7 +31,8 @@ const TableContent = ({
   rowsToRender,
 }: TableContentLocalProps) => {
   // Get stable props from context
-  const { columnResizing, editColumns, headers, collapsedHeaders } = useTableContext();
+  const { columnResizing, editColumns, headers, collapsedHeaders, autoExpandColumns } =
+    useTableContext();
 
   // Refs
   const centerHeaderRef = useRef<HTMLDivElement>(null);
@@ -46,20 +47,23 @@ const TableContent = ({
     return createGridTemplateColumns({
       headers: pinnedLeftColumns,
       collapsedHeaders,
+      autoExpandColumns,
     });
-  }, [pinnedLeftColumns, collapsedHeaders]);
+  }, [pinnedLeftColumns, collapsedHeaders, autoExpandColumns]);
   const mainTemplateColumns = useMemo(() => {
     return createGridTemplateColumns({
       headers: currentHeaders,
       collapsedHeaders,
+      autoExpandColumns,
     });
-  }, [currentHeaders, collapsedHeaders]);
+  }, [currentHeaders, collapsedHeaders, autoExpandColumns]);
   const pinnedRightTemplateColumns = useMemo(() => {
     return createGridTemplateColumns({
       headers: pinnedRightColumns,
       collapsedHeaders,
+      autoExpandColumns,
     });
-  }, [pinnedRightColumns, collapsedHeaders]);
+  }, [pinnedRightColumns, collapsedHeaders, autoExpandColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
     centerHeaderRef,
@@ -89,7 +93,6 @@ const TableContent = ({
     rowsToRender,
   };
 
-  console.log("mainTemplateColumns", mainTemplateColumns);
   return (
     <div
       className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}

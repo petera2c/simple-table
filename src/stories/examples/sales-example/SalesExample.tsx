@@ -19,6 +19,7 @@ export const SalesExampleComponent = (props: UniversalTableProps) => {
   return (
     <SimpleTable
       {...props}
+      autoExpandColumns
       enableRowSelection
       defaultHeaders={SALES_HEADERS}
       rowIdAccessor="id"

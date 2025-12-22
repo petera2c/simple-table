@@ -1,6 +1,6 @@
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 
-const getColumnWidth = (header: HeaderObject) => {
+const getColumnWidth = (header: HeaderObject, autoExpandColumns?: boolean) => {
   let { minWidth, width } = header;
 
   if (typeof width === "number") {
@@ -9,7 +9,8 @@ const getColumnWidth = (header: HeaderObject) => {
   if (minWidth && typeof minWidth === "number") {
     minWidth = `${minWidth}px`;
   }
-  if (minWidth !== undefined) {
+  // When autoExpandColumns is true, ignore minWidth to prevent horizontal overflow
+  if (minWidth !== undefined && !autoExpandColumns) {
     // If width is in fr units, we need to ensure the minimum is respected
     if (typeof width === "string" && width.endsWith("fr")) {
       return `minmax(${minWidth}, ${width})`;
@@ -23,9 +24,11 @@ const getColumnWidth = (header: HeaderObject) => {
 export const createGridTemplateColumns = ({
   headers,
   collapsedHeaders,
+  autoExpandColumns,
 }: {
   headers: HeaderObject[];
   collapsedHeaders?: Set<Accessor>;
+  autoExpandColumns?: boolean;
 }) => {
   // We only care about the leaf headers that are actually visible to create the grid template columns
   const flattenHeaders = ({
@@ -80,5 +83,5 @@ export const createGridTemplateColumns = ({
 
   const flattenedHeaders = flattenHeaders({ headers, flattenedHeaders: [] });
 
-  return `${flattenedHeaders.map((header) => getColumnWidth(header)).join(" ")}`;
+  return `${flattenedHeaders.map((header) => getColumnWidth(header, autoExpandColumns)).join(" ")}`;
 };
