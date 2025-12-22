@@ -4,8 +4,6 @@ import { HeaderObject, Accessor } from "..";
 export type HandleResizeStartProps = {
   event: MouseEvent | TouchEvent;
   forceUpdate: () => void;
-  gridColumnEnd: number;
-  gridColumnStart: number;
   header: HeaderObject;
   headers: HeaderObject[];
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
@@ -13,6 +11,9 @@ export type HandleResizeStartProps = {
   mainBodyRef: RefObject<HTMLDivElement>;
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
+  tableBodyContainerRef: RefObject<HTMLDivElement>;
   startWidth: number;
   collapsedHeaders: Set<Accessor>;
+  autoExpandColumns: boolean;
+  reverse: boolean;
 };

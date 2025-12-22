@@ -5,8 +5,13 @@ import {
   getHeaderWidthInPixels,
   removeAllFractionalWidths,
   getHeaderMinWidth,
+  getAllVisibleLeafHeaders,
 } from "./headerWidthUtils";
-import { MAX_PINNED_WIDTH_PERCENT, getResponsiveMaxPinnedPercent } from "../consts/general-consts";
+import {
+  MAX_PINNED_WIDTH_PERCENT,
+  getResponsiveMaxPinnedPercent,
+  ABSOLUTE_MIN_COLUMN_WIDTH,
+} from "../consts/general-consts";
 import { calculatePinnedWidth } from "./headerUtils";
 
 /**
@@ -74,14 +79,15 @@ const calculateMaxHeaderWidth = ({
  */
 export const handleResizeStart = ({
   event,
-  gridColumnEnd,
-  gridColumnStart,
   header,
   headers,
   setHeaders,
   setIsResizing,
+  tableBodyContainerRef,
   startWidth,
   collapsedHeaders,
+  autoExpandColumns = false,
+  reverse = false,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
   const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
@@ -109,34 +115,80 @@ export const handleResizeStart = ({
     childrenToResize = [header];
   }
 
+  // For autoExpandColumns, store the initial widths of all columns at drag start
+  const initialWidthsMap = new Map<string, number>();
+  let containerWidth = 0;
+
+  if (autoExpandColumns) {
+    const sectionHeaders = headers.filter((h) => h.pinned === header.pinned);
+    const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
+    leafHeaders.forEach((h) => {
+      const width =
+        typeof h.width === "number"
+          ? h.width
+          : typeof h.width === "string" && h.width.endsWith("px")
+          ? parseFloat(h.width)
+          : 100;
+      initialWidthsMap.set(h.accessor as string, width);
+    });
+
+    // Get the container width from the ref
+    if (tableBodyContainerRef.current) {
+      containerWidth = tableBodyContainerRef.current.clientWidth;
+    }
+  }
+
   const handleMove = (clientX: number) => {
     // Calculate the width delta (how much the width has changed)
     // For right-pinned headers, delta is reversed
     const delta = header.pinned === "right" ? startX - clientX : clientX - startX;
 
-    // Calculate maximum allowable width based on container constraints
-    const maxWidth = calculateMaxHeaderWidth({ header, headers, collapsedHeaders });
+    if (autoExpandColumns) {
+      // AutoExpandColumns mode: use proportional shrinking logic
+      // Get headers in the same section (left/main/right)
+      const sectionHeaders = headers.filter((h) => h.pinned === header.pinned);
 
-    // Simplified logic: always resize the leaf children (single source of truth)
-    if (childrenToResize.length > 1) {
-      // Multiple children: distribute width proportionally
-      handleParentHeaderResize({
+      // If this is a parent header with children, we need to resize the children, not the parent
+      const headerToResize = childrenToResize.length > 0 ? childrenToResize[0] : header;
+
+      handleResizeWithAutoExpand({
         delta,
-        leafHeaders: childrenToResize,
-        minWidth,
         startWidth,
-        maxWidth,
+        resizedHeader: headerToResize,
+        sectionHeaders,
+        reverse,
+        collapsedHeaders,
+        initialWidthsMap,
+        containerWidth,
+        isParentResize: childrenToResize.length > 1,
+        childrenToResize,
       });
     } else {
-      // Single child (or leaf header): direct resize
-      const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
-      childrenToResize[0].width = newWidth;
-    }
+      // Normal resize mode
+      // Calculate maximum allowable width based on container constraints
+      const maxWidth = calculateMaxHeaderWidth({ header, headers, collapsedHeaders });
 
-    // After a header is resized, update any headers that use fractional widths
-    headers.forEach((header) => {
-      removeAllFractionalWidths(header);
-    });
+      // Simplified logic: always resize the leaf children (single source of truth)
+      if (childrenToResize.length > 1) {
+        // Multiple children: distribute width proportionally
+        handleParentHeaderResize({
+          delta,
+          leafHeaders: childrenToResize,
+          minWidth,
+          startWidth,
+          maxWidth,
+        });
+      } else {
+        // Single child (or leaf header): direct resize
+        const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
+        childrenToResize[0].width = newWidth;
+      }
+
+      // After a header is resized, update any headers that use fractional widths
+      headers.forEach((header) => {
+        removeAllFractionalWidths(header);
+      });
+    }
 
     const newHeaders = [...headers];
     setHeaders(newHeaders);
@@ -278,4 +330,360 @@ export const recalculateAllSectionWidths = ({
     leftContentWidth,
     rightContentWidth,
   };
+};
+
+/**
+ * Distribute compensation among columns proportionally based on available headroom
+ * Used in autoExpandColumns mode
+ * Positive compensation = shrink columns, Negative compensation = grow columns
+ */
+const distributeCompensationProportionally = ({
+  columnsToShrink,
+  totalCompensation,
+  initialWidthsMap,
+}: {
+  columnsToShrink: HeaderObject[];
+  totalCompensation: number;
+  initialWidthsMap: Map<string, number>;
+}): void => {
+  // Handle growing columns (negative compensation)
+  if (totalCompensation < 0) {
+    const totalGrowth = Math.abs(totalCompensation);
+
+    // Distribute growth proportionally based on initial widths
+    const totalInitialWidth = columnsToShrink.reduce((sum, col) => {
+      const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+      return sum + initialWidth;
+    }, 0);
+
+    if (totalInitialWidth === 0) return;
+
+    columnsToShrink.forEach((col, index) => {
+      const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+      const proportion = initialWidth / totalInitialWidth;
+      let growth = totalGrowth * proportion;
+
+      // Last column takes any remaining to avoid rounding errors
+      if (index === columnsToShrink.length - 1) {
+        const alreadyDistributed = columnsToShrink.slice(0, index).reduce((sum, c) => {
+          const initW = initialWidthsMap.get(c.accessor as string) || 100;
+          const currentW = typeof c.width === "number" ? c.width : 100;
+          return sum + (currentW - initW);
+        }, 0);
+        growth = totalGrowth - alreadyDistributed;
+      }
+
+      col.width = initialWidth + growth;
+    });
+
+    return;
+  }
+
+  let remainingCompensation = totalCompensation;
+
+  // Keep iterating until all compensation is distributed (shrinking columns)
+  while (remainingCompensation > 0.5) {
+    // 0.5px threshold to avoid floating point issues
+    // Calculate headroom for each column (initial width - minWidth)
+    const headrooms = columnsToShrink.map((col) => {
+      // Use initial width from the map (captured at drag start)
+      const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+      const minWidth = (col.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+      return {
+        column: col,
+        headroom: Math.max(0, initialWidth - minWidth),
+        initialWidth,
+        minWidth,
+      };
+    });
+
+    // Filter to columns with headroom > 0
+    const columnsWithHeadroom = headrooms.filter((h) => h.headroom > 0);
+
+    if (columnsWithHeadroom.length > 0) {
+      // CASE 1: Some columns still have headroom above their minWidth
+      // Distribute proportionally based on available headroom
+      const totalHeadroom = columnsWithHeadroom.reduce((sum, h) => sum + h.headroom, 0);
+
+      let compensationDistributed = 0;
+      columnsWithHeadroom.forEach((item, index) => {
+        const proportion = item.headroom / totalHeadroom;
+        let compensation = remainingCompensation * proportion;
+
+        // Don't shrink below minWidth
+        compensation = Math.min(compensation, item.headroom);
+
+        // Last column takes any remaining to avoid rounding errors
+        if (index === columnsWithHeadroom.length - 1) {
+          compensation = Math.min(remainingCompensation - compensationDistributed, item.headroom);
+        }
+
+        // Calculate new width from initial width minus compensation
+        item.column.width = item.initialWidth - compensation;
+        compensationDistributed += compensation;
+      });
+
+      remainingCompensation -= compensationDistributed;
+    } else {
+      // CASE 2: All columns at minWidth
+      // Start shrinking minWidths equally, but not below ABSOLUTE_MIN_COLUMN_WIDTH
+      const columnsAboveAbsoluteMin = headrooms.filter(
+        (h) => h.minWidth > ABSOLUTE_MIN_COLUMN_WIDTH
+      );
+
+      if (columnsAboveAbsoluteMin.length > 0) {
+        // Distribute equally among columns that can still shrink
+        const compensationPerColumn = remainingCompensation / columnsAboveAbsoluteMin.length;
+
+        let compensationDistributed = 0;
+        columnsAboveAbsoluteMin.forEach((item, index) => {
+          const maxShrink = item.minWidth - ABSOLUTE_MIN_COLUMN_WIDTH;
+          let compensation = Math.min(compensationPerColumn, maxShrink);
+
+          // Last column takes remaining
+          if (index === columnsAboveAbsoluteMin.length - 1) {
+            compensation = Math.min(remainingCompensation - compensationDistributed, maxShrink);
+          }
+
+          const newWidth = item.initialWidth - compensation;
+          item.column.width = newWidth;
+          item.column.minWidth = Math.max(newWidth, ABSOLUTE_MIN_COLUMN_WIDTH);
+          compensationDistributed += compensation;
+        });
+
+        remainingCompensation -= compensationDistributed;
+      } else {
+        // All columns at absolute minimum - can't shrink further
+        break;
+      }
+    }
+  }
+};
+
+/**
+ * Handle resize with autoExpandColumns enabled
+ * Columns to the right (or left for right-pinned) shrink proportionally
+ */
+export const handleResizeWithAutoExpand = ({
+  delta,
+  startWidth,
+  resizedHeader,
+  sectionHeaders,
+  reverse,
+  collapsedHeaders,
+  initialWidthsMap,
+  containerWidth,
+  isParentResize = false,
+  childrenToResize = [],
+}: {
+  delta: number;
+  startWidth: number;
+  resizedHeader: HeaderObject;
+  sectionHeaders: HeaderObject[];
+  reverse: boolean;
+  collapsedHeaders?: Set<string>;
+  initialWidthsMap: Map<string, number>;
+  containerWidth: number;
+  isParentResize?: boolean;
+  childrenToResize?: HeaderObject[];
+}): void => {
+  // Special handling for parent header resize (multiple children)
+  if (isParentResize && childrenToResize.length > 1) {
+    const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
+
+    // Find the index range of the children being resized
+    const firstChildIndex = leafHeaders.findIndex(
+      (h) => h.accessor === childrenToResize[0].accessor
+    );
+    const lastChildIndex = leafHeaders.findIndex(
+      (h) => h.accessor === childrenToResize[childrenToResize.length - 1].accessor
+    );
+
+    if (firstChildIndex === -1 || lastChildIndex === -1) return;
+
+    // Determine which columns to shrink based on position
+    const isLeftmost = firstChildIndex === 0;
+    const isRightmost = lastChildIndex === leafHeaders.length - 1;
+
+    let columnsToShrink: HeaderObject[];
+
+    if (isLeftmost) {
+      // Leftmost: shrink columns to the right
+      columnsToShrink = leafHeaders.slice(lastChildIndex + 1);
+    } else if (isRightmost) {
+      // Rightmost: shrink columns to the left
+      columnsToShrink = leafHeaders.slice(0, firstChildIndex);
+    } else {
+      // Middle: shrink based on reverse flag
+      columnsToShrink = reverse
+        ? leafHeaders.slice(0, firstChildIndex)
+        : leafHeaders.slice(lastChildIndex + 1);
+    }
+
+    const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+
+    if (delta > 0) {
+      // GROWING parent: Check if we need to shrink other columns
+      const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
+
+      let actualDelta = delta;
+      let needsCompensation = false;
+
+      if (newTotalWidthIfNoCompensation > containerWidth) {
+        // We would exceed container width
+        needsCompensation = true;
+
+        // Calculate max possible shrinkage
+        const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
+          const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+          const canShrink = Math.max(0, initialWidth - ABSOLUTE_MIN_COLUMN_WIDTH);
+          return total + canShrink;
+        }, 0);
+
+        actualDelta = Math.min(delta, maxPossibleShrinkage);
+      }
+
+      // Resize all children proportionally
+      const totalOriginalWidth = childrenToResize.reduce((sum, child) => {
+        return sum + (initialWidthsMap.get(child.accessor as string) || 100);
+      }, 0);
+
+      const newTotalWidth = startWidth + actualDelta;
+      const scaleFactor = newTotalWidth / totalOriginalWidth;
+
+      childrenToResize.forEach((child) => {
+        const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
+        const minWidth = (child.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+        child.width = Math.max(originalWidth * scaleFactor, minWidth);
+      });
+
+      // Compensate other columns only if needed
+      if (needsCompensation && actualDelta > 0 && columnsToShrink.length > 0) {
+        distributeCompensationProportionally({
+          columnsToShrink,
+          totalCompensation: actualDelta,
+          initialWidthsMap,
+        });
+      }
+    } else {
+      // SHRINKING parent: Distribute freed space
+      const totalOriginalWidth = childrenToResize.reduce((sum, child) => {
+        return sum + (initialWidthsMap.get(child.accessor as string) || 100);
+      }, 0);
+
+      const newTotalWidth = Math.max(
+        startWidth + delta,
+        ABSOLUTE_MIN_COLUMN_WIDTH * childrenToResize.length
+      );
+      const scaleFactor = newTotalWidth / totalOriginalWidth;
+
+      childrenToResize.forEach((child) => {
+        const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
+        const minWidth = (child.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+        child.width = Math.max(originalWidth * scaleFactor, minWidth);
+      });
+
+      // Distribute freed space
+      const actualShrinkage = startWidth - newTotalWidth;
+      if (actualShrinkage > 0 && columnsToShrink.length > 0) {
+        distributeCompensationProportionally({
+          columnsToShrink,
+          totalCompensation: -actualShrinkage, // Negative to grow others
+          initialWidthsMap,
+        });
+      }
+    }
+
+    return;
+  }
+
+  const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
+  const resizedIndex = leafHeaders.findIndex((h) => h.accessor === resizedHeader.accessor);
+
+  if (resizedIndex === -1) return;
+
+  // Determine which columns to shrink based on position
+  const isLeftmost = resizedIndex === 0;
+  const isRightmost = resizedIndex === leafHeaders.length - 1;
+
+  let columnsToShrink: HeaderObject[];
+
+  if (isLeftmost) {
+    // Leftmost: always shrink to the right
+    columnsToShrink = leafHeaders.slice(resizedIndex + 1);
+  } else if (isRightmost) {
+    // Rightmost: always shrink to the left
+    columnsToShrink = leafHeaders.slice(0, resizedIndex);
+  } else {
+    // Middle columns:
+    // - If reverse (right-pinned): shrink left
+    // - Otherwise: shrink right
+    columnsToShrink = reverse
+      ? leafHeaders.slice(0, resizedIndex)
+      : leafHeaders.slice(resizedIndex + 1);
+  }
+
+  if (columnsToShrink.length === 0) {
+    // No columns to compensate - shouldn't happen in autoExpand mode
+    // But if it does, just resize normally
+    const minWidth = resizedHeader.minWidth || ABSOLUTE_MIN_COLUMN_WIDTH;
+    resizedHeader.width = Math.max(startWidth + delta, minWidth as number);
+    return;
+  }
+
+  const minWidth = (resizedHeader.minWidth as number) || ABSOLUTE_MIN_COLUMN_WIDTH;
+
+  // Calculate current total width and what it would be after resize
+  const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+
+  if (delta > 0) {
+    // GROWING: Check if we need to shrink other columns
+    const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
+
+    if (newTotalWidthIfNoCompensation <= containerWidth) {
+      // We have room to grow without shrinking others
+      resizedHeader.width = startWidth + delta;
+      return;
+    }
+
+    // We would exceed container width, so we need to shrink others
+    // Calculate how much compensation is actually needed
+    const excessWidth = newTotalWidthIfNoCompensation - containerWidth;
+    const compensationNeeded = Math.min(delta, excessWidth);
+
+    // Calculate how much others can shrink
+    const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
+      const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+      const canShrink = Math.max(0, initialWidth - ABSOLUTE_MIN_COLUMN_WIDTH);
+      return total + canShrink;
+    }, 0);
+
+    // Limit growth to what can be compensated
+    const actualGrowth = Math.min(delta, maxPossibleShrinkage);
+    resizedHeader.width = startWidth + actualGrowth;
+
+    // Shrink other columns by the amount needed
+    if (actualGrowth > 0) {
+      distributeCompensationProportionally({
+        columnsToShrink,
+        totalCompensation: actualGrowth,
+        initialWidthsMap,
+      });
+    }
+  } else {
+    // SHRINKING: Distribute the freed space to other columns
+    const newWidth = Math.max(startWidth + delta, minWidth);
+    const actualShrinkage = startWidth - newWidth;
+
+    resizedHeader.width = newWidth;
+
+    // Distribute the freed space (negative compensation = grow others)
+    if (actualShrinkage > 0) {
+      distributeCompensationProportionally({
+        columnsToShrink,
+        totalCompensation: -actualShrinkage, // Negative to grow others
+        initialWidthsMap,
+      });
+    }
+  }
 };

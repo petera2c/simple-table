@@ -60,6 +60,7 @@ const TableHeaderCell = ({
   const {
     activeHeaderDropdown,
     areAllRowsSelected,
+    autoExpandColumns,
     collapsedHeaders,
     columnBorders,
     columnReordering,
@@ -97,6 +98,7 @@ const TableHeaderCell = ({
     setSelectedColumns,
     sortDownIcon,
     sortUpIcon,
+    tableBodyContainerRef,
   } = useTableContext();
 
   // Derived state
@@ -443,14 +445,15 @@ const TableHeaderCell = ({
           callback: handleResizeStart,
           callbackProps: {
             event: event.nativeEvent,
-            gridColumnEnd,
-            gridColumnStart,
             header,
             headers,
             setHeaders,
             setIsResizing,
+            tableBodyContainerRef,
             startWidth,
             collapsedHeaders,
+            autoExpandColumns,
+            reverse,
           } as HandleResizeStartProps,
           limit: 10,
         });
@@ -465,14 +468,15 @@ const TableHeaderCell = ({
           callback: handleResizeStart,
           callbackProps: {
             event,
-            gridColumnEnd,
-            gridColumnStart,
             header,
             headers,
             setHeaders,
             setIsResizing,
+            tableBodyContainerRef,
             startWidth,
             collapsedHeaders,
+            autoExpandColumns,
+            reverse,
           } as HandleResizeStartProps,
           limit: 10,
         });

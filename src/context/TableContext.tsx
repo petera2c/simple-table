@@ -41,6 +41,7 @@ interface TableContextType {
   activeHeaderDropdown?: HeaderObject | null;
   allowAnimations?: boolean;
   areAllRowsSelected?: () => boolean;
+  autoExpandColumns?: boolean;
   canExpandRowGroup?: (row: Row) => boolean;
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;

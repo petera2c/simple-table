@@ -266,7 +266,13 @@ const AdvancedSortingExample: React.FC<UniversalTableProps> = (props) => {
           </p>
         </div>
       </div>
-      <SimpleTable rows={sampleData} defaultHeaders={headers} rowIdAccessor="id" {...props} />
+      <SimpleTable
+        rows={sampleData}
+        defaultHeaders={headers}
+        rowIdAccessor="id"
+        {...props}
+        maxHeight={props.height ?? "600px"}
+      />
     </div>
   );
 };
