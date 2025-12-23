@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Dropdown from "../../dropdown/Dropdown";
+import Dropdown from "../../dropdown2/Dropdown";
 import DatePicker from "../../date-picker/DatePicker";
 import CellValue from "../../../types/CellValue";
 import { parseDateString } from "../../../utils/dateUtils";
