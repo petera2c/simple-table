@@ -307,6 +307,8 @@ const TableHeaderCell = ({
     event: MouseEvent;
     header: HeaderObject;
   }) => {
+    console.log("\n");
+    console.log("handleColumnHeaderClick", header);
     // If this is the selection column, don't handle column selection
     if (header.isSelectionColumn) {
       return;
@@ -385,6 +387,7 @@ const TableHeaderCell = ({
 
     // If selectableColumns is disabled, handle sorting on single click
     if (!selectableColumns && header.isSortable) {
+      console.log("onSort", header.accessor);
       onSort(header.accessor);
     }
   };

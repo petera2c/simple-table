@@ -15,22 +15,22 @@ export const prefersReducedMotion = (): boolean => {
 export const ANIMATION_CONFIGS = {
   // For column reordering (horizontal movement)
   COLUMN_REORDER: {
-    // duration: 3000,
-    duration: 180,
+    duration: 3000,
+    //    duration: 180,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    // duration: 3000,
-    duration: 200,
+    duration: 3000,
+    //    duration: 200,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
   // For reduced motion users
   REDUCED_MOTION: {
-    // duration: 3000,
-    duration: 150, // Even faster for reduced motion
+    duration: 3000,
+    //    duration: 150, // Even faster for reduced motion
     easing: "ease-out",
     delay: 0,
   },
@@ -104,7 +104,7 @@ const animateToFinalPosition = (
   config: AnimationConfig,
   options: FlipAnimationOptions = {},
   id?: CellValue
-): Promise<void> => {
+): Promise<() => void> => {
   return new Promise((resolve) => {
     // Force a reflow to ensure the initial transform is applied
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -121,21 +121,28 @@ const animateToFinalPosition = (
     // Animate to final position
     element.style.transform = "translate3d(0, 0, 0)";
 
+    let timeoutId: NodeJS.Timeout | null = null;
+
     // Clean up after animation
     const cleanup = () => {
       cleanupAnimation(element);
       element.removeEventListener("transitionend", cleanup);
+      if (timeoutId) clearTimeout(timeoutId);
 
       if (options.onComplete) {
         options.onComplete();
       }
-      resolve();
     };
 
     element.addEventListener("transitionend", cleanup);
 
     // Fallback timeout in case transitionend doesn't fire
-    setTimeout(cleanup, config.duration + (config.delay || 0) + 50);
+    timeoutId = setTimeout(cleanup, config.duration + (config.delay || 0) + 50);
+
+    // Return cleanup function immediately so caller can cancel if needed
+    resolve(() => {
+      cleanup();
+    });
   });
 };
 
@@ -167,6 +174,7 @@ export const getAnimationConfig = (
  * Performs FLIP animation on a single element
  * This function can be called multiple times on the same element - it will automatically
  * interrupt any ongoing animation and start a new one.
+ * Returns a cleanup function that can be called to cancel the animation.
  */
 export const flipElement = async ({
   element,
@@ -178,17 +186,17 @@ export const flipElement = async ({
   finalConfig: FlipAnimationOptions;
   fromBounds: DOMRect;
   toBounds: DOMRect;
-}): Promise<void> => {
+}): Promise<() => void> => {
   const invert = calculateInvert(fromBounds, toBounds);
 
   // Skip animation if element hasn't moved
   if (invert.x === 0 && invert.y === 0) {
-    return;
+    return () => {}; // Return no-op cleanup
   }
 
   // Skip animation entirely if user prefers reduced motion and no explicit override
   if (prefersReducedMotion() && finalConfig.respectReducedMotion !== false) {
-    return;
+    return () => {}; // Return no-op cleanup
   }
 
   // Determine movement type based on the invert values
@@ -204,8 +212,8 @@ export const flipElement = async ({
   // Apply initial transform with limited values
   applyInitialTransform(element, invert);
 
-  // Animate to final position
-  await animateToFinalPosition(element, config, finalConfig);
+  // Animate to final position and return cleanup function
+  return await animateToFinalPosition(element, config, finalConfig);
 };
 
 /**

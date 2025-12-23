@@ -28,11 +28,11 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
 
   // Define headers
   const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true, type: "number" },
+    { accessor: "id", label: "ID", width: 120, isSortable: true, filterable: true, type: "number" },
     {
       accessor: "name",
       label: "Name",
-      minWidth: 80,
+      minWidth: 120,
       width: "1fr",
       isSortable: true,
       filterable: true,
@@ -48,7 +48,7 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
       initialSortDirection="asc"
       allowAnimations
       defaultHeaders={headers}
-      rows={createBasicData(40)}
+      rows={createBasicData(30)}
       rowIdAccessor="id"
     />
   );

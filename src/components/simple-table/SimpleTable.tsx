@@ -225,6 +225,7 @@ const SimpleTableComp = ({
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const capturedPositionsRef = useRef<Map<string, DOMRect>>(new Map());
 
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
@@ -841,7 +842,6 @@ const SimpleTableComp = ({
   // Check if we should show the empty state (no rows after filtering and not loading)
   const shouldShowEmptyState = !isLoading && currentTableRows.length === 0;
 
-  console.log(sort);
   return (
     <TableProvider
       value={{
@@ -850,6 +850,7 @@ const SimpleTableComp = ({
         areAllRowsSelected,
         autoExpandColumns,
         canExpandRowGroup,
+        capturedPositionsRef,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
         clearSelection,
