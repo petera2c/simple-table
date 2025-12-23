@@ -8,7 +8,7 @@ export const basicExampleDefaults = {
   editColumns: true,
   selectableCells: true,
   columnReordering: true,
-  height: "500px",
+  height: "400px",
 };
 
 const roles = ["Developer", "Designer", "Manager", "Intern", "DevOps", "Engineer"];
@@ -28,7 +28,7 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
 
   // Define headers
   const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true },
+    { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true, type: "number" },
     {
       accessor: "name",
       label: "Name",
@@ -42,14 +42,15 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
   ];
 
   return (
-    <div style={{}}>
-      <SimpleTable
-        {...props}
-        defaultHeaders={headers}
-        rows={createBasicData(100)}
-        rowIdAccessor="id"
-      />
-    </div>
+    <SimpleTable
+      {...props}
+      initialSortColumn="id"
+      initialSortDirection="asc"
+      allowAnimations
+      defaultHeaders={headers}
+      rows={createBasicData(40)}
+      rowIdAccessor="id"
+    />
   );
 };
 

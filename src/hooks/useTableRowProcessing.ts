@@ -255,9 +255,12 @@ const useTableRowProcessing = ({
 
     // Check if rows actually changed - this detects STAGE 2 (after sort/filter applied)
     if (!hasRowChanges) {
-      clearExtendedRowsIfNeeded();
-      previousTableRowsRef.current = currentTableRows;
-      previousVisibleRowsRef.current = targetVisibleRows;
+      // Don't clear extended rows if we have them - we're waiting for STAGE 2 (sort/filter to apply)
+      // Only clear if we don't have extended rows (normal state sync)
+      if (extendedRows.length === 0) {
+        previousTableRowsRef.current = currentTableRows;
+        previousVisibleRowsRef.current = targetVisibleRows;
+      }
       return;
     }
 
@@ -381,30 +384,32 @@ const useTableRowProcessing = ({
       // This identifies rows that are entering the visible area
       const { entering: visibleEntering } = categorizeRows(targetVisibleRows, newVisibleRows);
 
-      // Find these entering rows in the CURRENT table state (before filter) to get original positions
-      const enteringFromCurrentState = visibleEntering
-        .map((enteringRow) => {
-          const id = String(
+      // Get IDs of entering rows
+      const enteringIds = new Set(
+        visibleEntering.map((row) =>
+          String(
             getRowId({
-              row: enteringRow.row,
+              row: row.row,
               rowIdAccessor,
-              rowPath: enteringRow.rowPath,
+              rowPath: row.rowPath,
             })
-          );
-          // Find this row in the current table state to get its original position
-          const currentStateRow = currentTableRows.find(
-            (currentRow) =>
-              String(
-                getRowId({
-                  row: currentRow.row,
-                  rowIdAccessor,
-                  rowPath: currentRow.rowPath,
-                })
-              ) === id
-          );
-          return currentStateRow || enteringRow; // Fallback to enteringRow if not found
-        })
-        .filter(Boolean) as TableRow[];
+          )
+        )
+      );
+
+      // Find these entering rows in the FULL flattened dataset (before filter) to get original positions
+      // CRITICAL: Filter flattenedRows to preserve their CURRENT order (not the new sorted order)
+      // This ensures rows animate from their current positions to new positions
+      const enteringFromCurrentState = flattenedRows.filter((currentRow) => {
+        const id = String(
+          getRowId({
+            row: currentRow.row,
+            rowIdAccessor,
+            rowPath: currentRow.rowPath,
+          })
+        );
+        return enteringIds.has(id);
+      });
 
       if (enteringFromCurrentState.length > 0) {
         setExtendedRows([...targetVisibleRows, ...enteringFromCurrentState]);
@@ -420,7 +425,7 @@ const useTableRowProcessing = ({
       scrollTop,
       scrollDirection,
       categorizeRows,
-      currentTableRows,
+      flattenedRows,
       targetVisibleRows,
       rowIdAccessor,
       bufferRowCount,
@@ -447,30 +452,32 @@ const useTableRowProcessing = ({
       // This identifies rows that are entering the visible area
       const { entering: visibleEntering } = categorizeRows(targetVisibleRows, newVisibleRows);
 
-      // Find these entering rows in the CURRENT table state (before sort) to get original positions
-      const enteringFromCurrentState = visibleEntering
-        .map((enteringRow) => {
-          const id = String(
+      // Get IDs of entering rows
+      const enteringIds = new Set(
+        visibleEntering.map((row) =>
+          String(
             getRowId({
-              row: enteringRow.row,
+              row: row.row,
               rowIdAccessor,
-              rowPath: enteringRow.rowPath,
+              rowPath: row.rowPath,
             })
-          );
-          // Find this row in the current table state to get its original position
-          const currentStateRow = currentTableRows.find(
-            (currentRow) =>
-              String(
-                getRowId({
-                  row: currentRow.row,
-                  rowIdAccessor,
-                  rowPath: currentRow.rowPath,
-                })
-              ) === id
-          );
-          return currentStateRow || enteringRow; // Fallback to enteringRow if not found
-        })
-        .filter(Boolean) as TableRow[];
+          )
+        )
+      );
+
+      // Find these entering rows in the FULL flattened dataset (before sort) to get original positions
+      // CRITICAL: Filter flattenedRows to preserve their CURRENT order (not the new sorted order)
+      // This ensures rows animate from their current positions to new positions
+      const enteringFromCurrentState = flattenedRows.filter((currentRow) => {
+        const id = String(
+          getRowId({
+            row: currentRow.row,
+            rowIdAccessor,
+            rowPath: currentRow.rowPath,
+          })
+        );
+        return enteringIds.has(id);
+      });
 
       if (enteringFromCurrentState.length > 0) {
         setExtendedRows([...targetVisibleRows, ...enteringFromCurrentState]);
@@ -486,7 +493,7 @@ const useTableRowProcessing = ({
       scrollTop,
       scrollDirection,
       categorizeRows,
-      currentTableRows,
+      flattenedRows,
       targetVisibleRows,
       rowIdAccessor,
       bufferRowCount,

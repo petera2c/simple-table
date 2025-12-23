@@ -57,7 +57,6 @@ const ServerSidePaginationExample = () => {
   const [loading, setLoading] = useState(false);
 
   const handlePageChange = async (page: number) => {
-    console.log(`Fetching page ${page}...`);
     setLoading(true);
 
     try {
@@ -65,7 +64,6 @@ const ServerSidePaginationExample = () => {
       setRows(data.rows);
       setTotalCount(data.totalCount);
       setCurrentPage(page);
-      console.log(`✓ Loaded ${data.rows.length} rows for page ${page}`);
     } catch (error) {
       console.error("Failed to fetch page data:", error);
     } finally {

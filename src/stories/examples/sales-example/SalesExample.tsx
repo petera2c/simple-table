@@ -5,6 +5,7 @@ import { UniversalTableProps } from "../StoryWrapper";
 
 // Default args specific to SalesExample - exported for reuse in stories and tests
 export const salesExampleDefaults = {
+  allowAnimations: true,
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,

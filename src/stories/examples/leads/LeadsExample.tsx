@@ -32,7 +32,6 @@ const LeadsCustomFooter = ({
     setRowsPerPage(newSize);
 
     // Note: In a real implementation, you'd need to pass onRowsPerPageChange callback
-    console.log("Page size changed to:", newSize);
   };
 
   // Generate visible page numbers (show first 4 pages max)
