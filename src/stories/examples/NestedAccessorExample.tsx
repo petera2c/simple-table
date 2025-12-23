@@ -370,9 +370,7 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
         height="500px"
         initialSortColumn="awards[0]"
         initialSortDirection="asc"
-        onCellEdit={(props) => {
-          console.log("Cell edited:", props);
-        }}
+        onCellEdit={(props) => {}}
         rows={rows}
         rowIdAccessor="id"
         selectableCells={true}

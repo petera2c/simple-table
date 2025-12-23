@@ -145,21 +145,18 @@ const RowButtonsExample = (props: UniversalTableProps) => {
     const action = `Viewed details for ${row.name} (ID: ${row.id})`;
     setLastAction(action);
     setActionHistory((prev) => [action, ...prev.slice(0, 4)]);
-    console.log("View action:", row);
   };
 
   const handleEdit = (row: Row) => {
     const action = `Opened edit form for ${row.name} (ID: ${row.id})`;
     setLastAction(action);
     setActionHistory((prev) => [action, ...prev.slice(0, 4)]);
-    console.log("Edit action:", row);
   };
 
   const handleDelete = (row: Row) => {
     const action = `Delete requested for ${row.name} (ID: ${row.id})`;
     setLastAction(action);
     setActionHistory((prev) => [action, ...prev.slice(0, 4)]);
-    console.log("Delete action:", row);
     // In a real app, you'd show a confirmation dialog
   };
 
@@ -167,14 +164,12 @@ const RowButtonsExample = (props: UniversalTableProps) => {
     const action = `Email opened for ${row.name} (${row.email})`;
     setLastAction(action);
     setActionHistory((prev) => [action, ...prev.slice(0, 4)]);
-    console.log("Email action:", row);
   };
 
   const handleDuplicate = (row: Row) => {
     const action = `Duplicate created for ${row.name} (ID: ${row.id})`;
     setLastAction(action);
     setActionHistory((prev) => [action, ...prev.slice(0, 4)]);
-    console.log("Duplicate action:", row);
   };
 
   // Handle row selection changes
@@ -190,9 +185,7 @@ const RowButtonsExample = (props: UniversalTableProps) => {
     setSelectedRowsInfo(selectedRowsArray);
   };
 
-  const handleCellClick = ({ row, colIndex, accessor, value }: CellClickProps) => {
-    console.log("Cell clicked:", { row, colIndex, accessor, value });
-  };
+  const handleCellClick = ({ row, colIndex, accessor, value }: CellClickProps) => {};
 
   // Define row buttons with icons
   const rowButtons = [

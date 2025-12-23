@@ -22,7 +22,6 @@ const CustomFooter = ({
     const newSize = parseInt(event.target.value, 10);
     setPageSize(newSize);
     // In a real app, you'd call a callback here to update the parent's rowsPerPage
-    console.log("Page size changed to:", newSize);
   };
 
   const renderPageButton = (pageNum: number) => {
