@@ -18,7 +18,7 @@ import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
 import FilterIcon from "../../icons/FilterIcon";
-import Dropdown from "../dropdown2/Dropdown";
+import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
 import Animate from "../animate/Animate";

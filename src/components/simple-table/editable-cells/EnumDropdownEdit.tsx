@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Dropdown from "../../dropdown2/Dropdown";
-import DropdownItem from "../../dropdown2/DropdownItem";
+import Dropdown from "../../dropdown/Dropdown";
+import DropdownItem from "../../dropdown/DropdownItem";
 import EnumOption from "../../../types/EnumOption";
 
 interface EnumDropdownEditProps {

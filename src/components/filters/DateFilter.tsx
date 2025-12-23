@@ -14,7 +14,7 @@ import FilterSection from "./shared/FilterSection";
 import FilterActions from "./shared/FilterActions";
 import DatePicker from "../date-picker/DatePicker";
 import { createSafeDate } from "../../utils/dateUtils";
-import Dropdown from "../dropdown2/Dropdown";
+import Dropdown from "../dropdown/Dropdown";
 
 interface DateFilterProps {
   header: HeaderObject;

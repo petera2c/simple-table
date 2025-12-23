@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import SelectIcon from "../../../icons/SelectIcon";
-import Dropdown from "../../dropdown2/Dropdown";
+import Dropdown from "../../dropdown/Dropdown";
 
 export interface CustomSelectOption {
   value: string;
