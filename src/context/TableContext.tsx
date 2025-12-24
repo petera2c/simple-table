@@ -1,151 +1,14 @@
-import {
-  ReactNode,
-  RefObject,
-  MutableRefObject,
-  createContext,
-  useContext,
-  Dispatch,
-  SetStateAction,
-} from "react";
-import { TableFilterState, FilterCondition } from "../types/FilterTypes";
-import TableRow from "../types/TableRow";
-import Cell from "../types/Cell";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
-import OnSortProps from "../types/OnSortProps";
-import Theme from "../types/Theme";
-import CellValue from "../types/CellValue";
-import CellClickProps from "../types/CellClickProps";
-import { RowButton } from "../types/RowButton";
-import { HeaderDropdown } from "../types/HeaderDropdownProps";
-import OnRowGroupExpandProps from "../types/OnRowGroupExpandProps";
-import RowState from "../types/RowState";
-import Row from "../types/Row";
-import {
-  LoadingStateRenderer,
-  ErrorStateRenderer,
-  EmptyStateRenderer,
-} from "../types/RowStateRendererProps";
+import { ReactNode, useMemo } from "react";
+import { TableStaticProvider, TableDynamicProvider, TableContextType } from "./TableContexts";
 
-// Define the interface for cell registry entries
-export interface CellRegistryEntry {
-  updateContent: (newValue: CellValue) => void;
-}
+// Re-export everything from the new split contexts
+export * from "./TableContexts";
+export type { TableContextType } from "./TableContexts";
 
-// Define the interface for header cell registry entries
-export interface HeaderRegistryEntry {
-  setEditing: (isEditing: boolean) => void;
-}
-
-interface TableContextType {
-  // Stable values that don't change frequently
-  activeHeaderDropdown?: HeaderObject | null;
-  allowAnimations?: boolean;
-  areAllRowsSelected?: () => boolean;
-  autoExpandColumns?: boolean;
-  canExpandRowGroup?: (row: Row) => boolean;
-  capturedPositionsRef: MutableRefObject<Map<string, DOMRect>>;
-  cellRegistry?: Map<string, CellRegistryEntry>;
-  cellUpdateFlash?: boolean;
-  clearSelection?: () => void;
-  collapsedHeaders: Set<Accessor>;
-  columnBorders: boolean;
-  columnReordering: boolean;
-  columnResizing: boolean;
-  copyHeadersToClipboard: boolean;
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
-  editColumns?: boolean;
-  enableHeaderEditing?: boolean;
-  enableRowSelection?: boolean;
-  expandAll: boolean;
-  expandIcon?: ReactNode;
-  filterIcon?: ReactNode;
-  filters: TableFilterState;
-  includeHeadersInCSVExport: boolean;
-  loadingStateRenderer?: LoadingStateRenderer;
-  errorStateRenderer?: ErrorStateRenderer;
-  emptyStateRenderer?: EmptyStateRenderer;
-  forceUpdate: () => void;
-  rowStateMap: Map<string | number, RowState>;
-  setRowStateMap: Dispatch<SetStateAction<Map<string | number, RowState>>>;
-  rows: Row[];
-  getBorderClass: (cell: Cell) => string;
-  handleApplyFilter: (filter: FilterCondition) => void;
-  handleClearAllFilters: () => void;
-  handleClearFilter: (accessor: Accessor) => void;
-  handleMouseDown: (cell: Cell) => void;
-  handleMouseOver: (cell: Cell) => void;
-  handleRowSelect?: (rowId: string, isSelected: boolean) => void;
-  handleSelectAll?: (isSelected: boolean) => void;
-  handleToggleRow?: (rowId: string) => void;
-  headerCollapseIcon?: ReactNode;
-  headerContainerRef: RefObject<HTMLDivElement>;
-  headerDropdown?: HeaderDropdown;
-  headerExpandIcon?: ReactNode;
-  headerRegistry?: Map<string, HeaderRegistryEntry>;
-  headers: HeaderObject[];
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
-  isAnimating: boolean;
-  isCopyFlashing: (cell: Cell) => boolean;
-  isInitialFocusedCell: (cell: Cell) => boolean;
-  isLoading?: boolean;
-  isResizing: boolean;
-  isRowSelected?: (rowId: string) => boolean;
-  isScrolling: boolean;
-  isSelected: (cell: Cell) => boolean;
-  isWarningFlashing: (cell: Cell) => boolean;
-  mainBodyRef: RefObject<HTMLDivElement>;
-  nextIcon: ReactNode;
-  onCellEdit?: (props: any) => void;
-  onCellClick?: (props: CellClickProps) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onColumnSelect?: (header: HeaderObject) => void;
-  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
-  onLoadMore?: () => void;
-  onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
-  onSort: OnSortProps;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  pinnedLeftRef: RefObject<HTMLDivElement>;
-  pinnedRightRef: RefObject<HTMLDivElement>;
-  prevIcon: ReactNode;
-  rowButtons?: RowButton[];
-  rowGrouping?: Accessor[];
-  rowHeight: number;
-  headerHeight: number;
-  rowIdAccessor: Accessor;
-  scrollbarWidth: number;
-  selectColumns?: (columnIndices: number[], isShiftKey?: boolean) => void;
-  selectableColumns: boolean;
-  selectedColumns: Set<number>;
-  columnsWithSelectedCells: Set<number>;
-  rowsWithSelectedCells: Set<string>;
-  selectedRows?: Set<string>;
-  selectedRowCount?: number;
-  selectedRowsData?: any[];
-  setActiveHeaderDropdown?: Dispatch<SetStateAction<HeaderObject | null>>;
-  setCollapsedHeaders: Dispatch<SetStateAction<Set<Accessor>>>;
-  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
-  setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
-  setIsResizing: Dispatch<SetStateAction<boolean>>;
-  setIsScrolling: Dispatch<SetStateAction<boolean>>;
-  setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
-  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
-  setSelectedRows?: Dispatch<SetStateAction<Set<string>>>;
-  setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;
-  shouldPaginate: boolean;
-  sortDownIcon: ReactNode;
-  sortUpIcon: ReactNode;
-  tableBodyContainerRef: RefObject<HTMLDivElement>;
-  tableEmptyStateRenderer?: ReactNode;
-  tableRows: TableRow[];
-  theme: Theme;
-  unexpandedRows: Set<string>;
-  useHoverRowBackground: boolean;
-  useOddColumnBackground: boolean;
-  useOddEvenRowBackground: boolean;
-}
-
-export const TableContext = createContext<TableContextType | undefined>(undefined);
-
+/**
+ * Combined TableProvider that wraps both Static and Dynamic contexts
+ * This maintains backward compatibility while enabling the split context optimization
+ */
 export const TableProvider = ({
   children,
   value,
@@ -153,13 +16,228 @@ export const TableProvider = ({
   children: ReactNode;
   value: TableContextType;
 }) => {
-  return <TableContext.Provider value={value}>{children}</TableContext.Provider>;
-};
+  // Split the value into static and dynamic parts
+  // Static values are memoized and only change when configuration changes
+  const staticValue = useMemo(
+    () => ({
+      // Configuration
+      allowAnimations: value.allowAnimations,
+      autoExpandColumns: value.autoExpandColumns,
+      canExpandRowGroup: value.canExpandRowGroup,
+      cellUpdateFlash: value.cellUpdateFlash,
+      columnBorders: value.columnBorders,
+      columnReordering: value.columnReordering,
+      columnResizing: value.columnResizing,
+      copyHeadersToClipboard: value.copyHeadersToClipboard,
+      editColumns: value.editColumns,
+      enableHeaderEditing: value.enableHeaderEditing,
+      enableRowSelection: value.enableRowSelection,
+      includeHeadersInCSVExport: value.includeHeadersInCSVExport,
+      rowHeight: value.rowHeight,
+      headerHeight: value.headerHeight,
+      rowIdAccessor: value.rowIdAccessor,
+      scrollbarWidth: value.scrollbarWidth,
+      selectableColumns: value.selectableColumns,
+      shouldPaginate: value.shouldPaginate,
+      theme: value.theme,
+      useHoverRowBackground: value.useHoverRowBackground,
+      useOddColumnBackground: value.useOddColumnBackground,
+      useOddEvenRowBackground: value.useOddEvenRowBackground,
 
-export const useTableContext = () => {
-  const context = useContext(TableContext);
-  if (context === undefined) {
-    throw new Error("useTableContext must be used within a TableProvider");
-  }
-  return context;
+      // Refs (always stable)
+      capturedPositionsRef: value.capturedPositionsRef,
+      draggedHeaderRef: value.draggedHeaderRef,
+      hoveredHeaderRef: value.hoveredHeaderRef,
+      headerContainerRef: value.headerContainerRef,
+      mainBodyRef: value.mainBodyRef,
+      pinnedLeftRef: value.pinnedLeftRef,
+      pinnedRightRef: value.pinnedRightRef,
+      tableBodyContainerRef: value.tableBodyContainerRef,
+
+      // Registries
+      cellRegistry: value.cellRegistry,
+      headerRegistry: value.headerRegistry,
+
+      // Callbacks (should be memoized in parent)
+      forceUpdate: value.forceUpdate,
+      getBorderClass: value.getBorderClass,
+      handleApplyFilter: value.handleApplyFilter,
+      handleClearAllFilters: value.handleClearAllFilters,
+      handleClearFilter: value.handleClearFilter,
+      handleMouseDown: value.handleMouseDown,
+      handleMouseOver: value.handleMouseOver,
+      handleRowSelect: value.handleRowSelect,
+      handleSelectAll: value.handleSelectAll,
+      handleToggleRow: value.handleToggleRow,
+      isCopyFlashing: value.isCopyFlashing,
+      isInitialFocusedCell: value.isInitialFocusedCell,
+      isRowSelected: value.isRowSelected,
+      isSelected: value.isSelected,
+      isWarningFlashing: value.isWarningFlashing,
+      onCellEdit: value.onCellEdit,
+      onCellClick: value.onCellClick,
+      onColumnOrderChange: value.onColumnOrderChange,
+      onColumnSelect: value.onColumnSelect,
+      onHeaderEdit: value.onHeaderEdit,
+      onLoadMore: value.onLoadMore,
+      onRowGroupExpand: value.onRowGroupExpand,
+      onSort: value.onSort,
+      onTableHeaderDragEnd: value.onTableHeaderDragEnd,
+      selectColumns: value.selectColumns,
+      clearSelection: value.clearSelection,
+      areAllRowsSelected: value.areAllRowsSelected,
+
+      // State setters (stable references)
+      setActiveHeaderDropdown: value.setActiveHeaderDropdown,
+      setCollapsedHeaders: value.setCollapsedHeaders,
+      setHeaders: value.setHeaders,
+      setInitialFocusedCell: value.setInitialFocusedCell,
+      setIsResizing: value.setIsResizing,
+      setIsScrolling: value.setIsScrolling,
+      setSelectedCells: value.setSelectedCells,
+      setSelectedColumns: value.setSelectedColumns,
+      setSelectedRows: value.setSelectedRows,
+      setUnexpandedRows: value.setUnexpandedRows,
+      setRowStateMap: value.setRowStateMap,
+
+      // Arrays/Objects (should be memoized in parent)
+      headers: value.headers,
+      rowButtons: value.rowButtons,
+      rowGrouping: value.rowGrouping,
+      rows: value.rows,
+
+      // Icons (stable)
+      expandIcon: value.expandIcon,
+      filterIcon: value.filterIcon,
+      headerCollapseIcon: value.headerCollapseIcon,
+      headerExpandIcon: value.headerExpandIcon,
+      nextIcon: value.nextIcon,
+      prevIcon: value.prevIcon,
+      sortDownIcon: value.sortDownIcon,
+      sortUpIcon: value.sortUpIcon,
+
+      // Renderers (stable)
+      loadingStateRenderer: value.loadingStateRenderer,
+      errorStateRenderer: value.errorStateRenderer,
+      emptyStateRenderer: value.emptyStateRenderer,
+      tableEmptyStateRenderer: value.tableEmptyStateRenderer,
+      headerDropdown: value.headerDropdown,
+    }),
+    [
+      value.allowAnimations,
+      value.autoExpandColumns,
+      value.canExpandRowGroup,
+      value.cellUpdateFlash,
+      value.columnBorders,
+      value.columnReordering,
+      value.columnResizing,
+      value.copyHeadersToClipboard,
+      value.editColumns,
+      value.enableHeaderEditing,
+      value.enableRowSelection,
+      value.includeHeadersInCSVExport,
+      value.rowHeight,
+      value.headerHeight,
+      value.rowIdAccessor,
+      value.scrollbarWidth,
+      value.selectableColumns,
+      value.shouldPaginate,
+      value.theme,
+      value.useHoverRowBackground,
+      value.useOddColumnBackground,
+      value.useOddEvenRowBackground,
+      value.capturedPositionsRef,
+      value.draggedHeaderRef,
+      value.hoveredHeaderRef,
+      value.headerContainerRef,
+      value.mainBodyRef,
+      value.pinnedLeftRef,
+      value.pinnedRightRef,
+      value.tableBodyContainerRef,
+      value.cellRegistry,
+      value.headerRegistry,
+      value.forceUpdate,
+      value.getBorderClass,
+      value.handleApplyFilter,
+      value.handleClearAllFilters,
+      value.handleClearFilter,
+      value.handleMouseDown,
+      value.handleMouseOver,
+      value.handleRowSelect,
+      value.handleSelectAll,
+      value.handleToggleRow,
+      value.isCopyFlashing,
+      value.isInitialFocusedCell,
+      value.isRowSelected,
+      value.isSelected,
+      value.isWarningFlashing,
+      value.onCellEdit,
+      value.onCellClick,
+      value.onColumnOrderChange,
+      value.onColumnSelect,
+      value.onHeaderEdit,
+      value.onLoadMore,
+      value.onRowGroupExpand,
+      value.onSort,
+      value.onTableHeaderDragEnd,
+      value.selectColumns,
+      value.clearSelection,
+      value.areAllRowsSelected,
+      value.setActiveHeaderDropdown,
+      value.setCollapsedHeaders,
+      value.setHeaders,
+      value.setInitialFocusedCell,
+      value.setIsResizing,
+      value.setIsScrolling,
+      value.setSelectedCells,
+      value.setSelectedColumns,
+      value.setSelectedRows,
+      value.setUnexpandedRows,
+      value.setRowStateMap,
+      value.headers,
+      value.rowButtons,
+      value.rowGrouping,
+      value.rows,
+      value.expandIcon,
+      value.filterIcon,
+      value.headerCollapseIcon,
+      value.headerExpandIcon,
+      value.nextIcon,
+      value.prevIcon,
+      value.sortDownIcon,
+      value.sortUpIcon,
+      value.loadingStateRenderer,
+      value.errorStateRenderer,
+      value.emptyStateRenderer,
+      value.tableEmptyStateRenderer,
+      value.headerDropdown,
+    ]
+  );
+
+  // Dynamic values change frequently - don't memoize
+  const dynamicValue = {
+    activeHeaderDropdown: value.activeHeaderDropdown,
+    collapsedHeaders: value.collapsedHeaders,
+    expandAll: value.expandAll,
+    filters: value.filters,
+    isAnimating: value.isAnimating,
+    isLoading: value.isLoading,
+    isResizing: value.isResizing,
+    isScrolling: value.isScrolling,
+    rowStateMap: value.rowStateMap,
+    selectedColumns: value.selectedColumns,
+    columnsWithSelectedCells: value.columnsWithSelectedCells,
+    rowsWithSelectedCells: value.rowsWithSelectedCells,
+    selectedRows: value.selectedRows,
+    selectedRowCount: value.selectedRowCount,
+    selectedRowsData: value.selectedRowsData,
+    tableRows: value.tableRows,
+    unexpandedRows: value.unexpandedRows,
+  };
+
+  return (
+    <TableStaticProvider value={staticValue}>
+      <TableDynamicProvider value={dynamicValue}>{children}</TableDynamicProvider>
+    </TableStaticProvider>
+  );
 };
