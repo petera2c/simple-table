@@ -90,9 +90,46 @@ const RecursiveRenderCells = ({
   // Get the column index for this header from our pre-calculated mapping
   const colIndex = columnIndices[header.accessor];
 
-  // Get selection state for this cell
-  const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor, collapsedHeaders } =
-    useTableContext();
+  // Get all context values to pass to TableCell
+  const {
+    getBorderClass,
+    isSelected,
+    isInitialFocusedCell,
+    rowIdAccessor,
+    collapsedHeaders,
+    // Additional context values needed by TableCell
+    canExpandRowGroup,
+    cellRegistry,
+    cellUpdateFlash,
+    columnBorders,
+    draggedHeaderRef,
+    enableRowSelection,
+    expandAll,
+    expandIcon,
+    handleMouseDown,
+    handleMouseOver,
+    handleRowSelect,
+    headers: allHeaders,
+    hoveredHeaderRef,
+    isCopyFlashing,
+    isLoading,
+    isRowSelected,
+    isWarningFlashing,
+    onCellEdit,
+    onCellClick,
+    onRowGroupExpand,
+    onTableHeaderDragEnd,
+    rowButtons,
+    rowGrouping,
+    setRowStateMap,
+    rowsWithSelectedCells,
+    selectedColumns,
+    setUnexpandedRows,
+    tableBodyContainerRef,
+    theme,
+    unexpandedRows,
+    useOddColumnBackground,
+  } = useTableContext();
 
   // Calculate rowId once at the beginning (includes path for nested rows)
   const rowId = getRowId({
@@ -100,6 +137,42 @@ const RecursiveRenderCells = ({
     rowIdAccessor,
     rowPath: tableRow.rowPath,
   });
+
+  // Create props object to pass to TableCell (avoids duplication)
+  // Provide defaults for optional context values
+  const tableCellContextProps = {
+    canExpandRowGroup,
+    cellRegistry,
+    cellUpdateFlash: cellUpdateFlash ?? false,
+    columnBorders,
+    draggedHeaderRef,
+    enableRowSelection: enableRowSelection ?? false,
+    expandAll,
+    expandIcon: expandIcon ?? null,
+    handleMouseDown,
+    handleMouseOver,
+    handleRowSelect,
+    headers: allHeaders,
+    hoveredHeaderRef,
+    isCopyFlashing,
+    isLoading: isLoading ?? false,
+    isRowSelected,
+    isWarningFlashing,
+    onCellEdit,
+    onCellClick,
+    onRowGroupExpand,
+    onTableHeaderDragEnd,
+    rowButtons,
+    rowGrouping,
+    setRowStateMap,
+    rowsWithSelectedCells,
+    selectedColumns,
+    setUnexpandedRows,
+    tableBodyContainerRef,
+    theme,
+    unexpandedRows,
+    useOddColumnBackground,
+  };
 
   if (header.children && header.children.length > 0) {
     const filteredChildren = header.children.filter((child) =>
@@ -127,8 +200,10 @@ const RecursiveRenderCells = ({
             key={parentCellKey}
             nestedIndex={nestedIndex}
             parentHeader={parentHeader}
+            rowIdAccessor={rowIdAccessor}
             rowIndex={rowIndex}
             tableRow={tableRow}
+            {...tableCellContextProps}
           />
           {filteredChildren.map((child) => {
             const childCellKey = getCellId({ accessor: child.accessor, rowId });
@@ -196,8 +271,10 @@ const RecursiveRenderCells = ({
       key={tableCellKey}
       nestedIndex={nestedIndex}
       parentHeader={parentHeader}
+      rowIdAccessor={rowIdAccessor}
       rowIndex={rowIndex}
       tableRow={tableRow}
+      {...tableCellContextProps}
     />
   );
 };

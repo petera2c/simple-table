@@ -15,14 +15,8 @@ export const prefersReducedMotion = (): boolean => {
 export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    duration: 3000,
+    duration: 10000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
-    delay: 0,
-  },
-  // For reduced motion users
-  REDUCED_MOTION: {
-    duration: 150, // Even faster for reduced motion
-    easing: "ease-out",
     delay: 0,
   },
 } as const;
@@ -33,9 +27,7 @@ export const ANIMATION_CONFIGS = {
 export const createAnimationConfig = (
   overrides: Partial<AnimationConfig> = {}
 ): AnimationConfig => {
-  const baseConfig = prefersReducedMotion()
-    ? ANIMATION_CONFIGS.REDUCED_MOTION
-    : ANIMATION_CONFIGS.ROW_REORDER; // Default to row reorder as it's more common in tables
+  const baseConfig = ANIMATION_CONFIGS.ROW_REORDER; // Default to row reorder as it's more common in tables
 
   return { ...baseConfig, ...overrides };
 };
@@ -181,11 +173,6 @@ const animateToFinalPosition = (
  * Get appropriate animation config based on user preferences
  */
 export const getAnimationConfig = (options: FlipAnimationOptions = {}): AnimationConfig => {
-  // Check for user's motion preferences first
-  if (prefersReducedMotion()) {
-    return { ...ANIMATION_CONFIGS.REDUCED_MOTION, ...options };
-  }
-
   // Use row reorder config as default
   return { ...ANIMATION_CONFIGS.ROW_REORDER, ...options };
 };

@@ -6,7 +6,7 @@ import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId, getCellKey } from "../../utils/cellUtils";
 import TableCellProps from "../../types/TableCellProps";
-import { useTableContext } from "../../context/TableContext";
+// Context import removed - all values now passed as props
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import {
@@ -104,43 +104,51 @@ const TableCell = ({
   nestedIndex,
   parentHeader,
   rowIndex,
+  rowIdAccessor,
   tableRow,
+  // Context values now passed as props
+  canExpandRowGroup,
+  cellRegistry,
+  cellUpdateFlash,
+  columnBorders,
+  draggedHeaderRef,
+  enableRowSelection,
+  expandAll,
+  expandIcon,
+  handleMouseDown,
+  handleMouseOver,
+  handleRowSelect,
+  headers,
+  hoveredHeaderRef,
+  isCopyFlashing,
+  isLoading,
+  isRowSelected,
+  isWarningFlashing,
+  onCellEdit,
+  onCellClick,
+  onRowGroupExpand,
+  onTableHeaderDragEnd,
+  rowButtons,
+  rowGrouping,
+  setRowStateMap,
+  rowsWithSelectedCells,
+  selectedColumns,
+  setUnexpandedRows,
+  tableBodyContainerRef,
+  theme,
+  unexpandedRows,
+  useOddColumnBackground,
 }: TableCellProps) => {
-  // Get shared props from context
-  const {
-    canExpandRowGroup,
-    cellRegistry,
-    cellUpdateFlash,
-    columnBorders,
-    draggedHeaderRef,
-    enableRowSelection,
-    expandAll,
-    expandIcon,
-    handleMouseDown,
-    handleMouseOver,
-    handleRowSelect,
-    headers,
-    hoveredHeaderRef,
-    isCopyFlashing,
-    isLoading,
-    isRowSelected,
-    isWarningFlashing,
-    onCellEdit,
-    onCellClick,
-    onRowGroupExpand,
-    onTableHeaderDragEnd,
-    rowButtons,
-    rowGrouping,
+  // DEBUG: Log when component body executes
+  const debugRowId = getRowId({
+    row: tableRow.row,
     rowIdAccessor,
-    setRowStateMap,
-    rowsWithSelectedCells,
-    selectedColumns,
-    setUnexpandedRows,
-    tableBodyContainerRef,
-    theme,
-    unexpandedRows,
-    useOddColumnBackground,
-  } = useTableContext();
+    rowPath: tableRow.rowPath,
+  });
+  const debugCellId = getCellId({ accessor: header.accessor, rowId: debugRowId });
+  if (debugCellId === "5-name") {
+    console.log("🔴 TableCell BODY EXECUTING for 5-name");
+  }
 
   const { depth, row, rowPath, absoluteRowIndex } = tableRow;
 
@@ -445,6 +453,10 @@ const TableCell = ({
     ]
   );
 
+  if (cellId === "5-name") {
+    console.log("re-render");
+  }
+
   // Handle keyboard events when cell is focused
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     // If we're editing or this is a selection column, don't handle table navigation keys
@@ -681,6 +693,18 @@ const TableCell = ({
  * Only re-renders when essential props that affect display have changed
  */
 const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): boolean => {
+  const rowId = getRowId({
+    row: prevProps.tableRow.row,
+    rowIdAccessor: prevProps.rowIdAccessor,
+    rowPath: prevProps.tableRow.rowPath,
+  });
+  const prevCellId = getCellId({ accessor: prevProps.header.accessor, rowId });
+
+  if (prevCellId === "5-name") {
+    console.log("\n");
+    console.log(prevProps);
+    console.log(nextProps);
+  }
   // Quick reference checks for props that change frequently
   if (
     prevProps.rowIndex !== nextProps.rowIndex ||
@@ -689,6 +713,9 @@ const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): bo
     prevProps.isInitialFocused !== nextProps.isInitialFocused ||
     prevProps.borderClass !== nextProps.borderClass
   ) {
+    if (prevCellId === "5-name") {
+      console.log("re-render");
+    }
     return false;
   }
 
@@ -696,6 +723,9 @@ const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): bo
   if (prevProps.tableRow !== nextProps.tableRow) {
     // If references differ, check if the underlying row data is the same
     if (prevProps.tableRow.row !== nextProps.tableRow.row) {
+      if (prevCellId === "5-name") {
+        console.log("row data changed");
+      }
       return false;
     }
     // If row data is same but position changed, need to re-render for animations
@@ -703,6 +733,9 @@ const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): bo
       prevProps.tableRow.position !== nextProps.tableRow.position ||
       prevProps.tableRow.displayPosition !== nextProps.tableRow.displayPosition
     ) {
+      if (prevCellId === "5-name") {
+        console.log("position changed");
+      }
       return false;
     }
   }
@@ -717,25 +750,123 @@ const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): bo
       prevProps.header.cellRenderer !== nextProps.header.cellRenderer ||
       prevProps.header.valueFormatter !== nextProps.header.valueFormatter
     ) {
+      if (prevCellId === "5-name") {
+        console.log("header changed");
+      }
       return false;
     }
   }
 
   // Parent header reference check
   if (prevProps.parentHeader !== nextProps.parentHeader) {
+    if (prevCellId === "5-name") {
+      console.log("parent header changed");
+    }
     return false;
   }
 
   // Display row number check
   if (prevProps.displayRowNumber !== nextProps.displayRowNumber) {
+    if (prevCellId === "5-name") {
+      console.log("display row number changed");
+    }
     return false;
   }
 
   // Nested index check
   if (prevProps.nestedIndex !== nextProps.nestedIndex) {
+    if (prevCellId === "5-name") {
+      console.log("nested index changed");
+    }
     return false;
   }
 
+  // Check rowIdAccessor
+  if (prevProps.rowIdAccessor !== nextProps.rowIdAccessor) {
+    if (prevCellId === "5-name") {
+      console.log("rowIdAccessor changed");
+    }
+    return false;
+  }
+
+  // Check context props that might change and affect rendering
+  // Most context props are stable references (functions, refs) so we skip them
+  // Only check props that can actually change and affect the cell's display
+  if (
+    prevProps.isLoading !== nextProps.isLoading ||
+    prevProps.expandAll !== nextProps.expandAll ||
+    prevProps.enableRowSelection !== nextProps.enableRowSelection ||
+    prevProps.columnBorders !== nextProps.columnBorders ||
+    prevProps.cellUpdateFlash !== nextProps.cellUpdateFlash ||
+    prevProps.useOddColumnBackground !== nextProps.useOddColumnBackground ||
+    prevProps.theme !== nextProps.theme
+  ) {
+    if (prevCellId === "5-name") {
+      console.log("context props changed");
+    }
+    return false;
+  }
+
+  // Check if unexpandedRows Set changed (by reference)
+  if (prevProps.unexpandedRows !== nextProps.unexpandedRows) {
+    if (prevCellId === "5-name") {
+      console.log("unexpandedRows changed");
+    }
+    return false;
+  }
+
+  // Check if selectedColumns Set changed (by reference)
+  if (prevProps.selectedColumns !== nextProps.selectedColumns) {
+    if (prevCellId === "5-name") {
+      console.log("selectedColumns changed");
+    }
+    return false;
+  }
+
+  // Check if rowsWithSelectedCells Set changed (by reference)
+  if (prevProps.rowsWithSelectedCells !== nextProps.rowsWithSelectedCells) {
+    if (prevCellId === "5-name") {
+      console.log("rowsWithSelectedCells changed");
+    }
+    return false;
+  }
+
+  // Check if headers array changed (by reference)
+  if (prevProps.headers !== nextProps.headers) {
+    if (prevCellId === "5-name") {
+      console.log("headers changed");
+    }
+    return false;
+  }
+
+  // Check if rowGrouping array changed (by reference)
+  if (prevProps.rowGrouping !== nextProps.rowGrouping) {
+    if (prevCellId === "5-name") {
+      console.log("rowGrouping changed");
+    }
+    return false;
+  }
+
+  // Check if rowButtons array changed (by reference)
+  if (prevProps.rowButtons !== nextProps.rowButtons) {
+    if (prevCellId === "5-name") {
+      console.log("rowButtons changed");
+    }
+    return false;
+  }
+
+  // Skip checking these props as they are stable references that rarely/never change:
+  // - cellRegistry, draggedHeaderRef, hoveredHeaderRef, tableBodyContainerRef (MutableRefObjects)
+  // - setRowStateMap, setUnexpandedRows (setState functions)
+  // - handleMouseDown, handleMouseOver, handleRowSelect (functions)
+  // - isCopyFlashing, isWarningFlashing, isRowSelected (functions)
+  // - onCellEdit, onCellClick, onRowGroupExpand, onTableHeaderDragEnd (functions)
+  // - canExpandRowGroup (function)
+  // - expandIcon (ReactNode - should be stable)
+
+  if (prevCellId === "5-name") {
+    console.log("all checks passed - skip re-render");
+  }
   // If all checks pass, props are equal - skip re-render
   return true;
 };
