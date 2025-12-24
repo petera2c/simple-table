@@ -47,7 +47,7 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
       <SimpleTable
         {...props}
         defaultHeaders={headers}
-        rows={createBasicData(100)}
+        rows={createBasicData(20)}
         rowIdAccessor="id"
       />
     </div>

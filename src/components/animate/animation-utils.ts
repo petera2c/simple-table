@@ -13,23 +13,14 @@ export const prefersReducedMotion = (): boolean => {
  * Animation configs for different types of movements
  */
 export const ANIMATION_CONFIGS = {
-  // For column reordering (horizontal movement)
-  COLUMN_REORDER: {
-    // duration: 3000,
-    duration: 180,
-    easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
-    delay: 0,
-  },
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    // duration: 3000,
-    duration: 200,
+    duration: 3000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
   // For reduced motion users
   REDUCED_MOTION: {
-    // duration: 3000,
     duration: 150, // Even faster for reduced motion
     easing: "ease-out",
     delay: 0,
@@ -187,26 +178,15 @@ const animateToFinalPosition = (
 };
 
 /**
- * Get appropriate animation config based on movement type and user preferences
+ * Get appropriate animation config based on user preferences
  */
-export const getAnimationConfig = (
-  options: FlipAnimationOptions = {},
-  movementType?: "column" | "row"
-): AnimationConfig => {
+export const getAnimationConfig = (options: FlipAnimationOptions = {}): AnimationConfig => {
   // Check for user's motion preferences first
   if (prefersReducedMotion()) {
     return { ...ANIMATION_CONFIGS.REDUCED_MOTION, ...options };
   }
 
-  // Use specific config based on movement type
-  if (movementType === "column") {
-    return { ...ANIMATION_CONFIGS.COLUMN_REORDER, ...options };
-  }
-  if (movementType === "row") {
-    return { ...ANIMATION_CONFIGS.ROW_REORDER, ...options };
-  }
-
-  // Fall back to default config
+  // Use row reorder config as default
   return { ...ANIMATION_CONFIGS.ROW_REORDER, ...options };
 };
 
@@ -243,12 +223,8 @@ export const flipElement = async ({
     return () => {};
   }
 
-  // Determine movement type based on the invert values
-  const isColumnMovement = Math.abs(invert.x) > Math.abs(invert.y);
-  const movementType = isColumnMovement ? "column" : "row";
-
-  // Get appropriate config based on movement type and user preferences
-  const config = getAnimationConfig(finalConfig, movementType);
+  // Get appropriate config based on user preferences
+  const config = getAnimationConfig(finalConfig);
 
   // Apply new transform BEFORE cleaning up old one to prevent flickering
   // This ensures there's no gap where the element snaps to its DOM position

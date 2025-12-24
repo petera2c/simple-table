@@ -733,7 +733,6 @@ const SimpleTableComp = ({
   } = useTableRowProcessing({
     allowAnimations,
     flattenedRows,
-    originalFlattenedRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,

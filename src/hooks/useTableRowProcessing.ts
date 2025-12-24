@@ -11,8 +11,6 @@ interface UseTableRowProcessingProps {
   allowAnimations: boolean;
   /** Already flattened rows from useFlattenedRows */
   flattenedRows: TableRow[];
-  /** Original flattened rows for establishing baseline positions */
-  originalFlattenedRows: TableRow[];
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
@@ -30,7 +28,6 @@ interface UseTableRowProcessingProps {
 const useTableRowProcessing = ({
   allowAnimations,
   flattenedRows,
-  originalFlattenedRows,
   currentPage,
   rowsPerPage,
   shouldPaginate,
@@ -231,11 +228,12 @@ const useTableRowProcessing = ({
         return [...existingRows, ...uniqueNewRows];
       });
 
-      // Track rows that are leaving the DOM (currently visible but won't be visible after filter)
+      // Track rows that are leaving the DOM (currently visible but won't exist in new dataset after filter)
       setRowsLeavingTheDom((existingRows) => {
-        // Create set of IDs that will be visible after filter
-        const newVisibleIds = new Set(
-          newVisibleRows.map((tableRow) =>
+        // CRITICAL: Create set of IDs that will exist in the FULL paginated dataset (not just viewport)
+        // A row is only "leaving" if it's being filtered out entirely, not just scrolling out of view
+        const newPaginatedIds = new Set(
+          newPaginatedRows.map((tableRow) =>
             String(
               getRowId({
                 row: tableRow.row,
@@ -260,7 +258,7 @@ const useTableRowProcessing = ({
           ])
         );
 
-        // Find rows from targetVisibleRows that won't be visible after filter
+        // Find rows from targetVisibleRows that won't exist in the new paginated dataset (filtered out)
         const candidateLeavingRows = targetVisibleRows.filter((tableRow) => {
           const id = String(
             getRowId({
@@ -269,7 +267,8 @@ const useTableRowProcessing = ({
               rowPath: tableRow.rowPath,
             })
           );
-          return !newVisibleIds.has(id);
+          // Only consider it "leaving" if it's not in the new paginated dataset at all
+          return !newPaginatedIds.has(id);
         });
 
         // Separate into rows that need position updates vs truly new leaving rows
@@ -284,21 +283,12 @@ const useTableRowProcessing = ({
               rowPath: leavingRow.rowPath,
             })
           );
-          // Find this row in the NEW processed rows to get its NEW position (after filter)
-          const rowInNewState = newPaginatedRows.find(
-            (newRow) =>
-              String(
-                getRowId({
-                  row: newRow.row,
-                  rowIdAccessor,
-                  rowPath: newRow.rowPath,
-                })
-              ) === id
-          );
-          const rowWithNewPosition = rowInNewState || leavingRow;
+          // This row is being filtered out, so it won't have a position in newPaginatedRows
+          // Keep its current position for animation purposes
+          const rowWithNewPosition = leavingRow;
 
           if (existingRowsMap.has(id)) {
-            // Row is already leaving, update its position
+            // Row is already leaving, keep it
             rowsToUpdate.push(rowWithNewPosition);
           } else {
             // Row is newly leaving
@@ -443,106 +433,9 @@ const useTableRowProcessing = ({
         return [...existingRows, ...uniqueNewRows];
       });
 
-      // Track rows that are leaving the DOM (currently visible but won't be visible after sort)
-      setRowsLeavingTheDom((existingRows) => {
-        // Create set of IDs that will be visible after sort
-        const newVisibleIds = new Set(
-          newVisibleRows.map((tableRow) =>
-            String(
-              getRowId({
-                row: tableRow.row,
-                rowIdAccessor,
-                rowPath: tableRow.rowPath,
-              })
-            )
-          )
-        );
-
-        // Create map of existing leaving rows for quick lookup
-        const existingRowsMap = new Map(
-          existingRows.map((tableRow) => [
-            String(
-              getRowId({
-                row: tableRow.row,
-                rowIdAccessor,
-                rowPath: tableRow.rowPath,
-              })
-            ),
-            tableRow,
-          ])
-        );
-
-        // Find rows from targetVisibleRows that won't be visible after sort
-        const candidateLeavingRows = targetVisibleRows.filter((tableRow) => {
-          const id = String(
-            getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            })
-          );
-          return !newVisibleIds.has(id);
-        });
-
-        // Separate into rows that need position updates vs truly new leaving rows
-        const rowsToUpdate: TableRow[] = [];
-        const newLeavingRows: TableRow[] = [];
-
-        candidateLeavingRows.forEach((leavingRow) => {
-          const id = String(
-            getRowId({
-              row: leavingRow.row,
-              rowIdAccessor,
-              rowPath: leavingRow.rowPath,
-            })
-          );
-          // Find this row in the NEW processed rows to get its NEW position (after sort)
-          const rowInNewState = newPaginatedRows.find(
-            (newRow) =>
-              String(
-                getRowId({
-                  row: newRow.row,
-                  rowIdAccessor,
-                  rowPath: newRow.rowPath,
-                })
-              ) === id
-          );
-          const rowWithNewPosition = rowInNewState || leavingRow;
-
-          if (existingRowsMap.has(id)) {
-            // Row is already leaving, update its position
-            rowsToUpdate.push(rowWithNewPosition);
-          } else {
-            // Row is newly leaving
-            newLeavingRows.push(rowWithNewPosition);
-          }
-        });
-
-        // Update existing rows with new positions, keep rows not in update list unchanged
-        const updatedExistingRows = existingRows.map((tableRow) => {
-          const id = String(
-            getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            })
-          );
-          const updatedRow = rowsToUpdate.find(
-            (r) =>
-              String(
-                getRowId({
-                  row: r.row,
-                  rowIdAccessor,
-                  rowPath: r.rowPath,
-                })
-              ) === id
-          );
-          return updatedRow || tableRow;
-        });
-
-        // Combine updated existing rows with new leaving rows
-        return [...updatedExistingRows, ...newLeavingRows];
-      });
+      // For sorting, rows don't actually "leave" - they just reorder
+      // So we don't add any rows to rowsLeavingTheDom for sort operations
+      // Rows will animate in place as they reorder
     },
     [
       allowAnimations,
