@@ -1,4 +1,3 @@
-import CellValue from "../../types/CellValue";
 import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from "./types";
 
 /**
@@ -15,7 +14,7 @@ export const prefersReducedMotion = (): boolean => {
 export const ANIMATION_CONFIGS = {
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    duration: 10000,
+    duration: 3000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
     delay: 0,
   },
@@ -108,8 +107,7 @@ const cleanupAnimation = (element: HTMLElement) => {
 const animateToFinalPosition = (
   element: HTMLElement,
   config: AnimationConfig,
-  options: FlipAnimationOptions = {},
-  id?: CellValue
+  options: FlipAnimationOptions = {}
 ): Promise<() => void> => {
   return new Promise((resolve) => {
     // Force a reflow to ensure the initial transform is applied

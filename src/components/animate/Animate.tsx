@@ -7,7 +7,7 @@ import { calculateBufferRowCount, ROW_SEPARATOR_WIDTH } from "../../consts/gener
 
 // Animation thresholds
 const COLUMN_REORDER_THRESHOLD = 50; // px - minimum horizontal movement to trigger column reorder animation
-const ROW_REORDER_THRESHOLD = 5; // px - minimum vertical movement to trigger row reorder animation
+const ROW_REORDER_THRESHOLD = 10; // px - minimum vertical movement to trigger row reorder animation
 const DOM_POSITION_CHANGE_THRESHOLD = 5; // px - minimum position change to detect DOM movement
 
 // Stagger configuration
@@ -39,6 +39,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
   const previousResizingState = usePrevious(isResizing);
   const cleanupCallbackRef = useRef<(() => void) | null>(null);
   const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
+
   useLayoutEffect(() => {
     // Early exit if animations are disabled - don't do any work at all
     if (!allowAnimations) {
@@ -146,8 +147,13 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
       const finalConfig = {
         ...ANIMATION_CONFIGS.ROW_REORDER,
         onComplete: () => {
-          // Reset z-index after animation completes
+          // CRITICAL: Update fromBoundsRef to final position BEFORE resetting styles
+          // This prevents the next useLayoutEffect from seeing a stale position
           if (elementRef.current) {
+            const finalBounds = elementRef.current.getBoundingClientRect();
+            fromBoundsRef.current = finalBounds;
+
+            // Reset z-index after animation completes
             elementRef.current.style.zIndex = "";
             elementRef.current.style.position = "";
             elementRef.current.style.top = "";

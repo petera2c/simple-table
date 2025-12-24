@@ -29,7 +29,7 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
 
   // Define headers
   const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 120, isSortable: true, filterable: true },
+    { accessor: "id", label: "ID", width: 120, isSortable: true, filterable: true, type: "number" },
     {
       accessor: "name",
       label: "Name",

@@ -339,7 +339,9 @@ const useTableRowProcessing = ({
 
   const prepareForSortChange = useCallback(
     (accessor: Accessor, targetVisibleRows: TableRow[], capturePositions?: () => void) => {
-      if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
+      if (!allowAnimations || shouldPaginate || contentHeight === undefined) {
+        return;
+      }
 
       // CRITICAL: Capture positions of existing leaving rows BEFORE updating them
       // This prevents teleporting when their positions change
