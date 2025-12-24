@@ -1,8 +1,7 @@
-import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { calculateBufferRowCount } from "../consts/general-consts";
 import { getVisibleRows } from "../utils/infiniteScrollUtils";
 import { getRowId } from "../utils/rowUtils";
-import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
 import TableRow from "../types/TableRow";
