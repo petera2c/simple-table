@@ -10,6 +10,8 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { getRowId } from "../../utils/rowUtils";
 
 const TableBody = ({
+  currentVisibleRows,
+  rowsEnteringTheDom,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -17,7 +19,6 @@ const TableBody = ({
   pinnedRightColumns,
   pinnedRightTemplateColumns,
   pinnedRightWidth,
-  rowsToRender,
   setScrollTop,
   setScrollDirection,
   shouldShowEmptyState,
@@ -109,7 +110,7 @@ const TableBody = ({
     const indices: RowIndices = {};
 
     // Map each row's ID to its index in the visible rows array
-    rowsToRender.forEach((tableRow, index) => {
+    currentVisibleRows.forEach((tableRow, index) => {
       const rowId = String(
         getRowId({
           row: tableRow.row,
@@ -121,7 +122,7 @@ const TableBody = ({
     });
 
     return indices;
-  }, [rowsToRender, rowIdAccessor]);
+  }, [currentVisibleRows, rowIdAccessor]);
 
   // Check if we should load more data
   const checkForLoadMore = useCallback(
@@ -197,7 +198,8 @@ const TableBody = ({
     headers,
     rowHeight,
     rowIndices,
-    rowsToRender,
+    currentVisibleRows,
+    rowsEnteringTheDom,
     setHoveredIndex,
   };
 

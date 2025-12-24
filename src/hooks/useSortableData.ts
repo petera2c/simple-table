@@ -50,6 +50,7 @@ const useSortableData = ({
   rowGrouping,
   initialSortColumn,
   initialSortDirection,
+  onBeforeSort,
 }: {
   headers: HeaderObject[];
   tableRows: Row[];
@@ -58,6 +59,7 @@ const useSortableData = ({
   rowGrouping?: string[];
   initialSortColumn?: string;
   initialSortDirection?: SortDirection;
+  onBeforeSort?: () => void;
 }) => {
   // Initialize sort state with initial values if provided
   const getInitialSort = useCallback((): SortColumn | null => {
@@ -202,10 +204,13 @@ const useSortableData = ({
       }
       // If currently desc, clear the sort (newSortColumn stays null)
 
+      // CRITICAL: Capture positions right before state change (react-flip-move pattern)
+      onBeforeSort?.();
+
       setSort(newSortColumn);
       onSortChange?.(newSortColumn);
     },
-    [sort, headers, onSortChange]
+    [sort, headers, onSortChange, onBeforeSort]
   );
 
   // Function to preview what rows would be after applying a sort

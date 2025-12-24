@@ -43,6 +43,7 @@ interface TableContextType {
   areAllRowsSelected?: () => boolean;
   autoExpandColumns?: boolean;
   canExpandRowGroup?: (row: Row) => boolean;
+  capturedPositionsRef: MutableRefObject<Map<string, DOMRect>>;
   cellRegistry?: Map<string, CellRegistryEntry>;
   cellUpdateFlash?: boolean;
   clearSelection?: () => void;
