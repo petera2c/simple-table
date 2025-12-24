@@ -612,19 +612,6 @@ const SimpleTableComp = ({
     hasEmptyRenderer: Boolean(emptyStateRenderer),
   });
 
-  // Also flatten the original aggregated rows for animation baseline positions
-  const originalFlattenedRows = useFlattenedRows({
-    rows: aggregatedRows,
-    rowGrouping,
-    rowIdAccessor,
-    unexpandedRows,
-    expandAll,
-    rowStateMap,
-    hasLoadingRenderer: Boolean(loadingStateRenderer),
-    hasErrorRenderer: Boolean(errorStateRenderer),
-    hasEmptyRenderer: Boolean(emptyStateRenderer),
-  });
-
   // Create flattened preview functions for animations
   const computeFlattenedFilteredRowsPreview = useCallback(
     (filter: FilterCondition) => {

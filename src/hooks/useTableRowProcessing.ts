@@ -381,6 +381,7 @@ const useTableRowProcessing = ({
                 })
               ) === id
           );
+
           return currentStateRow || newVisibleRow; // Fallback to newVisibleRow if not found in current state
         })
         .filter(Boolean) as TableRow[];
@@ -425,6 +426,7 @@ const useTableRowProcessing = ({
               rowPath: tableRow.rowPath,
             })
           );
+
           return !targetVisibleIds.has(id) && !existingRowIds.has(id);
         });
 

@@ -40,6 +40,9 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
   const cleanupCallbackRef = useRef<(() => void) | null>(null);
   const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
   useLayoutEffect(() => {
+    if (id === "5-name") {
+      console.log("animate");
+    }
     // Early exit if animations are disabled - don't do any work at all
     if (!allowAnimations) {
       return;
@@ -92,6 +95,31 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     const deltaX = toBounds.x - fromBounds.x;
     const deltaY = toBounds.y - fromBounds.y;
     const positionDelta = Math.abs(deltaX);
+
+    // LOG: Row 5 - Check visual position vs logical position
+    if (id === "5-name") {
+      // Get current visual position (with any transforms applied)
+      const currentVisualY = elementRef.current.getBoundingClientRect().y;
+      // Get current transform if any
+      const currentTransform = elementRef.current.style.transform;
+      const hasActiveAnimation = !!elementRef.current.style.transition;
+
+      console.log(
+        "[Animate] Row 5 position check:",
+        JSON.stringify({
+          logicalPosition: tableRow?.position,
+          fromY: fromBounds.y,
+          toY: toBounds.y,
+          currentVisualY,
+          deltaY,
+          hasCapturedPosition: !!capturedPosition,
+          currentTransform,
+          hasActiveAnimation,
+          willSkipAnimation:
+            positionDelta < COLUMN_REORDER_THRESHOLD && Math.abs(deltaY) <= ROW_REORDER_THRESHOLD,
+        })
+      );
+    }
 
     // Only animate if position change is significant (indicates column/row reordering)
     if (positionDelta < COLUMN_REORDER_THRESHOLD && Math.abs(deltaY) <= ROW_REORDER_THRESHOLD) {
