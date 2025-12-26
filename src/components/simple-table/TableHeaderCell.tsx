@@ -535,6 +535,36 @@ const TableHeaderCell = ({
     }
   };
 
+  // Create the default label content for headerRenderer
+  const labelContent = (
+    <Tooltip content={header.tooltip || ""}>
+      <span
+        className={`st-header-label-text ${
+          header.align === "right"
+            ? "right-aligned"
+            : header.align === "center"
+            ? "center-aligned"
+            : "left-aligned"
+        }`}
+      >
+        {isSelectionColumn ? (
+          <Checkbox
+            checked={areAllRowsSelected ? areAllRowsSelected() : false}
+            onChange={handleSelectAllChange}
+          />
+        ) : isEditing ? (
+          <StringEdit
+            defaultValue={localLabel}
+            onBlur={() => setIsEditing(false)}
+            onChange={updateHeaderLabel}
+          />
+        ) : (
+          localLabel || header?.label
+        )}
+      </span>
+    </Tooltip>
+  );
+
   return (
     <Animate
       className={className}
@@ -557,9 +587,9 @@ const TableHeaderCell = ({
       }}
     >
       {reverse && ResizeHandle}
-      {header.align === "right" && CollapseIconComponent}
-      {header.align === "right" && FilterIconComponent}
-      {header.align === "right" && SortIcon}
+      {!header.headerRenderer && header.align === "right" && CollapseIconComponent}
+      {!header.headerRenderer && header.align === "right" && FilterIconComponent}
+      {!header.headerRenderer && header.align === "right" && SortIcon}
       <div
         ref={headerCellRef}
         className="st-header-label"
@@ -577,38 +607,23 @@ const TableHeaderCell = ({
         onDragEnd={!isSelectionColumn ? handleDragEndWrapper : undefined}
         onDragStart={!isSelectionColumn ? onDragStart : undefined}
       >
-        <Tooltip content={header.tooltip || ""}>
-          <span
-            className={`st-header-label-text ${
-              header.align === "right"
-                ? "right-aligned"
-                : header.align === "center"
-                ? "center-aligned"
-                : "left-aligned"
-            }`}
-          >
-            {isSelectionColumn ? (
-              <Checkbox
-                checked={areAllRowsSelected ? areAllRowsSelected() : false}
-                onChange={handleSelectAllChange}
-              />
-            ) : isEditing ? (
-              <StringEdit
-                defaultValue={localLabel}
-                onBlur={() => setIsEditing(false)}
-                onChange={updateHeaderLabel}
-              />
-            ) : header.headerRenderer ? (
-              header.headerRenderer({ accessor: header.accessor, colIndex, header })
-            ) : (
-              localLabel || header?.label
-            )}
-          </span>
-        </Tooltip>
+        {header.headerRenderer
+          ? header.headerRenderer({
+              accessor: header.accessor,
+              colIndex,
+              header,
+              components: {
+                sortIcon: SortIcon || undefined,
+                filterIcon: FilterIconComponent || undefined,
+                collapseIcon: CollapseIconComponent || undefined,
+                labelContent,
+              },
+            })
+          : labelContent}
       </div>
-      {header.align !== "right" && SortIcon}
-      {header.align !== "right" && FilterIconComponent}
-      {header.align !== "right" && CollapseIconComponent}
+      {!header.headerRenderer && header.align !== "right" && SortIcon}
+      {!header.headerRenderer && header.align !== "right" && FilterIconComponent}
+      {!header.headerRenderer && header.align !== "right" && CollapseIconComponent}
 
       {!reverse && ResizeHandle}
 
