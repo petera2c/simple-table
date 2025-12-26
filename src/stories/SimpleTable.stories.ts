@@ -100,6 +100,9 @@ import HeaderInclusionExample, {
 } from "./examples/HeaderInclusionExample";
 import CustomThemeDemo from "./examples/custom-theme/CustomThemeDemo";
 import PaginationAPIExample from "./examples/PaginationAPIExample";
+import CustomHeaderRenderingExample, {
+  customHeaderRenderingExampleDefaults,
+} from "./examples/CustomHeaderRenderingExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -314,6 +317,24 @@ export const CSVExportSingleRowChildren: StoryObj<UniversalTableProps> = {
     },
   },
 };
+export const CustomHeaderRendering: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...customHeaderRenderingExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: CustomHeaderRenderingExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates using headerRenderer with the components prop to gain full control over header layout and icon positioning. The components object provides labelContent, sortIcon, filterIcon, and collapseIcon that you can arrange however you want. Examples include icons on the right for left-aligned columns, custom styling with backgrounds, vertical layouts, and more. Perfect for creating custom header designs while maintaining all default functionality.",
+      },
+    },
+  },
+};
+
 export const CustomTheme: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
