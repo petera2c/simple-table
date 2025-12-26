@@ -40,7 +40,10 @@ import { FilterCondition, TableFilterState } from "./types/FilterTypes";
 import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 import CellClickProps from "./types/CellClickProps";
 import CellRendererProps, { CellRenderer } from "./types/CellRendererProps";
-import HeaderRendererProps, { HeaderRenderer } from "./types/HeaderRendererProps";
+import HeaderRendererProps, {
+  HeaderRenderer,
+  HeaderRendererComponents,
+} from "./types/HeaderRendererProps";
 import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps";
 import { RowButtonProps } from "./types/RowButton";
 import FooterRendererProps from "./types/FooterRendererProps";
@@ -92,6 +95,7 @@ export type {
   HeaderObject,
   HeaderRenderer,
   HeaderRendererProps,
+  HeaderRendererComponents,
   OnRowGroupExpandProps,
   OnSortProps,
   Row,

@@ -109,7 +109,6 @@ export const customHeaderRenderingExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,
-  selectableColumns: true,
   height: "calc(100dvh - 112px)",
 };
 
