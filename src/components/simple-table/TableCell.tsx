@@ -510,10 +510,18 @@ const TableCell = ({
     // Only show buttons when hovered or row is selected
     if (!isHovered && !(isRowSelected && isRowSelected(String(rowId)))) return null;
 
-    const buttonProps: RowButtonProps = { row };
+    const buttonProps: RowButtonProps = {
+      row,
+      rowIndex: displayRowNumber,
+      rowId,
+    };
 
     return (
-      <div className="st-row-buttons">
+      <div
+        className="st-row-buttons"
+        role="group"
+        aria-label={`Actions for row ${displayRowNumber + 1}`}
+      >
         {rowButtons.map((button, index) => (
           <span key={index} className="st-row-button">
             {button(buttonProps)}
