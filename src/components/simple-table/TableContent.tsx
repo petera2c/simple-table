@@ -10,6 +10,8 @@ import TableRow from "../../types/TableRow";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
+  currentVisibleRows: TableRow[];
+  rowsEnteringTheDom: TableRow[];
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: (scrollTop: number) => void;
@@ -17,10 +19,11 @@ interface TableContentLocalProps {
   shouldShowEmptyState: boolean;
   sort: SortColumn | null;
   tableRows: TableRow[];
-  rowsToRender: TableRow[];
 }
 
 const TableContent = ({
+  currentVisibleRows,
+  rowsEnteringTheDom,
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
@@ -28,7 +31,6 @@ const TableContent = ({
   shouldShowEmptyState,
   sort,
   tableRows,
-  rowsToRender,
 }: TableContentLocalProps) => {
   // Get stable props from context
   const { columnResizing, editColumns, headers, collapsedHeaders, autoExpandColumns } =
@@ -79,6 +81,8 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
+    currentVisibleRows,
+    rowsEnteringTheDom,
     tableRows,
     mainTemplateColumns,
     pinnedLeftColumns,
@@ -90,7 +94,6 @@ const TableContent = ({
     setScrollTop,
     setScrollDirection,
     shouldShowEmptyState,
-    rowsToRender,
   };
 
   return (

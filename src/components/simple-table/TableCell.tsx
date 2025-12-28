@@ -6,7 +6,7 @@ import useDragHandler from "../../hooks/useDragHandler";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId, getCellKey } from "../../utils/cellUtils";
 import TableCellProps from "../../types/TableCellProps";
-import { useTableContext } from "../../context/TableContext";
+import { useTableStaticContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import {
@@ -105,8 +105,14 @@ const TableCell = ({
   parentHeader,
   rowIndex,
   tableRow,
+  // Dynamic context values passed as props
+  expandAll,
+  isLoading,
+  rowsWithSelectedCells,
+  selectedColumns,
+  unexpandedRows,
 }: TableCellProps) => {
-  // Get shared props from context
+  // Get static context values (won't cause re-renders when dynamic state changes)
   const {
     canExpandRowGroup,
     cellRegistry,
@@ -114,7 +120,6 @@ const TableCell = ({
     columnBorders,
     draggedHeaderRef,
     enableRowSelection,
-    expandAll,
     expandIcon,
     handleMouseDown,
     handleMouseOver,
@@ -122,7 +127,6 @@ const TableCell = ({
     headers,
     hoveredHeaderRef,
     isCopyFlashing,
-    isLoading,
     isRowSelected,
     isWarningFlashing,
     onCellEdit,
@@ -133,14 +137,11 @@ const TableCell = ({
     rowGrouping,
     rowIdAccessor,
     setRowStateMap,
-    rowsWithSelectedCells,
-    selectedColumns,
     setUnexpandedRows,
     tableBodyContainerRef,
     theme,
-    unexpandedRows,
     useOddColumnBackground,
-  } = useTableContext();
+  } = useTableStaticContext();
 
   const { depth, row, rowPath, absoluteRowIndex } = tableRow;
 
@@ -677,8 +678,10 @@ const TableCell = ({
 
 /**
  * Custom comparison function for React.memo optimization
- * Checks if props have actually changed to prevent unnecessary re-renders
- * Only re-renders when essential props that affect display have changed
+ * With split contexts, we only need to check:
+ * 1. Core cell props (rowIndex, colIndex, etc.)
+ * 2. Dynamic context props (expandAll, isLoading, etc.)
+ * Static context values don't trigger re-renders since they're from a separate context
  */
 const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): boolean => {
   // Quick reference checks for props that change frequently
@@ -705,6 +708,10 @@ const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): bo
     ) {
       return false;
     }
+    // CRITICAL: If row data and position are the same, treat tableRow as equal
+    // even if other properties changed (like absoluteRowIndex, isLastGroupRow, etc.)
+    // This prevents interrupting ongoing animations when a new sort/filter is applied
+    // but the row ends up at the same position.
   }
 
   // Header comparison - compare by reference and key properties
@@ -736,7 +743,27 @@ const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): bo
     return false;
   }
 
-  // If all checks pass, props are equal - skip re-render
+  // Check dynamic context props (these are the only context values passed as props now)
+  if (prevProps.isLoading !== nextProps.isLoading || prevProps.expandAll !== nextProps.expandAll) {
+    return false;
+  }
+
+  // Check if unexpandedRows Set changed (by reference)
+  if (prevProps.unexpandedRows !== nextProps.unexpandedRows) {
+    return false;
+  }
+
+  // Check if selectedColumns Set changed (by reference)
+  if (prevProps.selectedColumns !== nextProps.selectedColumns) {
+    return false;
+  }
+
+  // Check if rowsWithSelectedCells Set changed (by reference)
+  if (prevProps.rowsWithSelectedCells !== nextProps.rowsWithSelectedCells) {
+    return false;
+  }
+
+  // All checks passed - props are equal, skip re-render
   return true;
 };
 

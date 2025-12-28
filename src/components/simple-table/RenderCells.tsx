@@ -90,8 +90,12 @@ const RecursiveRenderCells = ({
   // Get the column index for this header from our pre-calculated mapping
   const colIndex = columnIndices[header.accessor];
 
-  // Get selection state for this cell
+  // Get context values for cell selection and dynamic state
   const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor, collapsedHeaders } =
+    useTableContext();
+
+  // Get only dynamic values to pass to TableCell
+  const { expandAll, isLoading, rowsWithSelectedCells, selectedColumns, unexpandedRows } =
     useTableContext();
 
   // Calculate rowId once at the beginning (includes path for nested rows)
@@ -100,6 +104,15 @@ const RecursiveRenderCells = ({
     rowIdAccessor,
     rowPath: tableRow.rowPath,
   });
+
+  // Create props object with only dynamic values to pass to TableCell
+  const tableCellDynamicProps = {
+    expandAll,
+    isLoading: isLoading ?? false,
+    rowsWithSelectedCells,
+    selectedColumns,
+    unexpandedRows,
+  };
 
   if (header.children && header.children.length > 0) {
     const filteredChildren = header.children.filter((child) =>
@@ -129,6 +142,7 @@ const RecursiveRenderCells = ({
             parentHeader={parentHeader}
             rowIndex={rowIndex}
             tableRow={tableRow}
+            {...tableCellDynamicProps}
           />
           {filteredChildren.map((child) => {
             const childCellKey = getCellId({ accessor: child.accessor, rowId });
@@ -198,6 +212,7 @@ const RecursiveRenderCells = ({
       parentHeader={parentHeader}
       rowIndex={rowIndex}
       tableRow={tableRow}
+      {...tableCellDynamicProps}
     />
   );
 };

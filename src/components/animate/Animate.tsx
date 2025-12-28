@@ -7,7 +7,7 @@ import { calculateBufferRowCount, ROW_SEPARATOR_WIDTH } from "../../consts/gener
 
 // Animation thresholds
 const COLUMN_REORDER_THRESHOLD = 50; // px - minimum horizontal movement to trigger column reorder animation
-const ROW_REORDER_THRESHOLD = 5; // px - minimum vertical movement to trigger row reorder animation
+const ROW_REORDER_THRESHOLD = 10; // px - minimum vertical movement to trigger row reorder animation
 const DOM_POSITION_CHANGE_THRESHOLD = 5; // px - minimum position change to detect DOM movement
 
 // Stagger configuration
@@ -31,12 +31,15 @@ interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> 
   tableRow?: TableRow;
 }
 export const Animate = ({ children, id, parentRef, tableRow, ...props }: AnimateProps) => {
-  const { allowAnimations, isResizing, isScrolling, rowHeight } = useTableContext();
+  const { allowAnimations, capturedPositionsRef, isResizing, isScrolling, rowHeight } =
+    useTableContext();
   const elementRef = useRef<HTMLDivElement>(null);
   const fromBoundsRef = useRef<DOMRect | null>(null);
   const previousScrollingState = usePrevious(isScrolling);
   const previousResizingState = usePrevious(isResizing);
+  const cleanupCallbackRef = useRef<(() => void) | null>(null);
   const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
+
   useLayoutEffect(() => {
     // Early exit if animations are disabled - don't do any work at all
     if (!allowAnimations) {
@@ -48,8 +51,12 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
       return;
     }
 
-    const toBounds = elementRef.current.getBoundingClientRect();
-    const fromBounds = fromBoundsRef.current;
+    let toBounds = elementRef.current.getBoundingClientRect();
+
+    // CRITICAL: Check if we have a captured position for this element (react-flip-move pattern)
+    // This allows animations to continue smoothly even when interrupted by rapid clicks
+    const capturedPosition = capturedPositionsRef.current.get(id);
+    const fromBounds = capturedPosition || fromBoundsRef.current;
 
     // If we're currently scrolling, don't animate and don't update bounds
     if (isScrolling) {
@@ -65,11 +72,17 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     // If resizing just ended, update the previous bounds without animating
     if (previousResizingState && !isResizing) {
       fromBoundsRef.current = toBounds;
+      capturedPositionsRef.current.delete(id);
       return;
     }
 
     // Store current bounds for next render
     fromBoundsRef.current = toBounds;
+
+    // Clear captured position after using it (it's been consumed)
+    if (capturedPosition) {
+      capturedPositionsRef.current.delete(id);
+    }
 
     // If there's no previous bound data, don't animate (prevents first render animations)
     if (!fromBounds) {
@@ -96,12 +109,51 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     hasPositionChanged = hasDOMPositionChanged;
 
     if (hasPositionChanged) {
+      // CRITICAL: Cancel any pending cleanup from the previous animation
+      // This prevents the old animation's cleanup from interfering with the new one
+      if (cleanupCallbackRef.current) {
+        cleanupCallbackRef.current();
+        cleanupCallbackRef.current = null;
+      }
+
+      // CRITICAL: Immediately stop any in-progress animation before starting a new one
+      // This prevents the old animation from interfering with position calculations
+      if (elementRef.current.style.transition) {
+        // Get current visual position (with transform applied)
+        const currentVisualY = elementRef.current.getBoundingClientRect().y;
+
+        // Get the pure DOM position without any transforms
+        // Temporarily remove transform to get true DOM position
+        elementRef.current.style.transform = "none";
+        elementRef.current.style.transition = "none";
+        const pureDOMY = elementRef.current.getBoundingClientRect().y;
+
+        // Calculate offset needed to keep element at current visual position
+        const offsetY = currentVisualY - pureDOMY;
+
+        // Set the frozen transform to keep element at current visual position
+        elementRef.current.style.transform = `translate3d(0px, ${offsetY}px, 0px)`;
+
+        // Force reflow to ensure the freeze is applied
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        elementRef.current.offsetHeight;
+
+        // CRITICAL: Recapture toBounds after freezing the element
+        // The DOM position has changed (it's now at pureDOMY), so we need to update toBounds
+        toBounds = elementRef.current.getBoundingClientRect();
+      }
+
       // Merge animation config with defaults
       const finalConfig = {
         ...ANIMATION_CONFIGS.ROW_REORDER,
         onComplete: () => {
-          // Reset z-index after animation completes
+          // CRITICAL: Update fromBoundsRef to final position BEFORE resetting styles
+          // This prevents the next useLayoutEffect from seeing a stale position
           if (elementRef.current) {
+            const finalBounds = elementRef.current.getBoundingClientRect();
+            fromBoundsRef.current = finalBounds;
+
+            // Reset z-index after animation completes
             elementRef.current.style.zIndex = "";
             elementRef.current.style.position = "";
             elementRef.current.style.top = "";
@@ -284,16 +336,21 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         }
       }
 
+      // Start the animation and store the cleanup function
       flipElement({
         element: elementRef.current,
         fromBounds,
         toBounds,
         finalConfig,
+      }).then((cleanup) => {
+        cleanupCallbackRef.current = cleanup;
       });
     } else {
     }
   }, [
+    id,
     allowAnimations,
+    capturedPositionsRef,
     bufferRowCount,
     isResizing,
     isScrolling,

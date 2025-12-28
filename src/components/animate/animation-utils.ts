@@ -1,4 +1,3 @@
-import CellValue from "../../types/CellValue";
 import { AnimationConfig, FlipAnimationOptions, CustomAnimationOptions } from "./types";
 
 /**
@@ -13,25 +12,10 @@ export const prefersReducedMotion = (): boolean => {
  * Animation configs for different types of movements
  */
 export const ANIMATION_CONFIGS = {
-  // For column reordering (horizontal movement)
-  COLUMN_REORDER: {
-    // duration: 3000,
-    duration: 180,
-    easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
-    delay: 0,
-  },
   // For row reordering (vertical movement)
   ROW_REORDER: {
-    // duration: 3000,
-    duration: 200,
+    duration: 3000,
     easing: "cubic-bezier(0.2, 0.0, 0.2, 1)",
-    delay: 0,
-  },
-  // For reduced motion users
-  REDUCED_MOTION: {
-    // duration: 3000,
-    duration: 150, // Even faster for reduced motion
-    easing: "ease-out",
     delay: 0,
   },
 } as const;
@@ -42,9 +26,7 @@ export const ANIMATION_CONFIGS = {
 export const createAnimationConfig = (
   overrides: Partial<AnimationConfig> = {}
 ): AnimationConfig => {
-  const baseConfig = prefersReducedMotion()
-    ? ANIMATION_CONFIGS.REDUCED_MOTION
-    : ANIMATION_CONFIGS.ROW_REORDER; // Default to row reorder as it's more common in tables
+  const baseConfig = ANIMATION_CONFIGS.ROW_REORDER; // Default to row reorder as it's more common in tables
 
   return { ...baseConfig, ...overrides };
 };
@@ -70,14 +52,36 @@ export const calculateInvert = (
 
 /**
  * Applies initial transform to element for FLIP animation
+ * Handles interrupting in-progress animations by adjusting the transform calculation
  */
 export const applyInitialTransform = (element: HTMLElement, invert: { x: number; y: number }) => {
-  element.style.transform = `translate3d(${invert.x}px, ${invert.y}px, 0)`;
+  const currentVisualY = element.getBoundingClientRect().y;
+  const hasExistingTransform = element.style.transform && element.style.transform !== "none";
+
+  // If element has a frozen transform from an interrupted animation,
+  // we need to recalculate invert from pure DOM position
+  let adjustedInvertX = invert.x;
+  let adjustedInvertY = invert.y;
+
+  if (hasExistingTransform) {
+    // Temporarily remove transform to get pure DOM position
+    element.style.transform = "none";
+    const pureDOMY = element.getBoundingClientRect().y;
+    const pureDOMX = element.getBoundingClientRect().x;
+
+    // Recalculate invert from pure DOM position
+    // fromBounds represents where we want to visually appear to come from
+    const fromBoundsY = currentVisualY + invert.y;
+    const fromBoundsX = element.getBoundingClientRect().x + invert.x;
+
+    adjustedInvertY = fromBoundsY - pureDOMY;
+    adjustedInvertX = fromBoundsX - pureDOMX;
+  }
+
+  element.style.transform = `translate3d(${adjustedInvertX}px, ${adjustedInvertY}px, 0)`;
   element.style.transition = "none";
-  // Performance optimizations for smoother animations
-  element.style.willChange = "transform"; // Hint to browser for optimization
-  element.style.backfaceVisibility = "hidden"; // Prevent flickering during animation
-  // Add animating class to ensure proper z-index during animation
+  element.style.willChange = "transform";
+  element.style.backfaceVisibility = "hidden";
   element.classList.add("st-animating");
 };
 
@@ -98,13 +102,13 @@ const cleanupAnimation = (element: HTMLElement) => {
 
 /**
  * Animates element to its final position
+ * Returns a Promise that resolves to a cleanup function that can cancel the animation
  */
 const animateToFinalPosition = (
   element: HTMLElement,
   config: AnimationConfig,
-  options: FlipAnimationOptions = {},
-  id?: CellValue
-): Promise<void> => {
+  options: FlipAnimationOptions = {}
+): Promise<() => void> => {
   return new Promise((resolve) => {
     // Force a reflow to ensure the initial transform is applied
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -121,45 +125,53 @@ const animateToFinalPosition = (
     // Animate to final position
     element.style.transform = "translate3d(0, 0, 0)";
 
+    let isCleanedUp = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
     // Clean up after animation
-    const cleanup = () => {
+    const doCleanup = () => {
+      if (isCleanedUp) return;
+      isCleanedUp = true;
+
       cleanupAnimation(element);
-      element.removeEventListener("transitionend", cleanup);
+      element.removeEventListener("transitionend", doCleanup);
+
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
 
       if (options.onComplete) {
         options.onComplete();
       }
-      resolve();
     };
 
-    element.addEventListener("transitionend", cleanup);
+    element.addEventListener("transitionend", doCleanup);
 
     // Fallback timeout in case transitionend doesn't fire
-    setTimeout(cleanup, config.duration + (config.delay || 0) + 50);
+    timeoutId = setTimeout(doCleanup, config.duration + (config.delay || 0) + 50);
+
+    // Return cleanup function that can cancel the animation
+    const cancelCleanup = () => {
+      if (isCleanedUp) return;
+      isCleanedUp = true;
+
+      element.removeEventListener("transitionend", doCleanup);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    resolve(cancelCleanup);
   });
 };
 
 /**
- * Get appropriate animation config based on movement type and user preferences
+ * Get appropriate animation config based on user preferences
  */
-export const getAnimationConfig = (
-  options: FlipAnimationOptions = {},
-  movementType?: "column" | "row"
-): AnimationConfig => {
-  // Check for user's motion preferences first
-  if (prefersReducedMotion()) {
-    return { ...ANIMATION_CONFIGS.REDUCED_MOTION, ...options };
-  }
-
-  // Use specific config based on movement type
-  if (movementType === "column") {
-    return { ...ANIMATION_CONFIGS.COLUMN_REORDER, ...options };
-  }
-  if (movementType === "row") {
-    return { ...ANIMATION_CONFIGS.ROW_REORDER, ...options };
-  }
-
-  // Fall back to default config
+export const getAnimationConfig = (options: FlipAnimationOptions = {}): AnimationConfig => {
+  // Use row reorder config as default
   return { ...ANIMATION_CONFIGS.ROW_REORDER, ...options };
 };
 
@@ -167,6 +179,7 @@ export const getAnimationConfig = (
  * Performs FLIP animation on a single element
  * This function can be called multiple times on the same element - it will automatically
  * interrupt any ongoing animation and start a new one.
+ * Returns a cleanup function that can be called to cancel the animation.
  */
 export const flipElement = async ({
   element,
@@ -178,34 +191,39 @@ export const flipElement = async ({
   finalConfig: FlipAnimationOptions;
   fromBounds: DOMRect;
   toBounds: DOMRect;
-}): Promise<void> => {
+}): Promise<() => void> => {
   const invert = calculateInvert(fromBounds, toBounds);
 
   // Skip animation if element hasn't moved
   if (invert.x === 0 && invert.y === 0) {
-    return;
+    // Still need to clean up if there was an animation in progress
+    cleanupAnimation(element);
+    // Return no-op cleanup function
+    return () => {};
   }
 
   // Skip animation entirely if user prefers reduced motion and no explicit override
   if (prefersReducedMotion() && finalConfig.respectReducedMotion !== false) {
-    return;
+    cleanupAnimation(element);
+    return () => {};
   }
 
-  // Determine movement type based on the invert values
-  const isColumnMovement = Math.abs(invert.x) > Math.abs(invert.y);
-  const movementType = isColumnMovement ? "column" : "row";
+  // Get appropriate config based on user preferences
+  const config = getAnimationConfig(finalConfig);
 
-  // Get appropriate config based on movement type and user preferences
-  const config = getAnimationConfig(finalConfig, movementType);
-
-  // Clean up any existing animation before starting a new one
-  cleanupAnimation(element);
-
-  // Apply initial transform with limited values
+  // Apply new transform BEFORE cleaning up old one to prevent flickering
+  // This ensures there's no gap where the element snaps to its DOM position
   applyInitialTransform(element, invert);
 
-  // Animate to final position
-  await animateToFinalPosition(element, config, finalConfig);
+  // Now safe to clean up transition properties (but transform is already set above)
+  // Only clean transition-related properties, not transform
+  element.style.transition = "";
+  element.style.transitionDelay = "";
+
+  // Animate to final position and get cleanup function
+  const cleanup = await animateToFinalPosition(element, config, finalConfig);
+
+  return cleanup;
 };
 
 /**
@@ -251,20 +269,16 @@ export const animateWithCustomCoordinates = async ({
   const endTransformY = endY - currentY;
 
   return new Promise((resolve) => {
-    // Clean up any existing animation
-    element.style.transition = "";
-    element.style.transitionDelay = "";
-    element.style.transform = "";
-    element.style.willChange = "";
-    element.style.backfaceVisibility = "";
-    element.classList.remove("st-animating");
-
-    // Set initial position (startY)
+    // CRITICAL: Set initial position BEFORE cleaning up to prevent flickering
+    // Apply new transform first (overrides any existing transform)
     element.style.transform = `translate3d(0, ${startTransformY}px, 0)`;
-    element.style.transition = "none";
     element.style.willChange = "transform";
     element.style.backfaceVisibility = "hidden";
     element.classList.add("st-animating");
+
+    // Now clean up transition properties (transform already set above)
+    element.style.transition = "none";
+    element.style.transitionDelay = "";
 
     // Force reflow
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions

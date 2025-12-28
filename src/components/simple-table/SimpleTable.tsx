@@ -59,6 +59,7 @@ import {
   EmptyStateRenderer,
 } from "../../types/RowStateRendererProps";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
+import { ANIMATION_CONFIGS } from "../animate/animation-utils";
 
 interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -225,6 +226,7 @@ const SimpleTableComp = ({
   // Refs
   const draggedHeaderRef = useRef<HeaderObject | null>(null);
   const hoveredHeaderRef = useRef<HeaderObject | null>(null);
+  const capturedPositionsRef = useRef<Map<string, DOMRect>>(new Map());
 
   const mainBodyRef = useRef<HTMLDivElement>(null);
   const pinnedLeftRef = useRef<HTMLDivElement>(null);
@@ -571,6 +573,19 @@ const SimpleTableComp = ({
     onFilterChange,
   });
 
+  // Function to capture all element positions (called right before sort state change)
+  const captureAllPositions = useCallback(() => {
+    const allElements = document.querySelectorAll("[data-animate-id]");
+    capturedPositionsRef.current.clear();
+    allElements.forEach((el) => {
+      const id = el.getAttribute("data-animate-id");
+      if (id && el instanceof HTMLElement) {
+        const rect = el.getBoundingClientRect();
+        capturedPositionsRef.current.set(id, rect);
+      }
+    });
+  }, []);
+
   // Use custom hook for sorting (now operates on filtered rows)
   const { sort, sortedRows, updateSort, computeSortedRowsPreview } = useSortableData({
     headers,
@@ -580,25 +595,13 @@ const SimpleTableComp = ({
     rowGrouping,
     initialSortColumn,
     initialSortDirection,
+    onBeforeSort: captureAllPositions,
   });
 
   // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
   // Done BEFORE pagination so rowsPerPage correctly counts all visible rows including nested children
   const flattenedRows = useFlattenedRows({
     rows: sortedRows,
-    rowGrouping,
-    rowIdAccessor,
-    unexpandedRows,
-    expandAll,
-    rowStateMap,
-    hasLoadingRenderer: Boolean(loadingStateRenderer),
-    hasErrorRenderer: Boolean(errorStateRenderer),
-    hasEmptyRenderer: Boolean(emptyStateRenderer),
-  });
-
-  // Also flatten the original aggregated rows for animation baseline positions
-  const originalFlattenedRows = useFlattenedRows({
-    rows: aggregatedRows,
     rowGrouping,
     rowIdAccessor,
     unexpandedRows,
@@ -707,14 +710,16 @@ const SimpleTableComp = ({
   // Process rows through pagination and virtualization (now operates on flattened rows)
   const {
     currentTableRows,
-    rowsToRender,
+    currentVisibleRows,
+    rowsEnteringTheDom,
     prepareForFilterChange,
     prepareForSortChange,
+    cleanupAnimationRows,
     isAnimating,
+    animationStartTime,
   } = useTableRowProcessing({
     allowAnimations,
     flattenedRows,
-    originalFlattenedRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
@@ -727,6 +732,18 @@ const SimpleTableComp = ({
     computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
     computeSortedRowsPreview: computeFlattenedSortedRowsPreview,
   });
+
+  // Cleanup animation rows after animation completes
+  useEffect(() => {
+    if (isAnimating && animationStartTime > 0) {
+      // Animation duration is 200ms, add buffer for safety
+      const timeoutId = setTimeout(() => {
+        cleanupAnimationRows();
+      }, ANIMATION_CONFIGS.ROW_REORDER.duration + 50);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isAnimating, animationStartTime, cleanupAnimationRows]);
 
   // Create a registry for cells to enable direct updates
   const cellRegistryRef = useRef<Map<string, CellRegistryEntry>>(new Map());
@@ -766,14 +783,19 @@ const SimpleTableComp = ({
   const onSort = useCallback(
     (accessor: Accessor) => {
       // STAGE 1: Prepare animation by adding entering rows before applying sort
-      prepareForSortChange(accessor);
+      // Pass captureAllPositions so it can capture leaving rows before updating their positions
+      prepareForSortChange(accessor, currentVisibleRows, captureAllPositions);
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
-      setTimeout(() => {
-        updateSort({ accessor });
-      }, 0);
+      // Note: Position capture happens in updateSort via onBeforeSort callback
+      // Use double RAF to ensure browser has completed layout before capturing positions
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          updateSort({ accessor });
+        });
+      });
     },
-    [prepareForSortChange, updateSort]
+    [prepareForSortChange, updateSort, currentVisibleRows, captureAllPositions]
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
@@ -818,7 +840,7 @@ const SimpleTableComp = ({
     tableRef,
     updateFilter,
     updateSort,
-    visibleRows: rowsToRender,
+    visibleRows: currentVisibleRows,
   });
   useExternalFilters({ filters, onFilterChange });
   useExternalSort({ sort, onSortChange });
@@ -827,15 +849,22 @@ const SimpleTableComp = ({
   const handleApplyFilter = useCallback(
     (filter: FilterCondition) => {
       // STAGE 1: Prepare animation by adding entering rows before applying filter
-      prepareForFilterChange(filter);
+      // Pass captureAllPositions so it can capture leaving rows before updating their positions
+      prepareForFilterChange(filter, captureAllPositions);
 
       // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
-      setTimeout(() => {
-        // Update internal state and call external handler if provided
-        updateFilter(filter);
-      }, 0);
+      // Use double RAF to ensure browser has completed layout before capturing positions
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Capture positions right before filter state change
+          captureAllPositions();
+
+          // Update internal state and call external handler if provided
+          updateFilter(filter);
+        });
+      });
     },
-    [prepareForFilterChange, updateFilter]
+    [prepareForFilterChange, updateFilter, captureAllPositions]
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)
@@ -849,6 +878,7 @@ const SimpleTableComp = ({
         areAllRowsSelected,
         autoExpandColumns,
         canExpandRowGroup,
+        capturedPositionsRef,
         cellRegistry: cellRegistryRef.current,
         cellUpdateFlash,
         clearSelection,
@@ -965,6 +995,8 @@ const SimpleTableComp = ({
           <div className="st-wrapper-container">
             <div className="st-content-wrapper">
               <TableContent
+                currentVisibleRows={currentVisibleRows}
+                rowsEnteringTheDom={rowsEnteringTheDom}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}
@@ -972,7 +1004,6 @@ const SimpleTableComp = ({
                 shouldShowEmptyState={shouldShowEmptyState}
                 sort={sort}
                 tableRows={currentTableRows}
-                rowsToRender={rowsToRender}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

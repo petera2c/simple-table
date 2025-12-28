@@ -21,11 +21,12 @@ import { useTableContext } from "../../context/TableContext";
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
   columnIndices: ColumnIndices;
+  currentVisibleRows: TableRowType[];
+  rowsEnteringTheDom: TableRowType[];
   headers: HeaderObject[];
   pinned?: Pinned;
   rowHeight: number;
   rowIndices: RowIndices;
-  rowsToRender: TableRowType[];
   setHoveredIndex: (index: number | null) => void;
   templateColumns: string;
   totalHeight: number;
@@ -37,6 +38,8 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     {
       columnIndexStart,
       columnIndices,
+      currentVisibleRows,
+      rowsEnteringTheDom,
       headers,
       pinned,
       rowHeight,
@@ -44,7 +47,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       setHoveredIndex,
       templateColumns,
       totalHeight,
-      rowsToRender,
       width,
     },
     ref
@@ -76,7 +78,43 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             ...(!pinned && { flexGrow: 1 }),
           }}
         >
-          {rowsToRender.map((tableRow, index) => {
+          {currentVisibleRows.map((tableRow, index) => {
+            // Generate unique key - use stateIndicator parentRowId for state rows
+            const rowId = tableRow.stateIndicator
+              ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
+              : getRowId({
+                  row: tableRow.row,
+                  rowIdAccessor,
+                  rowPath: tableRow.rowPath,
+                });
+
+            return (
+              <Fragment key={rowId}>
+                {index !== 0 && (
+                  <TableRowSeparator
+                    // Is last row group and it is open
+                    displayStrongBorder={tableRow.isLastGroupRow}
+                    position={tableRow.position}
+                    rowHeight={rowHeight}
+                    templateColumns={templateColumns}
+                  />
+                )}
+                <TableRow
+                  columnIndexStart={columnIndexStart}
+                  columnIndices={columnIndices}
+                  gridTemplateColumns={templateColumns}
+                  headers={headers}
+                  index={index}
+                  pinned={pinned}
+                  rowHeight={rowHeight}
+                  rowIndices={rowIndices}
+                  setHoveredIndex={setHoveredIndex}
+                  tableRow={tableRow}
+                />
+              </Fragment>
+            );
+          })}
+          {rowsEnteringTheDom.map((tableRow, index) => {
             // Generate unique key - use stateIndicator parentRowId for state rows
             const rowId = tableRow.stateIndicator
               ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`

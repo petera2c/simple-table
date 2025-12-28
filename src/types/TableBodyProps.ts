@@ -2,6 +2,8 @@ import { HeaderObject } from "..";
 import TableRow from "./TableRow";
 
 interface TableBodyProps {
+  currentVisibleRows: TableRow[];
+  rowsEnteringTheDom: TableRow[];
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftTemplateColumns: string;
@@ -9,7 +11,6 @@ interface TableBodyProps {
   pinnedRightColumns: HeaderObject[];
   pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
-  rowsToRender: TableRow[];
   setScrollTop: (scrollTop: number) => void;
   setScrollDirection: (direction: "up" | "down" | "none") => void;
   shouldShowEmptyState: boolean;

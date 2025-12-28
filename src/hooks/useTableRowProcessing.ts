@@ -1,8 +1,7 @@
-import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { calculateBufferRowCount } from "../consts/general-consts";
 import { getVisibleRows } from "../utils/infiniteScrollUtils";
 import { getRowId } from "../utils/rowUtils";
-import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
 import TableRow from "../types/TableRow";
@@ -11,8 +10,6 @@ interface UseTableRowProcessingProps {
   allowAnimations: boolean;
   /** Already flattened rows from useFlattenedRows */
   flattenedRows: TableRow[];
-  /** Original flattened rows for establishing baseline positions */
-  originalFlattenedRows: TableRow[];
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
@@ -30,7 +27,6 @@ interface UseTableRowProcessingProps {
 const useTableRowProcessing = ({
   allowAnimations,
   flattenedRows,
-  originalFlattenedRows,
   currentPage,
   rowsPerPage,
   shouldPaginate,
@@ -44,22 +40,20 @@ const useTableRowProcessing = ({
   computeSortedRowsPreview,
 }: UseTableRowProcessingProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
-  const [extendedRows, setExtendedRows] = useState<TableRow[]>([]);
-  const previousTableRowsRef = useRef<TableRow[]>([]); // Track ALL processed rows, not just visible
-  const previousVisibleRowsRef = useRef<TableRow[]>([]); // Track only visible rows for animation
+  const [animationStartTime, setAnimationStartTime] = useState(0);
+  const [rowsEnteringTheDom, setRowsEnteringTheDom] = useState<TableRow[]>([]);
+  const [rowsLeavingTheDom, setRowsLeavingTheDom] = useState<TableRow[]>([]);
 
   // Calculate buffer row count based on actual row height
   // This ensures consistent ~800px overscan regardless of row size
   const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
 
-  // Track original positions of all rows (before any sort/filter applied)
-  const originalPositionsRef = useRef<Map<string, number>>(new Map());
-
-  // Capture values when animation starts to avoid dependency issues in timeout effect
-  const animationCaptureRef = useRef<{
-    tableRows: TableRow[];
-    visibleRows: TableRow[];
-  } | null>(null);
+  // Cleanup function to reset animation states
+  const cleanupAnimationRows = useCallback(() => {
+    setRowsEnteringTheDom([]);
+    setRowsLeavingTheDom([]);
+    setIsAnimating(false);
+  }, []);
 
   // Apply pagination to already-flattened rows and recalculate positions
   const applyPagination = useCallback(
@@ -82,26 +76,6 @@ const useTableRowProcessing = ({
     },
     [currentPage, rowsPerPage, serverSidePagination, shouldPaginate]
   );
-
-  // Establish original positions from unfiltered/unsorted data
-  useMemo(() => {
-    // Only set original positions once when component first loads
-    if (originalPositionsRef.current.size === 0 && originalFlattenedRows.length > 0) {
-      const newOriginalPositions = new Map<string, number>();
-      originalFlattenedRows.forEach((tableRow, index) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        newOriginalPositions.set(id, index);
-      });
-
-      originalPositionsRef.current = newOriginalPositions;
-    }
-  }, [originalFlattenedRows, rowIdAccessor]);
 
   // Current table rows (paginated for display)
   // Now pagination happens on FLATTENED rows, so rowsPerPage correctly counts all visible rows
@@ -126,244 +100,47 @@ const useTableRowProcessing = ({
     });
   }, [currentTableRows, contentHeight, rowHeight, scrollTop, scrollDirection, bufferRowCount]);
 
-  // Categorize rows based on ID changes
-  const categorizeRows = useCallback(
-    (previousRows: TableRow[], currentRows: TableRow[]) => {
-      const previousIds = new Set(
-        previousRows.map((tableRow) =>
-          String(
-            getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            })
-          )
+  // Combine target visible rows with leaving rows for rendering
+  const visibleRowsWithLeaving = useMemo(() => {
+    // Create a set of IDs from rowsLeavingTheDom
+    const leavingRowIds = new Set(
+      rowsLeavingTheDom.map((tableRow) =>
+        String(
+          getRowId({
+            row: tableRow.row,
+            rowIdAccessor,
+            rowPath: tableRow.rowPath,
+          })
         )
-      );
-      const currentIds = new Set(
-        currentRows.map((tableRow) =>
-          String(
-            getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            })
-          )
-        )
-      );
+      )
+    );
 
-      const staying = currentRows.filter((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        return previousIds.has(id);
-      });
-
-      const entering = currentRows.filter((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        return !previousIds.has(id);
-      });
-
-      const leaving = previousRows.filter((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        return !currentIds.has(id);
-      });
-
-      return { staying, entering, leaving };
-    },
-    [rowIdAccessor]
-  );
-
-  // Check if there are actual row changes (comparing all rows, not just visible)
-  const hasRowChanges = useMemo(() => {
-    if (previousTableRowsRef.current.length === 0) {
-      return false;
-    }
-
-    const currentIds = currentTableRows.map((tableRow) =>
-      String(
+    // Filter out any rows from targetVisibleRows that are already in rowsLeavingTheDom
+    const uniqueTargetRows = targetVisibleRows.filter((tableRow) => {
+      const id = String(
         getRowId({
           row: tableRow.row,
           rowIdAccessor,
           rowPath: tableRow.rowPath,
         })
-      )
-    );
-    const previousIds = previousTableRowsRef.current.map((tableRow) =>
-      String(
-        getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        })
-      )
-    );
+      );
+      return !leavingRowIds.has(id);
+    });
 
-    const hasChanges =
-      currentIds.length !== previousIds.length ||
-      !currentIds.every((id, index) => id === previousIds[index]);
-
-    return hasChanges;
-  }, [currentTableRows, rowIdAccessor]);
-
-  // Animation effect
-  useLayoutEffect(() => {
-    // Don't re-run effect while animation is in progress
-    if (isAnimating) {
-      return;
-    }
-
-    // Helper to clear extended rows only if needed (avoid unnecessary state updates
-    // that would cause infinite re-renders)
-    const clearExtendedRowsIfNeeded = () => {
-      if (extendedRows.length > 0) {
-        setExtendedRows([]);
-      }
-    };
-
-    // Always sync when not animating
-    if (!allowAnimations || shouldPaginate) {
-      clearExtendedRowsIfNeeded();
-      previousTableRowsRef.current = currentTableRows;
-      previousVisibleRowsRef.current = targetVisibleRows;
-      return;
-    }
-
-    // Initialize on first render
-    if (previousTableRowsRef.current.length === 0) {
-      clearExtendedRowsIfNeeded();
-      previousTableRowsRef.current = currentTableRows;
-      previousVisibleRowsRef.current = targetVisibleRows;
-      return;
-    }
-
-    // Check if rows actually changed - this detects STAGE 2 (after sort/filter applied)
-    if (!hasRowChanges) {
-      clearExtendedRowsIfNeeded();
-      previousTableRowsRef.current = currentTableRows;
-      previousVisibleRowsRef.current = targetVisibleRows;
-      return;
-    }
-
-    // STAGE 2: Rows have new positions, trigger animation
-    // extendedRows already contains current + entering rows (from STAGE 1)
-    // Now the positions will update automatically when the component re-renders
-
-    // Capture current values before starting animation
-    animationCaptureRef.current = {
-      tableRows: currentTableRows,
-      visibleRows: targetVisibleRows,
-    };
-
-    // Start animation
-    setIsAnimating(true);
-  }, [
-    allowAnimations,
-    currentTableRows,
-    extendedRows.length,
-    hasRowChanges,
-    isAnimating,
-    shouldPaginate,
-    targetVisibleRows,
-  ]);
-
-  // Separate effect to handle animation timeout - only runs when we have extended rows to animate
-  useLayoutEffect(() => {
-    if (isAnimating && animationCaptureRef.current && extendedRows.length > 0) {
-      // STAGE 3: After animation completes, remove leaving rows
-      const timeout = setTimeout(() => {
-        const captured = animationCaptureRef.current!;
-        setIsAnimating(false);
-        setExtendedRows([]); // Clear extended rows to use normal virtualization
-        previousTableRowsRef.current = captured.tableRows;
-        previousVisibleRowsRef.current = captured.visibleRows;
-        animationCaptureRef.current = null; // Clean up
-      }, ANIMATION_CONFIGS.ROW_REORDER.duration + 100);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [isAnimating, extendedRows.length]); // Depend on isAnimating AND extendedRows length
-
-  // Final rows to render - handles 3-stage animation
-  const rowsToRender = useMemo(() => {
-    // If animations are disabled, always use normal virtualization
-    if (!allowAnimations || shouldPaginate) {
-      return targetVisibleRows;
-    }
-
-    // If we have extended rows (from STAGE 1), we need to dynamically update their positions
-    // to reflect the current sort/filter state (STAGE 2)
-    if (extendedRows.length > 0) {
-      // Create a map of ALL positions from currentTableRows (not just visible ones)
-      // This ensures we have positions for existing rows AND entering rows
-      const positionMap = new Map<string, number>();
-      const displayPositionMap = new Map<string, number>();
-      currentTableRows.forEach((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        positionMap.set(id, tableRow.position);
-        displayPositionMap.set(id, tableRow.displayPosition);
-      });
-
-      // Update ALL rows in extendedRows with their new positions
-      const updatedExtendedRows = extendedRows.map((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        const newPosition = positionMap.get(id);
-        const newDisplayPosition = displayPositionMap.get(id);
-
-        // If this row exists in the new sorted state, use its new position
-        // Otherwise keep the original position (for leaving rows that are no longer in the sorted data)
-        if (newPosition !== undefined && newDisplayPosition !== undefined) {
-          return { ...tableRow, position: newPosition, displayPosition: newDisplayPosition };
-        }
-        return tableRow;
-      });
-
-      return updatedExtendedRows;
-    }
-
-    // Default: use normal visible rows (STAGE 3 after animation completes)
-    return targetVisibleRows;
-  }, [
-    targetVisibleRows,
-    extendedRows,
-    currentTableRows,
-    allowAnimations,
-    shouldPaginate,
-    rowIdAccessor,
-  ]);
+    // Combine unique target rows with leaving rows (leaving rows take precedence)
+    return [...uniqueTargetRows, ...rowsLeavingTheDom];
+  }, [targetVisibleRows, rowsLeavingTheDom, rowIdAccessor]);
 
   // Animation handlers for filter/sort changes
   const prepareForFilterChange = useCallback(
-    (filter: FilterCondition) => {
+    (filter: FilterCondition, capturePositions?: () => void) => {
       if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
+
+      // CRITICAL: Capture positions of existing leaving rows BEFORE updating them
+      // This prevents teleporting when their positions change
+      if (capturePositions) {
+        capturePositions();
+      }
 
       // Calculate what rows would be after filter (already flattened from preview function)
       const newFlattenedRows = computeFilteredRowsPreview(filter);
@@ -377,21 +154,18 @@ const useTableRowProcessing = ({
         scrollDirection,
       });
 
-      // CRITICAL: Compare VISIBLE rows (before filter) vs what WILL BE visible (after filter)
-      // This identifies rows that are entering the visible area
-      const { entering: visibleEntering } = categorizeRows(targetVisibleRows, newVisibleRows);
-
-      // Find these entering rows in the CURRENT table state (before filter) to get original positions
-      const enteringFromCurrentState = visibleEntering
-        .map((enteringRow) => {
+      // Find all rows that WILL BE visible after the filter, but with their CURRENT positions (before filter)
+      // This gives us the starting point for animation
+      const rowsInCurrentPosition = newVisibleRows
+        .map((newVisibleRow) => {
           const id = String(
             getRowId({
-              row: enteringRow.row,
+              row: newVisibleRow.row,
               rowIdAccessor,
-              rowPath: enteringRow.rowPath,
+              rowPath: newVisibleRow.rowPath,
             })
           );
-          // Find this row in the current table state to get its original position
+          // Find this row in the CURRENT table state (before filter) to get its current position
           const currentStateRow = currentTableRows.find(
             (currentRow) =>
               String(
@@ -402,13 +176,150 @@ const useTableRowProcessing = ({
                 })
               ) === id
           );
-          return currentStateRow || enteringRow; // Fallback to enteringRow if not found
+          return currentStateRow || newVisibleRow; // Fallback to newVisibleRow if not found in current state
         })
         .filter(Boolean) as TableRow[];
 
-      if (enteringFromCurrentState.length > 0) {
-        setExtendedRows([...targetVisibleRows, ...enteringFromCurrentState]);
-      }
+      setIsAnimating(true);
+      setAnimationStartTime(Date.now());
+
+      // Add unique rows to rowsEnteringTheDom (don't add duplicates from targetVisibleRows or existing rowsEnteringTheDom)
+      setRowsEnteringTheDom((existingRows) => {
+        // Create set of IDs already in targetVisibleRows
+        const targetVisibleIds = new Set(
+          targetVisibleRows.map((tableRow) =>
+            String(
+              getRowId({
+                row: tableRow.row,
+                rowIdAccessor,
+                rowPath: tableRow.rowPath,
+              })
+            )
+          )
+        );
+
+        // Create set of IDs already in existingRows
+        const existingRowIds = new Set(
+          existingRows.map((tableRow) =>
+            String(
+              getRowId({
+                row: tableRow.row,
+                rowIdAccessor,
+                rowPath: tableRow.rowPath,
+              })
+            )
+          )
+        );
+
+        // Filter to only include rows that aren't already in targetVisibleRows or existingRows
+        const uniqueNewRows = rowsInCurrentPosition.filter((tableRow) => {
+          const id = String(
+            getRowId({
+              row: tableRow.row,
+              rowIdAccessor,
+              rowPath: tableRow.rowPath,
+            })
+          );
+          return !targetVisibleIds.has(id) && !existingRowIds.has(id);
+        });
+
+        // Add unique rows to existing rows
+        return [...existingRows, ...uniqueNewRows];
+      });
+
+      // Track rows that are leaving the DOM (currently visible but won't exist in new dataset after filter)
+      setRowsLeavingTheDom((existingRows) => {
+        // CRITICAL: Create set of IDs that will exist in the FULL paginated dataset (not just viewport)
+        // A row is only "leaving" if it's being filtered out entirely, not just scrolling out of view
+        const newPaginatedIds = new Set(
+          newPaginatedRows.map((tableRow) =>
+            String(
+              getRowId({
+                row: tableRow.row,
+                rowIdAccessor,
+                rowPath: tableRow.rowPath,
+              })
+            )
+          )
+        );
+
+        // Create map of existing leaving rows for quick lookup
+        const existingRowsMap = new Map(
+          existingRows.map((tableRow) => [
+            String(
+              getRowId({
+                row: tableRow.row,
+                rowIdAccessor,
+                rowPath: tableRow.rowPath,
+              })
+            ),
+            tableRow,
+          ])
+        );
+
+        // Find rows from targetVisibleRows that won't exist in the new paginated dataset (filtered out)
+        const candidateLeavingRows = targetVisibleRows.filter((tableRow) => {
+          const id = String(
+            getRowId({
+              row: tableRow.row,
+              rowIdAccessor,
+              rowPath: tableRow.rowPath,
+            })
+          );
+          // Only consider it "leaving" if it's not in the new paginated dataset at all
+          return !newPaginatedIds.has(id);
+        });
+
+        // Separate into rows that need position updates vs truly new leaving rows
+        const rowsToUpdate: TableRow[] = [];
+        const newLeavingRows: TableRow[] = [];
+
+        candidateLeavingRows.forEach((leavingRow) => {
+          const id = String(
+            getRowId({
+              row: leavingRow.row,
+              rowIdAccessor,
+              rowPath: leavingRow.rowPath,
+            })
+          );
+          // This row is being filtered out, so it won't have a position in newPaginatedRows
+          // Keep its current position for animation purposes
+          const rowWithNewPosition = leavingRow;
+
+          if (existingRowsMap.has(id)) {
+            // Row is already leaving, keep it
+            rowsToUpdate.push(rowWithNewPosition);
+          } else {
+            // Row is newly leaving
+            newLeavingRows.push(rowWithNewPosition);
+          }
+        });
+
+        // Update existing rows with new positions, keep rows not in update list unchanged
+        const updatedExistingRows = existingRows.map((tableRow) => {
+          const id = String(
+            getRowId({
+              row: tableRow.row,
+              rowIdAccessor,
+              rowPath: tableRow.rowPath,
+            })
+          );
+          const updatedRow = rowsToUpdate.find(
+            (r) =>
+              String(
+                getRowId({
+                  row: r.row,
+                  rowIdAccessor,
+                  rowPath: r.rowPath,
+                })
+              ) === id
+          );
+          return updatedRow || tableRow;
+        });
+
+        // Combine updated existing rows with new leaving rows
+        return [...updatedExistingRows, ...newLeavingRows];
+      });
     },
     [
       allowAnimations,
@@ -419,7 +330,6 @@ const useTableRowProcessing = ({
       rowHeight,
       scrollTop,
       scrollDirection,
-      categorizeRows,
       currentTableRows,
       targetVisibleRows,
       rowIdAccessor,
@@ -428,8 +338,16 @@ const useTableRowProcessing = ({
   );
 
   const prepareForSortChange = useCallback(
-    (accessor: Accessor) => {
-      if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
+    (accessor: Accessor, targetVisibleRows: TableRow[], capturePositions?: () => void) => {
+      if (!allowAnimations || shouldPaginate || contentHeight === undefined) {
+        return;
+      }
+
+      // CRITICAL: Capture positions of existing leaving rows BEFORE updating them
+      // This prevents teleporting when their positions change
+      if (capturePositions) {
+        capturePositions();
+      }
 
       // Calculate what rows would be after sort (already flattened from preview function)
       const newFlattenedRows = computeSortedRowsPreview(accessor);
@@ -443,21 +361,18 @@ const useTableRowProcessing = ({
         scrollDirection,
       });
 
-      // CRITICAL: Compare VISIBLE rows (before sort) vs what WILL BE visible (after sort)
-      // This identifies rows that are entering the visible area
-      const { entering: visibleEntering } = categorizeRows(targetVisibleRows, newVisibleRows);
-
-      // Find these entering rows in the CURRENT table state (before sort) to get original positions
-      const enteringFromCurrentState = visibleEntering
-        .map((enteringRow) => {
+      // Find all rows that WILL BE visible after the sort, but with their CURRENT positions (before sort)
+      // This gives us the starting point for animation
+      const rowsInCurrentPosition = newVisibleRows
+        .map((newVisibleRow) => {
           const id = String(
             getRowId({
-              row: enteringRow.row,
+              row: newVisibleRow.row,
               rowIdAccessor,
-              rowPath: enteringRow.rowPath,
+              rowPath: newVisibleRow.rowPath,
             })
           );
-          // Find this row in the current table state to get its original position
+          // Find this row in the CURRENT table state (before sort) to get its current position
           const currentStateRow = currentTableRows.find(
             (currentRow) =>
               String(
@@ -468,13 +383,62 @@ const useTableRowProcessing = ({
                 })
               ) === id
           );
-          return currentStateRow || enteringRow; // Fallback to enteringRow if not found
+
+          return currentStateRow || newVisibleRow; // Fallback to newVisibleRow if not found in current state
         })
         .filter(Boolean) as TableRow[];
 
-      if (enteringFromCurrentState.length > 0) {
-        setExtendedRows([...targetVisibleRows, ...enteringFromCurrentState]);
-      }
+      setIsAnimating(true);
+      setAnimationStartTime(Date.now());
+
+      // Add unique rows to rowsEnteringTheDom (don't add duplicates from targetVisibleRows or existing rowsEnteringTheDom)
+      setRowsEnteringTheDom((existingRows) => {
+        // Create set of IDs already in targetVisibleRows
+        const targetVisibleIds = new Set(
+          targetVisibleRows.map((tableRow) =>
+            String(
+              getRowId({
+                row: tableRow.row,
+                rowIdAccessor,
+                rowPath: tableRow.rowPath,
+              })
+            )
+          )
+        );
+
+        // Create set of IDs already in existingRows
+        const existingRowIds = new Set(
+          existingRows.map((tableRow) =>
+            String(
+              getRowId({
+                row: tableRow.row,
+                rowIdAccessor,
+                rowPath: tableRow.rowPath,
+              })
+            )
+          )
+        );
+
+        // Filter to only include rows that aren't already in targetVisibleRows or existingRows
+        const uniqueNewRows = rowsInCurrentPosition.filter((tableRow) => {
+          const id = String(
+            getRowId({
+              row: tableRow.row,
+              rowIdAccessor,
+              rowPath: tableRow.rowPath,
+            })
+          );
+
+          return !targetVisibleIds.has(id) && !existingRowIds.has(id);
+        });
+
+        // Add unique rows to existing rows
+        return [...existingRows, ...uniqueNewRows];
+      });
+
+      // For sorting, rows don't actually "leave" - they just reorder
+      // So we don't add any rows to rowsLeavingTheDom for sort operations
+      // Rows will animate in place as they reorder
     },
     [
       allowAnimations,
@@ -485,9 +449,7 @@ const useTableRowProcessing = ({
       rowHeight,
       scrollTop,
       scrollDirection,
-      categorizeRows,
       currentTableRows,
-      targetVisibleRows,
       rowIdAccessor,
       bufferRowCount,
     ]
@@ -495,11 +457,13 @@ const useTableRowProcessing = ({
 
   return {
     currentTableRows,
-    currentVisibleRows: targetVisibleRows,
+    currentVisibleRows: visibleRowsWithLeaving,
     isAnimating,
+    animationStartTime,
     prepareForFilterChange,
     prepareForSortChange,
-    rowsToRender,
+    cleanupAnimationRows,
+    rowsEnteringTheDom,
   };
 };
 

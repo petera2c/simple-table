@@ -4,6 +4,7 @@ import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to BasicExample - exported for reuse in stories and tests
 export const basicExampleDefaults = {
+  allowAnimations: true,
   columnResizing: true,
   editColumns: true,
   selectableCells: true,
@@ -28,7 +29,7 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
 
   // Define headers
   const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true },
+    { accessor: "id", label: "ID", width: 120, isSortable: true, filterable: true, type: "number" },
     {
       accessor: "name",
       label: "Name",
@@ -46,7 +47,7 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
       <SimpleTable
         {...props}
         defaultHeaders={headers}
-        rows={createBasicData(100)}
+        rows={createBasicData(20)}
         rowIdAccessor="id"
       />
     </div>
