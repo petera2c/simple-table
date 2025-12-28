@@ -14,7 +14,12 @@ import HeaderObject, { DEFAULT_SHOW_WHEN } from "../../types/HeaderObject";
 import SortColumn from "../../types/SortColumn";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
-import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
+import {
+  getHeaderLeafIndices,
+  getColumnRange,
+  getHeaderDescriptionId,
+  getHeaderDescription,
+} from "../../utils/headerUtils";
 import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
@@ -615,12 +620,17 @@ const TableHeaderCell = ({
     return "none";
   };
 
+  // Generate unique ID and description for aria-describedby
+  const descriptionId = getHeaderDescriptionId(header.accessor);
+  const headerDescription = getHeaderDescription(header, filterable);
+
   return (
     <Animate
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
       aria-sort={getAriaSort()}
       aria-colindex={colIndex + 1}
+      aria-describedby={headerDescription ? descriptionId : undefined}
       onDragOver={(event) => {
         if (!isSelectionColumn) {
           throttle({
@@ -691,6 +701,13 @@ const TableHeaderCell = ({
             position: dropdownPosition,
           })}
         </div>
+      )}
+
+      {/* Visually hidden description for screen readers */}
+      {headerDescription && (
+        <span id={descriptionId} className="st-sr-only">
+          {headerDescription}
+        </span>
       )}
     </Animate>
   );
