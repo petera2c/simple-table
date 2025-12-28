@@ -43,6 +43,7 @@ import useTableAPI from "../../hooks/useTableAPI";
 import useTableRowProcessing from "../../hooks/useTableRowProcessing";
 import useFlattenedRows from "../../hooks/useFlattenedRows";
 import { useRowSelection } from "../../hooks/useRowSelection";
+import useAriaAnnouncements from "../../hooks/useAriaAnnouncements";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
 import CellClickProps from "../../types/CellClickProps";
@@ -356,6 +357,9 @@ const SimpleTableComp = ({
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
+  // Aria-live announcements for screen readers
+  const { announcement, announce } = useAriaAnnouncements();
+
   // Calculate table dimensions (container width, header height, and max header depth)
   const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = useTableDimensions({
     effectiveHeaders,
@@ -567,8 +571,10 @@ const SimpleTableComp = ({
     computeFilteredRowsPreview,
   } = useFilterableData({
     rows: aggregatedRows,
+    headers: effectiveHeaders,
     externalFilterHandling,
     onFilterChange,
+    announce,
   });
 
   // Use custom hook for sorting (now operates on filtered rows)
@@ -580,6 +586,7 @@ const SimpleTableComp = ({
     rowGrouping,
     initialSortColumn,
     initialSortDirection,
+    announce,
   });
 
   // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
@@ -1010,6 +1017,11 @@ const SimpleTableComp = ({
             )}
           </div>
         </ScrollSync>
+
+        {/* Aria-live region for screen reader announcements */}
+        <div aria-live="polite" aria-atomic="true" className="st-sr-only">
+          {announcement}
+        </div>
       </div>
     </TableProvider>
   );
