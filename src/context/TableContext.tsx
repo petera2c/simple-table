@@ -83,6 +83,7 @@ interface TableContextType {
   headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  maxHeaderDepth: number;
   isAnimating: boolean;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;

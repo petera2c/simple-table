@@ -568,6 +568,7 @@ const TableCell = ({
       data-col-index={colIndex}
       data-row-id={rowId}
       data-row-index={rowIndex}
+      aria-colindex={colIndex + 1}
       id={cellId}
       key={cellKey}
       onClick={handleCellClick}

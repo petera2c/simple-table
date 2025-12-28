@@ -620,6 +620,7 @@ const TableHeaderCell = ({
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
       aria-sort={getAriaSort()}
+      aria-colindex={colIndex + 1}
       onDragOver={(event) => {
         if (!isSelectionColumn) {
           throttle({

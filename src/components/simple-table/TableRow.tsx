@@ -46,6 +46,7 @@ const TableRow = ({
     loadingStateRenderer,
     errorStateRenderer,
     emptyStateRenderer,
+    maxHeaderDepth,
   } = useTableContext();
   const { position, displayPosition, stateIndicator } = tableRow;
 
@@ -137,6 +138,7 @@ const TableRow = ({
         isSelected ? "selected" : ""
       }`}
       data-index={index}
+      aria-rowindex={position + maxHeaderDepth + 1}
       onMouseEnter={() => {
         // Don't apply hover effects during animations
         if (!isAnimating && useHoverRowBackground) {

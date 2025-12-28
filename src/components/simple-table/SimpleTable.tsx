@@ -356,8 +356,8 @@ const SimpleTableComp = ({
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
   const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
 
-  // Calculate table dimensions (container width and header height)
-  const { containerWidth, calculatedHeaderHeight } = useTableDimensions({
+  // Calculate table dimensions (container width, header height, and max header depth)
+  const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = useTableDimensions({
     effectiveHeaders,
     headerHeight,
     rowHeight,
@@ -898,6 +898,7 @@ const SimpleTableComp = ({
         isWarningFlashing,
         loadingStateRenderer,
         mainBodyRef,
+        maxHeaderDepth,
         nextIcon,
         onCellClick,
         onCellEdit,
