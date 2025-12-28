@@ -335,7 +335,7 @@ const TableCell = ({
 
   // Handle row expansion
   const handleRowExpansion = useCallback(
-    (event: React.MouseEvent) => {
+    (event: React.MouseEvent | React.KeyboardEvent) => {
       event.stopPropagation(); // Prevent event bubbling
 
       // Calculate current expansion state based on expandAll setting
@@ -597,7 +597,17 @@ const TableCell = ({
           className={`st-icon-container st-expand-icon-container ${
             isRowExpanded ? "expanded" : "collapsed"
           }`}
-          onClick={handleRowExpansion}
+          onClick={(event: React.MouseEvent) => handleRowExpansion(event)}
+          role="button"
+          tabIndex={0}
+          aria-label={`${isRowExpanded ? "Collapse" : "Expand"} row group`}
+          aria-expanded={isRowExpanded}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleRowExpansion(e);
+            }
+          }}
         >
           {expandIcon}
         </div>
@@ -624,6 +634,7 @@ const TableCell = ({
                     <Checkbox
                       checked={isRowSelected ? isRowSelected(String(rowId)) : false}
                       onChange={handleRowCheckboxChange}
+                      ariaLabel={`Select row ${displayRowNumber + 1}`}
                     />
                   ) : (
                     <span className="st-row-number">{displayRowNumber + 1}</span>

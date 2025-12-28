@@ -5,9 +5,10 @@ interface CheckboxProps {
   checked?: boolean;
   children?: ReactNode;
   onChange?: (checked: boolean) => void;
+  ariaLabel?: string;
 }
 
-const Checkbox = ({ checked = false, children, onChange }: CheckboxProps) => {
+const Checkbox = ({ checked = false, children, onChange, ariaLabel }: CheckboxProps) => {
   const toggleCheckbox = () => {
     if (onChange) {
       onChange(!checked);
@@ -21,6 +22,7 @@ const Checkbox = ({ checked = false, children, onChange }: CheckboxProps) => {
         className="st-checkbox-input"
         onChange={toggleCheckbox}
         type="checkbox"
+        aria-label={ariaLabel}
       />
       <span className={`st-checkbox-custom ${checked ? "st-checked" : ""}`}>
         {checked && <CheckIcon className="st-checkbox-checkmark" />}

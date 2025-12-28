@@ -284,7 +284,7 @@ const TableHeaderCell = ({
 
   // Handle collapse/expand toggle
   const handleCollapseToggle = useCallback(
-    (event: MouseEvent) => {
+    (event: MouseEvent | React.KeyboardEvent) => {
       event.stopPropagation();
       setCollapsedHeaders((prev) => {
         const newSet = new Set(prev);
@@ -435,6 +435,9 @@ const TableHeaderCell = ({
   const ResizeHandle = columnResizing && !isSelectionColumn && (
     <div
       className="st-header-resize-handle-container"
+      role="separator"
+      aria-label={`Resize ${header.label} column`}
+      aria-orientation="vertical"
       onMouseDown={(event: MouseEvent) => {
         // Get the start width from the DOM element directly if ref is not available
         const startWidth = document.getElementById(
@@ -523,7 +526,20 @@ const TableHeaderCell = ({
   );
 
   const CollapseIconComponent = isCollapsible && !isSelectionColumn && (
-    <div className="st-icon-container st-collapse-icon-container" onClick={handleCollapseToggle}>
+    <div
+      className="st-icon-container st-collapse-icon-container"
+      onClick={(event: MouseEvent) => handleCollapseToggle(event)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleCollapseToggle(e);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`${isCollapsed ? "Expand" : "Collapse"} ${header.label} column`}
+      aria-expanded={!isCollapsed}
+    >
       {isCollapsed ? headerCollapseIcon : headerExpandIcon}
     </div>
   );
@@ -551,6 +567,7 @@ const TableHeaderCell = ({
           <Checkbox
             checked={areAllRowsSelected ? areAllRowsSelected() : false}
             onChange={handleSelectAllChange}
+            ariaLabel="Select all rows"
           />
         ) : isEditing ? (
           <StringEdit
@@ -565,10 +582,20 @@ const TableHeaderCell = ({
     </Tooltip>
   );
 
+  // Determine aria-sort value
+  const getAriaSort = () => {
+    if (!header.isSortable) return undefined;
+    if (sort?.key.accessor === header.accessor) {
+      return sort.direction === "asc" ? "ascending" : "descending";
+    }
+    return "none";
+  };
+
   return (
     <Animate
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
+      aria-sort={getAriaSort()}
       onDragOver={(event) => {
         if (!isSelectionColumn) {
           throttle({
