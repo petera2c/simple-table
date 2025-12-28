@@ -235,7 +235,7 @@ const TableHeaderCell = ({
   };
 
   // Filter handlers
-  const handleFilterIconClick = (event: MouseEvent) => {
+  const handleFilterIconClick = (event: MouseEvent | React.KeyboardEvent) => {
     event.stopPropagation();
     setIsFilterDropdownOpen(!isFilterDropdownOpen);
   };
@@ -493,6 +493,16 @@ const TableHeaderCell = ({
     <div
       className="st-icon-container"
       onClick={(event) => handleColumnHeaderClick({ event, header })}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          onSort(header.accessor);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`Sort ${header.label} ${sort.direction === "asc" ? "descending" : "ascending"}`}
     >
       {sort.direction === "asc" && sortUpIcon && sortUpIcon}
       {sort.direction === "desc" && sortDownIcon && sortDownIcon}
@@ -500,7 +510,21 @@ const TableHeaderCell = ({
   );
 
   const FilterIconComponent = filterable && filterIcon && (
-    <div className="st-icon-container" onClick={handleFilterIconClick}>
+    <div
+      className="st-icon-container"
+      onClick={handleFilterIconClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleFilterIconClick(e);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`Filter ${header.label}`}
+      aria-expanded={isFilterDropdownOpen}
+      aria-haspopup="dialog"
+    >
       {cloneElement(filterIcon as React.ReactElement, {
         style: {
           fill: currentFilter
