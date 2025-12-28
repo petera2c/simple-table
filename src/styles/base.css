@@ -557,6 +557,14 @@ input {
   align-items: center;
   justify-content: center;
   margin-left: 4px;
+  border-radius: 4px;
+  transition: outline 0.2s ease;
+}
+
+/* Focus visible styles for keyboard navigation */
+.st-icon-container:focus-visible {
+  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
+  outline-offset: -2px;
 }
 
 .st-collapse-icon-container {
@@ -791,6 +799,11 @@ input {
   background-color: var(--st-page-btn-hover-background-color);
 }
 
+.st-next-prev-btn:focus-visible {
+  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
+  outline-offset: 0;
+}
+
 .st-page-btn {
   margin-right: var(--st-spacing-small);
   padding: var(--st-spacing-small);
@@ -804,6 +817,11 @@ input {
 
 .st-page-btn:hover {
   background-color: var(--st-button-hover-background-color);
+}
+
+.st-page-btn:focus-visible {
+  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
+  outline-offset: -2px;
 }
 
 .st-page-btn.active {
@@ -935,6 +953,12 @@ input {
 
 .st-checkbox-input {
   display: none; /* Hide the default checkbox */
+}
+
+/* Focus visible styles for checkbox */
+.st-checkbox-input:focus-visible + .st-checkbox-custom {
+  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
+  outline-offset: 0;
 }
 
 .st-checkbox-custom {
