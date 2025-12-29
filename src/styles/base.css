@@ -577,7 +577,7 @@ input {
 /* Focus visible styles for keyboard navigation */
 .st-icon-container:focus-visible {
   outline: 2px solid var(--st-focus-ring-color, #3b82f6);
-  outline-offset: -2px;
+  outline-offset: 2px;
 }
 
 .st-collapse-icon-container {
