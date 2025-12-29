@@ -21,12 +21,14 @@ export const rowButtonsExampleDefaults = {
 const IconButton = ({
   icon,
   title,
+  ariaLabel,
   onClick,
   color = "#666",
   hoverColor = "#333",
 }: {
   icon: string;
   title: string;
+  ariaLabel?: string;
   onClick: () => void;
   color?: string;
   hoverColor?: string;
@@ -34,6 +36,7 @@ const IconButton = ({
   <button
     onClick={onClick}
     title={title}
+    aria-label={ariaLabel || title}
     style={{
       background: "none",
       border: "1px solid #ddd",
@@ -193,6 +196,7 @@ const RowButtonsExample = (props: UniversalTableProps) => {
       <IconButton
         icon="👁️"
         title="View Details"
+        ariaLabel={`View details for ${row.name}`}
         onClick={() => handleView(row)}
         color="#0066cc"
         hoverColor="#004499"
@@ -202,6 +206,7 @@ const RowButtonsExample = (props: UniversalTableProps) => {
       <IconButton
         icon="✏️"
         title="Edit Employee"
+        ariaLabel={`Edit ${row.name}`}
         onClick={() => handleEdit(row)}
         color="#ff9500"
         hoverColor="#cc7700"
@@ -211,6 +216,7 @@ const RowButtonsExample = (props: UniversalTableProps) => {
       <IconButton
         icon="📧"
         title="Send Email"
+        ariaLabel={`Send email to ${row.name}`}
         onClick={() => handleSendEmail(row)}
         color="#28a745"
         hoverColor="#1e7e34"
@@ -220,6 +226,7 @@ const RowButtonsExample = (props: UniversalTableProps) => {
       <IconButton
         icon="📋"
         title="Duplicate"
+        ariaLabel={`Duplicate ${row.name}`}
         onClick={() => handleDuplicate(row)}
         color="#6c757d"
         hoverColor="#495057"
@@ -229,6 +236,7 @@ const RowButtonsExample = (props: UniversalTableProps) => {
       <IconButton
         icon="🗑️"
         title="Delete Employee"
+        ariaLabel={`Delete ${row.name}`}
         onClick={() => handleDelete(row)}
         color="#dc3545"
         hoverColor="#bd2130"

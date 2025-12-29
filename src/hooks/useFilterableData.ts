@@ -2,8 +2,9 @@ import { useState, useCallback, useMemo } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
-import { Accessor } from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { getNestedValue } from "../utils/rowUtils";
+import useHeaderLookup from "./useHeaderLookup";
 
 // Helper function to compute filtered rows for a given filter state
 const computeFilteredRows = ({
@@ -33,8 +34,10 @@ const computeFilteredRows = ({
 
 interface UseFilterableDataProps {
   rows: Row[];
+  headers: HeaderObject[];
   externalFilterHandling: boolean;
   onFilterChange?: (filters: TableFilterState) => void;
+  announce?: (message: string) => void;
 }
 
 interface UseFilterableDataReturn {
@@ -49,11 +52,16 @@ interface UseFilterableDataReturn {
 
 const useFilterableData = ({
   rows,
+  headers,
   externalFilterHandling,
   onFilterChange,
+  announce,
 }: UseFilterableDataProps): UseFilterableDataReturn => {
   // Single filter state instead of complex 3-state system
   const [filters, setFilters] = useState<TableFilterState>({});
+
+  // Create O(1) lookup map for headers
+  const headerLookup = useHeaderLookup(headers);
 
   // Compute current filtered rows
   const filteredRows = useMemo(() => {
@@ -74,8 +82,16 @@ const useFilterableData = ({
 
       setFilters(newFilterState);
       onFilterChange?.(newFilterState);
+
+      // Announce filter change to screen readers
+      if (announce) {
+        const header = headerLookup.get(filter.accessor);
+        if (header) {
+          announce(`Filter applied to ${header.label}`);
+        }
+      }
     },
-    [filters, onFilterChange]
+    [filters, onFilterChange, announce, headerLookup]
   );
 
   // Clear single filter
@@ -86,15 +102,28 @@ const useFilterableData = ({
 
       setFilters(newFilterState);
       onFilterChange?.(newFilterState);
+
+      // Announce filter removal to screen readers
+      if (announce) {
+        const header = headerLookup.get(accessor);
+        if (header) {
+          announce(`Filter removed from ${header.label}`);
+        }
+      }
     },
-    [filters, onFilterChange]
+    [filters, onFilterChange, announce, headerLookup]
   );
 
   // Clear all filters
   const clearAllFilters = useCallback(() => {
     setFilters({});
     onFilterChange?.({});
-  }, [onFilterChange]);
+
+    // Announce all filters cleared to screen readers
+    if (announce) {
+      announce("All filters cleared");
+    }
+  }, [onFilterChange, announce]);
 
   // Function to preview what rows would be after applying a filter
   // This is used for pre-animation calculation

@@ -12,6 +12,7 @@ interface UseTableDimensionsProps {
 interface UseTableDimensionsReturn {
   containerWidth: number;
   calculatedHeaderHeight: number;
+  maxHeaderDepth: number;
 }
 
 export const useTableDimensions = ({
@@ -86,5 +87,6 @@ export const useTableDimensions = ({
   return {
     containerWidth,
     calculatedHeaderHeight,
+    maxHeaderDepth,
   };
 };

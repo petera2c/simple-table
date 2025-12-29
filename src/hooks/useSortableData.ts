@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import SortColumn, { SortDirection } from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
+import useHeaderLookup from "./useHeaderLookup";
 
 // Helper function to compute sorted rows for a given sort column
 const computeSortedRows = ({
@@ -50,6 +51,7 @@ const useSortableData = ({
   rowGrouping,
   initialSortColumn,
   initialSortDirection,
+  announce,
 }: {
   headers: HeaderObject[];
   tableRows: Row[];
@@ -58,32 +60,23 @@ const useSortableData = ({
   rowGrouping?: string[];
   initialSortColumn?: string;
   initialSortDirection?: SortDirection;
+  announce?: (message: string) => void;
 }) => {
+  // Create O(1) lookup map for headers
+  const headerLookup = useHeaderLookup(headers);
+
   // Initialize sort state with initial values if provided
   const getInitialSort = useCallback((): SortColumn | null => {
     if (!initialSortColumn) return null;
 
-    const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
-      for (const header of headers) {
-        if (header.accessor === initialSortColumn) {
-          return header;
-        }
-        if (header.children && header.children.length > 0) {
-          const found = findHeaderRecursively(header.children);
-          if (found) return found;
-        }
-      }
-      return undefined;
-    };
-
-    const targetHeader = findHeaderRecursively(headers);
+    const targetHeader = headerLookup.get(initialSortColumn);
     if (!targetHeader) return null;
 
     return {
       key: targetHeader,
       direction: initialSortDirection || "asc",
     };
-  }, [headers, initialSortColumn, initialSortDirection]);
+  }, [headerLookup, initialSortColumn, initialSortDirection]);
 
   // Single sort state instead of complex 3-state system
   const [sort, setSort] = useState<SortColumn | null>(getInitialSort);
@@ -160,20 +153,8 @@ const useSortableData = ({
 
       const { accessor, direction } = props;
 
-      const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
-        for (const header of headers) {
-          if (header.accessor === accessor) {
-            return header;
-          }
-          if (header.children && header.children.length > 0) {
-            const found = findHeaderRecursively(header.children);
-            if (found) return found;
-          }
-        }
-        return undefined;
-      };
-
-      const targetHeader = findHeaderRecursively(headers);
+      // Find the header using O(1) lookup
+      const targetHeader = headerLookup.get(accessor);
 
       if (!targetHeader) {
         return;
@@ -204,8 +185,18 @@ const useSortableData = ({
 
       setSort(newSortColumn);
       onSortChange?.(newSortColumn);
+
+      // Announce sort change to screen readers
+      if (announce) {
+        if (newSortColumn) {
+          const directionText = newSortColumn.direction === "asc" ? "ascending" : "descending";
+          announce(`Sorted by ${targetHeader.label}, ${directionText}`);
+        } else {
+          announce(`Sort removed from ${targetHeader.label}`);
+        }
+      }
     },
-    [sort, headers, onSortChange]
+    [sort, headerLookup, onSortChange, announce]
   );
 
   // Function to preview what rows would be after applying a sort

@@ -83,3 +83,44 @@ export const getColumnRange = (startColIndex: number, endColIndex: number): numb
 export const calculatePinnedWidth = (width = 0): number => {
   return width ? width + PINNED_BORDER_WIDTH : 0;
 };
+
+/**
+ * Generates a unique ID for header description element
+ * @param accessor The header accessor
+ * @returns Unique ID string for aria-describedby
+ */
+export const getHeaderDescriptionId = (accessor: string | number): string => {
+  return `header-desc-${accessor}`;
+};
+
+/**
+ * Builds a descriptive string for screen readers about a column header
+ * @param header The header object
+ * @param filterable Whether the column is filterable
+ * @returns Description string for aria-describedby, or empty string if no description
+ */
+export const getHeaderDescription = (header: HeaderObject, filterable: boolean): string => {
+  const parts: string[] = [];
+
+  // Add column type if available
+  if (header.type && header.type !== "other") {
+    parts.push(`${header.type} column`);
+  }
+
+  // Add sortable status
+  if (header.isSortable) {
+    parts.push("sortable");
+  }
+
+  // Add filterable status
+  if (filterable) {
+    parts.push("filterable");
+  }
+
+  // Add tooltip if available
+  if (header.tooltip) {
+    parts.push(header.tooltip);
+  }
+
+  return parts.join(", ");
+};

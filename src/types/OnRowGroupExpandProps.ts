@@ -1,11 +1,11 @@
-import { MouseEvent } from "react";
+import { KeyboardEvent, MouseEvent } from "react";
 import Row from "./Row";
 import { Accessor } from "./HeaderObject";
 
 interface OnRowGroupExpandProps {
   row: Row;
   depth: number;
-  event: MouseEvent;
+  event: MouseEvent | KeyboardEvent;
   rowId: string | number;
   groupingKey?: string;
   isExpanded: boolean;
