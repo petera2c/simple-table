@@ -59,6 +59,7 @@
   /* Border colors */
   --st-selected-border-color: var(--st-blue-600);
   --st-editable-cell-focus-border-color: var(--st-blue-500);
+  --st-focus-ring-color: var(--st-blue-600);
 
   /* Button colors */
   --st-button-hover-background-color: var(--st-blue-200);

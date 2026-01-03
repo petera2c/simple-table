@@ -16,12 +16,13 @@ const FilterActions: React.FC<FilterActionsProps> = ({ onApply, onClear, canAppl
         className={`st-filter-button st-filter-button-apply ${
           !canApply ? "st-filter-button-disabled" : ""
         }`}
+        tabIndex={0}
       >
         Apply
       </button>
 
       {showClear && onClear && (
-        <button onClick={onClear} className="st-filter-button st-filter-button-clear">
+        <button onClick={onClear} className="st-filter-button st-filter-button-clear" tabIndex={0}>
           Clear
         </button>
       )}

@@ -134,6 +134,13 @@ const CustomSelect = ({
               role="option"
               aria-selected={option.value === value}
               onClick={() => handleOptionClick(option.value)}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleOptionClick(option.value);
+                }
+              }}
             >
               {option.label}
             </div>

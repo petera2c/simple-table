@@ -169,7 +169,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   // Close when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | KeyboardEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         // Also check if the click is within the parent element (which contains the trigger)
         const parentElement = dropdownRef.current.parentElement;
@@ -179,14 +179,21 @@ const Dropdown: React.FC<DropdownProps> = ({
         }
       }
     };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleClickOutside(event);
+      }
+    };
 
     if (open) {
       // Use capture phase to ensure this runs before other handlers
       document.addEventListener("mousedown", handleClickOutside, true);
+      document.addEventListener("keydown", handleKeyDown, true);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside, true);
+      document.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [onClose, open, setOpen]);
 

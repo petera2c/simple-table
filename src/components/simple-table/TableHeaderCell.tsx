@@ -241,7 +241,6 @@ const TableHeaderCell = ({
 
   // Filter handlers
   const handleFilterIconClick = (event: MouseEvent | React.KeyboardEvent) => {
-    event.stopPropagation();
     setIsFilterDropdownOpen(!isFilterDropdownOpen);
   };
 
@@ -272,13 +271,6 @@ const TableHeaderCell = ({
     },
     [headers, setHeaders, onHeaderEdit, header]
   );
-
-  // Handle header dropdown toggle
-  // const handleHeaderDropdownToggle = useCallback(() => {
-  //   if (setActiveHeaderDropdown) {
-  //     setActiveHeaderDropdown(isDropdownOpen ? null : header);
-  //   }
-  // }, [setActiveHeaderDropdown, isDropdownOpen, header]);
 
   // Close header dropdown
   const handleHeaderDropdownClose = useCallback(() => {
@@ -500,8 +492,6 @@ const TableHeaderCell = ({
       onClick={(event) => handleColumnHeaderClick({ event, header })}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          e.stopPropagation();
           onSort(header.accessor);
         }
       }}
@@ -520,8 +510,20 @@ const TableHeaderCell = ({
       onClick={handleFilterIconClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleFilterIconClick(e);
+          // Only handle if the event target is the container itself or the icon
+          // Don't handle if the event came from within the dropdown
+          if (
+            e.target === e.currentTarget ||
+            (e.currentTarget as HTMLElement).contains(e.target as Node)
+          ) {
+            // Check if the target is not inside the dropdown content
+            const target = e.target as HTMLElement;
+            const isFromDropdown = target.closest(".st-dropdown-content");
+            if (!isFromDropdown) {
+              e.preventDefault();
+              handleFilterIconClick(e);
+            }
+          }
         }
       }}
       tabIndex={0}

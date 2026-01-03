@@ -576,7 +576,7 @@ input {
 
 /* Focus visible styles for keyboard navigation */
 .st-icon-container:focus-visible {
-  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
+  outline: 1px solid var(--st-focus-ring-color);
   outline-offset: 2px;
 }
 
@@ -813,7 +813,7 @@ input {
 }
 
 .st-next-prev-btn:focus-visible {
-  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
+  outline: 1px solid var(--st-focus-ring-color);
   outline-offset: 0;
 }
 
@@ -833,7 +833,7 @@ input {
 }
 
 .st-page-btn:focus-visible {
-  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
+  outline: 1px solid var(--st-focus-ring-color);
   outline-offset: -2px;
 }
 
@@ -965,13 +965,18 @@ input {
 }
 
 .st-checkbox-input {
-  display: none; /* Hide the default checkbox */
+  /* Visually hide but keep in accessibility tree */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 /* Focus visible styles for checkbox */
 .st-checkbox-input:focus-visible + .st-checkbox-custom {
-  outline: 2px solid var(--st-focus-ring-color, #3b82f6);
-  outline-offset: 0;
+  outline: 1px solid var(--st-focus-ring-color);
+  outline-offset: -1px;
 }
 
 .st-checkbox-custom {
@@ -1473,6 +1478,10 @@ input {
   font-weight: 500;
   font-family: inherit;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+.st-filter-button:focus {
+  outline: 2px solid var(--st-focus-ring-color);
+  outline-offset: -2px;
 }
 
 /* Apply Button */
