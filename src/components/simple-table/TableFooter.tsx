@@ -185,6 +185,8 @@ const TableFooter = ({
               key={index}
               onClick={() => handlePageChange(page)}
               className={`st-page-btn ${currentPage === page ? "active" : ""}`}
+              aria-label={`Go to page ${page}`}
+              aria-current={currentPage === page ? "page" : undefined}
             >
               {page}
             </button>
@@ -194,6 +196,7 @@ const TableFooter = ({
           className={`st-next-prev-btn ${isPrevDisabled ? "disabled" : ""}`}
           onClick={handlePrevPage}
           disabled={isPrevDisabled}
+          aria-label="Go to previous page"
         >
           {prevIcon}
         </button>
@@ -202,6 +205,7 @@ const TableFooter = ({
           className={`st-next-prev-btn ${isNextDisabled ? "disabled" : ""}`}
           onClick={handleNextPage}
           disabled={isNextDisabled}
+          aria-label="Go to next page"
         >
           {nextIcon}
         </button>

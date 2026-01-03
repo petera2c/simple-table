@@ -1,3 +1,16 @@
+/* Screen reader only - visually hidden but accessible to screen readers */
+.st-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .simple-table-root {
   --st-after-width: 11.01px;
   --st-resize-handle-width: 2px;
@@ -557,6 +570,14 @@ input {
   align-items: center;
   justify-content: center;
   margin-left: 4px;
+  border-radius: 4px;
+  transition: outline 0.2s ease;
+}
+
+/* Focus visible styles for keyboard navigation */
+.st-icon-container:focus-visible {
+  outline: 1px solid var(--st-focus-ring-color);
+  outline-offset: 2px;
 }
 
 .st-collapse-icon-container {
@@ -791,6 +812,11 @@ input {
   background-color: var(--st-page-btn-hover-background-color);
 }
 
+.st-next-prev-btn:focus-visible {
+  outline: 1px solid var(--st-focus-ring-color);
+  outline-offset: 0;
+}
+
 .st-page-btn {
   margin-right: var(--st-spacing-small);
   padding: var(--st-spacing-small);
@@ -804,6 +830,11 @@ input {
 
 .st-page-btn:hover {
   background-color: var(--st-button-hover-background-color);
+}
+
+.st-page-btn:focus-visible {
+  outline: 1px solid var(--st-focus-ring-color);
+  outline-offset: -2px;
 }
 
 .st-page-btn.active {
@@ -934,7 +965,18 @@ input {
 }
 
 .st-checkbox-input {
-  display: none; /* Hide the default checkbox */
+  /* Visually hide but keep in accessibility tree */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Focus visible styles for checkbox */
+.st-checkbox-input:focus-visible + .st-checkbox-custom {
+  outline: 1px solid var(--st-focus-ring-color);
+  outline-offset: -1px;
 }
 
 .st-checkbox-custom {
@@ -1436,6 +1478,10 @@ input {
   font-weight: 500;
   font-family: inherit;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+.st-filter-button:focus {
+  outline: 2px solid var(--st-focus-ring-color);
+  outline-offset: -2px;
 }
 
 /* Apply Button */

@@ -14,7 +14,12 @@ import HeaderObject, { DEFAULT_SHOW_WHEN } from "../../types/HeaderObject";
 import SortColumn from "../../types/SortColumn";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { getCellId } from "../../utils/cellUtils";
-import { getHeaderLeafIndices, getColumnRange } from "../../utils/headerUtils";
+import {
+  getHeaderLeafIndices,
+  getColumnRange,
+  getHeaderDescriptionId,
+  getHeaderDescription,
+} from "../../utils/headerUtils";
 import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
@@ -235,8 +240,7 @@ const TableHeaderCell = ({
   };
 
   // Filter handlers
-  const handleFilterIconClick = (event: MouseEvent) => {
-    event.stopPropagation();
+  const handleFilterIconClick = (event: MouseEvent | React.KeyboardEvent) => {
     setIsFilterDropdownOpen(!isFilterDropdownOpen);
   };
 
@@ -268,13 +272,6 @@ const TableHeaderCell = ({
     [headers, setHeaders, onHeaderEdit, header]
   );
 
-  // Handle header dropdown toggle
-  // const handleHeaderDropdownToggle = useCallback(() => {
-  //   if (setActiveHeaderDropdown) {
-  //     setActiveHeaderDropdown(isDropdownOpen ? null : header);
-  //   }
-  // }, [setActiveHeaderDropdown, isDropdownOpen, header]);
-
   // Close header dropdown
   const handleHeaderDropdownClose = useCallback(() => {
     if (setActiveHeaderDropdown) {
@@ -284,7 +281,7 @@ const TableHeaderCell = ({
 
   // Handle collapse/expand toggle
   const handleCollapseToggle = useCallback(
-    (event: MouseEvent) => {
+    (event: MouseEvent | React.KeyboardEvent) => {
       event.stopPropagation();
       setCollapsedHeaders((prev) => {
         const newSet = new Set(prev);
@@ -435,6 +432,9 @@ const TableHeaderCell = ({
   const ResizeHandle = columnResizing && !isSelectionColumn && (
     <div
       className="st-header-resize-handle-container"
+      role="separator"
+      aria-label={`Resize ${header.label} column`}
+      aria-orientation="vertical"
       onMouseDown={(event: MouseEvent) => {
         // Get the start width from the DOM element directly if ref is not available
         const startWidth = document.getElementById(
@@ -490,6 +490,14 @@ const TableHeaderCell = ({
     <div
       className="st-icon-container"
       onClick={(event) => handleColumnHeaderClick({ event, header })}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onSort(header.accessor);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`Sort ${header.label} ${sort.direction === "asc" ? "descending" : "ascending"}`}
     >
       {sort.direction === "asc" && sortUpIcon && sortUpIcon}
       {sort.direction === "desc" && sortDownIcon && sortDownIcon}
@@ -497,7 +505,33 @@ const TableHeaderCell = ({
   );
 
   const FilterIconComponent = filterable && filterIcon && (
-    <div className="st-icon-container" onClick={handleFilterIconClick}>
+    <div
+      className="st-icon-container"
+      onClick={handleFilterIconClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          // Only handle if the event target is the container itself or the icon
+          // Don't handle if the event came from within the dropdown
+          if (
+            e.target === e.currentTarget ||
+            (e.currentTarget as HTMLElement).contains(e.target as Node)
+          ) {
+            // Check if the target is not inside the dropdown content
+            const target = e.target as HTMLElement;
+            const isFromDropdown = target.closest(".st-dropdown-content");
+            if (!isFromDropdown) {
+              e.preventDefault();
+              handleFilterIconClick(e);
+            }
+          }
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`Filter ${header.label}`}
+      aria-expanded={isFilterDropdownOpen}
+      aria-haspopup="dialog"
+    >
       {cloneElement(filterIcon as React.ReactElement, {
         style: {
           fill: currentFilter
@@ -523,7 +557,20 @@ const TableHeaderCell = ({
   );
 
   const CollapseIconComponent = isCollapsible && !isSelectionColumn && (
-    <div className="st-icon-container st-collapse-icon-container" onClick={handleCollapseToggle}>
+    <div
+      className="st-icon-container st-collapse-icon-container"
+      onClick={(event: MouseEvent) => handleCollapseToggle(event)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleCollapseToggle(e);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`${isCollapsed ? "Expand" : "Collapse"} ${header.label} column`}
+      aria-expanded={!isCollapsed}
+    >
       {isCollapsed ? headerCollapseIcon : headerExpandIcon}
     </div>
   );
@@ -551,6 +598,7 @@ const TableHeaderCell = ({
           <Checkbox
             checked={areAllRowsSelected ? areAllRowsSelected() : false}
             onChange={handleSelectAllChange}
+            ariaLabel="Select all rows"
           />
         ) : isEditing ? (
           <StringEdit
@@ -565,10 +613,26 @@ const TableHeaderCell = ({
     </Tooltip>
   );
 
+  // Determine aria-sort value
+  const getAriaSort = () => {
+    if (!header.isSortable) return undefined;
+    if (sort?.key.accessor === header.accessor) {
+      return sort.direction === "asc" ? "ascending" : "descending";
+    }
+    return "none";
+  };
+
+  // Generate unique ID and description for aria-describedby
+  const descriptionId = getHeaderDescriptionId(header.accessor);
+  const headerDescription = getHeaderDescription(header, filterable);
+
   return (
     <Animate
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
+      aria-sort={getAriaSort()}
+      aria-colindex={colIndex + 1}
+      aria-describedby={headerDescription ? descriptionId : undefined}
       onDragOver={(event) => {
         if (!isSelectionColumn) {
           throttle({
@@ -639,6 +703,13 @@ const TableHeaderCell = ({
             position: dropdownPosition,
           })}
         </div>
+      )}
+
+      {/* Visually hidden description for screen readers */}
+      {headerDescription && (
+        <span id={descriptionId} className="st-sr-only">
+          {headerDescription}
+        </span>
       )}
     </Animate>
   );

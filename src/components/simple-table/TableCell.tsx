@@ -335,7 +335,7 @@ const TableCell = ({
 
   // Handle row expansion
   const handleRowExpansion = useCallback(
-    (event: React.MouseEvent) => {
+    (event: React.MouseEvent | React.KeyboardEvent) => {
       event.stopPropagation(); // Prevent event bubbling
 
       // Calculate current expansion state based on expandAll setting
@@ -510,10 +510,18 @@ const TableCell = ({
     // Only show buttons when hovered or row is selected
     if (!isHovered && !(isRowSelected && isRowSelected(String(rowId)))) return null;
 
-    const buttonProps: RowButtonProps = { row };
+    const buttonProps: RowButtonProps = {
+      row,
+      rowIndex: displayRowNumber,
+      rowId,
+    };
 
     return (
-      <div className="st-row-buttons">
+      <div
+        className="st-row-buttons"
+        role="group"
+        aria-label={`Actions for row ${displayRowNumber + 1}`}
+      >
         {rowButtons.map((button, index) => (
           <span key={index} className="st-row-button">
             {button(buttonProps)}
@@ -568,6 +576,7 @@ const TableCell = ({
       data-col-index={colIndex}
       data-row-id={rowId}
       data-row-index={rowIndex}
+      aria-colindex={colIndex + 1}
       id={cellId}
       key={cellKey}
       onClick={handleCellClick}
@@ -597,7 +606,17 @@ const TableCell = ({
           className={`st-icon-container st-expand-icon-container ${
             isRowExpanded ? "expanded" : "collapsed"
           }`}
-          onClick={handleRowExpansion}
+          onClick={(event: React.MouseEvent) => handleRowExpansion(event)}
+          role="button"
+          tabIndex={0}
+          aria-label={`${isRowExpanded ? "Collapse" : "Expand"} row group`}
+          aria-expanded={isRowExpanded}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleRowExpansion(e);
+            }
+          }}
         >
           {expandIcon}
         </div>
@@ -624,6 +643,7 @@ const TableCell = ({
                     <Checkbox
                       checked={isRowSelected ? isRowSelected(String(rowId)) : false}
                       onChange={handleRowCheckboxChange}
+                      ariaLabel={`Select row ${displayRowNumber + 1}`}
                     />
                   ) : (
                     <span className="st-row-number">{displayRowNumber + 1}</span>
