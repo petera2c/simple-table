@@ -111,10 +111,12 @@ const TableCell = ({
     canExpandRowGroup,
     cellRegistry,
     cellUpdateFlash,
+    collapsedRows,
     columnBorders,
     draggedHeaderRef,
     enableRowSelection,
-    expandAll,
+    expandedDepths,
+    expandedRows,
     expandIcon,
     handleMouseDown,
     handleMouseOver,
@@ -132,13 +134,13 @@ const TableCell = ({
     rowButtons,
     rowGrouping,
     rowIdAccessor,
+    setCollapsedRows,
+    setExpandedRows,
     setRowStateMap,
     rowsWithSelectedCells,
     selectedColumns,
-    setUnexpandedRows,
     tableBodyContainerRef,
     theme,
-    unexpandedRows,
     useOddColumnBackground,
   } = useTableContext();
 
@@ -159,8 +161,8 @@ const TableCell = ({
   const canExpandFurther = rowGrouping && depth < rowGrouping.length;
   // Check if this specific row can be expanded (if canExpandRowGroup is provided)
   const isRowExpandable = canExpandRowGroup ? canExpandRowGroup(row) : true;
-  // Determine if row is expanded based on expandAll setting
-  const isRowExpanded = getIsRowExpanded(rowId, expandAll, unexpandedRows);
+  // Determine if row is expanded based on expandedDepths setting
+  const isRowExpanded = getIsRowExpanded(rowId, depth, expandedDepths, expandedRows, collapsedRows);
 
   // Check if this cell is currently flashing from copy operation
   const isCellCopyFlashing = isCopyFlashing({ rowIndex, colIndex, rowId });
@@ -338,20 +340,44 @@ const TableCell = ({
     (event: React.MouseEvent | React.KeyboardEvent) => {
       event.stopPropagation(); // Prevent event bubbling
 
-      // Calculate current expansion state based on expandAll setting
-      const wasExpanded = getIsRowExpanded(rowId, expandAll, unexpandedRows);
+      // Calculate current expansion state based on expandedDepths setting
+      const wasExpanded = getIsRowExpanded(
+        rowId,
+        depth,
+        expandedDepths,
+        expandedRows,
+        collapsedRows
+      );
 
-      // Update the internal expansion state
       const rowIdStr = String(rowId);
-      setUnexpandedRows((prev) => {
-        const newSet = new Set(prev);
-        if (newSet.has(rowIdStr)) {
-          newSet.delete(rowIdStr);
-        } else {
-          newSet.add(rowIdStr);
-        }
-        return newSet;
-      });
+
+      if (wasExpanded) {
+        // Row is currently expanded, collapse it
+        setCollapsedRows((prev) => {
+          const next = new Map(prev);
+          next.set(rowIdStr, depth);
+          return next;
+        });
+        // Remove from expandedRows if it's there
+        setExpandedRows((prev) => {
+          const next = new Map(prev);
+          next.delete(rowIdStr);
+          return next;
+        });
+      } else {
+        // Row is currently collapsed, expand it
+        setExpandedRows((prev) => {
+          const next = new Map(prev);
+          next.set(rowIdStr, depth);
+          return next;
+        });
+        // Remove from collapsedRows if it's there
+        setCollapsedRows((prev) => {
+          const next = new Map(prev);
+          next.delete(rowIdStr);
+          return next;
+        });
+      }
 
       // If collapsing, clear the row state (loading/error/empty)
       if (wasExpanded) {
@@ -430,18 +456,20 @@ const TableCell = ({
       }
     },
     [
+      collapsedRows,
       currentGroupingKey,
       depth,
-      expandAll,
+      expandedDepths,
+      expandedRows,
       header.pinned,
       onRowGroupExpand,
       row,
       rowGrouping,
       rowId,
       rowPath,
+      setCollapsedRows,
+      setExpandedRows,
       setRowStateMap,
-      setUnexpandedRows,
-      unexpandedRows,
     ]
   );
 

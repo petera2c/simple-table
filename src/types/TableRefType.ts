@@ -38,6 +38,24 @@ type TableRefType = {
   getCurrentPage: () => number;
   /** Sets the current page (1-indexed) */
   setPage: (page: number) => void;
+  /** Expand all rows at all depths */
+  expandAll: () => void;
+  /** Collapse all rows at all depths */
+  collapseAll: () => void;
+  /** Expand all rows at a specific depth (0-indexed) */
+  expandDepth: (depth: number) => void;
+  /** Collapse all rows at a specific depth (0-indexed) */
+  collapseDepth: (depth: number) => void;
+  /** Toggle expansion for a specific depth */
+  toggleDepth: (depth: number) => void;
+  /** Set which depths are expanded (replaces current state) */
+  setExpandedDepths: (depths: Set<number>) => void;
+  /** Get currently expanded depths */
+  getExpandedDepths: () => Set<number>;
+  /** Get the grouping property name for a depth index */
+  getGroupingProperty: (depth: number) => Accessor | undefined;
+  /** Get the depth index for a grouping property name */
+  getGroupingDepth: (property: Accessor) => number;
 };
 
 export default TableRefType;
