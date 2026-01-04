@@ -9,8 +9,9 @@ interface UseFlattenedRowsProps {
   rows: Row[];
   rowGrouping?: Accessor[];
   rowIdAccessor: Accessor;
-  unexpandedRows: Set<string>;
-  expandAll: boolean;
+  expandedRows: Map<string, number>;
+  collapsedRows: Map<string, number>;
+  expandedDepths: Set<number>;
   rowStateMap: Map<string | number, RowState>;
   hasLoadingRenderer: boolean;
   hasErrorRenderer: boolean;
@@ -27,8 +28,9 @@ const useFlattenedRows = ({
   rows,
   rowGrouping = [],
   rowIdAccessor,
-  unexpandedRows,
-  expandAll,
+  expandedRows,
+  collapsedRows,
+  expandedDepths,
   rowStateMap,
   hasLoadingRenderer,
   hasErrorRenderer,
@@ -87,7 +89,13 @@ const useFlattenedRows = ({
         });
 
         // Check if row should be expanded using the unique ID
-        const isExpanded = isRowExpanded(rowId, expandAll, unexpandedRows);
+        const isExpanded = isRowExpanded(
+          rowId,
+          currentDepth,
+          expandedDepths,
+          expandedRows,
+          collapsedRows
+        );
 
         // If row is expanded and has nested data for the current grouping level
         if (isExpanded && currentDepth < rowGrouping.length) {
@@ -150,8 +158,9 @@ const useFlattenedRows = ({
     rows,
     rowGrouping,
     rowIdAccessor,
-    unexpandedRows,
-    expandAll,
+    expandedRows,
+    collapsedRows,
+    expandedDepths,
     rowStateMap,
     hasLoadingRenderer,
     hasErrorRenderer,
