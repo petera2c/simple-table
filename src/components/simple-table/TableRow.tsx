@@ -147,7 +147,7 @@ const TableRow = ({
       }}
       style={{
         gridTemplateColumns,
-        transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+        top: calculateRowTopPosition({ position, rowHeight }),
         height: `${rowHeight}px`,
       }}
     >

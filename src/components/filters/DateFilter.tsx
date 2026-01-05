@@ -171,7 +171,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
           setOpen={setIsOpen}
           onClose={handleClose}
           positioning="absolute"
-          overflow="visible"
+          overflow="hidden"
         >
           <DatePicker
             value={currentDate}

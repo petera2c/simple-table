@@ -294,9 +294,7 @@ input {
   min-width: 100%;
 
   /* Performance optimizations for virtual scrolling */
-  will-change: transform;
   backface-visibility: hidden;
-  transform: translateZ(0);
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered
@@ -1197,7 +1195,7 @@ input {
   -webkit-overflow-scrolling: touch;
   touch-action: auto;
   min-width: 120px;
-  max-height: 400px;
+  max-height: 300px;
   transform: translateZ(0);
   will-change: transform;
   cursor: default;
