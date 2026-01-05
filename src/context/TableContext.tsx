@@ -8,6 +8,7 @@ import {
   SetStateAction,
 } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
+import { ColumnVisibilityState } from "../types/ColumnVisibilityTypes";
 import TableRow from "../types/TableRow";
 import Cell from "../types/Cell";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
@@ -99,6 +100,7 @@ interface TableContextType {
   onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void;
+  onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void;
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
   onLoadMore?: () => void;
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;

@@ -2,8 +2,12 @@ import { useState } from "react";
 import Checkbox from "../../Checkbox";
 import HeaderObject from "../../../types/HeaderObject";
 import { useTableContext } from "../../../context/TableContext";
-import { areAllChildrenHidden, findAndMarkParentsVisible } from "./columnEditorUtils";
-import { updateParentHeaders } from "./columnEditorUtils";
+import {
+  areAllChildrenHidden,
+  findAndMarkParentsVisible,
+  updateParentHeaders,
+  buildColumnVisibilityState,
+} from "./columnEditorUtils";
 
 // Recursive component to render headers with proper indentation
 const ColumnEditorCheckbox = ({
@@ -20,7 +24,7 @@ const ColumnEditorCheckbox = ({
   isCheckedOverride?: boolean;
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const { expandIcon, headers, setHeaders } = useTableContext();
+  const { expandIcon, headers, setHeaders, onColumnVisibilityChange } = useTableContext();
   const paddingLeft = doesAnyHeaderHaveChildren ? `${depth * 16}px` : "8px";
   const hasChildren = header.children && header.children.length > 0;
 
@@ -56,7 +60,14 @@ const ColumnEditorCheckbox = ({
     }
 
     // Update state
-    setHeaders([...headers]);
+    const updatedHeaders = [...headers];
+    setHeaders(updatedHeaders);
+
+    // Notify consumer of visibility change
+    if (onColumnVisibilityChange) {
+      const visibilityState = buildColumnVisibilityState(updatedHeaders);
+      onColumnVisibilityChange(visibilityState);
+    }
   };
 
   return (

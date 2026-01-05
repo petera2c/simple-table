@@ -37,6 +37,7 @@ import TableRowProps from "./types/TableRowProps";
 import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
+import { ColumnVisibilityState } from "./types/ColumnVisibilityTypes";
 import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 import CellClickProps from "./types/CellClickProps";
 import CellRendererProps, { CellRenderer } from "./types/CellRendererProps";
@@ -75,6 +76,7 @@ export type {
   ChartOptions,
   ColumnEditorPosition,
   ColumnType,
+  ColumnVisibilityState,
   Comparator,
   ComparatorProps,
   DragHandlerProps,

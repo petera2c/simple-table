@@ -1,4 +1,5 @@
 import HeaderObject, { Accessor } from "../../../types/HeaderObject";
+import { ColumnVisibilityState } from "../../../types/ColumnVisibilityTypes";
 
 // Find all parents for a given header to ensure they're visible
 export const findAndMarkParentsVisible = (
@@ -59,4 +60,22 @@ export const updateParentHeaders = (headers: HeaderObject[]) => {
       }
     }
   });
+};
+
+// Build column visibility state from headers (recursively processes children)
+export const buildColumnVisibilityState = (headers: HeaderObject[]): ColumnVisibilityState => {
+  const visibilityState: ColumnVisibilityState = {};
+
+  const processHeader = (header: HeaderObject) => {
+    // Set visibility for this header (true = visible, false = hidden)
+    visibilityState[header.accessor] = !header.hide;
+
+    // Process children recursively
+    if (header.children && header.children.length > 0) {
+      header.children.forEach(processHeader);
+    }
+  };
+
+  headers.forEach(processHeader);
+  return visibilityState;
 };

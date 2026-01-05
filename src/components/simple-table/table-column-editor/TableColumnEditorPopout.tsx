@@ -22,7 +22,7 @@ const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorP
     >
       <div className="st-column-editor-popout-content">
         {headers.map((header, index) => {
-          if (header.isSelectionColumn) {
+          if (header.isSelectionColumn || header.excludeFromRender) {
             return null;
           }
           return (

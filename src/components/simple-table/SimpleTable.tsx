@@ -30,6 +30,7 @@ import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
+import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
@@ -105,6 +106,7 @@ interface SimpleTableProps {
   onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void; // Callback when a column is selected/clicked
+  onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void; // Callback when column visibility changes
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void; // Callback when a header is edited
@@ -189,6 +191,7 @@ const SimpleTableComp = ({
   onCellClick,
   onColumnOrderChange,
   onColumnSelect,
+  onColumnVisibilityChange,
   onFilterChange,
   onGridReady,
   onHeaderEdit,
@@ -929,6 +932,7 @@ const SimpleTableComp = ({
         onCellEdit,
         onColumnOrderChange,
         onColumnSelect,
+        onColumnVisibilityChange,
         onHeaderEdit,
         onLoadMore,
         onRowGroupExpand,
