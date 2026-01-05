@@ -55,7 +55,7 @@ interface TableContextType {
   editColumns?: boolean;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
-  expandAll: boolean;
+  expandedDepths: Set<number>;
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;
@@ -130,7 +130,9 @@ interface TableContextType {
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   setSelectedRows?: Dispatch<SetStateAction<Set<string>>>;
-  setUnexpandedRows: Dispatch<SetStateAction<Set<string>>>;
+  setExpandedDepths: Dispatch<SetStateAction<Set<number>>>;
+  setExpandedRows: Dispatch<SetStateAction<Map<string, number>>>;
+  setCollapsedRows: Dispatch<SetStateAction<Map<string, number>>>;
   shouldPaginate: boolean;
   sortDownIcon: ReactNode;
   sortUpIcon: ReactNode;
@@ -138,7 +140,8 @@ interface TableContextType {
   tableEmptyStateRenderer?: ReactNode;
   tableRows: TableRow[];
   theme: Theme;
-  unexpandedRows: Set<string>;
+  expandedRows: Map<string, number>;
+  collapsedRows: Map<string, number>;
   useHoverRowBackground: boolean;
   useOddColumnBackground: boolean;
   useOddEvenRowBackground: boolean;

@@ -203,21 +203,32 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
 };
 
 /**
- * Determine if a row is expanded based on expandAll setting and unexpandedRows set
+ * Determine if a row is expanded based on expandedDepths and manual row overrides
  * @param rowId - The ID of the row to check
- * @param expandAll - Whether all rows are expanded by default
- * @param unexpandedRows - Set of row IDs that are in the opposite state of expandAll
+ * @param depth - The depth level of the row (0-indexed)
+ * @param expandedDepths - Set of depth levels that are expanded
+ * @param expandedRows - Map of row IDs to their depths for rows that user wants expanded
+ * @param collapsedRows - Map of row IDs to their depths for rows that user wants collapsed
  * @returns true if the row is expanded, false otherwise
  */
 export const isRowExpanded = (
   rowId: string | number,
-  expandAll: boolean,
-  unexpandedRows: Set<string>
+  depth: number,
+  expandedDepths: Set<number>,
+  expandedRows: Map<string, number>,
+  collapsedRows: Map<string, number>
 ): boolean => {
   const rowIdStr = String(rowId);
-  return expandAll
-    ? !unexpandedRows.has(rowIdStr) // If expandAll=true, expanded unless explicitly collapsed
-    : unexpandedRows.has(rowIdStr); // If expandAll=false, only expanded if explicitly expanded
+  const isManuallyExpanded = expandedRows.has(rowIdStr) && expandedRows.get(rowIdStr) === depth;
+  const isManuallyCollapsed = collapsedRows.has(rowIdStr) && collapsedRows.get(rowIdStr) === depth;
+
+  if (expandedDepths.has(depth)) {
+    // Depth is expanded - row is expanded unless manually collapsed
+    return !isManuallyCollapsed;
+  } else {
+    // Depth is collapsed - row is collapsed unless manually expanded (pending)
+    return isManuallyExpanded;
+  }
 };
 
 /**
@@ -227,8 +238,9 @@ export const isRowExpanded = (
  */
 export const flattenRowsWithGrouping = ({
   depth = 0,
-  expandAll = false,
-  unexpandedRows,
+  expandedDepths,
+  expandedRows,
+  collapsedRows,
   rowGrouping = [],
   rowIdAccessor,
   rows,
@@ -239,8 +251,9 @@ export const flattenRowsWithGrouping = ({
   hasEmptyRenderer = false,
 }: {
   depth?: number;
-  expandAll?: boolean;
-  unexpandedRows: Set<string>;
+  expandedDepths: Set<number>;
+  expandedRows: Map<string, number>;
+  collapsedRows: Map<string, number>;
   rowGrouping?: Accessor[];
   rowIdAccessor: Accessor;
   rows: Row[];
@@ -294,7 +307,13 @@ export const flattenRowsWithGrouping = ({
       displayPosition++;
 
       // Check if row should be expanded
-      const isExpanded = isRowExpanded(rowId, expandAll, unexpandedRows);
+      const isExpanded = isRowExpanded(
+        rowId,
+        currentDepth,
+        expandedDepths,
+        expandedRows,
+        collapsedRows
+      );
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {

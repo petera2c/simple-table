@@ -54,6 +54,7 @@ import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import RowState from "../../types/RowState";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
+import useExpandedDepths from "../../hooks/useExpandedDepths";
 import {
   LoadingStateRenderer,
   ErrorStateRenderer,
@@ -355,7 +356,13 @@ const SimpleTableComp = ({
 
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
-  const [unexpandedRows, setUnexpandedRows] = useState<Set<string>>(new Set());
+
+  // Manage expandedDepths state with automatic cleanup on rowGrouping changes
+  const { expandedDepths, setExpandedDepths } = useExpandedDepths(expandAll, rowGrouping);
+
+  // Track user's manual row expansion/collapse preferences
+  const [expandedRows, setExpandedRows] = useState<Map<string, number>>(new Map());
+  const [collapsedRows, setCollapsedRows] = useState<Map<string, number>>(new Map());
 
   // Aria-live announcements for screen readers
   const { announcement, announce } = useAriaAnnouncements();
@@ -595,8 +602,9 @@ const SimpleTableComp = ({
     rows: sortedRows,
     rowGrouping,
     rowIdAccessor,
-    unexpandedRows,
-    expandAll,
+    expandedRows,
+    collapsedRows,
+    expandedDepths,
     rowStateMap,
     hasLoadingRenderer: Boolean(loadingStateRenderer),
     hasErrorRenderer: Boolean(errorStateRenderer),
@@ -608,8 +616,9 @@ const SimpleTableComp = ({
     rows: aggregatedRows,
     rowGrouping,
     rowIdAccessor,
-    unexpandedRows,
-    expandAll,
+    expandedRows,
+    collapsedRows,
+    expandedDepths,
     rowStateMap,
     hasLoadingRenderer: Boolean(loadingStateRenderer),
     hasErrorRenderer: Boolean(errorStateRenderer),
@@ -637,8 +646,9 @@ const SimpleTableComp = ({
         rows: filteredPreview,
         rowGrouping,
         rowIdAccessor,
-        unexpandedRows,
-        expandAll,
+        expandedRows,
+        collapsedRows,
+        expandedDepths,
         rowStateMap,
         hasLoadingRenderer: Boolean(loadingStateRenderer),
         hasErrorRenderer: Boolean(errorStateRenderer),
@@ -649,8 +659,9 @@ const SimpleTableComp = ({
       computeFilteredRowsPreview,
       rowGrouping,
       rowIdAccessor,
-      unexpandedRows,
-      expandAll,
+      expandedRows,
+      collapsedRows,
+      expandedDepths,
       rowStateMap,
       loadingStateRenderer,
       errorStateRenderer,
@@ -678,8 +689,9 @@ const SimpleTableComp = ({
         rows: sortedPreview,
         rowGrouping,
         rowIdAccessor,
-        unexpandedRows,
-        expandAll,
+        expandedRows,
+        collapsedRows,
+        expandedDepths,
         rowStateMap,
         hasLoadingRenderer: Boolean(loadingStateRenderer),
         hasErrorRenderer: Boolean(errorStateRenderer),
@@ -690,8 +702,9 @@ const SimpleTableComp = ({
       computeSortedRowsPreview,
       rowGrouping,
       rowIdAccessor,
-      unexpandedRows,
-      expandAll,
+      expandedRows,
+      collapsedRows,
+      expandedDepths,
       rowStateMap,
       loadingStateRenderer,
       errorStateRenderer,
@@ -808,17 +821,22 @@ const SimpleTableComp = ({
     clearAllFilters,
     clearFilter,
     currentPage,
+    expandedDepths,
     filters,
     flattenedRows,
     headerRegistryRef,
     headers: effectiveHeaders,
     includeHeadersInCSVExport,
+    rowGrouping,
     rowIdAccessor,
     rowIndexMap: rowIndexMapRef,
     rows: effectiveRows,
     rowsPerPage,
     serverSidePagination,
+    setCollapsedRows,
     setCurrentPage,
+    setExpandedDepths,
+    setExpandedRows,
     setRows: setLocalRows,
     shouldPaginate,
     sort,
@@ -871,7 +889,7 @@ const SimpleTableComp = ({
         enableHeaderEditing,
         enableRowSelection,
         errorStateRenderer,
-        expandAll,
+        expandedDepths,
         expandIcon,
         filterIcon,
         filters,
@@ -943,7 +961,9 @@ const SimpleTableComp = ({
         setSelectedCells,
         setSelectedColumns,
         setSelectedRows,
-        setUnexpandedRows,
+        setExpandedDepths,
+        setExpandedRows,
+        setCollapsedRows,
         shouldPaginate,
         sortDownIcon,
         sortUpIcon,
@@ -951,7 +971,8 @@ const SimpleTableComp = ({
         tableEmptyStateRenderer,
         tableRows: currentTableRows,
         theme,
-        unexpandedRows,
+        expandedRows,
+        collapsedRows,
         useHoverRowBackground,
         useOddColumnBackground,
         useOddEvenRowBackground,

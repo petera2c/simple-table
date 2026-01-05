@@ -16,6 +16,9 @@ import DynamicRowLoadingExample, {
   dynamicRowLoadingDefaults,
 } from "./examples/DynamicRowLoadingExample";
 import EditableCellsExample from "./examples/EditableCells";
+import ExpansionControlExample, {
+  expansionControlDefaults,
+} from "./examples/ExpansionControlExample";
 import ExternalSortExample, { externalSortExampleDefaults } from "./examples/ExternalSortExample";
 import ExternalFilterExample, {
   externalFilterExampleDefaults,
@@ -398,6 +401,24 @@ export const EditableCells: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: EditableCellsExample, ...args }),
+};
+
+export const ExpansionControl: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...expansionControlDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: ExpansionControlExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates programmatic control of row expansion via the new tableRef API. Use expandAll() to expand all depths, collapseAll() to collapse everything, expandDepth(n) to expand a specific depth level, and setExpandedDepths() to set multiple depths at once. Perfect for creating custom expansion controls, saved view states, or automated workflows. The example shows a 3-level hierarchy: Companies → Divisions → Teams, where you can control each level independently.",
+      },
+    },
+  },
 };
 
 export const ExternalFilter: StoryObj<UniversalTableProps> = {

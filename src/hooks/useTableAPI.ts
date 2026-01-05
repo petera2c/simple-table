@@ -32,17 +32,22 @@ const useTableAPI = ({
   clearAllFilters,
   clearFilter,
   currentPage,
+  expandedDepths,
   filters,
   flattenedRows,
   headerRegistryRef,
   headers,
   includeHeadersInCSVExport,
+  rowGrouping,
   rowIdAccessor,
   rowIndexMap,
   rows,
   rowsPerPage,
   serverSidePagination,
+  setCollapsedRows,
   setCurrentPage,
+  setExpandedDepths,
+  setExpandedRows,
   setRows,
   shouldPaginate,
   sort,
@@ -55,17 +60,26 @@ const useTableAPI = ({
   clearAllFilters: () => void;
   clearFilter: (accessor: Accessor) => void;
   currentPage: number;
+  expandedDepths: Set<number>;
   filters: TableFilterState;
   flattenedRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
+  rowGrouping?: Accessor[];
   rowIdAccessor: Accessor;
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
   rowsPerPage: number;
   serverSidePagination: boolean;
+  setCollapsedRows: (
+    rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)
+  ) => void;
   setCurrentPage: (page: number) => void;
+  setExpandedDepths: (depths: Set<number> | ((prev: Set<number>) => Set<number>)) => void;
+  setExpandedRows: (
+    rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)
+  ) => void;
   setRows: (rows: Row[]) => void;
   shouldPaginate: boolean;
   sort: SortColumn | null;
@@ -132,6 +146,115 @@ const useTableAPI = ({
           return currentPage;
         },
         setPage: (page: number) => setCurrentPage(page),
+        expandAll: () => {
+          const maxDepth = rowGrouping?.length || 0;
+          const depths = Array.from({ length: maxDepth }, (_, i) => i);
+          setExpandedDepths(new Set(depths));
+          setExpandedRows(new Map());
+          setCollapsedRows(new Map());
+        },
+        collapseAll: () => {
+          setExpandedDepths(new Set());
+          setExpandedRows(new Map());
+          setCollapsedRows(new Map());
+        },
+        expandDepth: (depth: number) => {
+          setExpandedDepths((prev) => {
+            const next = new Set(prev);
+            // Add this depth and all parent depths (0 to depth)
+            for (let i = 0; i <= depth; i++) {
+              next.add(i);
+            }
+            return next;
+          });
+          // Clear manual overrides for this depth
+          setExpandedRows((prev) => {
+            const next = new Map(prev);
+            Array.from(next.entries()).forEach(([rowId, rowDepth]) => {
+              if (rowDepth === depth) {
+                next.delete(rowId);
+              }
+            });
+            return next;
+          });
+          setCollapsedRows((prev) => {
+            const next = new Map(prev);
+            Array.from(next.entries()).forEach(([rowId, rowDepth]) => {
+              if (rowDepth === depth) {
+                next.delete(rowId);
+              }
+            });
+            return next;
+          });
+        },
+        collapseDepth: (depth: number) => {
+          setExpandedDepths((prev) => {
+            const next = new Set(prev);
+            next.delete(depth);
+            return next;
+          });
+          // Clear manual overrides for this depth
+          setExpandedRows((prev) => {
+            const next = new Map(prev);
+            Array.from(next.entries()).forEach(([rowId, rowDepth]) => {
+              if (rowDepth === depth) {
+                next.delete(rowId);
+              }
+            });
+            return next;
+          });
+          setCollapsedRows((prev) => {
+            const next = new Map(prev);
+            Array.from(next.entries()).forEach(([rowId, rowDepth]) => {
+              if (rowDepth === depth) {
+                next.delete(rowId);
+              }
+            });
+            return next;
+          });
+        },
+        toggleDepth: (depth: number) => {
+          setExpandedDepths((prev) => {
+            const next = new Set(prev);
+            if (next.has(depth)) {
+              next.delete(depth);
+            } else {
+              next.add(depth);
+            }
+            return next;
+          });
+          // Clear manual overrides for this depth
+          setExpandedRows((prev) => {
+            const next = new Map(prev);
+            Array.from(next.entries()).forEach(([rowId, rowDepth]) => {
+              if (rowDepth === depth) {
+                next.delete(rowId);
+              }
+            });
+            return next;
+          });
+          setCollapsedRows((prev) => {
+            const next = new Map(prev);
+            Array.from(next.entries()).forEach(([rowId, rowDepth]) => {
+              if (rowDepth === depth) {
+                next.delete(rowId);
+              }
+            });
+            return next;
+          });
+        },
+        setExpandedDepths: (depths: Set<number>) => {
+          setExpandedDepths(depths);
+        },
+        getExpandedDepths: () => {
+          return expandedDepths;
+        },
+        getGroupingProperty: (depth: number) => {
+          return rowGrouping?.[depth];
+        },
+        getGroupingDepth: (property: Accessor) => {
+          return rowGrouping?.indexOf(property) ?? -1;
+        },
       };
     }
   }, [
@@ -139,17 +262,22 @@ const useTableAPI = ({
     clearAllFilters,
     clearFilter,
     currentPage,
+    expandedDepths,
     filters,
     flattenedRows,
     headerRegistryRef,
     headers,
     includeHeadersInCSVExport,
+    rowGrouping,
     rowIdAccessor,
     rowIndexMap,
     rows,
     rowsPerPage,
     serverSidePagination,
+    setCollapsedRows,
     setCurrentPage,
+    setExpandedDepths,
+    setExpandedRows,
     setRows,
     shouldPaginate,
     sort,
