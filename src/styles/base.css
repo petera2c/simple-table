@@ -1195,7 +1195,7 @@ input {
   -webkit-overflow-scrolling: touch;
   touch-action: auto;
   min-width: 120px;
-  max-height: 400px;
+  max-height: 300px;
   transform: translateZ(0);
   will-change: transform;
   cursor: default;

@@ -6,7 +6,7 @@ export interface DropdownProps {
   containerRef?: React.MutableRefObject<HTMLElement>;
   onClose: () => void;
   open?: boolean;
-  overflow?: "auto" | "visible";
+  overflow?: "auto" | "visible" | "hidden";
   setOpen: (open: boolean) => void;
   width?: number;
   positioning?: "fixed" | "absolute";
