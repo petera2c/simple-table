@@ -172,6 +172,7 @@ const DateFilter: React.FC<DateFilterProps> = ({
           onClose={handleClose}
           positioning="absolute"
           overflow="hidden"
+          width={240}
         >
           <DatePicker
             value={currentDate}

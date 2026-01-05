@@ -75,9 +75,6 @@
   /* Checkbox colors */
   --st-checkbox-border-color: var(--st-stone-300);
 
-  /* Dropdown colors */
-  --st-dropdown-group-label-color: var(--st-stone-500);
-
   /* Datepicker colors */
   --st-datepicker-weekday-color: var(--st-stone-500);
   --st-datepicker-other-month-color: var(--st-stone-400);

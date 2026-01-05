@@ -1220,7 +1220,7 @@ input {
 
 /* Dropdown items */
 .st-dropdown-item {
-  padding: 8px 12px;
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
   cursor: pointer;
   white-space: nowrap;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
@@ -1236,14 +1236,6 @@ input {
   color: var(--st-selected-cell-color);
 }
 
-/* Dropdown groups */
-.st-dropdown-group-label {
-  padding: 6px 12px;
-  font-size: 0.8em;
-  color: var(--st-dropdown-group-label-color);
-  font-weight: 600;
-}
-
 .st-dropdown-divider {
   height: 1px;
   margin: 4px 0;
@@ -1255,14 +1247,13 @@ input {
 .st-datepicker {
   background-color: var(--st-odd-row-background-color);
   font-family: inherit;
-  min-width: 280px;
 }
 
 .st-datepicker-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: var(--st-spacing-medium);
   border-bottom: 1px solid var(--st-border-color);
   background-color: var(--st-header-background-color);
 }
@@ -1297,7 +1288,7 @@ input {
 
 .st-datepicker-grid {
   display: grid;
-  padding: 10px;
+  padding: var(--st-spacing-medium);
 }
 
 .st-datepicker-days-grid {
@@ -1328,10 +1319,12 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
+  height: 24px;
+  width: 24px;
   border-radius: 50%;
   cursor: pointer;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  font-size: 0.9em;
 }
 
 .st-datepicker-day.empty {
@@ -1381,7 +1374,7 @@ input {
 .st-datepicker-footer {
   display: flex;
   justify-content: flex-end;
-  padding: 10px;
+  padding: var(--st-spacing-medium);
   border-top: 1px solid var(--st-border-color);
 }
 

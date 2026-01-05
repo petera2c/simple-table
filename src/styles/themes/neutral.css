@@ -80,7 +80,6 @@
   --st-column-editor-text-color: var(--st-neutral-500);
 
   /* Form element colors */
-  --st-dropdown-group-label-color: var(--st-neutral-500);
   --st-datepicker-weekday-color: var(--st-neutral-500);
   --st-datepicker-other-month-color: var(--st-neutral-400);
   --st-filter-button-disabled-background-color: var(--st-neutral-300);

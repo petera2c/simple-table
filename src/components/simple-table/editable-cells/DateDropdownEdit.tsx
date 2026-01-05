@@ -44,7 +44,7 @@ const DateDropdownEdit = ({ onBlur, onChange, open, setOpen, value }: DateDropdo
   };
 
   return (
-    <Dropdown open={open} onClose={handleClose} setOpen={setOpen} width={280} overflow="hidden">
+    <Dropdown open={open} onClose={handleClose} setOpen={setOpen} overflow="hidden" width={240}>
       <DatePicker value={parseDate(value)} onChange={handleDateChange} onClose={handleClose} />
     </Dropdown>
   );

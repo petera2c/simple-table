@@ -79,7 +79,6 @@
   --st-column-editor-text-color: var(--st-slate-500);
 
   /* Form element colors */
-  --st-dropdown-group-label-color: var(--st-slate-500);
   --st-datepicker-weekday-color: var(--st-slate-500);
   --st-datepicker-other-month-color: var(--st-slate-400);
   --st-filter-button-disabled-background-color: var(--st-slate-300);

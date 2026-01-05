@@ -81,7 +81,6 @@
   --st-column-editor-text-color: var(--st-violet-600);
 
   /* Form element colors */
-  --st-dropdown-group-label-color: var(--st-violet-600);
   --st-datepicker-weekday-color: var(--st-violet-600);
   --st-datepicker-other-month-color: var(--st-violet-400);
   --st-filter-button-disabled-background-color: var(--st-stone-200);
