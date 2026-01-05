@@ -294,9 +294,7 @@ input {
   min-width: 100%;
 
   /* Performance optimizations for virtual scrolling */
-  will-change: transform;
   backface-visibility: hidden;
-  transform: translateZ(0);
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered
