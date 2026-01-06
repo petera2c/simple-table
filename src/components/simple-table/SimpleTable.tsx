@@ -78,8 +78,10 @@ interface SimpleTableProps {
   defaultHeaders: HeaderObject[]; // Default headers
   editColumns?: boolean; // Flag for column editing
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
+  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
+  errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Icon for expanded state (used in expandable rows)
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
@@ -88,22 +90,21 @@ interface SimpleTableProps {
   footerHeight?: number; // Height of the footer
   footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
   headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
-  headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
+  headerExpandIcon?: ReactNode; // Icon for expanded column headers
   headerHeight?: number; // Height of the header
   height?: string | number; // Height of the table
-  maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
   hideFooter?: boolean; // Flag for hiding the footer
+  hideHeader?: boolean; // Flag for hiding the header
   includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
   initialSortDirection?: SortDirection; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
   loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
-  errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
-  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
+  maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
   nextIcon?: ReactNode; // Next icon
-  onCellEdit?: (props: CellChangeProps) => void;
   onCellClick?: (props: CellClickProps) => void;
+  onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void; // Callback when a column is selected/clicked
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void; // Callback when column visibility changes
@@ -117,15 +118,15 @@ interface SimpleTableProps {
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // Previous icon
-  rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
   rowButtons?: RowButton[]; // Array of buttons to show in each row
+  rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
   rowIdAccessor: Accessor; // Property name to use as row ID (defaults to index-based ID)
   rows: Row[]; // Rows data
-  selectionColumnWidth?: number; // Width of the selection column (defaults to 42)
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
+  selectionColumnWidth?: number; // Width of the selection column (defaults to 42)
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
   shouldPaginate?: boolean; // Flag for pagination
   sortDownIcon?: ReactNode; // Sort down icon
@@ -134,8 +135,8 @@ interface SimpleTableProps {
   tableRef?: MutableRefObject<TableRefType | null>;
   theme?: Theme; // Theme
   totalRowCount?: number; // Total number of rows on server (for server-side pagination)
-  useOddColumnBackground?: boolean; // Flag for using column background
   useHoverRowBackground?: boolean; // Flag for using hover row background
+  useOddColumnBackground?: boolean; // Flag for using column background
   useOddEvenRowBackground?: boolean; // Flag for using odd/even row background
 }
 
@@ -163,8 +164,10 @@ const SimpleTableComp = ({
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
+  emptyStateRenderer,
   enableHeaderEditing = false,
   enableRowSelection = false,
+  errorStateRenderer,
   expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
   externalFilterHandling = false,
@@ -173,22 +176,21 @@ const SimpleTableComp = ({
   footerHeight = 49,
   footerRenderer,
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
-  headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
   headerDropdown,
+  headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
   headerHeight,
   height,
-  maxHeight,
   hideFooter = false,
+  hideHeader = false,
   includeHeadersInCSVExport = true,
   initialSortColumn,
   initialSortDirection = "asc",
   isLoading = false,
   loadingStateRenderer,
-  errorStateRenderer,
-  emptyStateRenderer,
+  maxHeight,
   nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
-  onCellEdit,
   onCellClick,
+  onCellEdit,
   onColumnOrderChange,
   onColumnSelect,
   onColumnVisibilityChange,
@@ -998,6 +1000,7 @@ const SimpleTableComp = ({
           <div className="st-wrapper-container">
             <div className="st-content-wrapper">
               <TableContent
+                hideHeader={hideHeader}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
                 setScrollTop={setScrollTop}

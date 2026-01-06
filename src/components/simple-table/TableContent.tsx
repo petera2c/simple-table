@@ -10,6 +10,7 @@ import TableRow from "../../types/TableRow";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
+  hideHeader: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: (scrollTop: number) => void;
@@ -21,6 +22,7 @@ interface TableContentLocalProps {
 }
 
 const TableContent = ({
+  hideHeader,
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
@@ -98,7 +100,7 @@ const TableContent = ({
       className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
       style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
     >
-      <TableHeader {...tableHeaderProps} />
+      {!hideHeader && <TableHeader {...tableHeaderProps} />}
       <TableBody {...tableBodyProps} />
     </div>
   );
