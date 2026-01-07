@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { HeaderObject, SimpleTable } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -52,16 +53,20 @@ const data = [
 ];
 
 const CellHighlightingDemo = (props: UniversalTableProps) => {
+  const [search, setSearch] = useState("");
   return (
-    <SimpleTable
-      {...props}
-      defaultHeaders={headers}
-      rowIdAccessor="id"
-      rows={data}
-      // Default to selectable for this example
-      selectableCells={props.selectableCells ?? true}
-      selectableColumns={props.selectableColumns ?? true}
-    />
+    <div>
+      <input value={search} onChange={(e) => setSearch(e.target.value)} />
+      <SimpleTable
+        {...props}
+        defaultHeaders={headers}
+        rowIdAccessor="id"
+        rows={data}
+        // Default to selectable for this example
+        selectableCells={props.selectableCells ?? true}
+        selectableColumns={props.selectableColumns ?? true}
+      />
+    </div>
   );
 };
 

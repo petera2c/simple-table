@@ -774,6 +774,7 @@ const SimpleTableComp = ({
     setSelectedColumns,
     columnsWithSelectedCells,
     rowsWithSelectedCells,
+    startCell,
   } = useSelection({
     selectableCells,
     headers,
@@ -814,6 +815,7 @@ const SimpleTableComp = ({
     setSelectedColumns,
     activeHeaderDropdown,
     setActiveHeaderDropdown,
+    startCell,
   });
   useWindowResize({
     forceUpdate,

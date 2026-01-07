@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import HeaderObject from "../types/HeaderObject";
+import Cell from "../types/Cell";
 
 const useHandleOutsideClick = ({
   selectableColumns,
@@ -9,6 +10,7 @@ const useHandleOutsideClick = ({
   setSelectedColumns,
   activeHeaderDropdown,
   setActiveHeaderDropdown,
+  startCell,
 }: {
   selectableColumns: boolean;
   selectedCells: Set<string>;
@@ -17,6 +19,7 @@ const useHandleOutsideClick = ({
   setSelectedColumns: (columns: Set<number>) => void;
   activeHeaderDropdown?: HeaderObject | null;
   setActiveHeaderDropdown?: (header: HeaderObject | null) => void;
+  startCell?: React.MutableRefObject<Cell | null>;
 }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,6 +52,10 @@ const useHandleOutsideClick = ({
         if (selectedColumns.size > 0) {
           setSelectedColumns(new Set());
         }
+        // Clear the start cell for range selection
+        if (startCell) {
+          startCell.current = null;
+        }
       }
     };
 
@@ -64,6 +71,7 @@ const useHandleOutsideClick = ({
     setSelectedColumns,
     activeHeaderDropdown,
     setActiveHeaderDropdown,
+    startCell,
   ]);
 };
 

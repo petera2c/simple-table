@@ -21,27 +21,29 @@ interface UseKeyboardNavigationProps {
   deleteSelectedCells: () => void;
   startCell: React.MutableRefObject<Cell | null>;
   enableRowSelection?: boolean;
+  selectedCells: Set<string>;
 }
 
 /**
  * Hook that handles keyboard navigation for cell selection
  */
 export const useKeyboardNavigation = ({
-  selectableCells,
+  copyToClipboard,
+  deleteSelectedCells,
+  enableRowSelection = false,
   initialFocusedCell,
-  tableRows,
   leafHeaders,
+  pasteFromClipboard,
   rowIdAccessor,
-  selectSingleCell,
   selectCellRange,
+  selectSingleCell,
+  selectableCells,
+  selectedCells,
+  setLastSelectedColumnIndex,
   setSelectedCells,
   setSelectedColumns,
-  setLastSelectedColumnIndex,
-  copyToClipboard,
-  pasteFromClipboard,
-  deleteSelectedCells,
   startCell,
-  enableRowSelection = false,
+  tableRows,
 }: UseKeyboardNavigationProps) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,21 +51,35 @@ export const useKeyboardNavigation = ({
 
       // We will navigate based on the initial focused cell
       if (!initialFocusedCell) return;
-      let { rowIndex, colIndex, rowId } = initialFocusedCell;
 
+      // If no cells are actually selected, don't intercept keyboard events
+      if (selectedCells.size === 0) return;
+
+      // Don't intercept if user is typing in a form element
+      const activeElement = document.activeElement;
+      if (
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") === "true"
+      ) {
+        return;
+      }
+
+      let { rowIndex, colIndex, rowId } = initialFocusedCell;
       // Copy functionality
       if ((event.ctrlKey || event.metaKey) && event.key === "c") {
         copyToClipboard();
         return;
       }
-
+      console.log("here4");
       // Paste functionality
       if ((event.ctrlKey || event.metaKey) && event.key === "v") {
         event.preventDefault();
         pasteFromClipboard();
         return;
       }
-
+      console.log("here5");
       // Select All functionality (Ctrl/Cmd + A)
       if ((event.ctrlKey || event.metaKey) && event.key === "a") {
         event.preventDefault();
@@ -86,7 +102,7 @@ export const useKeyboardNavigation = ({
         setLastSelectedColumnIndex(null);
         return;
       }
-
+      console.log("here6");
       // Delete functionality
       if (event.key === "Delete" || event.key === "Backspace") {
         event.preventDefault();
@@ -551,6 +567,7 @@ export const useKeyboardNavigation = ({
     rowIdAccessor,
     selectSingleCell,
     selectCellRange,
+    selectedCells,
     setSelectedCells,
     setSelectedColumns,
     setLastSelectedColumnIndex,

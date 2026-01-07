@@ -259,6 +259,7 @@ const useSelection = ({
     rowIdAccessor,
     selectSingleCell,
     selectCellRange,
+    selectedCells,
     setSelectedCells,
     setSelectedColumns,
     setLastSelectedColumnIndex,
@@ -602,6 +603,7 @@ const useSelection = ({
     deleteSelectedCells,
     columnsWithSelectedCells,
     rowsWithSelectedCells,
+    startCell,
   };
 };
 
