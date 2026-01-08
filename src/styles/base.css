@@ -1083,6 +1083,11 @@ input {
   transform: rotate(0deg);
 }
 
+.st-expand-icon-container.placeholder {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* Cell update animation */
 @keyframes cell-flash {
   0% {

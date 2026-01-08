@@ -626,25 +626,43 @@ const TableCell = ({
       parentRef={tableBodyContainerRef}
       tableRow={tableRow}
     >
-      {header.expandable &&
-      canExpandFurther &&
-      isRowExpandable &&
-      (cellHasChildren || onRowGroupExpand) ? (
+      {header.expandable && canExpandFurther ? (
         <div
           className={`st-icon-container st-expand-icon-container ${
-            isRowExpanded ? "expanded" : "collapsed"
+            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+              ? isRowExpanded
+                ? "expanded"
+                : "collapsed"
+              : "placeholder"
           }`}
-          onClick={(event: React.MouseEvent) => handleRowExpansion(event)}
-          role="button"
-          tabIndex={0}
-          aria-label={`${isRowExpanded ? "Collapse" : "Expand"} row group`}
-          aria-expanded={isRowExpanded}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              handleRowExpansion(e);
-            }
-          }}
+          onClick={
+            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+              ? (event: React.MouseEvent) => handleRowExpansion(event)
+              : undefined
+          }
+          role={
+            isRowExpandable && (cellHasChildren || onRowGroupExpand) ? "button" : "presentation"
+          }
+          tabIndex={isRowExpandable && (cellHasChildren || onRowGroupExpand) ? 0 : -1}
+          aria-label={
+            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+              ? `${isRowExpanded ? "Collapse" : "Expand"} row group`
+              : undefined
+          }
+          aria-expanded={
+            isRowExpandable && (cellHasChildren || onRowGroupExpand) ? isRowExpanded : undefined
+          }
+          aria-hidden={!(isRowExpandable && (cellHasChildren || onRowGroupExpand))}
+          onKeyDown={
+            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+              ? (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleRowExpansion(e);
+                  }
+                }
+              : undefined
+          }
         >
           {expandIcon}
         </div>
