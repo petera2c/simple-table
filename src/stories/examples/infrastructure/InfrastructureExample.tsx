@@ -900,7 +900,6 @@ export default function InfrastructureExampleComponent({
       columnResizing
       defaultHeaders={HEADERS}
       height={height ? height : "70dvh"}
-      rowIdAccessor="id"
       rows={data}
       selectableCells
       tableRef={tableRef}

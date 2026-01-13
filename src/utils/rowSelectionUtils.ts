@@ -1,11 +1,13 @@
 import Row from "../types/Row";
+import TableRow from "../types/TableRow";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
+import { getRowId } from "./rowUtils";
 
 /**
- * Get the set of selected row IDs from an array of rows
+ * Get the set of selected row IDs from an array of table rows
  */
-export const getSelectedRowIds = (rows: Row[], rowIdAccessor: Accessor): string[] => {
-  return rows.map((row) => String(row[rowIdAccessor]));
+export const getSelectedRowIds = (tableRows: TableRow[]): string[] => {
+  return tableRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position])));
 };
 
 /**
@@ -18,13 +20,11 @@ export const isRowSelected = (rowId: string, selectedRows: Set<string>): boolean
 /**
  * Check if all rows are selected
  */
-export const areAllRowsSelected = (
-  rows: Row[],
-  rowIdAccessor: Accessor,
-  selectedRows: Set<string>
-): boolean => {
-  if (rows.length === 0) return false;
-  return rows.every((row) => selectedRows.has(String(row[rowIdAccessor])));
+export const areAllRowsSelected = (tableRows: TableRow[], selectedRows: Set<string>): boolean => {
+  if (tableRows.length === 0) return false;
+  return tableRows.every((tableRow) =>
+    selectedRows.has(String(getRowId(tableRow.rowPath || [tableRow.position])))
+  );
 };
 
 /**
@@ -43,8 +43,10 @@ export const toggleRowSelection = (rowId: string, selectedRows: Set<string>): Se
 /**
  * Select all rows
  */
-export const selectAllRows = (rows: Row[], rowIdAccessor: Accessor): Set<string> => {
-  return new Set(rows.map((row) => String(row[rowIdAccessor])));
+export const selectAllRows = (tableRows: TableRow[]): Set<string> => {
+  return new Set(
+    tableRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position])))
+  );
 };
 
 /**
@@ -55,14 +57,14 @@ export const deselectAllRows = (): Set<string> => {
 };
 
 /**
- * Get the selected rows from the rows array
+ * Get the selected rows from the table rows array
  */
-export const getSelectedRows = (
-  rows: Row[],
-  rowIdAccessor: Accessor,
-  selectedRows: Set<string>
-): Row[] => {
-  return rows.filter((row) => selectedRows.has(String(row[rowIdAccessor])));
+export const getSelectedRows = (tableRows: TableRow[], selectedRows: Set<string>): Row[] => {
+  return tableRows
+    .filter((tableRow) =>
+      selectedRows.has(String(getRowId(tableRow.rowPath || [tableRow.position])))
+    )
+    .map((tableRow) => tableRow.row);
 };
 
 /**

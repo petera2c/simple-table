@@ -366,7 +366,6 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
         onColumnSelect={handleColumnSelect}
         onRowSelectionChange={handleRowSelectionChange}
         rowButtons={rowButtons}
-        rowIdAccessor="id"
         rows={rows}
         selectableColumns
         tableRef={tableRef}

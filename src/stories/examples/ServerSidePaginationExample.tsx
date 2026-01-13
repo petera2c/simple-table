@@ -188,7 +188,6 @@ const ServerSidePaginationExample = () => {
         tableRef={tableRef}
         defaultHeaders={SAAS_HEADERS}
         rows={rows}
-        rowIdAccessor="id"
         shouldPaginate={true}
         serverSidePagination={true}
         totalRowCount={totalCount}

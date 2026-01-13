@@ -8,7 +8,6 @@ import { getRowId, getNestedRows, isRowExpanded } from "../utils/rowUtils";
 interface UseFlattenedRowsProps {
   rows: Row[];
   rowGrouping?: Accessor[];
-  rowIdAccessor: Accessor;
   expandedRows: Map<string, number>;
   collapsedRows: Map<string, number>;
   expandedDepths: Set<number>;
@@ -27,7 +26,6 @@ interface UseFlattenedRowsProps {
 const useFlattenedRows = ({
   rows,
   rowGrouping = [],
-  rowIdAccessor,
   expandedRows,
   collapsedRows,
   expandedDepths,
@@ -68,11 +66,7 @@ const useFlattenedRows = ({
         const rowPath = [...parentPath, index];
 
         // Get unique row ID that accounts for nesting depth
-        const rowId = getRowId({
-          row,
-          rowIdAccessor,
-          rowPath,
-        });
+        const rowId = getRowId(rowPath);
 
         // Determine if this is the last row at depth 0
         const isLastGroupRow = currentDepth === 0;
@@ -129,13 +123,13 @@ const useFlattenedRows = ({
               // If loading but no custom renderer, add a dummy skeleton row
               const skeletonPosition = result.length;
               result.push({
-                row: { [rowIdAccessor]: `${rowId}-loading-skeleton` },
+                row: {},
                 depth: currentDepth + 1,
                 displayPosition: skeletonPosition,
                 groupingKey: currentGroupingKey,
                 position: skeletonPosition,
                 isLastGroupRow: false,
-                rowPath: [...rowPath, currentGroupingKey],
+                rowPath: [...rowPath, currentGroupingKey, "loading-skeleton"],
                 isLoadingSkeleton: true,
                 absoluteRowIndex: skeletonPosition,
               });
@@ -157,7 +151,6 @@ const useFlattenedRows = ({
   }, [
     rows,
     rowGrouping,
-    rowIdAccessor,
     expandedRows,
     collapsedRows,
     expandedDepths,

@@ -43,7 +43,6 @@ const RowHeightExampleComponent = (props: UniversalTableProps) => {
       {...props}
       defaultHeaders={headers}
       rows={rows}
-      rowIdAccessor="id"
       rowHeight={props.rowHeight ?? 32}
     />
   );

@@ -143,7 +143,6 @@ const CustomThemeDemo = ({ height = "400px" }: { height?: string | number }) => 
         columnResizing
         defaultHeaders={headers}
         height={height}
-        rowIdAccessor="id"
         rows={data}
         selectableCells
         selectableColumns

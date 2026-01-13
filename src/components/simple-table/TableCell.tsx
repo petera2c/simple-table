@@ -133,7 +133,6 @@ const TableCell = ({
     onTableHeaderDragEnd,
     rowButtons,
     rowGrouping,
-    rowIdAccessor,
     setCollapsedRows,
     setExpandedRows,
     setRowStateMap,
@@ -154,7 +153,7 @@ const TableCell = ({
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get row ID with path for uniqueness in nested rows
-  const rowId = getRowId({ row, rowIdAccessor, rowPath });
+  const rowId = getRowId(rowPath || [absoluteRowIndex]);
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   // Check if we can expand further (depth must be less than rowGrouping length)
@@ -447,7 +446,6 @@ const TableCell = ({
           groupingKeys: rowGrouping || [],
           isExpanded: !wasExpanded, // The new state (opposite of current)
           row,
-          rowId,
           rowIndexPath: rowPath || [],
           setEmpty,
           setError,
@@ -524,7 +522,6 @@ const TableCell = ({
         accessor: header.accessor,
         colIndex,
         row,
-        rowId,
         rowIndex,
         value: localContent,
       });
@@ -541,7 +538,6 @@ const TableCell = ({
     const buttonProps: RowButtonProps = {
       row,
       rowIndex: displayRowNumber,
-      rowId,
     };
 
     return (

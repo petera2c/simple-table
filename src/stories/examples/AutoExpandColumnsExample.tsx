@@ -108,7 +108,7 @@ const AutoExpandColumnsExampleComponent = (props: UniversalTableProps) => {
     { accessor: "status", label: "Status", width: 100, isSortable: true },
   ];
 
-  return <SimpleTable {...props} defaultHeaders={headers} rows={rows} rowIdAccessor="id" />;
+  return <SimpleTable {...props} defaultHeaders={headers} rows={rows} />;
 };
 
 export default AutoExpandColumnsExampleComponent;

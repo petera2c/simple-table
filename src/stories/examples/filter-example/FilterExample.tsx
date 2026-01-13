@@ -19,7 +19,6 @@ export const FilterExampleComponent = (props: UniversalTableProps) => {
     <SimpleTable
       {...props}
       defaultHeaders={PRODUCT_HEADERS}
-      rowIdAccessor="id"
       rows={data}
       // Default settings for this example
       columnResizing={props.columnResizing ?? true}

@@ -183,7 +183,6 @@ const EditableCellsExample = (props: UniversalTableProps) => {
       defaultHeaders={HEADERS}
       onCellEdit={updateCell}
       rows={rows}
-      rowIdAccessor="id"
       // Default settings for this example
       columnResizing={props.columnResizing ?? true}
       columnReordering={props.columnReordering ?? true}

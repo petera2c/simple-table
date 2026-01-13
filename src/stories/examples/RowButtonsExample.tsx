@@ -373,7 +373,6 @@ const RowButtonsExample = (props: UniversalTableProps) => {
         {...props}
         defaultHeaders={headers}
         rows={rows}
-        rowIdAccessor="id"
         enableRowSelection={true}
         rowButtons={rowButtons}
         onRowSelectionChange={handleRowSelectionChange}

@@ -17,7 +17,6 @@ interface UseTableRowProcessingProps {
   rowsPerPage: number;
   shouldPaginate: boolean;
   serverSidePagination: boolean;
-  rowIdAccessor: Accessor;
   contentHeight: number | undefined;
   rowHeight: number;
   scrollTop: number;
@@ -35,7 +34,6 @@ const useTableRowProcessing = ({
   rowsPerPage,
   shouldPaginate,
   serverSidePagination,
-  rowIdAccessor,
   contentHeight,
   rowHeight,
   scrollTop,
@@ -89,19 +87,13 @@ const useTableRowProcessing = ({
     if (originalPositionsRef.current.size === 0 && originalFlattenedRows.length > 0) {
       const newOriginalPositions = new Map<string, number>();
       originalFlattenedRows.forEach((tableRow, index) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
+        const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
         newOriginalPositions.set(id, index);
       });
 
       originalPositionsRef.current = newOriginalPositions;
     }
-  }, [originalFlattenedRows, rowIdAccessor]);
+  }, [originalFlattenedRows]);
 
   // Current table rows (paginated for display)
   // Now pagination happens on FLATTENED rows, so rowsPerPage correctly counts all visible rows
@@ -127,68 +119,31 @@ const useTableRowProcessing = ({
   }, [currentTableRows, contentHeight, rowHeight, scrollTop, scrollDirection, bufferRowCount]);
 
   // Categorize rows based on ID changes
-  const categorizeRows = useCallback(
-    (previousRows: TableRow[], currentRows: TableRow[]) => {
-      const previousIds = new Set(
-        previousRows.map((tableRow) =>
-          String(
-            getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            })
-          )
-        )
-      );
-      const currentIds = new Set(
-        currentRows.map((tableRow) =>
-          String(
-            getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            })
-          )
-        )
-      );
+  const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
+    const previousIds = new Set(
+      previousRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position])))
+    );
+    const currentIds = new Set(
+      currentRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position])))
+    );
 
-      const staying = currentRows.filter((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        return previousIds.has(id);
-      });
+    const staying = currentRows.filter((tableRow) => {
+      const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+      return previousIds.has(id);
+    });
 
-      const entering = currentRows.filter((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        return !previousIds.has(id);
-      });
+    const entering = currentRows.filter((tableRow) => {
+      const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+      return !previousIds.has(id);
+    });
 
-      const leaving = previousRows.filter((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
-        return !currentIds.has(id);
-      });
+    const leaving = previousRows.filter((tableRow) => {
+      const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+      return !currentIds.has(id);
+    });
 
-      return { staying, entering, leaving };
-    },
-    [rowIdAccessor]
-  );
+    return { staying, entering, leaving };
+  }, []);
 
   // Check if there are actual row changes (comparing all rows, not just visible)
   const hasRowChanges = useMemo(() => {
@@ -197,22 +152,10 @@ const useTableRowProcessing = ({
     }
 
     const currentIds = currentTableRows.map((tableRow) =>
-      String(
-        getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        })
-      )
+      String(getRowId(tableRow.rowPath || [tableRow.position]))
     );
     const previousIds = previousTableRowsRef.current.map((tableRow) =>
-      String(
-        getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        })
-      )
+      String(getRowId(tableRow.rowPath || [tableRow.position]))
     );
 
     const hasChanges =
@@ -220,7 +163,7 @@ const useTableRowProcessing = ({
       !currentIds.every((id, index) => id === previousIds[index]);
 
     return hasChanges;
-  }, [currentTableRows, rowIdAccessor]);
+  }, [currentTableRows]);
 
   // Animation effect
   useLayoutEffect(() => {
@@ -315,26 +258,14 @@ const useTableRowProcessing = ({
       const positionMap = new Map<string, number>();
       const displayPositionMap = new Map<string, number>();
       currentTableRows.forEach((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
+        const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
         positionMap.set(id, tableRow.position);
         displayPositionMap.set(id, tableRow.displayPosition);
       });
 
       // Update ALL rows in extendedRows with their new positions
       const updatedExtendedRows = extendedRows.map((tableRow) => {
-        const id = String(
-          getRowId({
-            row: tableRow.row,
-            rowIdAccessor,
-            rowPath: tableRow.rowPath,
-          })
-        );
+        const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
         const newPosition = positionMap.get(id);
         const newDisplayPosition = displayPositionMap.get(id);
 
@@ -351,14 +282,7 @@ const useTableRowProcessing = ({
 
     // Default: use normal visible rows (STAGE 3 after animation completes)
     return targetVisibleRows;
-  }, [
-    targetVisibleRows,
-    extendedRows,
-    currentTableRows,
-    allowAnimations,
-    shouldPaginate,
-    rowIdAccessor,
-  ]);
+  }, [targetVisibleRows, extendedRows, currentTableRows, allowAnimations, shouldPaginate]);
 
   // Animation handlers for filter/sort changes
   const prepareForFilterChange = useCallback(
@@ -384,23 +308,10 @@ const useTableRowProcessing = ({
       // Find these entering rows in the CURRENT table state (before filter) to get original positions
       const enteringFromCurrentState = visibleEntering
         .map((enteringRow) => {
-          const id = String(
-            getRowId({
-              row: enteringRow.row,
-              rowIdAccessor,
-              rowPath: enteringRow.rowPath,
-            })
-          );
+          const id = String(getRowId(enteringRow.rowPath || [enteringRow.position]));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) =>
-              String(
-                getRowId({
-                  row: currentRow.row,
-                  rowIdAccessor,
-                  rowPath: currentRow.rowPath,
-                })
-              ) === id
+            (currentRow) => String(getRowId(currentRow.rowPath || [currentRow.position])) === id
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -422,7 +333,6 @@ const useTableRowProcessing = ({
       categorizeRows,
       currentTableRows,
       targetVisibleRows,
-      rowIdAccessor,
       bufferRowCount,
     ]
   );
@@ -450,23 +360,10 @@ const useTableRowProcessing = ({
       // Find these entering rows in the CURRENT table state (before sort) to get original positions
       const enteringFromCurrentState = visibleEntering
         .map((enteringRow) => {
-          const id = String(
-            getRowId({
-              row: enteringRow.row,
-              rowIdAccessor,
-              rowPath: enteringRow.rowPath,
-            })
-          );
+          const id = String(getRowId(enteringRow.rowPath || [enteringRow.position]));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) =>
-              String(
-                getRowId({
-                  row: currentRow.row,
-                  rowIdAccessor,
-                  rowPath: currentRow.rowPath,
-                })
-              ) === id
+            (currentRow) => String(getRowId(currentRow.rowPath || [currentRow.position])) === id
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -488,7 +385,6 @@ const useTableRowProcessing = ({
       categorizeRows,
       currentTableRows,
       targetVisibleRows,
-      rowIdAccessor,
       bufferRowCount,
     ]
   );

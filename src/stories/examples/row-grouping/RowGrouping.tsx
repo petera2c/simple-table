@@ -616,7 +616,6 @@ const RowGroupingExample = (props: UniversalTableProps) => {
         defaultHeaders={headers}
         rows={rows}
         rowGrouping={["divisions", "teams"]}
-        rowIdAccessor="id"
         // Default settings for this example
         columnResizing={props.columnResizing ?? true}
         height={props.height ?? "calc(100dvh - 112px)"}

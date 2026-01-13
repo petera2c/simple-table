@@ -38,7 +38,6 @@ const TableRow = ({
 }: TableRowProps) => {
   const {
     useHoverRowBackground,
-    rowIdAccessor,
     isAnimating,
     isRowSelected,
     useOddEvenRowBackground,
@@ -79,9 +78,7 @@ const TableRow = ({
       }
 
       // Get the parent row from rows using the parentRowId
-      const parentRow = rows.find(
-        (r) => getRowId({ row: r, rowIdAccessor }) === stateIndicator.parentRowId
-      );
+      const parentRow = rows.find((r, index) => getRowId([index]) === stateIndicator.parentRowId);
 
       return (
         <div
@@ -123,11 +120,7 @@ const TableRow = ({
   const isOdd = position % 2 === 0;
 
   // Get stable row ID for key (includes path for nested rows)
-  const rowId = getRowId({
-    row: tableRow.row,
-    rowIdAccessor,
-    rowPath: tableRow.rowPath,
-  });
+  const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
 
   // Check if this row is selected
   const isSelected = isRowSelected ? isRowSelected(String(rowId)) : false;

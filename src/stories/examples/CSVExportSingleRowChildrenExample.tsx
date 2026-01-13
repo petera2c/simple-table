@@ -273,7 +273,6 @@ const CSVExportSingleRowChildrenExample: React.FC<UniversalTableProps> = (props)
         tableRef={tableRef}
         rows={sampleData}
         defaultHeaders={headers}
-        rowIdAccessor="id"
         {...props}
       />
     </div>

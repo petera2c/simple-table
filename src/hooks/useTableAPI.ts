@@ -39,7 +39,6 @@ const useTableAPI = ({
   headers,
   includeHeadersInCSVExport,
   rowGrouping,
-  rowIdAccessor,
   rowIndexMap,
   rows,
   rowsPerPage,
@@ -67,7 +66,6 @@ const useTableAPI = ({
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
   rowGrouping?: Accessor[];
-  rowIdAccessor: Accessor;
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
   rowsPerPage: number;
@@ -93,10 +91,10 @@ const useTableAPI = ({
     if (tableRef) {
       tableRef.current = {
         updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          // Get the row ID using the new utility
+          // Get the row ID using the index
           const row = rows?.[rowIndex];
           if (row) {
-            const rowId = getRowId({ row, rowIdAccessor });
+            const rowId = getRowId([rowIndex]);
             const key = getCellKey({ rowId, accessor });
             const cell = cellRegistryRef.current.get(key);
 
@@ -269,7 +267,6 @@ const useTableAPI = ({
     headers,
     includeHeadersInCSVExport,
     rowGrouping,
-    rowIdAccessor,
     rowIndexMap,
     rows,
     rowsPerPage,

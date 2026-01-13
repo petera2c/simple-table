@@ -28,7 +28,6 @@ const AlignmentExample = (props: UniversalTableProps) => {
         defaultHeaders={HEADERS}
         rows={EXAMPLE_DATA}
         rowGrouping={["stores"]}
-        rowIdAccessor="id"
         height={props.height ?? "calc(100dvh - 112px)"}
         tableRef={tableRef}
       />

@@ -193,7 +193,6 @@ const ChartsExample = (props: UniversalTableProps) => {
       {...props}
       defaultHeaders={headers}
       rows={rows}
-      rowIdAccessor="id"
       // Default settings for this example
       columnReordering={props.columnReordering ?? chartsExampleDefaults.columnReordering}
       columnResizing={props.columnResizing ?? chartsExampleDefaults.columnResizing}

@@ -6,7 +6,6 @@ interface OnRowGroupExpandProps {
   row: Row;
   depth: number;
   event: MouseEvent | KeyboardEvent;
-  rowId: string | number;
   groupingKey?: string;
   isExpanded: boolean;
   // Path through nested structure to reach this row

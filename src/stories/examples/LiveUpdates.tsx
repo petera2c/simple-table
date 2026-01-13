@@ -200,7 +200,6 @@ const LiveUpdatesExample = (props: UniversalTableProps) => {
     <SimpleTable
       {...props}
       defaultHeaders={headers}
-      rowIdAccessor="id"
       rows={initialData}
       tableRef={tableRef}
       // Default settings for this example

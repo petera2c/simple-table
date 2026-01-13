@@ -441,7 +441,6 @@ const LeadsExampleComponent = ({
         defaultHeaders={LEADS_HEADERS}
         enableRowSelection
         onGridReady={onGridReady}
-        rowIdAccessor="id"
         rows={data}
         rowHeight={92}
         theme="custom"

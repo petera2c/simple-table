@@ -121,7 +121,6 @@ interface SimpleTableProps {
   rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
   rowHeight?: number; // Height of each row
-  rowIdAccessor: Accessor; // Property name to use as row ID (defaults to index-based ID)
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells
@@ -207,7 +206,6 @@ const SimpleTableComp = ({
   rowButtons,
   rowGrouping,
   rowHeight = 32,
-  rowIdAccessor,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
@@ -260,11 +258,11 @@ const SimpleTableComp = ({
     // Rebuild the index map
     const newIndexMap = new Map<string | number, number>();
     rows.forEach((row, index) => {
-      const rowId = getRowId({ row, rowIdAccessor });
+      const rowId = getRowId([index]);
       newIndexMap.set(rowId, index);
     });
     rowIndexMapRef.current = newIndexMap;
-  }, [rows, rowIdAccessor]);
+  }, [rows]);
 
   // Apply aggregation to current rows
   const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
@@ -285,15 +283,13 @@ const SimpleTableComp = ({
 
       // Create dummy rows with empty data
       const dummyRows = Array.from({ length: rowsToShow }, (_, index) => {
-        const dummyRow: Record<string, any> = {
-          [rowIdAccessor]: `loading-${index}`,
-        };
+        const dummyRow: Record<string, any> = {};
         return dummyRow;
       });
       return dummyRows;
     }
     return localRows;
-  }, [isLoading, localRows, rowIdAccessor, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
+  }, [isLoading, localRows, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
@@ -327,24 +323,17 @@ const SimpleTableComp = ({
     setHeaders(defaultHeaders);
   }, [defaultHeaders]);
 
-  // Row selection hook
-  const {
-    selectedRows,
-    setSelectedRows,
-    isRowSelected,
-    areAllRowsSelected,
-    selectedRowCount,
-    selectedRowsData,
-    handleRowSelect,
-    handleSelectAll,
-    handleToggleRow,
-    clearSelection,
-  } = useRowSelection({
-    rows: effectiveRows,
-    rowIdAccessor,
-    onRowSelectionChange,
-    enableRowSelection,
-  });
+  // Row selection hook - placeholder, will be defined after flattenedRows
+  let selectedRows: Set<string> | undefined;
+  let setSelectedRows: React.Dispatch<React.SetStateAction<Set<string>>> | undefined;
+  let isRowSelected: ((rowId: string) => boolean) | undefined;
+  let areAllRowsSelected: (() => boolean) | undefined;
+  let selectedRowCount: number | undefined;
+  let selectedRowsData: any[] | undefined;
+  let handleRowSelect: ((rowId: string, isSelected: boolean) => void) | undefined;
+  let handleSelectAll: ((isSelected: boolean) => void) | undefined;
+  let handleToggleRow: ((rowId: string) => void) | undefined;
+  let clearSelection: (() => void) | undefined;
 
   // Create headers with selection column if enabled
   const effectiveHeaders = useMemo(() => {
@@ -606,7 +595,6 @@ const SimpleTableComp = ({
   const flattenedRows = useFlattenedRows({
     rows: sortedRows,
     rowGrouping,
-    rowIdAccessor,
     expandedRows,
     collapsedRows,
     expandedDepths,
@@ -616,11 +604,27 @@ const SimpleTableComp = ({
     hasEmptyRenderer: Boolean(emptyStateRenderer),
   });
 
+  // Row selection hook - now that flattenedRows is defined
+  const rowSelectionHook = useRowSelection({
+    tableRows: flattenedRows,
+    onRowSelectionChange,
+    enableRowSelection,
+  });
+  selectedRows = rowSelectionHook.selectedRows;
+  setSelectedRows = rowSelectionHook.setSelectedRows;
+  isRowSelected = rowSelectionHook.isRowSelected;
+  areAllRowsSelected = rowSelectionHook.areAllRowsSelected;
+  selectedRowCount = rowSelectionHook.selectedRowCount;
+  selectedRowsData = rowSelectionHook.selectedRowsData;
+  handleRowSelect = rowSelectionHook.handleRowSelect;
+  handleSelectAll = rowSelectionHook.handleSelectAll;
+  handleToggleRow = rowSelectionHook.handleToggleRow;
+  clearSelection = rowSelectionHook.clearSelection;
+
   // Also flatten the original aggregated rows for animation baseline positions
   const originalFlattenedRows = useFlattenedRows({
     rows: aggregatedRows,
     rowGrouping,
-    rowIdAccessor,
     expandedRows,
     collapsedRows,
     expandedDepths,
@@ -650,7 +654,6 @@ const SimpleTableComp = ({
       return flattenRowsWithGrouping({
         rows: filteredPreview,
         rowGrouping,
-        rowIdAccessor,
         expandedRows,
         collapsedRows,
         expandedDepths,
@@ -663,7 +666,6 @@ const SimpleTableComp = ({
     [
       computeFilteredRowsPreview,
       rowGrouping,
-      rowIdAccessor,
       expandedRows,
       collapsedRows,
       expandedDepths,
@@ -693,7 +695,6 @@ const SimpleTableComp = ({
       return flattenRowsWithGrouping({
         rows: sortedPreview,
         rowGrouping,
-        rowIdAccessor,
         expandedRows,
         collapsedRows,
         expandedDepths,
@@ -706,7 +707,6 @@ const SimpleTableComp = ({
     [
       computeSortedRowsPreview,
       rowGrouping,
-      rowIdAccessor,
       expandedRows,
       collapsedRows,
       expandedDepths,
@@ -744,7 +744,6 @@ const SimpleTableComp = ({
     rowsPerPage,
     shouldPaginate,
     serverSidePagination,
-    rowIdAccessor,
     contentHeight,
     rowHeight,
     scrollTop,
@@ -779,7 +778,6 @@ const SimpleTableComp = ({
     selectableCells,
     headers,
     tableRows: currentTableRows,
-    rowIdAccessor,
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
     collapsedHeaders,
@@ -835,7 +833,6 @@ const SimpleTableComp = ({
     headers: effectiveHeaders,
     includeHeadersInCSVExport,
     rowGrouping,
-    rowIdAccessor,
     rowIndexMap: rowIndexMapRef,
     rows: effectiveRows,
     rowsPerPage,
@@ -948,7 +945,6 @@ const SimpleTableComp = ({
         rowButtons,
         rowGrouping,
         rowHeight,
-        rowIdAccessor,
         rowStateMap,
         rows: localRows,
         rowsWithSelectedCells,

@@ -22,7 +22,6 @@ const SelectableCellsExample = (props: UniversalTableProps) => {
       defaultHeaders={HEADERS}
       rows={EXAMPLE_DATA}
       rowGrouping={["stores"]}
-      rowIdAccessor="id"
       // Default settings for this example
       selectableCells={props.selectableCells ?? true}
       selectableColumns={props.selectableColumns ?? true}

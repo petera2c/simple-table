@@ -37,7 +37,6 @@ const FilterColumnsExample = (props: UniversalTableProps) => {
       defaultHeaders={HEADERS}
       onCellEdit={updateCell}
       rows={rows}
-      rowIdAccessor="id"
       // Default to editColumnsInitOpen for this example, but allow override
       editColumnsInitOpen={props.editColumnsInitOpen ?? true}
     />

@@ -354,7 +354,6 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
   const handleRowExpand = useCallback(
     async ({
       row,
-      rowId,
       depth,
       groupingKey,
       isExpanded,
@@ -378,13 +377,16 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
           // Set loading state using the helper
           setLoading(true);
 
-          const teams = await fetchTeamsForDepartment(String(rowId));
+          // Use row.id to fetch data (not rowId which was the internal path)
+          const department = row as Department;
+          const teams = await fetchTeamsForDepartment(department.id);
 
           // Clear loading state
           setLoading(false);
 
           // Show empty state if no teams
           if (teams.length === 0) {
+            console.log("No teams found for this department");
             setEmpty(true, "No teams found for this department");
             return;
           }
@@ -400,13 +402,16 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
           // Set loading state
           setLoading(true);
 
-          const employees = await fetchEmployeesForTeam(String(rowId));
+          // Use row.id to fetch data (not rowId which was the internal path)
+          const team = row as Team;
+          const employees = await fetchEmployeesForTeam(team.id);
 
           // Clear loading state
           setLoading(false);
 
           // Show empty state if no employees
           if (employees.length === 0) {
+            console.log("No employees found for this team");
             setEmpty(true, "No employees found for this team");
             return;
           }
@@ -491,7 +496,6 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         height={props.height ?? "calc(100dvh - 200px)"}
         onRowGroupExpand={handleRowExpand}
         rowGrouping={["teams", "employees"]}
-        rowIdAccessor="id"
         rows={rows}
         selectableCells
         theme={props.theme}

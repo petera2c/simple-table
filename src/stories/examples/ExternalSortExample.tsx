@@ -153,7 +153,6 @@ const ExternalSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
       {...props}
       defaultHeaders={headers}
       rows={sortedData} // We provide the pre-sorted data
-      rowIdAccessor="id"
       onSortChange={setSortColumn} // Handle sort changes externally
       // Default settings for this example
       externalSortHandling={props.externalSortHandling ?? true}

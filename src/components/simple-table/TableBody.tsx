@@ -32,7 +32,6 @@ const TableBody = ({
     mainBodyRef,
     onLoadMore,
     rowHeight,
-    rowIdAccessor,
     scrollbarWidth,
     setIsScrolling,
     shouldPaginate,
@@ -110,18 +109,12 @@ const TableBody = ({
 
     // Map each row's ID to its index in the visible rows array
     rowsToRender.forEach((tableRow, index) => {
-      const rowId = String(
-        getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        })
-      );
+      const rowId = String(getRowId(tableRow.rowPath || [tableRow.position]));
       indices[rowId] = index;
     });
 
     return indices;
-  }, [rowsToRender, rowIdAccessor]);
+  }, [rowsToRender]);
 
   // Check if we should load more data
   const checkForLoadMore = useCallback(

@@ -182,7 +182,6 @@ const DynamicHeadersExample = (props: UniversalTableProps) => {
         {...props}
         defaultHeaders={currentHeaders}
         rows={rows}
-        rowIdAccessor="id"
         // Default settings for this example
         columnResizing={props.columnResizing ?? true}
         editColumns={props.editColumns ?? true}

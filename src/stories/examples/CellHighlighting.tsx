@@ -60,7 +60,6 @@ const CellHighlightingDemo = (props: UniversalTableProps) => {
       <SimpleTable
         {...props}
         defaultHeaders={headers}
-        rowIdAccessor="id"
         rows={data}
         // Default to selectable for this example
         selectableCells={props.selectableCells ?? true}

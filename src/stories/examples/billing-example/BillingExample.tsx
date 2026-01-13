@@ -26,7 +26,6 @@ const BillingExample = (props: UniversalTableProps) => {
       initialSortDirection="desc"
       onGridReady={() => {}}
       rowGrouping={["invoices", "charges"]}
-      rowIdAccessor="id"
       // @ts-ignore
       rows={billingData}
       selectableCells

@@ -115,7 +115,6 @@ const TooltipExample = (props: UniversalTableProps) => {
       {...props}
       defaultHeaders={HEADERS}
       rows={EXAMPLE_DATA}
-      rowIdAccessor="id"
       height={props.height ?? "calc(100dvh - 112px)"}
     />
   );

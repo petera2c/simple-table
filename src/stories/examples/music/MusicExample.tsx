@@ -30,7 +30,6 @@ export default function MusicExample({
       defaultHeaders={HEADERS}
       height={height ? height : "70dvh"}
       rowHeight={85}
-      rowIdAccessor="id"
       rows={data}
       selectableCells
       tableRef={tableRef}
