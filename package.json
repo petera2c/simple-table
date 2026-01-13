@@ -1,5 +1,5 @@
 {
-  "version": "2.1.8",
+  "version": "2.1.9",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -109,7 +109,7 @@
   "bugs": {
     "url": "https://github.com/petera2c/simple-table/issues"
   },
-  "homepage": "https://github.com/petera2c/simple-table#readme",
+  "homepage": "https://www.simple-table.com/",
   "keywords": [
     "simple-table",
     "simple-table-core",
