@@ -228,6 +228,20 @@ const useDragHandler = ({
         }
       }
 
+      // Check if both headers share the same parent (for nested headers)
+      // Headers share the same parent if all path indices match except the last one
+      const haveSameParent = (path1: number[], path2: number[]): boolean => {
+        if (path1.length !== path2.length) return false;
+        if (path1.length === 1) return true; // Top-level headers always share the same parent (root)
+        // Compare all indices except the last one (which is the position within the parent)
+        return path1.slice(0, -1).every((index, i) => index === path2[i]);
+      };
+
+      // If the headers don't share the same parent, don't allow the drag
+      if (!haveSameParent(draggedHeaderIndexPath, targetHoveredIndexPath)) {
+        return;
+      }
+
       // Create a copy of the headers
       const result = swapHeaders(currentHeaders, draggedHeaderIndexPath, targetHoveredIndexPath);
       newHeaders = result.newHeaders;
