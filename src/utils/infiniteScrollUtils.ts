@@ -170,3 +170,88 @@ export const calculateRowTopPosition = ({
 }) => {
   return position * (rowHeight + ROW_SEPARATOR_WIDTH);
 };
+
+/**
+ * Result of separating sticky parents from regular rendered rows
+ */
+export interface StickyParentsResult {
+  /** Parent rows that should be rendered as sticky at the top */
+  stickyParents: TableRow[];
+  /** Regular rows to render normally (with sticky parents removed if they were in the rendered range) */
+  regularRows: TableRow[];
+}
+
+/**
+ * Separate sticky parent rows from regular rendered rows for row grouping
+ *
+ * When scrolling through nested/grouped rows, parent rows that are scrolled out of view
+ * should be "pinned" at the top to provide context. This function:
+ * 1. Identifies which parent rows should be sticky (those not fully visible)
+ * 2. Removes them from the regular rendered rows if present (to avoid duplication)
+ * 3. Adds any sticky parents that are above the rendered range
+ *
+ * @param allTableRows - Complete flattened array of all table rows
+ * @param renderedRows - Rows currently in the rendered range (includes overscan)
+ * @param fullyVisibleStartIndex - Index of first fully visible row in viewport
+ * @param renderedStartIndex - Index of first rendered row (includes overscan buffer)
+ * @returns Object with stickyParents and regularRows arrays
+ */
+export const getStickyParents = (
+  allTableRows: TableRow[],
+  renderedRows: TableRow[],
+  fullyVisibleStartIndex: number,
+  renderedStartIndex: number
+): StickyParentsResult => {
+  // Get the first fully visible row to determine which parents should be sticky
+  const firstFullyVisibleRow = allTableRows[fullyVisibleStartIndex];
+
+  // If no row is visible or the row has no parents, return early
+  if (!firstFullyVisibleRow?.parentIndices || firstFullyVisibleRow.parentIndices.length === 0) {
+    return {
+      stickyParents: [],
+      regularRows: renderedRows,
+    };
+  }
+
+  // Get indices of parents that should be sticky
+  // A parent should be sticky if it's not fully visible (index < fullyVisibleStartIndex)
+  const stickyParentIndicesSet = new Set(
+    firstFullyVisibleRow.parentIndices.filter((parentIdx) => parentIdx < fullyVisibleStartIndex)
+  );
+
+  // If no parents need to be sticky, return early
+  if (stickyParentIndicesSet.size === 0) {
+    return {
+      stickyParents: [],
+      regularRows: renderedRows,
+    };
+  }
+
+  // Separate rendered rows into sticky parents and regular rows
+  const stickyParents: TableRow[] = [];
+  const regularRows: TableRow[] = [];
+
+  renderedRows.forEach((row, idx) => {
+    const actualIndex = renderedStartIndex + idx;
+
+    if (stickyParentIndicesSet.has(actualIndex)) {
+      // This row is a sticky parent - add to sticky array
+      stickyParents.push(row);
+    } else {
+      // This is a regular row - keep it in regular array
+      regularRows.push(row);
+    }
+  });
+
+  // Add any sticky parents that weren't in the rendered range (above overscan buffer)
+  firstFullyVisibleRow.parentIndices.forEach((parentIdx) => {
+    if (parentIdx < renderedStartIndex) {
+      stickyParents.push(allTableRows[parentIdx]);
+    }
+  });
+
+  // Sort sticky parents by depth (shallowest first) to maintain hierarchy order
+  stickyParents.sort((a, b) => a.depth - b.depth);
+
+  return { stickyParents, regularRows };
+};

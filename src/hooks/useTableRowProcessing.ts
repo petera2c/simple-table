@@ -1,6 +1,6 @@
 import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
 import { calculateBufferRowCount } from "../consts/general-consts";
-import { getVisibleRows } from "../utils/infiniteScrollUtils";
+import { getViewportCalculations, getStickyParents } from "../utils/infiniteScrollUtils";
 import { getRowId } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import { Accessor } from "../types/HeaderObject";
@@ -116,7 +116,9 @@ const useTableRowProcessing = ({
       // No virtualization - return all rows
       return currentTableRows;
     }
-    return getVisibleRows({
+
+    // Get viewport calculations for virtualization
+    const viewportCalcs = getViewportCalculations({
       bufferRowCount,
       contentHeight,
       tableRows: currentTableRows,
@@ -124,7 +126,43 @@ const useTableRowProcessing = ({
       scrollTop,
       scrollDirection,
     });
+
+    return viewportCalcs.rendered.rows;
   }, [currentTableRows, contentHeight, rowHeight, scrollTop, scrollDirection, bufferRowCount]);
+
+  // Separate sticky parents from regular rows for row grouping
+  const { stickyParents, regularRows } = useMemo(() => {
+    // Only apply sticky parents if we have virtualization and viewport calculations
+    if (contentHeight === undefined) {
+      return { stickyParents: [], regularRows: targetVisibleRows };
+    }
+
+    // Get viewport calculations
+    const viewportCalcs = getViewportCalculations({
+      bufferRowCount,
+      contentHeight,
+      tableRows: currentTableRows,
+      rowHeight,
+      scrollTop,
+      scrollDirection,
+    });
+
+    // Separate sticky parents from rendered rows
+    return getStickyParents(
+      currentTableRows,
+      viewportCalcs.rendered.rows,
+      viewportCalcs.fullyVisible.startIndex,
+      viewportCalcs.rendered.startIndex
+    );
+  }, [
+    currentTableRows,
+    contentHeight,
+    rowHeight,
+    scrollTop,
+    scrollDirection,
+    bufferRowCount,
+    targetVisibleRows,
+  ]);
 
   // Categorize rows based on ID changes
   const categorizeRows = useCallback(
@@ -368,7 +406,7 @@ const useTableRowProcessing = ({
       // Calculate what rows would be after filter (already flattened from preview function)
       const newFlattenedRows = computeFilteredRowsPreview(filter);
       const newPaginatedRows = applyPagination(newFlattenedRows);
-      const newVisibleRows = getVisibleRows({
+      const newViewportCalcs = getViewportCalculations({
         bufferRowCount,
         contentHeight,
         tableRows: newPaginatedRows,
@@ -376,6 +414,7 @@ const useTableRowProcessing = ({
         scrollTop,
         scrollDirection,
       });
+      const newVisibleRows = newViewportCalcs.rendered.rows;
 
       // CRITICAL: Compare VISIBLE rows (before filter) vs what WILL BE visible (after filter)
       // This identifies rows that are entering the visible area
@@ -434,7 +473,7 @@ const useTableRowProcessing = ({
       // Calculate what rows would be after sort (already flattened from preview function)
       const newFlattenedRows = computeSortedRowsPreview(accessor);
       const newPaginatedRows = applyPagination(newFlattenedRows);
-      const newVisibleRows = getVisibleRows({
+      const newViewportCalcs = getViewportCalculations({
         bufferRowCount,
         contentHeight,
         tableRows: newPaginatedRows,
@@ -442,6 +481,7 @@ const useTableRowProcessing = ({
         scrollTop,
         scrollDirection,
       });
+      const newVisibleRows = newViewportCalcs.rendered.rows;
 
       // CRITICAL: Compare VISIBLE rows (before sort) vs what WILL BE visible (after sort)
       // This identifies rows that are entering the visible area
@@ -500,6 +540,8 @@ const useTableRowProcessing = ({
     prepareForFilterChange,
     prepareForSortChange,
     rowsToRender,
+    stickyParents,
+    regularRows,
   };
 };
 

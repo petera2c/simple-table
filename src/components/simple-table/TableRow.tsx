@@ -9,6 +9,7 @@ import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
 import { getRowId } from "../../utils/rowUtils";
 import RowStateIndicator from "./RowStateIndicator";
+import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -22,6 +23,8 @@ interface TableRowProps {
   rowIndices: RowIndices;
   setHoveredIndex: (index: number | null) => void;
   tableRow: TableRowType;
+  isSticky?: boolean;
+  stickyIndex?: number;
 }
 
 const TableRow = ({
@@ -35,6 +38,8 @@ const TableRow = ({
   rowIndices,
   setHoveredIndex,
   tableRow,
+  isSticky = false,
+  stickyIndex = 0,
 }: TableRowProps) => {
   const {
     useHoverRowBackground,
@@ -132,11 +137,28 @@ const TableRow = ({
   // Check if this row is selected
   const isSelected = isRowSelected ? isRowSelected(String(rowId)) : false;
 
+  // Calculate row style based on whether it's sticky or regular
+  const rowStyle = isSticky
+    ? {
+        gridTemplateColumns,
+        transform: `translateY(${stickyIndex * (rowHeight + ROW_SEPARATOR_WIDTH)}px)`,
+        height: `${rowHeight}px`,
+        position: "absolute" as const,
+        top: 0,
+        left: 0,
+        right: 0,
+      }
+    : {
+        gridTemplateColumns,
+        top: calculateRowTopPosition({ position, rowHeight }),
+        height: `${rowHeight}px`,
+      };
+
   return (
     <div
-      className={`st-row ${useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""} ${
-        isSelected ? "selected" : ""
-      }`}
+      className={`st-row ${isSticky ? "st-sticky-parent" : ""} ${
+        useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""
+      } ${isSelected ? "selected" : ""}`}
       data-index={index}
       aria-rowindex={position + maxHeaderDepth + 1}
       onMouseEnter={() => {
@@ -145,11 +167,7 @@ const TableRow = ({
           setHoveredIndex(index);
         }
       }}
-      style={{
-        gridTemplateColumns,
-        top: calculateRowTopPosition({ position, rowHeight }),
-        height: `${rowHeight}px`,
-      }}
+      style={rowStyle}
     >
       <RenderCells
         columnIndexStart={columnIndexStart}

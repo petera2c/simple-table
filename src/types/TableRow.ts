@@ -19,6 +19,9 @@ type TableRow = {
   isLoadingSkeleton?: boolean;
   // The absolute row index accounting for pagination (e.g., on page 2 with 10 rows per page, first row has absoluteRowIndex = 10)
   absoluteRowIndex: number;
+  // Indices of parent rows in the flattened array (for sticky parent functionality in row grouping)
+  // For a row at depth 2, this would be [indexOfDepth0Parent, indexOfDepth1Parent]
+  parentIndices?: number[];
 };
 
 export default TableRow;

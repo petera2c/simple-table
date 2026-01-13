@@ -1,6 +1,7 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
+import StickyParentsContainer from "./StickyParentsContainer";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { useTableContext } from "../../context/TableContext";
@@ -22,6 +23,8 @@ const TableBody = ({
   setScrollDirection,
   shouldShowEmptyState,
   tableRows,
+  stickyParents,
+  regularRows,
 }: TableBodyProps) => {
   // Get stable props from context
   const {
@@ -199,44 +202,64 @@ const TableBody = ({
     rowIndices,
     rowsToRender,
     setHoveredIndex,
+    regularRows,
   };
 
   return (
-    <div
-      className="st-body-container"
-      onMouseLeave={() => setHoveredIndex(null)}
-      onScroll={handleScroll}
-      ref={tableBodyContainerRef}
-    >
-      {shouldShowEmptyState ? (
-        <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
-      ) : (
-        <>
-          <TableSection
-            {...commonProps}
-            pinned="left"
-            templateColumns={pinnedLeftTemplateColumns}
-            totalHeight={totalHeight}
-            width={pinnedLeftWidth}
-          />
-          <TableSection
-            {...commonProps}
-            columnIndexStart={pinnedLeftColumns.length}
-            ref={mainBodyRef}
-            templateColumns={mainTemplateColumns}
-            totalHeight={totalHeight}
-          />
-          <TableSection
-            {...commonProps}
-            columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
-            pinned="right"
-            templateColumns={pinnedRightTemplateColumns}
-            totalHeight={totalHeight}
-            width={pinnedRightWidth}
-          />
-        </>
+    <>
+      {/* Sticky parents container - positioned absolutely on top */}
+      {!shouldShowEmptyState && (
+        <StickyParentsContainer
+          stickyParents={stickyParents}
+          mainTemplateColumns={mainTemplateColumns}
+          pinnedLeftColumns={pinnedLeftColumns}
+          pinnedLeftTemplateColumns={pinnedLeftTemplateColumns}
+          pinnedLeftWidth={pinnedLeftWidth}
+          pinnedRightColumns={pinnedRightColumns}
+          pinnedRightTemplateColumns={pinnedRightTemplateColumns}
+          pinnedRightWidth={pinnedRightWidth}
+          setHoveredIndex={setHoveredIndex}
+          rowIndices={rowIndices}
+        />
       )}
-    </div>
+
+      {/* Main scrolling body container */}
+      <div
+        className="st-body-container"
+        onMouseLeave={() => setHoveredIndex(null)}
+        onScroll={handleScroll}
+        ref={tableBodyContainerRef}
+      >
+        {shouldShowEmptyState ? (
+          <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
+        ) : (
+          <>
+            <TableSection
+              {...commonProps}
+              pinned="left"
+              templateColumns={pinnedLeftTemplateColumns}
+              totalHeight={totalHeight}
+              width={pinnedLeftWidth}
+            />
+            <TableSection
+              {...commonProps}
+              columnIndexStart={pinnedLeftColumns.length}
+              ref={mainBodyRef}
+              templateColumns={mainTemplateColumns}
+              totalHeight={totalHeight}
+            />
+            <TableSection
+              {...commonProps}
+              columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
+              pinned="right"
+              templateColumns={pinnedRightTemplateColumns}
+              totalHeight={totalHeight}
+              width={pinnedRightWidth}
+            />
+          </>
+        )}
+      </div>
+    </>
   );
 };
 

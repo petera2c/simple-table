@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
+import StickyParentsContainer from "./StickyParentsContainer";
 import { useTableContext } from "../../context/TableContext";
 import SortColumn from "../../types/SortColumn";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
@@ -19,6 +20,8 @@ interface TableContentLocalProps {
   sort: SortColumn | null;
   tableRows: TableRow[];
   rowsToRender: TableRow[];
+  stickyParents: TableRow[];
+  regularRows: TableRow[];
 }
 
 const TableContent = ({
@@ -31,6 +34,8 @@ const TableContent = ({
   sort,
   tableRows,
   rowsToRender,
+  stickyParents,
+  regularRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
   const { columnResizing, editColumns, headers, collapsedHeaders, autoExpandColumns } =
@@ -93,6 +98,8 @@ const TableContent = ({
     setScrollDirection,
     shouldShowEmptyState,
     rowsToRender,
+    stickyParents,
+    regularRows,
   };
 
   return (

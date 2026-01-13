@@ -256,6 +256,38 @@ input {
   background-color: var(--st-even-row-background-color);
 }
 
+/* Sticky parents container - positioned above scrolling content */
+.st-sticky-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  z-index: 10;
+  pointer-events: none;
+  width: 100%;
+  background-color: var(--st-even-row-background-color);
+}
+
+.st-sticky-top > * {
+  pointer-events: auto;
+}
+
+.st-sticky-section-left,
+.st-sticky-section-main,
+.st-sticky-section-right {
+  overflow: hidden;
+  background-color: var(--st-even-row-background-color);
+}
+
+.st-sticky-section-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-sticky-section-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
+}
+
 .st-empty-state-wrapper {
   display: flex;
   align-items: center;
@@ -295,6 +327,32 @@ input {
 
   /* Performance optimizations for virtual scrolling */
   backface-visibility: hidden;
+}
+
+/* Sticky parent rows in row grouping */
+.st-row.st-sticky-parent {
+  z-index: 5;
+  /* Ensure sticky parents stay above regular rows and have proper background */
+}
+
+/* Ensure sticky parents have background color (override if needed) */
+.st-sticky-top .st-row.even {
+  background-color: var(--st-even-row-background-color);
+}
+
+.st-sticky-top .st-row.odd {
+  background-color: var(--st-odd-row-background-color);
+}
+
+.st-sticky-top .st-row.selected {
+  background-color: var(--st-selected-row-background-color);
+}
+
+.st-sticky-top
+  .st-row.hovered:not(.st-cell-editing):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-last
+  ):not(.st-cell-column-selected-first) {
+  background-color: var(--st-hover-row-background-color);
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered

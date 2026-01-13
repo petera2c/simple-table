@@ -14,6 +14,8 @@ interface TableBodyProps {
   setScrollDirection: (direction: "up" | "down" | "none") => void;
   shouldShowEmptyState: boolean;
   tableRows: TableRow[];
+  stickyParents: TableRow[];
+  regularRows: TableRow[];
 }
 
 export default TableBodyProps;
