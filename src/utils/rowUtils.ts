@@ -4,49 +4,39 @@ import { RowId } from "../types/RowId";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
-import { ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
-
-// Maximum height for nested grids in pixels
-export const NESTED_GRID_MAX_HEIGHT = 400;
-
-// Padding for nested grids (top + bottom combined)
-export const NESTED_GRID_PADDING = 16;
-
-// Individual padding values for nested grids
-export const NESTED_GRID_PADDING_TOP = 8;
-export const NESTED_GRID_PADDING_BOTTOM = 8;
-
-// Border width for nested grid tables (top + bottom)
-export const NESTED_GRID_BORDER_WIDTH = 2; // 1px top + 1px bottom
+import { CustomTheme } from "../types/CustomTheme";
 
 /**
  * Calculate the height of a nested grid based on the number of child rows
  * @param childRowCount - Number of rows in the nested grid
  * @param rowHeight - Height of each row
  * @param headerHeight - Height of the header
+ * @param customTheme - Custom theme configuration
  * @returns Calculated height in pixels (includes padding, borders, row separators, and header border)
  */
 export const calculateNestedGridHeight = ({
   childRowCount,
   rowHeight,
   headerHeight,
+  customTheme,
 }: {
   childRowCount: number;
   rowHeight: number;
   headerHeight: number;
+  customTheme: CustomTheme;
 }): number => {
   // Calculate content height: header + header border + (rows * rowHeight) + row separators + top/bottom padding + table borders
   const contentHeight = 
     headerHeight + 
   // Header has a bottom border separating it from rows
-    ROW_SEPARATOR_WIDTH +
-    childRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) + 
-    NESTED_GRID_PADDING_TOP + 
-    NESTED_GRID_PADDING_BOTTOM + 
-    NESTED_GRID_BORDER_WIDTH;
+    customTheme.rowSeparatorWidth +
+    childRowCount * (rowHeight + customTheme.rowSeparatorWidth) + 
+    customTheme.nestedGridPaddingTop + 
+    customTheme.nestedGridPaddingBottom + 
+    customTheme.nestedGridBorderWidth;
   
   // Return the minimum of content height and max height (max height also includes padding and borders)
-  return Math.min(contentHeight, NESTED_GRID_MAX_HEIGHT + NESTED_GRID_PADDING_TOP + NESTED_GRID_PADDING_BOTTOM + NESTED_GRID_BORDER_WIDTH);
+  return Math.min(contentHeight, customTheme.nestedGridMaxHeight + customTheme.nestedGridPaddingTop + customTheme.nestedGridPaddingBottom + customTheme.nestedGridBorderWidth);
 };
 
 /**
@@ -274,6 +264,7 @@ export const flattenRowsWithGrouping = ({
   headers = [],
   rowHeight,
   headerHeight,
+  customTheme,
 }: {
   depth?: number;
   expandedDepths: Set<number>;
@@ -289,6 +280,7 @@ export const flattenRowsWithGrouping = ({
   headers?: HeaderObject[];
   rowHeight: number;
   headerHeight: number;
+  customTheme: CustomTheme;
 }): TableRow[] => {
   const result: TableRow[] = [];
 
@@ -356,6 +348,7 @@ export const flattenRowsWithGrouping = ({
             childRowCount: nestedRows.length,
             rowHeight: nestedGridRowHeight,
             headerHeight: nestedGridHeaderHeight,
+            customTheme,
           });
           
           result.push({

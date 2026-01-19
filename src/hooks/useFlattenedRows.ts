@@ -5,6 +5,7 @@ import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
 import { getRowId, getNestedRows, isRowExpanded, calculateNestedGridHeight } from "../utils/rowUtils";
 import { HeightOffsets } from "../utils/infiniteScrollUtils";
+import { CustomTheme } from "../types/CustomTheme";
 
 interface UseFlattenedRowsProps {
   rows: Row[];
@@ -19,6 +20,7 @@ interface UseFlattenedRowsProps {
   headers: HeaderObject[];
   rowHeight: number;
   headerHeight: number;
+  customTheme: CustomTheme;
 }
 
 interface UseFlattenedRowsResult {
@@ -45,6 +47,7 @@ const useFlattenedRows = ({
   headers,
   rowHeight,
   headerHeight,
+  customTheme,
 }: UseFlattenedRowsProps): UseFlattenedRowsResult => {
   return useMemo(() => {
     // If no row grouping, just convert rows to TableRow format
@@ -127,6 +130,7 @@ const useFlattenedRows = ({
               childRowCount: nestedRows.length,
               rowHeight: nestedGridRowHeight,
               headerHeight: nestedGridHeaderHeight,
+              customTheme,
             });
             
             // Calculate extra height (beyond standard row height)
@@ -220,6 +224,7 @@ const useFlattenedRows = ({
     headers,
     rowHeight,
     headerHeight,
+    customTheme,
   ]);
 };
 

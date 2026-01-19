@@ -16,6 +16,7 @@ import RowSelectionChangeProps from "./RowSelectionChangeProps";
 import { RowButton } from "./RowButton";
 import TableRefType from "./TableRefType";
 import Theme from "./Theme";
+import { CustomTheme } from "./CustomTheme";
 
 export interface SimpleTableProps {
     allowAnimations?: boolean; // Flag for allowing animations
@@ -29,6 +30,7 @@ export interface SimpleTableProps {
     columnReordering?: boolean; // Flag for column reordering
     columnResizing?: boolean; // Flag for column resizing
     copyHeadersToClipboard?: boolean; // Flag for including column headers when copying cells to clipboard (default: false)
+    customTheme?: Partial<CustomTheme>; // Custom theme configuration for dimensions and spacing
     defaultHeaders: HeaderObject[]; // Default headers
     editColumns?: boolean; // Flag for column editing
     editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded

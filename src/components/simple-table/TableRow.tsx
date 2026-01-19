@@ -38,16 +38,17 @@ const TableRow = ({
   tableRow,
 }: TableRowProps) => {
   const {
-    useHoverRowBackground,
+    customTheme,
+    emptyStateRenderer,
+    errorStateRenderer,
+    heightOffsets,
     isAnimating,
     isRowSelected,
-    useOddEvenRowBackground,
-    rows,
     loadingStateRenderer,
-    errorStateRenderer,
-    emptyStateRenderer,
     maxHeaderDepth,
-    heightOffsets,
+    rows,
+    useHoverRowBackground,
+    useOddEvenRowBackground,
   } = useTableContext();
   const { position, displayPosition, stateIndicator, nestedGrid } = tableRow;
 
@@ -77,7 +78,7 @@ const TableRow = ({
         data-index={index}
         style={{
           gridTemplateColumns,
-          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets })}px, 0)`,
+          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
           height: `${nestedGrid.calculatedHeight}px`,
         }}
       />
@@ -105,7 +106,7 @@ const TableRow = ({
             data-index={index}
             style={{
               gridTemplateColumns,
-              transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets })}px, 0)`,
+              transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
               height: `${rowHeight}px`,
             }}
           />
@@ -121,7 +122,7 @@ const TableRow = ({
           data-index={index}
           style={{
             gridTemplateColumns,
-            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets })}px, 0)`,
+            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
             height: `${rowHeight}px`,
           }}
         >
@@ -144,7 +145,7 @@ const TableRow = ({
         data-index={index}
         style={{
           gridTemplateColumns,
-          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets })}px, 0)`,
+          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
           height: `${rowHeight}px`,
         }}
       />
@@ -175,7 +176,7 @@ const TableRow = ({
       }}
       style={{
         gridTemplateColumns,
-        top: calculateRowTopPosition({ position, rowHeight, heightOffsets }),
+        top: calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme }),
         height: `${rowHeight}px`,
       }}
     >

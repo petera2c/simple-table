@@ -2,7 +2,6 @@ import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
-import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
@@ -37,6 +36,7 @@ const TableBody = ({
     shouldPaginate,
     tableBodyContainerRef,
     tableEmptyStateRenderer,
+    customTheme,
   } = useTableContext();
 
   // Local state
@@ -91,7 +91,7 @@ const TableBody = ({
 
   // Derived state
   const totalRowCount = getTotalRowCount(tableRows);
-  const totalHeight = totalRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+  const totalHeight = totalRowCount * (rowHeight + customTheme.rowSeparatorWidth) - customTheme.rowSeparatorWidth;
 
   // Calculate column indices for all headers (including pinned) in one place
   const columnIndices = useMemo(() => {

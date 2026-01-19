@@ -41,6 +41,7 @@ import RowState from "../../types/RowState";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import useExpandedDepths from "../../hooks/useExpandedDepths";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
+import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
@@ -66,6 +67,7 @@ const SimpleTableComp = ({
   columnReordering = false,
   columnResizing = false,
   copyHeadersToClipboard = false,
+  customTheme: customThemeProp,
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
@@ -78,12 +80,12 @@ const SimpleTableComp = ({
   externalFilterHandling = false,
   externalSortHandling = false,
   filterIcon = <FilterIcon className="st-header-icon" />,
-  footerHeight = 49,
+  footerHeight: footerHeightProp,
   footerRenderer,
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
   headerDropdown,
   headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
-  headerHeight,
+  headerHeight: headerHeightProp,
   height,
   hideFooter = false,
   hideHeader = false,
@@ -111,12 +113,12 @@ const SimpleTableComp = ({
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowButtons,
   rowGrouping,
-  rowHeight = DEFAULT_ROW_HEIGHT,
+  rowHeight: rowHeightProp,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
   selectableColumns = false,
-  selectionColumnWidth = 42,
+  selectionColumnWidth: selectionColumnWidthProp,
   serverSidePagination = false,
   shouldPaginate = false,
   sortDownIcon = <DescIcon className="st-header-icon" />,
@@ -129,6 +131,17 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
   useOddEvenRowBackground = false,
 }: SimpleTableProps) => {
+  // Merge customTheme with defaults
+  const customTheme = useMemo(() => ({
+    ...DEFAULT_CUSTOM_THEME,
+    ...customThemeProp,
+  }), [customThemeProp]);
+
+  // Use values from customTheme, with prop overrides for backwards compatibility
+  const rowHeight = rowHeightProp ?? customTheme.rowHeight;
+  const headerHeight = headerHeightProp ?? customTheme.headerHeight;
+  const footerHeight = footerHeightProp ?? customTheme.footerHeight;
+  const selectionColumnWidth = selectionColumnWidthProp ?? customTheme.selectionColumnWidth;
   if (useOddColumnBackground) useOddEvenRowBackground = false;
   // Disable hover row background when column borders are enabled to prevent visual conflicts
   if (columnBorders) useHoverRowBackground = false;
@@ -511,6 +524,7 @@ const SimpleTableComp = ({
     headers: effectiveHeaders,
     rowHeight,
     headerHeight: headerHeight ?? rowHeight,
+    customTheme,
   });
 
   // Row selection hook - now that flattenedRows is defined
@@ -544,6 +558,7 @@ const SimpleTableComp = ({
     headers: effectiveHeaders,
     rowHeight,
     headerHeight: headerHeight ?? rowHeight,
+    customTheme,
   });
 
   // Create flattened preview functions for animations
@@ -576,6 +591,7 @@ const SimpleTableComp = ({
         headers: effectiveHeaders,
         rowHeight,
         headerHeight: headerHeight ?? rowHeight,
+        customTheme,
       });
     },
     [
@@ -591,6 +607,7 @@ const SimpleTableComp = ({
       effectiveHeaders,
       rowHeight,
       headerHeight,
+      customTheme,
     ]
   );
 
@@ -623,6 +640,7 @@ const SimpleTableComp = ({
         headers: effectiveHeaders,
         rowHeight,
         headerHeight: headerHeight ?? rowHeight,
+        customTheme,
       });
     },
     [
@@ -638,6 +656,7 @@ const SimpleTableComp = ({
       effectiveHeaders,
       rowHeight,
       headerHeight,
+      customTheme,
     ]
   );
 
@@ -708,6 +727,7 @@ const SimpleTableComp = ({
     rowHeight,
     enableRowSelection,
     copyHeadersToClipboard,
+    customTheme,
   });
 
   // Memoize handlers
@@ -900,6 +920,7 @@ const SimpleTableComp = ({
         tableEmptyStateRenderer,
         tableRows: currentTableRows,
         theme,
+        customTheme,
         expandedRows,
         collapsedRows,
         useHoverRowBackground,

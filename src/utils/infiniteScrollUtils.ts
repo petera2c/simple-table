@@ -1,5 +1,5 @@
-import { ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
 import TableRow from "../types/TableRow";
+import { CustomTheme } from "../types/CustomTheme";
 
 const SEPARATOR_HEIGHT = 1;
 
@@ -202,13 +202,15 @@ export const calculateSeparatorTopPosition = ({
   position,
   rowHeight,
   heightOffsets,
+  customTheme,
 }: {
   position: number;
   rowHeight: number;
   heightOffsets?: HeightOffsets;
+  customTheme: CustomTheme;
 }) => {
   // Base calculation
-  const baseHeight = position * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+  const baseHeight = position * (rowHeight + customTheme.rowSeparatorWidth) - customTheme.rowSeparatorWidth;
   
   // Add extra height from nested grids above this position
   const extraHeight = getCumulativeExtraHeight(position, heightOffsets);
@@ -220,13 +222,15 @@ export const calculateRowTopPosition = ({
   position,
   rowHeight,
   heightOffsets,
+  customTheme,
 }: {
   position: number;
   rowHeight: number;
   heightOffsets?: HeightOffsets;
+  customTheme: CustomTheme;
 }) => {
   // Base calculation
-  const baseHeight = position * (rowHeight + ROW_SEPARATOR_WIDTH);
+  const baseHeight = position * (rowHeight + customTheme.rowSeparatorWidth);
   
   // Add extra height from nested grids above this position
   const extraHeight = getCumulativeExtraHeight(position, heightOffsets);

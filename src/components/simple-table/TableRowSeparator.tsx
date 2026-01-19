@@ -13,7 +13,7 @@ const TableRowSeparator = ({
   rowHeight: number;
   templateColumns: string;
 }) => {
-  const { heightOffsets } = useTableContext();
+  const { heightOffsets, customTheme } = useTableContext();
   const targetCellRef = useRef<HTMLElement | null>(null);
 
   const handleSeparatorMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -84,7 +84,7 @@ const TableRowSeparator = ({
       onMouseUp={handleSeparatorMouseUp}
       style={{
         gridTemplateColumns: templateColumns,
-        transform: `translate3d(0, ${calculateSeparatorTopPosition({ position, rowHeight, heightOffsets })}px, 0)`,
+        transform: `translate3d(0, ${calculateSeparatorTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
       }}
     >
       <div style={{ gridColumn: "1 / -1" }} />

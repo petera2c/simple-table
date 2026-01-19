@@ -11,6 +11,7 @@ import {
   deleteSelectedCellsContent,
 } from "../utils/cellClipboardUtils";
 import { useKeyboardNavigation } from "./useKeyboardNavigation";
+import { CustomTheme } from "../types/CustomTheme";
 
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
@@ -25,6 +26,7 @@ interface UseSelectionProps {
   rowHeight: number;
   enableRowSelection?: boolean;
   copyHeadersToClipboard?: boolean;
+  customTheme: CustomTheme;
 }
 
 const useSelection = ({
@@ -37,6 +39,7 @@ const useSelection = ({
   rowHeight,
   enableRowSelection = false,
   copyHeadersToClipboard = false,
+  customTheme,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
@@ -193,9 +196,9 @@ const useSelection = ({
       setInitialFocusedCell(endCell);
 
       // Scroll the end cell into view
-      setTimeout(() => scrollCellIntoView(endCell, rowHeight), 0);
+      setTimeout(() => scrollCellIntoView(endCell, rowHeight, customTheme), 0);
     },
-    [tableRows, rowHeight, enableRowSelection]
+    [tableRows, rowHeight, enableRowSelection, customTheme]
   );
 
   const selectSingleCell = useCallback(
@@ -217,10 +220,10 @@ const useSelection = ({
         setInitialFocusedCell(cell);
 
         // Scroll the cell into view
-        setTimeout(() => scrollCellIntoView(cell, rowHeight), 0);
+        setTimeout(() => scrollCellIntoView(cell, rowHeight, customTheme), 0);
       }
     },
-    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection]
+    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection, customTheme]
   );
 
   const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
