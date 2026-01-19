@@ -4,6 +4,7 @@ import { RowId } from "../types/RowId";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
+import { DEFAULT_ROW_HEIGHT, DEFAULT_HEADER_HEIGHT } from "../consts/general-consts";
 
 // Maximum height for nested grids in pixels
 export const NESTED_GRID_MAX_HEIGHT = 400;
@@ -18,14 +19,14 @@ export const NESTED_GRID_PADDING_BOTTOM = 8;
 /**
  * Calculate the height of a nested grid based on the number of child rows
  * @param childRowCount - Number of rows in the nested grid
- * @param rowHeight - Height of each row (default: 32)
- * @param headerHeight - Height of the header (default: 32)
+ * @param rowHeight - Height of each row (defaults to DEFAULT_ROW_HEIGHT)
+ * @param headerHeight - Height of the header (defaults to DEFAULT_HEADER_HEIGHT)
  * @returns Calculated height in pixels (includes padding)
  */
 export const calculateNestedGridHeight = ({
   childRowCount,
-  rowHeight = 32,
-  headerHeight = 32,
+  rowHeight = DEFAULT_ROW_HEIGHT,
+  headerHeight = DEFAULT_HEADER_HEIGHT,
 }: {
   childRowCount: number;
   rowHeight?: number;
@@ -261,6 +262,8 @@ export const flattenRowsWithGrouping = ({
   hasErrorRenderer = false,
   hasEmptyRenderer = false,
   headers = [],
+  rowHeight = DEFAULT_ROW_HEIGHT,
+  headerHeight = DEFAULT_HEADER_HEIGHT,
 }: {
   depth?: number;
   expandedDepths: Set<number>;
@@ -274,6 +277,8 @@ export const flattenRowsWithGrouping = ({
   hasErrorRenderer?: boolean;
   hasEmptyRenderer?: boolean;
   headers?: HeaderObject[];
+  rowHeight?: number;
+  headerHeight?: number;
 }): TableRow[] => {
   const result: TableRow[] = [];
 
@@ -335,11 +340,12 @@ export const flattenRowsWithGrouping = ({
         // If there's a nested grid configuration, inject a nested grid row instead of regular child rows
         if (expandableHeader?.nestedGrid && nestedRows.length > 0) {
           // Calculate the height for this nested grid
-          const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || 32;
+          const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || rowHeight;
+          const nestedGridHeaderHeight = expandableHeader.nestedGrid.headerHeight || headerHeight;
           const calculatedHeight = calculateNestedGridHeight({
             childRowCount: nestedRows.length,
             rowHeight: nestedGridRowHeight,
-            headerHeight: 32, // Standard header height
+            headerHeight: nestedGridHeaderHeight,
           });
           
           result.push({

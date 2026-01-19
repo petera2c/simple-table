@@ -26,6 +26,7 @@ import {
   ErrorStateRenderer,
   EmptyStateRenderer,
 } from "../types/RowStateRendererProps";
+import { HeightOffsets } from "../utils/infiniteScrollUtils";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -83,6 +84,7 @@ interface TableContextType {
   headerExpandIcon?: ReactNode;
   headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
+  heightOffsets: HeightOffsets;
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   maxHeaderDepth: number;
   isAnimating: boolean;

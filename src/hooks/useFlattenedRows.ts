@@ -4,6 +4,7 @@ import Row from "../types/Row";
 import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
 import { getRowId, getNestedRows, isRowExpanded, calculateNestedGridHeight } from "../utils/rowUtils";
+import { HeightOffsets } from "../utils/infiniteScrollUtils";
 
 interface UseFlattenedRowsProps {
   rows: Row[];
@@ -16,6 +17,13 @@ interface UseFlattenedRowsProps {
   hasErrorRenderer: boolean;
   hasEmptyRenderer: boolean;
   headers: HeaderObject[];
+  rowHeight: number;
+  headerHeight: number;
+}
+
+interface UseFlattenedRowsResult {
+  flattenedRows: TableRow[];
+  heightOffsets: HeightOffsets;
 }
 
 /**
@@ -35,25 +43,31 @@ const useFlattenedRows = ({
   hasErrorRenderer,
   hasEmptyRenderer,
   headers,
-}: UseFlattenedRowsProps): TableRow[] => {
+  rowHeight,
+  headerHeight,
+}: UseFlattenedRowsProps): UseFlattenedRowsResult => {
   return useMemo(() => {
     // If no row grouping, just convert rows to TableRow format
     if (!rowGrouping || rowGrouping.length === 0) {
-      return rows.map(
-        (row, index) =>
-          ({
-            row,
-            depth: 0,
-            displayPosition: index,
-            groupingKey: undefined,
-            position: index,
-            rowPath: [index],
-            absoluteRowIndex: index,
-          } as TableRow)
-      );
+      return {
+        flattenedRows: rows.map(
+          (row, index) =>
+            ({
+              row,
+              depth: 0,
+              displayPosition: index,
+              groupingKey: undefined,
+              position: index,
+              rowPath: [index],
+              absoluteRowIndex: index,
+            } as TableRow)
+        ),
+        heightOffsets: [],
+      };
     }
 
     const result: TableRow[] = [];
+    const heightOffsets: HeightOffsets = [];
 
     const processRows = (
       currentRows: Row[],
@@ -107,12 +121,19 @@ const useFlattenedRows = ({
             const nestedGridPosition = result.length;
             
             // Calculate the height for this nested grid
-            const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || 32;
+            const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || rowHeight;
+            const nestedGridHeaderHeight = expandableHeader.nestedGrid.headerHeight || headerHeight;
             const calculatedHeight = calculateNestedGridHeight({
               childRowCount: nestedRows.length,
               rowHeight: nestedGridRowHeight,
-              headerHeight: 32, // Standard header height
+              headerHeight: nestedGridHeaderHeight,
             });
+            
+            // Calculate extra height (beyond standard row height)
+            const extraHeight = calculatedHeight - rowHeight;
+            
+            // Add to height offsets array (kept sorted by position)
+            heightOffsets.push([nestedGridPosition, extraHeight]);
             
             result.push({
               row: {}, // Empty row object, content will be rendered by NestedGridRow
@@ -182,7 +203,10 @@ const useFlattenedRows = ({
     };
 
     processRows(rows, 0);
-    return result;
+    return {
+      flattenedRows: result,
+      heightOffsets,
+    };
   }, [
     rows,
     rowGrouping,
@@ -194,6 +218,8 @@ const useFlattenedRows = ({
     hasErrorRenderer,
     hasEmptyRenderer,
     headers,
+    rowHeight,
+    headerHeight,
   ]);
 };
 

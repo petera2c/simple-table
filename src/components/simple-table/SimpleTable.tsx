@@ -24,7 +24,7 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition,  } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
-import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
+import { getResponsiveMaxPinnedPercent, DEFAULT_ROW_HEIGHT } from "../../consts/general-consts";
 import { useTableDimensions } from "../../hooks/useTableDimensions";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
@@ -111,7 +111,7 @@ const SimpleTableComp = ({
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowButtons,
   rowGrouping,
-  rowHeight = 32,
+  rowHeight = DEFAULT_ROW_HEIGHT,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
@@ -498,7 +498,7 @@ const SimpleTableComp = ({
 
   // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
   // Done BEFORE pagination so rowsPerPage correctly counts all visible rows including nested children
-  const flattenedRows = useFlattenedRows({
+  const { flattenedRows, heightOffsets } = useFlattenedRows({
     rows: sortedRows,
     rowGrouping,
     expandedRows,
@@ -509,6 +509,8 @@ const SimpleTableComp = ({
     hasErrorRenderer: Boolean(errorStateRenderer),
     hasEmptyRenderer: Boolean(emptyStateRenderer),
     headers: effectiveHeaders,
+    rowHeight,
+    headerHeight: headerHeight ?? rowHeight,
   });
 
   // Row selection hook - now that flattenedRows is defined
@@ -529,7 +531,7 @@ const SimpleTableComp = ({
   clearSelection = rowSelectionHook.clearSelection;
 
   // Also flatten the original aggregated rows for animation baseline positions
-  const originalFlattenedRows = useFlattenedRows({
+  const { flattenedRows: originalFlattenedRows } = useFlattenedRows({
     rows: aggregatedRows,
     rowGrouping,
     expandedRows,
@@ -540,6 +542,8 @@ const SimpleTableComp = ({
     hasErrorRenderer: Boolean(errorStateRenderer),
     hasEmptyRenderer: Boolean(emptyStateRenderer),
     headers: effectiveHeaders,
+    rowHeight,
+    headerHeight: headerHeight ?? rowHeight,
   });
 
   // Create flattened preview functions for animations
@@ -570,6 +574,8 @@ const SimpleTableComp = ({
         hasErrorRenderer: Boolean(errorStateRenderer),
         hasEmptyRenderer: Boolean(emptyStateRenderer),
         headers: effectiveHeaders,
+        rowHeight,
+        headerHeight: headerHeight ?? rowHeight,
       });
     },
     [
@@ -613,6 +619,8 @@ const SimpleTableComp = ({
         hasErrorRenderer: Boolean(errorStateRenderer),
         hasEmptyRenderer: Boolean(emptyStateRenderer),
         headers: effectiveHeaders,
+        rowHeight,
+        headerHeight: headerHeight ?? rowHeight,
       });
     },
     [
@@ -826,6 +834,7 @@ const SimpleTableComp = ({
         headerHeight: headerHeight ?? rowHeight,
         headerRegistry: headerRegistryRef.current,
         headers: effectiveHeaders,
+        heightOffsets,
         hoveredHeaderRef,
         includeHeadersInCSVExport,
         isAnimating,

@@ -3,6 +3,10 @@ export const ROW_SEPARATOR_WIDTH = 1;
 
 export const PAGE_SIZE = 20;
 
+// Default dimensions
+export const DEFAULT_ROW_HEIGHT = 32;
+export const DEFAULT_HEADER_HEIGHT = 32;
+
 // CSS variable names
 export const CSS_VAR_BORDER_WIDTH = "--st-border-width";
 export const DEFAULT_BORDER_WIDTH = 1;

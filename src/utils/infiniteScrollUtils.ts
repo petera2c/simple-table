@@ -3,6 +3,53 @@ import TableRow from "../types/TableRow";
 
 const SEPARATOR_HEIGHT = 1;
 
+/**
+ * Sorted array of [position, extraHeight] tuples for nested grids
+ * Position: the row index in flattened array
+ * ExtraHeight: additional height beyond standard rowHeight (in pixels)
+ * Array is kept sorted by position for efficient binary search
+ */
+export type HeightOffsets = Array<[number, number]>;
+
+/**
+ * Calculate cumulative extra height from nested grids above a given position
+ * Uses binary search for O(log n) performance
+ * @param position - The row position to calculate height for
+ * @param heightOffsets - Sorted array of [position, extraHeight] tuples
+ * @returns Total extra height from all nested grids above this position
+ */
+export const getCumulativeExtraHeight = (
+  position: number,
+  heightOffsets?: HeightOffsets
+): number => {
+  if (!heightOffsets || heightOffsets.length === 0) {
+    return 0;
+  }
+
+  let extraHeight = 0;
+  
+  // Binary search to find the insertion point
+  // All items before this point have position < target position
+  let left = 0;
+  let right = heightOffsets.length;
+  
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    if (heightOffsets[mid][0] < position) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+  
+  // Sum all extra heights before this position
+  for (let i = 0; i < left; i++) {
+    extraHeight += heightOffsets[i][1];
+  }
+  
+  return extraHeight;
+};
+
 // Calculate total row count - now just the array length
 export const getTotalRowCount = (tableRows: TableRow[]): number => {
   return tableRows.length;
@@ -154,49 +201,35 @@ export const getVisibleRows = ({
 export const calculateSeparatorTopPosition = ({
   position,
   rowHeight,
-  tableRows,
+  heightOffsets,
 }: {
   position: number;
   rowHeight: number;
-  tableRows?: TableRow[];
+  heightOffsets?: HeightOffsets;
 }) => {
-  // If we have tableRows, calculate cumulative height accounting for nested grids
-  if (tableRows) {
-    let cumulativeHeight = 0;
-    for (let i = 0; i < position && i < tableRows.length; i++) {
-      const row = tableRows[i];
-      // Use nested grid height if present, otherwise use standard row height
-      const currentRowHeight = row.nestedGrid?.calculatedHeight || rowHeight;
-      cumulativeHeight += currentRowHeight + ROW_SEPARATOR_WIDTH;
-    }
-    return cumulativeHeight - ROW_SEPARATOR_WIDTH;
-  }
+  // Base calculation
+  const baseHeight = position * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
   
-  // Fallback to simple calculation if tableRows not provided
-  return position * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+  // Add extra height from nested grids above this position
+  const extraHeight = getCumulativeExtraHeight(position, heightOffsets);
+  
+  return baseHeight + extraHeight;
 };
 
 export const calculateRowTopPosition = ({
   position,
   rowHeight,
-  tableRows,
+  heightOffsets,
 }: {
   position: number;
   rowHeight: number;
-  tableRows?: TableRow[];
+  heightOffsets?: HeightOffsets;
 }) => {
-  // If we have tableRows, calculate cumulative height accounting for nested grids
-  if (tableRows) {
-    let cumulativeHeight = 0;
-    for (let i = 0; i < position && i < tableRows.length; i++) {
-      const row = tableRows[i];
-      // Use nested grid height if present, otherwise use standard row height
-      const currentRowHeight = row.nestedGrid?.calculatedHeight || rowHeight;
-      cumulativeHeight += currentRowHeight + ROW_SEPARATOR_WIDTH;
-    }
-    return cumulativeHeight;
-  }
+  // Base calculation
+  const baseHeight = position * (rowHeight + ROW_SEPARATOR_WIDTH);
   
-  // Fallback to simple calculation if tableRows not provided
-  return position * (rowHeight + ROW_SEPARATOR_WIDTH);
+  // Add extra height from nested grids above this position
+  const extraHeight = getCumulativeExtraHeight(position, heightOffsets);
+  
+  return baseHeight + extraHeight;
 };
