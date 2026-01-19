@@ -66,17 +66,12 @@ const NestedGridRow: React.FC<NestedGridRowProps> = ({
         }}
       >
         <SimpleTable
-          defaultHeaders={nestedGridConfig.childHeaders}
           rows={childRows}
           theme={theme}
-          rowHeight={nestedGridConfig.rowHeight || parentRowHeight}
+          rowHeight={parentRowHeight}
           height={`${tableHeight}px`}
-          shouldPaginate={nestedGridConfig.shouldPaginate ?? false}
-          rowsPerPage={nestedGridConfig.rowsPerPage}
-          expandAll={nestedGridConfig.expandAll ?? true}
-          hideFooter={!nestedGridConfig.shouldPaginate}
-          columnResizing={true}
           rowGrouping={childRowGrouping}
+          {...nestedGridConfig}
         />
       </div>
     </div>

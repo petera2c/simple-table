@@ -255,7 +255,7 @@ const companyHeaders: HeaderObject[] = [
     width: 200,
     expandable: true,
     nestedGrid: {
-      childHeaders: divisionHeaders,
+      defaultHeaders: divisionHeaders,
     },
   },
   { accessor: "industry", label: "Industry", width: 150 },

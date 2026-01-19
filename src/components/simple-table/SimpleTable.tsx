@@ -3,38 +3,28 @@ import {
   useRef,
   useEffect,
   useReducer,
-  ReactNode,
   useMemo,
   useCallback,
-  MutableRefObject,
 } from "react";
 import useSelection from "../../hooks/useSelection";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import { AngleLeftIcon, AngleRightIcon, DescIcon, AscIcon, FilterIcon } from "../../icons";
-import CellChangeProps from "../../types/CellChangeProps";
-import Theme from "../../types/Theme";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../context/TableContext";
-import ColumnEditorPosition from "../../types/ColumnEditorPosition";
-import TableRefType from "../../types/TableRefType";
-import OnNextPage from "../../types/OnNextPage";
-import "../../styles/all-themes.css";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import useFilterableData from "../../hooks/useFilterableData";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
-import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
-import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
+import { FilterCondition,  } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
-import SortColumn, { SortDirection } from "../../types/SortColumn";
 import { useTableDimensions } from "../../hooks/useTableDimensions";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
@@ -46,98 +36,14 @@ import useFlattenedRows from "../../hooks/useFlattenedRows";
 import { useRowSelection } from "../../hooks/useRowSelection";
 import useAriaAnnouncements from "../../hooks/useAriaAnnouncements";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
-import RowSelectionChangeProps from "../../types/RowSelectionChangeProps";
-import CellClickProps from "../../types/CellClickProps";
-import { RowButton } from "../../types/RowButton";
-import { HeaderDropdown } from "../../types/HeaderDropdownProps";
-import FooterRendererProps from "../../types/FooterRendererProps";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
-import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import RowState from "../../types/RowState";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import useExpandedDepths from "../../hooks/useExpandedDepths";
-import {
-  LoadingStateRenderer,
-  ErrorStateRenderer,
-  EmptyStateRenderer,
-} from "../../types/RowStateRendererProps";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 
-interface SimpleTableProps {
-  allowAnimations?: boolean; // Flag for allowing animations
-  autoExpandColumns?: boolean; // Flag for converting pixel widths to proportional fr units that fill table width
-  canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
-  cellUpdateFlash?: boolean; // Flag for flash animation after cell update
-  className?: string; // Class name for the table
-  columnBorders?: boolean; // Flag for showing column borders
-  columnEditorPosition?: ColumnEditorPosition;
-  columnEditorText?: string; // Text for the column editor
-  columnReordering?: boolean; // Flag for column reordering
-  columnResizing?: boolean; // Flag for column resizing
-  copyHeadersToClipboard?: boolean; // Flag for including column headers when copying cells to clipboard (default: false)
-  defaultHeaders: HeaderObject[]; // Default headers
-  editColumns?: boolean; // Flag for column editing
-  editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
-  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
-  enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
-  enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
-  errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
-  expandAll?: boolean; // Flag for expanding all rows by default
-  expandIcon?: ReactNode; // Icon for expanded state (used in expandable rows)
-  externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
-  externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
-  filterIcon?: ReactNode; // Icon for filter button
-  footerHeight?: number; // Height of the footer
-  footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
-  headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
-  headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
-  headerExpandIcon?: ReactNode; // Icon for expanded column headers
-  headerHeight?: number; // Height of the header
-  height?: string | number; // Height of the table
-  hideFooter?: boolean; // Flag for hiding the footer
-  hideHeader?: boolean; // Flag for hiding the header
-  includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
-  initialSortColumn?: string; // Accessor of the column to sort by on initial load
-  initialSortDirection?: SortDirection; // Sort direction for initial sort
-  isLoading?: boolean; // Flag for showing loading skeleton state
-  loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
-  maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
-  nextIcon?: ReactNode; // Next icon
-  onCellClick?: (props: CellClickProps) => void;
-  onCellEdit?: (props: CellChangeProps) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onColumnSelect?: (header: HeaderObject) => void; // Callback when a column is selected/clicked
-  onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void; // Callback when column visibility changes
-  onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
-  onGridReady?: () => void; // Custom handler for when the grid is ready
-  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void; // Callback when a header is edited
-  onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
-  onNextPage?: OnNextPage; // Custom handler for next page
-  onPageChange?: (page: number) => void | Promise<void>; // Callback when page changes (for server-side pagination)
-  onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>; // Callback when a row is expanded/collapsed
-  onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
-  onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
-  prevIcon?: ReactNode; // Previous icon
-  rowButtons?: RowButton[]; // Array of buttons to show in each row
-  rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
-  rowHeight?: number; // Height of each row
-  rows: Row[]; // Rows data
-  rowsPerPage?: number; // Rows per page
-  selectableCells?: boolean; // Flag if can select cells
-  selectableColumns?: boolean; // Flag for selectable column headers
-  selectionColumnWidth?: number; // Width of the selection column (defaults to 42)
-  serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
-  shouldPaginate?: boolean; // Flag for pagination
-  sortDownIcon?: ReactNode; // Sort down icon
-  sortUpIcon?: ReactNode; // Sort up icon
-  tableEmptyStateRenderer?: ReactNode; // Custom empty state component when table has no rows
-  tableRef?: MutableRefObject<TableRefType | null>;
-  theme?: Theme; // Theme
-  totalRowCount?: number; // Total number of rows on server (for server-side pagination)
-  useHoverRowBackground?: boolean; // Flag for using hover row background
-  useOddColumnBackground?: boolean; // Flag for using column background
-  useOddEvenRowBackground?: boolean; // Flag for using odd/even row background
-}
+import { SimpleTableProps } from "../../types/SimpleTableProps";
+import "../../styles/all-themes.css";
 
 const SimpleTable = (props: SimpleTableProps) => {
   const [isClient, setIsClient] = useState(false);
