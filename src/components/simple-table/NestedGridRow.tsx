@@ -66,12 +66,12 @@ const NestedGridRow: React.FC<NestedGridRowProps> = ({
         }}
       >
         <SimpleTable
+          {...nestedGridConfig}
           rows={childRows}
           theme={theme}
           rowHeight={parentRowHeight}
           height={`${tableHeight}px`}
           rowGrouping={childRowGrouping}
-          {...nestedGridConfig}
         />
       </div>
     </div>

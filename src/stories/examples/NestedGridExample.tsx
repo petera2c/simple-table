@@ -3,52 +3,6 @@ import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Sample data structure with different grid structures at each level
-interface Company {
-  id: number;
-  companyName: string;
-  industry: string;
-  founded: number;
-  headquarters: string;
-  stockSymbol: string;
-  marketCap: string;
-  ceo: string;
-  revenue: string;
-  employees: number;
-  // Children have completely different structure
-  divisions?: Division[];
-}
-
-interface Division {
-  divisionId: string;
-  divisionName: string;
-  revenue: string;
-  profitMargin: string;
-  // Children have yet another different structure
-  teams?: Team[];
-}
-
-interface Team {
-  teamId: string;
-  teamName: string;
-  manager: string;
-  location: string;
-  budget: string;
-  headcount: number;
-  projects: number;
-  efficiency: string;
-  satisfaction: number;
-  turnover: string;
-  avgSalary: string;
-  topSkill: string;
-  certifications: number;
-  remoteWorkers: number;
-  officeSpace: string;
-  equipment: string;
-  trainingHours: number;
-  innovations: number;
-  patents: number;
-  awards: string;
-}
 
 const sampleData= [
   {
@@ -217,28 +171,6 @@ const sampleData= [
   },
 ];
 
-// Grandchild grid for teams: 19 columns!
-const teamHeaders: HeaderObject[] = [
-  { accessor: "teamName", label: "Team", width: 180 },
-  { accessor: "manager", label: "Manager", width: 150 },
-  { accessor: "location", label: "Location", width: 130 },
-  { accessor: "budget", label: "Budget", width: 100 },
-  { accessor: "headcount", label: "Headcount", width: 100, type: "number" },
-  { accessor: "projects", label: "Projects", width: 90, type: "number" },
-  { accessor: "efficiency", label: "Efficiency", width: 100 },
-  { accessor: "satisfaction", label: "Satisfaction", width: 110, type: "number" },
-  { accessor: "turnover", label: "Turnover", width: 100 },
-  { accessor: "avgSalary", label: "Avg Salary", width: 110 },
-  { accessor: "topSkill", label: "Top Skill", width: 150 },
-  { accessor: "certifications", label: "Certs", width: 80, type: "number" },
-  { accessor: "remoteWorkers", label: "Remote", width: 90, type: "number" },
-  { accessor: "officeSpace", label: "Office Space", width: 120 },
-  { accessor: "equipment", label: "Equipment", width: 110 },
-  { accessor: "trainingHours", label: "Training Hrs", width: 110, type: "number" },
-  { accessor: "innovations", label: "Innovations", width: 110, type: "number" },
-  { accessor: "patents", label: "Patents", width: 90, type: "number" },
-  { accessor: "awards", label: "Awards", width: 180 },
-];
 
 // Child grid for divisions: only 3 columns
 const divisionHeaders: HeaderObject[] = [
