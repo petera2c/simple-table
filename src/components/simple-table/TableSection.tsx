@@ -89,6 +89,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                     position={tableRow.position}
                     rowHeight={rowHeight}
                     templateColumns={templateColumns}
+                    allTableRows={rowsToRender}
                   />
                 )}
                 <TableRow
@@ -102,6 +103,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                   rowIndices={rowIndices}
                   setHoveredIndex={setHoveredIndex}
                   tableRow={tableRow}
+                  allTableRows={rowsToRender}
                 />
               </Fragment>
             );

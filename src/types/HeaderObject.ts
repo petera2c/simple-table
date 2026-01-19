@@ -100,6 +100,14 @@ type HeaderObject = {
   isSortable?: boolean;
   label: string;
   minWidth?: number | string;
+  // Nested grid configuration - when expandable is true and this is set, renders a nested table instead of child rows
+  nestedGrid?: {
+    childHeaders: HeaderObject[]; // Headers for the nested grid
+    rowHeight?: number; // Row height for nested grid rows
+    shouldPaginate?: boolean; // Whether nested grid should paginate
+    rowsPerPage?: number; // Rows per page for nested grid
+    expandAll?: boolean; // Whether to expand all rows in nested grid by default
+  };
   pinned?: Pinned;
   singleRowChildren?: boolean; // When true, renders parent and children on the same row instead of tree hierarchy
   tooltip?: string; // Optional tooltip text to display on hover

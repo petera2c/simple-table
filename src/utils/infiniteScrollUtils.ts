@@ -154,19 +154,49 @@ export const getVisibleRows = ({
 export const calculateSeparatorTopPosition = ({
   position,
   rowHeight,
+  tableRows,
 }: {
   position: number;
   rowHeight: number;
+  tableRows?: TableRow[];
 }) => {
+  // If we have tableRows, calculate cumulative height accounting for nested grids
+  if (tableRows) {
+    let cumulativeHeight = 0;
+    for (let i = 0; i < position && i < tableRows.length; i++) {
+      const row = tableRows[i];
+      // Use nested grid height if present, otherwise use standard row height
+      const currentRowHeight = row.nestedGrid?.calculatedHeight || rowHeight;
+      cumulativeHeight += currentRowHeight + ROW_SEPARATOR_WIDTH;
+    }
+    return cumulativeHeight - ROW_SEPARATOR_WIDTH;
+  }
+  
+  // Fallback to simple calculation if tableRows not provided
   return position * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 };
 
 export const calculateRowTopPosition = ({
   position,
   rowHeight,
+  tableRows,
 }: {
   position: number;
   rowHeight: number;
+  tableRows?: TableRow[];
 }) => {
+  // If we have tableRows, calculate cumulative height accounting for nested grids
+  if (tableRows) {
+    let cumulativeHeight = 0;
+    for (let i = 0; i < position && i < tableRows.length; i++) {
+      const row = tableRows[i];
+      // Use nested grid height if present, otherwise use standard row height
+      const currentRowHeight = row.nestedGrid?.calculatedHeight || rowHeight;
+      cumulativeHeight += currentRowHeight + ROW_SEPARATOR_WIDTH;
+    }
+    return cumulativeHeight;
+  }
+  
+  // Fallback to simple calculation if tableRows not provided
   return position * (rowHeight + ROW_SEPARATOR_WIDTH);
 };

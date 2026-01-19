@@ -1,9 +1,42 @@
 import TableRow from "../types/TableRow";
 import Row from "../types/Row";
 import { RowId } from "../types/RowId";
-import { Accessor } from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
+
+// Maximum height for nested grids in pixels
+export const NESTED_GRID_MAX_HEIGHT = 400;
+
+// Padding for nested grids (top + bottom combined)
+export const NESTED_GRID_PADDING = 16;
+
+// Individual padding values for nested grids
+export const NESTED_GRID_PADDING_TOP = 8;
+export const NESTED_GRID_PADDING_BOTTOM = 8;
+
+/**
+ * Calculate the height of a nested grid based on the number of child rows
+ * @param childRowCount - Number of rows in the nested grid
+ * @param rowHeight - Height of each row (default: 32)
+ * @param headerHeight - Height of the header (default: 32)
+ * @returns Calculated height in pixels (includes padding)
+ */
+export const calculateNestedGridHeight = ({
+  childRowCount,
+  rowHeight = 32,
+  headerHeight = 32,
+}: {
+  childRowCount: number;
+  rowHeight?: number;
+  headerHeight?: number;
+}): number => {
+  // Calculate content height: header + (rows * rowHeight) + top/bottom padding
+  const contentHeight = headerHeight + childRowCount * rowHeight + NESTED_GRID_PADDING_TOP + NESTED_GRID_PADDING_BOTTOM;
+  
+  // Return the minimum of content height and max height (max height also includes padding)
+  return Math.min(contentHeight, NESTED_GRID_MAX_HEIGHT + NESTED_GRID_PADDING_TOP + NESTED_GRID_PADDING_BOTTOM);
+};
 
 /**
  * Parse a path segment that may contain array notation
@@ -213,6 +246,7 @@ export const isRowExpanded = (
  * Flatten rows recursively based on row grouping configuration
  * Now calculates ALL properties including position and isLastGroupRow
  * Also injects special state rows for loading/error/empty states (only if renderers are available)
+ * Also injects nested grid rows when a header has nestedGrid configuration
  */
 export const flattenRowsWithGrouping = ({
   depth = 0,
@@ -226,6 +260,7 @@ export const flattenRowsWithGrouping = ({
   hasLoadingRenderer = false,
   hasErrorRenderer = false,
   hasEmptyRenderer = false,
+  headers = [],
 }: {
   depth?: number;
   expandedDepths: Set<number>;
@@ -238,6 +273,7 @@ export const flattenRowsWithGrouping = ({
   hasLoadingRenderer?: boolean;
   hasErrorRenderer?: boolean;
   hasEmptyRenderer?: boolean;
+  headers?: HeaderObject[];
 }): TableRow[] => {
   const result: TableRow[] = [];
 
@@ -292,8 +328,41 @@ export const flattenRowsWithGrouping = ({
         const rowState = rowStateMap?.get(rowId);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
+        // Check if any header with expandable=true has a nestedGrid configuration
+        // The expandable header is the one that shows the expand icon, not necessarily matching the grouping key
+        const expandableHeader = headers.find((h) => h.expandable && h.nestedGrid);
+
+        // If there's a nested grid configuration, inject a nested grid row instead of regular child rows
+        if (expandableHeader?.nestedGrid && nestedRows.length > 0) {
+          // Calculate the height for this nested grid
+          const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || 32;
+          const calculatedHeight = calculateNestedGridHeight({
+            childRowCount: nestedRows.length,
+            rowHeight: nestedGridRowHeight,
+            headerHeight: 32, // Standard header height
+          });
+          
+          result.push({
+            row: {}, // Empty row object, content will be rendered by NestedGridRow
+            depth: currentDepth + 1,
+            displayPosition,
+            groupingKey: currentGroupingKey,
+            position,
+            isLastGroupRow: false,
+            rowPath: [...rowPath, currentGroupingKey],
+            nestedGrid: {
+              parentRow: row,
+              expandableHeader,
+              childAccessor: currentGroupingKey,
+              calculatedHeight,
+            },
+            absoluteRowIndex: position,
+          });
+          position++;
+          displayPosition++;
+        }
         // Show state indicator row if loading/error/empty state is active AND a corresponding renderer exists
-        if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
+        else if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
           const shouldShowState =
             (rowState.loading && hasLoadingRenderer) ||
             (rowState.error && hasErrorRenderer) ||

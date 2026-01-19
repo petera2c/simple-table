@@ -593,6 +593,9 @@ const TableCell = ({
     );
   }
 
+
+
+
   return (
     <Animate
       className={cellClassName}

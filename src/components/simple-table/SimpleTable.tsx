@@ -602,6 +602,7 @@ const SimpleTableComp = ({
     hasLoadingRenderer: Boolean(loadingStateRenderer),
     hasErrorRenderer: Boolean(errorStateRenderer),
     hasEmptyRenderer: Boolean(emptyStateRenderer),
+    headers: effectiveHeaders,
   });
 
   // Row selection hook - now that flattenedRows is defined
@@ -632,6 +633,7 @@ const SimpleTableComp = ({
     hasLoadingRenderer: Boolean(loadingStateRenderer),
     hasErrorRenderer: Boolean(errorStateRenderer),
     hasEmptyRenderer: Boolean(emptyStateRenderer),
+    headers: effectiveHeaders,
   });
 
   // Create flattened preview functions for animations
@@ -661,6 +663,7 @@ const SimpleTableComp = ({
         hasLoadingRenderer: Boolean(loadingStateRenderer),
         hasErrorRenderer: Boolean(errorStateRenderer),
         hasEmptyRenderer: Boolean(emptyStateRenderer),
+        headers: effectiveHeaders,
       });
     },
     [
@@ -673,6 +676,7 @@ const SimpleTableComp = ({
       loadingStateRenderer,
       errorStateRenderer,
       emptyStateRenderer,
+      effectiveHeaders,
     ]
   );
 
@@ -702,6 +706,7 @@ const SimpleTableComp = ({
         hasLoadingRenderer: Boolean(loadingStateRenderer),
         hasErrorRenderer: Boolean(errorStateRenderer),
         hasEmptyRenderer: Boolean(emptyStateRenderer),
+        headers: effectiveHeaders,
       });
     },
     [
@@ -714,6 +719,7 @@ const SimpleTableComp = ({
       loadingStateRenderer,
       errorStateRenderer,
       emptyStateRenderer,
+      effectiveHeaders,
     ]
   );
 

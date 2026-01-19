@@ -9,6 +9,7 @@ import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
 import { getRowId } from "../../utils/rowUtils";
 import RowStateIndicator from "./RowStateIndicator";
+import NestedGridRow from "./NestedGridRow";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -22,6 +23,7 @@ interface TableRowProps {
   rowIndices: RowIndices;
   setHoveredIndex: (index: number | null) => void;
   tableRow: TableRowType;
+  allTableRows: TableRowType[]; // All rows being rendered for height calculations
 }
 
 const TableRow = ({
@@ -35,6 +37,7 @@ const TableRow = ({
   rowIndices,
   setHoveredIndex,
   tableRow,
+  allTableRows,
 }: TableRowProps) => {
   const {
     useHoverRowBackground,
@@ -47,7 +50,48 @@ const TableRow = ({
     emptyStateRenderer,
     maxHeaderDepth,
   } = useTableContext();
-  const { position, displayPosition, stateIndicator } = tableRow;
+  const { position, displayPosition, stateIndicator, nestedGrid } = tableRow;
+
+  // If this is a nested grid row, render it differently
+  if (nestedGrid) {
+    // Determine which section should show the nested grid
+    // For simplicity, show in all sections (main, left, right) but only render content in main
+    const shouldShowNestedGrid = !pinned; // Only show in main section
+    if (shouldShowNestedGrid) {
+      return (
+        <div
+          className="st-row st-nested-grid-row"
+          data-index={index}
+          style={{
+            gridTemplateColumns,
+            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, tableRows: allTableRows })}px, 0)`,
+            height: `${nestedGrid.calculatedHeight}px`,
+          }}
+        >
+          <NestedGridRow
+            parentRow={nestedGrid.parentRow}
+            expandableHeader={nestedGrid.expandableHeader}
+            childAccessor={nestedGrid.childAccessor}
+            depth={tableRow.depth - 1} // Pass parent depth
+            calculatedHeight={nestedGrid.calculatedHeight}
+          />
+        </div>
+      );
+    }
+
+    // For pinned sections, render an empty spacer row
+    return (
+      <div
+        className="st-row st-nested-grid-spacer"
+        data-index={index}
+        style={{
+          gridTemplateColumns,
+          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, tableRows: allTableRows })}px, 0)`,
+          height: `${nestedGrid.calculatedHeight}px`,
+        }}
+      />
+    );
+  }
 
   // If this is a state indicator row, render it differently
   if (stateIndicator) {
@@ -86,7 +130,7 @@ const TableRow = ({
           data-index={index}
           style={{
             gridTemplateColumns,
-            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, tableRows: allTableRows })}px, 0)`,
             height: `${rowHeight}px`,
           }}
         >
@@ -109,7 +153,7 @@ const TableRow = ({
         data-index={index}
         style={{
           gridTemplateColumns,
-          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, tableRows: allTableRows })}px, 0)`,
           height: `${rowHeight}px`,
         }}
       />
@@ -140,7 +184,7 @@ const TableRow = ({
       }}
       style={{
         gridTemplateColumns,
-        top: calculateRowTopPosition({ position, rowHeight }),
+        top: calculateRowTopPosition({ position, rowHeight, tableRows: allTableRows }),
         height: `${rowHeight}px`,
       }}
     >
@@ -215,6 +259,11 @@ const arePropsEqual = (prevProps: TableRowProps, nextProps: TableRowProps): bool
 
   // Column index start
   if (prevProps.columnIndexStart !== nextProps.columnIndexStart) {
+    return false;
+  }
+
+  // Check if allTableRows changed (by reference)
+  if (prevProps.allTableRows !== nextProps.allTableRows) {
     return false;
   }
 

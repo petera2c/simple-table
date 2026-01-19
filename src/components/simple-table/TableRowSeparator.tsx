@@ -1,16 +1,19 @@
 import { calculateSeparatorTopPosition } from "../../utils/infiniteScrollUtils";
 import { useRef } from "react";
+import TableRow from "../../types/TableRow";
 
 const TableRowSeparator = ({
   displayStrongBorder,
   position,
   rowHeight,
   templateColumns,
+  allTableRows,
 }: {
   displayStrongBorder?: boolean;
   position: number;
   rowHeight: number;
   templateColumns: string;
+  allTableRows: TableRow[];
 }) => {
   const targetCellRef = useRef<HTMLElement | null>(null);
 
@@ -82,7 +85,7 @@ const TableRowSeparator = ({
       onMouseUp={handleSeparatorMouseUp}
       style={{
         gridTemplateColumns: templateColumns,
-        transform: `translate3d(0, ${calculateSeparatorTopPosition({ position, rowHeight })}px, 0)`,
+        transform: `translate3d(0, ${calculateSeparatorTopPosition({ position, rowHeight, tableRows: allTableRows })}px, 0)`,
       }}
     >
       <div style={{ gridColumn: "1 / -1" }} />

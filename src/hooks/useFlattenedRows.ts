@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { Accessor } from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
 import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
-import { getRowId, getNestedRows, isRowExpanded } from "../utils/rowUtils";
+import { getRowId, getNestedRows, isRowExpanded, calculateNestedGridHeight } from "../utils/rowUtils";
 
 interface UseFlattenedRowsProps {
   rows: Row[];
@@ -15,6 +15,7 @@ interface UseFlattenedRowsProps {
   hasLoadingRenderer: boolean;
   hasErrorRenderer: boolean;
   hasEmptyRenderer: boolean;
+  headers: HeaderObject[];
 }
 
 /**
@@ -33,6 +34,7 @@ const useFlattenedRows = ({
   hasLoadingRenderer,
   hasErrorRenderer,
   hasEmptyRenderer,
+  headers,
 }: UseFlattenedRowsProps): TableRow[] => {
   return useMemo(() => {
     // If no row grouping, just convert rows to TableRow format
@@ -96,8 +98,41 @@ const useFlattenedRows = ({
           const rowState = rowStateMap?.get(rowId);
           const nestedRows = getNestedRows(row, currentGroupingKey);
 
+          // Check if any header with expandable=true has a nestedGrid configuration
+          // The expandable header is the one that shows the expand icon, not necessarily matching the grouping key
+          const expandableHeader = headers.find((h) => h.expandable && h.nestedGrid);
+
+          // If there's a nested grid configuration, inject a nested grid row instead of regular child rows
+          if (expandableHeader?.nestedGrid && nestedRows.length > 0) {
+            const nestedGridPosition = result.length;
+            
+            // Calculate the height for this nested grid
+            const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || 32;
+            const calculatedHeight = calculateNestedGridHeight({
+              childRowCount: nestedRows.length,
+              rowHeight: nestedGridRowHeight,
+              headerHeight: 32, // Standard header height
+            });
+            
+            result.push({
+              row: {}, // Empty row object, content will be rendered by NestedGridRow
+              depth: currentDepth + 1,
+              displayPosition: nestedGridPosition,
+              groupingKey: currentGroupingKey,
+              position: nestedGridPosition,
+              isLastGroupRow: false,
+              rowPath: [...rowPath, currentGroupingKey],
+              nestedGrid: {
+                parentRow: row,
+                expandableHeader,
+                childAccessor: currentGroupingKey,
+                calculatedHeight,
+              },
+              absoluteRowIndex: nestedGridPosition,
+            });
+          }
           // Show state indicator row if loading/error/empty state is active AND a corresponding renderer exists
-          if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
+          else if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
             const shouldShowState =
               (rowState.loading && hasLoadingRenderer) ||
               (rowState.error && hasErrorRenderer) ||
@@ -158,6 +193,7 @@ const useFlattenedRows = ({
     hasLoadingRenderer,
     hasErrorRenderer,
     hasEmptyRenderer,
+    headers,
   ]);
 };
 
