@@ -188,6 +188,7 @@ const companyHeaders: HeaderObject[] = [
     expandable: true,
     nestedGrid: {
       defaultHeaders: divisionHeaders,
+      autoExpandColumns: true,
     },
   },
   { accessor: "industry", label: "Industry", width: 150 },
@@ -234,7 +235,6 @@ const NestedGridExample = (props: UniversalTableProps) => {
         height={props.height ?? "calc(100dvh - 200px)"}
         useOddEvenRowBackground
         onRowGroupExpand={() => {
-          console.log("row group expanded");
         }}
       />
     </div>

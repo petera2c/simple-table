@@ -589,6 +589,8 @@ const SimpleTableComp = ({
       errorStateRenderer,
       emptyStateRenderer,
       effectiveHeaders,
+      rowHeight,
+      headerHeight,
     ]
   );
 
@@ -634,6 +636,8 @@ const SimpleTableComp = ({
       errorStateRenderer,
       emptyStateRenderer,
       effectiveHeaders,
+      rowHeight,
+      headerHeight,
     ]
   );
 

@@ -2,29 +2,34 @@ import React from "react";
 import SimpleTable from "./SimpleTable";
 import Row from "../../types/Row";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
-import { getNestedValue, NESTED_GRID_PADDING_TOP, NESTED_GRID_PADDING_BOTTOM } from "../../utils/rowUtils";
+import { getNestedValue, NESTED_GRID_PADDING_TOP, NESTED_GRID_PADDING_BOTTOM, NESTED_GRID_BORDER_WIDTH } from "../../utils/rowUtils";
 import { useTableContext } from "../../context/TableContext";
+import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 
 interface NestedGridRowProps {
-  parentRow: Row;
-  expandableHeader: HeaderObject;
+  calculatedHeight: number;
   childAccessor: Accessor;
   depth: number;
-  calculatedHeight: number;
+  expandableHeader: HeaderObject;
+  index: number;
+  parentRow: Row;
+  position: number;
 }
 
 /**
  * Component that renders a nested SimpleTable inside an expanded row
  * Spans the full width of the parent table (grid column 1 / -1)
  */
-const NestedGridRow: React.FC<NestedGridRowProps> = ({
-  parentRow,
-  expandableHeader,
+const NestedGridRow= ({
+  calculatedHeight,
   childAccessor,
   depth,
-  calculatedHeight,
-}) => {
-  const { theme, rowGrouping, rowHeight: parentRowHeight } = useTableContext();
+  expandableHeader,
+  index,
+  parentRow,
+  position,
+}: NestedGridRowProps) => {
+  const { theme, rowGrouping, rowHeight: parentRowHeight, heightOffsets } = useTableContext();
 
   const nestedGridConfig = expandableHeader.nestedGrid;
 
@@ -44,36 +49,34 @@ const NestedGridRow: React.FC<NestedGridRowProps> = ({
   const nextLevelGrouping = rowGrouping && rowGrouping[depth + 1];
   const childRowGrouping = nextLevelGrouping ? rowGrouping?.slice(depth + 1) : undefined;
 
-  // The SimpleTable height should exclude the padding since padding is applied to the wrapper
+  console.log('calculatedHeight', calculatedHeight);
+
+  // The SimpleTable height should exclude the padding and borders since those are applied to the wrapper
   const tableHeight = calculatedHeight - NESTED_GRID_PADDING_TOP - NESTED_GRID_PADDING_BOTTOM;
+
+  console.log('tableHeight', tableHeight);
 
   return (
     <div
-      className="st-cell st-nested-grid-cell"
+      className="st-row st-nested-grid-row"
+      data-index={index}
       style={{
-        gridColumn: "1 / -1", // Span all columns
-        padding: 0,
-        overflow: "hidden",
+        transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight: parentRowHeight, heightOffsets })}px, 0)`,
+        height: `${calculatedHeight}px`,
+        paddingTop: `${NESTED_GRID_PADDING_TOP}px`,
+        paddingBottom: `${NESTED_GRID_PADDING_BOTTOM}px`,
+        paddingLeft: "8px",
+        paddingRight: "8px",
       }}
     >
-      <div
-        style={{
-          paddingTop: `${NESTED_GRID_PADDING_TOP}px`,
-          paddingBottom: `${NESTED_GRID_PADDING_BOTTOM}px`,
-          paddingLeft: "8px",
-          paddingRight: "8px",
-          background: "var(--st-nested-grid-background, rgba(0, 0, 0, 0.02))",
-        }}
-      >
-        <SimpleTable
-          {...nestedGridConfig}
-          rows={childRows}
-          theme={theme}
-          rowHeight={parentRowHeight}
-          height={`${tableHeight}px`}
-          rowGrouping={childRowGrouping}
-        />
-      </div>
+      <SimpleTable
+        {...nestedGridConfig}
+        rows={childRows}
+        theme={theme}
+        rowHeight={parentRowHeight}
+        height={`${tableHeight}px`}
+        rowGrouping={childRowGrouping}
+      />
     </div>
   );
 };

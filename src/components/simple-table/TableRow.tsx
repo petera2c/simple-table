@@ -58,23 +58,15 @@ const TableRow = ({
     const shouldShowNestedGrid = !pinned; // Only show in main section
     if (shouldShowNestedGrid) {
       return (
-        <div
-          className="st-row st-nested-grid-row"
-          data-index={index}
-          style={{
-            gridTemplateColumns,
-            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets })}px, 0)`,
-            height: `${nestedGrid.calculatedHeight}px`,
-          }}
-        >
-          <NestedGridRow
-            parentRow={nestedGrid.parentRow}
-            expandableHeader={nestedGrid.expandableHeader}
-            childAccessor={nestedGrid.childAccessor}
-            depth={tableRow.depth - 1} // Pass parent depth
-            calculatedHeight={nestedGrid.calculatedHeight}
-          />
-        </div>
+        <NestedGridRow
+          calculatedHeight={nestedGrid.calculatedHeight}
+          childAccessor={nestedGrid.childAccessor}
+          depth={tableRow.depth - 1} // Pass parent depth
+          expandableHeader={nestedGrid.expandableHeader}
+          index={index}
+          parentRow={nestedGrid.parentRow}
+          position={position}
+        />
       );
     }
 
