@@ -26,6 +26,7 @@ interface UseFlattenedRowsProps {
 interface UseFlattenedRowsResult {
   flattenedRows: TableRow[];
   heightOffsets: HeightOffsets;
+  paginatableRows: TableRow[]; // Rows excluding nested grids and state indicators (for pagination)
 }
 
 /**
@@ -52,24 +53,27 @@ const useFlattenedRows = ({
   return useMemo(() => {
     // If no row grouping, just convert rows to TableRow format
     if (!rowGrouping || rowGrouping.length === 0) {
+      const flattenedRows = rows.map(
+        (row, index) =>
+          ({
+            row,
+            depth: 0,
+            displayPosition: index,
+            groupingKey: undefined,
+            position: index,
+            rowPath: [index],
+            absoluteRowIndex: index,
+          } as TableRow)
+      );
       return {
-        flattenedRows: rows.map(
-          (row, index) =>
-            ({
-              row,
-              depth: 0,
-              displayPosition: index,
-              groupingKey: undefined,
-              position: index,
-              rowPath: [index],
-              absoluteRowIndex: index,
-            } as TableRow)
-        ),
+        flattenedRows,
         heightOffsets: [],
+        paginatableRows: flattenedRows, // Same as flattenedRows when no grouping
       };
     }
 
     const result: TableRow[] = [];
+    const paginatableRowsBuilder: TableRow[] = [];
     const heightOffsets: HeightOffsets = [];
     
     // Track displayPosition separately from position
@@ -95,7 +99,7 @@ const useFlattenedRows = ({
         // Determine if this is the last row at depth 0
         const isLastGroupRow = currentDepth === 0;
         // Add the main row
-        result.push({
+        const mainRow = {
           row,
           depth: currentDepth,
           displayPosition,
@@ -104,7 +108,11 @@ const useFlattenedRows = ({
           isLastGroupRow,
           rowPath,
           absoluteRowIndex: position,
-        });
+        };
+        result.push(mainRow);
+        
+        // This is a paginatable data row (not a nested grid or state indicator)
+        paginatableRowsBuilder.push(mainRow);
         
         // Increment displayPosition for this data row
         displayPosition++;
@@ -217,9 +225,11 @@ const useFlattenedRows = ({
     };
 
     processRows(rows, 0);
+    
     return {
       flattenedRows: result,
       heightOffsets,
+      paginatableRows: paginatableRowsBuilder,
     };
   }, [
     rows,

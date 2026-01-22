@@ -510,8 +510,8 @@ const SimpleTableComp = ({
   });
 
   // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
-  // Done BEFORE pagination so rowsPerPage correctly counts all visible rows including nested children
-  const { flattenedRows, heightOffsets } = useFlattenedRows({
+  // Done BEFORE pagination so rowsPerPage correctly counts data rows (excluding nested grids)
+  const { flattenedRows, heightOffsets, paginatableRows } = useFlattenedRows({
     rows: sortedRows,
     rowGrouping,
     expandedRows,
@@ -667,7 +667,7 @@ const SimpleTableComp = ({
     rowHeight,
     shouldPaginate,
     rowsPerPage,
-    totalRowCount: totalRowCount ?? flattenedRows.length,
+    totalRowCount: totalRowCount ?? paginatableRows.length,
     headerHeight: calculatedHeaderHeight,
     footerHeight: shouldPaginate && !hideFooter ? footerHeight : undefined,
   });
@@ -683,6 +683,7 @@ const SimpleTableComp = ({
     allowAnimations,
     flattenedRows,
     originalFlattenedRows,
+    paginatableRows,
     currentPage,
     rowsPerPage,
     shouldPaginate,
@@ -778,6 +779,7 @@ const SimpleTableComp = ({
     headerRegistryRef,
     headers: effectiveHeaders,
     includeHeadersInCSVExport,
+    paginatableRows,
     rowGrouping,
     rowIndexMap: rowIndexMapRef,
     rows: effectiveRows,
@@ -791,6 +793,7 @@ const SimpleTableComp = ({
     shouldPaginate,
     sort,
     tableRef,
+    totalRowCount,
     updateFilter,
     updateSort,
     visibleRows: rowsToRender,
@@ -985,8 +988,8 @@ const SimpleTableComp = ({
                 onUserPageChange={onPageChange}
                 rowsPerPage={rowsPerPage}
                 shouldPaginate={shouldPaginate}
-                totalPages={Math.ceil((totalRowCount ?? flattenedRows.length) / rowsPerPage)}
-                totalRows={totalRowCount ?? flattenedRows.length}
+                totalPages={Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage)}
+                totalRows={totalRowCount ?? paginatableRows.length}
               />
             )}
           </div>

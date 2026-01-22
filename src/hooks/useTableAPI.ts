@@ -38,6 +38,7 @@ const useTableAPI = ({
   headerRegistryRef,
   headers,
   includeHeadersInCSVExport,
+  paginatableRows,
   rowGrouping,
   rowIndexMap,
   rows,
@@ -51,6 +52,7 @@ const useTableAPI = ({
   shouldPaginate,
   sort,
   tableRef,
+  totalRowCount,
   updateFilter,
   updateSort,
   visibleRows,
@@ -65,6 +67,7 @@ const useTableAPI = ({
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
+  paginatableRows: TableRow[];
   rowGrouping?: Accessor[];
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
@@ -82,6 +85,7 @@ const useTableAPI = ({
   shouldPaginate: boolean;
   sort: SortColumn | null;
   tableRef?: MutableRefObject<TableRefType | null>;
+  totalRowCount?: number;
   updateFilter: (filter: FilterCondition) => void;
   updateSort: (props?: { accessor: Accessor; direction?: SortDirection }) => void;
   visibleRows: TableRow[];
@@ -142,6 +146,10 @@ const useTableAPI = ({
         clearAllFilters: asyncStateUpdate(clearAllFilters),
         getCurrentPage: () => {
           return currentPage;
+        },
+        getTotalPages: () => {
+          const totalRows = totalRowCount ?? paginatableRows.length;
+          return Math.ceil(totalRows / rowsPerPage);
         },
         setPage: (page: number) => setCurrentPage(page),
         expandAll: () => {
@@ -266,6 +274,7 @@ const useTableAPI = ({
     headerRegistryRef,
     headers,
     includeHeadersInCSVExport,
+    paginatableRows,
     rowGrouping,
     rowIndexMap,
     rows,
@@ -279,6 +288,7 @@ const useTableAPI = ({
     shouldPaginate,
     sort,
     tableRef,
+    totalRowCount,
     updateFilter,
     updateSort,
     visibleRows,
