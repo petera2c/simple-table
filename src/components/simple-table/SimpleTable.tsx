@@ -691,6 +691,8 @@ const SimpleTableComp = ({
     rowHeight,
     scrollTop,
     scrollDirection,
+    heightOffsets,
+    customTheme,
     computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
     computeSortedRowsPreview: computeFlattenedSortedRowsPreview,
   });

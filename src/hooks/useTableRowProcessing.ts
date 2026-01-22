@@ -1,11 +1,13 @@
 import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
 import { calculateBufferRowCount } from "../consts/general-consts";
-import { getVisibleRows } from "../utils/infiniteScrollUtils";
+import { getVisibleRows, buildCumulativeHeightMap, CumulativeHeightMap } from "../utils/infiniteScrollUtils";
 import { getRowId } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
 import TableRow from "../types/TableRow";
+import { HeightOffsets } from "../utils/infiniteScrollUtils";
+import { CustomTheme } from "../types/CustomTheme";
 
 interface UseTableRowProcessingProps {
   allowAnimations: boolean;
@@ -21,6 +23,8 @@ interface UseTableRowProcessingProps {
   rowHeight: number;
   scrollTop: number;
   scrollDirection?: "up" | "down" | "none";
+  heightOffsets?: HeightOffsets;
+  customTheme: CustomTheme;
   // Functions to preview what rows would be after changes (now return TableRow[])
   computeFilteredRowsPreview: (filter: FilterCondition) => TableRow[];
   computeSortedRowsPreview: (accessor: Accessor) => TableRow[];
@@ -38,6 +42,8 @@ const useTableRowProcessing = ({
   rowHeight,
   scrollTop,
   scrollDirection = "none",
+  heightOffsets,
+  customTheme,
   computeFilteredRowsPreview,
   computeSortedRowsPreview,
 }: UseTableRowProcessingProps) => {
@@ -101,6 +107,21 @@ const useTableRowProcessing = ({
     return applyPagination(flattenedRows);
   }, [flattenedRows, applyPagination]);
 
+  // Build cumulative height map for O(log n) viewport calculations with variable-height rows
+  const heightMap = useMemo<CumulativeHeightMap | undefined>(() => {
+    // Only build height map if we have height offsets (variable-height rows like nested grids)
+    if (!heightOffsets || heightOffsets.length === 0) {
+      return undefined;
+    }
+    
+    return buildCumulativeHeightMap(
+      currentTableRows.length,
+      rowHeight,
+      heightOffsets,
+      customTheme
+    );
+  }, [currentTableRows.length, rowHeight, heightOffsets, customTheme]);
+
   // Calculate target visible rows (what should be visible)
   // If contentHeight is undefined, we skip virtualization and render all rows
   const targetVisibleRows = useMemo(() => {
@@ -115,8 +136,9 @@ const useTableRowProcessing = ({
       rowHeight,
       scrollTop,
       scrollDirection,
+      heightMap,
     });
-  }, [currentTableRows, contentHeight, rowHeight, scrollTop, scrollDirection, bufferRowCount]);
+  }, [currentTableRows, contentHeight, rowHeight, scrollTop, scrollDirection, bufferRowCount, heightMap]);
 
   // Categorize rows based on ID changes
   const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
@@ -299,6 +321,7 @@ const useTableRowProcessing = ({
         rowHeight,
         scrollTop,
         scrollDirection,
+        heightMap,
       });
 
       // CRITICAL: Compare VISIBLE rows (before filter) vs what WILL BE visible (after filter)
@@ -334,6 +357,7 @@ const useTableRowProcessing = ({
       currentTableRows,
       targetVisibleRows,
       bufferRowCount,
+      heightMap,
     ]
   );
 
@@ -351,6 +375,7 @@ const useTableRowProcessing = ({
         rowHeight,
         scrollTop,
         scrollDirection,
+        heightMap,
       });
 
       // CRITICAL: Compare VISIBLE rows (before sort) vs what WILL BE visible (after sort)
@@ -386,6 +411,7 @@ const useTableRowProcessing = ({
       currentTableRows,
       targetVisibleRows,
       bufferRowCount,
+      heightMap,
     ]
   );
 
