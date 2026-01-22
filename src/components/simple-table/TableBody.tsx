@@ -48,19 +48,34 @@ const TableBody = ({
 
   // Direct DOM manipulation for hover - no React re-renders
   const setHoveredIndex = useCallback((index: number | null) => {
-    // Clear previous hover
-    hoveredRowRefs.current.forEach((el) => el.classList.remove("hovered"));
+    // Clear ALL hovered rows across all tables (including nested ones)
+    // This ensures only one table's rows are hovered at a time
+    document.querySelectorAll('.st-row.hovered').forEach((el) => {
+      el.classList.remove('hovered');
+    });
     hoveredRowRefs.current.clear();
 
-    if (index !== null) {
-      // Find all rows with this index and add class directly
-      const rows = document.querySelectorAll(`.st-body-container .st-row[data-index="${index}"]`);
-      rows.forEach((row) => {
-        (row as HTMLElement).classList.add("hovered");
-        hoveredRowRefs.current.add(row as HTMLElement);
+    if (index !== null && tableBodyContainerRef.current) {
+      // Find all rows with this index within this specific table's body container
+      // Only select direct child rows of the body sections (not nested table rows)
+      const bodyContainer = tableBodyContainerRef.current;
+      const selector = `.st-row[data-index="${index}"]:not(.st-nested-grid-row)`;
+      
+      // Query within the specific container, but filter to only direct section children
+      const allRows = bodyContainer.querySelectorAll(selector);
+      
+      allRows.forEach((row) => {
+        const rowElement = row as HTMLElement;
+        // Check if this row belongs to this table (not a nested table)
+        // by verifying its closest st-body-container is this one
+        const closestBodyContainer = rowElement.closest('.st-body-container');
+        if (closestBodyContainer === bodyContainer) {
+          rowElement.classList.add("hovered");
+          hoveredRowRefs.current.add(rowElement);
+        }
       });
     }
-  }, []);
+  }, [tableBodyContainerRef]);
 
   // Clear hover state when animations start
   useEffect(() => {
