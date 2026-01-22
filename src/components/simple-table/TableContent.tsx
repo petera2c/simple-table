@@ -81,7 +81,6 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
-    tableRows,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,
@@ -89,10 +88,11 @@ const TableContent = ({
     pinnedRightColumns,
     pinnedRightTemplateColumns,
     pinnedRightWidth,
-    setScrollTop,
-    setScrollDirection,
-    shouldShowEmptyState,
     rowsToRender,
+    setScrollDirection,
+    setScrollTop,
+    shouldShowEmptyState,
+    tableRows,
   };
 
   return (

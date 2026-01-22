@@ -56,6 +56,29 @@ export const getTotalRowCount = (tableRows: TableRow[]): number => {
 };
 
 /**
+ * Calculate the total height of all rows including nested grids with extra heights
+ * @param totalRowCount - Total number of rows
+ * @param rowHeight - Standard height of each row
+ * @param heightOffsets - Array of [position, extraHeight] tuples for rows with non-standard heights
+ * @param customTheme - Custom theme configuration for separator width
+ * @returns Total height in pixels
+ */
+export const calculateTotalHeight = (
+  totalRowCount: number,
+  rowHeight: number,
+  heightOffsets: HeightOffsets | undefined,
+  customTheme: CustomTheme
+): number => {
+  // Calculate base height assuming all rows are standard height
+  const baseHeight = totalRowCount * (rowHeight + customTheme.rowSeparatorWidth) - customTheme.rowSeparatorWidth;
+  
+  // Add all the extra heights from nested grids
+  const extraHeight = heightOffsets?.reduce((sum, [_, extra]) => sum + extra, 0) || 0;
+  
+  return baseHeight + extraHeight;
+};
+
+/**
  * Viewport range calculation result containing start/end indices and the actual rows
  */
 export interface ViewportRange {
