@@ -71,6 +71,11 @@ const useFlattenedRows = ({
 
     const result: TableRow[] = [];
     const heightOffsets: HeightOffsets = [];
+    
+    // Track displayPosition separately from position
+    // displayPosition is for UI row numbers (skips nested grid rows)
+    // position is for actual array index and positioning calculations
+    let displayPosition = 0;
 
     const processRows = (
       currentRows: Row[],
@@ -93,13 +98,16 @@ const useFlattenedRows = ({
         result.push({
           row,
           depth: currentDepth,
-          displayPosition: position,
+          displayPosition,
           groupingKey: currentGroupingKey,
           position,
           isLastGroupRow,
           rowPath,
           absoluteRowIndex: position,
         });
+        
+        // Increment displayPosition for this data row
+        displayPosition++;
 
         // Check if row should be expanded using the unique ID
         const isExpanded = isRowExpanded(
@@ -142,7 +150,7 @@ const useFlattenedRows = ({
             result.push({
               row: {}, // Empty row object, content will be rendered by NestedGridRow
               depth: currentDepth + 1,
-              displayPosition: nestedGridPosition,
+              displayPosition: displayPosition - 1, // Use same displayPosition as parent row
               groupingKey: currentGroupingKey,
               position: nestedGridPosition,
               isLastGroupRow: false,
@@ -155,6 +163,7 @@ const useFlattenedRows = ({
               },
               absoluteRowIndex: nestedGridPosition,
             });
+            // Don't increment displayPosition for nested grid rows - they don't show row numbers
           }
           // Show state indicator row if loading/error/empty state is active AND a corresponding renderer exists
           else if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
@@ -168,7 +177,7 @@ const useFlattenedRows = ({
               result.push({
                 row: {}, // Empty row object, content will be rendered by state indicator
                 depth: currentDepth + 1,
-                displayPosition: statePosition,
+                displayPosition: displayPosition - 1, // Use same displayPosition as parent row
                 groupingKey: currentGroupingKey,
                 position: statePosition,
                 isLastGroupRow: false,
@@ -179,13 +188,14 @@ const useFlattenedRows = ({
                 },
                 absoluteRowIndex: statePosition,
               });
+              // Don't increment displayPosition for state indicator rows - they show custom content
             } else if (rowState.loading && !hasLoadingRenderer) {
               // If loading but no custom renderer, add a dummy skeleton row
               const skeletonPosition = result.length;
               result.push({
                 row: {},
                 depth: currentDepth + 1,
-                displayPosition: skeletonPosition,
+                displayPosition: displayPosition - 1, // Use same displayPosition as parent row
                 groupingKey: currentGroupingKey,
                 position: skeletonPosition,
                 isLastGroupRow: false,

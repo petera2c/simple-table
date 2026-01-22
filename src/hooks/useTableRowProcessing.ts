@@ -76,10 +76,11 @@ const useTableRowProcessing = ({
           : rows;
 
       // Recalculate positions after pagination
+      // Note: We preserve displayPosition from the flattened rows (it's calculated differently to skip nested grids)
       return paginatedRows.map((tableRow, index) => ({
         ...tableRow,
         position: index,
-        displayPosition: index,
+        // Keep the original displayPosition (don't recalculate)
         // Calculate absolute row index accounting for pagination offset
         absoluteRowIndex: shouldPaginate && !serverSidePagination ? startIndex + index : index,
       }));

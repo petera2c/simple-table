@@ -191,6 +191,7 @@ const PaginationAPIExample = () => {
         selectableColumns={true}
         theme="dark"
         maxHeight={"200px"}
+        enableRowSelection={true}
       />
 
       <div

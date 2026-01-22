@@ -164,6 +164,7 @@ const companyHeaders: HeaderObject[] = [
     nestedGrid: {
       defaultHeaders: divisionHeaders,
       autoExpandColumns: true,
+      enableRowSelection: true,
     },
   },
   { accessor: "industry", label: "Industry", width: 150 },
@@ -215,6 +216,8 @@ const NestedGridExample = (props: UniversalTableProps) => {
         useOddEvenRowBackground
         onRowGroupExpand={() => {
         }}
+        enableRowSelection
+        shouldPaginate
       />
     </div>
   );
