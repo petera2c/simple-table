@@ -30,7 +30,7 @@ export interface SimpleTableProps {
     columnReordering?: boolean; // Flag for column reordering
     columnResizing?: boolean; // Flag for column resizing
     copyHeadersToClipboard?: boolean; // Flag for including column headers when copying cells to clipboard (default: false)
-    customTheme?: Partial<CustomTheme>; // Custom theme configuration for dimensions and spacing
+    customTheme?: CustomTheme; // Custom theme configuration for dimensions and spacing
     defaultHeaders: HeaderObject[]; // Default headers
     editColumns?: boolean; // Flag for column editing
     editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
@@ -43,12 +43,10 @@ export interface SimpleTableProps {
     externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
     externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
     filterIcon?: ReactNode; // Icon for filter button
-    footerHeight?: number; // Height of the footer
     footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
     headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
     headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
     headerExpandIcon?: ReactNode; // Icon for expanded column headers
-    headerHeight?: number; // Height of the header
     height?: string | number; // Height of the table
     hideFooter?: boolean; // Flag for hiding the footer
     hideHeader?: boolean; // Flag for hiding the header
@@ -76,12 +74,10 @@ export interface SimpleTableProps {
     prevIcon?: ReactNode; // Previous icon
     rowButtons?: RowButton[]; // Array of buttons to show in each row
     rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
-    rowHeight?: number; // Height of each row
     rows: Row[]; // Rows data
     rowsPerPage?: number; // Rows per page
     selectableCells?: boolean; // Flag if can select cells
     selectableColumns?: boolean; // Flag for selectable column headers
-    selectionColumnWidth?: number; // Width of the selection column (defaults to 42)
     serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
     shouldPaginate?: boolean; // Flag for pagination
     sortDownIcon?: ReactNode; // Sort down icon

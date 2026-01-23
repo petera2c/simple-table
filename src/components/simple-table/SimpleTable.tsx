@@ -67,7 +67,7 @@ const SimpleTableComp = ({
   columnReordering = false,
   columnResizing = false,
   copyHeadersToClipboard = false,
-  customTheme: customThemeProp,
+  customTheme = DEFAULT_CUSTOM_THEME,
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
@@ -80,12 +80,10 @@ const SimpleTableComp = ({
   externalFilterHandling = false,
   externalSortHandling = false,
   filterIcon = <FilterIcon className="st-header-icon" />,
-  footerHeight: footerHeightProp,
   footerRenderer,
   headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
   headerDropdown,
   headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
-  headerHeight: headerHeightProp,
   height,
   hideFooter = false,
   hideHeader = false,
@@ -113,12 +111,10 @@ const SimpleTableComp = ({
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowButtons,
   rowGrouping,
-  rowHeight: rowHeightProp,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
   selectableColumns = false,
-  selectionColumnWidth: selectionColumnWidthProp,
   serverSidePagination = false,
   shouldPaginate = false,
   sortDownIcon = <DescIcon className="st-header-icon" />,
@@ -131,17 +127,6 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
   useOddEvenRowBackground = false,
 }: SimpleTableProps) => {
-  // Merge customTheme with defaults
-  const customTheme = useMemo(() => ({
-    ...DEFAULT_CUSTOM_THEME,
-    ...customThemeProp,
-  }), [customThemeProp]);
-
-  // Use values from customTheme, with prop overrides for backwards compatibility
-  const rowHeight = rowHeightProp ?? customTheme.rowHeight;
-  const headerHeight = headerHeightProp ?? customTheme.headerHeight;
-  const footerHeight = footerHeightProp ?? customTheme.footerHeight;
-  const selectionColumnWidth = selectionColumnWidthProp ?? customTheme.selectionColumnWidth;
   if (useOddColumnBackground) useOddEvenRowBackground = false;
   // Disable hover row background when column borders are enabled to prevent visual conflicts
   if (columnBorders) useHoverRowBackground = false;
@@ -260,12 +245,12 @@ const SimpleTableComp = ({
 
     // Add selection column if enabled and not already present
     if (enableRowSelection && !headers?.[0]?.isSelectionColumn) {
-      const selectionHeader = createSelectionHeader(selectionColumnWidth);
+      const selectionHeader = createSelectionHeader(customTheme.selectionColumnWidth);
       processedHeaders = [selectionHeader, ...processedHeaders];
     }
 
     return processedHeaders;
-  }, [enableRowSelection, headers, selectionColumnWidth]);
+  }, [enableRowSelection, headers, customTheme.selectionColumnWidth]);
 
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
@@ -283,8 +268,8 @@ const SimpleTableComp = ({
   // Calculate table dimensions (container width, header height, and max header depth)
   const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = useTableDimensions({
     effectiveHeaders,
-    headerHeight,
-    rowHeight,
+    headerHeight: customTheme.headerHeight,
+    rowHeight: customTheme.rowHeight,
     tableBodyContainerRef,
   });
 
@@ -522,8 +507,8 @@ const SimpleTableComp = ({
     hasErrorRenderer: Boolean(errorStateRenderer),
     hasEmptyRenderer: Boolean(emptyStateRenderer),
     headers: effectiveHeaders,
-    rowHeight,
-    headerHeight: headerHeight ?? rowHeight,
+    rowHeight: customTheme.rowHeight,
+    headerHeight: customTheme.headerHeight,
     customTheme,
   });
 
@@ -556,8 +541,8 @@ const SimpleTableComp = ({
     hasErrorRenderer: Boolean(errorStateRenderer),
     hasEmptyRenderer: Boolean(emptyStateRenderer),
     headers: effectiveHeaders,
-    rowHeight,
-    headerHeight: headerHeight ?? rowHeight,
+    rowHeight: customTheme.rowHeight,
+    headerHeight: customTheme.headerHeight,
     customTheme,
   });
 
@@ -589,8 +574,8 @@ const SimpleTableComp = ({
         hasErrorRenderer: Boolean(errorStateRenderer),
         hasEmptyRenderer: Boolean(emptyStateRenderer),
         headers: effectiveHeaders,
-        rowHeight,
-        headerHeight: headerHeight ?? rowHeight,
+        rowHeight: customTheme.rowHeight,
+        headerHeight: customTheme.headerHeight,
         customTheme,
       });
     },
@@ -605,8 +590,8 @@ const SimpleTableComp = ({
       errorStateRenderer,
       emptyStateRenderer,
       effectiveHeaders,
-      rowHeight,
-      headerHeight,
+      customTheme.rowHeight,
+      customTheme.headerHeight,
       customTheme,
     ]
   );
@@ -638,8 +623,8 @@ const SimpleTableComp = ({
         hasErrorRenderer: Boolean(errorStateRenderer),
         hasEmptyRenderer: Boolean(emptyStateRenderer),
         headers: effectiveHeaders,
-        rowHeight,
-        headerHeight: headerHeight ?? rowHeight,
+        rowHeight: customTheme.rowHeight,
+        headerHeight: customTheme.headerHeight,
         customTheme,
       });
     },
@@ -654,8 +639,8 @@ const SimpleTableComp = ({
       errorStateRenderer,
       emptyStateRenderer,
       effectiveHeaders,
-      rowHeight,
-      headerHeight,
+      customTheme.rowHeight,
+      customTheme.headerHeight,
       customTheme,
     ]
   );
@@ -664,12 +649,12 @@ const SimpleTableComp = ({
   const contentHeight = useContentHeight({
     height,
     maxHeight,
-    rowHeight,
+    rowHeight: customTheme.rowHeight,
     shouldPaginate,
     rowsPerPage,
     totalRowCount: totalRowCount ?? paginatableRows.length,
     headerHeight: calculatedHeaderHeight,
-    footerHeight: shouldPaginate && !hideFooter ? footerHeight : undefined,
+    footerHeight: shouldPaginate && !hideFooter ? customTheme.footerHeight : undefined,
   });
 
   // Process rows through pagination and virtualization (now operates on flattened rows)
@@ -689,7 +674,7 @@ const SimpleTableComp = ({
     shouldPaginate,
     serverSidePagination,
     contentHeight,
-    rowHeight,
+    rowHeight: customTheme.rowHeight,
     scrollTop,
     scrollDirection,
     heightOffsets,
@@ -727,7 +712,7 @@ const SimpleTableComp = ({
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
     collapsedHeaders,
-    rowHeight,
+    rowHeight: customTheme.rowHeight,
     enableRowSelection,
     copyHeadersToClipboard,
     customTheme,
@@ -860,7 +845,7 @@ const SimpleTableComp = ({
         headerContainerRef,
         headerDropdown,
         headerExpandIcon,
-        headerHeight: headerHeight ?? rowHeight,
+        headerHeight: customTheme.headerHeight,
         headerRegistry: headerRegistryRef.current,
         headers: effectiveHeaders,
         heightOffsets,
@@ -894,7 +879,7 @@ const SimpleTableComp = ({
         prevIcon,
         rowButtons,
         rowGrouping,
-        rowHeight,
+        rowHeight: customTheme.rowHeight,
         rowStateMap,
         rows: localRows,
         rowsWithSelectedCells,
