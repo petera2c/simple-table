@@ -19,7 +19,7 @@ interface NestedGridRowProps {
  * Component that renders a nested SimpleTable inside an expanded row
  * Spans the full width of the parent table (grid column 1 / -1)
  */
-const NestedGridRow= ({
+const NestedGridRow = ({
   calculatedHeight,
   childAccessor,
   depth,
@@ -28,7 +28,13 @@ const NestedGridRow= ({
   parentRow,
   position,
 }: NestedGridRowProps) => {
-  const { theme, rowGrouping, rowHeight: parentRowHeight, heightOffsets, customTheme } = useTableContext();
+  const {
+    theme,
+    rowGrouping,
+    rowHeight: parentRowHeight,
+    heightOffsets,
+    customTheme,
+  } = useTableContext();
 
   const nestedGridConfig = expandableHeader.nestedGrid;
 
@@ -48,10 +54,9 @@ const NestedGridRow= ({
   const nextLevelGrouping = rowGrouping && rowGrouping[depth + 1];
   const childRowGrouping = nextLevelGrouping ? rowGrouping?.slice(depth + 1) : undefined;
 
-
   // The SimpleTable height should exclude the padding and borders since those are applied to the wrapper
-  const tableHeight = calculatedHeight - customTheme.nestedGridPaddingTop - customTheme.nestedGridPaddingBottom;
-
+  const tableHeight =
+    calculatedHeight - customTheme.nestedGridPaddingTop - customTheme.nestedGridPaddingBottom;
 
   return (
     <div

@@ -3,7 +3,12 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
 import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
-import { getRowId, getNestedRows, isRowExpanded, calculateNestedGridHeight } from "../utils/rowUtils";
+import {
+  getRowId,
+  getNestedRows,
+  isRowExpanded,
+  calculateNestedGridHeight,
+} from "../utils/rowUtils";
 import { HeightOffsets } from "../utils/infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
 
@@ -63,7 +68,7 @@ const useFlattenedRows = ({
             position: index,
             rowPath: [index],
             absoluteRowIndex: index,
-          } as TableRow)
+          }) as TableRow,
       );
       return {
         flattenedRows,
@@ -75,7 +80,7 @@ const useFlattenedRows = ({
     const result: TableRow[] = [];
     const paginatableRowsBuilder: TableRow[] = [];
     const heightOffsets: HeightOffsets = [];
-    
+
     // Track displayPosition separately from position
     // displayPosition is for UI row numbers (skips nested grid rows)
     // position is for actual array index and positioning calculations
@@ -84,7 +89,7 @@ const useFlattenedRows = ({
     const processRows = (
       currentRows: Row[],
       currentDepth: number,
-      parentPath: (string | number)[] = []
+      parentPath: (string | number)[] = [],
     ): void => {
       currentRows.forEach((row, index) => {
         const currentGroupingKey = rowGrouping[currentDepth];
@@ -110,10 +115,10 @@ const useFlattenedRows = ({
           absoluteRowIndex: position,
         };
         result.push(mainRow);
-        
+
         // This is a paginatable data row (not a nested grid or state indicator)
         paginatableRowsBuilder.push(mainRow);
-        
+
         // Increment displayPosition for this data row
         displayPosition++;
 
@@ -123,7 +128,7 @@ const useFlattenedRows = ({
           currentDepth,
           expandedDepths,
           expandedRows,
-          collapsedRows
+          collapsedRows,
         );
 
         // If row is expanded and has nested data for the current grouping level
@@ -138,7 +143,7 @@ const useFlattenedRows = ({
           // If there's a nested grid configuration, inject a nested grid row instead of regular child rows
           if (expandableHeader?.nestedGrid && nestedRows.length > 0) {
             const nestedGridPosition = result.length;
-            
+
             // Calculate the height for this nested grid
             const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || rowHeight;
             const nestedGridHeaderHeight = expandableHeader.nestedGrid.headerHeight || headerHeight;
@@ -148,13 +153,13 @@ const useFlattenedRows = ({
               headerHeight: nestedGridHeaderHeight,
               customTheme,
             });
-            
+
             // Calculate extra height (beyond standard row height)
             const extraHeight = calculatedHeight - rowHeight;
-            
+
             // Add to height offsets array (kept sorted by position)
             heightOffsets.push([nestedGridPosition, extraHeight]);
-            
+
             result.push({
               row: {}, // Empty row object, content will be rendered by NestedGridRow
               depth: currentDepth + 1,
@@ -225,7 +230,7 @@ const useFlattenedRows = ({
     };
 
     processRows(rows, 0);
-    
+
     return {
       flattenedRows: result,
       heightOffsets,

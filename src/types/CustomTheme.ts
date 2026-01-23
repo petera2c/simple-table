@@ -22,9 +22,6 @@ export interface CustomTheme {
   nestedGridMaxHeight: number; // Maximum height for nested grids in pixels
 
   // Column dimensions
-  columnEditWidth: number; // Width of the column editor
-  tableHeaderCellWidthDefault: number; // Default width for header cells
-  absoluteMinColumnWidth: number; // Absolute minimum width for columns in autoExpandColumns mode
   selectionColumnWidth: number; // Width of the selection column (for row selection checkboxes)
 }
 
@@ -51,9 +48,5 @@ export const DEFAULT_CUSTOM_THEME: CustomTheme = {
   nestedGridPaddingRight: 8,
   nestedGridMaxHeight: 400,
 
-  // Column dimensions
-  columnEditWidth: 28,
-  tableHeaderCellWidthDefault: 150,
-  absoluteMinColumnWidth: 30,
   selectionColumnWidth: 42,
 };

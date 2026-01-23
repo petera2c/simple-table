@@ -17,7 +17,7 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
-import { getResponsiveMaxPinnedPercent, DEFAULT_ROW_HEIGHT } from "../../consts/general-consts";
+import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
 import { useTableDimensions } from "../../hooks/useTableDimensions";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
@@ -658,6 +658,7 @@ const SimpleTableComp = ({
     prepareForFilterChange,
     prepareForSortChange,
     isAnimating,
+    paginatedHeightOffsets,
   } = useTableRowProcessing({
     allowAnimations,
     flattenedRows,
@@ -842,7 +843,7 @@ const SimpleTableComp = ({
         headerHeight,
         headerRegistry: headerRegistryRef.current,
         headers: effectiveHeaders,
-        heightOffsets,
+        heightOffsets: paginatedHeightOffsets,
         hoveredHeaderRef,
         includeHeadersInCSVExport,
         isAnimating,

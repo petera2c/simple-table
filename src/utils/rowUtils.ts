@@ -26,17 +26,23 @@ export const calculateNestedGridHeight = ({
   customTheme: CustomTheme;
 }): number => {
   // Calculate content height: header + header border + (rows * rowHeight) + row separators + top/bottom padding + table borders
-  const contentHeight = 
-    headerHeight + 
-  // Header has a bottom border separating it from rows
+  const contentHeight =
+    headerHeight +
+    // Header has a bottom border separating it from rows
     customTheme.rowSeparatorWidth +
-    childRowCount * (rowHeight + customTheme.rowSeparatorWidth) + 
-    customTheme.nestedGridPaddingTop + 
-    customTheme.nestedGridPaddingBottom + 
+    childRowCount * (rowHeight + customTheme.rowSeparatorWidth) +
+    customTheme.nestedGridPaddingTop +
+    customTheme.nestedGridPaddingBottom +
     customTheme.nestedGridBorderWidth;
-  
+
   // Return the minimum of content height and max height (max height also includes padding and borders)
-  return Math.min(contentHeight, customTheme.nestedGridMaxHeight + customTheme.nestedGridPaddingTop + customTheme.nestedGridPaddingBottom + customTheme.nestedGridBorderWidth);
+  return Math.min(
+    contentHeight,
+    customTheme.nestedGridMaxHeight +
+      customTheme.nestedGridPaddingTop +
+      customTheme.nestedGridPaddingBottom +
+      customTheme.nestedGridBorderWidth,
+  );
 };
 
 /**
@@ -130,7 +136,7 @@ export const setNestedValue = (obj: Row, path: Accessor, value: CellValue): void
     if (index !== null) {
       if (!Array.isArray(current)) {
         throw new Error(
-          `Expected array at ${segments.slice(0, i + 1).join(".")}, but found ${typeof current}`
+          `Expected array at ${segments.slice(0, i + 1).join(".")}, but found ${typeof current}`,
         );
       }
 
@@ -228,7 +234,7 @@ export const isRowExpanded = (
   depth: number,
   expandedDepths: Set<number>,
   expandedRows: Map<string, number>,
-  collapsedRows: Map<string, number>
+  collapsedRows: Map<string, number>,
 ): boolean => {
   const rowIdStr = String(rowId);
   const isManuallyExpanded = expandedRows.has(rowIdStr) && expandedRows.get(rowIdStr) === depth;
@@ -289,7 +295,7 @@ export const flattenRowsWithGrouping = ({
     currentDepth: number,
     parentPosition = 0,
     parentDisplayPosition = displayPositionOffset,
-    parentPath: (string | number)[] = []
+    parentPath: (string | number)[] = [],
   ): number => {
     let position = parentPosition;
     let displayPosition = parentDisplayPosition;
@@ -327,7 +333,7 @@ export const flattenRowsWithGrouping = ({
         currentDepth,
         expandedDepths,
         expandedRows,
-        collapsedRows
+        collapsedRows,
       );
 
       // If row is expanded and has nested data for the current grouping level
@@ -350,7 +356,7 @@ export const flattenRowsWithGrouping = ({
             headerHeight: nestedGridHeaderHeight,
             customTheme,
           });
-          
+
           result.push({
             row: {}, // Empty row object, content will be rendered by NestedGridRow
             depth: currentDepth + 1,
@@ -421,7 +427,7 @@ export const flattenRowsWithGrouping = ({
             currentDepth + 1,
             position,
             displayPosition,
-            nestedPath
+            nestedPath,
           );
         }
       }

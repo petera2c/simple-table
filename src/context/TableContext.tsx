@@ -85,7 +85,7 @@ interface TableContextType {
   headerExpandIcon?: ReactNode;
   headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
-  heightOffsets: HeightOffsets;
+  heightOffsets?: HeightOffsets;
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   maxHeaderDepth: number;
   isAnimating: boolean;
