@@ -121,10 +121,14 @@ const SimpleTableComp = ({
   useOddEvenRowBackground = false,
 }: SimpleTableProps) => {
   // Merge customTheme with defaults - all properties will be defined after merge
-  const customTheme = useMemo(() => ({
-    ...DEFAULT_CUSTOM_THEME,
-    ...customThemeProp,
-  }) as Required<CustomTheme>, [customThemeProp]);
+  const customTheme = useMemo(
+    () =>
+      ({
+        ...DEFAULT_CUSTOM_THEME,
+        ...customThemeProp,
+      }) as CustomTheme,
+    [customThemeProp],
+  );
 
   const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } = customTheme;
   if (useOddColumnBackground) useOddEvenRowBackground = false;

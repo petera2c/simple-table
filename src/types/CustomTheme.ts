@@ -3,7 +3,7 @@
  * Contains all customizable dimensions and spacing values used in calculations and styling
  * All properties are optional - missing values will be filled with defaults
  */
-export interface CustomTheme {
+export interface CustomThemeProps {
   // Row and header dimensions
   rowHeight?: number;
   headerHeight?: number;
@@ -25,6 +25,8 @@ export interface CustomTheme {
   // Column dimensions
   selectionColumnWidth?: number; // Width of the selection column (for row selection checkboxes)
 }
+
+export type CustomTheme = Required<CustomThemeProps>;
 
 /**
  * Default theme values
