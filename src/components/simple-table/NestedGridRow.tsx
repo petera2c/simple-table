@@ -36,7 +36,7 @@ const NestedGridRow = ({
     customTheme,
   } = useTableContext();
 
-  const nestedGridConfig = expandableHeader.nestedGrid;
+  const nestedGridConfig = expandableHeader.nestedTable;
 
   // If no nested grid config, don't render anything
   if (!nestedGridConfig) {

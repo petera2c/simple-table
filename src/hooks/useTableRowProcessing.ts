@@ -109,7 +109,7 @@ const useTableRowProcessing = ({
         }
 
         // Include if this is a nested grid or state indicator whose parent is on this page
-        if (tableRow.nestedGrid || tableRow.stateIndicator || tableRow.isLoadingSkeleton) {
+        if (tableRow.nestedTable || tableRow.stateIndicator || tableRow.isLoadingSkeleton) {
           // Get parent path (remove last element)
           const parentPath = tableRow.rowPath ? tableRow.rowPath.slice(0, -1) : [];
           const parentId = String(getRowId(parentPath));
@@ -123,7 +123,7 @@ const useTableRowProcessing = ({
       return paginatedRows.map((tableRow, index) => {
         // For nested grid rows, preserve the original absoluteRowIndex from flattenedRows
         // For regular rows, calculate based on pagination offset
-        const absoluteRowIndex = tableRow.nestedGrid
+        const absoluteRowIndex = tableRow.nestedTable
           ? tableRow.absoluteRowIndex // Keep original position from flattenedRows
           : shouldPaginate && !serverSidePagination
             ? startIndex + index
@@ -173,7 +173,7 @@ const useTableRowProcessing = ({
     // Build a map: originalPosition (absoluteRowIndex) -> newPosition (position)
     const positionMap = new Map<number, number>();
     currentTableRows.forEach((tableRow) => {
-      if (tableRow.nestedGrid) {
+      if (tableRow.nestedTable) {
         // absoluteRowIndex is the position in the original flattenedRows
         // position is the new position in currentTableRows (0, 1, 2...)
         positionMap.set(tableRow.absoluteRowIndex, tableRow.position);
@@ -183,7 +183,10 @@ const useTableRowProcessing = ({
     // Filter heightOffsets to only include rows on current page, and remap positions
     return heightOffsets
       .filter(([originalPos]) => positionMap.has(originalPos))
-      .map(([originalPos, extraHeight]) => [positionMap.get(originalPos)!, extraHeight] as [number, number]);
+      .map(
+        ([originalPos, extraHeight]) =>
+          [positionMap.get(originalPos)!, extraHeight] as [number, number],
+      );
   }, [heightOffsets, currentTableRows, shouldPaginate, serverSidePagination]);
 
   // Build cumulative height map for O(log n) viewport calculations with variable-height rows
@@ -193,7 +196,12 @@ const useTableRowProcessing = ({
       return undefined;
     }
 
-    return buildCumulativeHeightMap(currentTableRows.length, rowHeight, paginatedHeightOffsets, customTheme);
+    return buildCumulativeHeightMap(
+      currentTableRows.length,
+      rowHeight,
+      paginatedHeightOffsets,
+      customTheme,
+    );
   }, [currentTableRows.length, rowHeight, paginatedHeightOffsets, customTheme]);
 
   // Calculate target visible rows (what should be visible)
@@ -398,7 +406,7 @@ const useTableRowProcessing = ({
       // Filter to get paginatable rows for the new state
       const newPaginatableRows = newFlattenedRows.filter(
         (tableRow) =>
-          !tableRow.nestedGrid && !tableRow.stateIndicator && !tableRow.isLoadingSkeleton,
+          !tableRow.nestedTable && !tableRow.stateIndicator && !tableRow.isLoadingSkeleton,
       );
       const newPaginatedRows = applyPagination(newFlattenedRows, newPaginatableRows);
       const newVisibleRows = getVisibleRows({
@@ -457,7 +465,7 @@ const useTableRowProcessing = ({
       // Filter to get paginatable rows for the new state
       const newPaginatableRows = newFlattenedRows.filter(
         (tableRow) =>
-          !tableRow.nestedGrid && !tableRow.stateIndicator && !tableRow.isLoadingSkeleton,
+          !tableRow.nestedTable && !tableRow.stateIndicator && !tableRow.isLoadingSkeleton,
       );
       const newPaginatedRows = applyPagination(newFlattenedRows, newPaginatableRows);
       const newVisibleRows = getVisibleRows({

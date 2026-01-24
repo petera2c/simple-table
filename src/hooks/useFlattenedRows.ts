@@ -136,18 +136,20 @@ const useFlattenedRows = ({
           const rowState = rowStateMap?.get(rowId);
           const nestedRows = getNestedRows(row, currentGroupingKey);
 
-          // Check if any header with expandable=true has a nestedGrid configuration
+          // Check if any header with expandable=true has a nestedTable configuration
           // The expandable header is the one that shows the expand icon, not necessarily matching the grouping key
-          const expandableHeader = headers.find((h) => h.expandable && h.nestedGrid);
+          const expandableHeader = headers.find((h) => h.expandable && h.nestedTable);
 
           // If there's a nested grid configuration, inject a nested grid row instead of regular child rows
-          if (expandableHeader?.nestedGrid && nestedRows.length > 0) {
+          if (expandableHeader?.nestedTable && nestedRows.length > 0) {
             const nestedGridPosition = result.length;
 
             // Calculate the height for this nested grid
             // Use customTheme from nested grid if provided, otherwise use parent's customTheme
-            const nestedGridRowHeight = expandableHeader.nestedGrid.customTheme?.rowHeight || rowHeight;
-            const nestedGridHeaderHeight = expandableHeader.nestedGrid.customTheme?.headerHeight || headerHeight;
+            const nestedGridRowHeight =
+              expandableHeader.nestedTable.customTheme?.rowHeight || rowHeight;
+            const nestedGridHeaderHeight =
+              expandableHeader.nestedTable.customTheme?.headerHeight || headerHeight;
             const calculatedHeight = calculateNestedGridHeight({
               childRowCount: nestedRows.length,
               rowHeight: nestedGridRowHeight,
@@ -169,7 +171,7 @@ const useFlattenedRows = ({
               position: nestedGridPosition,
               isLastGroupRow: false,
               rowPath: [...rowPath, currentGroupingKey],
-              nestedGrid: {
+              nestedTable: {
                 parentRow: row,
                 expandableHeader,
                 childAccessor: currentGroupingKey,

@@ -271,7 +271,7 @@ const companyHeaders: HeaderObject[] = [
     label: "Company",
     width: 200,
     expandable: true,
-    nestedGrid: {
+    nestedTable: {
       defaultHeaders: divisionHeaders,
       autoExpandColumns: true,
       enableRowSelection: true,

@@ -50,22 +50,22 @@ const TableRow = ({
     useHoverRowBackground,
     useOddEvenRowBackground,
   } = useTableContext();
-  const { position, displayPosition, stateIndicator, nestedGrid } = tableRow;
+  const { position, displayPosition, stateIndicator, nestedTable } = tableRow;
 
   // If this is a nested grid row, render it differently
-  if (nestedGrid) {
+  if (nestedTable) {
     // Determine which section should show the nested grid
     // For simplicity, show in all sections (main, left, right) but only render content in main
     const shouldShowNestedGrid = !pinned; // Only show in main section
     if (shouldShowNestedGrid) {
       return (
         <NestedGridRow
-          calculatedHeight={nestedGrid.calculatedHeight}
-          childAccessor={nestedGrid.childAccessor}
+          calculatedHeight={nestedTable.calculatedHeight}
+          childAccessor={nestedTable.childAccessor}
           depth={tableRow.depth - 1} // Pass parent depth
-          expandableHeader={nestedGrid.expandableHeader}
+          expandableHeader={nestedTable.expandableHeader}
           index={index}
-          parentRow={nestedGrid.parentRow}
+          parentRow={nestedTable.parentRow}
           position={position}
         />
       );
@@ -79,7 +79,7 @@ const TableRow = ({
         style={{
           gridTemplateColumns,
           transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
-          height: `${nestedGrid.calculatedHeight}px`,
+          height: `${nestedTable.calculatedHeight}px`,
         }}
       />
     );

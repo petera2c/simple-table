@@ -19,7 +19,7 @@ type TableRow = {
   // If this row is a loading skeleton (used when expanding rows without a custom loadingStateRenderer)
   isLoadingSkeleton?: boolean;
   // If this row should render a nested grid, this contains the necessary information
-  nestedGrid?: {
+  nestedTable?: {
     parentRow: Row;
     expandableHeader: HeaderObject;
     childAccessor: Accessor;
