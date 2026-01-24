@@ -145,8 +145,9 @@ const useFlattenedRows = ({
             const nestedGridPosition = result.length;
 
             // Calculate the height for this nested grid
-            const nestedGridRowHeight = expandableHeader.nestedGrid.rowHeight || rowHeight;
-            const nestedGridHeaderHeight = expandableHeader.nestedGrid.headerHeight || headerHeight;
+            // Use customTheme from nested grid if provided, otherwise use parent's customTheme
+            const nestedGridRowHeight = expandableHeader.nestedGrid.customTheme?.rowHeight || rowHeight;
+            const nestedGridHeaderHeight = expandableHeader.nestedGrid.customTheme?.headerHeight || headerHeight;
             const calculatedHeight = calculateNestedGridHeight({
               childRowCount: nestedRows.length,
               rowHeight: nestedGridRowHeight,

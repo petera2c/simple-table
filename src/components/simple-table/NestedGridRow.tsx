@@ -58,6 +58,12 @@ const NestedGridRow = ({
   const tableHeight =
     calculatedHeight - customTheme.nestedGridPaddingTop - customTheme.nestedGridPaddingBottom;
 
+  // Merge parent customTheme with nested grid's customTheme (if provided)
+  // This allows nested grids to inherit parent dimensions while optionally overriding them
+  const nestedCustomTheme = nestedGridConfig.customTheme
+    ? { ...customTheme, ...nestedGridConfig.customTheme }
+    : customTheme;
+
   return (
     <div
       className="st-row st-nested-grid-row"
@@ -73,7 +79,7 @@ const NestedGridRow = ({
         {...nestedGridConfig}
         rows={childRows}
         theme={theme}
-        rowHeight={parentRowHeight}
+        customTheme={nestedCustomTheme}
         height={`${tableHeight}px`}
         rowGrouping={childRowGrouping}
       />
