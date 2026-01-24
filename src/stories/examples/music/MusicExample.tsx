@@ -29,12 +29,14 @@ export default function MusicExample({
       columnResizing
       defaultHeaders={HEADERS}
       height={height ? height : "70dvh"}
-      rowHeight={85}
+      customTheme={{
+        rowHeight: 85,
+        headerHeight: 40,
+      }}
       rows={data}
       selectableCells
       tableRef={tableRef}
       theme={"frost"}
-      headerHeight={40}
     />
   );
 }

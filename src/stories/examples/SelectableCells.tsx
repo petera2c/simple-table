@@ -8,7 +8,10 @@ export const selectableCellsDefaults = {
   selectableColumns: true,
   columnResizing: true,
   columnReordering: true,
-  rowHeight: 20,
+  customTheme: {
+    rowHeight: 20,
+    headerHeight: 20,
+  },
   height: "80vh",
 };
 
@@ -27,7 +30,6 @@ const SelectableCellsExample = (props: UniversalTableProps) => {
       selectableColumns={props.selectableColumns ?? true}
       columnResizing={props.columnResizing ?? true}
       columnReordering={props.columnReordering ?? true}
-      rowHeight={props.rowHeight ?? 20}
       height={props.height ?? "80vh"}
     />
   );

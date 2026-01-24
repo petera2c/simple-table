@@ -36,6 +36,8 @@ type TableRefType = {
   clearAllFilters: () => Promise<void>;
   /** Returns the current page number (1-indexed) */
   getCurrentPage: () => number;
+  /** Returns the total number of pages */
+  getTotalPages: () => number;
   /** Sets the current page (1-indexed) */
   setPage: (page: number) => void;
   /** Expand all rows at all depths */

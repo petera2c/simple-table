@@ -46,7 +46,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       rowsToRender,
       width,
     },
-    ref
+    ref,
   ) => {
     const className = pinned ? `st-body-pinned-${pinned}` : "st-body-main";
     const internalRef = useRef<HTMLDivElement | null>(null);
@@ -109,7 +109,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
         </div>
       </ScrollSyncPane>
     );
-  }
+  },
 );
 
 TableSection.displayName = "TableSection";

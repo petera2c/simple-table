@@ -674,7 +674,6 @@ const CollapsibleColumnsExample = (props: UniversalTableProps) => {
       defaultHeaders={headers}
       rows={SALES_DATA}
       onColumnVisibilityChange={(visibleColumns: ColumnVisibilityState) => {
-        console.log("visibleColumns", visibleColumns);
       }}
     />
   );

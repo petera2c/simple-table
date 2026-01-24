@@ -1,6 +1,7 @@
 import React from "react";
 import Theme from "../../types/Theme";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
+import { CustomTheme } from "../../types/CustomTheme";
 
 // Universal props that can be controlled via Storybook args
 export interface UniversalTableProps {
@@ -12,7 +13,7 @@ export interface UniversalTableProps {
   allowAnimations?: boolean;
   cellUpdateFlash?: boolean;
   height?: string;
-  rowHeight?: number;
+  customTheme?: CustomTheme;
 
   // Feature Toggle Props
   autoExpandColumns?: boolean;
@@ -63,7 +64,7 @@ export const defaultUniversalArgs: UniversalTableProps = {
   useOddEvenRowBackground: false,
   cellUpdateFlash: false,
   height: undefined,
-  rowHeight: 32,
+  customTheme: undefined,
   autoExpandColumns: false,
   expandAll: true,
   columnReordering: false,
@@ -112,9 +113,9 @@ export const universalArgTypes = {
     control: { type: "text" as const },
     description: "Table height (e.g., '500px', '90vh')",
   },
-  rowHeight: {
-    control: { type: "number" as const, min: 20, max: 100, step: 4 },
-    description: "Height of each row in pixels",
+  customTheme: {
+    control: { type: "object" as const },
+    description: "Custom theme configuration for dimensions and spacing",
   },
   autoExpandColumns: {
     control: { type: "boolean" as const },

@@ -1,7 +1,7 @@
 import Cell from "../types/Cell";
-import { ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
 import { getViewportCalculations } from "./infiniteScrollUtils";
 import TableRow from "../types/TableRow";
+import { CustomTheme } from "../types/CustomTheme";
 
 /**
  * Fine-tunes the scroll position when a cell is already in the DOM
@@ -69,14 +69,14 @@ const isRowFullyVisible = (
  * Uses viewport calculations to check if the cell is already fully visible
  * before performing any scroll operations.
  */
-export const scrollCellIntoView = (cell: Cell, rowHeight: number, tableRows?: TableRow[]) => {
+export const scrollCellIntoView = (cell: Cell, rowHeight: number, customTheme: CustomTheme, tableRows?: TableRow[]) => {
   const tableContainer = document.querySelector(".st-body-container");
   const mainBody = document.querySelector(".st-body-main");
 
   if (!tableContainer) return;
 
   // Calculate the actual row height including separator
-  const rowHeightWithSeparator = rowHeight + ROW_SEPARATOR_WIDTH;
+  const rowHeightWithSeparator = rowHeight + customTheme.rowSeparatorWidth;
 
   // Try to find the cell element using data attributes
   const cellElement = document.querySelector(

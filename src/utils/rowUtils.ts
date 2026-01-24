@@ -1,9 +1,49 @@
 import TableRow from "../types/TableRow";
 import Row from "../types/Row";
 import { RowId } from "../types/RowId";
-import { Accessor } from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
+import { CustomTheme } from "../types/CustomTheme";
+
+/**
+ * Calculate the height of a nested grid based on the number of child rows
+ * @param childRowCount - Number of rows in the nested grid
+ * @param rowHeight - Height of each row
+ * @param headerHeight - Height of the header
+ * @param customTheme - Custom theme configuration
+ * @returns Calculated height in pixels (includes padding, borders, row separators, and header border)
+ */
+export const calculateNestedGridHeight = ({
+  childRowCount,
+  rowHeight,
+  headerHeight,
+  customTheme,
+}: {
+  childRowCount: number;
+  rowHeight: number;
+  headerHeight: number;
+  customTheme: CustomTheme;
+}): number => {
+  // Calculate content height: header + header border + (rows * rowHeight) + row separators + top/bottom padding + table borders
+  const contentHeight =
+    headerHeight +
+    // Header has a bottom border separating it from rows
+    customTheme.rowSeparatorWidth +
+    childRowCount * (rowHeight + customTheme.rowSeparatorWidth) +
+    customTheme.nestedGridPaddingTop +
+    customTheme.nestedGridPaddingBottom +
+    customTheme.nestedGridBorderWidth;
+
+  // Return the minimum of content height and max height (max height also includes padding and borders)
+  return Math.min(
+    contentHeight,
+    customTheme.nestedGridMaxHeight +
+      customTheme.nestedGridPaddingTop +
+      customTheme.nestedGridPaddingBottom +
+      customTheme.nestedGridBorderWidth,
+  );
+};
 
 /**
  * Parse a path segment that may contain array notation
@@ -96,7 +136,7 @@ export const setNestedValue = (obj: Row, path: Accessor, value: CellValue): void
     if (index !== null) {
       if (!Array.isArray(current)) {
         throw new Error(
-          `Expected array at ${segments.slice(0, i + 1).join(".")}, but found ${typeof current}`
+          `Expected array at ${segments.slice(0, i + 1).join(".")}, but found ${typeof current}`,
         );
       }
 
@@ -194,7 +234,7 @@ export const isRowExpanded = (
   depth: number,
   expandedDepths: Set<number>,
   expandedRows: Map<string, number>,
-  collapsedRows: Map<string, number>
+  collapsedRows: Map<string, number>,
 ): boolean => {
   const rowIdStr = String(rowId);
   const isManuallyExpanded = expandedRows.has(rowIdStr) && expandedRows.get(rowIdStr) === depth;
@@ -213,6 +253,7 @@ export const isRowExpanded = (
  * Flatten rows recursively based on row grouping configuration
  * Now calculates ALL properties including position and isLastGroupRow
  * Also injects special state rows for loading/error/empty states (only if renderers are available)
+ * Also injects nested grid rows when a header has nestedGrid configuration
  */
 export const flattenRowsWithGrouping = ({
   depth = 0,
@@ -226,6 +267,10 @@ export const flattenRowsWithGrouping = ({
   hasLoadingRenderer = false,
   hasErrorRenderer = false,
   hasEmptyRenderer = false,
+  headers = [],
+  rowHeight,
+  headerHeight,
+  customTheme,
 }: {
   depth?: number;
   expandedDepths: Set<number>;
@@ -238,6 +283,10 @@ export const flattenRowsWithGrouping = ({
   hasLoadingRenderer?: boolean;
   hasErrorRenderer?: boolean;
   hasEmptyRenderer?: boolean;
+  headers?: HeaderObject[];
+  rowHeight: number;
+  headerHeight: number;
+  customTheme: CustomTheme;
 }): TableRow[] => {
   const result: TableRow[] = [];
 
@@ -246,7 +295,7 @@ export const flattenRowsWithGrouping = ({
     currentDepth: number,
     parentPosition = 0,
     parentDisplayPosition = displayPositionOffset,
-    parentPath: (string | number)[] = []
+    parentPath: (string | number)[] = [],
   ): number => {
     let position = parentPosition;
     let displayPosition = parentDisplayPosition;
@@ -284,7 +333,7 @@ export const flattenRowsWithGrouping = ({
         currentDepth,
         expandedDepths,
         expandedRows,
-        collapsedRows
+        collapsedRows,
       );
 
       // If row is expanded and has nested data for the current grouping level
@@ -292,8 +341,44 @@ export const flattenRowsWithGrouping = ({
         const rowState = rowStateMap?.get(rowId);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
+        // Check if any header with expandable=true has a nestedGrid configuration
+        // The expandable header is the one that shows the expand icon, not necessarily matching the grouping key
+        const expandableHeader = headers.find((h) => h.expandable && h.nestedGrid);
+
+        // If there's a nested grid configuration, inject a nested grid row instead of regular child rows
+        if (expandableHeader?.nestedGrid && nestedRows.length > 0) {
+          // Calculate the height for this nested grid
+          // Use customTheme from nested grid if provided, otherwise use parent's customTheme
+          const nestedGridRowHeight = expandableHeader.nestedGrid.customTheme?.rowHeight || rowHeight;
+          const nestedGridHeaderHeight = expandableHeader.nestedGrid.customTheme?.headerHeight || headerHeight;
+          const calculatedHeight = calculateNestedGridHeight({
+            childRowCount: nestedRows.length,
+            rowHeight: nestedGridRowHeight,
+            headerHeight: nestedGridHeaderHeight,
+            customTheme,
+          });
+
+          result.push({
+            row: {}, // Empty row object, content will be rendered by NestedGridRow
+            depth: currentDepth + 1,
+            displayPosition,
+            groupingKey: currentGroupingKey,
+            position,
+            isLastGroupRow: false,
+            rowPath: [...rowPath, currentGroupingKey],
+            nestedGrid: {
+              parentRow: row,
+              expandableHeader,
+              childAccessor: currentGroupingKey,
+              calculatedHeight,
+            },
+            absoluteRowIndex: position,
+          });
+          position++;
+          displayPosition++;
+        }
         // Show state indicator row if loading/error/empty state is active AND a corresponding renderer exists
-        if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
+        else if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
           const shouldShowState =
             (rowState.loading && hasLoadingRenderer) ||
             (rowState.error && hasErrorRenderer) ||
@@ -343,7 +428,7 @@ export const flattenRowsWithGrouping = ({
             currentDepth + 1,
             position,
             displayPosition,
-            nestedPath
+            nestedPath,
           );
         }
       }

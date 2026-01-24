@@ -386,7 +386,6 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
 
           // Show empty state if no teams
           if (teams.length === 0) {
-            console.log("No teams found for this department");
             setEmpty(true, "No teams found for this department");
             return;
           }
@@ -411,7 +410,6 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
 
           // Show empty state if no employees
           if (employees.length === 0) {
-            console.log("No employees found for this team");
             setEmpty(true, "No employees found for this team");
             return;
           }

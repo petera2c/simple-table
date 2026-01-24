@@ -106,6 +106,7 @@ import PaginationAPIExample from "./examples/PaginationAPIExample";
 import CustomHeaderRenderingExample, {
   customHeaderRenderingExampleDefaults,
 } from "./examples/CustomHeaderRenderingExample";
+import NestedGridExample from "./examples/NestedGridExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -575,6 +576,14 @@ export const NestedAccessor: StoryObj<UniversalTableProps> = {
       },
     },
   },
+};
+
+export const NestedGrid: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+  },
+  argTypes: universalArgTypes,
+  render: (args) => React.createElement(StoryWrapper, { ExampleComponent: NestedGridExample, ...args }),
 };
 
 export const Pagination: StoryObj<UniversalTableProps> = {
