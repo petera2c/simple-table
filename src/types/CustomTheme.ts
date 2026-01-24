@@ -1,28 +1,29 @@
 /**
  * Custom theme configuration for SimpleTable
  * Contains all customizable dimensions and spacing values used in calculations and styling
+ * All properties are optional - missing values will be filled with defaults
  */
 export interface CustomTheme {
   // Row and header dimensions
-  rowHeight: number;
-  headerHeight: number;
-  footerHeight: number;
+  rowHeight?: number;
+  headerHeight?: number;
+  footerHeight?: number;
 
   // Border widths
-  rowSeparatorWidth: number; // Width of separators between rows
-  borderWidth: number; // General border width (e.g., table borders, header borders)
-  pinnedBorderWidth: number; // Width of borders for pinned columns
-  nestedGridBorderWidth: number; // Border width for nested grid tables (top + bottom)
+  rowSeparatorWidth?: number; // Width of separators between rows
+  borderWidth?: number; // General border width (e.g., table borders, header borders)
+  pinnedBorderWidth?: number; // Width of borders for pinned columns
+  nestedGridBorderWidth?: number; // Border width for nested grid tables (top + bottom)
 
   // Nested grid spacing
-  nestedGridPaddingTop: number;
-  nestedGridPaddingBottom: number;
-  nestedGridPaddingLeft: number;
-  nestedGridPaddingRight: number;
-  nestedGridMaxHeight: number; // Maximum height for nested grids in pixels
+  nestedGridPaddingTop?: number;
+  nestedGridPaddingBottom?: number;
+  nestedGridPaddingLeft?: number;
+  nestedGridPaddingRight?: number;
+  nestedGridMaxHeight?: number; // Maximum height for nested grids in pixels
 
   // Column dimensions
-  selectionColumnWidth: number; // Width of the selection column (for row selection checkboxes)
+  selectionColumnWidth?: number; // Width of the selection column (for row selection checkboxes)
 }
 
 /**

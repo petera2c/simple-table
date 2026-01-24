@@ -34,7 +34,7 @@ import RowState from "../../types/RowState";
 import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import useExpandedDepths from "../../hooks/useExpandedDepths";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
-import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
+import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
@@ -60,7 +60,7 @@ const SimpleTableComp = ({
   columnReordering = false,
   columnResizing = false,
   copyHeadersToClipboard = false,
-  customTheme = DEFAULT_CUSTOM_THEME,
+  customTheme: customThemeProp,
   defaultHeaders,
   editColumns = false,
   editColumnsInitOpen = false,
@@ -120,6 +120,12 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
   useOddEvenRowBackground = false,
 }: SimpleTableProps) => {
+  // Merge customTheme with defaults - all properties will be defined after merge
+  const customTheme = useMemo(() => ({
+    ...DEFAULT_CUSTOM_THEME,
+    ...customThemeProp,
+  }) as Required<CustomTheme>, [customThemeProp]);
+
   const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } = customTheme;
   if (useOddColumnBackground) useOddEvenRowBackground = false;
   // Disable hover row background when column borders are enabled to prevent visual conflicts

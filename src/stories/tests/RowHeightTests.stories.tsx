@@ -46,7 +46,14 @@ const InteractiveRowHeightTest = (args: UniversalTableProps) => {
           Current: {currentRowHeight}px
         </span>
       </div>
-      <StoryWrapper ExampleComponent={RowHeightExample} {...args} rowHeight={currentRowHeight} />
+      <StoryWrapper 
+        ExampleComponent={RowHeightExample} 
+        {...args} 
+        customTheme={{
+          rowHeight: currentRowHeight,
+          headerHeight: currentRowHeight,
+        }}
+      />
     </div>
   );
 };

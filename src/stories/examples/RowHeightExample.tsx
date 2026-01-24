@@ -4,7 +4,10 @@ import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to RowHeight - exported for reuse in stories and tests
 export const rowHeightDefaults = {
-  rowHeight: 24,
+  customTheme: {
+    rowHeight: 24,
+    headerHeight: 24,
+  },
 };
 
 const RowHeightExampleComponent = (props: UniversalTableProps) => {
@@ -43,7 +46,6 @@ const RowHeightExampleComponent = (props: UniversalTableProps) => {
       {...props}
       defaultHeaders={headers}
       rows={rows}
-      rowHeight={props.rowHeight ?? 32}
     />
   );
 };
