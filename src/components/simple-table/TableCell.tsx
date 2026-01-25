@@ -48,7 +48,7 @@ const displayContent = ({
   if (header.type === "lineAreaChart" && Array.isArray(content)) {
     // Ensure all values are numbers
     const numericData = (content as any[]).filter(
-      (item: any) => typeof item === "number"
+      (item: any) => typeof item === "number",
     ) as number[];
     if (numericData.length > 0) {
       return <LineAreaChart data={numericData} {...header.chartOptions} />;
@@ -57,7 +57,7 @@ const displayContent = ({
   } else if (header.type === "barChart" && Array.isArray(content)) {
     // Ensure all values are numbers
     const numericData = (content as any[]).filter(
-      (item: any) => typeof item === "number"
+      (item: any) => typeof item === "number",
     ) as number[];
     if (numericData.length > 0) {
       return <BarChart data={numericData} {...header.chartOptions} />;
@@ -160,6 +160,8 @@ const TableCell = ({
   const canExpandFurther = rowGrouping && depth < rowGrouping.length;
   // Check if this specific row can be expanded (if canExpandRowGroup is provided)
   const isRowExpandable = canExpandRowGroup ? canExpandRowGroup(row) : true;
+  // Check if this header has a nested table configuration
+  const hasNestedTableConfig = !!header.nestedTable;
   // Determine if row is expanded based on expandedDepths setting
   const isRowExpanded = getIsRowExpanded(rowId, depth, expandedDepths, expandedRows, collapsedRows);
 
@@ -331,7 +333,7 @@ const TableCell = ({
         rowIndex,
       });
     },
-    [header.accessor, header.type, onCellEdit, row, rowIndex]
+    [header.accessor, header.type, onCellEdit, row, rowIndex],
   );
 
   // Handle row expansion
@@ -345,7 +347,7 @@ const TableCell = ({
         depth,
         expandedDepths,
         expandedRows,
-        collapsedRows
+        collapsedRows,
       );
 
       const rowIdStr = String(rowId);
@@ -468,7 +470,7 @@ const TableCell = ({
       setCollapsedRows,
       setExpandedRows,
       setRowStateMap,
-    ]
+    ],
   );
 
   // Handle keyboard events when cell is focused
@@ -563,8 +565,8 @@ const TableCell = ({
             header.align === "right"
               ? "right-aligned"
               : header.align === "center"
-              ? "center-aligned"
-              : "left-aligned"
+                ? "center-aligned"
+                : "left-aligned"
           }`}
         >
           <div className="st-loading-skeleton" />
@@ -592,9 +594,6 @@ const TableCell = ({
       </div>
     );
   }
-
-
-
 
   return (
     <Animate
@@ -628,32 +627,42 @@ const TableCell = ({
       {header.expandable && canExpandFurther ? (
         <div
           className={`st-icon-container st-expand-icon-container ${
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? isRowExpanded
                 ? "expanded"
                 : "collapsed"
               : "placeholder"
           }`}
           onClick={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? (event: React.MouseEvent) => handleRowExpansion(event)
               : undefined
           }
           role={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand) ? "button" : "presentation"
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+              ? "button"
+              : "presentation"
           }
-          tabIndex={isRowExpandable && (cellHasChildren || onRowGroupExpand) ? 0 : -1}
+          tabIndex={
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+              ? 0
+              : -1
+          }
           aria-label={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? `${isRowExpanded ? "Collapse" : "Expand"} row group`
               : undefined
           }
           aria-expanded={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand) ? isRowExpanded : undefined
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+              ? isRowExpanded
+              : undefined
           }
-          aria-hidden={!(isRowExpandable && (cellHasChildren || onRowGroupExpand))}
+          aria-hidden={
+            !(isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig))
+          }
           onKeyDown={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? (e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
@@ -672,8 +681,8 @@ const TableCell = ({
           header.align === "right"
             ? "right-aligned"
             : header.align === "center"
-            ? "center-aligned"
-            : "left-aligned"
+              ? "center-aligned"
+              : "left-aligned"
         }`}
       >
         {isLoading || tableRow.isLoadingSkeleton ? (

@@ -327,7 +327,6 @@ const NestedGridExample = (props: UniversalTableProps) => {
         columnResizing={props.columnResizing ?? true}
         height={props.height ?? "calc(100dvh - 200px)"}
         useOddEvenRowBackground
-        onRowGroupExpand={() => {}}
         enableRowSelection
         // shouldPaginate
       />

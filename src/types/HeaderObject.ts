@@ -102,8 +102,23 @@ type HeaderObject = {
   label: string;
   minWidth?: number | string;
   // Nested grid configuration - when expandable is true and this is set, renders a nested table instead of child rows
-  // Omit 'rows' because it comes from the parent row's data
-  nestedTable?: Omit<SimpleTableProps, "rows">;
+  // Omit 'rows' and props that should inherit from parent table
+  nestedTable?: Omit<
+    SimpleTableProps,
+    | "rows"
+    | "loadingStateRenderer"
+    | "errorStateRenderer"
+    | "emptyStateRenderer"
+    | "tableEmptyStateRenderer"
+    | "expandIcon"
+    | "filterIcon"
+    | "sortUpIcon"
+    | "sortDownIcon"
+    | "nextIcon"
+    | "prevIcon"
+    | "headerCollapseIcon"
+    | "headerExpandIcon"
+  >;
   pinned?: Pinned;
   singleRowChildren?: boolean; // When true, renders parent and children on the same row instead of tree hierarchy
   tooltip?: string; // Optional tooltip text to display on hover
