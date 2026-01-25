@@ -381,11 +381,9 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
           const department = row as Department;
           const teams = await fetchTeamsForDepartment(department.id);
 
-          // Clear loading state
-          setLoading(false);
-
           // Show empty state if no teams
           if (teams.length === 0) {
+            setLoading(false);
             setEmpty(true, "No teams found for this department");
             return;
           }
@@ -397,6 +395,8 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
             newRows[rowIndexPath[0] as number].teams = teams;
             return newRows;
           });
+
+          setLoading(false);
         } else if (depth === 1 && groupingKey === "employees") {
           // Set loading state
           setLoading(true);
@@ -405,11 +405,9 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
           const team = row as Team;
           const employees = await fetchEmployeesForTeam(team.id);
 
-          // Clear loading state
-          setLoading(false);
-
           // Show empty state if no employees
           if (employees.length === 0) {
+            setLoading(false);
             setEmpty(true, "No employees found for this team");
             return;
           }
@@ -428,6 +426,8 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
 
             return newRows;
           });
+
+          setLoading(false);
         }
       } catch (error) {
         console.error("❌ Error fetching data:", error);

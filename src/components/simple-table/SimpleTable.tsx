@@ -154,6 +154,10 @@ const SimpleTableComp = ({
   // Local state
   // Manage rows internally to allow imperative API mutations to trigger re-renders
   const [localRows, setLocalRows] = useState<Row[]>(rows);
+  
+  // Internal loading state that can be deferred
+  const [internalIsLoading, setInternalIsLoading] = useState(isLoading);
+  const previousIsLoadingRef = useRef(isLoading);
 
   // Create a mapping of rowId -> absolute index for O(1) lookups
   // This maps each row to its position in the original localRows array
@@ -172,6 +176,24 @@ const SimpleTableComp = ({
     rowIndexMapRef.current = newIndexMap;
   }, [rows]);
 
+  // Handle isLoading prop changes with deferred clearing
+  useEffect(() => {
+    const wasLoading = previousIsLoadingRef.current;
+    const isNowLoading = isLoading;
+
+    if (isNowLoading && !wasLoading) {
+      // Loading started - apply immediately
+      setInternalIsLoading(true);
+    } else if (!isNowLoading && wasLoading) {
+      // Loading finished - defer to next tick to ensure data is rendered first
+      setTimeout(() => {
+        setInternalIsLoading(false);
+      }, 0);
+    }
+
+    previousIsLoadingRef.current = isLoading;
+  }, [isLoading]);
+
   // Apply aggregation to current rows
   const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
 
@@ -182,7 +204,7 @@ const SimpleTableComp = ({
     scrollbarWidth,
   });
   const effectiveRows = useMemo(() => {
-    if (isLoading && localRows.length === 0) {
+    if (internalIsLoading && localRows.length === 0) {
       // Calculate how many rows can fit in the visible area
       let rowsToShow = shouldPaginate ? rowsPerPage : 10; // Default to 10 rows for loading state
       if (isMainSectionScrollable) {
@@ -197,7 +219,7 @@ const SimpleTableComp = ({
       return dummyRows;
     }
     return localRows;
-  }, [isLoading, localRows, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
+  }, [internalIsLoading, localRows, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeaders] = useState(defaultHeaders);
@@ -807,7 +829,7 @@ const SimpleTableComp = ({
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)
-  const shouldShowEmptyState = !isLoading && currentTableRows.length === 0;
+  const shouldShowEmptyState = !internalIsLoading && currentTableRows.length === 0;
 
   return (
     <TableProvider
@@ -859,7 +881,7 @@ const SimpleTableComp = ({
         isAnimating,
         isCopyFlashing,
         isInitialFocusedCell,
-        isLoading,
+        isLoading: internalIsLoading,
         isResizing,
         isRowSelected,
         isScrolling,

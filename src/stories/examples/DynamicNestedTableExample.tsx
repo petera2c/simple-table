@@ -96,23 +96,18 @@ const INITIAL_COMPANIES: Company[] = [
   },
 ];
 
-// Division headers for nested table (3 columns)
-const divisionHeaders: HeaderObject[] = [
-  { accessor: "divisionName", label: "Division", width: 200, expandable: true },
-  { accessor: "revenue", label: "Revenue", width: 120 },
-  { accessor: "profitMargin", label: "Profit Margin", width: 120 },
-];
-
-// Team headers for deeply nested table (5 columns)
-const teamHeaders: HeaderObject[] = [
-  { accessor: "teamName", label: "Team", width: 150 },
-  { accessor: "manager", label: "Manager", width: 150 },
-  { accessor: "headcount", label: "Headcount", width: 100, type: "number" },
-  { accessor: "budget", label: "Budget", width: 100 },
-];
-
 const DynamicNestedTableExample = (props: UniversalTableProps) => {
   const [rows, setRows] = useState<Company[]>(INITIAL_COMPANIES);
+
+  // Division headers for nested table (3 columns)
+  const divisionHeaders: HeaderObject[] = useMemo(
+    () => [
+      { accessor: "divisionName", label: "Division", width: 200 },
+      { accessor: "revenue", label: "Revenue", width: 120 },
+      { accessor: "profitMargin", label: "Profit Margin", width: 120 },
+    ],
+    [],
+  );
 
   // Handler for company-level expansions (loading divisions)
   const handleCompanyExpand = useCallback(
@@ -137,9 +132,9 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
 
           setLoading(true);
           const divisions = await fetchDivisionsForCompany(company.id);
-          setLoading(false);
 
           if (divisions.length === 0) {
+            setLoading(false);
             setEmpty(true, "No divisions found for this company");
             return;
           }
@@ -153,6 +148,8 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
             };
             return newRows;
           });
+
+          setLoading(false);
         }
       } catch (error) {
         console.error("❌ Error fetching divisions:", error);
@@ -187,9 +184,9 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
 
           setLoading(true);
           const teams = await fetchTeamsForDivision(division.id);
-          setLoading(false);
 
           if (teams.length === 0) {
+            setLoading(false);
             setEmpty(true, "No teams found for this division");
             return;
           }
@@ -218,6 +215,8 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
 
             return newRows;
           });
+
+          setLoading(false);
         }
       } catch (error) {
         console.error("❌ Error fetching teams:", error);
@@ -229,41 +228,28 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
   );
 
   // Company headers with nested table configuration
-  const companyHeaders: HeaderObject[] = [
-    {
-      accessor: "companyName",
-      label: "Company",
-      width: 200,
-      expandable: true,
-      pinned: "left",
-      // Configure nested table for divisions
-      nestedTable: {
-        defaultHeaders: divisionHeaders.map((header) => {
-          // Configure nested table for teams at division level
-          if (header.accessor === "divisionName") {
-            return {
-              ...header,
-              nestedTable: {
-                defaultHeaders: teamHeaders,
-                expandAll: false,
-                autoExpandColumns: true,
-                useOddEvenRowBackground: true,
-                onRowGroupExpand: handleDivisionExpand,
-              },
-            };
-          }
-          return header;
-        }),
-        expandAll: false,
-        autoExpandColumns: true,
-        useOddEvenRowBackground: true,
-        onRowGroupExpand: handleDivisionExpand,
+  const companyHeaders: HeaderObject[] = useMemo(
+    () => [
+      {
+        accessor: "companyName",
+        label: "Company",
+        width: 200,
+        expandable: true,
+        pinned: "left",
+        // Configure nested table for divisions
+        nestedTable: {
+          defaultHeaders: divisionHeaders,
+          expandAll: false,
+          autoExpandColumns: true,
+          useOddEvenRowBackground: true,
+        },
       },
-    },
-    { accessor: "industry", label: "Industry", width: 150 },
-    { accessor: "revenue", label: "Revenue", width: 120 },
-    { accessor: "employees", label: "Employees", width: 120, type: "number" },
-  ];
+      { accessor: "industry", label: "Industry", width: 150 },
+      { accessor: "revenue", label: "Revenue", width: 120 },
+      { accessor: "employees", label: "Employees", width: 120, type: "number" },
+    ],
+    [handleDivisionExpand],
+  );
 
   return (
     <div>
@@ -318,9 +304,8 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
 
       <SimpleTable
         {...props}
-        columnResizing
+        autoExpandColumns
         defaultHeaders={companyHeaders}
-        editColumns
         expandAll={false}
         height={props.height ?? "calc(100dvh - 200px)"}
         rowGrouping={["divisions", "teams"]}

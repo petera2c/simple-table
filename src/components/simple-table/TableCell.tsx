@@ -396,18 +396,38 @@ const TableCell = ({
 
         // Create helper functions for managing row state
         const setLoading = (loading: boolean) => {
-          setRowStateMap((prevMap) => {
-            const newMap = new Map(prevMap);
-            const currentState = newMap.get(rowId) || {};
-            newMap.set(rowId, {
-              ...currentState,
-              loading,
-              error: null,
-              isEmpty: false,
-              triggerSection,
+          // When clearing loading state (loading = false), defer to next tick
+          // to ensure data updates are rendered before removing the loading indicator
+          if (!loading) {
+            setTimeout(() => {
+              setRowStateMap((prevMap) => {
+                const newMap = new Map(prevMap);
+                const currentState = newMap.get(rowId) || {};
+                newMap.set(rowId, {
+                  ...currentState,
+                  loading: false,
+                  error: null,
+                  isEmpty: false,
+                  triggerSection,
+                });
+                return newMap;
+              });
+            }, 0);
+          } else {
+            // Set loading immediately when loading = true
+            setRowStateMap((prevMap) => {
+              const newMap = new Map(prevMap);
+              const currentState = newMap.get(rowId) || {};
+              newMap.set(rowId, {
+                ...currentState,
+                loading: true,
+                error: null,
+                isEmpty: false,
+                triggerSection,
+              });
+              return newMap;
             });
-            return newMap;
-          });
+          }
         };
 
         const setError = (error: string | null) => {
