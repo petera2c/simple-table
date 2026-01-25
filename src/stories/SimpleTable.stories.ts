@@ -15,6 +15,7 @@ import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import DynamicRowLoadingExample, {
   dynamicRowLoadingDefaults,
 } from "./examples/DynamicRowLoadingExample";
+import DynamicNestedTableExample from "./examples/DynamicNestedTableExample";
 import EditableCellsExample from "./examples/EditableCells";
 import ExpansionControlExample, {
   expansionControlDefaults,
@@ -106,6 +107,7 @@ import PaginationAPIExample from "./examples/PaginationAPIExample";
 import CustomHeaderRenderingExample, {
   customHeaderRenderingExampleDefaults,
 } from "./examples/CustomHeaderRenderingExample";
+import NestedGridExample from "./examples/NestedGridExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -393,6 +395,23 @@ export const DynamicRowLoading: StoryObj<UniversalTableProps> = {
   },
 };
 
+export const DynamicNestedTableLoading: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: DynamicNestedTableExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates lazy-loading nested tables with explicit onRowGroupExpand handlers for each nesting level. Companies load immediately without divisions. When you expand a company, divisions are fetched and displayed in a nested table. When you expand a division, teams are fetched and shown in a nested nested table. Each nested table has its own onRowGroupExpand handler defined in the nestedTable config, providing clear separation of concerns and avoiding confusion about depth/indices. The expand icon appears automatically when nestedTable is configured. Perfect for complex hierarchical data with different grid structures at each level. Open the browser console to see the API simulation!",
+      },
+    },
+  },
+};
+
 export const EditableCells: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -575,6 +594,15 @@ export const NestedAccessor: StoryObj<UniversalTableProps> = {
       },
     },
   },
+};
+
+export const NestedGrid: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: NestedGridExample, ...args }),
 };
 
 export const Pagination: StoryObj<UniversalTableProps> = {

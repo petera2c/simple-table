@@ -30,7 +30,7 @@ const RenderCells = ({
   rowIndices,
   tableRow,
 }: RenderCellsProps) => {
-  const { rowIdAccessor, collapsedHeaders } = useTableContext();
+  const { collapsedHeaders } = useTableContext();
   const filteredHeaders = headers.filter((header) =>
     displayCell({ header, pinned, headers, collapsedHeaders })
   );
@@ -38,11 +38,7 @@ const RenderCells = ({
   return (
     <>
       {filteredHeaders.map((header, index) => {
-        const rowId = getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        });
+        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
         const cellKey = getCellId({ accessor: header.accessor, rowId });
 
         return (
@@ -91,15 +87,10 @@ const RecursiveRenderCells = ({
   const colIndex = columnIndices[header.accessor];
 
   // Get selection state for this cell
-  const { getBorderClass, isSelected, isInitialFocusedCell, rowIdAccessor, collapsedHeaders } =
-    useTableContext();
+  const { getBorderClass, isSelected, isInitialFocusedCell, collapsedHeaders } = useTableContext();
 
   // Calculate rowId once at the beginning (includes path for nested rows)
-  const rowId = getRowId({
-    row: tableRow.row,
-    rowIdAccessor,
-    rowPath: tableRow.rowPath,
-  });
+  const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
 
   if (header.children && header.children.length > 0) {
     const filteredChildren = header.children.filter((child) =>

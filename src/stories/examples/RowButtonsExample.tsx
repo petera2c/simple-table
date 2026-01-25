@@ -13,7 +13,9 @@ export const rowButtonsExampleDefaults = {
   columnReordering: true,
   enableRowSelection: true,
   height: "400px",
-  selectionColumnWidth: 160, // Wider to accommodate row buttons
+  customTheme: {
+    selectionColumnWidth: 160, // Wider to accommodate row buttons
+  },
   columnBorders: true,
 };
 
@@ -373,7 +375,6 @@ const RowButtonsExample = (props: UniversalTableProps) => {
         {...props}
         defaultHeaders={headers}
         rows={rows}
-        rowIdAccessor="id"
         enableRowSelection={true}
         rowButtons={rowButtons}
         onRowSelectionChange={handleRowSelectionChange}

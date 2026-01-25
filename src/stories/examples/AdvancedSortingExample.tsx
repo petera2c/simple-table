@@ -269,7 +269,6 @@ const AdvancedSortingExample: React.FC<UniversalTableProps> = (props) => {
       <SimpleTable
         rows={sampleData}
         defaultHeaders={headers}
-        rowIdAccessor="id"
         {...props}
         maxHeight={props.height ?? "600px"}
       />

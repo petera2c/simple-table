@@ -267,7 +267,6 @@ const ExternalFilterExampleComponent: React.FC<UniversalTableProps> = (props) =>
       {...props}
       defaultHeaders={headers}
       rows={filteredData} // We provide the pre-filtered data
-      rowIdAccessor="id"
       onFilterChange={handleFilterChange} // Handle filter changes externally
       // Default settings for this example
       externalFilterHandling={props.externalFilterHandling ?? true}

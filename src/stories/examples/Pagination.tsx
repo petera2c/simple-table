@@ -52,7 +52,6 @@ const PaginationExample = (props: UniversalTableProps) => {
         defaultHeaders={HEADERS}
         onNextPage={onNextPage}
         rows={rows}
-        rowIdAccessor="id"
         // Default settings for this example
         shouldPaginate={props.shouldPaginate ?? true}
         rowsPerPage={props.rowsPerPage ?? ROWS_PER_PAGE}

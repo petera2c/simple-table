@@ -425,7 +425,6 @@ const AggregateFunctionsDemo = (props: UniversalTableProps) => {
       defaultHeaders={headers}
       rows={rows}
       rowGrouping={["categories", "creators"]}
-      rowIdAccessor="id"
       // Default settings for this example
       columnResizing={props.columnResizing ?? true}
       height={props.height ?? "400px"}

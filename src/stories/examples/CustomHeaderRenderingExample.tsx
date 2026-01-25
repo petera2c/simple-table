@@ -120,7 +120,6 @@ const CustomHeaderRenderingExample = (props: UniversalTableProps) => {
       {...props}
       defaultHeaders={HEADERS}
       rows={SAMPLE_DATA}
-      rowIdAccessor="id"
       height={props.height ?? "600px"}
       tableRef={tableRef}
     />

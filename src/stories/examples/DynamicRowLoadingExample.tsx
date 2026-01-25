@@ -354,7 +354,6 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
   const handleRowExpand = useCallback(
     async ({
       row,
-      rowId,
       depth,
       groupingKey,
       isExpanded,
@@ -378,13 +377,13 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
           // Set loading state using the helper
           setLoading(true);
 
-          const teams = await fetchTeamsForDepartment(String(rowId));
-
-          // Clear loading state
-          setLoading(false);
+          // Use row.id to fetch data (not rowId which was the internal path)
+          const department = row as Department;
+          const teams = await fetchTeamsForDepartment(department.id);
 
           // Show empty state if no teams
           if (teams.length === 0) {
+            setLoading(false);
             setEmpty(true, "No teams found for this department");
             return;
           }
@@ -396,17 +395,19 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
             newRows[rowIndexPath[0] as number].teams = teams;
             return newRows;
           });
+
+          setLoading(false);
         } else if (depth === 1 && groupingKey === "employees") {
           // Set loading state
           setLoading(true);
 
-          const employees = await fetchEmployeesForTeam(String(rowId));
-
-          // Clear loading state
-          setLoading(false);
+          // Use row.id to fetch data (not rowId which was the internal path)
+          const team = row as Team;
+          const employees = await fetchEmployeesForTeam(team.id);
 
           // Show empty state if no employees
           if (employees.length === 0) {
+            setLoading(false);
             setEmpty(true, "No employees found for this team");
             return;
           }
@@ -425,6 +426,8 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
 
             return newRows;
           });
+
+          setLoading(false);
         }
       } catch (error) {
         console.error("❌ Error fetching data:", error);
@@ -491,7 +494,6 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         height={props.height ?? "calc(100dvh - 200px)"}
         onRowGroupExpand={handleRowExpand}
         rowGrouping={["teams", "employees"]}
-        rowIdAccessor="id"
         rows={rows}
         selectableCells
         theme={props.theme}

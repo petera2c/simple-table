@@ -183,7 +183,6 @@ const CustomFooterExample = () => {
       <SimpleTable
         defaultHeaders={headers}
         rows={rows}
-        rowIdAccessor="id"
         shouldPaginate={true}
         rowsPerPage={100}
         height={600}

@@ -221,7 +221,7 @@ const ClipboardFormattingExample: React.FC<UniversalTableProps> = (props) => {
           </p>
         </div>
       </div>
-      <SimpleTable rows={sampleData} defaultHeaders={headers} rowIdAccessor="id" {...props} />
+      <SimpleTable rows={sampleData} defaultHeaders={headers} {...props} />
     </div>
   );
 };

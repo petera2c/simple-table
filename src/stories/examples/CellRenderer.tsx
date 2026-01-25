@@ -190,7 +190,6 @@ const CellRendererExample = (props: UniversalTableProps) => {
       {...props}
       defaultHeaders={headers}
       rows={rows}
-      rowIdAccessor="id"
       // Default settings for this example
       columnReordering={props.columnReordering ?? true}
       columnResizing={props.columnResizing ?? true}

@@ -13,7 +13,9 @@ export const clayExampleDefaults = {
   columnReordering: true,
   enableRowSelection: true,
   height: "400px",
-  selectionColumnWidth: 160, // Wider to accommodate row buttons
+  customTheme: {
+    selectionColumnWidth: 160, // Wider to accommodate row buttons
+  },
   columnBorders: true,
 };
 
@@ -366,7 +368,6 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
         onColumnSelect={handleColumnSelect}
         onRowSelectionChange={handleRowSelectionChange}
         rowButtons={rowButtons}
-        rowIdAccessor="id"
         rows={rows}
         selectableColumns
         tableRef={tableRef}

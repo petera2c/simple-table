@@ -183,7 +183,6 @@ const PaginationAPIExample = () => {
         tableRef={tableRef}
         defaultHeaders={SAAS_HEADERS}
         rows={EXAMPLE_DATA}
-        rowIdAccessor="id"
         shouldPaginate={true}
         rowsPerPage={ROWS_PER_PAGE}
         columnReordering={true}
@@ -192,6 +191,7 @@ const PaginationAPIExample = () => {
         selectableColumns={true}
         theme="dark"
         maxHeight={"200px"}
+        enableRowSelection={true}
       />
 
       <div

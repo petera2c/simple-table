@@ -22,7 +22,6 @@ export const SalesExampleComponent = (props: UniversalTableProps) => {
       autoExpandColumns
       enableRowSelection
       defaultHeaders={SALES_HEADERS}
-      rowIdAccessor="id"
       rows={data}
       // Default settings for this example
       columnResizing={props.columnResizing ?? true}

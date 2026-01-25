@@ -441,13 +441,14 @@ const LeadsExampleComponent = ({
         defaultHeaders={LEADS_HEADERS}
         enableRowSelection
         onGridReady={onGridReady}
-        rowIdAccessor="id"
         rows={data}
-        rowHeight={92}
+        customTheme={{
+          rowHeight: 92,
+          headerHeight: 48,
+        }}
         theme="custom"
         onCellEdit={handleCellEdit}
         height={"70dvh"}
-        headerHeight={48}
         shouldPaginate
         rowsPerPage={rowsPerPage}
         footerRenderer={(props) => <LeadsCustomFooter {...props} setRowsPerPage={setRowsPerPage} />}

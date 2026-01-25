@@ -56,8 +56,9 @@ import {
   ErrorStateRendererProps,
   EmptyStateRendererProps,
 } from "./types/RowStateRendererProps";
+import { CustomTheme, DEFAULT_CUSTOM_THEME } from "./types/CustomTheme";
 
-export { SimpleTable, LineAreaChart, BarChart, DefaultEmptyState };
+export { SimpleTable, LineAreaChart, BarChart, DefaultEmptyState, DEFAULT_CUSTOM_THEME };
 
 // Tree-shakeable icon exports (imported separately to reduce bundle size)
 export * from "./icons";
@@ -79,6 +80,7 @@ export type {
   ColumnVisibilityState,
   Comparator,
   ComparatorProps,
+  CustomTheme,
   DragHandlerProps,
   EmptyStateRenderer,
   EmptyStateRendererProps,

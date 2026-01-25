@@ -10,6 +10,7 @@ import { useTableContext } from "../../context/TableContext";
 import { getRowId } from "../../utils/rowUtils";
 import RowStateIndicator from "./RowStateIndicator";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
+import NestedGridRow from "./NestedGridRow";
 
 // Define just the props needed for RenderCells
 interface TableRowProps {
@@ -42,18 +43,52 @@ const TableRow = ({
   stickyIndex = 0,
 }: TableRowProps) => {
   const {
-    useHoverRowBackground,
-    rowIdAccessor,
+    customTheme,
+    emptyStateRenderer,
+    errorStateRenderer,
+    heightOffsets,
     isAnimating,
     isRowSelected,
-    useOddEvenRowBackground,
-    rows,
     loadingStateRenderer,
-    errorStateRenderer,
-    emptyStateRenderer,
     maxHeaderDepth,
+    rows,
+    useHoverRowBackground,
+    useOddEvenRowBackground,
   } = useTableContext();
-  const { position, displayPosition, stateIndicator } = tableRow;
+  const { position, displayPosition, stateIndicator, nestedTable } = tableRow;
+
+  // If this is a nested grid row, render it differently
+  if (nestedTable) {
+    // Determine which section should show the nested grid
+    // For simplicity, show in all sections (main, left, right) but only render content in main
+    const shouldShowNestedGrid = !pinned; // Only show in main section
+    if (shouldShowNestedGrid) {
+      return (
+        <NestedGridRow
+          calculatedHeight={nestedTable.calculatedHeight}
+          childAccessor={nestedTable.childAccessor}
+          depth={tableRow.depth - 1} // Pass parent depth
+          expandableHeader={nestedTable.expandableHeader}
+          index={index}
+          parentRow={nestedTable.parentRow}
+          position={position}
+        />
+      );
+    }
+
+    // For pinned sections, render an empty spacer row
+    return (
+      <div
+        className="st-row st-nested-grid-spacer"
+        data-index={index}
+        style={{
+          gridTemplateColumns,
+          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
+          height: `${nestedTable.calculatedHeight}px`,
+        }}
+      />
+    );
+  }
 
   // If this is a state indicator row, render it differently
   if (stateIndicator) {
@@ -76,7 +111,7 @@ const TableRow = ({
             data-index={index}
             style={{
               gridTemplateColumns,
-              transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+              transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
               height: `${rowHeight}px`,
             }}
           />
@@ -84,9 +119,7 @@ const TableRow = ({
       }
 
       // Get the parent row from rows using the parentRowId
-      const parentRow = rows.find(
-        (r) => getRowId({ row: r, rowIdAccessor }) === stateIndicator.parentRowId
-      );
+      const parentRow = rows.find((r, index) => getRowId([index]) === stateIndicator.parentRowId);
 
       return (
         <div
@@ -94,7 +127,7 @@ const TableRow = ({
           data-index={index}
           style={{
             gridTemplateColumns,
-            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
             height: `${rowHeight}px`,
           }}
         >
@@ -117,7 +150,7 @@ const TableRow = ({
         data-index={index}
         style={{
           gridTemplateColumns,
-          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight })}px, 0)`,
+          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
           height: `${rowHeight}px`,
         }}
       />
@@ -128,11 +161,7 @@ const TableRow = ({
   const isOdd = position % 2 === 0;
 
   // Get stable row ID for key (includes path for nested rows)
-  const rowId = getRowId({
-    row: tableRow.row,
-    rowIdAccessor,
-    rowPath: tableRow.rowPath,
-  });
+  const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
 
   // Check if this row is selected
   const isSelected = isRowSelected ? isRowSelected(String(rowId)) : false;
@@ -150,7 +179,7 @@ const TableRow = ({
       }
     : {
         gridTemplateColumns,
-        top: calculateRowTopPosition({ position, rowHeight }),
+        top: calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme }),
         height: `${rowHeight}px`,
       };
 

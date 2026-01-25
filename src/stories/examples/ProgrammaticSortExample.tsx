@@ -278,7 +278,6 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
         tableRef={tableRef}
         defaultHeaders={headers}
         rows={sampleData}
-        rowIdAccessor="id"
         columnResizing={props.columnResizing ?? true}
         columnReordering={props.columnReordering ?? true}
         height={props.height ?? "500px"}

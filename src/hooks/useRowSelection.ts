@@ -1,6 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import Row from "../types/Row";
-import { Accessor } from "../types/HeaderObject";
+import TableRow from "../types/TableRow";
 import {
   areAllRowsSelected,
   toggleRowSelection,
@@ -11,17 +10,16 @@ import {
   isRowSelected as utilIsRowSelected,
 } from "../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../types/RowSelectionChangeProps";
+import { getRowId } from "../utils/rowUtils";
 
 interface UseRowSelectionProps {
-  rows: Row[];
-  rowIdAccessor: Accessor;
+  tableRows: TableRow[];
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void;
   enableRowSelection?: boolean;
 }
 
 export const useRowSelection = ({
-  rows,
-  rowIdAccessor,
+  tableRows,
   onRowSelectionChange,
   enableRowSelection = false,
 }: UseRowSelectionProps) => {
@@ -39,8 +37,8 @@ export const useRowSelection = ({
   // Check if all rows are selected
   const areAllSelected = useCallback((): boolean => {
     if (!enableRowSelection) return false;
-    return areAllRowsSelected(rows, rowIdAccessor, selectedRows);
-  }, [rows, rowIdAccessor, selectedRows, enableRowSelection]);
+    return areAllRowsSelected(tableRows, selectedRows);
+  }, [tableRows, selectedRows, enableRowSelection]);
 
   // Get count of selected rows
   const selectedRowCount = useMemo(() => {
@@ -51,8 +49,8 @@ export const useRowSelection = ({
   // Get the actual row data for selected rows
   const selectedRowsData = useMemo(() => {
     if (!enableRowSelection) return [];
-    return getSelectedRows(rows, rowIdAccessor, selectedRows);
-  }, [rows, rowIdAccessor, selectedRows, enableRowSelection]);
+    return getSelectedRows(tableRows, selectedRows);
+  }, [tableRows, selectedRows, enableRowSelection]);
 
   // Handle individual row selection
   const handleRowSelect = useCallback(
@@ -64,17 +62,19 @@ export const useRowSelection = ({
 
       // Call the callback with the row data
       if (onRowSelectionChange) {
-        const row = rows.find((r) => String(r[rowIdAccessor]) === rowId);
-        if (row) {
+        const tableRow = tableRows.find(
+          (tr) => String(getRowId(tr.rowPath || [tr.position])) === rowId
+        );
+        if (tableRow) {
           onRowSelectionChange({
-            row,
+            row: tableRow.row,
             isSelected,
             selectedRows: newSelectedRows,
           });
         }
       }
     },
-    [selectedRows, rows, rowIdAccessor, onRowSelectionChange, enableRowSelection]
+    [selectedRows, tableRows, onRowSelectionChange, enableRowSelection]
   );
 
   // Handle select all/deselect all
@@ -85,12 +85,12 @@ export const useRowSelection = ({
       let newSelectedRows: Set<string>;
 
       if (isSelected) {
-        newSelectedRows = selectAllRows(rows, rowIdAccessor);
+        newSelectedRows = selectAllRows(tableRows);
         // Call onRowSelectionChange for each row being selected
         if (onRowSelectionChange) {
-          rows.forEach((row) =>
+          tableRows.forEach((tableRow) =>
             onRowSelectionChange({
-              row,
+              row: tableRow.row,
               isSelected: true,
               selectedRows: newSelectedRows,
             })
@@ -101,10 +101,12 @@ export const useRowSelection = ({
         // Call onRowSelectionChange for each currently selected row being deselected
         if (onRowSelectionChange) {
           selectedRows.forEach((rowId) => {
-            const row = rows.find((r) => String(r[rowIdAccessor]) === rowId);
-            if (row) {
+            const tableRow = tableRows.find(
+              (tr) => String(getRowId(tr.rowPath || [tr.position])) === rowId
+            );
+            if (tableRow) {
               onRowSelectionChange({
-                row,
+                row: tableRow.row,
                 isSelected: false,
                 selectedRows: newSelectedRows,
               });
@@ -115,7 +117,7 @@ export const useRowSelection = ({
 
       setSelectedRows(newSelectedRows);
     },
-    [rows, rowIdAccessor, onRowSelectionChange, selectedRows, enableRowSelection]
+    [tableRows, onRowSelectionChange, selectedRows, enableRowSelection]
   );
 
   // Handle toggling a single row (convenience method)
@@ -137,10 +139,12 @@ export const useRowSelection = ({
     if (onRowSelectionChange) {
       const newSelectedRows = new Set<string>();
       selectedRows.forEach((rowId) => {
-        const row = rows.find((r) => String(r[rowIdAccessor]) === rowId);
-        if (row) {
+        const tableRow = tableRows.find(
+          (tr) => String(getRowId(tr.rowPath || [tr.position])) === rowId
+        );
+        if (tableRow) {
           onRowSelectionChange({
-            row,
+            row: tableRow.row,
             isSelected: false,
             selectedRows: newSelectedRows,
           });
@@ -149,7 +153,7 @@ export const useRowSelection = ({
     }
 
     setSelectedRows(new Set());
-  }, [selectedRows, rows, rowIdAccessor, onRowSelectionChange, enableRowSelection]);
+  }, [selectedRows, tableRows, onRowSelectionChange, enableRowSelection]);
 
   return {
     selectedRows,

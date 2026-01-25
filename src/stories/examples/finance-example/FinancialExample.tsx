@@ -163,7 +163,6 @@ export const FinancialExample = (props: UniversalTableProps) => {
       {...props}
       defaultHeaders={HEADERS}
       rows={financeData}
-      rowIdAccessor="id"
       tableRef={tableRef}
       // Default settings for this example
       columnResizing={props.columnResizing ?? true}

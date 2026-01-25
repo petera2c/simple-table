@@ -35,7 +35,7 @@ const StickyParentsContainer = ({
   setHoveredIndex,
   rowIndices,
 }: StickyParentsContainerProps) => {
-  const { headers, rowHeight, rowIdAccessor, collapsedHeaders } = useTableContext();
+  const { headers, rowHeight, collapsedHeaders } = useTableContext();
 
   // Calculate column indices
   const columnIndices = useMemo(() => {
@@ -77,11 +77,7 @@ const StickyParentsContainer = ({
         {stickyParents.map((tableRow, stickyIndex) => {
           const rowId = tableRow.stateIndicator
             ? `sticky-state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
-            : `sticky-${getRowId({
-                row: tableRow.row,
-                rowIdAccessor,
-                rowPath: tableRow.rowPath,
-              })}`;
+            : `sticky-${getRowId(tableRow.rowPath || [tableRow.position])}`;
 
           const isLastStickyRow = stickyIndex === stickyParents.length - 1;
 

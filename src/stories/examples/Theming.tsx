@@ -44,7 +44,6 @@ const ThemingExample = (props: UniversalTableProps) => {
         defaultHeaders={HEADERS}
         onCellEdit={updateCell}
         rows={rows}
-        rowIdAccessor="id"
         // Use local theme state if user is interacting with theme buttons, otherwise use props
         theme={theme}
         // Default settings for this example

@@ -567,7 +567,6 @@ const ExpansionControlExample = (props: UniversalTableProps) => {
         defaultHeaders={headers}
         rows={rows}
         rowGrouping={["divisions", "teams"]}
-        rowIdAccessor="id"
         expandAll={false}
         columnResizing={props.columnResizing ?? true}
         height={props.height ?? "calc(100dvh - 200px)"}

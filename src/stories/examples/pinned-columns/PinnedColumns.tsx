@@ -21,7 +21,6 @@ const PinnedColumnsExample = (props: UniversalTableProps) => {
       defaultHeaders={HEADERS}
       rows={EXAMPLE_DATA}
       rowGrouping={["stores"]}
-      rowIdAccessor="id"
       // Default settings for this example
       columnReordering={props.columnReordering ?? true}
       selectableCells={props.selectableCells ?? true}

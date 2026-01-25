@@ -259,7 +259,6 @@ const HeaderInclusionExample: React.FC<UniversalTableProps> = (props) => {
         tableRef={tableRef}
         rows={sampleData}
         defaultHeaders={headers}
-        rowIdAccessor="id"
         copyHeadersToClipboard={copyHeaders}
         includeHeadersInCSVExport={exportHeaders}
         {...props}

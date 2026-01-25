@@ -1,7 +1,6 @@
 import Cell from "../types/Cell";
 import HeaderObject from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
-import { Accessor } from "../types/HeaderObject";
 import { getRowId, getNestedValue, setNestedValue } from "./rowUtils";
 
 interface CellRegistryEntry {
@@ -120,7 +119,6 @@ export const pasteClipboardDataToCells = (
   initialFocusedCell: Cell,
   leafHeaders: HeaderObject[],
   tableRows: TableRowType[],
-  rowIdAccessor: Accessor,
   onCellEdit?: (props: any) => void,
   cellRegistry?: Map<string, CellRegistryEntry>
 ): { updatedCells: Set<string>; warningCells: Set<string> } => {
@@ -153,11 +151,7 @@ export const pasteClipboardDataToCells = (
 
       const targetRow = tableRows[targetRowIndex];
       const targetHeader = flattenedLeafHeaders[targetColIndex];
-      const targetRowId = getRowId({
-        row: targetRow.row,
-        rowIdAccessor,
-        rowPath: targetRow.rowPath,
-      });
+      const targetRowId = getRowId(targetRow.rowPath || [targetRow.position]);
 
       // Track warning flash for non-editable cells
       if (!targetHeader?.isEditable) {
@@ -225,7 +219,6 @@ export const deleteSelectedCellsContent = (
   selectedCells: Set<string>,
   leafHeaders: HeaderObject[],
   tableRows: TableRowType[],
-  rowIdAccessor: Accessor,
   onCellEdit?: (props: any) => void,
   cellRegistry?: Map<string, CellRegistryEntry>
 ): { deletedCells: Set<string>; warningCells: Set<string> } => {
@@ -250,11 +243,7 @@ export const deleteSelectedCellsContent = (
 
     const targetRow = tableRows[rowIndex];
     const targetHeader = flattenedLeafHeaders[colIndex];
-    const targetRowId = getRowId({
-      row: targetRow.row,
-      rowIdAccessor,
-      rowPath: targetRow.rowPath,
-    });
+    const targetRowId = getRowId(targetRow.rowPath || [targetRow.position]);
 
     // Track warning flash for non-editable cells
     if (!targetHeader?.isEditable) {

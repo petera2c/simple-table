@@ -226,7 +226,6 @@ const RowSelectionExample = (props: UniversalTableProps) => {
         {...props}
         defaultHeaders={headers}
         rows={rows}
-        rowIdAccessor="id"
         enableRowSelection={true}
         onRowSelectionChange={handleRowSelectionChange}
         onCellClick={handleCellClick}

@@ -122,6 +122,14 @@ const TableFooter = ({
       endPage = currentPage + pagesAfterCurrent;
     }
 
+    // Add ellipsis and first page if not already included
+    if (startPage > 2) {
+      pages.push(1);
+      pages.push(-1); // Ellipsis
+    } else if (startPage === 2) {
+      pages.push(1);
+    }
+
     // Add pages in the primary range
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
@@ -129,7 +137,9 @@ const TableFooter = ({
 
     // Add ellipsis and last page if not already included
     if (endPage < totalPages - 1) {
-      pages.push(-1); // Ellipsis
+      pages.push(-2); // Ellipsis (use -2 to distinguish from first ellipsis)
+      pages.push(totalPages);
+    } else if (endPage === totalPages - 1) {
       pages.push(totalPages);
     }
 

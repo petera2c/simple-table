@@ -388,6 +388,13 @@ input {
   ) {
   background-color: var(--st-hover-row-background-color);
 }
+
+/* Nested grid row styling */
+.st-nested-grid-row {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
 .st-cell-content {
   display: flex;
 }

@@ -48,7 +48,7 @@ const displayContent = ({
   if (header.type === "lineAreaChart" && Array.isArray(content)) {
     // Ensure all values are numbers
     const numericData = (content as any[]).filter(
-      (item: any) => typeof item === "number"
+      (item: any) => typeof item === "number",
     ) as number[];
     if (numericData.length > 0) {
       return <LineAreaChart data={numericData} {...header.chartOptions} />;
@@ -57,7 +57,7 @@ const displayContent = ({
   } else if (header.type === "barChart" && Array.isArray(content)) {
     // Ensure all values are numbers
     const numericData = (content as any[]).filter(
-      (item: any) => typeof item === "number"
+      (item: any) => typeof item === "number",
     ) as number[];
     if (numericData.length > 0) {
       return <BarChart data={numericData} {...header.chartOptions} />;
@@ -133,7 +133,6 @@ const TableCell = ({
     onTableHeaderDragEnd,
     rowButtons,
     rowGrouping,
-    rowIdAccessor,
     setCollapsedRows,
     setExpandedRows,
     setRowStateMap,
@@ -154,13 +153,15 @@ const TableCell = ({
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get row ID with path for uniqueness in nested rows
-  const rowId = getRowId({ row, rowIdAccessor, rowPath });
+  const rowId = getRowId(rowPath || [absoluteRowIndex]);
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   // Check if we can expand further (depth must be less than rowGrouping length)
   const canExpandFurther = rowGrouping && depth < rowGrouping.length;
   // Check if this specific row can be expanded (if canExpandRowGroup is provided)
   const isRowExpandable = canExpandRowGroup ? canExpandRowGroup(row) : true;
+  // Check if this header has a nested table configuration
+  const hasNestedTableConfig = !!header.nestedTable;
   // Determine if row is expanded based on expandedDepths setting
   const isRowExpanded = getIsRowExpanded(rowId, depth, expandedDepths, expandedRows, collapsedRows);
 
@@ -332,7 +333,7 @@ const TableCell = ({
         rowIndex,
       });
     },
-    [header.accessor, header.type, onCellEdit, row, rowIndex]
+    [header.accessor, header.type, onCellEdit, row, rowIndex],
   );
 
   // Handle row expansion
@@ -346,7 +347,7 @@ const TableCell = ({
         depth,
         expandedDepths,
         expandedRows,
-        collapsedRows
+        collapsedRows,
       );
 
       const rowIdStr = String(rowId);
@@ -395,18 +396,38 @@ const TableCell = ({
 
         // Create helper functions for managing row state
         const setLoading = (loading: boolean) => {
-          setRowStateMap((prevMap) => {
-            const newMap = new Map(prevMap);
-            const currentState = newMap.get(rowId) || {};
-            newMap.set(rowId, {
-              ...currentState,
-              loading,
-              error: null,
-              isEmpty: false,
-              triggerSection,
+          // When clearing loading state (loading = false), defer to next tick
+          // to ensure data updates are rendered before removing the loading indicator
+          if (!loading) {
+            setTimeout(() => {
+              setRowStateMap((prevMap) => {
+                const newMap = new Map(prevMap);
+                const currentState = newMap.get(rowId) || {};
+                newMap.set(rowId, {
+                  ...currentState,
+                  loading: false,
+                  error: null,
+                  isEmpty: false,
+                  triggerSection,
+                });
+                return newMap;
+              });
+            }, 0);
+          } else {
+            // Set loading immediately when loading = true
+            setRowStateMap((prevMap) => {
+              const newMap = new Map(prevMap);
+              const currentState = newMap.get(rowId) || {};
+              newMap.set(rowId, {
+                ...currentState,
+                loading: true,
+                error: null,
+                isEmpty: false,
+                triggerSection,
+              });
+              return newMap;
             });
-            return newMap;
-          });
+          }
         };
 
         const setError = (error: string | null) => {
@@ -447,7 +468,6 @@ const TableCell = ({
           groupingKeys: rowGrouping || [],
           isExpanded: !wasExpanded, // The new state (opposite of current)
           row,
-          rowId,
           rowIndexPath: rowPath || [],
           setEmpty,
           setError,
@@ -470,7 +490,7 @@ const TableCell = ({
       setCollapsedRows,
       setExpandedRows,
       setRowStateMap,
-    ]
+    ],
   );
 
   // Handle keyboard events when cell is focused
@@ -524,7 +544,6 @@ const TableCell = ({
         accessor: header.accessor,
         colIndex,
         row,
-        rowId,
         rowIndex,
         value: localContent,
       });
@@ -541,7 +560,6 @@ const TableCell = ({
     const buttonProps: RowButtonProps = {
       row,
       rowIndex: displayRowNumber,
-      rowId,
     };
 
     return (
@@ -567,8 +585,8 @@ const TableCell = ({
             header.align === "right"
               ? "right-aligned"
               : header.align === "center"
-              ? "center-aligned"
-              : "left-aligned"
+                ? "center-aligned"
+                : "left-aligned"
           }`}
         >
           <div className="st-loading-skeleton" />
@@ -629,32 +647,42 @@ const TableCell = ({
       {header.expandable && canExpandFurther ? (
         <div
           className={`st-icon-container st-expand-icon-container ${
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? isRowExpanded
                 ? "expanded"
                 : "collapsed"
               : "placeholder"
           }`}
           onClick={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? (event: React.MouseEvent) => handleRowExpansion(event)
               : undefined
           }
           role={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand) ? "button" : "presentation"
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+              ? "button"
+              : "presentation"
           }
-          tabIndex={isRowExpandable && (cellHasChildren || onRowGroupExpand) ? 0 : -1}
+          tabIndex={
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+              ? 0
+              : -1
+          }
           aria-label={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? `${isRowExpanded ? "Collapse" : "Expand"} row group`
               : undefined
           }
           aria-expanded={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand) ? isRowExpanded : undefined
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+              ? isRowExpanded
+              : undefined
           }
-          aria-hidden={!(isRowExpandable && (cellHasChildren || onRowGroupExpand))}
+          aria-hidden={
+            !(isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig))
+          }
           onKeyDown={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand)
+            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? (e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
@@ -673,8 +701,8 @@ const TableCell = ({
           header.align === "right"
             ? "right-aligned"
             : header.align === "center"
-            ? "center-aligned"
-            : "left-aligned"
+              ? "center-aligned"
+              : "left-aligned"
         }`}
       >
         {isLoading || tableRow.isLoadingSkeleton ? (

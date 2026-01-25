@@ -16,7 +16,6 @@ export default function ManufacturingExampleComponent(props: UniversalTableProps
     <SimpleTable
       defaultHeaders={HEADERS}
       rows={MANUFACTURING_DATA}
-      rowIdAccessor="id"
       {...props}
       expandAll={false}
     />

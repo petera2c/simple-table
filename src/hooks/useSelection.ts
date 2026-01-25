@@ -11,6 +11,7 @@ import {
   deleteSelectedCellsContent,
 } from "../utils/cellClipboardUtils";
 import { useKeyboardNavigation } from "./useKeyboardNavigation";
+import { CustomTheme } from "../types/CustomTheme";
 
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
@@ -19,26 +20,26 @@ interface UseSelectionProps {
   selectableCells: boolean;
   headers: HeaderObject[];
   tableRows: TableRowType[];
-  rowIdAccessor: Accessor;
   onCellEdit?: (props: any) => void;
   cellRegistry?: Map<string, any>;
   collapsedHeaders?: Set<Accessor>;
   rowHeight: number;
   enableRowSelection?: boolean;
   copyHeadersToClipboard?: boolean;
+  customTheme: CustomTheme;
 }
 
 const useSelection = ({
   selectableCells,
   headers,
   tableRows,
-  rowIdAccessor,
   onCellEdit,
   cellRegistry,
   collapsedHeaders,
   rowHeight,
   enableRowSelection = false,
   copyHeadersToClipboard = false,
+  customTheme,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
@@ -84,17 +85,13 @@ const useSelection = ({
 
     if (selectedColumns.size > 0) {
       tableRows.forEach((tableRow) => {
-        const rowId = getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        });
+        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
         rows.add(String(rowId));
       });
     }
 
     return rows;
-  }, [selectedCells, selectedColumns, tableRows, rowIdAccessor]);
+  }, [selectedCells, selectedColumns, tableRows]);
 
   // Get flattened leaf headers
   const leafHeaders = useMemo(() => {
@@ -130,7 +127,6 @@ const useSelection = ({
         initialFocusedCell,
         leafHeaders,
         tableRows,
-        rowIdAccessor,
         onCellEdit,
         cellRegistry
       );
@@ -147,7 +143,7 @@ const useSelection = ({
     } catch (error) {
       console.warn("Failed to paste from clipboard:", error);
     }
-  }, [initialFocusedCell, leafHeaders, tableRows, rowIdAccessor, onCellEdit, cellRegistry]);
+  }, [initialFocusedCell, leafHeaders, tableRows, onCellEdit, cellRegistry]);
 
   const deleteSelectedCells = useCallback(() => {
     if (selectedCells.size === 0) return;
@@ -156,7 +152,6 @@ const useSelection = ({
       selectedCells,
       leafHeaders,
       tableRows,
-      rowIdAccessor,
       onCellEdit,
       cellRegistry
     );
@@ -170,7 +165,7 @@ const useSelection = ({
       setWarningFlashCells(warningCells);
       setTimeout(() => setWarningFlashCells(new Set()), 800);
     }
-  }, [selectedCells, leafHeaders, tableRows, rowIdAccessor, onCellEdit, cellRegistry]);
+  }, [selectedCells, leafHeaders, tableRows, onCellEdit, cellRegistry]);
 
   // Selection operations
   const selectCellRange = useCallback(
@@ -189,11 +184,7 @@ const useSelection = ({
               continue;
             }
             const tableRow = tableRows[row];
-            const rowId = getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            });
+            const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -205,9 +196,9 @@ const useSelection = ({
       setInitialFocusedCell(endCell);
 
       // Scroll the end cell into view
-      setTimeout(() => scrollCellIntoView(endCell, rowHeight), 0);
+      setTimeout(() => scrollCellIntoView(endCell, rowHeight, customTheme), 0);
     },
-    [tableRows, rowIdAccessor, rowHeight, enableRowSelection]
+    [tableRows, rowHeight, enableRowSelection, customTheme]
   );
 
   const selectSingleCell = useCallback(
@@ -229,10 +220,10 @@ const useSelection = ({
         setInitialFocusedCell(cell);
 
         // Scroll the cell into view
-        setTimeout(() => scrollCellIntoView(cell, rowHeight), 0);
+        setTimeout(() => scrollCellIntoView(cell, rowHeight, customTheme), 0);
       }
     },
-    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection]
+    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection, customTheme]
   );
 
   const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
@@ -256,7 +247,6 @@ const useSelection = ({
     initialFocusedCell,
     tableRows,
     leafHeaders,
-    rowIdAccessor,
     selectSingleCell,
     selectCellRange,
     selectedCells,
@@ -277,11 +267,7 @@ const useSelection = ({
 
       const rowIdToIndexMap = new Map<string, number>();
       tableRows.forEach((tableRow, index) => {
-        const rowId = getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        });
+        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
         rowIdToIndexMap.set(String(rowId), index);
       });
 
@@ -305,11 +291,7 @@ const useSelection = ({
               continue;
             }
             const tableRow = tableRows[row];
-            const rowId = getRowId({
-              row: tableRow.row,
-              rowIdAccessor,
-              rowPath: tableRow.rowPath,
-            });
+            const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -317,7 +299,7 @@ const useSelection = ({
 
       setSelectedCells(newSelectedCells);
     },
-    [tableRows, rowIdAccessor, enableRowSelection]
+    [tableRows, enableRowSelection]
   );
 
   const calculateNearestCell = useCallback((clientX: number, clientY: number): Cell | null => {
@@ -521,21 +503,9 @@ const useSelection = ({
 
       const classes = [];
       const topRow = tableRows[rowIndex - 1];
-      const topRowId = topRow
-        ? getRowId({
-            row: topRow.row,
-            rowIdAccessor,
-            rowPath: topRow.rowPath,
-          })
-        : null;
+      const topRowId = topRow ? getRowId(topRow.rowPath || [topRow.position]) : null;
       const bottomRow = tableRows[rowIndex + 1];
-      const bottomRowId = bottomRow
-        ? getRowId({
-            row: bottomRow.row,
-            rowIdAccessor,
-            rowPath: bottomRow.rowPath,
-          })
-        : null;
+      const bottomRowId = bottomRow ? getRowId(bottomRow.rowPath || [bottomRow.position]) : null;
 
       const topCell =
         topRowId !== null ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId } : null;
@@ -557,7 +527,7 @@ const useSelection = ({
 
       return classes.join(" ");
     },
-    [isSelectingState, isSelected, tableRows, selectedColumns, rowIdAccessor]
+    [isSelectingState, isSelected, tableRows, selectedColumns]
   );
 
   const isInitialFocusedCell = useMemo(() => {

@@ -2,7 +2,7 @@ import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import StickyParentsContainer from "./StickyParentsContainer";
-import { getTotalRowCount } from "../../utils/infiniteScrollUtils";
+import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
@@ -31,16 +31,17 @@ const TableBody = ({
     collapsedHeaders,
     headerContainerRef,
     headers,
+    heightOffsets,
     isAnimating,
     mainBodyRef,
     onLoadMore,
     rowHeight,
-    rowIdAccessor,
     scrollbarWidth,
     setIsScrolling,
     shouldPaginate,
     tableBodyContainerRef,
     tableEmptyStateRenderer,
+    customTheme,
   } = useTableContext();
 
   // Local state
@@ -50,20 +51,38 @@ const TableBody = ({
   const hoveredRowRefs = useRef<Set<HTMLElement>>(new Set());
 
   // Direct DOM manipulation for hover - no React re-renders
-  const setHoveredIndex = useCallback((index: number | null) => {
-    // Clear previous hover
-    hoveredRowRefs.current.forEach((el) => el.classList.remove("hovered"));
-    hoveredRowRefs.current.clear();
-
-    if (index !== null) {
-      // Find all rows with this index and add class directly
-      const rows = document.querySelectorAll(`.st-body-container .st-row[data-index="${index}"]`);
-      rows.forEach((row) => {
-        (row as HTMLElement).classList.add("hovered");
-        hoveredRowRefs.current.add(row as HTMLElement);
+  const setHoveredIndex = useCallback(
+    (index: number | null) => {
+      // Clear ALL hovered rows across all tables (including nested ones)
+      // This ensures only one table's rows are hovered at a time
+      document.querySelectorAll(".st-row.hovered").forEach((el) => {
+        el.classList.remove("hovered");
       });
-    }
-  }, []);
+      hoveredRowRefs.current.clear();
+
+      if (index !== null && tableBodyContainerRef.current) {
+        // Find all rows with this index within this specific table's body container
+        // Only select direct child rows of the body sections (not nested table rows)
+        const bodyContainer = tableBodyContainerRef.current;
+        const selector = `.st-row[data-index="${index}"]:not(.st-nested-grid-row)`;
+
+        // Query within the specific container, but filter to only direct section children
+        const allRows = bodyContainer.querySelectorAll(selector);
+
+        allRows.forEach((row) => {
+          const rowElement = row as HTMLElement;
+          // Check if this row belongs to this table (not a nested table)
+          // by verifying its closest st-body-container is this one
+          const closestBodyContainer = rowElement.closest(".st-body-container");
+          if (closestBodyContainer === bodyContainer) {
+            rowElement.classList.add("hovered");
+            hoveredRowRefs.current.add(rowElement);
+          }
+        });
+      }
+    },
+    [tableBodyContainerRef],
+  );
 
   // Clear hover state when animations start
   useEffect(() => {
@@ -95,7 +114,10 @@ const TableBody = ({
 
   // Derived state
   const totalRowCount = getTotalRowCount(tableRows);
-  const totalHeight = totalRowCount * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+  const totalHeight = useMemo(
+    () => calculateTotalHeight(totalRowCount, rowHeight, heightOffsets, customTheme),
+    [totalRowCount, rowHeight, heightOffsets, customTheme],
+  );
 
   // Calculate column indices for all headers (including pinned) in one place
   const columnIndices = useMemo(() => {
@@ -113,18 +135,12 @@ const TableBody = ({
 
     // Map each row's ID to its index in the visible rows array
     rowsToRender.forEach((tableRow, index) => {
-      const rowId = String(
-        getRowId({
-          row: tableRow.row,
-          rowIdAccessor,
-          rowPath: tableRow.rowPath,
-        })
-      );
+      const rowId = String(getRowId(tableRow.rowPath || [tableRow.position]));
       indices[rowId] = index;
     });
 
     return indices;
-  }, [rowsToRender, rowIdAccessor]);
+  }, [rowsToRender]);
 
   // Check if we should load more data
   const checkForLoadMore = useCallback(
@@ -147,7 +163,7 @@ const TableBody = ({
         }, 1000);
       }
     },
-    [onLoadMore, shouldPaginate, isLoadingMore]
+    [onLoadMore, shouldPaginate, isLoadingMore],
   );
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -178,8 +194,8 @@ const TableBody = ({
         newScrollTop > previousScrollTop
           ? "down"
           : newScrollTop < previousScrollTop
-          ? "up"
-          : "none";
+            ? "up"
+            : "none";
 
       // Update scroll position and direction for asymmetric buffering
       setScrollTop(newScrollTop);

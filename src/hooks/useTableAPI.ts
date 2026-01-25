@@ -38,8 +38,9 @@ const useTableAPI = ({
   headerRegistryRef,
   headers,
   includeHeadersInCSVExport,
+  onPageChange,
+  paginatableRows,
   rowGrouping,
-  rowIdAccessor,
   rowIndexMap,
   rows,
   rowsPerPage,
@@ -52,6 +53,7 @@ const useTableAPI = ({
   shouldPaginate,
   sort,
   tableRef,
+  totalRowCount,
   updateFilter,
   updateSort,
   visibleRows,
@@ -66,8 +68,9 @@ const useTableAPI = ({
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
+  onPageChange?: (page: number) => void | Promise<void>;
+  paginatableRows: TableRow[];
   rowGrouping?: Accessor[];
-  rowIdAccessor: Accessor;
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
   rowsPerPage: number;
@@ -84,6 +87,7 @@ const useTableAPI = ({
   shouldPaginate: boolean;
   sort: SortColumn | null;
   tableRef?: MutableRefObject<TableRefType | null>;
+  totalRowCount?: number;
   updateFilter: (filter: FilterCondition) => void;
   updateSort: (props?: { accessor: Accessor; direction?: SortDirection }) => void;
   visibleRows: TableRow[];
@@ -93,10 +97,10 @@ const useTableAPI = ({
     if (tableRef) {
       tableRef.current = {
         updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          // Get the row ID using the new utility
+          // Get the row ID using the index
           const row = rows?.[rowIndex];
           if (row) {
-            const rowId = getRowId({ row, rowIdAccessor });
+            const rowId = getRowId([rowIndex]);
             const key = getCellKey({ rowId, accessor });
             const cell = cellRegistryRef.current.get(key);
 
@@ -145,7 +149,22 @@ const useTableAPI = ({
         getCurrentPage: () => {
           return currentPage;
         },
-        setPage: (page: number) => setCurrentPage(page),
+        getTotalPages: () => {
+          const totalRows = totalRowCount ?? paginatableRows.length;
+          return Math.ceil(totalRows / rowsPerPage);
+        },
+        setPage: async (page: number) => {
+          // Only update page if within valid range
+          const totalPages = Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage);
+          if (page >= 1 && page <= totalPages) {
+            // Update internal state
+            setCurrentPage(page);
+            // Call user's page change callback if provided
+            if (onPageChange) {
+              await onPageChange(page);
+            }
+          }
+        },
         expandAll: () => {
           const maxDepth = rowGrouping?.length || 0;
           const depths = Array.from({ length: maxDepth }, (_, i) => i);
@@ -268,8 +287,9 @@ const useTableAPI = ({
     headerRegistryRef,
     headers,
     includeHeadersInCSVExport,
+    onPageChange,
+    paginatableRows,
     rowGrouping,
-    rowIdAccessor,
     rowIndexMap,
     rows,
     rowsPerPage,
@@ -282,6 +302,7 @@ const useTableAPI = ({
     shouldPaginate,
     sort,
     tableRef,
+    totalRowCount,
     updateFilter,
     updateSort,
     visibleRows,

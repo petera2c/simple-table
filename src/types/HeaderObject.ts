@@ -5,6 +5,7 @@ import { AggregationConfig } from "./AggregationTypes";
 import { CellRenderer } from "./CellRendererProps";
 import { HeaderRenderer } from "./HeaderRendererProps";
 import CellValue from "./CellValue";
+import { SimpleTableProps } from "./SimpleTableProps";
 
 // Accessor can be:
 // - A simple key of Row (e.g., "name")
@@ -100,6 +101,25 @@ type HeaderObject = {
   isSortable?: boolean;
   label: string;
   minWidth?: number | string;
+  sortingOrder?: ("asc" | "desc" | null)[]; // Custom sorting cycle order for this column (e.g., ["desc", "asc", null] for numbers/dates)
+  // Nested grid configuration - when expandable is true and this is set, renders a nested table instead of child rows
+  // Omit 'rows' and props that should inherit from parent table
+  nestedTable?: Omit<
+    SimpleTableProps,
+    | "rows"
+    | "loadingStateRenderer"
+    | "errorStateRenderer"
+    | "emptyStateRenderer"
+    | "tableEmptyStateRenderer"
+    | "expandIcon"
+    | "filterIcon"
+    | "sortUpIcon"
+    | "sortDownIcon"
+    | "nextIcon"
+    | "prevIcon"
+    | "headerCollapseIcon"
+    | "headerExpandIcon"
+  >;
   pinned?: Pinned;
   singleRowChildren?: boolean; // When true, renders parent and children on the same row instead of tree hierarchy
   tooltip?: string; // Optional tooltip text to display on hover
