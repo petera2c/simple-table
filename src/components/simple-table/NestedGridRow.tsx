@@ -34,6 +34,18 @@ const NestedGridRow = ({
     rowHeight: parentRowHeight,
     heightOffsets,
     customTheme,
+    // Get inherited props from parent table
+    loadingStateRenderer,
+    errorStateRenderer,
+    emptyStateRenderer,
+    expandIcon,
+    filterIcon,
+    sortUpIcon,
+    sortDownIcon,
+    nextIcon,
+    prevIcon,
+    headerCollapseIcon,
+    headerExpandIcon,
   } = useTableContext();
 
   const nestedGridConfig = expandableHeader.nestedTable;
@@ -82,6 +94,20 @@ const NestedGridRow = ({
         customTheme={nestedCustomTheme}
         height={`${tableHeight}px`}
         rowGrouping={childRowGrouping}
+        // Inherit props from parent table
+        loadingStateRenderer={loadingStateRenderer}
+        errorStateRenderer={errorStateRenderer}
+        emptyStateRenderer={emptyStateRenderer}
+        expandIcon={expandIcon}
+        filterIcon={filterIcon}
+        sortUpIcon={sortUpIcon}
+        sortDownIcon={sortDownIcon}
+        nextIcon={nextIcon}
+        prevIcon={prevIcon}
+        headerCollapseIcon={headerCollapseIcon}
+        headerExpandIcon={headerExpandIcon}
+        // onRowGroupExpand comes from nestedGridConfig if provided
+        // Each nested table should have its own explicit handler
       />
     </div>
   );

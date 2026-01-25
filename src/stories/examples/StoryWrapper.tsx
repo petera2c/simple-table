@@ -1,7 +1,7 @@
 import React from "react";
 import Theme from "../../types/Theme";
 import ColumnEditorPosition from "../../types/ColumnEditorPosition";
-import { CustomTheme } from "../../types/CustomTheme";
+import { CustomThemeProps } from "../../types/CustomTheme";
 
 // Universal props that can be controlled via Storybook args
 export interface UniversalTableProps {
@@ -13,7 +13,7 @@ export interface UniversalTableProps {
   allowAnimations?: boolean;
   cellUpdateFlash?: boolean;
   height?: string;
-  customTheme?: CustomTheme;
+  customTheme?: CustomThemeProps;
 
   // Feature Toggle Props
   autoExpandColumns?: boolean;
