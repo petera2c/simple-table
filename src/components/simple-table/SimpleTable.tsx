@@ -791,6 +791,7 @@ const SimpleTableComp = ({
     headerRegistryRef,
     headers: effectiveHeaders,
     includeHeadersInCSVExport,
+    onPageChange,
     paginatableRows,
     rowGrouping,
     rowIndexMap: rowIndexMapRef,

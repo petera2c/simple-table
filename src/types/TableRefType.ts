@@ -38,8 +38,8 @@ type TableRefType = {
   getCurrentPage: () => number;
   /** Returns the total number of pages */
   getTotalPages: () => number;
-  /** Sets the current page (1-indexed) */
-  setPage: (page: number) => void;
+  /** Sets the current page (1-indexed) and triggers onPageChange callback */
+  setPage: (page: number) => Promise<void>;
   /** Expand all rows at all depths */
   expandAll: () => void;
   /** Collapse all rows at all depths */

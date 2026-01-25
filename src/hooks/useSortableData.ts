@@ -169,19 +169,30 @@ const useSortableData = ({
           direction: direction,
         };
       }
-      // Otherwise, cycle through: no sort -> asc -> desc -> no sort
-      else if (!sort || sort.key.accessor !== accessor) {
-        newSortColumn = {
-          key: targetHeader,
-          direction: "asc",
-        };
-      } else if (sort.direction === "asc") {
-        newSortColumn = {
-          key: targetHeader,
-          direction: "desc",
-        };
+      // Otherwise, cycle through the sorting order
+      else {
+        // Get custom sorting order or use default: ["asc", "desc", null]
+        const sortingOrder = targetHeader.sortingOrder || ["asc", "desc", null];
+        
+        // Find current position in the cycle
+        let currentIndex = -1;
+        if (sort && sort.key.accessor === accessor) {
+          currentIndex = sortingOrder.indexOf(sort.direction);
+        }
+        
+        // Move to next position in cycle
+        const nextIndex = (currentIndex + 1) % sortingOrder.length;
+        const nextDirection = sortingOrder[nextIndex];
+        
+        if (nextDirection === null) {
+          newSortColumn = null;
+        } else {
+          newSortColumn = {
+            key: targetHeader,
+            direction: nextDirection,
+          };
+        }
       }
-      // If currently desc, clear the sort (newSortColumn stays null)
 
       setSort(newSortColumn);
       onSortChange?.(newSortColumn);
@@ -224,15 +235,25 @@ const useSortableData = ({
 
       let previewSortColumn: SortColumn | null = null;
 
-      if (!sort || sort.key.accessor !== accessor) {
+      // Get custom sorting order or use default: ["asc", "desc", null]
+      const sortingOrder = targetHeader.sortingOrder || ["asc", "desc", null];
+      
+      // Find current position in the cycle
+      let currentIndex = -1;
+      if (sort && sort.key.accessor === accessor) {
+        currentIndex = sortingOrder.indexOf(sort.direction);
+      }
+      
+      // Move to next position in cycle
+      const nextIndex = (currentIndex + 1) % sortingOrder.length;
+      const nextDirection = sortingOrder[nextIndex];
+      
+      if (nextDirection === null) {
+        previewSortColumn = null;
+      } else {
         previewSortColumn = {
           key: targetHeader,
-          direction: "asc",
-        };
-      } else if (sort.direction === "asc") {
-        previewSortColumn = {
-          key: targetHeader,
-          direction: "desc",
+          direction: nextDirection,
         };
       }
 

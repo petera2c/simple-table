@@ -38,6 +38,7 @@ const useTableAPI = ({
   headerRegistryRef,
   headers,
   includeHeadersInCSVExport,
+  onPageChange,
   paginatableRows,
   rowGrouping,
   rowIndexMap,
@@ -67,6 +68,7 @@ const useTableAPI = ({
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
+  onPageChange?: (page: number) => void | Promise<void>;
   paginatableRows: TableRow[];
   rowGrouping?: Accessor[];
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
@@ -151,7 +153,18 @@ const useTableAPI = ({
           const totalRows = totalRowCount ?? paginatableRows.length;
           return Math.ceil(totalRows / rowsPerPage);
         },
-        setPage: (page: number) => setCurrentPage(page),
+        setPage: async (page: number) => {
+          // Only update page if within valid range
+          const totalPages = Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage);
+          if (page >= 1 && page <= totalPages) {
+            // Update internal state
+            setCurrentPage(page);
+            // Call user's page change callback if provided
+            if (onPageChange) {
+              await onPageChange(page);
+            }
+          }
+        },
         expandAll: () => {
           const maxDepth = rowGrouping?.length || 0;
           const depths = Array.from({ length: maxDepth }, (_, i) => i);
@@ -274,6 +287,7 @@ const useTableAPI = ({
     headerRegistryRef,
     headers,
     includeHeadersInCSVExport,
+    onPageChange,
     paginatableRows,
     rowGrouping,
     rowIndexMap,

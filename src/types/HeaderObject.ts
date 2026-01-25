@@ -101,6 +101,7 @@ type HeaderObject = {
   isSortable?: boolean;
   label: string;
   minWidth?: number | string;
+  sortingOrder?: ("asc" | "desc" | null)[]; // Custom sorting cycle order for this column (e.g., ["desc", "asc", null] for numbers/dates)
   // Nested grid configuration - when expandable is true and this is set, renders a nested table instead of child rows
   // Omit 'rows' and props that should inherit from parent table
   nestedTable?: Omit<
