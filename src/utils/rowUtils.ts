@@ -296,7 +296,7 @@ export const flattenRowsWithGrouping = ({
     parentPosition = 0,
     parentDisplayPosition = displayPositionOffset,
     parentPath: (string | number)[] = [],
-    parentIndices: number[] = []
+    parentIndices: number[] = [],
   ): number => {
     let position = parentPosition;
     let displayPosition = parentDisplayPosition;
@@ -441,7 +441,7 @@ export const flattenRowsWithGrouping = ({
             position,
             displayPosition,
             nestedPath,
-            [...parentIndices, currentRowIndex]
+            [...parentIndices, currentRowIndex],
           );
         }
       }

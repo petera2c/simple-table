@@ -90,7 +90,7 @@ const useFlattenedRows = ({
       currentRows: Row[],
       currentDepth: number,
       parentPath: (string | number)[] = [],
-      parentIndices: number[] = []
+      parentIndices: number[] = [],
     ): void => {
       currentRows.forEach((row, index) => {
         const currentGroupingKey = rowGrouping[currentDepth];
