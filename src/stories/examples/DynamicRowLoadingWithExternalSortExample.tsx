@@ -557,27 +557,204 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
     [],
   );
 
+  // Handle sort button clicks
+  const handleSortButtonClick = useCallback((accessor: string, direction: "asc" | "desc") => {
+    const header = HEADERS.find((h) => h.accessor === accessor);
+    if (header) {
+      const newSortColumn: SortColumn = {
+        key: header,
+        direction,
+      };
+      setSortColumn(newSortColumn);
+      setCurrentPage(1); // Reset to first page when sorting changes
+    }
+  }, []);
+
+  // Clear sort
+  const handleClearSort = useCallback(() => {
+    setSortColumn(null);
+    setCurrentPage(1);
+  }, []);
+
   return (
-    <SimpleTable
-      columnResizing
-      defaultHeaders={HEADERS}
-      editColumns
-      expandAll={false}
-      height={"600px"}
-      onPageChange={handlePageChange}
-      onRowGroupExpand={handleRowExpand}
-      onSortChange={handleSortChange}
-      rowGrouping={["stores", "products"]}
-      rows={rows}
-      rowsPerPage={rowsPerPage}
-      selectableCells
-      shouldPaginate
-      theme={theme}
-      totalRowCount={totalCount}
-      useOddEvenRowBackground
-      errorStateRenderer={<div style={{ paddingLeft: "16px" }}>Error loading data</div>}
-      emptyStateRenderer={<div style={{ paddingLeft: "16px" }}>No data found</div>}
-    />
+    <div>
+      {/* Sort Control Buttons */}
+      <div
+        style={{
+          marginBottom: "16px",
+          display: "flex",
+          gap: "8px",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
+        <span style={{ fontWeight: "bold", marginRight: "8px" }}>Quick Sort:</span>
+
+        <button
+          onClick={() => handleSortButtonClick("name", "asc")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor:
+              sortColumn?.key.accessor === "name" && sortColumn?.direction === "asc"
+                ? "#007bff"
+                : "#f0f0f0",
+            color:
+              sortColumn?.key.accessor === "name" && sortColumn?.direction === "asc"
+                ? "white"
+                : "black",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Name (A-Z)
+        </button>
+
+        <button
+          onClick={() => handleSortButtonClick("name", "desc")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor:
+              sortColumn?.key.accessor === "name" && sortColumn?.direction === "desc"
+                ? "#007bff"
+                : "#f0f0f0",
+            color:
+              sortColumn?.key.accessor === "name" && sortColumn?.direction === "desc"
+                ? "white"
+                : "black",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Name (Z-A)
+        </button>
+
+        <button
+          onClick={() => handleSortButtonClick("totalSales", "desc")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor:
+              sortColumn?.key.accessor === "totalSales" && sortColumn?.direction === "desc"
+                ? "#007bff"
+                : "#f0f0f0",
+            color:
+              sortColumn?.key.accessor === "totalSales" && sortColumn?.direction === "desc"
+                ? "white"
+                : "black",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Sales (High-Low)
+        </button>
+
+        <button
+          onClick={() => handleSortButtonClick("totalSales", "asc")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor:
+              sortColumn?.key.accessor === "totalSales" && sortColumn?.direction === "asc"
+                ? "#007bff"
+                : "#f0f0f0",
+            color:
+              sortColumn?.key.accessor === "totalSales" && sortColumn?.direction === "asc"
+                ? "white"
+                : "black",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Sales (Low-High)
+        </button>
+
+        <button
+          onClick={() => handleSortButtonClick("totalRevenue", "desc")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor:
+              sortColumn?.key.accessor === "totalRevenue" && sortColumn?.direction === "desc"
+                ? "#007bff"
+                : "#f0f0f0",
+            color:
+              sortColumn?.key.accessor === "totalRevenue" && sortColumn?.direction === "desc"
+                ? "white"
+                : "black",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Revenue (High-Low)
+        </button>
+
+        <button
+          onClick={() => handleSortButtonClick("avgRating", "desc")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor:
+              sortColumn?.key.accessor === "avgRating" && sortColumn?.direction === "desc"
+                ? "#007bff"
+                : "#f0f0f0",
+            color:
+              sortColumn?.key.accessor === "avgRating" && sortColumn?.direction === "desc"
+                ? "white"
+                : "black",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Rating (High-Low)
+        </button>
+
+        <button
+          onClick={handleClearSort}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: !sortColumn ? "#28a745" : "#f0f0f0",
+            color: !sortColumn ? "white" : "black",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+            marginLeft: "8px",
+          }}
+        >
+          Clear Sort
+        </button>
+
+        {sortColumn && (
+          <span style={{ marginLeft: "8px", color: "#666", fontSize: "14px" }}>
+            Currently sorted by: <strong>{sortColumn.key.label}</strong> (
+            {sortColumn.direction === "asc" ? "Ascending" : "Descending"})
+          </span>
+        )}
+      </div>
+
+      {/* Table */}
+      <SimpleTable
+        columnResizing
+        defaultHeaders={HEADERS}
+        editColumns
+        expandAll={false}
+        height={"600px"}
+        onPageChange={handlePageChange}
+        onRowGroupExpand={handleRowExpand}
+        onSortChange={handleSortChange}
+        rowGrouping={["stores", "products"]}
+        rows={rows}
+        rowsPerPage={rowsPerPage}
+        selectableCells
+        shouldPaginate
+        theme={theme}
+        totalRowCount={totalCount}
+        useOddEvenRowBackground
+        errorStateRenderer={<div style={{ paddingLeft: "16px" }}>Error loading data</div>}
+        emptyStateRenderer={<div style={{ paddingLeft: "16px" }}>No data found</div>}
+      />
+    </div>
   );
 };
 

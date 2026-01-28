@@ -101,219 +101,212 @@ const HEADERS: HeaderObject[] = [
 // Simulated API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Data generation utilities
+const FIRST_NAMES = [
+  "Alice",
+  "Bob",
+  "Carol",
+  "David",
+  "Emma",
+  "Frank",
+  "Grace",
+  "Henry",
+  "Iris",
+  "Jack",
+  "Karen",
+  "Liam",
+  "Mia",
+  "Noah",
+  "Olivia",
+  "Peter",
+  "Quinn",
+  "Rachel",
+  "Sam",
+  "Taylor",
+  "Uma",
+  "Victor",
+  "Wendy",
+  "Xavier",
+  "Yara",
+  "Zane",
+  "Amy",
+  "Ben",
+  "Chloe",
+  "Dan",
+];
+
+const LAST_NAMES = [
+  "Johnson",
+  "Smith",
+  "White",
+  "Brown",
+  "Davis",
+  "Miller",
+  "Lee",
+  "Wilson",
+  "Taylor",
+  "Anderson",
+  "Thomas",
+  "Martinez",
+  "Garcia",
+  "Rodriguez",
+  "Hernandez",
+  "Lopez",
+  "Gonzalez",
+  "Perez",
+  "Moore",
+  "Jackson",
+  "Martin",
+  "Thompson",
+  "Young",
+  "Allen",
+  "King",
+  "Wright",
+  "Scott",
+  "Green",
+  "Baker",
+  "Adams",
+];
+
+const DEPARTMENT_NAMES = [
+  "Engineering",
+  "Operations",
+  "Product",
+  "Marketing",
+  "Sales",
+  "Finance",
+  "Human Resources",
+  "Customer Success",
+  "Legal",
+  "Research & Development",
+  "Quality Assurance",
+  "Data Science",
+];
+
+const TEAM_NAMES = [
+  "Frontend Team",
+  "Backend Team",
+  "Mobile Team",
+  "Cloud Infrastructure",
+  "Security Team",
+  "Product Management",
+  "UX Research",
+  "DevOps Team",
+  "Analytics Team",
+  "Platform Team",
+  "API Team",
+  "Data Engineering",
+  "Machine Learning",
+  "Design System",
+  "Testing Team",
+];
+
+const ROLES = [
+  "Senior Frontend Developer",
+  "Frontend Developer",
+  "UI Designer",
+  "Senior Backend Developer",
+  "Backend Developer",
+  "iOS Developer",
+  "Android Developer",
+  "DevOps Engineer",
+  "Cloud Architect",
+  "Security Engineer",
+  "Product Manager",
+  "Associate Product Manager",
+  "UX Researcher",
+  "Senior Software Engineer",
+  "Software Engineer",
+  "Tech Lead",
+  "Engineering Manager",
+];
+
+const generateRandomDate = (startYear: number, endYear: number): string => {
+  const start = new Date(startYear, 0, 1);
+  const end = new Date(endYear, 11, 31);
+  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return date.toISOString().split("T")[0];
+};
+
+const generateRandomSalary = (min: number, max: number): string => {
+  const salary = Math.floor(Math.random() * (max - min) + min);
+  return `$${salary.toLocaleString()}`;
+};
+
+const generateRandomBudget = (min: number, max: number): string => {
+  const budget = Math.floor(Math.random() * (max - min) + min);
+  return `$${budget.toLocaleString()}`;
+};
+
+const getRandomItem = <T,>(array: T[]): T => {
+  return array[Math.floor(Math.random() * array.length)];
+};
+
+// Generate departments
+const generateDepartments = (count: number): Department[] => {
+  return Array.from({ length: count }, (_, index) => {
+    const employeeCount = Math.floor(Math.random() * 30) + 5; // 5-35 employees
+    return {
+      id: `DEPT-${index + 1}`,
+      name: DEPARTMENT_NAMES[index % DEPARTMENT_NAMES.length],
+      type: "department",
+      employeeCount,
+      budget: generateRandomBudget(500000, 3000000),
+      manager: `${getRandomItem(FIRST_NAMES)} ${getRandomItem(LAST_NAMES)}`,
+    };
+  });
+};
+
+// Generate teams for a department
+const generateTeamsForDepartment = (departmentId: string, count: number): Team[] => {
+  const startIndex = parseInt(departmentId.split("-")[1]) * 10;
+  return Array.from({ length: count }, (_, index) => {
+    const employeeCount = Math.floor(Math.random() * 12); // 0-11 employees (some teams can be empty)
+    return {
+      id: `TEAM-${startIndex + index + 1}`,
+      name: TEAM_NAMES[(startIndex + index) % TEAM_NAMES.length],
+      type: "team",
+      employeeCount,
+      budget: generateRandomBudget(200000, 1000000),
+      lead: `${getRandomItem(FIRST_NAMES)} ${getRandomItem(LAST_NAMES)}`,
+    };
+  });
+};
+
+// Generate employees for a team
+const generateEmployeesForTeam = (teamId: string, count: number): Employee[] => {
+  const startIndex = parseInt(teamId.split("-")[1]) * 100;
+  return Array.from({ length: count }, (_, index) => {
+    const firstName = getRandomItem(FIRST_NAMES);
+    const lastName = getRandomItem(LAST_NAMES);
+    return {
+      id: `EMP-${startIndex + index + 1}`,
+      name: `${firstName} ${lastName}`,
+      type: "employee",
+      role: getRandomItem(ROLES),
+      salary: generateRandomSalary(70000, 150000),
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@company.com`,
+      startDate: generateRandomDate(2018, 2024),
+    };
+  });
+};
+
 // Simulated API: Fetch teams for a department
 const fetchTeamsForDepartment = async (departmentId: string): Promise<Team[]> => {
   await delay(1200); // Simulate network delay
 
-  // Simulated data based on department
-  const teamsData: Record<string, Team[]> = {
-    "DEPT-1": [
-      {
-        id: "TEAM-1",
-        name: "Frontend Team",
-        type: "team",
-        employeeCount: 0,
-        budget: "$720,000",
-        lead: "Sarah Connor",
-      },
-      {
-        id: "TEAM-2",
-        name: "Backend Team",
-        type: "team",
-        employeeCount: 10,
-        budget: "$950,000",
-        lead: "John Reese",
-      },
-      {
-        id: "TEAM-3",
-        name: "Mobile Team",
-        type: "team",
-        employeeCount: 6,
-        budget: "$540,000",
-        lead: "Jessica Day",
-      },
-    ],
-    "DEPT-2": [
-      {
-        id: "TEAM-4",
-        name: "Cloud Infrastructure",
-        type: "team",
-        employeeCount: 7,
-        budget: "$840,000",
-        lead: "Marcus Kane",
-      },
-      {
-        id: "TEAM-5",
-        name: "Security Team",
-        type: "team",
-        employeeCount: 5,
-        budget: "$650,000",
-        lead: "Octavia Blake",
-      },
-    ],
-    "DEPT-3": [
-      {
-        id: "TEAM-6",
-        name: "Product Management",
-        type: "team",
-        employeeCount: 4,
-        budget: "$480,000",
-        lead: "Clarke Griffin",
-      },
-      {
-        id: "TEAM-7",
-        name: "UX Research",
-        type: "team",
-        employeeCount: 3,
-        budget: "$360,000",
-        lead: "Raven Reyes",
-      },
-    ],
-  };
-
-  return teamsData[departmentId] || [];
+  // Generate 2-5 teams per department
+  const teamCount = Math.floor(Math.random() * 4) + 2;
+  return generateTeamsForDepartment(departmentId, teamCount);
 };
 
 // Simulated API: Fetch employees for a team
 const fetchEmployeesForTeam = async (teamId: string): Promise<Employee[]> => {
   await delay(800); // Simulate network delay
 
-  // Simulated data based on team
-  const employeesData: Record<string, Employee[]> = {
-    "TEAM-1": [
-      {
-        id: "EMP-1",
-        name: "Alice Johnson",
-        type: "employee",
-        role: "Senior Frontend Developer",
-        salary: "$105,000",
-        email: "alice.johnson@company.com",
-        startDate: "2021-03-15",
-      },
-      {
-        id: "EMP-2",
-        name: "Bob Smith",
-        type: "employee",
-        role: "Frontend Developer",
-        salary: "$85,000",
-        email: "bob.smith@company.com",
-        startDate: "2022-06-01",
-      },
-      {
-        id: "EMP-3",
-        name: "Carol White",
-        type: "employee",
-        role: "UI Designer",
-        salary: "$78,000",
-        email: "carol.white@company.com",
-        startDate: "2022-09-12",
-      },
-    ],
-    "TEAM-2": [
-      {
-        id: "EMP-4",
-        name: "David Brown",
-        type: "employee",
-        role: "Senior Backend Developer",
-        salary: "$115,000",
-        email: "david.brown@company.com",
-        startDate: "2020-01-20",
-      },
-      {
-        id: "EMP-5",
-        name: "Emma Davis",
-        type: "employee",
-        role: "Backend Developer",
-        salary: "$90,000",
-        email: "emma.davis@company.com",
-        startDate: "2021-11-05",
-      },
-    ],
-    "TEAM-3": [
-      {
-        id: "EMP-6",
-        name: "Frank Miller",
-        type: "employee",
-        role: "iOS Developer",
-        salary: "$95,000",
-        email: "frank.miller@company.com",
-        startDate: "2021-07-18",
-      },
-      {
-        id: "EMP-7",
-        name: "Grace Lee",
-        type: "employee",
-        role: "Android Developer",
-        salary: "$92,000",
-        email: "grace.lee@company.com",
-        startDate: "2022-02-28",
-      },
-    ],
-    "TEAM-4": [
-      {
-        id: "EMP-8",
-        name: "Henry Wilson",
-        type: "employee",
-        role: "DevOps Engineer",
-        salary: "$110,000",
-        email: "henry.wilson@company.com",
-        startDate: "2020-08-10",
-      },
-      {
-        id: "EMP-9",
-        name: "Iris Taylor",
-        type: "employee",
-        role: "Cloud Architect",
-        salary: "$125,000",
-        email: "iris.taylor@company.com",
-        startDate: "2019-05-22",
-      },
-    ],
-    "TEAM-5": [
-      {
-        id: "EMP-10",
-        name: "Jack Anderson",
-        type: "employee",
-        role: "Security Engineer",
-        salary: "$108,000",
-        email: "jack.anderson@company.com",
-        startDate: "2021-04-14",
-      },
-    ],
-    "TEAM-6": [
-      {
-        id: "EMP-11",
-        name: "Karen Thomas",
-        type: "employee",
-        role: "Product Manager",
-        salary: "$120,000",
-        email: "karen.thomas@company.com",
-        startDate: "2020-10-05",
-      },
-      {
-        id: "EMP-12",
-        name: "Liam Martinez",
-        type: "employee",
-        role: "Associate Product Manager",
-        salary: "$88,000",
-        email: "liam.martinez@company.com",
-        startDate: "2023-01-10",
-      },
-    ],
-    "TEAM-7": [
-      {
-        id: "EMP-13",
-        name: "Mia Garcia",
-        type: "employee",
-        role: "UX Researcher",
-        salary: "$95,000",
-        email: "mia.garcia@company.com",
-        startDate: "2021-12-01",
-      },
-    ],
-  };
-
-  return employeesData[teamId] || [];
+  // Generate 1-8 employees per team
+  const employeeCount = Math.floor(Math.random() * 8) + 1;
+  return generateEmployeesForTeam(teamId, employeeCount);
 };
 
 export const dynamicRowLoadingDefaults = {
@@ -324,32 +317,8 @@ export const dynamicRowLoadingDefaults = {
 
 const DynamicRowLoadingExample = (props: UniversalTableProps) => {
   // Initialize with departments only (no teams loaded yet)
-  const [rows, setRows] = useState<Department[]>([
-    {
-      id: "DEPT-1",
-      name: "Engineering",
-      type: "department",
-      employeeCount: 24,
-      budget: "$2,210,000",
-      manager: "Michael Scott",
-    },
-    {
-      id: "DEPT-2",
-      name: "Operations",
-      type: "department",
-      employeeCount: 12,
-      budget: "$1,490,000",
-      manager: "Dwight Schrute",
-    },
-    {
-      id: "DEPT-3",
-      name: "Product",
-      type: "department",
-      employeeCount: 7,
-      budget: "$840,000",
-      manager: "Pam Beesly",
-    },
-  ]);
+  // You can change the number of departments here (default: 5)
+  const [rows, setRows] = useState<Department[]>(() => generateDepartments(40));
 
   const handleRowExpand = useCallback(
     async ({
@@ -481,6 +450,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
       </div>
 
       <SimpleTable
+        autoExpandColumns
         canExpandRowGroup={(row) => {
           // Only show expand icon if row has employeeCount > 0
           const typedRow = row as Department | Team | Employee;
@@ -501,6 +471,9 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         // loadingStateRenderer={<div>Loading...</div>}
         errorStateRenderer={<div>Error loading data</div>}
         emptyStateRenderer={<div>No data found</div>}
+        customTheme={{
+          rowHeight: 100,
+        }}
       />
     </div>
   );
