@@ -5,6 +5,8 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
 import { CustomTheme } from "../types/CustomTheme";
+import { GetRowId } from "../types/GetRowId";
+import { GenerateRowIdParams } from "../types/GenerateRowIdParams";
 
 /**
  * Calculate the height of a nested grid based on the number of child rows
@@ -183,52 +185,52 @@ export const isRowArray = (data: any): data is Row[] => {
 };
 
 /**
- * Get the row ID from its position path or from a row property.
+ * Generate the row ID array from index path and optional custom identifier.
  *
- * If rowIdAccessor is provided:
- * - For root-level rows (depth 0): Uses the value from row[rowIdAccessor]
- * - For nested rows: Creates composite ID using parent IDs and the rowIdAccessor value
+ * The row ID is always an array that includes:
+ * - The index at each level of nesting
+ * - The grouping key between levels (for readability)
+ * - An optional custom identifier from getRowId (appended at the end)
  *
- * If rowIdAccessor is not provided:
- * - Uses the row's index-based path to create a unique identifier (backward compatible)
+ * Examples:
+ * - Root row (index 1): [1]
+ * - Nested store (parent index 1, store index 5): [1, "stores", 5]
+ * - With custom ID: [1, "stores", 5, "STORE-101"]
+ * - Deep nesting: [1, "stores", 5, "products", 2, "PROD-24"]
  *
- * Examples with rowIdAccessor='id':
- * - Root row with id='REG-1': "REG-1"
- * - Nested store under REG-1 with id='STORE-101': "REG-1-stores-STORE-101"
- * - Deeply nested: "REG-1-stores-STORE-101-products-PROD-5"
- *
- * Examples without rowIdAccessor (index-based):
- * - Root row at index 0: "0"
- * - Nested row under parent 0, divisions array, index 2: "0-divisions-2"
- *
- * @param params - Object containing row data, rowIdAccessor, and rowPath
- * @returns A unique row ID
+ * @param params - Object containing row data, getRowId function, and metadata
+ * @returns An array representing the unique row ID path
  */
-export const getRowId = (
-  params:
-    | { row: Row; rowIdAccessor: Accessor; rowPath?: (string | number)[] }
-    | (string | number)[],
-): RowId => {
-  // Backward compatibility: if params is an array, treat it as rowPath
-  if (Array.isArray(params)) {
-    return params.join("-");
+export const generateRowId = (params: GenerateRowIdParams): (string | number)[] => {
+  const { row, getRowId, rowIndexPath, rowPath } = params;
+
+  // Start with the full row path (already contains indices and grouping keys)
+  const result: (string | number)[] = [...rowPath];
+
+  // If custom getRowId is provided, append its value to the path
+  if (getRowId) {
+    const customId = getRowId({
+      row: params.row,
+      depth: params.depth,
+      index: params.index,
+      rowPath: params.rowPath,
+      rowIndexPath: params.rowIndexPath,
+      groupingKey: params.groupingKey,
+    });
+    result.push(customId);
   }
 
-  const { row, rowIdAccessor, rowPath } = params;
+  return result;
+};
 
-  // Get the base ID from the row using the accessor
-  const baseId = row[rowIdAccessor] as RowId;
-
-  // If no rowPath or at root level (length 1 = just the index), return the base ID
-  if (!rowPath || rowPath.length <= 1) {
-    return baseId;
-  }
-
-  // For nested rows, create a composite ID using the FULL path
-  // This ensures uniqueness by incorporating all parent IDs
-  // Format: "parentId-groupKey1-childId-groupKey2-grandchildId-..."
-  // Example: ['REG-1', 'stores', 'STORE-101'] becomes "REG-1-stores-STORE-101"
-  return rowPath.join("-");
+/**
+ * Convert a row ID array to a string for use as Map keys, Set members, etc.
+ *
+ * @param rowId - Array of strings/numbers representing the row ID path
+ * @returns A string representation of the row ID
+ */
+export const rowIdToString = (rowId: (string | number)[]): string => {
+  return rowId.join("-");
 };
 
 /**
@@ -293,7 +295,7 @@ export const flattenRowsWithGrouping = ({
   expandedRows,
   collapsedRows,
   rowGrouping = [],
-  rowIdAccessor,
+  getRowId,
   rows,
   displayPositionOffset = 0,
   rowStateMap,
@@ -310,7 +312,7 @@ export const flattenRowsWithGrouping = ({
   expandedRows: Map<string, number>;
   collapsedRows: Map<string, number>;
   rowGrouping?: Accessor[];
-  rowIdAccessor?: Accessor;
+  getRowId?: GetRowId;
   rows: Row[];
   displayPositionOffset?: number;
   rowStateMap?: Map<string | number, RowState>;
@@ -338,15 +340,25 @@ export const flattenRowsWithGrouping = ({
     currentRows.forEach((row, index) => {
       const currentGroupingKey = rowGrouping[currentDepth];
 
-      // Build the ID path (using row IDs when rowIdAccessor is provided)
-      const rowIdentifier: string | number = rowIdAccessor ? String(row[rowIdAccessor]) : index;
-      const rowPath = [...parentIdPath, rowIdentifier];
+      // Build the ID path: always includes index and grouping keys for readability
+      // The parent path already has the pattern: [index, groupKey, index, groupKey, ...]
+      // We add: the current index, then the grouping key (if this row has children)
+      // Example: parent=[1, "stores"], index=5, groupKey="products" -> [1, "stores", 5, "products"]
+      const rowPath = [...parentIdPath, index];
 
-      // Build the index path (always using array indices)
+      // Build the index path (always using array indices only, no grouping keys)
       const rowIndexPath = [...parentIndexPath, index];
 
-      // Get unique row ID that accounts for nesting depth
-      const rowId = rowIdAccessor ? getRowId({ row, rowIdAccessor, rowPath }) : getRowId(rowPath);
+      // Get unique row ID array (includes path + optional custom ID)
+      const rowId = generateRowId({
+        row,
+        getRowId,
+        depth: currentDepth,
+        index,
+        rowPath,
+        rowIndexPath,
+        groupingKey: currentGroupingKey,
+      });
 
       // Determine if this is the last row in a group
       const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
@@ -359,6 +371,7 @@ export const flattenRowsWithGrouping = ({
         groupingKey: currentGroupingKey,
         position,
         isLastGroupRow,
+        rowId,
         rowPath,
         rowIndexPath,
         absoluteRowIndex: position,
@@ -367,9 +380,12 @@ export const flattenRowsWithGrouping = ({
       position++;
       displayPosition++;
 
+      // Convert row ID array to string for use as Map/Set key
+      const rowIdKey = rowIdToString(rowId);
+
       // Check if row should be expanded
       const isExpanded = isRowExpanded(
-        rowId,
+        rowIdKey,
         currentDepth,
         expandedDepths,
         expandedRows,
@@ -378,7 +394,7 @@ export const flattenRowsWithGrouping = ({
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {
-        const rowState = rowStateMap?.get(rowId);
+        const rowState = rowStateMap?.get(rowIdKey);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
         // Check if any header with expandable=true has a nestedTable configuration
@@ -400,6 +416,7 @@ export const flattenRowsWithGrouping = ({
             customTheme,
           });
 
+          const nestedGridRowPath = [...rowPath, currentGroupingKey];
           result.push({
             row: {}, // Empty row object, content will be rendered by NestedGridRow
             depth: currentDepth + 1,
@@ -407,7 +424,8 @@ export const flattenRowsWithGrouping = ({
             groupingKey: currentGroupingKey,
             position,
             isLastGroupRow: false,
-            rowPath: [...rowPath, currentGroupingKey],
+            rowId: nestedGridRowPath, // Nested grid uses path as ID
+            rowPath: nestedGridRowPath,
             rowIndexPath,
             nestedTable: {
               parentRow: row,
@@ -428,6 +446,7 @@ export const flattenRowsWithGrouping = ({
             (rowState.isEmpty && hasEmptyRenderer);
 
           if (shouldShowState) {
+            const stateRowPath = [...rowPath, currentGroupingKey];
             result.push({
               row: {}, // Empty row object, content will be rendered by state indicator
               depth: currentDepth + 1,
@@ -435,10 +454,11 @@ export const flattenRowsWithGrouping = ({
               groupingKey: currentGroupingKey,
               position,
               isLastGroupRow: false,
-              rowPath: [...rowPath, currentGroupingKey],
+              rowId: stateRowPath, // State indicator uses path as ID
+              rowPath: stateRowPath,
               rowIndexPath,
               stateIndicator: {
-                parentRowId: rowId,
+                parentRowId: rowIdKey,
                 state: rowState,
               },
               absoluteRowIndex: position,
@@ -447,6 +467,7 @@ export const flattenRowsWithGrouping = ({
             displayPosition++;
           } else if (rowState.loading && !hasLoadingRenderer) {
             // If loading but no custom renderer, add a dummy skeleton row
+            const skeletonRowPath = [...rowPath, currentGroupingKey, "loading-skeleton"];
             result.push({
               row: {},
               depth: currentDepth + 1,
@@ -454,7 +475,8 @@ export const flattenRowsWithGrouping = ({
               groupingKey: currentGroupingKey,
               position,
               isLastGroupRow: false,
-              rowPath: [...rowPath, currentGroupingKey, "loading-skeleton"],
+              rowId: skeletonRowPath,
+              rowPath: skeletonRowPath,
               rowIndexPath,
               isLoadingSkeleton: true,
               absoluteRowIndex: position,

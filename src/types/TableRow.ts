@@ -9,7 +9,11 @@ type TableRow = {
   isLastGroupRow: boolean;
   position: number;
   row: Row;
-  // Path to reach this row using row IDs (when rowIdAccessor is provided)
+  // Unique row ID array including indices, grouping keys, and optional custom ID
+  // Example: [1, "stores", 5] or [1, "stores", 5, "STORE-101"]
+  // Use rowIdToString(rowId) to convert to string for Map keys
+  rowId: (string | number)[];
+  // Path to reach this row using row IDs (when getRowId is provided)
   // Example: ['REG-1', 'stores', 'STORE-101'] means find region with id='REG-1', then its stores, then store with id='STORE-101'
   rowPath?: (string | number)[];
   // Path to reach this row using array indices (always available)

@@ -7,7 +7,7 @@ import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
-import { getRowId } from "../../utils/rowUtils";
+import { rowIdToString } from "../../utils/rowUtils";
 import RowStateIndicator from "./RowStateIndicator";
 import NestedGridRow from "./NestedGridRow";
 
@@ -114,7 +114,8 @@ const TableRow = ({
       }
 
       // Get the parent row from rows using the parentRowId
-      const parentRow = rows.find((r, index) => getRowId([index]) === stateIndicator.parentRowId);
+      // parentRowId is a string like "0" or "1-stores-5", so we compare it directly
+      const parentRow = rows.find((r, index) => rowIdToString([index]) === stateIndicator.parentRowId);
 
       return (
         <div
@@ -156,10 +157,10 @@ const TableRow = ({
   const isOdd = position % 2 === 0;
 
   // Get stable row ID for key (includes path for nested rows)
-  const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
+  const rowId = rowIdToString(tableRow.rowId);
 
   // Check if this row is selected
-  const isSelected = isRowSelected ? isRowSelected(String(rowId)) : false;
+  const isSelected = isRowSelected ? isRowSelected(rowId) : false;
 
   return (
     <div

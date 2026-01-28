@@ -31,7 +31,7 @@ import useAriaAnnouncements from "../../hooks/useAriaAnnouncements";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import RowState from "../../types/RowState";
-import { getRowId, flattenRowsWithGrouping } from "../../utils/rowUtils";
+import { generateRowId, rowIdToString, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import useExpandedDepths from "../../hooks/useExpandedDepths";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
@@ -104,7 +104,7 @@ const SimpleTableComp = ({
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowButtons,
   rowGrouping,
-  rowIdAccessor,
+  getRowId,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
@@ -171,13 +171,19 @@ const SimpleTableComp = ({
     // Rebuild the index map
     const newIndexMap = new Map<string | number, number>();
     rows.forEach((row, index) => {
-      const rowId = rowIdAccessor
-        ? getRowId({ row, rowIdAccessor, rowPath: [index] })
-        : getRowId([index]);
-      newIndexMap.set(rowId, index);
+      const rowIdArray = generateRowId({
+        row,
+        getRowId,
+        depth: 0,
+        index,
+        rowPath: [index],
+        rowIndexPath: [index],
+      });
+      const rowIdKey = rowIdToString(rowIdArray);
+      newIndexMap.set(rowIdKey, index);
     });
     rowIndexMapRef.current = newIndexMap;
-  }, [rows, rowIdAccessor]);
+  }, [rows, getRowId]);
 
   // Handle isLoading prop changes with deferred clearing
   useEffect(() => {
@@ -528,7 +534,7 @@ const SimpleTableComp = ({
   const { flattenedRows, heightOffsets, paginatableRows, parentEndPositions } = useFlattenedRows({
     rows: sortedRows,
     rowGrouping,
-    rowIdAccessor,
+    getRowId,
     expandedRows,
     collapsedRows,
     expandedDepths,
@@ -563,7 +569,7 @@ const SimpleTableComp = ({
   const { flattenedRows: originalFlattenedRows } = useFlattenedRows({
     rows: aggregatedRows,
     rowGrouping,
-    rowIdAccessor,
+    getRowId,
     expandedRows,
     collapsedRows,
     expandedDepths,
@@ -590,6 +596,7 @@ const SimpleTableComp = ({
           groupingKey: undefined,
           position: index,
           isLastGroupRow: false,
+          rowId: [index],
           rowPath: [index],
           absoluteRowIndex: index,
         }));
@@ -597,7 +604,7 @@ const SimpleTableComp = ({
       return flattenRowsWithGrouping({
         rows: filteredPreview,
         rowGrouping,
-        rowIdAccessor,
+        getRowId,
         expandedRows,
         collapsedRows,
         expandedDepths,
@@ -640,6 +647,7 @@ const SimpleTableComp = ({
           groupingKey: undefined,
           position: index,
           isLastGroupRow: false,
+          rowId: [index],
           rowPath: [index],
           absoluteRowIndex: index,
         }));
@@ -647,7 +655,7 @@ const SimpleTableComp = ({
       return flattenRowsWithGrouping({
         rows: sortedPreview,
         rowGrouping,
-        rowIdAccessor,
+        getRowId,
         expandedRows,
         collapsedRows,
         expandedDepths,

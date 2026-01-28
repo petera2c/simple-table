@@ -57,8 +57,10 @@ import {
   EmptyStateRendererProps,
 } from "./types/RowStateRendererProps";
 import { CustomTheme, DEFAULT_CUSTOM_THEME } from "./types/CustomTheme";
+import { GetRowId, GetRowIdParams } from "./types/GetRowId";
+import { rowIdToString } from "./utils/rowUtils";
 
-export { SimpleTable, LineAreaChart, BarChart, DefaultEmptyState, DEFAULT_CUSTOM_THEME };
+export { SimpleTable, LineAreaChart, BarChart, DefaultEmptyState, DEFAULT_CUSTOM_THEME, rowIdToString };
 
 // Tree-shakeable icon exports (imported separately to reduce bundle size)
 export * from "./icons";
@@ -92,6 +94,8 @@ export type {
   ExportValueProps,
   FilterCondition,
   FooterRendererProps,
+  GetRowId,
+  GetRowIdParams,
   LoadingStateRenderer,
   LoadingStateRendererProps,
   HeaderDropdown,

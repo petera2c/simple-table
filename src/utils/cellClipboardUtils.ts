@@ -1,7 +1,7 @@
 import Cell from "../types/Cell";
 import HeaderObject from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
-import { getRowId, getNestedValue, setNestedValue } from "./rowUtils";
+import { rowIdToString, getNestedValue, setNestedValue } from "./rowUtils";
 
 interface CellRegistryEntry {
   updateContent: (newValue: any) => void;
@@ -151,7 +151,7 @@ export const pasteClipboardDataToCells = (
 
       const targetRow = tableRows[targetRowIndex];
       const targetHeader = flattenedLeafHeaders[targetColIndex];
-      const targetRowId = getRowId(targetRow.rowPath || [targetRow.position]);
+      const targetRowId = rowIdToString(targetRow.rowId);
 
       // Track warning flash for non-editable cells
       if (!targetHeader?.isEditable) {
@@ -243,7 +243,7 @@ export const deleteSelectedCellsContent = (
 
     const targetRow = tableRows[rowIndex];
     const targetHeader = flattenedLeafHeaders[colIndex];
-    const targetRowId = getRowId(targetRow.rowPath || [targetRow.position]);
+    const targetRowId = rowIdToString(targetRow.rowId);
 
     // Track warning flash for non-editable cells
     if (!targetHeader?.isEditable) {

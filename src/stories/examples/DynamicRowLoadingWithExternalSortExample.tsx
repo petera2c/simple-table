@@ -743,7 +743,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
         onRowGroupExpand={handleRowExpand}
         onSortChange={handleSortChange}
         rowGrouping={["stores", "products"]}
-        rowIdAccessor="id"
+        getRowId={({ row }) => row.id as string | number}
         rows={rows}
         rowsPerPage={rowsPerPage}
         selectableCells

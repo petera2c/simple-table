@@ -6,7 +6,7 @@ import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
-import { getRowId } from "../../utils/rowUtils";
+import { rowIdToString } from "../../utils/rowUtils";
 
 const TableBody = ({
   mainTemplateColumns,
@@ -131,7 +131,7 @@ const TableBody = ({
 
     // Map each row's ID to its index in the visible rows array
     rowsToRender.forEach((tableRow, index) => {
-      const rowId = String(getRowId(tableRow.rowPath || [tableRow.position]));
+      const rowId = rowIdToString(tableRow.rowId);
       indices[rowId] = index;
     });
 

@@ -7,7 +7,7 @@ import { Pinned } from "../../types/Pinned";
 import { useTableContext } from "../../context/TableContext";
 import RowIndices from "../../types/RowIndices";
 import ColumnIndices from "../../types/ColumnIndices";
-import { getRowId } from "../../utils/rowUtils";
+import { rowIdToString } from "../../utils/rowUtils";
 
 interface RenderCellsProps {
   columnIndexStart?: number;
@@ -38,7 +38,7 @@ const RenderCells = ({
   return (
     <>
       {filteredHeaders.map((header, index) => {
-        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
+        const rowId = rowIdToString(tableRow.rowId);
         const cellKey = getCellId({ accessor: header.accessor, rowId });
 
         return (
@@ -90,7 +90,7 @@ const RecursiveRenderCells = ({
   const { getBorderClass, isSelected, isInitialFocusedCell, collapsedHeaders } = useTableContext();
 
   // Calculate rowId once at the beginning (includes path for nested rows)
-  const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
+  const rowId = rowIdToString(tableRow.rowId);
 
   if (header.children && header.children.length > 0) {
     const filteredChildren = header.children.filter((child) =>

@@ -4,18 +4,20 @@ import Row from "../types/Row";
 import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
 import {
-  getRowId,
+  generateRowId,
+  rowIdToString,
   getNestedRows,
   isRowExpanded,
   calculateNestedGridHeight,
 } from "../utils/rowUtils";
 import { HeightOffsets } from "../utils/infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
+import { GetRowId } from "../types/GetRowId";
 
 interface UseFlattenedRowsProps {
   rows: Row[];
   rowGrouping?: Accessor[];
-  rowIdAccessor?: Accessor;
+  getRowId?: GetRowId;
   expandedRows: Map<string, number>;
   collapsedRows: Map<string, number>;
   expandedDepths: Set<number>;
@@ -45,7 +47,7 @@ interface UseFlattenedRowsResult {
 const useFlattenedRows = ({
   rows,
   rowGrouping = [],
-  rowIdAccessor,
+  getRowId,
   expandedRows,
   collapsedRows,
   expandedDepths,
@@ -104,15 +106,25 @@ const useFlattenedRows = ({
         const currentGroupingKey = rowGrouping[currentDepth];
         const position = result.length;
 
-        // Build the ID path (using row IDs when rowIdAccessor is provided)
-        const rowIdentifier: string | number = rowIdAccessor ? String(row[rowIdAccessor]) : index;
-        const rowPath = [...parentIdPath, rowIdentifier];
+        // Build the ID path: always includes index and grouping keys for readability
+        // The parent path already has the pattern: [index, groupKey, index, groupKey, ...]
+        // We add: the current index
+        // Example: parent=[1, "stores"], index=5 -> [1, "stores", 5]
+        const rowPath = [...parentIdPath, index];
 
-        // Build the index path (always using array indices)
+        // Build the index path (always using array indices only, no grouping keys)
         const rowIndexPath = [...parentIndexPath, index];
 
-        // Get unique row ID that accounts for nesting depth
-        const rowId = rowIdAccessor ? getRowId({ row, rowIdAccessor, rowPath }) : getRowId(rowPath);
+        // Get unique row ID array (includes path + optional custom ID)
+        const rowId = generateRowId({
+          row,
+          getRowId,
+          depth: currentDepth,
+          index,
+          rowPath,
+          rowIndexPath,
+          groupingKey: currentGroupingKey,
+        });
 
         // Determine if this is the last row at depth 0
         const isLastGroupRow = currentDepth === 0;
@@ -124,6 +136,7 @@ const useFlattenedRows = ({
           groupingKey: currentGroupingKey,
           position,
           isLastGroupRow,
+          rowId,
           rowPath,
           rowIndexPath,
           absoluteRowIndex: position,
@@ -136,9 +149,12 @@ const useFlattenedRows = ({
         // Increment displayPosition for this data row
         displayPosition++;
 
+        // Convert row ID array to string for use as Map/Set key
+        const rowIdKey = rowIdToString(rowId);
+
         // Check if row should be expanded using the unique ID
         const isExpanded = isRowExpanded(
-          rowId,
+          rowIdKey,
           currentDepth,
           expandedDepths,
           expandedRows,
@@ -147,7 +163,7 @@ const useFlattenedRows = ({
 
         // If row is expanded and has nested data for the current grouping level
         if (isExpanded && currentDepth < rowGrouping.length) {
-          const rowState = rowStateMap?.get(rowId);
+          const rowState = rowStateMap?.get(rowIdKey);
           const nestedRows = getNestedRows(row, currentGroupingKey);
 
           // Check if any header with expandable=true has a nestedTable configuration
@@ -177,6 +193,7 @@ const useFlattenedRows = ({
             // Add to height offsets array (kept sorted by position)
             heightOffsets.push([nestedGridPosition, extraHeight]);
 
+            const nestedGridRowPath = [...rowPath, currentGroupingKey];
             result.push({
               row: {}, // Empty row object, content will be rendered by NestedGridRow
               depth: currentDepth + 1,
@@ -184,7 +201,8 @@ const useFlattenedRows = ({
               groupingKey: currentGroupingKey,
               position: nestedGridPosition,
               isLastGroupRow: false,
-              rowPath: [...rowPath, currentGroupingKey],
+              rowId: nestedGridRowPath,
+              rowPath: nestedGridRowPath,
               rowIndexPath,
               nestedTable: {
                 parentRow: row,
@@ -205,6 +223,7 @@ const useFlattenedRows = ({
 
             if (shouldShowState) {
               const statePosition = result.length;
+              const stateRowPath = [...rowPath, currentGroupingKey];
               result.push({
                 row: {}, // Empty row object, content will be rendered by state indicator
                 depth: currentDepth + 1,
@@ -212,10 +231,11 @@ const useFlattenedRows = ({
                 groupingKey: currentGroupingKey,
                 position: statePosition,
                 isLastGroupRow: false,
-                rowPath: [...rowPath, currentGroupingKey],
+                rowId: stateRowPath,
+                rowPath: stateRowPath,
                 rowIndexPath,
                 stateIndicator: {
-                  parentRowId: rowId,
+                  parentRowId: rowIdKey,
                   state: rowState,
                 },
                 absoluteRowIndex: statePosition,
@@ -224,6 +244,7 @@ const useFlattenedRows = ({
             } else if (rowState.loading && !hasLoadingRenderer) {
               // If loading but no custom renderer, add a dummy skeleton row
               const skeletonPosition = result.length;
+              const skeletonRowPath = [...rowPath, currentGroupingKey, "loading-skeleton"];
               result.push({
                 row: {},
                 depth: currentDepth + 1,
@@ -231,7 +252,8 @@ const useFlattenedRows = ({
                 groupingKey: currentGroupingKey,
                 position: skeletonPosition,
                 isLastGroupRow: false,
-                rowPath: [...rowPath, currentGroupingKey, "loading-skeleton"],
+                rowId: skeletonRowPath,
+                rowPath: skeletonRowPath,
                 rowIndexPath,
                 isLoadingSkeleton: true,
                 absoluteRowIndex: skeletonPosition,
@@ -266,7 +288,7 @@ const useFlattenedRows = ({
   }, [
     rows,
     rowGrouping,
-    rowIdAccessor,
+    getRowId,
     expandedRows,
     collapsedRows,
     expandedDepths,
