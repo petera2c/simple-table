@@ -21,6 +21,8 @@ interface UseTableRowProcessingProps {
   originalFlattenedRows: TableRow[];
   /** Rows that should count towards pagination (excludes nested grids, state indicators) */
   paginatableRows: TableRow[];
+  /** End positions of each depth-0 parent row (including its children) */
+  parentEndPositions: number[];
   currentPage: number;
   rowsPerPage: number;
   shouldPaginate: boolean;
@@ -41,6 +43,7 @@ const useTableRowProcessing = ({
   flattenedRows,
   originalFlattenedRows,
   paginatableRows,
+  parentEndPositions,
   currentPage,
   rowsPerPage,
   shouldPaginate,
@@ -74,7 +77,7 @@ const useTableRowProcessing = ({
 
   // Apply pagination to already-flattened rows and recalculate positions
   const applyPagination = useCallback(
-    (allRows: TableRow[], paginatableRowsForCalc: TableRow[]): TableRow[] => {
+    (allRows: TableRow[], parentEndPositions: number[]): TableRow[] => {
       if (!shouldPaginate || serverSidePagination) {
         // No pagination - return all rows with recalculated positions
         return allRows.map((tableRow, index) => ({
@@ -84,40 +87,21 @@ const useTableRowProcessing = ({
         }));
       }
 
-      // Determine which paginatable rows should be on this page
-      const startIndex = (currentPage - 1) * rowsPerPage;
-      const endIndex = currentPage * rowsPerPage;
-      const paginatedDataRows = paginatableRowsForCalc.slice(startIndex, endIndex);
+      // Calculate which parent rows should be on this page
+      const startParentIndex = (currentPage - 1) * rowsPerPage; // e.g., 0 for page 1
+      const endParentIndex = currentPage * rowsPerPage; // e.g., 10 for page 1
 
-      // Create a set of row IDs that should be included on this page
-      const includedRowIds = new Set(
-        paginatedDataRows.map((tableRow) =>
-          String(getRowId(tableRow.rowPath || [tableRow.position])),
-        ),
-      );
+      // Find the start and end positions in the flattened array
+      // startPosition: where the first parent on this page begins (0 for first parent)
+      // endPosition: where the last parent on this page ends (including all its children)
+      const startPosition = startParentIndex === 0 ? 0 : parentEndPositions[startParentIndex - 1];
+      const endPosition =
+        endParentIndex <= parentEndPositions.length
+          ? parentEndPositions[endParentIndex - 1]
+          : allRows.length;
 
-      // Filter all rows to include:
-      // 1. Paginatable rows that are on this page
-      // 2. Nested grid rows whose parent is on this page
-      // 3. State indicator rows whose parent is on this page
-      const paginatedRows = allRows.filter((tableRow) => {
-        const rowId = String(getRowId(tableRow.rowPath || [tableRow.position]));
-
-        // Include if this is a paginatable row on this page
-        if (includedRowIds.has(rowId)) {
-          return true;
-        }
-
-        // Include if this is a nested grid or state indicator whose parent is on this page
-        if (tableRow.nestedTable || tableRow.stateIndicator || tableRow.isLoadingSkeleton) {
-          // Get parent path (remove last element)
-          const parentPath = tableRow.rowPath ? tableRow.rowPath.slice(0, -1) : [];
-          const parentId = String(getRowId(parentPath));
-          return includedRowIds.has(parentId);
-        }
-
-        return false;
-      });
+      // Slice the flattened array to get all rows for this page (parents + their children)
+      const paginatedRows = allRows.slice(startPosition, endPosition);
 
       // Recalculate positions after pagination
       return paginatedRows.map((tableRow, index) => {
@@ -126,7 +110,7 @@ const useTableRowProcessing = ({
         const absoluteRowIndex = tableRow.nestedTable
           ? tableRow.absoluteRowIndex // Keep original position from flattenedRows
           : shouldPaginate && !serverSidePagination
-            ? startIndex + index
+            ? startPosition + index
             : index;
 
         return {
@@ -155,11 +139,11 @@ const useTableRowProcessing = ({
   }, [originalFlattenedRows]);
 
   // Current table rows (paginated for display)
-  // Pagination uses paginatableRows to determine which data rows to show,
-  // then includes any nested grid/state rows that belong to those data rows
+  // Pagination uses parentEndPositions to slice the flattened array,
+  // ensuring we show exactly rowsPerPage parent rows plus all their children
   const currentTableRows = useMemo(() => {
-    return applyPagination(flattenedRows, paginatableRows);
-  }, [flattenedRows, paginatableRows, applyPagination]);
+    return applyPagination(flattenedRows, parentEndPositions);
+  }, [flattenedRows, parentEndPositions, applyPagination]);
 
   // Remap heightOffsets for pagination
   // When paginating, row positions are reset to 0, 1, 2... for each page
@@ -403,12 +387,9 @@ const useTableRowProcessing = ({
 
       // Calculate what rows would be after filter (already flattened from preview function)
       const newFlattenedRows = computeFilteredRowsPreview(filter);
-      // Filter to get paginatable rows for the new state
-      const newPaginatableRows = newFlattenedRows.filter(
-        (tableRow) =>
-          !tableRow.nestedTable && !tableRow.stateIndicator && !tableRow.isLoadingSkeleton,
-      );
-      const newPaginatedRows = applyPagination(newFlattenedRows, newPaginatableRows);
+      // Since shouldPaginate is false here (early return above), pass empty array
+      // applyPagination will just return all rows when !shouldPaginate
+      const newPaginatedRows = applyPagination(newFlattenedRows, []);
       const newVisibleRows = getVisibleRows({
         bufferRowCount,
         contentHeight,
@@ -462,12 +443,9 @@ const useTableRowProcessing = ({
 
       // Calculate what rows would be after sort (already flattened from preview function)
       const newFlattenedRows = computeSortedRowsPreview(accessor);
-      // Filter to get paginatable rows for the new state
-      const newPaginatableRows = newFlattenedRows.filter(
-        (tableRow) =>
-          !tableRow.nestedTable && !tableRow.stateIndicator && !tableRow.isLoadingSkeleton,
-      );
-      const newPaginatedRows = applyPagination(newFlattenedRows, newPaginatableRows);
+      // Since shouldPaginate is false here (early return above), pass empty array
+      // applyPagination will just return all rows when !shouldPaginate
+      const newPaginatedRows = applyPagination(newFlattenedRows, []);
       const newVisibleRows = getVisibleRows({
         bufferRowCount,
         contentHeight,

@@ -104,6 +104,7 @@ const SimpleTableComp = ({
   prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
   rowButtons,
   rowGrouping,
+  rowIdAccessor,
   rows,
   rowsPerPage = 10,
   selectableCells = false,
@@ -154,7 +155,7 @@ const SimpleTableComp = ({
   // Local state
   // Manage rows internally to allow imperative API mutations to trigger re-renders
   const [localRows, setLocalRows] = useState<Row[]>(rows);
-  
+
   // Internal loading state that can be deferred
   const [internalIsLoading, setInternalIsLoading] = useState(isLoading);
   const previousIsLoadingRef = useRef(isLoading);
@@ -170,11 +171,13 @@ const SimpleTableComp = ({
     // Rebuild the index map
     const newIndexMap = new Map<string | number, number>();
     rows.forEach((row, index) => {
-      const rowId = getRowId([index]);
+      const rowId = rowIdAccessor
+        ? getRowId({ row, rowIdAccessor, rowPath: [index] })
+        : getRowId([index]);
       newIndexMap.set(rowId, index);
     });
     rowIndexMapRef.current = newIndexMap;
-  }, [rows]);
+  }, [rows, rowIdAccessor]);
 
   // Handle isLoading prop changes with deferred clearing
   useEffect(() => {
@@ -522,9 +525,10 @@ const SimpleTableComp = ({
 
   // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
   // Done BEFORE pagination so rowsPerPage correctly counts data rows (excluding nested grids)
-  const { flattenedRows, heightOffsets, paginatableRows } = useFlattenedRows({
+  const { flattenedRows, heightOffsets, paginatableRows, parentEndPositions } = useFlattenedRows({
     rows: sortedRows,
     rowGrouping,
+    rowIdAccessor,
     expandedRows,
     collapsedRows,
     expandedDepths,
@@ -559,6 +563,7 @@ const SimpleTableComp = ({
   const { flattenedRows: originalFlattenedRows } = useFlattenedRows({
     rows: aggregatedRows,
     rowGrouping,
+    rowIdAccessor,
     expandedRows,
     collapsedRows,
     expandedDepths,
@@ -592,6 +597,7 @@ const SimpleTableComp = ({
       return flattenRowsWithGrouping({
         rows: filteredPreview,
         rowGrouping,
+        rowIdAccessor,
         expandedRows,
         collapsedRows,
         expandedDepths,
@@ -641,6 +647,7 @@ const SimpleTableComp = ({
       return flattenRowsWithGrouping({
         rows: sortedPreview,
         rowGrouping,
+        rowIdAccessor,
         expandedRows,
         collapsedRows,
         expandedDepths,
@@ -696,6 +703,7 @@ const SimpleTableComp = ({
     flattenedRows,
     originalFlattenedRows,
     paginatableRows,
+    parentEndPositions,
     currentPage,
     rowsPerPage,
     shouldPaginate,

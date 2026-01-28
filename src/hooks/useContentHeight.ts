@@ -77,13 +77,8 @@ export const useContentHeight = ({
       return Math.max(0, maxHeightPx - actualHeaderHeight);
     }
 
-    // When pagination is enabled and no height is specified, use content-based height
-    if (!height && shouldPaginate && rowsPerPage) {
-      // Calculate height based on rows per page (plus header row)
-      return rowHeight * (rowsPerPage + 1);
-    }
-
-    // When no height is specified and not paginating, return undefined to disable virtualization
+    // When no height is specified, return undefined to disable virtualization
+    // This allows the table to grow naturally to fit all content (paginated or not)
     if (!height) return undefined;
 
     // Convert height to pixels
