@@ -435,7 +435,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         setError(error instanceof Error ? error.message : "Failed to load data");
       }
     },
-    []
+    [],
   );
 
   return (

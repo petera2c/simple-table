@@ -154,7 +154,7 @@ const SimpleTableComp = ({
   // Local state
   // Manage rows internally to allow imperative API mutations to trigger re-renders
   const [localRows, setLocalRows] = useState<Row[]>(rows);
-  
+
   // Internal loading state that can be deferred
   const [internalIsLoading, setInternalIsLoading] = useState(isLoading);
   const previousIsLoadingRef = useRef(isLoading);
@@ -522,7 +522,7 @@ const SimpleTableComp = ({
 
   // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
   // Done BEFORE pagination so rowsPerPage correctly counts data rows (excluding nested grids)
-  const { flattenedRows, heightOffsets, paginatableRows } = useFlattenedRows({
+  const { flattenedRows, heightOffsets, paginatableRows, parentEndPositions } = useFlattenedRows({
     rows: sortedRows,
     rowGrouping,
     expandedRows,
@@ -696,6 +696,7 @@ const SimpleTableComp = ({
     flattenedRows,
     originalFlattenedRows,
     paginatableRows,
+    parentEndPositions,
     currentPage,
     rowsPerPage,
     shouldPaginate,

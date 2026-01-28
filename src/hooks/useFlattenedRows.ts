@@ -32,6 +32,7 @@ interface UseFlattenedRowsResult {
   flattenedRows: TableRow[];
   heightOffsets: HeightOffsets;
   paginatableRows: TableRow[]; // Rows excluding nested grids and state indicators (for pagination)
+  parentEndPositions: number[]; // Track the end position of each depth-0 parent row (including its children)
 }
 
 /**
@@ -70,16 +71,21 @@ const useFlattenedRows = ({
             absoluteRowIndex: index,
           }) as TableRow,
       );
+      // For non-grouped rows, each row is its own "parent" with end position = index + 1
+      const parentEndPositions = rows.map((_, index) => index + 1);
+      
       return {
         flattenedRows,
         heightOffsets: [],
         paginatableRows: flattenedRows, // Same as flattenedRows when no grouping
+        parentEndPositions,
       };
     }
 
     const result: TableRow[] = [];
     const paginatableRowsBuilder: TableRow[] = [];
     const heightOffsets: HeightOffsets = [];
+    const parentEndPositions: number[] = [];
 
     // Track displayPosition separately from position
     // displayPosition is for UI row numbers (skips nested grid rows)
@@ -229,6 +235,11 @@ const useFlattenedRows = ({
             processRows(nestedRows, currentDepth + 1, nestedPath);
           }
         }
+        
+        // After processing this depth-0 parent and all its children, record the end position
+        if (currentDepth === 0) {
+          parentEndPositions.push(result.length);
+        }
       });
     };
 
@@ -238,6 +249,7 @@ const useFlattenedRows = ({
       flattenedRows: result,
       heightOffsets,
       paginatableRows: paginatableRowsBuilder,
+      parentEndPositions,
     };
   }, [
     rows,

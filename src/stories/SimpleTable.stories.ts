@@ -15,6 +15,9 @@ import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import DynamicRowLoadingExample, {
   dynamicRowLoadingDefaults,
 } from "./examples/DynamicRowLoadingExample";
+import DynamicRowLoadingWithExternalSortExample, {
+  dynamicRowLoadingWithExternalSortDefaults,
+} from "./examples/DynamicRowLoadingWithExternalSortExample";
 import DynamicNestedTableExample from "./examples/DynamicNestedTableExample";
 import EditableCellsExample from "./examples/EditableCells";
 import ExpansionControlExample, {
@@ -390,6 +393,27 @@ export const DynamicRowLoading: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates the onRowGroupExpand callback for lazy-loading hierarchical data on demand. Departments load immediately without children. When you expand a department, teams are fetched from a simulated API. When you expand a team, employees are fetched. This pattern is perfect for large datasets where loading all nested data upfront would be too expensive. Open the browser console to see the simulated API calls!",
+      },
+    },
+  },
+};
+
+export const DynamicRowLoadingWithExternalSort: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...dynamicRowLoadingWithExternalSortDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: DynamicRowLoadingWithExternalSortExample,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates a powerful combination of three features: server-side pagination (20 total regions, 10 per page), external sorting (click headers to trigger API calls), and dynamic row loading (expand regions to lazy-load stores, expand stores to lazy-load products). This example shows how to build a highly scalable table that handles large datasets efficiently by only loading what's needed when it's needed. Perfect for real-world applications with thousands of records and complex hierarchical data structures.",
       },
     },
   },
