@@ -63,18 +63,32 @@ const useFlattenedRows = ({
   return useMemo(() => {
     // If no row grouping, just convert rows to TableRow format
     if (!rowGrouping || rowGrouping.length === 0) {
-      const flattenedRows = rows.map(
-        (row, index) =>
-          ({
-            row,
-            depth: 0,
-            displayPosition: index,
-            groupingKey: undefined,
-            position: index,
-            rowPath: [index],
-            absoluteRowIndex: index,
-          }) as TableRow,
-      );
+      const flattenedRows = rows.map((row, index) => {
+        const rowPath = [index];
+        const rowIndexPath = [index];
+        const rowId = generateRowId({
+          row,
+          getRowId,
+          depth: 0,
+          index,
+          rowPath,
+          rowIndexPath,
+          groupingKey: undefined,
+        });
+
+        return {
+          row,
+          depth: 0,
+          displayPosition: index,
+          groupingKey: undefined,
+          position: index,
+          rowId,
+          rowPath,
+          rowIndexPath,
+          absoluteRowIndex: index,
+          isLastGroupRow: true,
+        };
+      });
       // For non-grouped rows, each row is its own "parent" with end position = index + 1
       const parentEndPositions = rows.map((_, index) => index + 1);
 

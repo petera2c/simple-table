@@ -91,14 +91,5 @@ export const useContentHeight = ({
 
     // Subtract header height
     return Math.max(0, totalHeightPx - rowHeight);
-  }, [
-    height,
-    maxHeight,
-    rowHeight,
-    shouldPaginate,
-    rowsPerPage,
-    totalRowCount,
-    headerHeight,
-    footerHeight,
-  ]);
+  }, [height, maxHeight, rowHeight, totalRowCount, headerHeight, footerHeight]);
 };

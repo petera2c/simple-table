@@ -1,6 +1,5 @@
 import TableRow from "../types/TableRow";
 import Row from "../types/Row";
-import { RowId } from "../types/RowId";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
@@ -202,7 +201,7 @@ export const isRowArray = (data: any): data is Row[] => {
  * @returns An array representing the unique row ID path
  */
 export const generateRowId = (params: GenerateRowIdParams): (string | number)[] => {
-  const { row, getRowId, rowIndexPath, rowPath } = params;
+  const { getRowId, rowPath } = params;
 
   // Start with the full row path (already contains indices and grouping keys)
   const result: (string | number)[] = [...rowPath];

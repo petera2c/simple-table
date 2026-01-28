@@ -621,6 +621,7 @@ const SimpleTableComp = ({
     [
       computeFilteredRowsPreview,
       rowGrouping,
+      getRowId,
       expandedRows,
       collapsedRows,
       expandedDepths,
@@ -672,6 +673,7 @@ const SimpleTableComp = ({
     [
       computeSortedRowsPreview,
       rowGrouping,
+      getRowId,
       expandedRows,
       collapsedRows,
       expandedDepths,

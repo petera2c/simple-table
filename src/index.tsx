@@ -60,7 +60,14 @@ import { CustomTheme, DEFAULT_CUSTOM_THEME } from "./types/CustomTheme";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
 import { rowIdToString } from "./utils/rowUtils";
 
-export { SimpleTable, LineAreaChart, BarChart, DefaultEmptyState, DEFAULT_CUSTOM_THEME, rowIdToString };
+export {
+  SimpleTable,
+  LineAreaChart,
+  BarChart,
+  DefaultEmptyState,
+  DEFAULT_CUSTOM_THEME,
+  rowIdToString,
+};
 
 // Tree-shakeable icon exports (imported separately to reduce bundle size)
 export * from "./icons";

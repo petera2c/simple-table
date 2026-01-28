@@ -487,6 +487,7 @@ const TableCell = ({
       row,
       rowGrouping,
       rowId,
+      rowIndexPath,
       rowPath,
       setCollapsedRows,
       setExpandedRows,

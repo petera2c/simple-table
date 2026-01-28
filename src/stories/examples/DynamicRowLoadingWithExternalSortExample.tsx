@@ -445,6 +445,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
 
   // Fetch regions when page or sort changes
   useEffect(() => {
+    console.log(currentPage);
     const loadRegions = async () => {
       setIsLoading(true);
       try {

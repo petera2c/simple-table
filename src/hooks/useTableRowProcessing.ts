@@ -217,10 +217,10 @@ const useTableRowProcessing = ({
   // Categorize rows based on ID changes
   const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
     const previousIds = new Set(
-      previousRows.map((tableRow) => rowIdToString(tableRow.rowId)),
+      previousRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
     );
     const currentIds = new Set(
-      currentRows.map((tableRow) => rowIdToString(tableRow.rowId)),
+      currentRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
     );
 
     const staying = currentRows.filter((tableRow) => {
@@ -247,12 +247,12 @@ const useTableRowProcessing = ({
       return false;
     }
 
-    const currentIds = currentTableRows.map((tableRow) =>
-      rowIdToString(tableRow.rowId),
-    );
-    const previousIds = previousTableRowsRef.current.map((tableRow) =>
-      rowIdToString(tableRow.rowId),
-    );
+    const currentIds = currentTableRows
+      .filter((tr) => tr && tr.rowId)
+      .map((tableRow) => rowIdToString(tableRow.rowId));
+    const previousIds = previousTableRowsRef.current
+      .filter((tr) => tr && tr.rowId)
+      .map((tableRow) => rowIdToString(tableRow.rowId));
 
     const hasChanges =
       currentIds.length !== previousIds.length ||
