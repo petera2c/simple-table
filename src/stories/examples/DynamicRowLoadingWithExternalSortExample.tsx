@@ -511,11 +511,11 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
             return;
           }
 
-          // Update nested data using rowIndexPath
+          // Update nested data using rowIndexPath (simple array indices)
           // rowIndexPath = [0] means rows[0]
           setRows((prevRows) => {
             const newRows = [...prevRows];
-            const regionIndex = rowIndexPath[0] as number;
+            const regionIndex = rowIndexPath[0];
             newRows[regionIndex].stores = stores;
             return newRows;
           });
@@ -535,12 +535,12 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
             return;
           }
 
-          // Update nested data using rowIndexPath
-          // rowIndexPath = [0, 'stores', 1] means rows[0].stores[1]
+          // Update nested data using rowIndexPath (simple array indices)
+          // rowIndexPath = [0, 1] means rows[0].stores[1]
           setRows((prevRows) => {
             const newRows = [...prevRows];
-            const regionIndex = rowIndexPath[0] as number;
-            const storeIndex = rowIndexPath[2] as number;
+            const regionIndex = rowIndexPath[0];
+            const storeIndex = rowIndexPath[1];
             const region = newRows[regionIndex];
             if (region.stores && region.stores[storeIndex]) {
               region.stores[storeIndex].products = products;
@@ -739,11 +739,11 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
         defaultHeaders={HEADERS}
         editColumns
         expandAll={false}
-        height={"600px"}
         onPageChange={handlePageChange}
         onRowGroupExpand={handleRowExpand}
         onSortChange={handleSortChange}
         rowGrouping={["stores", "products"]}
+        rowIdAccessor="id"
         rows={rows}
         rowsPerPage={rowsPerPage}
         selectableCells
@@ -753,24 +753,12 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
         useOddEvenRowBackground
         errorStateRenderer={<div style={{ paddingLeft: "16px" }}>Error loading data</div>}
         emptyStateRenderer={<div style={{ paddingLeft: "16px" }}>No data found</div>}
+        customTheme={{
+          rowHeight: 100,
+        }}
       />
     </div>
   );
 };
-
-// columnResizing
-// defaultHeaders={HEADERS}
-// editColumns
-// expandAll={false}
-// height={height}
-// onRowGroupExpand={handleRowExpand}
-// rowGrouping={["stores", "products"]}
-// rows={rows}
-// selectableCells
-// theme={theme}
-// useOddEvenRowBackground
-// errorStateRenderer={<div style={{ paddingLeft: "16px" }}>Error loading data</div>}
-// emptyStateRenderer={<div style={{ paddingLeft: "16px" }}>No data found</div>}
-// shouldPaginate
 
 export default DynamicRowLoadingWithExternalSortExample;

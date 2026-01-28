@@ -9,8 +9,12 @@ type TableRow = {
   isLastGroupRow: boolean;
   position: number;
   row: Row;
-  // Path to reach this row in the nested structure (e.g., [0, 'teams', 2] means rows[0].teams[2])
+  // Path to reach this row using row IDs (when rowIdAccessor is provided)
+  // Example: ['REG-1', 'stores', 'STORE-101'] means find region with id='REG-1', then its stores, then store with id='STORE-101'
   rowPath?: (string | number)[];
+  // Path to reach this row using array indices (always available)
+  // Example: [0, 1, 2] means rows[0].stores[1].products[2]
+  rowIndexPath?: number[];
   // If this row is a state indicator (loading/error/empty), this contains the state info and parent row ID
   stateIndicator?: {
     parentRowId: string | number;

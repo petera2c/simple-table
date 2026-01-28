@@ -78,6 +78,7 @@ export interface SimpleTableProps {
   prevIcon?: ReactNode; // Previous icon
   rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
+  rowIdAccessor?: Accessor; // Property name to use as row ID for stable row identification across data changes (e.g., 'id', 'uuid'). If not provided, uses index-based IDs.
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells

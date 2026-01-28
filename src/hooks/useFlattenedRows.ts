@@ -15,6 +15,7 @@ import { CustomTheme } from "../types/CustomTheme";
 interface UseFlattenedRowsProps {
   rows: Row[];
   rowGrouping?: Accessor[];
+  rowIdAccessor?: Accessor;
   expandedRows: Map<string, number>;
   collapsedRows: Map<string, number>;
   expandedDepths: Set<number>;
@@ -44,6 +45,7 @@ interface UseFlattenedRowsResult {
 const useFlattenedRows = ({
   rows,
   rowGrouping = [],
+  rowIdAccessor,
   expandedRows,
   collapsedRows,
   expandedDepths,
@@ -73,7 +75,7 @@ const useFlattenedRows = ({
       );
       // For non-grouped rows, each row is its own "parent" with end position = index + 1
       const parentEndPositions = rows.map((_, index) => index + 1);
-      
+
       return {
         flattenedRows,
         heightOffsets: [],
@@ -95,17 +97,22 @@ const useFlattenedRows = ({
     const processRows = (
       currentRows: Row[],
       currentDepth: number,
-      parentPath: (string | number)[] = [],
+      parentIdPath: (string | number)[] = [],
+      parentIndexPath: number[] = [],
     ): void => {
       currentRows.forEach((row, index) => {
         const currentGroupingKey = rowGrouping[currentDepth];
         const position = result.length;
 
-        // Build the path to this row
-        const rowPath = [...parentPath, index];
+        // Build the ID path (using row IDs when rowIdAccessor is provided)
+        const rowIdentifier: string | number = rowIdAccessor ? String(row[rowIdAccessor]) : index;
+        const rowPath = [...parentIdPath, rowIdentifier];
+
+        // Build the index path (always using array indices)
+        const rowIndexPath = [...parentIndexPath, index];
 
         // Get unique row ID that accounts for nesting depth
-        const rowId = getRowId(rowPath);
+        const rowId = rowIdAccessor ? getRowId({ row, rowIdAccessor, rowPath }) : getRowId(rowPath);
 
         // Determine if this is the last row at depth 0
         const isLastGroupRow = currentDepth === 0;
@@ -118,6 +125,7 @@ const useFlattenedRows = ({
           position,
           isLastGroupRow,
           rowPath,
+          rowIndexPath,
           absoluteRowIndex: position,
         };
         result.push(mainRow);
@@ -177,6 +185,7 @@ const useFlattenedRows = ({
               position: nestedGridPosition,
               isLastGroupRow: false,
               rowPath: [...rowPath, currentGroupingKey],
+              rowIndexPath,
               nestedTable: {
                 parentRow: row,
                 expandableHeader,
@@ -204,6 +213,7 @@ const useFlattenedRows = ({
                 position: statePosition,
                 isLastGroupRow: false,
                 rowPath: [...rowPath, currentGroupingKey],
+                rowIndexPath,
                 stateIndicator: {
                   parentRowId: rowId,
                   state: rowState,
@@ -222,6 +232,7 @@ const useFlattenedRows = ({
                 position: skeletonPosition,
                 isLastGroupRow: false,
                 rowPath: [...rowPath, currentGroupingKey, "loading-skeleton"],
+                rowIndexPath,
                 isLoadingSkeleton: true,
                 absoluteRowIndex: skeletonPosition,
               });
@@ -229,13 +240,14 @@ const useFlattenedRows = ({
           }
           // Process actual nested rows if they exist and no state is active
           else if (nestedRows.length > 0) {
-            // Build path for nested rows (parent path + grouping key)
-            const nestedPath = [...rowPath, currentGroupingKey];
+            // Build paths for nested rows (parent path + grouping key)
+            const nestedIdPath = [...rowPath, currentGroupingKey];
+            const nestedIndexPath = [...rowIndexPath];
             // Recursively process nested rows
-            processRows(nestedRows, currentDepth + 1, nestedPath);
+            processRows(nestedRows, currentDepth + 1, nestedIdPath, nestedIndexPath);
           }
         }
-        
+
         // After processing this depth-0 parent and all its children, record the end position
         if (currentDepth === 0) {
           parentEndPositions.push(result.length);
@@ -243,7 +255,7 @@ const useFlattenedRows = ({
       });
     };
 
-    processRows(rows, 0);
+    processRows(rows, 0, [], []);
 
     return {
       flattenedRows: result,
@@ -254,6 +266,7 @@ const useFlattenedRows = ({
   }, [
     rows,
     rowGrouping,
+    rowIdAccessor,
     expandedRows,
     collapsedRows,
     expandedDepths,

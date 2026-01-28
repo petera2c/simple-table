@@ -183,19 +183,51 @@ export const isRowArray = (data: any): data is Row[] => {
 };
 
 /**
- * Get the row ID from its position path in the data structure.
- * Uses the row's index-based path to create a unique, stable identifier.
+ * Get the row ID from its position path or from a row property.
  *
- * Examples:
+ * If rowIdAccessor is provided:
+ * - For root-level rows (depth 0): Uses the value from row[rowIdAccessor]
+ * - For nested rows: Creates composite ID using parent IDs and the rowIdAccessor value
+ *
+ * If rowIdAccessor is not provided:
+ * - Uses the row's index-based path to create a unique identifier (backward compatible)
+ *
+ * Examples with rowIdAccessor='id':
+ * - Root row with id='REG-1': "REG-1"
+ * - Nested store under REG-1 with id='STORE-101': "REG-1-stores-STORE-101"
+ * - Deeply nested: "REG-1-stores-STORE-101-products-PROD-5"
+ *
+ * Examples without rowIdAccessor (index-based):
  * - Root row at index 0: "0"
- * - Root row at index 1: "1"
  * - Nested row under parent 0, divisions array, index 2: "0-divisions-2"
- * - Deeply nested: "0-divisions-1-teams-3"
  *
- * @param rowPath - Path to this row in nested structure (e.g., [0], [1, 'divisions', 2])
- * @returns A unique row ID based on position
+ * @param params - Object containing row data, rowIdAccessor, and rowPath
+ * @returns A unique row ID
  */
-export const getRowId = (rowPath: (string | number)[]): RowId => {
+export const getRowId = (
+  params:
+    | { row: Row; rowIdAccessor: Accessor; rowPath?: (string | number)[] }
+    | (string | number)[],
+): RowId => {
+  // Backward compatibility: if params is an array, treat it as rowPath
+  if (Array.isArray(params)) {
+    return params.join("-");
+  }
+
+  const { row, rowIdAccessor, rowPath } = params;
+
+  // Get the base ID from the row using the accessor
+  const baseId = row[rowIdAccessor] as RowId;
+
+  // If no rowPath or at root level (length 1 = just the index), return the base ID
+  if (!rowPath || rowPath.length <= 1) {
+    return baseId;
+  }
+
+  // For nested rows, create a composite ID using the FULL path
+  // This ensures uniqueness by incorporating all parent IDs
+  // Format: "parentId-groupKey1-childId-groupKey2-grandchildId-..."
+  // Example: ['REG-1', 'stores', 'STORE-101'] becomes "REG-1-stores-STORE-101"
   return rowPath.join("-");
 };
 
@@ -261,6 +293,7 @@ export const flattenRowsWithGrouping = ({
   expandedRows,
   collapsedRows,
   rowGrouping = [],
+  rowIdAccessor,
   rows,
   displayPositionOffset = 0,
   rowStateMap,
@@ -277,6 +310,7 @@ export const flattenRowsWithGrouping = ({
   expandedRows: Map<string, number>;
   collapsedRows: Map<string, number>;
   rowGrouping?: Accessor[];
+  rowIdAccessor?: Accessor;
   rows: Row[];
   displayPositionOffset?: number;
   rowStateMap?: Map<string | number, RowState>;
@@ -295,7 +329,8 @@ export const flattenRowsWithGrouping = ({
     currentDepth: number,
     parentPosition = 0,
     parentDisplayPosition = displayPositionOffset,
-    parentPath: (string | number)[] = [],
+    parentIdPath: (string | number)[] = [],
+    parentIndexPath: number[] = [],
   ): number => {
     let position = parentPosition;
     let displayPosition = parentDisplayPosition;
@@ -303,11 +338,15 @@ export const flattenRowsWithGrouping = ({
     currentRows.forEach((row, index) => {
       const currentGroupingKey = rowGrouping[currentDepth];
 
-      // Build the path to this row (e.g., [0, 'teams', 2])
-      const rowPath = [...parentPath, index];
+      // Build the ID path (using row IDs when rowIdAccessor is provided)
+      const rowIdentifier: string | number = rowIdAccessor ? String(row[rowIdAccessor]) : index;
+      const rowPath = [...parentIdPath, rowIdentifier];
+
+      // Build the index path (always using array indices)
+      const rowIndexPath = [...parentIndexPath, index];
 
       // Get unique row ID that accounts for nesting depth
-      const rowId = getRowId(rowPath);
+      const rowId = rowIdAccessor ? getRowId({ row, rowIdAccessor, rowPath }) : getRowId(rowPath);
 
       // Determine if this is the last row in a group
       const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
@@ -321,6 +360,7 @@ export const flattenRowsWithGrouping = ({
         position,
         isLastGroupRow,
         rowPath,
+        rowIndexPath,
         absoluteRowIndex: position,
       });
 
@@ -368,6 +408,7 @@ export const flattenRowsWithGrouping = ({
             position,
             isLastGroupRow: false,
             rowPath: [...rowPath, currentGroupingKey],
+            rowIndexPath,
             nestedTable: {
               parentRow: row,
               expandableHeader,
@@ -395,6 +436,7 @@ export const flattenRowsWithGrouping = ({
               position,
               isLastGroupRow: false,
               rowPath: [...rowPath, currentGroupingKey],
+              rowIndexPath,
               stateIndicator: {
                 parentRowId: rowId,
                 state: rowState,
@@ -413,6 +455,7 @@ export const flattenRowsWithGrouping = ({
               position,
               isLastGroupRow: false,
               rowPath: [...rowPath, currentGroupingKey, "loading-skeleton"],
+              rowIndexPath,
               isLoadingSkeleton: true,
               absoluteRowIndex: position,
             });
@@ -422,15 +465,17 @@ export const flattenRowsWithGrouping = ({
         }
         // Process actual nested rows if they exist and no state is active
         else if (nestedRows.length > 0) {
-          // Build path for nested rows (parent path + grouping key)
-          const nestedPath = [...rowPath, currentGroupingKey];
+          // Build paths for nested rows (parent path + grouping key)
+          const nestedIdPath = [...rowPath, currentGroupingKey];
+          const nestedIndexPath = [...rowIndexPath];
           // Recursively process nested rows and update position
           position = processRows(
             nestedRows,
             currentDepth + 1,
             position,
             displayPosition,
-            nestedPath,
+            nestedIdPath,
+            nestedIndexPath,
           );
         }
       }
@@ -439,6 +484,6 @@ export const flattenRowsWithGrouping = ({
     return position;
   };
 
-  processRows(rows, depth, 0, displayPositionOffset);
+  processRows(rows, depth, 0, displayPositionOffset, [], []);
   return result;
 };
