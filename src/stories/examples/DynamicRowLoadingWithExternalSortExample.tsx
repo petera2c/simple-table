@@ -445,6 +445,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
 
   // Fetch regions when page or sort changes
   useEffect(() => {
+    console.log(currentPage);
     const loadRegions = async () => {
       setIsLoading(true);
       try {
@@ -743,7 +744,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
         onRowGroupExpand={handleRowExpand}
         onSortChange={handleSortChange}
         rowGrouping={["stores", "products"]}
-        rowIdAccessor="id"
+        getRowId={({ row }) => row.id as string | number}
         rows={rows}
         rowsPerPage={rowsPerPage}
         selectableCells

@@ -3,7 +3,7 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
 import Cell from "../types/Cell";
 import { findLeafHeaders } from "../utils/headerWidthUtils";
-import { getRowId } from "../utils/rowUtils";
+import { rowIdToString } from "../utils/rowUtils";
 import { scrollCellIntoView } from "../utils/cellScrollUtils";
 import {
   copySelectedCellsToClipboard,
@@ -85,8 +85,8 @@ const useSelection = ({
 
     if (selectedColumns.size > 0) {
       tableRows.forEach((tableRow) => {
-        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
-        rows.add(String(rowId));
+        const rowId = rowIdToString(tableRow.rowId);
+        rows.add(rowId);
       });
     }
 
@@ -106,7 +106,7 @@ const useSelection = ({
       selectedCells,
       leafHeaders,
       tableRows,
-      copyHeadersToClipboard
+      copyHeadersToClipboard,
     );
     navigator.clipboard.writeText(text);
 
@@ -128,7 +128,7 @@ const useSelection = ({
         leafHeaders,
         tableRows,
         onCellEdit,
-        cellRegistry
+        cellRegistry,
       );
 
       if (updatedCells.size > 0) {
@@ -153,7 +153,7 @@ const useSelection = ({
       leafHeaders,
       tableRows,
       onCellEdit,
-      cellRegistry
+      cellRegistry,
     );
 
     if (deletedCells.size > 0) {
@@ -184,7 +184,7 @@ const useSelection = ({
               continue;
             }
             const tableRow = tableRows[row];
-            const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
+            const rowId = rowIdToString(tableRow.rowId);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -198,7 +198,7 @@ const useSelection = ({
       // Scroll the end cell into view
       setTimeout(() => scrollCellIntoView(endCell, rowHeight, customTheme), 0);
     },
-    [tableRows, rowHeight, enableRowSelection, customTheme]
+    [tableRows, rowHeight, enableRowSelection, customTheme],
   );
 
   const selectSingleCell = useCallback(
@@ -223,7 +223,7 @@ const useSelection = ({
         setTimeout(() => scrollCellIntoView(cell, rowHeight, customTheme), 0);
       }
     },
-    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection, customTheme]
+    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection, customTheme],
   );
 
   const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
@@ -267,8 +267,8 @@ const useSelection = ({
 
       const rowIdToIndexMap = new Map<string, number>();
       tableRows.forEach((tableRow, index) => {
-        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
-        rowIdToIndexMap.set(String(rowId), index);
+        const rowId = rowIdToString(tableRow.rowId);
+        rowIdToIndexMap.set(rowId, index);
       });
 
       const startRowCurrentIndex = rowIdToIndexMap.get(String(startCell.rowId));
@@ -291,7 +291,7 @@ const useSelection = ({
               continue;
             }
             const tableRow = tableRows[row];
-            const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
+            const rowId = rowIdToString(tableRow.rowId);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -299,7 +299,7 @@ const useSelection = ({
 
       setSelectedCells(newSelectedCells);
     },
-    [tableRows, enableRowSelection]
+    [tableRows, enableRowSelection],
   );
 
   const calculateNearestCell = useCallback((clientX: number, clientY: number): Cell | null => {
@@ -308,7 +308,7 @@ const useSelection = ({
 
     const rect = tableContainer.getBoundingClientRect();
     const cells = Array.from(
-      document.querySelectorAll(".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)")
+      document.querySelectorAll(".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)"),
     );
 
     if (cells.length === 0) return null;
@@ -328,7 +328,7 @@ const useSelection = ({
       const cellCenterY = cellRect.top + cellRect.height / 2;
 
       const distance = Math.sqrt(
-        Math.pow(cellCenterX - clampedX, 2) + Math.pow(cellCenterY - clampedY, 2)
+        Math.pow(cellCenterX - clampedX, 2) + Math.pow(cellCenterY - clampedY, 2),
       );
 
       if (distance < minDistance) {
@@ -370,7 +370,7 @@ const useSelection = ({
 
       return calculateNearestCell(clientX, clientY);
     },
-    [calculateNearestCell]
+    [calculateNearestCell],
   );
 
   const handleAutoScroll = useCallback((clientX: number, clientY: number) => {
@@ -492,7 +492,7 @@ const useSelection = ({
 
       return isCellSelected || isColumnSelected;
     },
-    [selectedCells, selectedColumns]
+    [selectedCells, selectedColumns],
   );
 
   const getBorderClass = useCallback(
@@ -503,9 +503,9 @@ const useSelection = ({
 
       const classes = [];
       const topRow = tableRows[rowIndex - 1];
-      const topRowId = topRow ? getRowId(topRow.rowPath || [topRow.position]) : null;
+      const topRowId = topRow ? rowIdToString(topRow.rowId) : null;
       const bottomRow = tableRows[rowIndex + 1];
-      const bottomRowId = bottomRow ? getRowId(bottomRow.rowPath || [bottomRow.position]) : null;
+      const bottomRowId = bottomRow ? rowIdToString(bottomRow.rowId) : null;
 
       const topCell =
         topRowId !== null ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId } : null;
@@ -527,7 +527,7 @@ const useSelection = ({
 
       return classes.join(" ");
     },
-    [isSelectingState, isSelected, tableRows, selectedColumns]
+    [isSelectingState, isSelected, tableRows, selectedColumns],
   );
 
   const isInitialFocusedCell = useMemo(() => {
@@ -543,7 +543,7 @@ const useSelection = ({
       const cellId = createSetString({ colIndex, rowIndex, rowId });
       return copyFlashCells.has(cellId);
     },
-    [copyFlashCells]
+    [copyFlashCells],
   );
 
   const isWarningFlashing = useCallback(
@@ -551,7 +551,7 @@ const useSelection = ({
       const cellId = createSetString({ colIndex, rowIndex, rowId });
       return warningFlashCells.has(cellId);
     },
-    [warningFlashCells]
+    [warningFlashCells],
   );
 
   return {

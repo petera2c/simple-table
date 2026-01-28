@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect } from "react";
 import { Row, SortColumn, TableRefType, UpdateDataProps } from "..";
-import { getRowId, getNestedValue, setNestedValue } from "../utils/rowUtils";
+import { rowIdToString, getNestedValue, setNestedValue } from "../utils/rowUtils";
 import { getCellKey } from "../utils/cellUtils";
 import { CellRegistryEntry, HeaderRegistryEntry } from "../context/TableContext";
 import { Accessor } from "../types/HeaderObject";
@@ -97,10 +97,10 @@ const useTableAPI = ({
     if (tableRef) {
       tableRef.current = {
         updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          // Get the row ID using the index
+          // Get the row ID using the index (for top-level rows, the ID is just the index)
           const row = rows?.[rowIndex];
           if (row) {
-            const rowId = getRowId([rowIndex]);
+            const rowId = rowIdToString([rowIndex]);
             const key = getCellKey({ rowId, accessor });
             const cell = cellRegistryRef.current.get(key);
 

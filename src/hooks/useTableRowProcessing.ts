@@ -5,7 +5,7 @@ import {
   buildCumulativeHeightMap,
   CumulativeHeightMap,
 } from "../utils/infiniteScrollUtils";
-import { getRowId } from "../utils/rowUtils";
+import { rowIdToString } from "../utils/rowUtils";
 import { ANIMATION_CONFIGS } from "../components/animate/animation-utils";
 import { Accessor } from "../types/HeaderObject";
 import { FilterCondition } from "../types/FilterTypes";
@@ -130,7 +130,7 @@ const useTableRowProcessing = ({
     if (originalPositionsRef.current.size === 0 && originalFlattenedRows.length > 0) {
       const newOriginalPositions = new Map<string, number>();
       originalFlattenedRows.forEach((tableRow, index) => {
-        const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+        const id = rowIdToString(tableRow.rowId);
         newOriginalPositions.set(id, index);
       });
 
@@ -217,24 +217,24 @@ const useTableRowProcessing = ({
   // Categorize rows based on ID changes
   const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
     const previousIds = new Set(
-      previousRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position]))),
+      previousRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
     );
     const currentIds = new Set(
-      currentRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position]))),
+      currentRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
     );
 
     const staying = currentRows.filter((tableRow) => {
-      const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+      const id = rowIdToString(tableRow.rowId);
       return previousIds.has(id);
     });
 
     const entering = currentRows.filter((tableRow) => {
-      const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+      const id = rowIdToString(tableRow.rowId);
       return !previousIds.has(id);
     });
 
     const leaving = previousRows.filter((tableRow) => {
-      const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+      const id = rowIdToString(tableRow.rowId);
       return !currentIds.has(id);
     });
 
@@ -247,12 +247,12 @@ const useTableRowProcessing = ({
       return false;
     }
 
-    const currentIds = currentTableRows.map((tableRow) =>
-      String(getRowId(tableRow.rowPath || [tableRow.position])),
-    );
-    const previousIds = previousTableRowsRef.current.map((tableRow) =>
-      String(getRowId(tableRow.rowPath || [tableRow.position])),
-    );
+    const currentIds = currentTableRows
+      .filter((tr) => tr && tr.rowId)
+      .map((tableRow) => rowIdToString(tableRow.rowId));
+    const previousIds = previousTableRowsRef.current
+      .filter((tr) => tr && tr.rowId)
+      .map((tableRow) => rowIdToString(tableRow.rowId));
 
     const hasChanges =
       currentIds.length !== previousIds.length ||
@@ -354,14 +354,14 @@ const useTableRowProcessing = ({
       const positionMap = new Map<string, number>();
       const displayPositionMap = new Map<string, number>();
       currentTableRows.forEach((tableRow) => {
-        const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+        const id = rowIdToString(tableRow.rowId);
         positionMap.set(id, tableRow.position);
         displayPositionMap.set(id, tableRow.displayPosition);
       });
 
       // Update ALL rows in extendedRows with their new positions
       const updatedExtendedRows = extendedRows.map((tableRow) => {
-        const id = String(getRowId(tableRow.rowPath || [tableRow.position]));
+        const id = rowIdToString(tableRow.rowId);
         const newPosition = positionMap.get(id);
         const newDisplayPosition = displayPositionMap.get(id);
 
@@ -407,10 +407,10 @@ const useTableRowProcessing = ({
       // Find these entering rows in the CURRENT table state (before filter) to get original positions
       const enteringFromCurrentState = visibleEntering
         .map((enteringRow) => {
-          const id = String(getRowId(enteringRow.rowPath || [enteringRow.position]));
+          const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(getRowId(currentRow.rowPath || [currentRow.position])) === id,
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -463,10 +463,10 @@ const useTableRowProcessing = ({
       // Find these entering rows in the CURRENT table state (before sort) to get original positions
       const enteringFromCurrentState = visibleEntering
         .map((enteringRow) => {
-          const id = String(getRowId(enteringRow.rowPath || [enteringRow.position]));
+          const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(getRowId(currentRow.rowPath || [currentRow.position])) === id,
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })

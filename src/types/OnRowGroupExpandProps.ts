@@ -12,7 +12,7 @@ interface OnRowGroupExpandProps {
   // Example: [0, 1, 2] means rows[0].stores[1].products[2]
   // Use this to directly navigate and update nested data by index
   rowIndexPath: number[];
-  // Path through nested structure using row IDs (when rowIdAccessor is provided)
+  // Path through nested structure using row IDs (when getRowId is provided)
   // Example: ['REG-1', 'STORE-101', 'PROD-5']
   // Use this to find rows by ID when data order may change
   rowIdPath?: (string | number)[];

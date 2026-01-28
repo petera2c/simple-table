@@ -10,7 +10,7 @@ import {
   isRowSelected as utilIsRowSelected,
 } from "../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../types/RowSelectionChangeProps";
-import { getRowId } from "../utils/rowUtils";
+import { rowIdToString } from "../utils/rowUtils";
 
 interface UseRowSelectionProps {
   tableRows: TableRow[];
@@ -63,7 +63,7 @@ export const useRowSelection = ({
       // Call the callback with the row data
       if (onRowSelectionChange) {
         const tableRow = tableRows.find(
-          (tr) => String(getRowId(tr.rowPath || [tr.position])) === rowId
+          (tr) => rowIdToString(tr.rowId) === rowId
         );
         if (tableRow) {
           onRowSelectionChange({
@@ -102,7 +102,7 @@ export const useRowSelection = ({
         if (onRowSelectionChange) {
           selectedRows.forEach((rowId) => {
             const tableRow = tableRows.find(
-              (tr) => String(getRowId(tr.rowPath || [tr.position])) === rowId
+              (tr) => rowIdToString(tr.rowId) === rowId
             );
             if (tableRow) {
               onRowSelectionChange({
@@ -140,7 +140,7 @@ export const useRowSelection = ({
       const newSelectedRows = new Set<string>();
       selectedRows.forEach((rowId) => {
         const tableRow = tableRows.find(
-          (tr) => String(getRowId(tr.rowPath || [tr.position])) === rowId
+          (tr) => rowIdToString(tr.rowId) === rowId
         );
         if (tableRow) {
           onRowSelectionChange({
