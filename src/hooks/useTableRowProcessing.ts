@@ -257,7 +257,7 @@ const useTableRowProcessing = ({
       currentTableRows,
       viewportCalcs.rendered.rows,
       viewportCalcs.fullyVisible.startIndex,
-      viewportCalcs.rendered.startIndex
+      viewportCalcs.rendered.startIndex,
     );
   }, [
     currentTableRows,
@@ -268,6 +268,7 @@ const useTableRowProcessing = ({
     bufferRowCount,
     targetVisibleRows,
   ]);
+  console.log("stickyParents", stickyParents);
 
   // Categorize rows based on ID changes
   const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
