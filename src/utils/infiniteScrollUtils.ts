@@ -38,7 +38,7 @@ export const buildCumulativeHeightMap = (
   rowCount: number,
   rowHeight: number,
   heightOffsets: HeightOffsets | undefined,
-  customTheme: CustomTheme,
+  customTheme: CustomTheme
 ): CumulativeHeightMap => {
   const rowHeightWithSeparator = rowHeight + customTheme.rowSeparatorWidth;
   const rowTopPositions: number[] = new Array(rowCount);
@@ -82,7 +82,7 @@ export const buildCumulativeHeightMap = (
  */
 export const findRowAtScrollPosition = (
   scrollTop: number,
-  heightMap: CumulativeHeightMap,
+  heightMap: CumulativeHeightMap
 ): number => {
   const { rowTopPositions } = heightMap;
 
@@ -116,7 +116,7 @@ export const findRowAtScrollPosition = (
  */
 export const getCumulativeExtraHeight = (
   position: number,
-  heightOffsets?: HeightOffsets,
+  heightOffsets?: HeightOffsets
 ): number => {
   if (!heightOffsets || heightOffsets.length === 0) {
     return 0;
@@ -163,7 +163,7 @@ export const calculateTotalHeight = (
   totalRowCount: number,
   rowHeight: number,
   heightOffsets: HeightOffsets | undefined,
-  customTheme: CustomTheme,
+  customTheme: CustomTheme
 ): number => {
   // Calculate base height assuming all rows are standard height
   const baseHeight =
@@ -223,7 +223,7 @@ export const getViewportCalculations = ({
   tableRows: TableRow[];
   scrollDirection?: "up" | "down" | "none";
   heightMap?: CumulativeHeightMap;
-}): ViewportCalculations => {
+}) => {
   const rowHeightWithSeparator = rowHeight + SEPARATOR_HEIGHT;
 
   // If no height map provided, fall back to fixed-height calculation
@@ -246,11 +246,11 @@ export const getViewportCalculations = ({
     const renderedEndOffset = scrollTop + contentHeight + bottomOverscanPixels;
     const renderedStartIndex = Math.max(
       0,
-      Math.floor(renderedStartOffset / rowHeightWithSeparator),
+      Math.floor(renderedStartOffset / rowHeightWithSeparator)
     );
     const renderedEndIndex = Math.min(
       tableRows.length,
-      Math.ceil(renderedEndOffset / rowHeightWithSeparator),
+      Math.ceil(renderedEndOffset / rowHeightWithSeparator)
     );
 
     // 2. FULLY VISIBLE: Rows completely visible in viewport
@@ -258,11 +258,11 @@ export const getViewportCalculations = ({
     const fullyVisibleEndOffset = scrollTop + contentHeight;
     const fullyVisibleStartIndex = Math.max(
       0,
-      Math.ceil(fullyVisibleStartOffset / rowHeightWithSeparator),
+      Math.ceil(fullyVisibleStartOffset / rowHeightWithSeparator)
     );
     const fullyVisibleEndIndex = Math.min(
       tableRows.length,
-      Math.floor(fullyVisibleEndOffset / rowHeightWithSeparator),
+      Math.floor(fullyVisibleEndOffset / rowHeightWithSeparator)
     );
 
     // 3. PARTIALLY VISIBLE: Rows at least partially visible
@@ -270,11 +270,11 @@ export const getViewportCalculations = ({
     const partiallyVisibleEndOffset = scrollTop + contentHeight;
     const partiallyVisibleStartIndex = Math.max(
       0,
-      Math.floor(partiallyVisibleStartOffset / rowHeightWithSeparator),
+      Math.floor(partiallyVisibleStartOffset / rowHeightWithSeparator)
     );
     const partiallyVisibleEndIndex = Math.min(
       tableRows.length,
-      Math.ceil(partiallyVisibleEndOffset / rowHeightWithSeparator),
+      Math.ceil(partiallyVisibleEndOffset / rowHeightWithSeparator)
     );
 
     return {
@@ -343,7 +343,7 @@ export const getViewportCalculations = ({
 
   const partiallyVisibleStartIndex = findRowAtScrollPosition(
     partiallyVisibleStartOffset,
-    heightMap,
+    heightMap
   );
   let partiallyVisibleEndIndex = findRowAtScrollPosition(partiallyVisibleEndOffset, heightMap) + 1;
   partiallyVisibleEndIndex = Math.min(tableRows.length, partiallyVisibleEndIndex);
@@ -355,8 +355,6 @@ export const getViewportCalculations = ({
       rows: tableRows.slice(renderedStartIndex, renderedEndIndex),
     },
     fullyVisible: {
-      startIndex: fullyVisibleStartIndex,
-      endIndex: fullyVisibleEndIndex,
       rows: tableRows.slice(fullyVisibleStartIndex, fullyVisibleEndIndex),
     },
     partiallyVisible: {
@@ -443,87 +441,140 @@ export const calculateRowTopPosition = ({
   return baseHeight + extraHeight;
 };
 
-/**
- * Result of separating sticky parents from regular rendered rows
- */
-export interface StickyParentsResult {
-  /** Parent rows that should be rendered as sticky at the top */
-  stickyParents: TableRow[];
-  /** Regular rows to render normally (with sticky parents removed if they were in the rendered range) */
-  regularRows: TableRow[];
-}
-
-/**
- * Separate sticky parent rows from regular rendered rows for row grouping
- *
- * When scrolling through nested/grouped rows, parent rows that are scrolled out of view
- * should be "pinned" at the top to provide context. This function:
- * 1. Identifies which parent rows should be sticky (those not fully visible)
- * 2. Removes them from the regular rendered rows if present (to avoid duplication)
- * 3. Adds any sticky parents that are above the rendered range
- *
- * @param allTableRows - Complete flattened array of all table rows
- * @param renderedRows - Rows currently in the rendered range (includes overscan)
- * @param fullyVisibleStartIndex - Index of first fully visible row in viewport
- * @param renderedStartIndex - Index of first rendered row (includes overscan buffer)
- * @returns Object with stickyParents and regularRows arrays
- */
 export const getStickyParents = (
   allTableRows: TableRow[],
   renderedRows: TableRow[],
-  fullyVisibleStartIndex: number,
-  renderedStartIndex: number,
-): StickyParentsResult => {
-  // Get the first fully visible row to determine which parents should be sticky
-  const firstFullyVisibleRow = allTableRows[fullyVisibleStartIndex];
+  fullyVisibleRows: TableRow[],
+  partiallyVisibleRows: TableRow[]
+) => {
+  // Helper function to check if a row is a parent (has children)
+  const isParentRow = (row: TableRow): boolean => {
+    const rowIndex = row.position;
+    const nextRow = allTableRows[rowIndex + 1];
 
-  // If no row is visible or the row has no parents, return early
-  if (!firstFullyVisibleRow?.parentIndices || firstFullyVisibleRow.parentIndices.length === 0) {
+    // A row is a parent if the next row has this row in its parentIndices
+    return nextRow?.parentIndices?.includes(rowIndex) ?? false;
+  };
+
+  // Start with the first partially visible row (more responsive for sticky parent detection)
+  let firstVisibleRow = partiallyVisibleRows[0];
+
+  if (!firstVisibleRow) {
     return {
       stickyParents: [],
       regularRows: renderedRows,
     };
   }
 
-  // Get indices of parents that should be sticky
-  // A parent should be sticky if it's not fully visible (index < fullyVisibleStartIndex)
-  const stickyParentIndicesSet = new Set(
-    firstFullyVisibleRow.parentIndices.filter((parentIdx) => parentIdx < fullyVisibleStartIndex),
-  );
-
-  // If no parents need to be sticky, return early
-  if (stickyParentIndicesSet.size === 0) {
-    return {
-      stickyParents: [],
-      regularRows: renderedRows,
-    };
-  }
-
-  // Separate rendered rows into sticky parents and regular rows
+  // Check if this row has parents that are scrolled out of view
+  // If so, those parents will become sticky and push content down
   const stickyParents: TableRow[] = [];
-  const regularRows: TableRow[] = [];
 
-  renderedRows.forEach((row, idx) => {
-    const actualIndex = renderedStartIndex + idx;
+  if (firstVisibleRow.parentIndices && firstVisibleRow.parentIndices.length > 0) {
+    // Collect all parent rows that are scrolled out of view
+    for (const parentIndex of firstVisibleRow.parentIndices) {
+      const parentRow = allTableRows[parentIndex];
+      if (parentRow) {
+        // Check if this parent is scrolled out of view (not in fully visible rows)
+        const isParentFullyVisible = fullyVisibleRows.some(
+          (row) => row.position === parentRow.position
+        );
 
-    if (stickyParentIndicesSet.has(actualIndex)) {
-      // This row is a sticky parent - add to sticky array
-      stickyParents.push(row);
+        if (!isParentFullyVisible) {
+          // Check if the last sticky parent has the same depth
+          const lastStickyParent = stickyParents[stickyParents.length - 1];
+          if (!lastStickyParent || lastStickyParent.depth !== parentRow.depth) {
+            stickyParents.push(parentRow);
+          }
+        }
+      }
+    }
+
+    // If we have sticky parents, we need to recalculate the first visible row
+    // The sticky parents will take up space at the top, so we need to skip ahead
+    if (stickyParents.length > 0) {
+      // Before recalculating, check if the current firstVisibleRow is itself a parent
+      // If it is, it should also be sticky (it's being pushed out by parents above it)
+      if (isParentRow(firstVisibleRow)) {
+        // Check if the last sticky parent has the same depth
+        const lastStickyParent = stickyParents[stickyParents.length - 1];
+        if (!lastStickyParent || lastStickyParent.depth !== firstVisibleRow.depth) {
+          stickyParents.push(firstVisibleRow);
+        }
+      }
+
+      // Skip ahead by the number of sticky parents to find the actual first visible row
+      const newFirstVisibleIndex = fullyVisibleRows.findIndex(
+        (row) => !stickyParents.some((parent) => parent.position === row.position)
+      );
+
+      if (newFirstVisibleIndex !== -1) {
+        firstVisibleRow = fullyVisibleRows[newFirstVisibleIndex];
+      }
+    }
+  }
+
+  // Now check if the (possibly recalculated) first visible row is itself a parent
+  if (!isParentRow(firstVisibleRow)) {
+    // Not a parent, return what we have
+    return {
+      stickyParents,
+      regularRows: renderedRows,
+    };
+  }
+
+  // Check if this parent row is at or above the top of the fully visible viewport
+  const isAtOrAboveViewport = fullyVisibleRows[0]?.position >= firstVisibleRow.position;
+
+  if (!isAtOrAboveViewport) {
+    // Parent is below the top, return what we have
+    return {
+      stickyParents,
+      regularRows: renderedRows,
+    };
+  }
+
+  // Add this parent to sticky parents if not already there
+  if (!stickyParents.some((parent) => parent.position === firstVisibleRow.position)) {
+    // Check if the last sticky parent has the same depth
+    const lastStickyParent = stickyParents[stickyParents.length - 1];
+    if (!lastStickyParent || lastStickyParent.depth !== firstVisibleRow.depth) {
+      stickyParents.push(firstVisibleRow);
+    }
+  }
+
+  // Now check subsequent rows to build the parent hierarchy
+  let currentRow = firstVisibleRow;
+  let nextRowIndex = currentRow.position + 1;
+
+  while (nextRowIndex < allTableRows.length) {
+    const nextRow = allTableRows[nextRowIndex];
+
+    // Check if nextRow is a child of currentRow and also a parent itself
+    const isChildOfCurrent = nextRow.parentIndices?.includes(currentRow.position) ?? false;
+    const isNextRowAParent = isParentRow(nextRow);
+
+    if (isChildOfCurrent && isNextRowAParent) {
+      // Check if the last sticky parent has the same depth
+      const lastStickyParent = stickyParents[stickyParents.length - 1];
+      if (!lastStickyParent || lastStickyParent.depth !== nextRow.depth) {
+        stickyParents.push(nextRow);
+        currentRow = nextRow;
+        nextRowIndex = currentRow.position + 1;
+      } else {
+        break;
+      }
     } else {
-      // This is a regular row - keep it in regular array
-      regularRows.push(row);
+      break;
     }
-  });
+  }
 
-  // Add any sticky parents that weren't in the rendered range (above overscan buffer)
-  firstFullyVisibleRow.parentIndices.forEach((parentIdx) => {
-    if (parentIdx < renderedStartIndex) {
-      stickyParents.push(allTableRows[parentIdx]);
-    }
-  });
+  // Filter out sticky parents from regular rows to avoid rendering them twice
+  const stickyParentPositions = new Set(stickyParents.map((parent) => parent.position));
+  const regularRows = renderedRows.filter((row) => !stickyParentPositions.has(row.position));
 
-  // Sort sticky parents by depth (shallowest first) to maintain hierarchy order
-  stickyParents.sort((a, b) => a.depth - b.depth);
-
-  return { stickyParents, regularRows };
+  return {
+    stickyParents,
+    regularRows,
+  };
 };

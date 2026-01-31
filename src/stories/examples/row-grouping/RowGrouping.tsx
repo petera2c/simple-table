@@ -110,8 +110,18 @@ const headers: HeaderObject[] = [
 const generateTeams = (divisionId: number, count: number = 200) => {
   const performances = ["Exceeding", "Meeting", "Below Target"];
   const statuses = ["Hiring", "Stable", "Restructuring", "Expanding", "Reviewing"];
-  const locations = ["San Francisco", "Seattle", "Boston", "New York", "Austin", "Chicago", "Remote", "Portland", "Denver"];
-  
+  const locations = [
+    "San Francisco",
+    "Seattle",
+    "Boston",
+    "New York",
+    "Austin",
+    "Chicago",
+    "Remote",
+    "Portland",
+    "Denver",
+  ];
+
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
     organization: `Team ${divisionId}-${i + 1}`,
@@ -132,7 +142,7 @@ const generateTeams = (divisionId: number, count: number = 200) => {
 const generateDivisions = (companyId: number, count: number = 3) => {
   const performances = ["Exceeding", "Meeting", "Below Target"];
   const statuses = ["Hiring", "Stable", "Restructuring", "Expanding"];
-  
+
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
     organization: `Division ${companyId}-${i + 1}`,
@@ -147,6 +157,15 @@ const generateDivisions = (companyId: number, count: number = 3) => {
 
 // Generate rows with divisions and teams
 const rows = [
+  {
+    id: 0,
+    organization: "Company 1",
+    performance: "Exceeding",
+    location: "San Francisco",
+    growthRate: "+10%",
+    status: "Expanding",
+    established: "2018-01-01",
+  },
   {
     id: 1,
     organization: "TechSolutions Inc.",
@@ -193,7 +212,6 @@ const RowGroupingExample = (props: UniversalTableProps) => {
         // Default settings for this example
         columnResizing={props.columnResizing ?? true}
         height={props.height ?? "calc(100dvh - 112px)"}
-        hideHeader
         // shouldPaginate
         // rowsPerPage={10}
       />

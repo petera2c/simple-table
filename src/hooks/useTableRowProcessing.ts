@@ -234,14 +234,15 @@ const useTableRowProcessing = ({
       rowHeight,
       scrollTop,
       scrollDirection,
+      heightMap,
     });
 
     // Separate sticky parents from rendered rows
     return getStickyParents(
       currentTableRows,
       viewportCalcs.rendered.rows,
-      viewportCalcs.fullyVisible.startIndex,
-      viewportCalcs.rendered.startIndex
+      viewportCalcs.fullyVisible.rows,
+      viewportCalcs.partiallyVisible.rows
     );
   }, [
     currentTableRows,
@@ -251,6 +252,7 @@ const useTableRowProcessing = ({
     scrollDirection,
     bufferRowCount,
     targetVisibleRows,
+    heightMap,
   ]);
 
   // Categorize rows based on ID changes
