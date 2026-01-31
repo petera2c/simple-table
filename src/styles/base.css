@@ -618,17 +618,6 @@ input {
   padding-left: calc(var(--st-cell-padding) * 28);
 }
 
-/* Reset depth padding for sticky parent rows to prevent padding changes */
-.st-sticky-parent .st-cell-depth-1,
-.st-sticky-parent .st-cell-depth-2,
-.st-sticky-parent .st-cell-depth-3,
-.st-sticky-parent .st-cell-depth-4,
-.st-sticky-parent .st-cell-depth-5,
-.st-sticky-parent .st-cell-depth-6,
-.st-sticky-parent .st-cell-depth-7 {
-  padding-left: var(--st-cell-padding);
-}
-
 .st-cell-depth-1 .st-cell-content {
   color: rgb(from var(--st-cell-color) r g b / 80%) !important;
 }
