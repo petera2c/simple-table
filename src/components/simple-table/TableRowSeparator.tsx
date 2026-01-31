@@ -7,11 +7,13 @@ const TableRowSeparator = ({
   position,
   rowHeight,
   templateColumns,
+  isSticky = false,
 }: {
   displayStrongBorder?: boolean;
   position: number;
   rowHeight: number;
   templateColumns: string;
+  isSticky?: boolean;
 }) => {
   const { heightOffsets, customTheme } = useTableContext();
   const targetCellRef = useRef<HTMLElement | null>(null);
@@ -77,6 +79,25 @@ const TableRowSeparator = ({
     }
   };
 
+  // Calculate position based on context (sticky vs regular scrolling body)
+  const topPosition = isSticky
+    ? position // For sticky, position is already the correct Y offset
+    : calculateSeparatorTopPosition({ position, rowHeight, heightOffsets, customTheme });
+
+  // For sticky separators, use absolute positioning with translateY
+  // For regular separators, use translate3d for better performance
+  const positionStyle = isSticky
+    ? {
+        position: "absolute" as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        transform: `translateY(${topPosition}px)`,
+      }
+    : {
+        transform: `translate3d(0, ${topPosition}px, 0)`,
+      };
+
   return (
     <div
       className={`st-row-separator ${displayStrongBorder ? "st-last-group-row" : ""}`}
@@ -84,7 +105,7 @@ const TableRowSeparator = ({
       onMouseUp={handleSeparatorMouseUp}
       style={{
         gridTemplateColumns: templateColumns,
-        transform: `translate3d(0, ${calculateSeparatorTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
+        ...positionStyle,
       }}
     >
       <div style={{ gridColumn: "1 / -1" }} />

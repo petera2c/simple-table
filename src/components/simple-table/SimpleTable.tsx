@@ -708,6 +708,8 @@ const SimpleTableComp = ({
     prepareForFilterChange,
     prepareForSortChange,
     isAnimating,
+    stickyParents,
+    regularRows,
     paginatedHeightOffsets,
   } = useTableRowProcessing({
     allowAnimations,
@@ -994,6 +996,8 @@ const SimpleTableComp = ({
                 sort={sort}
                 tableRows={currentTableRows}
                 rowsToRender={rowsToRender}
+                stickyParents={stickyParents}
+                regularRows={regularRows}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

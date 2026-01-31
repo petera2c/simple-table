@@ -19,6 +19,8 @@ interface TableContentLocalProps {
   sort: SortColumn | null;
   tableRows: TableRow[];
   rowsToRender: TableRow[];
+  stickyParents: TableRow[];
+  regularRows: TableRow[];
 }
 
 const TableContent = ({
@@ -31,6 +33,8 @@ const TableContent = ({
   sort,
   tableRows,
   rowsToRender,
+  stickyParents,
+  regularRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
   const { columnResizing, editColumns, headers, collapsedHeaders, autoExpandColumns } =
@@ -89,6 +93,8 @@ const TableContent = ({
     pinnedRightTemplateColumns,
     pinnedRightWidth,
     rowsToRender,
+    stickyParents,
+    regularRows,
     setScrollDirection,
     setScrollTop,
     shouldShowEmptyState,

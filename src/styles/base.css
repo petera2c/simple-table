@@ -256,6 +256,36 @@ input {
   background-color: var(--st-even-row-background-color);
 }
 
+/* Sticky parents container - positioned above scrolling content */
+.st-sticky-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  z-index: 10;
+  pointer-events: none;
+  background-color: var(--st-even-row-background-color);
+}
+
+.st-sticky-top > * {
+  pointer-events: auto;
+}
+
+.st-sticky-section-left,
+.st-sticky-section-main,
+.st-sticky-section-right {
+  overflow: hidden;
+  background-color: var(--st-even-row-background-color);
+}
+
+.st-sticky-section-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-sticky-section-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
+}
+
 .st-empty-state-wrapper {
   display: flex;
   align-items: center;
@@ -295,6 +325,32 @@ input {
 
   /* Performance optimizations for virtual scrolling */
   backface-visibility: hidden;
+}
+
+/* Sticky parent rows in row grouping */
+.st-row.st-sticky-parent {
+  z-index: 5;
+  /* Ensure sticky parents stay above regular rows and have proper background */
+}
+
+/* Ensure sticky parents have background color (override if needed) */
+.st-sticky-top .st-row.even {
+  background-color: var(--st-even-row-background-color);
+}
+
+.st-sticky-top .st-row.odd {
+  background-color: var(--st-odd-row-background-color);
+}
+
+.st-sticky-top .st-row.selected {
+  background-color: var(--st-selected-row-background-color);
+}
+
+.st-sticky-top
+  .st-row.hovered:not(.st-cell-editing):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-last
+  ):not(.st-cell-column-selected-first) {
+  background-color: var(--st-hover-row-background-color);
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered
@@ -499,23 +555,27 @@ input {
   padding-right: var(--st-cell-padding);
 }
 
-/* If the cell is in the main body or pinned left then the resize handle is on the right */
-.st-resizeable .st-body-pinned-right .st-cell-content {
+/* Right-pinned sections have resize handle on the left */
+.st-resizeable .st-body-pinned-right .st-cell-content,
+.st-resizeable .st-sticky-section-right .st-cell-content {
   padding-left: calc(
     var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
   padding-right: var(--st-cell-padding);
 }
-/* If the cell is in the main body or pinned left then the resize handle is on the right */
+
+/* Main and left-pinned sections have resize handle on the right */
 .st-resizeable .st-body-pinned-left .st-cell-content,
-.st-resizeable .st-body-main .st-cell-content {
+.st-resizeable .st-body-main .st-cell-content,
+.st-resizeable .st-sticky-section-left .st-cell-content,
+.st-resizeable .st-sticky-section-main .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: calc(
     var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
 }
 
-/* Override resize handle padding for selection cells */
+/* Override resize handle padding for selection cells in all sections */
 .st-resizeable .st-selection-cell .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: var(--st-cell-padding);

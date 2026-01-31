@@ -29,6 +29,7 @@ interface TableSectionProps {
   templateColumns: string;
   totalHeight: number;
   width?: number;
+  regularRows: TableRowType[];
 }
 
 const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
@@ -45,6 +46,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       totalHeight,
       rowsToRender,
       width,
+      regularRows,
     },
     ref,
   ) => {
@@ -74,8 +76,8 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             ...(!pinned && { flexGrow: 1 }),
           }}
         >
-          {rowsToRender.map((tableRow, index) => {
-            // Generate unique key - use stateIndicator parentRowId for state rows
+          {/* Render regular rows */}
+          {regularRows.map((tableRow, index) => {
             const rowId = tableRow.stateIndicator
               ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
               : rowIdToString(tableRow.rowId);
@@ -84,7 +86,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
               <Fragment key={rowId}>
                 {index !== 0 && (
                   <TableRowSeparator
-                    // Is last row group and it is open
                     displayStrongBorder={tableRow.isLastGroupRow}
                     position={tableRow.position}
                     rowHeight={rowHeight}
