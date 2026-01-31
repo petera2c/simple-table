@@ -32,12 +32,14 @@ const useTableAPI = ({
   clearAllFilters,
   clearFilter,
   currentPage,
+  editColumns,
   expandedDepths,
   filters,
   flattenedRows,
   headerRegistryRef,
   headers,
   includeHeadersInCSVExport,
+  onColumnVisibilityChange,
   onPageChange,
   paginatableRows,
   rowGrouping,
@@ -46,9 +48,11 @@ const useTableAPI = ({
   rowsPerPage,
   serverSidePagination,
   setCollapsedRows,
+  setColumnEditorOpen,
   setCurrentPage,
   setExpandedDepths,
   setExpandedRows,
+  setHeaders,
   setRows,
   shouldPaginate,
   sort,
@@ -62,12 +66,14 @@ const useTableAPI = ({
   clearAllFilters: () => void;
   clearFilter: (accessor: Accessor) => void;
   currentPage: number;
+  editColumns: boolean;
   expandedDepths: Set<number>;
   filters: TableFilterState;
   flattenedRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
+  onColumnVisibilityChange?: (visibilityState: Record<string, boolean>) => void;
   onPageChange?: (page: number) => void | Promise<void>;
   paginatableRows: TableRow[];
   rowGrouping?: Accessor[];
@@ -78,11 +84,13 @@ const useTableAPI = ({
   setCollapsedRows: (
     rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)
   ) => void;
+  setColumnEditorOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentPage: (page: number) => void;
   setExpandedDepths: (depths: Set<number> | ((prev: Set<number>) => Set<number>)) => void;
   setExpandedRows: (
     rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)
   ) => void;
+  setHeaders: React.Dispatch<React.SetStateAction<HeaderObject[]>>;
   setRows: (rows: Row[]) => void;
   shouldPaginate: boolean;
   sort: SortColumn | null;
@@ -274,6 +282,43 @@ const useTableAPI = ({
         getGroupingDepth: (property: Accessor) => {
           return rowGrouping?.indexOf(property) ?? -1;
         },
+        toggleColumnEditor: (open?: boolean) => {
+          // Only allow toggling if editColumns is enabled
+          if (!editColumns) return;
+          
+          if (open !== undefined) {
+            // Explicitly set the state
+            setColumnEditorOpen(open);
+          } else {
+            // Toggle the state
+            setColumnEditorOpen((prev) => !prev);
+          }
+        },
+        applyColumnVisibility: asyncStateUpdate((visibility: { [accessor: string]: boolean }) => {
+          // Helper function to recursively update headers
+          const updateHeaderVisibility = (headers: HeaderObject[]): HeaderObject[] => {
+            return headers.map((header) => {
+              const accessor = String(header.accessor);
+              const shouldUpdate = accessor in visibility;
+              
+              return {
+                ...header,
+                // Update hide property if this accessor is in the visibility object
+                hide: shouldUpdate ? !visibility[accessor] : header.hide,
+                // Recursively update children if they exist
+                children: header.children ? updateHeaderVisibility(header.children) : header.children,
+              };
+            });
+          };
+
+          // Update headers state
+          setHeaders((currentHeaders) => updateHeaderVisibility(currentHeaders));
+
+          // Call the callback if provided
+          if (onColumnVisibilityChange) {
+            onColumnVisibilityChange(visibility);
+          }
+        }),
       };
     }
   }, [
@@ -281,12 +326,14 @@ const useTableAPI = ({
     clearAllFilters,
     clearFilter,
     currentPage,
+    editColumns,
     expandedDepths,
     filters,
     flattenedRows,
     headerRegistryRef,
     headers,
     includeHeadersInCSVExport,
+    onColumnVisibilityChange,
     onPageChange,
     paginatableRows,
     rowGrouping,
@@ -295,9 +342,11 @@ const useTableAPI = ({
     rowsPerPage,
     serverSidePagination,
     setCollapsedRows,
+    setColumnEditorOpen,
     setCurrentPage,
     setExpandedDepths,
     setExpandedRows,
+    setHeaders,
     setRows,
     shouldPaginate,
     sort,

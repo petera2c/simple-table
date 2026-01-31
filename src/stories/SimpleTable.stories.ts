@@ -11,6 +11,9 @@ import ChartsExample, { chartsExampleDefaults } from "./examples/ChartsExample";
 import CollapsibleColumnsExample, {
   collapsibleColumnsExampleDefaults,
 } from "./examples/CollapsibleColumnsExample";
+import ColumnVisibilityAPIExampleComponent, {
+  columnVisibilityAPIExampleDefaults,
+} from "./examples/ColumnVisibilityAPIExample";
 import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import DynamicRowLoadingExample, {
   dynamicRowLoadingDefaults,
@@ -285,6 +288,27 @@ export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: CollapsibleColumnsExample, ...args }),
+};
+
+export const ColumnVisibilityAPI: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...columnVisibilityAPIExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: ColumnVisibilityAPIExampleComponent,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates programmatic control of column visibility and the column editor menu via the tableRef API. Use toggleColumnEditor() to open/close the column editor menu, and applyColumnVisibility() to show/hide specific columns. Perfect for creating custom column visibility presets (e.g., 'Basic View', 'Contact Info', 'Financial View'), saved view states, or automated workflows. The example shows how to control individual columns or apply multiple visibility changes at once.",
+      },
+    },
+  },
 };
 
 export const CSVExportFormatting: StoryObj<UniversalTableProps> = {

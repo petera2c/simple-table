@@ -1,4 +1,3 @@
-import { useState } from "react";
 import TableColumnEditorPopout from "./TableColumnEditorPopout";
 import HeaderObject from "../../../types/HeaderObject";
 import { COLUMN_EDIT_WIDTH } from "../../../consts/general-consts";
@@ -6,22 +5,22 @@ import { COLUMN_EDIT_WIDTH } from "../../../consts/general-consts";
 type TableColumnEditorProps = {
   columnEditorText: string;
   editColumns: boolean;
-  editColumnsInitOpen: boolean;
   headers: HeaderObject[];
+  open: boolean;
   position: "left" | "right";
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const TableColumnEditor = ({
   columnEditorText,
   editColumns,
-  editColumnsInitOpen,
   headers,
+  open,
   position = "right",
+  setOpen,
 }: TableColumnEditorProps) => {
-  const [open, setOpen] = useState(editColumnsInitOpen);
-
-  const handleClick = (open: boolean) => {
-    setOpen(open);
+  const handleClick = () => {
+    setOpen(!open);
   };
 
   if (!editColumns) return null;
@@ -29,7 +28,7 @@ const TableColumnEditor = ({
   return (
     <div
       className={`st-column-editor ${open ? "open" : ""} ${position}`}
-      onClick={() => handleClick(!open)}
+      onClick={handleClick}
       style={{ width: COLUMN_EDIT_WIDTH }}
     >
       <div className="st-column-editor-text">{columnEditorText}</div>

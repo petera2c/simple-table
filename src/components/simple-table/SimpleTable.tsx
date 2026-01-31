@@ -127,8 +127,8 @@ const SimpleTableComp = ({
       ({
         ...DEFAULT_CUSTOM_THEME,
         ...customThemeProp,
-      }) as CustomTheme,
-    [customThemeProp],
+      } as CustomTheme),
+    [customThemeProp]
   );
 
   const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } = customTheme;
@@ -235,6 +235,7 @@ const SimpleTableComp = ({
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
+  const [columnEditorOpen, setColumnEditorOpen] = useState(editColumnsInitOpen);
 
   // Initialize collapsed headers with columns that have collapsedByDefault set
   const getInitialCollapsedHeaders = useCallback(() => {
@@ -254,7 +255,7 @@ const SimpleTableComp = ({
   }, [defaultHeaders]);
 
   const [collapsedHeaders, setCollapsedHeaders] = useState<Set<Accessor>>(
-    getInitialCollapsedHeaders,
+    getInitialCollapsedHeaders
   );
 
   // Update headers when defaultHeaders prop changes
@@ -394,8 +395,8 @@ const SimpleTableComp = ({
           typeof header.width === "number"
             ? header.width
             : typeof header.width === "string" && header.width.endsWith("px")
-              ? parseFloat(header.width)
-              : 150;
+            ? parseFloat(header.width)
+            : 150;
         return total + width;
       }, 0);
 
@@ -424,8 +425,8 @@ const SimpleTableComp = ({
           typeof header.width === "number"
             ? header.width
             : typeof header.width === "string" && header.width.endsWith("px")
-              ? parseFloat(header.width)
-              : 150;
+            ? parseFloat(header.width)
+            : 150;
 
         let newWidth: number;
         if (index === leafHeaders.length - 1) {
@@ -474,8 +475,8 @@ const SimpleTableComp = ({
             typeof header.width === "number"
               ? header.width
               : typeof header.width === "string" && header.width.endsWith("px")
-                ? parseFloat(header.width)
-                : 150;
+              ? parseFloat(header.width)
+              : 150;
 
           return {
             ...header,
@@ -633,7 +634,7 @@ const SimpleTableComp = ({
       rowHeight,
       headerHeight,
       customTheme,
-    ],
+    ]
   );
 
   const computeFlattenedSortedRowsPreview = useCallback(
@@ -685,7 +686,7 @@ const SimpleTableComp = ({
       rowHeight,
       headerHeight,
       customTheme,
-    ],
+    ]
   );
 
   // Calculate content height using hook (after flattenedRows is available)
@@ -774,7 +775,7 @@ const SimpleTableComp = ({
         updateSort({ accessor });
       }, 0);
     },
-    [prepareForSortChange, updateSort],
+    [prepareForSortChange, updateSort]
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
@@ -803,12 +804,14 @@ const SimpleTableComp = ({
     clearAllFilters,
     clearFilter,
     currentPage,
+    editColumns,
     expandedDepths,
     filters,
     flattenedRows,
     headerRegistryRef,
     headers: effectiveHeaders,
     includeHeadersInCSVExport,
+    onColumnVisibilityChange,
     onPageChange,
     paginatableRows,
     rowGrouping,
@@ -817,9 +820,11 @@ const SimpleTableComp = ({
     rowsPerPage,
     serverSidePagination,
     setCollapsedRows,
+    setColumnEditorOpen,
     setCurrentPage,
     setExpandedDepths,
     setExpandedRows,
+    setHeaders,
     setRows: setLocalRows,
     shouldPaginate,
     sort,
@@ -844,7 +849,7 @@ const SimpleTableComp = ({
         updateFilter(filter);
       }, 0);
     },
-    [prepareForFilterChange, updateFilter],
+    [prepareForFilterChange, updateFilter]
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)
@@ -972,8 +977,8 @@ const SimpleTableComp = ({
           maxHeight
             ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
             : height
-              ? { height }
-              : {}
+            ? { height }
+            : {}
         }
       >
         <ScrollSync>
@@ -993,9 +998,10 @@ const SimpleTableComp = ({
               <TableColumnEditor
                 columnEditorText={columnEditorText}
                 editColumns={editColumns}
-                editColumnsInitOpen={editColumnsInitOpen}
                 headers={headers}
+                open={columnEditorOpen}
                 position={columnEditorPosition}
+                setOpen={setColumnEditorOpen}
               />
             </div>
             {!shouldShowEmptyState && (
