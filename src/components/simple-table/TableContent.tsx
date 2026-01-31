@@ -2,7 +2,6 @@ import { useMemo, useRef } from "react";
 import TableHeaderProps from "../../types/TableHeaderProps";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
-import StickyParentsContainer from "./StickyParentsContainer";
 import { useTableContext } from "../../context/TableContext";
 import SortColumn from "../../types/SortColumn";
 import { createGridTemplateColumns } from "../../utils/columnUtils";

@@ -7,7 +7,6 @@ import TableRowSeparator from "./TableRowSeparator";
 import { rowIdToString } from "../../utils/rowUtils";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
-import ColumnIndices from "../../types/ColumnIndices";
 import HeaderObject from "../../types/HeaderObject";
 
 interface StickyParentsContainerProps {
@@ -79,10 +78,9 @@ const StickyParentsContainer = ({
             ? `sticky-state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
             : `sticky-${rowIdToString(tableRow.rowId)}`;
 
-          const isLastStickyRow = stickyIndex === stickyParents.length - 1;
-
           // Calculate the Y position for this sticky row's separator
-          const separatorTop = (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+          const separatorTop =
+            (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
 
           return (
             <Fragment key={rowId}>
