@@ -20,6 +20,7 @@ interface StickyParentsContainerProps {
   pinnedRightWidth: number;
   setHoveredIndex: (index: number | null) => void;
   rowIndices: RowIndices;
+  scrollbarWidth: number;
 }
 
 const StickyParentsContainer = ({
@@ -33,6 +34,7 @@ const StickyParentsContainer = ({
   pinnedRightWidth,
   setHoveredIndex,
   rowIndices,
+  scrollbarWidth,
 }: StickyParentsContainerProps) => {
   const { headers, rowHeight, collapsedHeaders } = useTableContext();
 
@@ -48,9 +50,7 @@ const StickyParentsContainer = ({
 
   // Calculate total height for sticky container
   const stickyHeight =
-    stickyParents.length > 0
-      ? stickyParents.length * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH
-      : 0;
+    stickyParents.length > 0 ? stickyParents.length * (rowHeight + ROW_SEPARATOR_WIDTH) : 0;
 
   if (stickyParents.length === 0) return null;
 
@@ -115,8 +115,11 @@ const StickyParentsContainer = ({
 
   const currentHeaders = headers.filter((header) => !header.pinned);
 
+  // Calculate width accounting for scrollbar
+  const containerWidth = `calc(100% - ${scrollbarWidth}px)`;
+
   return (
-    <div className="st-sticky-top" style={{ height: `${stickyHeight}px` }}>
+    <div className="st-sticky-top" style={{ height: `${stickyHeight}px`, width: containerWidth }}>
       {/* Left pinned section */}
       {pinnedLeftColumns.length > 0 &&
         renderStickySection(

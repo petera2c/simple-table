@@ -235,6 +235,7 @@ const TableBody = ({
           pinnedRightWidth={pinnedRightWidth}
           setHoveredIndex={setHoveredIndex}
           rowIndices={rowIndices}
+          scrollbarWidth={scrollbarWidth}
         />
       )}
 
