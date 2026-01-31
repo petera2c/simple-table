@@ -111,8 +111,8 @@ const useTableRowProcessing = ({
         const absoluteRowIndex = tableRow.nestedTable
           ? tableRow.absoluteRowIndex // Keep original position from flattenedRows
           : shouldPaginate && !serverSidePagination
-            ? startPosition + index
-            : index;
+          ? startPosition + index
+          : index;
 
         return {
           ...tableRow,
@@ -122,7 +122,7 @@ const useTableRowProcessing = ({
         };
       });
     },
-    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate],
+    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate]
   );
 
   // Establish original positions from unfiltered/unsorted data
@@ -170,7 +170,7 @@ const useTableRowProcessing = ({
       .filter(([originalPos]) => positionMap.has(originalPos))
       .map(
         ([originalPos, extraHeight]) =>
-          [positionMap.get(originalPos)!, extraHeight] as [number, number],
+          [positionMap.get(originalPos)!, extraHeight] as [number, number]
       );
   }, [heightOffsets, currentTableRows, shouldPaginate, serverSidePagination]);
 
@@ -185,7 +185,7 @@ const useTableRowProcessing = ({
       currentTableRows.length,
       rowHeight,
       paginatedHeightOffsets,
-      customTheme,
+      customTheme
     );
   }, [currentTableRows.length, rowHeight, paginatedHeightOffsets, customTheme]);
 
@@ -241,7 +241,7 @@ const useTableRowProcessing = ({
       currentTableRows,
       viewportCalcs.rendered.rows,
       viewportCalcs.fullyVisible.startIndex,
-      viewportCalcs.rendered.startIndex,
+      viewportCalcs.rendered.startIndex
     );
   }, [
     currentTableRows,
@@ -252,15 +252,14 @@ const useTableRowProcessing = ({
     bufferRowCount,
     targetVisibleRows,
   ]);
-  console.log("stickyParents", stickyParents);
 
   // Categorize rows based on ID changes
   const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
     const previousIds = new Set(
-      previousRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
+      previousRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId))
     );
     const currentIds = new Set(
-      currentRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
+      currentRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId))
     );
 
     const staying = currentRows.filter((tableRow) => {
@@ -451,7 +450,7 @@ const useTableRowProcessing = ({
           const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -475,7 +474,7 @@ const useTableRowProcessing = ({
       targetVisibleRows,
       bufferRowCount,
       heightMap,
-    ],
+    ]
   );
 
   const prepareForSortChange = useCallback(
@@ -508,7 +507,7 @@ const useTableRowProcessing = ({
           const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -532,7 +531,7 @@ const useTableRowProcessing = ({
       targetVisibleRows,
       bufferRowCount,
       heightMap,
-    ],
+    ]
   );
 
   return {
