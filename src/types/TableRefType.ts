@@ -58,6 +58,10 @@ type TableRefType = {
   getGroupingProperty: (depth: number) => Accessor | undefined;
   /** Get the depth index for a grouping property name */
   getGroupingDepth: (property: Accessor) => number;
+  /** Toggle the column editor menu. Pass true to open, false to close, or no argument to toggle. Only works if editColumns prop is enabled. */
+  toggleColumnEditor: (open?: boolean) => void;
+  /** Apply column visibility changes. Pass an object with column accessors as keys and boolean visibility as values. */
+  applyColumnVisibility: (visibility: { [accessor: string]: boolean }) => Promise<void>;
 };
 
 export default TableRefType;

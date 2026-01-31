@@ -1,13 +1,15 @@
 import Row from "../types/Row";
 import TableRow from "../types/TableRow";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import { getRowId } from "./rowUtils";
+import { rowIdToString } from "./rowUtils";
 
 /**
  * Get the set of selected row IDs from an array of table rows
  */
 export const getSelectedRowIds = (tableRows: TableRow[]): string[] => {
-  return tableRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position])));
+  return tableRows
+    .filter((tableRow) => tableRow && tableRow.rowId)
+    .map((tableRow) => rowIdToString(tableRow.rowId));
 };
 
 /**
@@ -22,9 +24,9 @@ export const isRowSelected = (rowId: string, selectedRows: Set<string>): boolean
  */
 export const areAllRowsSelected = (tableRows: TableRow[], selectedRows: Set<string>): boolean => {
   if (tableRows.length === 0) return false;
-  return tableRows.every((tableRow) =>
-    selectedRows.has(String(getRowId(tableRow.rowPath || [tableRow.position])))
-  );
+  return tableRows
+    .filter((tableRow) => tableRow && tableRow.rowId)
+    .every((tableRow) => selectedRows.has(rowIdToString(tableRow.rowId)));
 };
 
 /**
@@ -45,7 +47,9 @@ export const toggleRowSelection = (rowId: string, selectedRows: Set<string>): Se
  */
 export const selectAllRows = (tableRows: TableRow[]): Set<string> => {
   return new Set(
-    tableRows.map((tableRow) => String(getRowId(tableRow.rowPath || [tableRow.position])))
+    tableRows
+      .filter((tableRow) => tableRow && tableRow.rowId)
+      .map((tableRow) => rowIdToString(tableRow.rowId)),
   );
 };
 
@@ -61,9 +65,11 @@ export const deselectAllRows = (): Set<string> => {
  */
 export const getSelectedRows = (tableRows: TableRow[], selectedRows: Set<string>): Row[] => {
   return tableRows
-    .filter((tableRow) =>
-      selectedRows.has(String(getRowId(tableRow.rowPath || [tableRow.position])))
-    )
+    .filter((tableRow) => {
+      // Safety check: skip rows without rowId (shouldn't happen, but prevents crashes)
+      if (!tableRow || !tableRow.rowId) return false;
+      return selectedRows.has(rowIdToString(tableRow.rowId));
+    })
     .map((tableRow) => tableRow.row);
 };
 

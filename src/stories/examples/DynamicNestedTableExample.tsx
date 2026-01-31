@@ -52,25 +52,6 @@ const fetchDivisionsForCompany = async (companyId: string): Promise<Division[]> 
   return divisions;
 };
 
-const fetchTeamsForDivision = async (divisionId: string): Promise<Team[]> => {
-  await simulateDelay(600);
-
-  const teamCount = Math.floor(Math.random() * 4) + 2; // 2-5 teams
-  const teams: Team[] = [];
-
-  for (let i = 0; i < teamCount; i++) {
-    teams.push({
-      id: `${divisionId}-team-${i}`,
-      teamName: `Team ${i + 1}`,
-      manager: `Manager ${String.fromCharCode(65 + i)}`,
-      headcount: Math.floor(Math.random() * 20) + 5,
-      budget: `$${Math.floor(Math.random() * 5) + 1}M`,
-    });
-  }
-
-  return teams;
-};
-
 // Initial company data (no divisions loaded yet)
 const INITIAL_COMPANIES: Company[] = [
   {
@@ -160,73 +141,6 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
     [],
   );
 
-  // Handler for division-level expansions (loading teams)
-  const handleDivisionExpand = useCallback(
-    async ({
-      row,
-      groupingKey,
-      isExpanded,
-      rowIndexPath,
-      setLoading,
-      setError,
-      setEmpty,
-    }: OnRowGroupExpandProps) => {
-      if (!isExpanded) return;
-      console.log("here");
-
-      try {
-        if (groupingKey === "teams") {
-          const division = row as Division;
-
-          if (division.teams && division.teams.length > 0) {
-            return;
-          }
-
-          setLoading(true);
-          const teams = await fetchTeamsForDivision(division.id);
-
-          if (teams.length === 0) {
-            setLoading(false);
-            setEmpty(true, "No teams found for this division");
-            return;
-          }
-
-          // Need to update the parent company's divisions array
-          // We need to track which company this division belongs to
-          // This is tricky because the nested table doesn't know about parent context
-
-          // For now, we'll need to find the company by searching
-          setRows((prevRows) => {
-            const newRows = [...prevRows];
-
-            // Find the company that contains this division
-            for (const company of newRows) {
-              if (company.divisions) {
-                const divisionIndex = company.divisions.findIndex((d) => d.id === division.id);
-                if (divisionIndex !== -1) {
-                  company.divisions[divisionIndex] = {
-                    ...company.divisions[divisionIndex],
-                    teams,
-                  };
-                  break;
-                }
-              }
-            }
-
-            return newRows;
-          });
-
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("❌ Error fetching teams:", error);
-        setLoading(false);
-        setError(error instanceof Error ? error.message : "Failed to load teams");
-      }
-    },
-    [],
-  );
-
   // Company headers with nested table configuration
   const companyHeaders: HeaderObject[] = useMemo(
     () => [
@@ -248,88 +162,37 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
       { accessor: "revenue", label: "Revenue", width: 120 },
       { accessor: "employees", label: "Employees", width: 120, type: "number" },
     ],
-    [handleDivisionExpand],
+    [divisionHeaders],
   );
 
   return (
-    <div>
-      <div
-        style={{
-          padding: "20px",
-          backgroundColor: "#fef3c7",
-          border: "2px solid #f59e0b",
-          borderRadius: "12px",
-          marginBottom: "20px",
-        }}
-      >
-        <h2 style={{ margin: "0 0 12px 0", color: "#92400e", fontSize: "20px" }}>
-          🎯 Dynamic Nested Table Loading Demo
-        </h2>
-        <div style={{ fontSize: "14px", color: "#78350f", lineHeight: "1.6" }}>
-          <p style={{ margin: "0 0 8px 0" }}>
-            <strong>
-              This example demonstrates lazy-loading nested tables with explicit handlers:
-            </strong>
-          </p>
-          <ul style={{ margin: "0", paddingLeft: "20px" }}>
-            <li>
-              <strong>Companies</strong> load immediately (no divisions yet)
-            </li>
-            <li>
-              Click to expand a company → <strong>Divisions</strong> are fetched and shown in a{" "}
-              <strong>nested table</strong>
-            </li>
-            <li>
-              Click to expand a division → <strong>Teams</strong> are fetched and shown in a{" "}
-              <strong>nested nested table</strong>
-            </li>
-            <li>
-              Each nested table has its own <code>onRowGroupExpand</code> handler in the{" "}
-              <code>nestedTable</code> config
-            </li>
-            <li>
-              <strong>Handlers are explicit</strong> - each table level has clear, separate logic
-            </li>
-            <li>No confusion about depth/indices - each handler deals with its own table's data</li>
-            <li>
-              Open the <strong>browser console</strong> to see the API simulation! 🔍
-            </li>
-          </ul>
-          <p style={{ margin: "12px 0 0 0", fontStyle: "italic" }}>
-            💡 Try expanding companies and divisions to see multi-level nested tables loading on
-            demand with separate handlers.
-          </p>
+    <SimpleTable
+      {...props}
+      autoExpandColumns
+      defaultHeaders={companyHeaders}
+      expandAll={false}
+      height={props.height ?? "calc(100dvh - 200px)"}
+      rowGrouping={["divisions", "teams"]}
+      rows={rows}
+      selectableCells
+      useOddEvenRowBackground
+      onRowGroupExpand={handleCompanyExpand}
+      loadingStateRenderer={
+        <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>
+          <div>⏳ Loading...</div>
         </div>
-      </div>
-
-      <SimpleTable
-        {...props}
-        autoExpandColumns
-        defaultHeaders={companyHeaders}
-        expandAll={false}
-        height={props.height ?? "calc(100dvh - 200px)"}
-        rowGrouping={["divisions", "teams"]}
-        rows={rows}
-        selectableCells
-        useOddEvenRowBackground
-        onRowGroupExpand={handleCompanyExpand}
-        loadingStateRenderer={
-          <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>
-            <div>⏳ Loading...</div>
-          </div>
-        }
-        errorStateRenderer={
-          <div style={{ padding: "20px", textAlign: "center", color: "#dc2626" }}>
-            <div>❌ Error loading data</div>
-          </div>
-        }
-        emptyStateRenderer={
-          <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>
-            <div>📭 No data available</div>
-          </div>
-        }
-      />
-    </div>
+      }
+      errorStateRenderer={
+        <div style={{ padding: "20px", textAlign: "center", color: "#dc2626" }}>
+          <div>❌ Error loading data</div>
+        </div>
+      }
+      emptyStateRenderer={
+        <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>
+          <div>📭 No data available</div>
+        </div>
+      }
+    />
   );
 };
 

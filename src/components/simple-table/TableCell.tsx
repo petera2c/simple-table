@@ -10,7 +10,7 @@ import { useTableContext } from "../../context/TableContext";
 import HeaderObject from "../../types/HeaderObject";
 import { formatDate } from "../../utils/formatters";
 import {
-  getRowId,
+  rowIdToString,
   hasNestedRows,
   getNestedValue,
   setNestedValue,
@@ -143,7 +143,7 @@ const TableCell = ({
     useOddColumnBackground,
   } = useTableContext();
 
-  const { depth, row, rowPath, absoluteRowIndex } = tableRow;
+  const { depth, row, rowPath, rowIndexPath, absoluteRowIndex, rowId: tableRowId } = tableRow;
 
   // Local state
   const [localContent, setLocalContent] = useState<CellValue>(getNestedValue(row, header.accessor));
@@ -153,7 +153,7 @@ const TableCell = ({
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get row ID with path for uniqueness in nested rows
-  const rowId = getRowId(rowPath || [absoluteRowIndex]);
+  const rowId = rowIdToString(tableRowId);
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
   // Check if we can expand further (depth must be less than rowGrouping length)
@@ -468,7 +468,8 @@ const TableCell = ({
           groupingKeys: rowGrouping || [],
           isExpanded: !wasExpanded, // The new state (opposite of current)
           row,
-          rowIndexPath: rowPath || [],
+          rowIndexPath: rowIndexPath || [],
+          rowIdPath: rowPath,
           setEmpty,
           setError,
           setLoading,
@@ -486,6 +487,7 @@ const TableCell = ({
       row,
       rowGrouping,
       rowId,
+      rowIndexPath,
       rowPath,
       setCollapsedRows,
       setExpandedRows,

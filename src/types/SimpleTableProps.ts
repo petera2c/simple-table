@@ -21,6 +21,7 @@ import { RowButton } from "./RowButton";
 import TableRefType from "./TableRefType";
 import Theme from "./Theme";
 import { CustomThemeProps } from "./CustomTheme";
+import { GetRowId } from "./GetRowId";
 
 export interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -78,6 +79,7 @@ export interface SimpleTableProps {
   prevIcon?: ReactNode; // Previous icon
   rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
+  getRowId?: GetRowId; // Function to generate unique row IDs for stable row identification across data changes. Receives row data, depth, index, paths, and grouping key. If not provided, uses index-based IDs.
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   selectableCells?: boolean; // Flag if can select cells

@@ -3,7 +3,7 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
 import Cell from "../types/Cell";
 import { findLeafHeaders } from "../utils/headerWidthUtils";
-import { getRowId } from "../utils/rowUtils";
+import { rowIdToString } from "../utils/rowUtils";
 import { scrollCellIntoView } from "../utils/cellScrollUtils";
 import {
   copySelectedCellsToClipboard,
@@ -85,8 +85,8 @@ const useSelection = ({
 
     if (selectedColumns.size > 0) {
       tableRows.forEach((tableRow) => {
-        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
-        rows.add(String(rowId));
+        const rowId = rowIdToString(tableRow.rowId);
+        rows.add(rowId);
       });
     }
 
@@ -184,7 +184,7 @@ const useSelection = ({
               continue;
             }
             const tableRow = tableRows[row];
-            const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
+            const rowId = rowIdToString(tableRow.rowId);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -267,8 +267,8 @@ const useSelection = ({
 
       const rowIdToIndexMap = new Map<string, number>();
       tableRows.forEach((tableRow, index) => {
-        const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
-        rowIdToIndexMap.set(String(rowId), index);
+        const rowId = rowIdToString(tableRow.rowId);
+        rowIdToIndexMap.set(rowId, index);
       });
 
       const startRowCurrentIndex = rowIdToIndexMap.get(String(startCell.rowId));
@@ -291,7 +291,7 @@ const useSelection = ({
               continue;
             }
             const tableRow = tableRows[row];
-            const rowId = getRowId(tableRow.rowPath || [tableRow.position]);
+            const rowId = rowIdToString(tableRow.rowId);
             newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
           }
         }
@@ -503,9 +503,9 @@ const useSelection = ({
 
       const classes = [];
       const topRow = tableRows[rowIndex - 1];
-      const topRowId = topRow ? getRowId(topRow.rowPath || [topRow.position]) : null;
+      const topRowId = topRow ? rowIdToString(topRow.rowId) : null;
       const bottomRow = tableRows[rowIndex + 1];
-      const bottomRowId = bottomRow ? getRowId(bottomRow.rowPath || [bottomRow.position]) : null;
+      const bottomRowId = bottomRow ? rowIdToString(bottomRow.rowId) : null;
 
       const topCell =
         topRowId !== null ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId } : null;

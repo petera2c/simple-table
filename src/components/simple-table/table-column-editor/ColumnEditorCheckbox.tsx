@@ -30,18 +30,18 @@ const ColumnEditorCheckbox = ({
 
   const isChecked =
     isCheckedOverride ??
-    (header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children)));
+    !(header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children)));
 
   // Handle checkbox change
   const handleCheckboxChange = (checked: boolean) => {
-    // Update this header's state
-    header.hide = checked;
+    // Update this header's state (checked = visible, so hide = !checked)
+    header.hide = !checked;
 
-    if (checked) {
-      // If checked (hidden), check if we need to update any parents to be hidden
+    if (!checked) {
+      // If unchecked (hidden), check if we need to update any parents to be hidden
       updateParentHeaders(allHeaders);
     } else {
-      // If unchecked (visible), ensure all parent headers are also visible
+      // If checked (visible), ensure all parent headers are also visible
       findAndMarkParentsVisible(allHeaders, header.accessor);
 
       // If this is a parent header being made visible, and all its children are hidden,
@@ -103,7 +103,7 @@ const ColumnEditorCheckbox = ({
               doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
               header={childHeader}
               key={`${childHeader.accessor}-${index}`}
-              isCheckedOverride={isChecked ? true : undefined}
+              isCheckedOverride={!isChecked ? false : undefined}
             />
           ))}
         </div>

@@ -4,7 +4,7 @@ import TableRow from "../../types/TableRow";
 import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import TableRowComponent from "./TableRow";
 import TableRowSeparator from "./TableRowSeparator";
-import { getRowId } from "../../utils/rowUtils";
+import { rowIdToString } from "../../utils/rowUtils";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import ColumnIndices from "../../types/ColumnIndices";
@@ -77,7 +77,7 @@ const StickyParentsContainer = ({
         {stickyParents.map((tableRow, stickyIndex) => {
           const rowId = tableRow.stateIndicator
             ? `sticky-state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
-            : `sticky-${getRowId(tableRow.rowPath || [tableRow.position])}`;
+            : `sticky-${rowIdToString(tableRow.rowId)}`;
 
           const isLastStickyRow = stickyIndex === stickyParents.length - 1;
 

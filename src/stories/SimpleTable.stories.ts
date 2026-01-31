@@ -11,10 +11,16 @@ import ChartsExample, { chartsExampleDefaults } from "./examples/ChartsExample";
 import CollapsibleColumnsExample, {
   collapsibleColumnsExampleDefaults,
 } from "./examples/CollapsibleColumnsExample";
+import ColumnVisibilityAPIExampleComponent, {
+  columnVisibilityAPIExampleDefaults,
+} from "./examples/ColumnVisibilityAPIExample";
 import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import DynamicRowLoadingExample, {
   dynamicRowLoadingDefaults,
 } from "./examples/DynamicRowLoadingExample";
+import DynamicRowLoadingWithExternalSortExample, {
+  dynamicRowLoadingWithExternalSortDefaults,
+} from "./examples/DynamicRowLoadingWithExternalSortExample";
 import DynamicNestedTableExample from "./examples/DynamicNestedTableExample";
 import EditableCellsExample from "./examples/EditableCells";
 import ExpansionControlExample, {
@@ -284,6 +290,27 @@ export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
     React.createElement(StoryWrapper, { ExampleComponent: CollapsibleColumnsExample, ...args }),
 };
 
+export const ColumnVisibilityAPI: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...columnVisibilityAPIExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: ColumnVisibilityAPIExampleComponent,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates programmatic control of column visibility and the column editor menu via the tableRef API. Use toggleColumnEditor() to open/close the column editor menu, and applyColumnVisibility() to show/hide specific columns. Perfect for creating custom column visibility presets (e.g., 'Basic View', 'Contact Info', 'Financial View'), saved view states, or automated workflows. The example shows how to control individual columns or apply multiple visibility changes at once.",
+      },
+    },
+  },
+};
+
 export const CSVExportFormatting: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
@@ -390,6 +417,27 @@ export const DynamicRowLoading: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates the onRowGroupExpand callback for lazy-loading hierarchical data on demand. Departments load immediately without children. When you expand a department, teams are fetched from a simulated API. When you expand a team, employees are fetched. This pattern is perfect for large datasets where loading all nested data upfront would be too expensive. Open the browser console to see the simulated API calls!",
+      },
+    },
+  },
+};
+
+export const DynamicRowLoadingWithExternalSort: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...dynamicRowLoadingWithExternalSortDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: DynamicRowLoadingWithExternalSortExample,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates a powerful combination of three features: server-side pagination (20 total regions, 10 per page), external sorting (click headers to trigger API calls), and dynamic row loading (expand regions to lazy-load stores, expand stores to lazy-load products). This example shows how to build a highly scalable table that handles large datasets efficiently by only loading what's needed when it's needed. Perfect for real-world applications with thousands of records and complex hierarchical data structures.",
       },
     },
   },
