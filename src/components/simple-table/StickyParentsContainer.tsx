@@ -81,16 +81,11 @@ const StickyParentsContainer = ({
 
           const isLastStickyRow = stickyIndex === stickyParents.length - 1;
 
+          // Calculate the Y position for this sticky row's separator
+          const separatorTop = (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+
           return (
             <Fragment key={rowId}>
-              {stickyIndex !== 0 && (
-                <TableRowSeparator
-                  displayStrongBorder={tableRow.isLastGroupRow}
-                  position={stickyIndex * (rowHeight + ROW_SEPARATOR_WIDTH)}
-                  rowHeight={rowHeight}
-                  templateColumns={templateColumns}
-                />
-              )}
               <TableRowComponent
                 columnIndexStart={columnIndexStart}
                 columnIndices={columnIndices}
@@ -105,15 +100,14 @@ const StickyParentsContainer = ({
                 isSticky={true}
                 stickyIndex={stickyIndex}
               />
-              {/* Add separator after the last sticky row */}
-              {isLastStickyRow && (
-                <TableRowSeparator
-                  displayStrongBorder={tableRow.isLastGroupRow}
-                  position={(stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH)}
-                  rowHeight={rowHeight}
-                  templateColumns={templateColumns}
-                />
-              )}
+              {/* Add separator after each sticky row - never use strong border for sticky rows */}
+              <TableRowSeparator
+                displayStrongBorder={false}
+                position={separatorTop}
+                rowHeight={rowHeight}
+                templateColumns={templateColumns}
+                isSticky={true}
+              />
             </Fragment>
           );
         })}

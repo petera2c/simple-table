@@ -557,23 +557,27 @@ input {
   padding-right: var(--st-cell-padding);
 }
 
-/* If the cell is in the main body or pinned left then the resize handle is on the right */
-.st-resizeable .st-body-pinned-right .st-cell-content {
+/* Right-pinned sections have resize handle on the left */
+.st-resizeable .st-body-pinned-right .st-cell-content,
+.st-resizeable .st-sticky-section-right .st-cell-content {
   padding-left: calc(
     var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
   padding-right: var(--st-cell-padding);
 }
-/* If the cell is in the main body or pinned left then the resize handle is on the right */
+
+/* Main and left-pinned sections have resize handle on the right */
 .st-resizeable .st-body-pinned-left .st-cell-content,
-.st-resizeable .st-body-main .st-cell-content {
+.st-resizeable .st-body-main .st-cell-content,
+.st-resizeable .st-sticky-section-left .st-cell-content,
+.st-resizeable .st-sticky-section-main .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: calc(
     var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
 }
 
-/* Override resize handle padding for selection cells */
+/* Override resize handle padding for selection cells in all sections */
 .st-resizeable .st-selection-cell .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: var(--st-cell-padding);
@@ -614,6 +618,17 @@ input {
 }
 .st-cell-depth-7 {
   padding-left: calc(var(--st-cell-padding) * 28);
+}
+
+/* Reset depth padding for sticky parent rows to prevent padding changes */
+.st-sticky-parent .st-cell-depth-1,
+.st-sticky-parent .st-cell-depth-2,
+.st-sticky-parent .st-cell-depth-3,
+.st-sticky-parent .st-cell-depth-4,
+.st-sticky-parent .st-cell-depth-5,
+.st-sticky-parent .st-cell-depth-6,
+.st-sticky-parent .st-cell-depth-7 {
+  padding-left: var(--st-cell-padding);
 }
 
 .st-cell-depth-1 .st-cell-content {
