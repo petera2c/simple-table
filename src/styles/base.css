@@ -264,7 +264,6 @@ input {
   display: flex;
   z-index: 10;
   pointer-events: none;
-  background-color: var(--st-even-row-background-color);
 }
 
 .st-sticky-top > * {
@@ -275,7 +274,6 @@ input {
 .st-sticky-section-main,
 .st-sticky-section-right {
   overflow: hidden;
-  background-color: var(--st-even-row-background-color);
 }
 
 .st-sticky-section-left {
@@ -322,6 +320,7 @@ input {
   position: absolute;
   transition: background 0.2s ease;
   min-width: 100%;
+  background-color: var(--st-even-row-background-color);
 
   /* Performance optimizations for virtual scrolling */
   backface-visibility: hidden;

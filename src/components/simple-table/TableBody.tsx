@@ -25,6 +25,8 @@ const TableBody = ({
   tableRows,
   stickyParents,
   regularRows,
+  partiallyVisibleRows,
+  heightMap,
 }: TableBodyProps) => {
   // Get stable props from context
   const {
@@ -46,6 +48,7 @@ const TableBody = ({
 
   // Local state
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [localScrollTop, setLocalScrollTop] = useState(0);
 
   // Track hovered row elements for direct DOM manipulation
   const hoveredRowRefs = useRef<Set<HTMLElement>>(new Set());
@@ -200,6 +203,7 @@ const TableBody = ({
       // Update scroll position and direction for asymmetric buffering
       setScrollTop(newScrollTop);
       setScrollDirection(direction);
+      setLocalScrollTop(newScrollTop);
 
       // Check if we should load more data
       checkForLoadMore(element, newScrollTop);
@@ -227,17 +231,20 @@ const TableBody = ({
       {!shouldShowEmptyState && (
         <StickyParentsContainer
           calculatedHeaderHeight={calculatedHeaderHeight}
-          stickyParents={stickyParents}
+          heightMap={heightMap}
           mainTemplateColumns={mainTemplateColumns}
+          partiallyVisibleRows={partiallyVisibleRows}
           pinnedLeftColumns={pinnedLeftColumns}
           pinnedLeftTemplateColumns={pinnedLeftTemplateColumns}
           pinnedLeftWidth={pinnedLeftWidth}
           pinnedRightColumns={pinnedRightColumns}
           pinnedRightTemplateColumns={pinnedRightTemplateColumns}
           pinnedRightWidth={pinnedRightWidth}
-          setHoveredIndex={setHoveredIndex}
           rowIndices={rowIndices}
+          scrollTop={localScrollTop}
           scrollbarWidth={scrollbarWidth}
+          setHoveredIndex={setHoveredIndex}
+          stickyParents={stickyParents}
         />
       )}
 

@@ -7,6 +7,7 @@ import SortColumn from "../../types/SortColumn";
 import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "../../types/TableRow";
+import { CumulativeHeightMap } from "../../utils/infiniteScrollUtils";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
@@ -22,6 +23,8 @@ interface TableContentLocalProps {
   rowsToRender: TableRow[];
   stickyParents: TableRow[];
   regularRows: TableRow[];
+  partiallyVisibleRows: TableRow[];
+  heightMap?: CumulativeHeightMap;
 }
 
 const TableContent = ({
@@ -37,6 +40,8 @@ const TableContent = ({
   rowsToRender,
   stickyParents,
   regularRows,
+  partiallyVisibleRows,
+  heightMap,
 }: TableContentLocalProps) => {
   // Get stable props from context
   const { columnResizing, editColumns, headers, collapsedHeaders, autoExpandColumns } =
@@ -98,6 +103,8 @@ const TableContent = ({
     rowsToRender,
     stickyParents,
     regularRows,
+    partiallyVisibleRows,
+    heightMap,
     setScrollDirection,
     setScrollTop,
     shouldShowEmptyState,

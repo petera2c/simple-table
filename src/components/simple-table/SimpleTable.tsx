@@ -711,26 +711,29 @@ const SimpleTableComp = ({
     isAnimating,
     stickyParents,
     regularRows,
+    partiallyVisibleRows,
     paginatedHeightOffsets,
+    heightMap,
   } = useTableRowProcessing({
     allowAnimations,
+    computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
+    computeSortedRowsPreview: computeFlattenedSortedRowsPreview,
+    contentHeight,
+    currentPage,
+    customTheme,
+    enableStickyParents,
     flattenedRows,
+    heightOffsets,
     originalFlattenedRows,
     paginatableRows,
     parentEndPositions,
-    currentPage,
-    rowsPerPage,
-    shouldPaginate,
-    serverSidePagination,
-    contentHeight,
+    rowGrouping,
     rowHeight,
-    scrollTop,
+    rowsPerPage,
     scrollDirection,
-    heightOffsets,
-    customTheme,
-    enableStickyParents,
-    computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
-    computeSortedRowsPreview: computeFlattenedSortedRowsPreview,
+    scrollTop,
+    serverSidePagination,
+    shouldPaginate,
   });
 
   // Create a registry for cells to enable direct updates
@@ -1001,6 +1004,8 @@ const SimpleTableComp = ({
                 rowsToRender={rowsToRender}
                 stickyParents={stickyParents}
                 regularRows={regularRows}
+                partiallyVisibleRows={partiallyVisibleRows}
+                heightMap={heightMap}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

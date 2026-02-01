@@ -38,27 +38,29 @@ interface UseTableRowProcessingProps {
   // Functions to preview what rows would be after changes (now return TableRow[])
   computeFilteredRowsPreview: (filter: FilterCondition) => TableRow[];
   computeSortedRowsPreview: (accessor: Accessor) => TableRow[];
+  rowGrouping?: Accessor[];
 }
 
 const useTableRowProcessing = ({
   allowAnimations,
+  computeFilteredRowsPreview,
+  computeSortedRowsPreview,
+  contentHeight,
+  currentPage,
+  customTheme,
+  enableStickyParents,
   flattenedRows,
+  heightOffsets,
   originalFlattenedRows,
   paginatableRows,
   parentEndPositions,
-  currentPage,
-  rowsPerPage,
-  shouldPaginate,
-  serverSidePagination,
-  contentHeight,
   rowHeight,
-  scrollTop,
+  rowsPerPage,
   scrollDirection = "none",
-  heightOffsets,
-  customTheme,
-  enableStickyParents,
-  computeFilteredRowsPreview,
-  computeSortedRowsPreview,
+  scrollTop,
+  serverSidePagination,
+  shouldPaginate,
+  rowGrouping,
 }: UseTableRowProcessingProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [extendedRows, setExtendedRows] = useState<TableRow[]>([]);
@@ -222,10 +224,10 @@ const useTableRowProcessing = ({
   ]);
 
   // Separate sticky parents from regular rows for row grouping
-  const { stickyParents, regularRows } = useMemo(() => {
+  const { stickyParents, regularRows, partiallyVisibleRows } = useMemo(() => {
     // Only apply sticky parents if enabled and we have virtualization and viewport calculations
     if (!enableStickyParents || contentHeight === undefined) {
-      return { stickyParents: [], regularRows: targetVisibleRows };
+      return { stickyParents: [], regularRows: targetVisibleRows, partiallyVisibleRows: [] };
     }
 
     // Get viewport calculations
@@ -240,22 +242,31 @@ const useTableRowProcessing = ({
     });
 
     // Separate sticky parents from rendered rows
-    return getStickyParents(
-      currentTableRows,
-      viewportCalcs.rendered.rows,
-      viewportCalcs.fullyVisible.rows,
-      viewportCalcs.partiallyVisible.rows
-    );
+    const stickyResult = rowGrouping
+      ? getStickyParents(
+          currentTableRows,
+          viewportCalcs.rendered.rows,
+          viewportCalcs.fullyVisible.rows,
+          viewportCalcs.partiallyVisible.rows,
+          rowGrouping
+        )
+      : { stickyParents: [], regularRows: viewportCalcs.rendered.rows, partiallyVisibleRows: [] };
+
+    return {
+      ...stickyResult,
+      partiallyVisibleRows: viewportCalcs.partiallyVisible.rows,
+    };
   }, [
-    enableStickyParents,
-    currentTableRows,
-    contentHeight,
-    rowHeight,
-    scrollTop,
-    scrollDirection,
     bufferRowCount,
-    targetVisibleRows,
+    contentHeight,
+    currentTableRows,
+    enableStickyParents,
     heightMap,
+    rowGrouping,
+    rowHeight,
+    scrollDirection,
+    scrollTop,
+    targetVisibleRows,
   ]);
 
   // Categorize rows based on ID changes
@@ -548,7 +559,9 @@ const useTableRowProcessing = ({
     rowsToRender,
     stickyParents,
     regularRows,
+    partiallyVisibleRows,
     paginatedHeightOffsets,
+    heightMap,
   };
 };
 

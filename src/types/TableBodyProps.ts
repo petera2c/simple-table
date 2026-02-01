@@ -1,5 +1,6 @@
 import { HeaderObject } from "..";
 import TableRow from "./TableRow";
+import { CumulativeHeightMap } from "../utils/infiniteScrollUtils";
 
 interface TableBodyProps {
   calculatedHeaderHeight: number;
@@ -17,6 +18,8 @@ interface TableBodyProps {
   tableRows: TableRow[];
   stickyParents: TableRow[];
   regularRows: TableRow[];
+  partiallyVisibleRows: TableRow[];
+  heightMap?: CumulativeHeightMap;
 }
 
 export default TableBodyProps;
