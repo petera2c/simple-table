@@ -4,6 +4,7 @@ import React from "react";
 import AggregateFunctionsDemo from "./examples/AggregateExample";
 import AlignmentExample from "./examples/AlignmentExample";
 import BasicExampleComponent from "./examples/BasicExample";
+import BasicRowGroupingDemo, { basicRowGroupingDefaults } from "./examples/BasicRowGrouping";
 import BillingExampleComponent from "./examples/billing-example/BillingExample";
 import CellHighlightingDemo from "./examples/CellHighlighting";
 import CellRendererExample from "./examples/CellRenderer";
@@ -203,6 +204,24 @@ export const BasicExample: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: BasicExampleComponent, ...args }),
+};
+
+export const BasicRowGrouping: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...basicRowGroupingDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: BasicRowGroupingDemo, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates basic row grouping with a hierarchical organization structure. Shows companies with divisions and departments, featuring programmatic expansion controls via tableRef API. Use the control buttons to expand all levels, collapse everything, show only divisions, or expand specific depth combinations. Includes enableStickyParents to keep parent rows visible while scrolling through children.",
+      },
+    },
+  },
 };
 
 export const BillingExample: StoryObj<UniversalTableProps> = {
