@@ -10,6 +10,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { rowIdToString } from "../../utils/rowUtils";
 
 const TableBody = ({
+  calculatedHeaderHeight,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -225,6 +226,7 @@ const TableBody = ({
       {/* Sticky parents container - positioned absolutely on top */}
       {!shouldShowEmptyState && (
         <StickyParentsContainer
+          calculatedHeaderHeight={calculatedHeaderHeight}
           stickyParents={stickyParents}
           mainTemplateColumns={mainTemplateColumns}
           pinnedLeftColumns={pinnedLeftColumns}

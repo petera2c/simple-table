@@ -987,6 +987,7 @@ const SimpleTableComp = ({
           <div className="st-wrapper-container">
             <div className="st-content-wrapper">
               <TableContent
+                calculatedHeaderHeight={calculatedHeaderHeight}
                 hideHeader={hideHeader}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}

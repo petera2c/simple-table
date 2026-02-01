@@ -10,6 +10,7 @@ import RowIndices from "../../types/RowIndices";
 import HeaderObject from "../../types/HeaderObject";
 
 interface StickyParentsContainerProps {
+  calculatedHeaderHeight: number;
   stickyParents: TableRow[];
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
@@ -24,6 +25,7 @@ interface StickyParentsContainerProps {
 }
 
 const StickyParentsContainer = ({
+  calculatedHeaderHeight,
   stickyParents,
   mainTemplateColumns,
   pinnedLeftColumns,
@@ -119,7 +121,14 @@ const StickyParentsContainer = ({
   const containerWidth = `calc(100% - ${scrollbarWidth}px)`;
 
   return (
-    <div className="st-sticky-top" style={{ height: `${stickyHeight}px`, width: containerWidth }}>
+    <div 
+      className="st-sticky-top" 
+      style={{ 
+        height: `${stickyHeight}px`, 
+        width: containerWidth,
+        top: `${calculatedHeaderHeight}px`
+      }}
+    >
       {/* Left pinned section */}
       {pinnedLeftColumns.length > 0 &&
         renderStickySection(

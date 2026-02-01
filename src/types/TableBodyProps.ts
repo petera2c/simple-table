@@ -2,6 +2,7 @@ import { HeaderObject } from "..";
 import TableRow from "./TableRow";
 
 interface TableBodyProps {
+  calculatedHeaderHeight: number;
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftTemplateColumns: string;

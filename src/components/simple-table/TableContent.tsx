@@ -10,6 +10,7 @@ import TableRow from "../../types/TableRow";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
+  calculatedHeaderHeight: number;
   hideHeader: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
@@ -24,6 +25,7 @@ interface TableContentLocalProps {
 }
 
 const TableContent = ({
+  calculatedHeaderHeight,
   hideHeader,
   pinnedLeftWidth,
   pinnedRightWidth,
@@ -85,6 +87,7 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
+    calculatedHeaderHeight,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,
