@@ -10,6 +10,21 @@ import RowIndices from "../../types/RowIndices";
 import HeaderObject from "../../types/HeaderObject";
 import { CumulativeHeightMap } from "../../utils/infiniteScrollUtils";
 
+const copyObject = (obj: Record<string, any>) => {
+  const newObj = {} as Record<string, any>;
+  for (const key in obj) {
+    if (key === "row") {
+      newObj[key] = {
+        id: obj.row.id,
+        organization: obj.row.organization,
+      };
+    } else {
+      newObj[key] = obj[key];
+    }
+  }
+  return newObj;
+};
+
 interface StickyParentsContainerProps {
   calculatedHeaderHeight: number;
   stickyParents: TableRow[];
@@ -60,55 +75,79 @@ const StickyParentsContainer = ({
     // Check if there are multiple trees/sibling groups in stickyParents
     // A new tree/sibling starts when we have parents at the same depth that are siblings
     // We detect this by checking if consecutive sticky parents at the same depth have different parent chains
-    let firstTreeBoundaryIndex = -1;
+    let newTreeStartIndex = -1;
 
-    for (let i = 1; i < stickyParents.length; i++) {
+    for (let i = 0; i < stickyParents.length; i++) {
       const currentParent = stickyParents[i];
-      const previousParent = stickyParents[i - 1];
+      const nextParent = stickyParents[i + 1];
 
-      // Check if they're at the same depth
-      if (currentParent.depth === previousParent.depth) {
-        // Check if they're siblings (have the same parent indices except for the last one)
-        const currentParentIndices = currentParent.parentIndices || [];
-        const previousParentIndices = previousParent.parentIndices || [];
-
-        // If they have the same parent chain length and share the same parents (except themselves)
-        // then they are siblings, indicating a tree boundary
-        if (currentParentIndices.length === previousParentIndices.length) {
-          // For depth > 0, check if they share the same immediate parent
-          if (currentParent.depth > 0) {
-            const currentParentPos = currentParentIndices[currentParentIndices.length - 1];
-            const previousParentPos = previousParentIndices[previousParentIndices.length - 1];
-
-            // If they have the same immediate parent, they're siblings
-            if (currentParentPos === previousParentPos) {
-              firstTreeBoundaryIndex = i;
-              break;
-            }
-          } else {
-            // For depth 0, any second depth-0 parent is a new tree
-            firstTreeBoundaryIndex = i;
-            break;
-          }
-        }
+      if (nextParent.depth === currentParent.depth) {
+        newTreeStartIndex = i;
+        break;
+      } else if (nextParent.depth < currentParent.depth) {
+        newTreeStartIndex = stickyParents.findIndex(
+          (parent) => parent.depth === currentParent.depth
+        );
+        break;
       }
     }
 
-    // If no tree boundary found, we're in a single tree - no offset needed
-    if (firstTreeBoundaryIndex === -1) {
+    if (newTreeStartIndex === -1) {
       return 0;
     }
 
-    console.log("\n");
+    // Get the position of the parent row we're transitioning away from
+    // This is the sticky parent right after newTreeStartIndex (the one being pushed out)
+    const oldTreeParentPosition = stickyParents[newTreeStartIndex]?.position;
 
-    // Get the old tree's sticky parents (before the boundary)
-    const oldTreeStickyParents = stickyParents.slice(0, firstTreeBoundaryIndex);
-    const oldTreeStickyPositions = new Set(oldTreeStickyParents.map((p) => p.position));
+    if (oldTreeParentPosition === undefined) {
+      return 0;
+    }
 
-    console.log(stickyParents[firstTreeBoundaryIndex]);
+    // Count how many rows in partiallyVisibleRows belong to the old tree parent
+    // A row belongs to the old tree if it has oldTreeParentPosition in its parentIndices
+    let rowsLeftFromOldTree = 0;
 
-    // TODO: Calculate the actual offset based on visibility
-    return 0;
+    for (const row of partiallyVisibleRows) {
+      if (row.parentIndices?.includes(oldTreeParentPosition)) {
+        rowsLeftFromOldTree++;
+      } else {
+        // Stop when we encounter a row that doesn't belong to the old tree parent
+        break;
+      }
+    }
+
+    if (rowsLeftFromOldTree === 0) {
+      return 0;
+    }
+
+    // Get the first row from the old tree
+    const firstRowFromOldTree = partiallyVisibleRows[0];
+
+    // Calculate the top position of this row
+    let firstRowTopPosition: number;
+    if (heightMap) {
+      firstRowTopPosition = heightMap.rowTopPositions[firstRowFromOldTree.position];
+    } else {
+      // Fallback to fixed-height calculation
+      firstRowTopPosition =
+        firstRowFromOldTree.position * (rowHeight + customTheme.rowSeparatorWidth);
+    }
+
+    // Calculate how many pixels of the first row are scrolled out of view (above the viewport)
+    const pixelsScrolledOutOfView = Math.max(0, scrollTop - firstRowTopPosition);
+
+    // Count how many sticky parents belong to the old tree (before the new tree starts)
+    // This is all sticky parents from index 0 up to (but not including) newTreeStartIndex
+    const parentsFromOldTree = newTreeStartIndex + 1;
+
+    // Calculate the offset:
+    // - If we have fewer rows left than sticky parents, some parent slots are "freed up"
+    // - Each freed slot contributes rowHeight pixels
+    // - Plus the pixels of the first row that are scrolled out of view
+    const offset = (parentsFromOldTree - rowsLeftFromOldTree) * rowHeight + pixelsScrolledOutOfView;
+
+    return offset;
   }, [stickyParents, scrollTop, partiallyVisibleRows]);
 
   // Calculate column indices
