@@ -492,7 +492,7 @@ const findStickyParents = ({
   recursionDepth: number;
   stickyParents: TableRow[];
   rowGrouping: Accessor[];
-}) => {
+}): { stickyParents: TableRow[]; regularRows: TableRow[] } => {
   // Start with the first partially visible row (more responsive for sticky parent detection)
   let firstVisibleRow = partiallyVisibleRows[partiallyVisibleRowIndex];
 

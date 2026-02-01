@@ -47,11 +47,34 @@ const StickyParentsContainer = ({
 }: StickyParentsContainerProps) => {
   const { headers, rowHeight, collapsedHeaders, customTheme } = useTableContext();
 
-  // Calculate offset for transitioning between sibling trees in sticky parents
-  const treeTransitionOffset = useMemo(() => {
+  // Calculate offset for transitioning between sibling trees and determine which sticky parents should have the offset applied
+  const { treeTransitionOffset, offsetStartIndex } = useMemo(() => {
     if (stickyParents.length === 0) {
-      return 0;
+      return { treeTransitionOffset: 0, offsetStartIndex: -1 };
     }
+
+    // Find the first parent of the first partially visible row that's in stickyParents
+    const firstPartiallyVisibleRow = partiallyVisibleRows[0];
+    let stickyParentPosition: number | undefined;
+
+    if (firstPartiallyVisibleRow?.parentIndices && firstPartiallyVisibleRow.parentIndices.length > 0) {
+      // Check parents from immediate to most distant
+      for (let i = firstPartiallyVisibleRow.parentIndices.length - 1; i >= 0; i--) {
+        const parentPosition = firstPartiallyVisibleRow.parentIndices[i];
+        
+        // Check if this parent is in stickyParents
+        if (stickyParents.some((parent) => parent.position === parentPosition)) {
+          stickyParentPosition = parentPosition;
+          break;
+        }
+      }
+    }
+
+    // Find the index in stickyParents where we should start applying the offset
+    const calculatedOffsetStartIndex =
+      stickyParentPosition !== undefined
+        ? stickyParents.findIndex((parent) => parent.position === stickyParentPosition)
+        : -1;
 
     // Find where a new sibling tree starts (same depth parents)
     let newTreeStartIndex = -1;
@@ -74,13 +97,13 @@ const StickyParentsContainer = ({
     }
 
     if (newTreeStartIndex === -1) {
-      return 0;
+      return { treeTransitionOffset: 0, offsetStartIndex: calculatedOffsetStartIndex };
     }
 
     const oldTreeParentPosition = stickyParents[newTreeStartIndex]?.position;
 
     if (oldTreeParentPosition === undefined) {
-      return 0;
+      return { treeTransitionOffset: 0, offsetStartIndex: calculatedOffsetStartIndex };
     }
 
     // Count remaining visible rows from the old tree
@@ -95,7 +118,7 @@ const StickyParentsContainer = ({
     }
 
     if (rowsLeftFromOldTree === 0) {
-      return 0;
+      return { treeTransitionOffset: 0, offsetStartIndex: calculatedOffsetStartIndex };
     }
 
     const firstRowFromOldTree = partiallyVisibleRows[0];
@@ -115,7 +138,7 @@ const StickyParentsContainer = ({
     // Offset = freed sticky slots + pixels scrolled out
     const offset = (parentsFromOldTree - rowsLeftFromOldTree) * rowHeight + pixelsScrolledOutOfView;
 
-    return -offset;
+    return { treeTransitionOffset: -offset, offsetStartIndex: calculatedOffsetStartIndex };
   }, [customTheme, heightMap, partiallyVisibleRows, rowHeight, scrollTop, stickyParents]);
 
   // Calculate column indices
@@ -130,23 +153,11 @@ const StickyParentsContainer = ({
 
   // Calculate total height for sticky container including tree transition offset
   const stickyHeight =
-    stickyParents.length > 0 
-      ? stickyParents.length * (rowHeight + ROW_SEPARATOR_WIDTH) + treeTransitionOffset 
+    stickyParents.length > 0
+      ? stickyParents.length * (rowHeight + ROW_SEPARATOR_WIDTH) + treeTransitionOffset
       : 0;
 
   if (stickyParents.length === 0) return null;
-
-  // Determine which sticky parents should have the offset applied
-  // Only apply offset to the immediate parent of the first partially visible row and all parents after it
-  const firstPartiallyVisibleRow = partiallyVisibleRows[0];
-  const firstRowImmediateParentPosition = firstPartiallyVisibleRow?.parentIndices?.[
-    firstPartiallyVisibleRow.parentIndices.length - 1
-  ];
-  
-  // Find the index in stickyParents where we should start applying the offset
-  const offsetStartIndex = firstRowImmediateParentPosition !== undefined
-    ? stickyParents.findIndex((parent) => parent.position === firstRowImmediateParentPosition)
-    : -1;
 
   // Render sticky rows for a specific section
   const renderStickySection = (
@@ -177,15 +188,11 @@ const StickyParentsContainer = ({
           const rowOffset = shouldApplyOffset ? treeTransitionOffset : 0;
 
           // Calculate z-index: rows before offset get higher z-index
-          const zIndex = shouldApplyOffset 
-            ? stickyIndex 
-            : stickyParents.length - stickyIndex;
+          const zIndex = shouldApplyOffset ? stickyIndex : stickyParents.length - stickyIndex;
 
           // Calculate the Y position for this sticky row's separator
           const separatorTop =
-            (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) -
-            ROW_SEPARATOR_WIDTH +
-            rowOffset;
+            (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH + rowOffset;
 
           return (
             <Fragment key={rowId}>
