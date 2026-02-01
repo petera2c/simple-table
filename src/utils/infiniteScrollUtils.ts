@@ -355,6 +355,8 @@ export const getViewportCalculations = ({
       rows: tableRows.slice(renderedStartIndex, renderedEndIndex),
     },
     fullyVisible: {
+      startIndex: fullyVisibleStartIndex,
+      endIndex: fullyVisibleEndIndex,
       rows: tableRows.slice(fullyVisibleStartIndex, fullyVisibleEndIndex),
     },
     partiallyVisible: {

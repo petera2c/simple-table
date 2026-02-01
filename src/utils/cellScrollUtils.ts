@@ -9,7 +9,7 @@ import { CustomTheme } from "../types/CustomTheme";
 const fineTuneScroll = (
   cellElement: Element,
   tableContainer: Element,
-  mainBody: Element | null,
+  mainBody: Element | null
 ) => {
   const cellRect = cellElement.getBoundingClientRect();
   const containerRect = tableContainer.getBoundingClientRect();
@@ -45,7 +45,7 @@ const isRowFullyVisible = (
   rowIndex: number,
   tableContainer: Element,
   rowHeight: number,
-  tableRows: TableRow[],
+  tableRows: TableRow[]
 ): boolean => {
   const scrollTop = tableContainer.scrollTop;
   const contentHeight = tableContainer.clientHeight;
@@ -73,7 +73,7 @@ export const scrollCellIntoView = (
   cell: Cell,
   rowHeight: number,
   customTheme: CustomTheme,
-  tableRows?: TableRow[],
+  tableRows?: TableRow[]
 ) => {
   const tableContainer = document.querySelector(".st-body-container");
   const mainBody = document.querySelector(".st-body-main");
@@ -85,7 +85,7 @@ export const scrollCellIntoView = (
 
   // Try to find the cell element using data attributes
   const cellElement = document.querySelector(
-    `.st-cell[data-row-index="${cell.rowIndex}"][data-col-index="${cell.colIndex}"][data-row-id="${cell.rowId}"]`,
+    `.st-cell[data-row-index="${cell.rowIndex}"][data-col-index="${cell.colIndex}"][data-row-id="${cell.rowId}"]`
   );
 
   // Check if row is already fully visible using our new viewport calculations
@@ -112,7 +112,7 @@ export const scrollCellIntoView = (
     // Wait for virtualization to render the cell, then fine-tune
     setTimeout(() => {
       const newCellElement = document.querySelector(
-        `.st-cell[data-row-index="${cell.rowIndex}"][data-col-index="${cell.colIndex}"][data-row-id="${cell.rowId}"]`,
+        `.st-cell[data-row-index="${cell.rowIndex}"][data-col-index="${cell.colIndex}"][data-row-id="${cell.rowId}"]`
       );
 
       if (newCellElement) {
