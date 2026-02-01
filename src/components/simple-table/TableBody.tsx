@@ -2,10 +2,7 @@ import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import StickyParentsContainer from "./StickyParentsContainer";
-import {
-  getTotalRowCount,
-  calculateTotalHeight,
-} from "../../utils/infiniteScrollUtils";
+import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
@@ -117,9 +114,6 @@ const TableBody = ({
   const scrollTimeoutRef = useRef<number | null>(null);
   const scrollEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollTopRef = useRef<number>(0);
-
-  // Get content height from the body container
-  const contentHeight = tableBodyContainerRef.current?.clientHeight ?? 0;
 
   // Derived state
   const totalRowCount = getTotalRowCount(tableRows);
@@ -237,21 +231,20 @@ const TableBody = ({
       {!shouldShowEmptyState && (
         <StickyParentsContainer
           calculatedHeaderHeight={calculatedHeaderHeight}
-          stickyParents={stickyParents}
+          heightMap={heightMap}
           mainTemplateColumns={mainTemplateColumns}
+          partiallyVisibleRows={partiallyVisibleRows}
           pinnedLeftColumns={pinnedLeftColumns}
           pinnedLeftTemplateColumns={pinnedLeftTemplateColumns}
           pinnedLeftWidth={pinnedLeftWidth}
           pinnedRightColumns={pinnedRightColumns}
           pinnedRightTemplateColumns={pinnedRightTemplateColumns}
           pinnedRightWidth={pinnedRightWidth}
-          setHoveredIndex={setHoveredIndex}
           rowIndices={rowIndices}
-          scrollbarWidth={scrollbarWidth}
           scrollTop={localScrollTop}
-          contentHeight={contentHeight}
-          heightMap={heightMap}
-          partiallyVisibleRows={partiallyVisibleRows}
+          scrollbarWidth={scrollbarWidth}
+          setHoveredIndex={setHoveredIndex}
+          stickyParents={stickyParents}
         />
       )}
 
