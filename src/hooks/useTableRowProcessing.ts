@@ -38,7 +38,7 @@ interface UseTableRowProcessingProps {
   // Functions to preview what rows would be after changes (now return TableRow[])
   computeFilteredRowsPreview: (filter: FilterCondition) => TableRow[];
   computeSortedRowsPreview: (accessor: Accessor) => TableRow[];
-  rowGrouping: Accessor[];
+  rowGrouping?: Accessor[];
 }
 
 const useTableRowProcessing = ({
@@ -224,10 +224,10 @@ const useTableRowProcessing = ({
   ]);
 
   // Separate sticky parents from regular rows for row grouping
-  const { stickyParents, regularRows } = useMemo(() => {
+  const { stickyParents, regularRows, partiallyVisibleRows } = useMemo(() => {
     // Only apply sticky parents if enabled and we have virtualization and viewport calculations
     if (!enableStickyParents || contentHeight === undefined) {
-      return { stickyParents: [], regularRows: targetVisibleRows };
+      return { stickyParents: [], regularRows: targetVisibleRows, partiallyVisibleRows: [] };
     }
 
     // Get viewport calculations
@@ -242,13 +242,20 @@ const useTableRowProcessing = ({
     });
 
     // Separate sticky parents from rendered rows
-    return getStickyParents(
-      currentTableRows,
-      viewportCalcs.rendered.rows,
-      viewportCalcs.fullyVisible.rows,
-      viewportCalcs.partiallyVisible.rows,
-      rowGrouping
-    );
+    const stickyResult = rowGrouping
+      ? getStickyParents(
+          currentTableRows,
+          viewportCalcs.rendered.rows,
+          viewportCalcs.fullyVisible.rows,
+          viewportCalcs.partiallyVisible.rows,
+          rowGrouping
+        )
+      : { stickyParents: [], regularRows: viewportCalcs.rendered.rows, partiallyVisibleRows: [] };
+
+    return {
+      ...stickyResult,
+      partiallyVisibleRows: viewportCalcs.partiallyVisible.rows,
+    };
   }, [
     bufferRowCount,
     contentHeight,
@@ -552,7 +559,9 @@ const useTableRowProcessing = ({
     rowsToRender,
     stickyParents,
     regularRows,
+    partiallyVisibleRows,
     paginatedHeightOffsets,
+    heightMap,
   };
 };
 

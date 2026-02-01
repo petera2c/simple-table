@@ -711,7 +711,9 @@ const SimpleTableComp = ({
     isAnimating,
     stickyParents,
     regularRows,
+    partiallyVisibleRows,
     paginatedHeightOffsets,
+    heightMap,
   } = useTableRowProcessing({
     allowAnimations,
     computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
@@ -1002,6 +1004,8 @@ const SimpleTableComp = ({
                 rowsToRender={rowsToRender}
                 stickyParents={stickyParents}
                 regularRows={regularRows}
+                partiallyVisibleRows={partiallyVisibleRows}
+                heightMap={heightMap}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

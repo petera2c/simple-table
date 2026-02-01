@@ -2,7 +2,10 @@ import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import StickyParentsContainer from "./StickyParentsContainer";
-import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
+import {
+  getTotalRowCount,
+  calculateTotalHeight,
+} from "../../utils/infiniteScrollUtils";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
@@ -25,6 +28,8 @@ const TableBody = ({
   tableRows,
   stickyParents,
   regularRows,
+  partiallyVisibleRows,
+  heightMap,
 }: TableBodyProps) => {
   // Get stable props from context
   const {
@@ -46,6 +51,7 @@ const TableBody = ({
 
   // Local state
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [localScrollTop, setLocalScrollTop] = useState(0);
 
   // Track hovered row elements for direct DOM manipulation
   const hoveredRowRefs = useRef<Set<HTMLElement>>(new Set());
@@ -111,6 +117,9 @@ const TableBody = ({
   const scrollTimeoutRef = useRef<number | null>(null);
   const scrollEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollTopRef = useRef<number>(0);
+
+  // Get content height from the body container
+  const contentHeight = tableBodyContainerRef.current?.clientHeight ?? 0;
 
   // Derived state
   const totalRowCount = getTotalRowCount(tableRows);
@@ -200,6 +209,7 @@ const TableBody = ({
       // Update scroll position and direction for asymmetric buffering
       setScrollTop(newScrollTop);
       setScrollDirection(direction);
+      setLocalScrollTop(newScrollTop);
 
       // Check if we should load more data
       checkForLoadMore(element, newScrollTop);
@@ -238,6 +248,10 @@ const TableBody = ({
           setHoveredIndex={setHoveredIndex}
           rowIndices={rowIndices}
           scrollbarWidth={scrollbarWidth}
+          scrollTop={localScrollTop}
+          contentHeight={contentHeight}
+          heightMap={heightMap}
+          partiallyVisibleRows={partiallyVisibleRows}
         />
       )}
 
