@@ -27,6 +27,7 @@ interface TableRowProps {
   isSticky?: boolean;
   stickyIndex?: number;
   stickyOffset?: number;
+  stickyZIndex?: number;
 }
 
 const TableRow = ({
@@ -43,6 +44,7 @@ const TableRow = ({
   isSticky = false,
   stickyIndex = 0,
   stickyOffset = 0,
+  stickyZIndex,
 }: TableRowProps) => {
   const {
     customTheme,
@@ -85,7 +87,12 @@ const TableRow = ({
         data-index={index}
         style={{
           gridTemplateColumns,
-          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
+          transform: `translate3d(0, ${calculateRowTopPosition({
+            position,
+            rowHeight,
+            heightOffsets,
+            customTheme,
+          })}px, 0)`,
           height: `${nestedTable.calculatedHeight}px`,
         }}
       />
@@ -113,7 +120,12 @@ const TableRow = ({
             data-index={index}
             style={{
               gridTemplateColumns,
-              transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
+              transform: `translate3d(0, ${calculateRowTopPosition({
+                position,
+                rowHeight,
+                heightOffsets,
+                customTheme,
+              })}px, 0)`,
               height: `${rowHeight}px`,
             }}
           />
@@ -122,7 +134,9 @@ const TableRow = ({
 
       // Get the parent row from rows using the parentRowId
       // parentRowId is a string like "0" or "1-stores-5", so we compare it directly
-      const parentRow = rows.find((r, index) => rowIdToString([index]) === stateIndicator.parentRowId);
+      const parentRow = rows.find(
+        (r, index) => rowIdToString([index]) === stateIndicator.parentRowId
+      );
 
       return (
         <div
@@ -130,7 +144,12 @@ const TableRow = ({
           data-index={index}
           style={{
             gridTemplateColumns,
-            transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
+            transform: `translate3d(0, ${calculateRowTopPosition({
+              position,
+              rowHeight,
+              heightOffsets,
+              customTheme,
+            })}px, 0)`,
             height: `${rowHeight}px`,
           }}
         >
@@ -153,7 +172,12 @@ const TableRow = ({
         data-index={index}
         style={{
           gridTemplateColumns,
-          transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme })}px, 0)`,
+          transform: `translate3d(0, ${calculateRowTopPosition({
+            position,
+            rowHeight,
+            heightOffsets,
+            customTheme,
+          })}px, 0)`,
           height: `${rowHeight}px`,
         }}
       />
@@ -173,12 +197,15 @@ const TableRow = ({
   const rowStyle = isSticky
     ? {
         gridTemplateColumns,
-        transform: `translateY(${stickyIndex * (rowHeight + ROW_SEPARATOR_WIDTH) + stickyOffset}px)`,
+        transform: `translateY(${
+          stickyIndex * (rowHeight + ROW_SEPARATOR_WIDTH) + stickyOffset
+        }px)`,
         height: `${rowHeight}px`,
         position: "absolute" as const,
         top: 0,
         left: 0,
         right: 0,
+        zIndex: stickyZIndex,
       }
     : {
         gridTemplateColumns,

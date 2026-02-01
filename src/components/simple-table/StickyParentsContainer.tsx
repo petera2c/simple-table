@@ -136,6 +136,18 @@ const StickyParentsContainer = ({
 
   if (stickyParents.length === 0) return null;
 
+  // Determine which sticky parents should have the offset applied
+  // Only apply offset to the immediate parent of the first partially visible row and all parents after it
+  const firstPartiallyVisibleRow = partiallyVisibleRows[0];
+  const firstRowImmediateParentPosition = firstPartiallyVisibleRow?.parentIndices?.[
+    firstPartiallyVisibleRow.parentIndices.length - 1
+  ];
+  
+  // Find the index in stickyParents where we should start applying the offset
+  const offsetStartIndex = firstRowImmediateParentPosition !== undefined
+    ? stickyParents.findIndex((parent) => parent.position === firstRowImmediateParentPosition)
+    : -1;
+
   // Render sticky rows for a specific section
   const renderStickySection = (
     templateColumns: string,
@@ -160,11 +172,20 @@ const StickyParentsContainer = ({
             ? `sticky-state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
             : `sticky-${rowIdToString(tableRow.rowId)}`;
 
-          // Calculate the Y position for this sticky row's separator with tree transition offset
+          // Only apply offset to this row if it's at or after the offsetStartIndex
+          const shouldApplyOffset = offsetStartIndex !== -1 && stickyIndex >= offsetStartIndex;
+          const rowOffset = shouldApplyOffset ? treeTransitionOffset : 0;
+
+          // Calculate z-index: rows before offset get higher z-index
+          const zIndex = shouldApplyOffset 
+            ? stickyIndex 
+            : stickyParents.length - stickyIndex;
+
+          // Calculate the Y position for this sticky row's separator
           const separatorTop =
             (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) -
             ROW_SEPARATOR_WIDTH +
-            treeTransitionOffset;
+            rowOffset;
 
           return (
             <Fragment key={rowId}>
@@ -181,7 +202,8 @@ const StickyParentsContainer = ({
                 tableRow={tableRow}
                 isSticky={true}
                 stickyIndex={stickyIndex}
-                stickyOffset={treeTransitionOffset}
+                stickyOffset={rowOffset}
+                stickyZIndex={zIndex}
               />
               {/* Add separator after each sticky row */}
               <TableRowSeparator
