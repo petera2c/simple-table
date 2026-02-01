@@ -481,9 +481,9 @@ export const getStickyParents = (
         );
 
         if (!isParentFullyVisible) {
-          // Check if the last sticky parent has the same depth
+          // Check if the last sticky parent has a depth >= this parent's depth
           const lastStickyParent = stickyParents[stickyParents.length - 1];
-          if (!lastStickyParent || lastStickyParent.depth !== parentRow.depth) {
+          if (!lastStickyParent || lastStickyParent.depth < parentRow.depth) {
             stickyParents.push(parentRow);
           }
         }
@@ -496,9 +496,9 @@ export const getStickyParents = (
       // Before recalculating, check if the current firstVisibleRow is itself a parent
       // If it is, it should also be sticky (it's being pushed out by parents above it)
       if (isParentRow(firstVisibleRow)) {
-        // Check if the last sticky parent has the same depth
+        // Check if the last sticky parent has a depth >= this row's depth
         const lastStickyParent = stickyParents[stickyParents.length - 1];
-        if (!lastStickyParent || lastStickyParent.depth !== firstVisibleRow.depth) {
+        if (!lastStickyParent || lastStickyParent.depth < firstVisibleRow.depth) {
           stickyParents.push(firstVisibleRow);
         }
       }
@@ -536,9 +536,9 @@ export const getStickyParents = (
 
   // Add this parent to sticky parents if not already there
   if (!stickyParents.some((parent) => parent.position === firstVisibleRow.position)) {
-    // Check if the last sticky parent has the same depth
+    // Check if the last sticky parent has a depth >= this row's depth
     const lastStickyParent = stickyParents[stickyParents.length - 1];
-    if (!lastStickyParent || lastStickyParent.depth !== firstVisibleRow.depth) {
+    if (!lastStickyParent || lastStickyParent.depth < firstVisibleRow.depth) {
       stickyParents.push(firstVisibleRow);
     }
   }
@@ -555,9 +555,9 @@ export const getStickyParents = (
     const isNextRowAParent = isParentRow(nextRow);
 
     if (isChildOfCurrent && isNextRowAParent) {
-      // Check if the last sticky parent has the same depth
+      // Check if the last sticky parent has a depth >= this row's depth
       const lastStickyParent = stickyParents[stickyParents.length - 1];
-      if (!lastStickyParent || lastStickyParent.depth !== nextRow.depth) {
+      if (!lastStickyParent || lastStickyParent.depth < nextRow.depth) {
         stickyParents.push(nextRow);
         currentRow = nextRow;
         nextRowIndex = currentRow.position + 1;
