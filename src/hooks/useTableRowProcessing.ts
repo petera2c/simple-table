@@ -250,15 +250,16 @@ const useTableRowProcessing = ({
       rowGrouping
     );
   }, [
-    enableStickyParents,
-    currentTableRows,
-    contentHeight,
-    rowHeight,
-    scrollTop,
-    scrollDirection,
     bufferRowCount,
-    targetVisibleRows,
+    contentHeight,
+    currentTableRows,
+    enableStickyParents,
     heightMap,
+    rowGrouping,
+    rowHeight,
+    scrollDirection,
+    scrollTop,
+    targetVisibleRows,
   ]);
 
   // Categorize rows based on ID changes

@@ -454,22 +454,6 @@ const isParentRow = (row: TableRow, allTableRows: TableRow[]): boolean => {
   return nextRow?.parentIndices?.includes(rowIndex) ?? false;
 };
 
-const copyObj = (obj: Record<string, any>) => {
-  // Copy the first depth of the object
-  const copy = {} as Record<string, any>;
-  for (const key in obj) {
-    if (key === "row") {
-      copy[key] = {
-        id: obj[key].id,
-        organization: obj[key].organization,
-      };
-    } else {
-      copy[key] = obj[key];
-    }
-  }
-  return copy;
-};
-
 export const getStickyParents = (
   allTableRows: TableRow[],
   renderedRows: TableRow[],
@@ -477,26 +461,26 @@ export const getStickyParents = (
   partiallyVisibleRows: TableRow[],
   rowGrouping: Accessor[]
 ) => {
-  const result = recursion({
+  const result = findStickyParents({
     allTableRows,
     renderedRows,
     fullyVisibleRows,
     partiallyVisibleRows,
-    firstVisibleRowIndex: 0,
-    counter: 0,
+    partiallyVisibleRowIndex: 0,
+    recursionDepth: 0,
     stickyParents: [],
     rowGrouping,
   });
   return result;
 };
 
-const recursion = ({
+const findStickyParents = ({
   allTableRows,
   renderedRows,
   fullyVisibleRows,
   partiallyVisibleRows,
-  firstVisibleRowIndex,
-  counter,
+  partiallyVisibleRowIndex,
+  recursionDepth,
   stickyParents,
   rowGrouping,
 }: {
@@ -504,15 +488,16 @@ const recursion = ({
   renderedRows: TableRow[];
   fullyVisibleRows: TableRow[];
   partiallyVisibleRows: TableRow[];
-  firstVisibleRowIndex: number;
-  counter: number;
+  partiallyVisibleRowIndex: number;
+  recursionDepth: number;
   stickyParents: TableRow[];
   rowGrouping: Accessor[];
 }) => {
   // Start with the first partially visible row (more responsive for sticky parent detection)
-  let firstVisibleRow = partiallyVisibleRows[firstVisibleRowIndex];
+  let firstVisibleRow = partiallyVisibleRows[partiallyVisibleRowIndex];
 
-  if (!firstVisibleRow || counter > 3) {
+  // Guard: no more rows or recursion limit reached
+  if (!firstVisibleRow || recursionDepth > 10) {
     return {
       stickyParents: [],
       regularRows: renderedRows,
@@ -520,29 +505,29 @@ const recursion = ({
   }
 
   if (firstVisibleRow.parentIndices && firstVisibleRow.parentIndices.length > 0) {
-    // Collect all parent rows that are scrolled out of view
+    // Collect parent rows that are not fully visible
     for (const parentIndex of firstVisibleRow.parentIndices) {
       const parentRow = allTableRows[parentIndex];
       if (parentRow) {
-        // Check if this parent is scrolled out of view (not in fully visible rows)
         const isParentFullyVisible = fullyVisibleRows.some(
           (row) => row.position === parentRow.position
         );
 
-        // Calculate how many siblings are after firstVisibleRow
+        // Optimization: stop adding sticky parents if few siblings remain
         if (firstVisibleRow.rowIndexPath && firstVisibleRow.rowIndexPath.length > 0) {
           const parentRowPosition =
             firstVisibleRow.parentIndices[firstVisibleRow.parentIndices.length - 1];
           const currentParentRow = allTableRows[parentRowPosition];
-          const parentChildrenValue = currentParentRow.row[rowGrouping[currentParentRow.depth]];
-          const parentChildren = Array.isArray(parentChildrenValue) ? parentChildrenValue : [];
-          const parentChildrenLength = parentChildren.length;
+          const childrenValue = currentParentRow.row[rowGrouping[currentParentRow.depth]];
+          const parentChildren = Array.isArray(childrenValue) ? childrenValue : [];
+          const totalSiblingsCount = parentChildren.length;
 
-          const remainingSiblingRows =
-            parentChildrenLength -
+          const remainingSiblingsCount =
+            totalSiblingsCount -
             firstVisibleRow.rowIndexPath[firstVisibleRow.rowIndexPath.length - 1];
 
-          if (remainingSiblingRows <= stickyParents.length) {
+          // Don't show more sticky parents than remaining siblings (the parents container is absolutely positioned and takes up space and the user can't even see the rows from this parent if there are few left)
+          if (remainingSiblingsCount <= stickyParents.length) {
             break;
           }
         }
@@ -556,47 +541,46 @@ const recursion = ({
       }
     }
 
-    // If we have sticky parents, we need to recalculate the first visible row
-    // The sticky parents will take up space at the top, so we need to skip ahead
+    // Sticky parents take up space, so adjust which row is actually first visible
     if (stickyParents.length > 0) {
-      // Before recalculating, check if the current firstVisibleRow is itself a parent
-      // If it is, it should also be sticky (it's being pushed out by parents above it)
+      // If firstVisibleRow is itself a parent, it's also being pushed out
       if (isParentRow(firstVisibleRow, allTableRows)) {
         stickyParents.push(firstVisibleRow);
       }
 
-      // Skip ahead by the number of sticky parents to find the actual first visible row
-      firstVisibleRowIndex += stickyParents.length;
-      const newFirstVisibleRow = partiallyVisibleRows[firstVisibleRowIndex];
+      // Skip ahead by sticky parent count to find actual first visible row
+      partiallyVisibleRowIndex += stickyParents.length;
+      const recalculatedFirstVisibleRow = partiallyVisibleRows[partiallyVisibleRowIndex];
 
-      if (newFirstVisibleRow) {
-        firstVisibleRow = newFirstVisibleRow;
+      if (recalculatedFirstVisibleRow) {
+        firstVisibleRow = recalculatedFirstVisibleRow;
       }
     }
   } else if (isParentRow(firstVisibleRow, allTableRows)) {
+    // No parent indices but is a parent itself (top-level parent)
     stickyParents.push(firstVisibleRow);
-    firstVisibleRowIndex++;
-    return recursion({
+    partiallyVisibleRowIndex++;
+    return findStickyParents({
       allTableRows,
       renderedRows,
       fullyVisibleRows,
       partiallyVisibleRows,
-      firstVisibleRowIndex,
-      counter: counter + 1,
+      partiallyVisibleRowIndex,
+      recursionDepth: recursionDepth + 1,
       stickyParents,
       rowGrouping,
     });
   }
 
-  // Now check if the (possibly recalculated) first visible row is itself a parent
+  // Recurse if the (possibly recalculated) first visible row is itself a parent
   if (isParentRow(firstVisibleRow, allTableRows)) {
-    return recursion({
+    return findStickyParents({
       allTableRows,
       renderedRows,
       fullyVisibleRows,
       partiallyVisibleRows,
-      firstVisibleRowIndex,
-      counter: counter + 1,
+      partiallyVisibleRowIndex,
+      recursionDepth: recursionDepth + 1,
       stickyParents,
       rowGrouping,
     });
