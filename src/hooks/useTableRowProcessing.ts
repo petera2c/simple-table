@@ -34,6 +34,7 @@ interface UseTableRowProcessingProps {
   scrollDirection?: "up" | "down" | "none";
   heightOffsets?: HeightOffsets;
   customTheme: CustomTheme;
+  enableStickyParents: boolean;
   // Functions to preview what rows would be after changes (now return TableRow[])
   computeFilteredRowsPreview: (filter: FilterCondition) => TableRow[];
   computeSortedRowsPreview: (accessor: Accessor) => TableRow[];
@@ -55,6 +56,7 @@ const useTableRowProcessing = ({
   scrollDirection = "none",
   heightOffsets,
   customTheme,
+  enableStickyParents,
   computeFilteredRowsPreview,
   computeSortedRowsPreview,
 }: UseTableRowProcessingProps) => {
@@ -221,8 +223,8 @@ const useTableRowProcessing = ({
 
   // Separate sticky parents from regular rows for row grouping
   const { stickyParents, regularRows } = useMemo(() => {
-    // Only apply sticky parents if we have virtualization and viewport calculations
-    if (contentHeight === undefined) {
+    // Only apply sticky parents if enabled and we have virtualization and viewport calculations
+    if (!enableStickyParents || contentHeight === undefined) {
       return { stickyParents: [], regularRows: targetVisibleRows };
     }
 
@@ -245,6 +247,7 @@ const useTableRowProcessing = ({
       viewportCalcs.partiallyVisible.rows
     );
   }, [
+    enableStickyParents,
     currentTableRows,
     contentHeight,
     rowHeight,

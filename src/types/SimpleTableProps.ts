@@ -42,6 +42,7 @@ export interface SimpleTableProps {
   emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
+  enableStickyParents?: boolean; // Flag for enabling sticky parent rows during scrolling in grouped tables (default: false)
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // Icon for expanded state (used in expandable rows)

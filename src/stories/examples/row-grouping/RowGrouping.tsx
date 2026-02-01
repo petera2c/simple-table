@@ -212,6 +212,7 @@ const RowGroupingExample = (props: UniversalTableProps) => {
         // Default settings for this example
         columnResizing={props.columnResizing ?? true}
         height={props.height ?? "calc(100dvh - 112px)"}
+        enableStickyParents={true}
         // shouldPaginate
         // rowsPerPage={10}
       />

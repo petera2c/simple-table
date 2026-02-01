@@ -67,6 +67,7 @@ const SimpleTableComp = ({
   emptyStateRenderer,
   enableHeaderEditing = false,
   enableRowSelection = false,
+  enableStickyParents = false,
   errorStateRenderer,
   expandAll = true,
   expandIcon = <AngleRightIcon className="st-expand-icon" />,
@@ -727,6 +728,7 @@ const SimpleTableComp = ({
     scrollDirection,
     heightOffsets,
     customTheme,
+    enableStickyParents,
     computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
     computeSortedRowsPreview: computeFlattenedSortedRowsPreview,
   });
