@@ -543,7 +543,7 @@ const RowGroupingDemo = (props: UniversalTableProps) => {
 };
 
 export const basicRowGroupingDefaults = {
-  expandAll: false,
+  expandAll: true,
   height: "400px",
 };
 

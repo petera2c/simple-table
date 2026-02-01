@@ -268,6 +268,10 @@ const useTableRowProcessing = ({
     scrollTop,
     targetVisibleRows,
   ]);
+  console.log(
+    "stickyParents",
+    stickyParents.map((row) => row.row.employees)
+  );
 
   // Categorize rows based on ID changes
   const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
