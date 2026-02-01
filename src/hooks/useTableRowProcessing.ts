@@ -38,27 +38,29 @@ interface UseTableRowProcessingProps {
   // Functions to preview what rows would be after changes (now return TableRow[])
   computeFilteredRowsPreview: (filter: FilterCondition) => TableRow[];
   computeSortedRowsPreview: (accessor: Accessor) => TableRow[];
+  rowGrouping: Accessor[];
 }
 
 const useTableRowProcessing = ({
   allowAnimations,
+  computeFilteredRowsPreview,
+  computeSortedRowsPreview,
+  contentHeight,
+  currentPage,
+  customTheme,
+  enableStickyParents,
   flattenedRows,
+  heightOffsets,
   originalFlattenedRows,
   paginatableRows,
   parentEndPositions,
-  currentPage,
-  rowsPerPage,
-  shouldPaginate,
-  serverSidePagination,
-  contentHeight,
   rowHeight,
-  scrollTop,
+  rowsPerPage,
   scrollDirection = "none",
-  heightOffsets,
-  customTheme,
-  enableStickyParents,
-  computeFilteredRowsPreview,
-  computeSortedRowsPreview,
+  scrollTop,
+  serverSidePagination,
+  shouldPaginate,
+  rowGrouping,
 }: UseTableRowProcessingProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [extendedRows, setExtendedRows] = useState<TableRow[]>([]);
@@ -244,7 +246,8 @@ const useTableRowProcessing = ({
       currentTableRows,
       viewportCalcs.rendered.rows,
       viewportCalcs.fullyVisible.rows,
-      viewportCalcs.partiallyVisible.rows
+      viewportCalcs.partiallyVisible.rows,
+      rowGrouping
     );
   }, [
     enableStickyParents,
