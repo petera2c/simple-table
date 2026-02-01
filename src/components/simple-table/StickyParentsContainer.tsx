@@ -60,6 +60,8 @@ const StickyParentsContainer = ({
       const currentParent = stickyParents[i];
       const nextParent = stickyParents[i + 1];
 
+      if (!nextParent) break;
+
       if (nextParent.depth === currentParent.depth) {
         newTreeStartIndex = i;
         break;
@@ -113,7 +115,7 @@ const StickyParentsContainer = ({
     // Offset = freed sticky slots + pixels scrolled out
     const offset = (parentsFromOldTree - rowsLeftFromOldTree) * rowHeight + pixelsScrolledOutOfView;
 
-    return offset;
+    return -offset;
   }, [customTheme, heightMap, partiallyVisibleRows, rowHeight, scrollTop, stickyParents]);
 
   // Calculate column indices
@@ -126,9 +128,11 @@ const StickyParentsContainer = ({
     });
   }, [headers, pinnedLeftColumns, pinnedRightColumns, collapsedHeaders]);
 
-  // Calculate total height for sticky container
+  // Calculate total height for sticky container including tree transition offset
   const stickyHeight =
-    stickyParents.length > 0 ? stickyParents.length * (rowHeight + ROW_SEPARATOR_WIDTH) : 0;
+    stickyParents.length > 0 
+      ? stickyParents.length * (rowHeight + ROW_SEPARATOR_WIDTH) + treeTransitionOffset 
+      : 0;
 
   if (stickyParents.length === 0) return null;
 
@@ -156,9 +160,11 @@ const StickyParentsContainer = ({
             ? `sticky-state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
             : `sticky-${rowIdToString(tableRow.rowId)}`;
 
-          // Calculate the Y position for this sticky row's separator
+          // Calculate the Y position for this sticky row's separator with tree transition offset
           const separatorTop =
-            (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH;
+            (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) -
+            ROW_SEPARATOR_WIDTH +
+            treeTransitionOffset;
 
           return (
             <Fragment key={rowId}>
@@ -175,8 +181,9 @@ const StickyParentsContainer = ({
                 tableRow={tableRow}
                 isSticky={true}
                 stickyIndex={stickyIndex}
+                stickyOffset={treeTransitionOffset}
               />
-              {/* Add separator after each sticky row - never use strong border for sticky rows */}
+              {/* Add separator after each sticky row */}
               <TableRowSeparator
                 displayStrongBorder={false}
                 position={separatorTop}

@@ -26,6 +26,7 @@ interface TableRowProps {
   tableRow: TableRowType;
   isSticky?: boolean;
   stickyIndex?: number;
+  stickyOffset?: number;
 }
 
 const TableRow = ({
@@ -41,6 +42,7 @@ const TableRow = ({
   tableRow,
   isSticky = false,
   stickyIndex = 0,
+  stickyOffset = 0,
 }: TableRowProps) => {
   const {
     customTheme,
@@ -171,7 +173,7 @@ const TableRow = ({
   const rowStyle = isSticky
     ? {
         gridTemplateColumns,
-        transform: `translateY(${stickyIndex * (rowHeight + ROW_SEPARATOR_WIDTH)}px)`,
+        transform: `translateY(${stickyIndex * (rowHeight + ROW_SEPARATOR_WIDTH) + stickyOffset}px)`,
         height: `${rowHeight}px`,
         position: "absolute" as const,
         top: 0,
