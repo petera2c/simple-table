@@ -454,21 +454,21 @@ const isParentRow = (row: TableRow, allTableRows: TableRow[]): boolean => {
   return nextRow?.parentIndices?.includes(rowIndex) ?? false;
 };
 
-const copyObject = (obj: Record<string, any>) => {
-  const newObj = {} as Record<string, any>;
-  for (const key in obj) {
-    if (key === "row") {
-      newObj.row = {
-        id: obj.row.id,
-        organization: obj.row.organization,
-        employees: obj.row.employees,
-      };
-    } else {
-      newObj[key] = obj[key];
-    }
-  }
-  return newObj;
-};
+// const copyObject = (obj: Record<string, any>) => {
+//   const newObj = {} as Record<string, any>;
+//   for (const key in obj) {
+//     if (key === "row") {
+//       newObj.row = {
+//         id: obj.row.id,
+//         organization: obj.row.organization,
+//         employees: obj.row.employees,
+//       };
+//     } else {
+//       newObj[key] = obj[key];
+//     }
+//   }
+//   return newObj;
+// };
 
 export const getStickyParents = (
   allTableRows: TableRow[],
