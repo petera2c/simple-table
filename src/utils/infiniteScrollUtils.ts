@@ -520,10 +520,7 @@ const findStickyParents = ({
     };
   }
 
-  console.log("\n");
-  console.log("recursionDepth", recursionDepth);
-  console.log("firstVisibleRow", copyObject(firstVisibleRow));
-  console.log("isParentRow", isParentRow(firstVisibleRow, allTableRows));
+  let addedStickParentTotal = 0;
 
   if (firstVisibleRow.parentIndices && firstVisibleRow.parentIndices.length > 0) {
     // Collect parent rows that are not fully visible
@@ -558,6 +555,7 @@ const findStickyParents = ({
           !stickyParents.some((row) => rowIdToString(row.rowId) === rowIdToString(parentRow.rowId))
         ) {
           stickyParents.push(parentRow);
+          addedStickParentTotal++;
         }
       }
     }
@@ -567,14 +565,11 @@ const findStickyParents = ({
       // If firstVisibleRow is itself a parent, it's also being pushed out
       if (isParentRow(firstVisibleRow, allTableRows)) {
         stickyParents.push(firstVisibleRow);
+        addedStickParentTotal++;
       }
-      console.log(
-        "stickyParents",
-        stickyParents.map((row) => row.row.employees)
-      );
 
       // Skip ahead by sticky parent count to find actual first visible row
-      partiallyVisibleRowIndex += stickyParents.length;
+      partiallyVisibleRowIndex += addedStickParentTotal;
       const recalculatedFirstVisibleRow = partiallyVisibleRows[partiallyVisibleRowIndex];
 
       if (recalculatedFirstVisibleRow) {
@@ -599,7 +594,6 @@ const findStickyParents = ({
 
   // Recurse if the (possibly recalculated) first visible row is itself a parent
   if (isParentRow(firstVisibleRow, allTableRows)) {
-    console.log("2 recurse");
     return findStickyParents({
       allTableRows,
       renderedRows,

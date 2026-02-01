@@ -4,6 +4,7 @@ import { HeaderObject, TableRefType } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 const headers: HeaderObject[] = [
+  { accessor: "id", label: "ID", width: 100, type: "string" },
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },
