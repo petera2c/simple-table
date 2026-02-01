@@ -106,502 +106,95 @@ const headers: HeaderObject[] = [
   { accessor: "status", label: "Status", width: 110, type: "string" },
 ];
 
-// In the new format, we have a flat array where grouping is defined by the 'divisions' and 'teams' properties
-// The rowGrouping prop will tell the table how to group: ["divisions", "teams"]
+// Helper function to generate teams
+const generateTeams = (divisionId: number, count: number = 200) => {
+  const performances = ["Exceeding", "Meeting", "Below Target"];
+  const statuses = ["Hiring", "Stable", "Restructuring", "Expanding", "Reviewing"];
+  const locations = [
+    "San Francisco",
+    "Seattle",
+    "Boston",
+    "New York",
+    "Austin",
+    "Chicago",
+    "Remote",
+    "Portland",
+    "Denver",
+  ];
+
+  return Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    organization: `Team ${divisionId}-${i + 1}`,
+    employees: Math.floor(Math.random() * 50) + 10,
+    budget: `$${(Math.random() * 5 + 1).toFixed(1)}M`,
+    rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
+    projectCount: Math.floor(Math.random() * 15) + 1,
+    minTeamSize: Math.floor(Math.random() * 5) + 1,
+    maxTeamSize: Math.floor(Math.random() * 30) + 20,
+    weightedScore: Math.round((Math.random() * 30 + 70) * 10) / 10,
+    performance: performances[Math.floor(Math.random() * performances.length)],
+    location: locations[Math.floor(Math.random() * locations.length)],
+    status: statuses[Math.floor(Math.random() * statuses.length)],
+  }));
+};
+
+// Helper function to generate divisions
+const generateDivisions = (companyId: number, count: number = 3) => {
+  const performances = ["Exceeding", "Meeting", "Below Target"];
+  const statuses = ["Hiring", "Stable", "Restructuring", "Expanding"];
+
+  return Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    organization: `Division ${companyId}-${i + 1}`,
+    performance: performances[Math.floor(Math.random() * performances.length)],
+    location: "Multiple",
+    growthRate: `${Math.floor(Math.random() * 20) - 5}%`,
+    status: statuses[Math.floor(Math.random() * statuses.length)],
+    established: `20${Math.floor(Math.random() * 20) + 5}-01-15`,
+    teams: generateTeams(i + 1, 200),
+  }));
+};
+
+// Generate rows with divisions and teams
 const rows = [
-  // TechSolutions Inc. company
+  {
+    id: 0,
+    organization: "Company 1",
+    performance: "Exceeding",
+    location: "San Francisco",
+    growthRate: "+10%",
+    status: "Expanding",
+    established: "2018-01-01",
+  },
   {
     id: 1,
     organization: "TechSolutions Inc.",
-    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Exceeding",
     location: "San Francisco",
     growthRate: "+9%",
     status: "Expanding",
     established: "2018-01-01",
-    divisions: [
-      {
-        id: 1,
-        organization: "Engineering",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Exceeding",
-        location: "Multiple",
-        growthRate: "+11%",
-        status: "Expanding",
-        established: "2018-01-15",
-        teams: [
-          {
-            id: 1,
-            organization: "Frontend",
-            employees: 28,
-            budget: "$2.8M",
-            rating: 4.8,
-            projectCount: 12,
-            minTeamSize: 3,
-            maxTeamSize: 28,
-            weightedScore: 92.5,
-            performance: "Exceeding",
-            location: "San Francisco",
-            status: "Hiring",
-          },
-          {
-            id: 2,
-            organization: "Backend",
-            employees: 32,
-            budget: "$3.4M",
-            rating: 4.6,
-            projectCount: 8,
-            minTeamSize: 4,
-            maxTeamSize: 32,
-            weightedScore: 88.2,
-            performance: "Meeting",
-            location: "Seattle",
-            status: "Stable",
-          },
-          {
-            id: 3,
-            organization: "DevOps",
-            employees: 15,
-            budget: "$1.9M",
-            rating: 4.9,
-            projectCount: 15,
-            minTeamSize: 2,
-            maxTeamSize: 15,
-            weightedScore: 95.1,
-            performance: "Exceeding",
-            location: "Remote",
-            status: "Hiring",
-          },
-          {
-            id: 4,
-            organization: "Mobile",
-            employees: 22,
-            budget: "$2.5M",
-            rating: 4.3,
-            projectCount: 6,
-            minTeamSize: 3,
-            maxTeamSize: 22,
-            weightedScore: 82.7,
-            performance: "Meeting",
-            location: "Austin",
-            status: "Restructuring",
-          },
-        ],
-      },
-      {
-        id: 2,
-        organization: "Product",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Meeting",
-        location: "Multiple",
-        growthRate: "+5%",
-        status: "Stable",
-        established: "2019-01-10",
-        teams: [
-          {
-            id: 1,
-            organization: "Design",
-            employees: 17,
-            budget: "$1.8M",
-            rating: 4.4,
-            projectCount: 9,
-            minTeamSize: 2,
-            maxTeamSize: 17,
-            weightedScore: 87.3,
-            performance: "Meeting",
-            location: "Portland",
-            status: "Stable",
-          },
-          {
-            id: 2,
-            organization: "Research",
-            employees: 9,
-            budget: "$1.4M",
-            rating: 4.1,
-            projectCount: 4,
-            minTeamSize: 1,
-            maxTeamSize: 9,
-            weightedScore: 74.6,
-            performance: "Below Target",
-            location: "Boston",
-            status: "Reviewing",
-          },
-          {
-            id: 3,
-            organization: "QA Testing",
-            employees: 14,
-            budget: "$1.2M",
-            rating: 4.5,
-            projectCount: 11,
-            minTeamSize: 2,
-            maxTeamSize: 14,
-            weightedScore: 85.9,
-            performance: "Meeting",
-            location: "Chicago",
-            status: "Stable",
-          },
-        ],
-      },
-    ],
+    divisions: generateDivisions(1, 3),
   },
-  // HealthFirst Group company
   {
     id: 2,
-    organization: "HealthFirst Group",
-    // Removed employees and budget - these should be aggregated from divisions/teams
-    performance: "Meeting",
-    location: "Boston",
-    growthRate: "+8%",
-    status: "Stable",
-    established: "2010-01-01",
-  },
-  // Global Finance company
-  {
-    id: 3,
     organization: "Global Finance",
-    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Meeting",
     location: "New York",
     growthRate: "+3%",
     status: "Restructuring",
     established: "2005-01-01",
-    divisions: [
-      {
-        id: 1,
-        organization: "Banking Operations",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Meeting",
-        location: "Multiple",
-        growthRate: "+3%",
-        status: "Stable",
-        established: "2005-01-15",
-        teams: [
-          {
-            id: 1,
-            organization: "Retail Banking",
-            employees: 56,
-            budget: "$4.8M",
-            performance: "Meeting",
-            location: "New York",
-            growthRate: "+2%",
-            status: "Stable",
-            established: "2005-11-08",
-          },
-          {
-            id: 2,
-            organization: "Investment",
-            employees: 38,
-            budget: "$7.2M",
-            performance: "Exceeding",
-            location: "Chicago",
-            growthRate: "+11%",
-            status: "Hiring",
-            established: "2008-05-12",
-          },
-          {
-            id: 3,
-            organization: "Loans",
-            employees: 27,
-            budget: "$3.5M",
-            performance: "Below Target",
-            location: "Dallas",
-            growthRate: "-3%",
-            status: "Restructuring",
-            established: "2010-03-17",
-          },
-        ],
-      },
-    ],
+    divisions: generateDivisions(2, 2),
   },
-  // Apex University
   {
-    id: 4,
-    organization: "Apex University",
-    // Removed employees and budget - these should be aggregated from divisions/teams
-    performance: "Meeting",
-    location: "Cambridge",
-    growthRate: "+6%",
-    status: "Stable",
-    established: "1992-01-01",
-    divisions: [
-      {
-        id: 1,
-        organization: "Academic Departments",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Meeting",
-        location: "Multiple",
-        growthRate: "+6%",
-        status: "Stable",
-        established: "1992-01-15",
-        teams: [
-          {
-            id: 1,
-            organization: "Computer Science",
-            employees: 35,
-            budget: "$3.8M",
-            performance: "Meeting",
-            location: "Boston",
-            growthRate: "+8%",
-            status: "Expanding",
-            established: "1998-08-24",
-          },
-          {
-            id: 2,
-            organization: "Business",
-            employees: 42,
-            budget: "$4.5M",
-            performance: "Exceeding",
-            location: "Chicago",
-            growthRate: "+6%",
-            status: "Stable",
-            established: "1995-09-15",
-          },
-          {
-            id: 3,
-            organization: "Engineering",
-            employees: 38,
-            budget: "$5.1M",
-            performance: "Meeting",
-            location: "San Francisco",
-            growthRate: "+4%",
-            status: "Stable",
-            established: "1992-02-11",
-          },
-        ],
-      },
-    ],
-  },
-  // Industrial Systems
-  {
-    id: 5,
-    organization: "Industrial Systems",
-    // Removed employees and budget - these should be aggregated from divisions/teams
-    performance: "Meeting",
-    location: "Detroit",
-    growthRate: "+3%",
-    status: "Stable",
-    established: "2001-01-01",
-    divisions: [
-      {
-        id: 1,
-        organization: "Production",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Meeting",
-        location: "Multiple",
-        growthRate: "+3%",
-        status: "Stable",
-        established: "2001-01-10",
-        teams: [
-          {
-            id: 1,
-            organization: "Assembly",
-            employees: 78,
-            budget: "$6.2M",
-            performance: "Meeting",
-            location: "Detroit",
-            growthRate: "+2%",
-            status: "Stable",
-            established: "2001-05-18",
-          },
-          {
-            id: 2,
-            organization: "Quality Control",
-            employees: 32,
-            budget: "$2.8M",
-            performance: "Exceeding",
-            location: "Pittsburgh",
-            growthRate: "+5%",
-            status: "Hiring",
-            established: "2003-11-24",
-          },
-          {
-            id: 3,
-            organization: "Logistics",
-            employees: 42,
-            budget: "$3.9M",
-            performance: "Meeting",
-            location: "Indianapolis",
-            growthRate: "+3%",
-            status: "Stable",
-            established: "2005-02-08",
-          },
-        ],
-      },
-    ],
-  },
-  // Creative Media
-  {
-    id: 6,
+    id: 3,
     organization: "Creative Media",
-    // Removed employees and budget - these should be aggregated from divisions/teams
     performance: "Exceeding",
     location: "Los Angeles",
     growthRate: "+14%",
     status: "Expanding",
     established: "2008-01-01",
-    divisions: [
-      {
-        id: 1,
-        organization: "Studio Operations",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Exceeding",
-        location: "Multiple",
-        growthRate: "+14%",
-        status: "Expanding",
-        established: "2008-01-15",
-        teams: [
-          {
-            id: 1,
-            organization: "Production",
-            employees: 64,
-            budget: "$12.5M",
-            performance: "Exceeding",
-            location: "Los Angeles",
-            growthRate: "+15%",
-            status: "Expanding",
-            established: "2008-07-22",
-          },
-          {
-            id: 2,
-            organization: "Post-Production",
-            employees: 38,
-            budget: "$8.2M",
-            performance: "Meeting",
-            location: "Vancouver",
-            growthRate: "+9%",
-            status: "Hiring",
-            established: "2010-04-15",
-          },
-          {
-            id: 3,
-            organization: "Animation",
-            employees: 52,
-            budget: "$7.8M",
-            performance: "Exceeding",
-            location: "San Francisco",
-            growthRate: "+18%",
-            status: "Expanding",
-            established: "2014-09-30",
-          },
-        ],
-      },
-    ],
-  },
-  // ShopSmart
-  {
-    id: 7,
-    organization: "ShopSmart",
-    // Removed employees and budget - these should be aggregated from divisions/teams
-    performance: "Below Target",
-    location: "Chicago",
-    growthRate: "+2%",
-    status: "Restructuring",
-    established: "2009-01-01",
-    divisions: [
-      {
-        id: 1,
-        organization: "Store Operations",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Meeting",
-        location: "Multiple",
-        growthRate: "+7%",
-        status: "Stable",
-        established: "2009-01-05",
-        teams: [
-          {
-            id: 1,
-            organization: "Sales",
-            employees: 85,
-            budget: "$4.2M",
-            performance: "Below Target",
-            location: "Multiple",
-            growthRate: "-2%",
-            status: "Restructuring",
-            established: "2009-03-14",
-          },
-          {
-            id: 2,
-            organization: "Customer Support",
-            employees: 42,
-            budget: "$2.8M",
-            performance: "Meeting",
-            location: "Phoenix",
-            growthRate: "+1%",
-            status: "Stable",
-            established: "2010-11-22",
-          },
-          {
-            id: 3,
-            organization: "Online Store",
-            employees: 28,
-            budget: "$3.5M",
-            performance: "Exceeding",
-            location: "Remote",
-            growthRate: "+22%",
-            status: "Expanding",
-            established: "2018-06-05",
-          },
-        ],
-      },
-    ],
-  },
-  // Green Harvest
-  {
-    id: 8,
-    organization: "Green Harvest",
-    // Removed employees and budget - these should be aggregated from divisions/teams
-    performance: "Meeting",
-    location: "Iowa",
-    growthRate: "+4%",
-    status: "Stable",
-    established: "2005-01-01",
-    divisions: [
-      {
-        id: 1,
-        organization: "Farming Operations",
-        // Removed employees and budget - these should be aggregated from teams
-        performance: "Meeting",
-        location: "Multiple",
-        growthRate: "+4%",
-        status: "Stable",
-        established: "2005-01-10",
-        teams: [
-          {
-            id: 1,
-            organization: "Crop Division",
-            employees: 56,
-            budget: "$5.1M",
-            performance: "Meeting",
-            location: "Iowa",
-            growthRate: "+4%",
-            status: "Stable",
-            established: "2005-02-18",
-          },
-          {
-            id: 2,
-            organization: "Livestock",
-            employees: 42,
-            budget: "$4.8M",
-            performance: "Below Target",
-            location: "Nebraska",
-            growthRate: "-1%",
-            status: "Reviewing",
-            established: "2007-05-22",
-          },
-          {
-            id: 3,
-            organization: "Research",
-            employees: 18,
-            budget: "$2.9M",
-            performance: "Exceeding",
-            location: "California",
-            growthRate: "+9%",
-            status: "Expanding",
-            established: "2015-08-11",
-          },
-        ],
-      },
-    ],
+    divisions: generateDivisions(3, 2),
   },
 ];
 
@@ -619,7 +212,6 @@ const RowGroupingExample = (props: UniversalTableProps) => {
         // Default settings for this example
         columnResizing={props.columnResizing ?? true}
         height={props.height ?? "calc(100dvh - 112px)"}
-        hideHeader
         // shouldPaginate
         // rowsPerPage={10}
       />

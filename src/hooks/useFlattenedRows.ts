@@ -115,6 +115,7 @@ const useFlattenedRows = ({
       currentDepth: number,
       parentIdPath: (string | number)[] = [],
       parentIndexPath: number[] = [],
+      parentIndices: number[] = [],
     ): void => {
       currentRows.forEach((row, index) => {
         const currentGroupingKey = rowGrouping[currentDepth];
@@ -142,6 +143,10 @@ const useFlattenedRows = ({
 
         // Determine if this is the last row at depth 0
         const isLastGroupRow = currentDepth === 0;
+
+        // Store the index where this row will be added (for children to reference)
+        const currentRowIndex = result.length;
+
         // Add the main row
         const mainRow = {
           row,
@@ -154,6 +159,7 @@ const useFlattenedRows = ({
           rowPath,
           rowIndexPath,
           absoluteRowIndex: position,
+          parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
         };
         result.push(mainRow);
 
@@ -253,6 +259,7 @@ const useFlattenedRows = ({
                   state: rowState,
                 },
                 absoluteRowIndex: statePosition,
+                parentIndices: [...parentIndices, currentRowIndex],
               });
               // Don't increment displayPosition for state indicator rows - they show custom content
             } else if (rowState.loading && !hasLoadingRenderer) {
@@ -271,6 +278,7 @@ const useFlattenedRows = ({
                 rowIndexPath,
                 isLoadingSkeleton: true,
                 absoluteRowIndex: skeletonPosition,
+                parentIndices: [...parentIndices, currentRowIndex],
               });
             }
           }
@@ -279,8 +287,11 @@ const useFlattenedRows = ({
             // Build paths for nested rows (parent path + grouping key)
             const nestedIdPath = [...rowPath, currentGroupingKey];
             const nestedIndexPath = [...rowIndexPath];
-            // Recursively process nested rows
-            processRows(nestedRows, currentDepth + 1, nestedIdPath, nestedIndexPath);
+            // Recursively process nested rows, passing current row's index as parent
+            processRows(nestedRows, currentDepth + 1, nestedIdPath, nestedIndexPath, [
+              ...parentIndices,
+              currentRowIndex,
+            ]);
           }
         }
 
@@ -291,7 +302,7 @@ const useFlattenedRows = ({
       });
     };
 
-    processRows(rows, 0, [], []);
+    processRows(rows, 0, [], [], []);
 
     return {
       flattenedRows: result,

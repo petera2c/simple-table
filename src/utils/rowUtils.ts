@@ -332,6 +332,7 @@ export const flattenRowsWithGrouping = ({
     parentDisplayPosition = displayPositionOffset,
     parentIdPath: (string | number)[] = [],
     parentIndexPath: number[] = [],
+    parentIndices: number[] = [],
   ): number => {
     let position = parentPosition;
     let displayPosition = parentDisplayPosition;
@@ -362,8 +363,11 @@ export const flattenRowsWithGrouping = ({
       // Determine if this is the last row in a group
       const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
 
+      // Store the index where this row will be added
+      const currentRowIndex = result.length;
+
       // Add the main row with calculated position and path
-      result.push({
+      const tableRow = {
         row,
         depth: currentDepth,
         displayPosition,
@@ -374,7 +378,10 @@ export const flattenRowsWithGrouping = ({
         rowPath,
         rowIndexPath,
         absoluteRowIndex: position,
-      });
+        parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
+      };
+
+      result.push(tableRow);
 
       position++;
       displayPosition++;
@@ -461,6 +468,7 @@ export const flattenRowsWithGrouping = ({
                 state: rowState,
               },
               absoluteRowIndex: position,
+              parentIndices: [...parentIndices, currentRowIndex],
             });
             position++;
             displayPosition++;
@@ -479,6 +487,7 @@ export const flattenRowsWithGrouping = ({
               rowIndexPath,
               isLoadingSkeleton: true,
               absoluteRowIndex: position,
+              parentIndices: [...parentIndices, currentRowIndex],
             });
             position++;
             displayPosition++;
@@ -490,6 +499,7 @@ export const flattenRowsWithGrouping = ({
           const nestedIdPath = [...rowPath, currentGroupingKey];
           const nestedIndexPath = [...rowIndexPath];
           // Recursively process nested rows and update position
+          // Pass current row's index as parent for children
           position = processRows(
             nestedRows,
             currentDepth + 1,
@@ -497,6 +507,7 @@ export const flattenRowsWithGrouping = ({
             displayPosition,
             nestedIdPath,
             nestedIndexPath,
+            [...parentIndices, currentRowIndex],
           );
         }
       }
@@ -505,6 +516,6 @@ export const flattenRowsWithGrouping = ({
     return position;
   };
 
-  processRows(rows, depth, 0, displayPositionOffset, [], []);
+  processRows(rows, depth, 0, displayPositionOffset, [], [], []);
   return result;
 };

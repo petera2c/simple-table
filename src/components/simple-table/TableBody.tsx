@@ -1,6 +1,7 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
+import StickyParentsContainer from "./StickyParentsContainer";
 import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
@@ -9,6 +10,7 @@ import TableBodyProps from "../../types/TableBodyProps";
 import { rowIdToString } from "../../utils/rowUtils";
 
 const TableBody = ({
+  calculatedHeaderHeight,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -21,6 +23,8 @@ const TableBody = ({
   setScrollDirection,
   shouldShowEmptyState,
   tableRows,
+  stickyParents,
+  regularRows,
 }: TableBodyProps) => {
   // Get stable props from context
   const {
@@ -77,7 +81,7 @@ const TableBody = ({
         });
       }
     },
-    [tableBodyContainerRef],
+    [tableBodyContainerRef]
   );
 
   // Clear hover state when animations start
@@ -112,7 +116,7 @@ const TableBody = ({
   const totalRowCount = getTotalRowCount(tableRows);
   const totalHeight = useMemo(
     () => calculateTotalHeight(totalRowCount, rowHeight, heightOffsets, customTheme),
-    [totalRowCount, rowHeight, heightOffsets, customTheme],
+    [totalRowCount, rowHeight, heightOffsets, customTheme]
   );
 
   // Calculate column indices for all headers (including pinned) in one place
@@ -159,7 +163,7 @@ const TableBody = ({
         }, 1000);
       }
     },
-    [onLoadMore, shouldPaginate, isLoadingMore],
+    [onLoadMore, shouldPaginate, isLoadingMore]
   );
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -190,8 +194,8 @@ const TableBody = ({
         newScrollTop > previousScrollTop
           ? "down"
           : newScrollTop < previousScrollTop
-            ? "up"
-            : "none";
+          ? "up"
+          : "none";
 
       // Update scroll position and direction for asymmetric buffering
       setScrollTop(newScrollTop);
@@ -214,44 +218,66 @@ const TableBody = ({
     rowIndices,
     rowsToRender,
     setHoveredIndex,
+    regularRows,
   };
 
   return (
-    <div
-      className="st-body-container"
-      onMouseLeave={() => setHoveredIndex(null)}
-      onScroll={handleScroll}
-      ref={tableBodyContainerRef}
-    >
-      {shouldShowEmptyState ? (
-        <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
-      ) : (
-        <>
-          <TableSection
-            {...commonProps}
-            pinned="left"
-            templateColumns={pinnedLeftTemplateColumns}
-            totalHeight={totalHeight}
-            width={pinnedLeftWidth}
-          />
-          <TableSection
-            {...commonProps}
-            columnIndexStart={pinnedLeftColumns.length}
-            ref={mainBodyRef}
-            templateColumns={mainTemplateColumns}
-            totalHeight={totalHeight}
-          />
-          <TableSection
-            {...commonProps}
-            columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
-            pinned="right"
-            templateColumns={pinnedRightTemplateColumns}
-            totalHeight={totalHeight}
-            width={pinnedRightWidth}
-          />
-        </>
+    <>
+      {/* Sticky parents container - positioned absolutely on top */}
+      {!shouldShowEmptyState && (
+        <StickyParentsContainer
+          calculatedHeaderHeight={calculatedHeaderHeight}
+          stickyParents={stickyParents}
+          mainTemplateColumns={mainTemplateColumns}
+          pinnedLeftColumns={pinnedLeftColumns}
+          pinnedLeftTemplateColumns={pinnedLeftTemplateColumns}
+          pinnedLeftWidth={pinnedLeftWidth}
+          pinnedRightColumns={pinnedRightColumns}
+          pinnedRightTemplateColumns={pinnedRightTemplateColumns}
+          pinnedRightWidth={pinnedRightWidth}
+          setHoveredIndex={setHoveredIndex}
+          rowIndices={rowIndices}
+          scrollbarWidth={scrollbarWidth}
+        />
       )}
-    </div>
+
+      {/* Main scrolling body container */}
+      <div
+        className="st-body-container"
+        onMouseLeave={() => setHoveredIndex(null)}
+        onScroll={handleScroll}
+        ref={tableBodyContainerRef}
+      >
+        {shouldShowEmptyState ? (
+          <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
+        ) : (
+          <>
+            <TableSection
+              {...commonProps}
+              pinned="left"
+              templateColumns={pinnedLeftTemplateColumns}
+              totalHeight={totalHeight}
+              width={pinnedLeftWidth}
+            />
+            <TableSection
+              {...commonProps}
+              columnIndexStart={pinnedLeftColumns.length}
+              ref={mainBodyRef}
+              templateColumns={mainTemplateColumns}
+              totalHeight={totalHeight}
+            />
+            <TableSection
+              {...commonProps}
+              columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
+              pinned="right"
+              templateColumns={pinnedRightTemplateColumns}
+              totalHeight={totalHeight}
+              width={pinnedRightWidth}
+            />
+          </>
+        )}
+      </div>
+    </>
   );
 };
 

@@ -1,7 +1,8 @@
 import { useMemo, useState, useLayoutEffect, useCallback, useRef } from "react";
 import { calculateBufferRowCount } from "../consts/general-consts";
 import {
-  getVisibleRows,
+  getViewportCalculations,
+  getStickyParents,
   buildCumulativeHeightMap,
   CumulativeHeightMap,
 } from "../utils/infiniteScrollUtils";
@@ -110,8 +111,8 @@ const useTableRowProcessing = ({
         const absoluteRowIndex = tableRow.nestedTable
           ? tableRow.absoluteRowIndex // Keep original position from flattenedRows
           : shouldPaginate && !serverSidePagination
-            ? startPosition + index
-            : index;
+          ? startPosition + index
+          : index;
 
         return {
           ...tableRow,
@@ -121,7 +122,7 @@ const useTableRowProcessing = ({
         };
       });
     },
-    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate],
+    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate]
   );
 
   // Establish original positions from unfiltered/unsorted data
@@ -169,7 +170,7 @@ const useTableRowProcessing = ({
       .filter(([originalPos]) => positionMap.has(originalPos))
       .map(
         ([originalPos, extraHeight]) =>
-          [positionMap.get(originalPos)!, extraHeight] as [number, number],
+          [positionMap.get(originalPos)!, extraHeight] as [number, number]
       );
   }, [heightOffsets, currentTableRows, shouldPaginate, serverSidePagination]);
 
@@ -184,7 +185,7 @@ const useTableRowProcessing = ({
       currentTableRows.length,
       rowHeight,
       paginatedHeightOffsets,
-      customTheme,
+      customTheme
     );
   }, [currentTableRows.length, rowHeight, paginatedHeightOffsets, customTheme]);
 
@@ -195,7 +196,9 @@ const useTableRowProcessing = ({
       // No virtualization - return all rows
       return currentTableRows;
     }
-    return getVisibleRows({
+
+    // Get viewport calculations for virtualization
+    const viewportCalcs = getViewportCalculations({
       bufferRowCount,
       contentHeight,
       tableRows: currentTableRows,
@@ -204,6 +207,8 @@ const useTableRowProcessing = ({
       scrollDirection,
       heightMap,
     });
+
+    return viewportCalcs.rendered.rows;
   }, [
     currentTableRows,
     contentHeight,
@@ -214,13 +219,49 @@ const useTableRowProcessing = ({
     heightMap,
   ]);
 
+  // Separate sticky parents from regular rows for row grouping
+  const { stickyParents, regularRows } = useMemo(() => {
+    // Only apply sticky parents if we have virtualization and viewport calculations
+    if (contentHeight === undefined) {
+      return { stickyParents: [], regularRows: targetVisibleRows };
+    }
+
+    // Get viewport calculations
+    const viewportCalcs = getViewportCalculations({
+      bufferRowCount,
+      contentHeight,
+      tableRows: currentTableRows,
+      rowHeight,
+      scrollTop,
+      scrollDirection,
+      heightMap,
+    });
+
+    // Separate sticky parents from rendered rows
+    return getStickyParents(
+      currentTableRows,
+      viewportCalcs.rendered.rows,
+      viewportCalcs.fullyVisible.rows,
+      viewportCalcs.partiallyVisible.rows
+    );
+  }, [
+    currentTableRows,
+    contentHeight,
+    rowHeight,
+    scrollTop,
+    scrollDirection,
+    bufferRowCount,
+    targetVisibleRows,
+    heightMap,
+  ]);
+
   // Categorize rows based on ID changes
   const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
     const previousIds = new Set(
-      previousRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
+      previousRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId))
     );
     const currentIds = new Set(
-      currentRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId)),
+      currentRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId))
     );
 
     const staying = currentRows.filter((tableRow) => {
@@ -390,7 +431,7 @@ const useTableRowProcessing = ({
       // Since shouldPaginate is false here (early return above), pass empty array
       // applyPagination will just return all rows when !shouldPaginate
       const newPaginatedRows = applyPagination(newFlattenedRows, []);
-      const newVisibleRows = getVisibleRows({
+      const newViewportCalcs = getViewportCalculations({
         bufferRowCount,
         contentHeight,
         tableRows: newPaginatedRows,
@@ -399,6 +440,7 @@ const useTableRowProcessing = ({
         scrollDirection,
         heightMap,
       });
+      const newVisibleRows = newViewportCalcs.rendered.rows;
 
       // CRITICAL: Compare VISIBLE rows (before filter) vs what WILL BE visible (after filter)
       // This identifies rows that are entering the visible area
@@ -410,7 +452,7 @@ const useTableRowProcessing = ({
           const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -434,7 +476,7 @@ const useTableRowProcessing = ({
       targetVisibleRows,
       bufferRowCount,
       heightMap,
-    ],
+    ]
   );
 
   const prepareForSortChange = useCallback(
@@ -446,7 +488,7 @@ const useTableRowProcessing = ({
       // Since shouldPaginate is false here (early return above), pass empty array
       // applyPagination will just return all rows when !shouldPaginate
       const newPaginatedRows = applyPagination(newFlattenedRows, []);
-      const newVisibleRows = getVisibleRows({
+      const newViewportCalcs = getViewportCalculations({
         bufferRowCount,
         contentHeight,
         tableRows: newPaginatedRows,
@@ -455,6 +497,7 @@ const useTableRowProcessing = ({
         scrollDirection,
         heightMap,
       });
+      const newVisibleRows = newViewportCalcs.rendered.rows;
 
       // CRITICAL: Compare VISIBLE rows (before sort) vs what WILL BE visible (after sort)
       // This identifies rows that are entering the visible area
@@ -466,7 +509,7 @@ const useTableRowProcessing = ({
           const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -490,7 +533,7 @@ const useTableRowProcessing = ({
       targetVisibleRows,
       bufferRowCount,
       heightMap,
-    ],
+    ]
   );
 
   return {
@@ -500,6 +543,8 @@ const useTableRowProcessing = ({
     prepareForFilterChange,
     prepareForSortChange,
     rowsToRender,
+    stickyParents,
+    regularRows,
     paginatedHeightOffsets,
   };
 };

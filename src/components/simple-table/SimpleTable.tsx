@@ -708,6 +708,8 @@ const SimpleTableComp = ({
     prepareForFilterChange,
     prepareForSortChange,
     isAnimating,
+    stickyParents,
+    regularRows,
     paginatedHeightOffsets,
   } = useTableRowProcessing({
     allowAnimations,
@@ -985,6 +987,7 @@ const SimpleTableComp = ({
           <div className="st-wrapper-container">
             <div className="st-content-wrapper">
               <TableContent
+                calculatedHeaderHeight={calculatedHeaderHeight}
                 hideHeader={hideHeader}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
@@ -994,6 +997,8 @@ const SimpleTableComp = ({
                 sort={sort}
                 tableRows={currentTableRows}
                 rowsToRender={rowsToRender}
+                stickyParents={stickyParents}
+                regularRows={regularRows}
               />
               <TableColumnEditor
                 columnEditorText={columnEditorText}

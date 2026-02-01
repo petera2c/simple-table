@@ -378,7 +378,7 @@ const TOTAL_REGIONS = SERVER_DATA.length;
 const fetchRegions = async (
   page: number,
   pageSize: number,
-  sortColumn: SortColumn | null,
+  sortColumn: SortColumn | null
 ): Promise<{ regions: Region[]; totalCount: number }> => {
   await delay(1000); // Simulate network delay
 
@@ -445,7 +445,6 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
 
   // Fetch regions when page or sort changes
   useEffect(() => {
-    console.log(currentPage);
     const loadRegions = async () => {
       setIsLoading(true);
       try {
@@ -555,7 +554,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
         setError(error instanceof Error ? error.message : "Failed to load data");
       }
     },
-    [],
+    []
   );
 
   // Handle sort button clicks

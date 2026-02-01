@@ -10,6 +10,7 @@ import TableRow from "../../types/TableRow";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
+  calculatedHeaderHeight: number;
   hideHeader: boolean;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
@@ -19,9 +20,12 @@ interface TableContentLocalProps {
   sort: SortColumn | null;
   tableRows: TableRow[];
   rowsToRender: TableRow[];
+  stickyParents: TableRow[];
+  regularRows: TableRow[];
 }
 
 const TableContent = ({
+  calculatedHeaderHeight,
   hideHeader,
   pinnedLeftWidth,
   pinnedRightWidth,
@@ -31,6 +35,8 @@ const TableContent = ({
   sort,
   tableRows,
   rowsToRender,
+  stickyParents,
+  regularRows,
 }: TableContentLocalProps) => {
   // Get stable props from context
   const { columnResizing, editColumns, headers, collapsedHeaders, autoExpandColumns } =
@@ -81,6 +87,7 @@ const TableContent = ({
   };
 
   const tableBodyProps: TableBodyProps = {
+    calculatedHeaderHeight,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,
@@ -89,6 +96,8 @@ const TableContent = ({
     pinnedRightTemplateColumns,
     pinnedRightWidth,
     rowsToRender,
+    stickyParents,
+    regularRows,
     setScrollDirection,
     setScrollTop,
     shouldShowEmptyState,
