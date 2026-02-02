@@ -21,7 +21,7 @@ export const calculateBufferRowCount = (rowHeight: number): number => {
   return Math.ceil(OVERSCAN_PIXELS / rowHeightWithSeparator);
 };
 
-export const COLUMN_EDIT_WIDTH = 28;
+export const COLUMN_EDIT_WIDTH = 29.5;
 export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
 export const PINNED_BORDER_WIDTH = 1;
 export const MAX_PINNED_WIDTH_PERCENT = 0.8;

@@ -8,6 +8,7 @@ import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableBodyProps from "../../types/TableBodyProps";
 import TableRow from "../../types/TableRow";
 import { CumulativeHeightMap } from "../../utils/infiniteScrollUtils";
+import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 
 // Define props for the frequently changing values not in context
 interface TableContentLocalProps {
@@ -114,7 +115,7 @@ const TableContent = ({
   return (
     <div
       className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
-      style={{ width: editColumns ? "calc(100% - 27.5px)" : "100%" }}
+      style={{ width: editColumns ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)` : "100%" }}
     >
       {!hideHeader && <TableHeader {...tableHeaderProps} />}
       <TableBody {...tableBodyProps} />

@@ -27,6 +27,7 @@ const PinnedColumnsExample = (props: UniversalTableProps) => {
       selectableColumns={props.selectableColumns ?? true}
       editColumns={props.editColumns ?? true}
       height={props.height ?? "calc(100dvh - 112px)"}
+      enableStickyParents
     />
   );
 };

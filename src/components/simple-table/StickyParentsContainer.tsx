@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from "react";
 import { useTableContext } from "../../context/TableContext";
 import TableRow from "../../types/TableRow";
-import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
+import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import TableRowComponent from "./TableRow";
 import TableRowSeparator from "./TableRowSeparator";
 import { rowIdToString } from "../../utils/rowUtils";
@@ -45,7 +45,7 @@ const StickyParentsContainer = ({
   heightMap,
   partiallyVisibleRows,
 }: StickyParentsContainerProps) => {
-  const { headers, rowHeight, collapsedHeaders, customTheme } = useTableContext();
+  const { collapsedHeaders, customTheme, editColumns, headers, rowHeight } = useTableContext();
 
   // Calculate offset for transitioning between sibling trees and determine which sticky parents should have the offset applied
   const { treeTransitionOffset, offsetStartIndex } = useMemo(() => {
@@ -57,11 +57,14 @@ const StickyParentsContainer = ({
     const firstPartiallyVisibleRow = partiallyVisibleRows[0];
     let stickyParentPosition: number | undefined;
 
-    if (firstPartiallyVisibleRow?.parentIndices && firstPartiallyVisibleRow.parentIndices.length > 0) {
+    if (
+      firstPartiallyVisibleRow?.parentIndices &&
+      firstPartiallyVisibleRow.parentIndices.length > 0
+    ) {
       // Check parents from immediate to most distant
       for (let i = firstPartiallyVisibleRow.parentIndices.length - 1; i >= 0; i--) {
         const parentPosition = firstPartiallyVisibleRow.parentIndices[i];
-        
+
         // Check if this parent is in stickyParents
         if (stickyParents.some((parent) => parent.position === parentPosition)) {
           stickyParentPosition = parentPosition;
@@ -230,7 +233,9 @@ const StickyParentsContainer = ({
   const currentHeaders = headers.filter((header) => !header.pinned);
 
   // Calculate width accounting for scrollbar
-  const containerWidth = `calc(100% - ${scrollbarWidth}px)`;
+  const containerWidth = `calc(100% - ${scrollbarWidth}px - ${
+    editColumns ? `${COLUMN_EDIT_WIDTH}px` : "0px"
+  })`;
 
   return (
     <div
