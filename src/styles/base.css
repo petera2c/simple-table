@@ -1006,6 +1006,34 @@ input {
   gap: var(--st-spacing-small);
 }
 
+.st-column-label-container {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-drag-icon-container {
+  display: flex;
+  align-items: center;
+  cursor: grab;
+  opacity: 0.5;
+  transition: opacity var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-drag-icon-container:hover {
+  opacity: 1;
+}
+
+.st-drag-icon-container:active {
+  cursor: grabbing;
+}
+
+.st-drag-icon {
+  fill: currentColor;
+}
+
 .st-header-icon-container {
   width: 24px;
   display: flex;
@@ -1048,6 +1076,10 @@ input {
   align-items: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .st-checkbox-input {

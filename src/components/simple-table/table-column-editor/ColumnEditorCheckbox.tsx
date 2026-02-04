@@ -26,7 +26,7 @@ const ColumnEditorCheckbox = ({
   forceExpanded?: boolean;
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const { expandIcon, headers, setHeaders, onColumnVisibilityChange } = useTableContext();
+  const { dragIcon, expandIcon, headers, setHeaders, onColumnVisibilityChange } = useTableContext();
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
@@ -97,9 +97,9 @@ const ColumnEditorCheckbox = ({
             ) : null}
           </div>
         )}
-        <Checkbox checked={isChecked} onChange={handleCheckboxChange}>
-          {header.label}
-        </Checkbox>
+        <Checkbox checked={isChecked} onChange={handleCheckboxChange}></Checkbox>
+        <div className="st-drag-icon-container">{dragIcon}</div>
+        <div className="st-column-label-container">{header.label}</div>
       </div>
       {hasChildren && shouldExpand && header.children && (
         <div className="st-nested-headers">

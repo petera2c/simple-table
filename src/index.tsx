@@ -61,6 +61,7 @@ import {
   ColumnEditorSearchFunction,
   DEFAULT_COLUMN_EDITOR_CONFIG,
 } from "./types/ColumnEditorConfig";
+import { IconsConfig } from "./types/IconsConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
 import { rowIdToString } from "./utils/rowUtils";
 
@@ -109,6 +110,7 @@ export type {
   FooterRendererProps,
   GetRowId,
   GetRowIdParams,
+  IconsConfig,
   LoadingStateRenderer,
   LoadingStateRendererProps,
   HeaderDropdown,

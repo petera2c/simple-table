@@ -22,6 +22,46 @@ const DEPRECATED_PROPS: DeprecatedProp[] = [
     message:
       "Use the columnEditorConfig object instead for better organization of column editor settings.",
   },
+  {
+    propName: "expandIcon",
+    replacement: "icons.expand",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
+  {
+    propName: "filterIcon",
+    replacement: "icons.filter",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
+  {
+    propName: "headerCollapseIcon",
+    replacement: "icons.headerCollapse",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
+  {
+    propName: "headerExpandIcon",
+    replacement: "icons.headerExpand",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
+  {
+    propName: "nextIcon",
+    replacement: "icons.next",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
+  {
+    propName: "prevIcon",
+    replacement: "icons.prev",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
+  {
+    propName: "sortDownIcon",
+    replacement: "icons.sortDown",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
+  {
+    propName: "sortUpIcon",
+    replacement: "icons.sortUp",
+    message: "Use the icons object instead for better organization of icon settings.",
+  },
 ];
 
 /**
@@ -40,10 +80,12 @@ export const checkDeprecatedProps = (props: SimpleTableProps): void => {
       const replacementMessage = `Please use "${replacement}" instead.`;
       const additionalMessage = message ? `\n${message}` : "";
 
+      const [objectName, propertyName] = replacement.split(".");
+      const exampleValue =
+        typeof props[propName] === "string" ? JSON.stringify(props[propName]) : "<YourIcon />";
+
       console.error(
-        `${baseMessage}\n${replacementMessage}${additionalMessage}\n\nExample:\n<SimpleTable\n  columnEditorConfig={{\n    ${
-          replacement.split(".")[1]
-        }: ${JSON.stringify(props[propName])}\n  }}\n/>`
+        `${baseMessage}\n${replacementMessage}${additionalMessage}\n\nExample:\n<SimpleTable\n  ${objectName}={{\n    ${propertyName}: ${exampleValue}\n  }}\n/>`
       );
     }
   });

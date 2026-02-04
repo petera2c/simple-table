@@ -22,6 +22,7 @@ import Theme from "./Theme";
 import { CustomThemeProps } from "./CustomTheme";
 import { GetRowId } from "./GetRowId";
 import { ColumnEditorConfig } from "./ColumnEditorConfig";
+import { IconsConfig } from "./IconsConfig";
 
 export interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -45,24 +46,25 @@ export interface SimpleTableProps {
   enableStickyParents?: boolean; // Flag for enabling sticky parent rows during scrolling in grouped tables (default: false)
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
-  expandIcon?: ReactNode; // Icon for expanded state (used in expandable rows)
+  expandIcon?: ReactNode; // @deprecated Use icons.expand instead
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
-  filterIcon?: ReactNode; // Icon for filter button
+  filterIcon?: ReactNode; // @deprecated Use icons.filter instead
   footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
-  headerCollapseIcon?: ReactNode; // Icon for collapsed column headers
+  headerCollapseIcon?: ReactNode; // @deprecated Use icons.headerCollapse instead
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
-  headerExpandIcon?: ReactNode; // Icon for expanded column headers
+  headerExpandIcon?: ReactNode; // @deprecated Use icons.headerExpand instead
   height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   hideHeader?: boolean; // Flag for hiding the header
+  icons?: IconsConfig; // Configuration for all table icons
   includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
   initialSortDirection?: SortDirection; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
   loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
   maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
-  nextIcon?: ReactNode; // Next icon
+  nextIcon?: ReactNode; // @deprecated Use icons.next instead
   onCellClick?: (props: CellClickProps) => void;
   onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
@@ -77,7 +79,7 @@ export interface SimpleTableProps {
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>; // Callback when a row is expanded/collapsed
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
-  prevIcon?: ReactNode; // Previous icon
+  prevIcon?: ReactNode; // @deprecated Use icons.prev instead
   rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
   getRowId?: GetRowId; // Function to generate unique row IDs for stable row identification across data changes. Receives row data, depth, index, paths, and grouping key. If not provided, uses index-based IDs.
@@ -87,8 +89,8 @@ export interface SimpleTableProps {
   selectableColumns?: boolean; // Flag for selectable column headers
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
   shouldPaginate?: boolean; // Flag for pagination
-  sortDownIcon?: ReactNode; // Sort down icon
-  sortUpIcon?: ReactNode; // Sort up icon
+  sortDownIcon?: ReactNode; // @deprecated Use icons.sortDown instead
+  sortUpIcon?: ReactNode; // @deprecated Use icons.sortUp instead
   tableEmptyStateRenderer?: ReactNode; // Custom empty state component when table has no rows
   tableRef?: MutableRefObject<TableRefType | null>;
   theme?: Theme; // Theme
