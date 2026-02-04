@@ -28,7 +28,6 @@ export const copySelectedCellsToClipboard = (
     colIndexToAccessor.set(index, header.accessor);
     colIndexToHeader.set(index, header);
   });
-  console.log("flattenedLeafHeaders", flattenedLeafHeaders);
 
   // Convert selectedCells to a text format suitable for clipboard
   const rowsText = Array.from(selectedCells).reduce((acc, cellKey) => {
