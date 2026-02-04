@@ -1,16 +1,18 @@
 import { useMemo, useState } from "react";
 import HeaderObject from "../../../types/HeaderObject";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
+import { ColumnEditorSearchFunction } from "../../../types/ColumnEditorConfig";
 
 type TableColumnEditorPopoutProps = {
   headers: HeaderObject[];
   open: boolean;
   searchEnabled: boolean;
   searchPlaceholder: string;
+  searchFunction?: ColumnEditorSearchFunction;
 };
 
-// Helper function to check if a header or any of its children match the search term
-const headerMatchesSearch = (header: HeaderObject, searchTerm: string): boolean => {
+// Default search function - checks if a header or any of its children match the search term
+const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): boolean => {
   const lowerSearch = searchTerm.toLowerCase();
 
   // Check if the current header matches
@@ -20,23 +22,29 @@ const headerMatchesSearch = (header: HeaderObject, searchTerm: string): boolean 
 
   // Check if any children match
   if (header.children && header.children.length > 0) {
-    return header.children.some((child) => headerMatchesSearch(child, searchTerm));
+    return header.children.some((child) => defaultHeaderMatchesSearch(child, searchTerm));
   }
 
   return false;
 };
 
 // Helper function to filter headers based on search term
-const filterHeaders = (headers: HeaderObject[], searchTerm: string): HeaderObject[] => {
+const filterHeaders = (
+  headers: HeaderObject[],
+  searchTerm: string,
+  searchFunction?: ColumnEditorSearchFunction
+): HeaderObject[] => {
   if (!searchTerm.trim()) {
     return headers;
   }
+
+  const matchFunction = searchFunction || defaultHeaderMatchesSearch;
 
   return headers.filter((header) => {
     if (header.isSelectionColumn || header.excludeFromRender) {
       return false;
     }
-    return headerMatchesSearch(header, searchTerm);
+    return matchFunction(header, searchTerm);
   });
 };
 
@@ -45,6 +53,7 @@ const TableColumnEditorPopout = ({
   open,
   searchEnabled,
   searchPlaceholder,
+  searchFunction,
 }: TableColumnEditorPopoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const doesAnyHeaderHaveChildren = useMemo(
@@ -53,8 +62,8 @@ const TableColumnEditorPopout = ({
   );
 
   const filteredHeaders = useMemo(
-    () => (searchEnabled ? filterHeaders(headers, searchTerm) : headers),
-    [headers, searchTerm, searchEnabled]
+    () => (searchEnabled ? filterHeaders(headers, searchTerm, searchFunction) : headers),
+    [headers, searchTerm, searchEnabled, searchFunction]
   );
 
   return (

@@ -1,6 +1,7 @@
 import TableColumnEditorPopout from "./TableColumnEditorPopout";
 import HeaderObject from "../../../types/HeaderObject";
 import { COLUMN_EDIT_WIDTH } from "../../../consts/general-consts";
+import { ColumnEditorSearchFunction } from "../../../types/ColumnEditorConfig";
 
 type TableColumnEditorProps = {
   columnEditorText: string;
@@ -9,6 +10,7 @@ type TableColumnEditorProps = {
   open: boolean;
   searchEnabled: boolean;
   searchPlaceholder: string;
+  searchFunction?: ColumnEditorSearchFunction;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -19,6 +21,7 @@ const TableColumnEditor = ({
   open,
   searchEnabled,
   searchPlaceholder,
+  searchFunction,
   setOpen,
 }: TableColumnEditorProps) => {
   const handleClick = () => {
@@ -39,6 +42,7 @@ const TableColumnEditor = ({
         open={open}
         searchEnabled={searchEnabled}
         searchPlaceholder={searchPlaceholder}
+        searchFunction={searchFunction}
       />
     </div>
   );

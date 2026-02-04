@@ -149,6 +149,7 @@ const SimpleTableComp = ({
         columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
       searchPlaceholder:
         columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+      searchFunction: columnEditorConfig?.searchFunction,
     }),
     [columnEditorConfig, columnEditorText]
   );
@@ -1035,6 +1036,7 @@ const SimpleTableComp = ({
                 open={columnEditorOpen}
                 searchEnabled={mergedColumnEditorConfig.searchEnabled}
                 searchPlaceholder={mergedColumnEditorConfig.searchPlaceholder}
+                searchFunction={mergedColumnEditorConfig.searchFunction}
                 setOpen={setColumnEditorOpen}
               />
             </div>

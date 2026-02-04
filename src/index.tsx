@@ -56,7 +56,11 @@ import {
   EmptyStateRendererProps,
 } from "./types/RowStateRendererProps";
 import { CustomTheme, DEFAULT_CUSTOM_THEME } from "./types/CustomTheme";
-import { ColumnEditorConfig, DEFAULT_COLUMN_EDITOR_CONFIG } from "./types/ColumnEditorConfig";
+import {
+  ColumnEditorConfig,
+  ColumnEditorSearchFunction,
+  DEFAULT_COLUMN_EDITOR_CONFIG,
+} from "./types/ColumnEditorConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
 import { rowIdToString } from "./utils/rowUtils";
 
@@ -86,6 +90,7 @@ export type {
   CellValue,
   ChartOptions,
   ColumnEditorConfig,
+  ColumnEditorSearchFunction,
   ColumnType,
   ColumnVisibilityState,
   Comparator,
