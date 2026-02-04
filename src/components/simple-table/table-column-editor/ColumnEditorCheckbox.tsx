@@ -16,21 +16,26 @@ const ColumnEditorCheckbox = ({
   doesAnyHeaderHaveChildren,
   header,
   isCheckedOverride,
+  forceExpanded = false,
 }: {
   allHeaders: HeaderObject[];
   depth?: number;
   doesAnyHeaderHaveChildren: boolean;
   header: HeaderObject;
   isCheckedOverride?: boolean;
+  forceExpanded?: boolean;
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const { expandIcon, headers, setHeaders, onColumnVisibilityChange } = useTableContext();
-  const paddingLeft = doesAnyHeaderHaveChildren ? `${depth * 16}px` : "8px";
+  const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
   const isChecked =
     isCheckedOverride ??
     !(header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children)));
+
+  // Use forceExpanded when searching to show all matching children
+  const shouldExpand = forceExpanded || isExpanded;
 
   // Handle checkbox change
   const handleCheckboxChange = (checked: boolean) => {
@@ -78,11 +83,13 @@ const ColumnEditorCheckbox = ({
             {hasChildren ? (
               <div
                 className={`st-collapsible-header-icon st-expand-icon-container ${
-                  isExpanded ? "expanded" : "collapsed"
+                  shouldExpand ? "expanded" : "collapsed"
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsExpanded(!isExpanded);
+                  if (!forceExpanded) {
+                    setIsExpanded(!isExpanded);
+                  }
                 }}
               >
                 {expandIcon}
@@ -94,7 +101,7 @@ const ColumnEditorCheckbox = ({
           {header.label}
         </Checkbox>
       </div>
-      {hasChildren && isExpanded && header.children && (
+      {hasChildren && shouldExpand && header.children && (
         <div className="st-nested-headers">
           {header.children.map((childHeader, index) => (
             <ColumnEditorCheckbox
@@ -104,6 +111,7 @@ const ColumnEditorCheckbox = ({
               header={childHeader}
               key={`${childHeader.accessor}-${index}`}
               isCheckedOverride={!isChecked ? false : undefined}
+              forceExpanded={forceExpanded}
             />
           ))}
         </div>

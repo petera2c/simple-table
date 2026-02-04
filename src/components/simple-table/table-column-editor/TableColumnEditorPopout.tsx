@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import HeaderObject from "../../../types/HeaderObject";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
 
@@ -8,12 +8,46 @@ type TableColumnEditorPopoutProps = {
   position: "left" | "right";
 };
 
+// Helper function to check if a header or any of its children match the search term
+const headerMatchesSearch = (header: HeaderObject, searchTerm: string): boolean => {
+  const lowerSearch = searchTerm.toLowerCase();
+
+  // Check if the current header matches
+  if (header.label.toLowerCase().includes(lowerSearch)) {
+    return true;
+  }
+
+  // Check if any children match
+  if (header.children && header.children.length > 0) {
+    return header.children.some((child) => headerMatchesSearch(child, searchTerm));
+  }
+
+  return false;
+};
+
+// Helper function to filter headers based on search term
+const filterHeaders = (headers: HeaderObject[], searchTerm: string): HeaderObject[] => {
+  if (!searchTerm.trim()) {
+    return headers;
+  }
+
+  return headers.filter((header) => {
+    if (header.isSelectionColumn || header.excludeFromRender) {
+      return false;
+    }
+    return headerMatchesSearch(header, searchTerm);
+  });
+};
+
 const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorPopoutProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const positionClass = position === "left" ? "left" : "";
   const doesAnyHeaderHaveChildren = useMemo(
     () => headers.some((header) => header.children && header.children.length > 0),
     [headers]
   );
+
+  const filteredHeaders = useMemo(() => filterHeaders(headers, searchTerm), [headers, searchTerm]);
 
   return (
     <div
@@ -21,19 +55,34 @@ const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorP
       onClick={(e) => e.stopPropagation()}
     >
       <div className="st-column-editor-popout-content">
-        {headers.map((header, index) => {
-          if (header.isSelectionColumn || header.excludeFromRender) {
-            return null;
-          }
-          return (
-            <ColumnEditorCheckbox
-              doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
-              key={`${header.accessor}-${index}`}
-              header={header}
-              allHeaders={headers}
+        <div className="st-column-editor-search-wrapper">
+          <div className="st-column-editor-search">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search columns..."
+              className="st-filter-input"
+              onClick={(e) => e.stopPropagation()}
             />
-          );
-        })}
+          </div>
+        </div>
+        <div className="st-column-editor-list">
+          {filteredHeaders.map((header, index) => {
+            if (header.isSelectionColumn || header.excludeFromRender) {
+              return null;
+            }
+            return (
+              <ColumnEditorCheckbox
+                doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
+                key={`${header.accessor}-${index}`}
+                header={header}
+                allHeaders={headers}
+                forceExpanded={searchTerm.trim().length > 0}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

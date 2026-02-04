@@ -972,16 +972,36 @@ input {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: auto;
-  gap: var(--st-spacing-medium);
-  padding: var(--st-spacing-medium) var(--st-spacing-small);
   border-left: var(--st-border-width) solid var(--st-border-color);
   height: 100%;
+}
+
+/* Column Editor Search Wrapper */
+.st-column-editor-search-wrapper {
+  position: sticky;
+  top: 0;
+  background-color: var(--st-column-editor-popout-background-color);
+  z-index: 1;
+  padding: var(--st-spacing-medium);
+}
+
+/* Column Editor Search Styles */
+.st-column-editor-search {
+}
+
+/* Column Editor List */
+.st-column-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--st-spacing-medium);
+  padding: var(--st-spacing-medium);
 }
 
 /* Column Editor Header Checkbox Styles */
 .st-header-checkbox-item {
   display: flex;
   align-items: center;
+  gap: var(--st-spacing-small);
 }
 
 .st-header-icon-container {
