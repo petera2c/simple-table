@@ -7,7 +7,8 @@ type TableColumnEditorProps = {
   editColumns: boolean;
   headers: HeaderObject[];
   open: boolean;
-  position: "left" | "right";
+  searchEnabled: boolean;
+  searchPlaceholder: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -16,7 +17,8 @@ const TableColumnEditor = ({
   editColumns,
   headers,
   open,
-  position = "right",
+  searchEnabled,
+  searchPlaceholder,
   setOpen,
 }: TableColumnEditorProps) => {
   const handleClick = () => {
@@ -27,12 +29,17 @@ const TableColumnEditor = ({
 
   return (
     <div
-      className={`st-column-editor ${open ? "open" : ""} ${position}`}
+      className={`st-column-editor ${open ? "open" : ""}`}
       onClick={handleClick}
       style={{ width: COLUMN_EDIT_WIDTH }}
     >
       <div className="st-column-editor-text">{columnEditorText}</div>
-      <TableColumnEditorPopout headers={headers} open={open} position={position} />
+      <TableColumnEditorPopout
+        headers={headers}
+        open={open}
+        searchEnabled={searchEnabled}
+        searchPlaceholder={searchPlaceholder}
+      />
     </div>
   );
 };

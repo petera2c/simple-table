@@ -1,5 +1,4 @@
 import { MutableRefObject, ReactNode } from "react";
-import ColumnEditorPosition from "./ColumnEditorPosition";
 import HeaderObject, { Accessor } from "./HeaderObject";
 import Row from "./Row";
 import {
@@ -22,6 +21,7 @@ import TableRefType from "./TableRefType";
 import Theme from "./Theme";
 import { CustomThemeProps } from "./CustomTheme";
 import { GetRowId } from "./GetRowId";
+import { ColumnEditorConfig } from "./ColumnEditorConfig";
 
 export interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -30,8 +30,8 @@ export interface SimpleTableProps {
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   className?: string; // Class name for the table
   columnBorders?: boolean; // Flag for showing column borders
-  columnEditorPosition?: ColumnEditorPosition;
-  columnEditorText?: string; // Text for the column editor
+  columnEditorConfig?: ColumnEditorConfig; // Configuration for the column editor drawer
+  columnEditorText?: string; // @deprecated Use columnEditorConfig.text instead
   columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
   copyHeadersToClipboard?: boolean; // Flag for including column headers when copying cells to clipboard (default: false)

@@ -994,7 +994,9 @@ input {
   display: flex;
   flex-direction: column;
   gap: var(--st-spacing-medium);
-  padding: var(--st-spacing-medium);
+  padding-right: var(--st-spacing-medium);
+  padding-left: var(--st-spacing-medium);
+  padding-bottom: var(--st-spacing-medium);
 }
 
 /* Column Editor Header Checkbox Styles */

@@ -5,7 +5,8 @@ import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
 type TableColumnEditorPopoutProps = {
   headers: HeaderObject[];
   open: boolean;
-  position: "left" | "right";
+  searchEnabled: boolean;
+  searchPlaceholder: string;
 };
 
 // Helper function to check if a header or any of its children match the search term
@@ -39,34 +40,43 @@ const filterHeaders = (headers: HeaderObject[], searchTerm: string): HeaderObjec
   });
 };
 
-const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorPopoutProps) => {
+const TableColumnEditorPopout = ({
+  headers,
+  open,
+  searchEnabled,
+  searchPlaceholder,
+}: TableColumnEditorPopoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const positionClass = position === "left" ? "left" : "";
   const doesAnyHeaderHaveChildren = useMemo(
     () => headers.some((header) => header.children && header.children.length > 0),
     [headers]
   );
 
-  const filteredHeaders = useMemo(() => filterHeaders(headers, searchTerm), [headers, searchTerm]);
+  const filteredHeaders = useMemo(
+    () => (searchEnabled ? filterHeaders(headers, searchTerm) : headers),
+    [headers, searchTerm, searchEnabled]
+  );
 
   return (
     <div
-      className={`st-column-editor-popout ${open ? "open" : ""} ${positionClass}`}
+      className={`st-column-editor-popout ${open ? "open" : ""}`}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="st-column-editor-popout-content">
-        <div className="st-column-editor-search-wrapper">
-          <div className="st-column-editor-search">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search columns..."
-              className="st-filter-input"
-              onClick={(e) => e.stopPropagation()}
-            />
+        {searchEnabled && (
+          <div className="st-column-editor-search-wrapper">
+            <div className="st-column-editor-search">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={searchPlaceholder}
+                className="st-filter-input"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
           </div>
-        </div>
+        )}
         <div className="st-column-editor-list">
           {filteredHeaders.map((header, index) => {
             if (header.isSelectionColumn || header.excludeFromRender) {
@@ -78,7 +88,7 @@ const TableColumnEditorPopout = ({ headers, open, position }: TableColumnEditorP
                 key={`${header.accessor}-${index}`}
                 header={header}
                 allHeaders={headers}
-                forceExpanded={searchTerm.trim().length > 0}
+                forceExpanded={searchEnabled && searchTerm.trim().length > 0}
               />
             );
           })}

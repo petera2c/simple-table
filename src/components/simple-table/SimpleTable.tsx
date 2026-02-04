@@ -35,12 +35,20 @@ import { generateRowId, rowIdToString, flattenRowsWithGrouping } from "../../uti
 import useExpandedDepths from "../../hooks/useExpandedDepths";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
+import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
+import { checkDeprecatedProps } from "../../utils/deprecatedPropsWarnings";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
 
 const SimpleTable = (props: SimpleTableProps) => {
   const [isClient, setIsClient] = useState(false);
+
+  // Check for deprecated props before defaults are applied
+  useEffect(() => {
+    checkDeprecatedProps(props);
+  }, [props.columnEditorText]);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -55,8 +63,8 @@ const SimpleTableComp = ({
   cellUpdateFlash = false,
   className,
   columnBorders = false,
-  columnEditorPosition = "right",
-  columnEditorText = "Columns",
+  columnEditorConfig = DEFAULT_COLUMN_EDITOR_CONFIG,
+  columnEditorText,
   columnReordering = false,
   columnResizing = false,
   copyHeadersToClipboard = false,
@@ -130,6 +138,19 @@ const SimpleTableComp = ({
         ...customThemeProp,
       } as CustomTheme),
     [customThemeProp]
+  );
+
+  // Merge columnEditorConfig with defaults and legacy props
+  // Priority: columnEditorConfig > legacy props > defaults
+  const mergedColumnEditorConfig = useMemo(
+    () => ({
+      text: columnEditorConfig?.text ?? columnEditorText ?? DEFAULT_COLUMN_EDITOR_CONFIG.text,
+      searchEnabled:
+        columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
+      searchPlaceholder:
+        columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+    }),
+    [columnEditorConfig, columnEditorText]
   );
 
   const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } = customTheme;
@@ -1008,11 +1029,12 @@ const SimpleTableComp = ({
                 heightMap={heightMap}
               />
               <TableColumnEditor
-                columnEditorText={columnEditorText}
+                columnEditorText={mergedColumnEditorConfig.text}
                 editColumns={editColumns}
                 headers={headers}
                 open={columnEditorOpen}
-                position={columnEditorPosition}
+                searchEnabled={mergedColumnEditorConfig.searchEnabled}
+                searchPlaceholder={mergedColumnEditorConfig.searchPlaceholder}
                 setOpen={setColumnEditorOpen}
               />
             </div>

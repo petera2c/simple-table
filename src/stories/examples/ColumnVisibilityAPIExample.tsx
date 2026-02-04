@@ -235,6 +235,8 @@ const ColumnVisibilityAPIExampleComponent: React.FC<UniversalTableProps> = (prop
     showStatus("Salary column shown");
   };
 
+  console.log("props", props);
+
   return (
     <div style={{ padding: "20px" }}>
       {statusMessage && (
@@ -405,6 +407,11 @@ const ColumnVisibilityAPIExampleComponent: React.FC<UniversalTableProps> = (prop
         columnResizing={props.columnResizing ?? true}
         columnReordering={props.columnReordering ?? true}
         editColumns={props.editColumns ?? true}
+        columnEditorConfig={{
+          text: "Columns editor",
+          searchEnabled: true,
+          searchPlaceholder: "Search columns...",
+        }}
         height={props.height ?? "600px"}
         theme={props.theme ?? "light"}
       />
