@@ -760,7 +760,7 @@ const SimpleTableComp = ({
     startCell,
   } = useSelection({
     selectableCells,
-    headers,
+    headers: effectiveHeaders,
     tableRows: currentTableRows,
     onCellEdit,
     cellRegistry: cellRegistryRef.current,
