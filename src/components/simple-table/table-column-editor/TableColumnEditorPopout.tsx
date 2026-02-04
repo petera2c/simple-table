@@ -56,6 +56,9 @@ const TableColumnEditorPopout = ({
   searchFunction,
 }: TableColumnEditorPopoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [draggingRow, setDraggingRow] = useState<HeaderObject | null>(null);
+  const [hoveredSeparatorIndex, setHoveredSeparatorIndex] = useState<number | null>(null);
+
   const doesAnyHeaderHaveChildren = useMemo(
     () => headers.some((header) => header.children && header.children.length > 0),
     [headers]
@@ -98,6 +101,11 @@ const TableColumnEditorPopout = ({
                 header={header}
                 allHeaders={headers}
                 forceExpanded={searchEnabled && searchTerm.trim().length > 0}
+                rowIndex={index}
+                draggingRow={draggingRow}
+                setDraggingRow={setDraggingRow}
+                hoveredSeparatorIndex={hoveredSeparatorIndex}
+                setHoveredSeparatorIndex={setHoveredSeparatorIndex}
               />
             );
           })}

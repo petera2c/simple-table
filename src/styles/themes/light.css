@@ -108,4 +108,7 @@
   --st-loading-skeleton-bg-color: var(--st-slate-200);
   --st-chart-color: var(--st-blue-300);
   --st-chart-fill-color: var(--st-blue-300);
+
+  /* Drag and drop colors */
+  --st-drag-separator-color: var(--st-blue-500);
 }

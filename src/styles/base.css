@@ -993,7 +993,6 @@ input {
 .st-column-editor-list {
   display: flex;
   flex-direction: column;
-  gap: var(--st-spacing-medium);
   padding-right: var(--st-spacing-medium);
   padding-left: var(--st-spacing-medium);
   padding-bottom: var(--st-spacing-medium);
@@ -1004,6 +1003,8 @@ input {
   display: flex;
   align-items: center;
   gap: var(--st-spacing-small);
+  padding-top: var(--st-spacing-small);
+  padding-bottom: var(--st-spacing-small);
 }
 
 .st-column-label-container {
@@ -1034,6 +1035,15 @@ input {
   fill: currentColor;
 }
 
+.st-column-editor-drag-separator {
+  height: 2px;
+  width: 100%;
+  background-color: var(--st-drag-separator-color);
+  margin: 2px 0;
+  border-radius: 1px;
+  transition: opacity 0.2s ease;
+}
+
 .st-header-icon-container {
   width: 24px;
   display: flex;
@@ -1054,7 +1064,6 @@ input {
 .st-nested-headers {
   display: flex;
   flex-direction: column;
-  gap: var(--st-spacing-medium);
 }
 
 .st-column-editor-popout.open {

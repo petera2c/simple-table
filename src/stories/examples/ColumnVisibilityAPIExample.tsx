@@ -62,6 +62,39 @@ const sampleData: Row[] = [
     email: "ethan.h@company.com",
     phone: "555-0105",
   },
+  {
+    id: 6,
+    name: "Frank Underwood",
+    age: 40,
+    department: "Marketing",
+    salary: 90000,
+    status: "Active",
+    location: "New York",
+  },
+  {
+    id: 7,
+    name: "Grace Hopper",
+    age: 38,
+    department: "Engineering",
+    salary: 100000,
+    status: "Active",
+  },
+  {
+    id: 8,
+    name: "Hank Hill",
+    age: 45,
+    department: "Sales",
+    salary: 85000,
+    status: "Active",
+  },
+  {
+    id: 9,
+    name: "Ivy Moxie",
+    age: 32,
+    department: "Marketing",
+    salary: 88000,
+    status: "Active",
+  },
 ];
 
 const headers: HeaderObject[] = [
@@ -412,7 +445,7 @@ const ColumnVisibilityAPIExampleComponent: React.FC<UniversalTableProps> = (prop
           searchEnabled: true,
           searchPlaceholder: "Search columns...",
         }}
-        height={props.height ?? "600px"}
+        height={"1000px"}
         theme={props.theme ?? "light"}
       />
     </div>
