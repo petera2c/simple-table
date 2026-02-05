@@ -11,6 +11,13 @@ type TableColumnEditorPopoutProps = {
   searchFunction?: ColumnEditorSearchFunction;
 };
 
+type FlattenedHeader = {
+  header: HeaderObject;
+  visualIndex: number;
+  depth: number;
+  parent: HeaderObject | null;
+};
+
 // Default search function - checks if a header or any of its children match the search term
 const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): boolean => {
   const lowerSearch = searchTerm.toLowerCase();
@@ -59,6 +66,21 @@ const TableColumnEditorPopout = ({
   const [draggingRow, setDraggingRow] = useState<HeaderObject | null>(null);
   const [hoveredSeparatorIndex, setHoveredSeparatorIndex] = useState<number | null>(null);
 
+  // Initialize with all headers expanded by default
+  const [expandedHeaders, setExpandedHeaders] = useState<Set<string>>(() => {
+    const initialExpanded = new Set<string>();
+    const collectAccessors = (headerList: HeaderObject[]) => {
+      headerList.forEach((header) => {
+        if (header.children && header.children.length > 0) {
+          initialExpanded.add(header.accessor);
+          collectAccessors(header.children);
+        }
+      });
+    };
+    collectAccessors(headers);
+    return initialExpanded;
+  });
+
   const doesAnyHeaderHaveChildren = useMemo(
     () => headers.some((header) => header.children && header.children.length > 0),
     [headers]
@@ -68,6 +90,39 @@ const TableColumnEditorPopout = ({
     () => (searchEnabled ? filterHeaders(headers, searchTerm, searchFunction) : headers),
     [headers, searchTerm, searchEnabled, searchFunction]
   );
+
+  const flattenedHeaders = useMemo(() => {
+    const result: FlattenedHeader[] = [];
+    const forceExpanded = searchEnabled && searchTerm.trim().length > 0;
+
+    const flatten = (
+      headerList: HeaderObject[],
+      depth: number = 0,
+      parent: HeaderObject | null = null
+    ) => {
+      headerList.forEach((header) => {
+        // Skip selection columns and excluded headers
+        if (header.isSelectionColumn || header.excludeFromRender) {
+          return;
+        }
+
+        const visualIndex = result.length;
+        result.push({ header, visualIndex, depth, parent });
+
+        // Check if this header should be expanded
+        const hasChildren = header.children && header.children.length > 0;
+        const shouldExpand = forceExpanded || expandedHeaders.has(header.accessor);
+
+        // Recursively flatten children if expanded
+        if (hasChildren && shouldExpand && header.children) {
+          flatten(header.children, depth + 1, header);
+        }
+      });
+    };
+
+    flatten(filteredHeaders);
+    return result;
+  }, [filteredHeaders, expandedHeaders, searchEnabled, searchTerm]);
 
   return (
     <div
@@ -90,25 +145,24 @@ const TableColumnEditorPopout = ({
           </div>
         )}
         <div className="st-column-editor-list">
-          {filteredHeaders.map((header, index) => {
-            if (header.isSelectionColumn || header.excludeFromRender) {
-              return null;
-            }
-            return (
-              <ColumnEditorCheckbox
-                doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
-                key={`${header.accessor}-${index}`}
-                header={header}
-                allHeaders={headers}
-                forceExpanded={searchEnabled && searchTerm.trim().length > 0}
-                rowIndex={index}
-                draggingRow={draggingRow}
-                setDraggingRow={setDraggingRow}
-                hoveredSeparatorIndex={hoveredSeparatorIndex}
-                setHoveredSeparatorIndex={setHoveredSeparatorIndex}
-              />
-            );
-          })}
+          {flattenedHeaders.map((flatItem) => (
+            <ColumnEditorCheckbox
+              doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
+              key={`${flatItem.header.accessor}-${flatItem.visualIndex}`}
+              header={flatItem.header}
+              allHeaders={headers}
+              depth={flatItem.depth}
+              forceExpanded={searchEnabled && searchTerm.trim().length > 0}
+              rowIndex={flatItem.visualIndex}
+              draggingRow={draggingRow}
+              setDraggingRow={setDraggingRow}
+              hoveredSeparatorIndex={hoveredSeparatorIndex}
+              setHoveredSeparatorIndex={setHoveredSeparatorIndex}
+              expandedHeaders={expandedHeaders}
+              setExpandedHeaders={setExpandedHeaders}
+              flattenedHeaders={flattenedHeaders}
+            />
+          ))}
         </div>
       </div>
     </div>
