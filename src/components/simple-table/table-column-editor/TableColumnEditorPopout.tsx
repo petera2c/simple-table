@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import HeaderObject from "../../../types/HeaderObject";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
 import { ColumnEditorSearchFunction } from "../../../types/ColumnEditorConfig";
+import { FlattenedHeader } from "./columnEditorUtils";
 
 type TableColumnEditorPopoutProps = {
   headers: HeaderObject[];
@@ -9,13 +10,6 @@ type TableColumnEditorPopoutProps = {
   searchEnabled: boolean;
   searchPlaceholder: string;
   searchFunction?: ColumnEditorSearchFunction;
-};
-
-type FlattenedHeader = {
-  header: HeaderObject;
-  visualIndex: number;
-  depth: number;
-  parent: HeaderObject | null;
 };
 
 // Default search function - checks if a header or any of its children match the search term

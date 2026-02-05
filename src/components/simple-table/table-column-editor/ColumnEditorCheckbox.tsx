@@ -7,14 +7,9 @@ import {
   findAndMarkParentsVisible,
   updateParentHeaders,
   buildColumnVisibilityState,
+  findClosestValidSeparatorIndex,
+  FlattenedHeader,
 } from "./columnEditorUtils";
-
-type FlattenedHeader = {
-  header: HeaderObject;
-  visualIndex: number;
-  depth: number;
-  parent: HeaderObject | null;
-};
 
 // Component to render a single header row
 const ColumnEditorCheckbox = ({
@@ -97,14 +92,17 @@ const ColumnEditorCheckbox = ({
       const rect = event.currentTarget.getBoundingClientRect();
       const mouseY = event.clientY;
       const rowMiddle = rect.top + rect.height / 2;
+      const isTopHalf = mouseY < rowMiddle;
 
-      // If in top half, show separator above (index - 1)
-      // If in bottom half, show separator below (index)
-      if (mouseY < rowMiddle) {
-        setHoveredSeparatorIndex(rowIndex - 1);
-      } else {
-        setHoveredSeparatorIndex(rowIndex);
-      }
+      // Find the closest valid separator index based on hierarchy constraints
+      const validSeparatorIndex = findClosestValidSeparatorIndex(
+        flattenedHeaders,
+        draggingRow,
+        rowIndex,
+        isTopHalf
+      );
+
+      setHoveredSeparatorIndex(validSeparatorIndex);
     }
   };
 
