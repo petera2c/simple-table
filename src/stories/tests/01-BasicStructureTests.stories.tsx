@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
-import { within, expect, waitFor } from "@storybook/test";
+import { expect } from "@storybook/test";
 import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
@@ -143,27 +142,33 @@ const validateBasicTableStructure = async (canvasElement: HTMLElement) => {
 
   // Core table structure
   const tableRoot = canvasElement.querySelector(".simple-table-root");
-  expect(tableRoot).toBeInTheDocument();
+  if (!tableRoot) throw new Error("Table root not found");
+  expect(tableRoot).toBeTruthy();
 
   const tableContent = canvasElement.querySelector(".st-content");
-  expect(tableContent).toBeInTheDocument();
+  if (!tableContent) throw new Error("Table content not found");
+  expect(tableContent).toBeTruthy();
 
   const headerContainer = canvasElement.querySelector(".st-header-container");
-  expect(headerContainer).toBeInTheDocument();
+  if (!headerContainer) throw new Error("Header container not found");
+  expect(headerContainer).toBeTruthy();
 
   const bodyContainer = canvasElement.querySelector(".st-body-container");
-  expect(bodyContainer).toBeInTheDocument();
+  if (!bodyContainer) throw new Error("Body container not found");
+  expect(bodyContainer).toBeTruthy();
 
   // At least one row should exist
   const rows = canvasElement.querySelectorAll(".st-row");
   expect(rows.length).toBeGreaterThan(0);
 
   // Header and body main sections
-  const headerMain = headerContainer?.querySelector(".st-header-main");
-  expect(headerMain).toBeInTheDocument();
+  const headerMain = headerContainer.querySelector(".st-header-main");
+  if (!headerMain) throw new Error("Header main not found");
+  expect(headerMain).toBeTruthy();
 
-  const bodyMain = bodyContainer?.querySelector(".st-body-main");
-  expect(bodyMain).toBeInTheDocument();
+  const bodyMain = bodyContainer.querySelector(".st-body-main");
+  if (!bodyMain) throw new Error("Body main not found");
+  expect(bodyMain).toBeTruthy();
 };
 
 const validateColumnCount = (canvasElement: HTMLElement, expectedCount: number) => {
@@ -182,9 +187,13 @@ const validateCellContent = (
   accessor: string,
   expectedValue: string
 ) => {
-  const cells = canvasElement.querySelectorAll(`[data-accessor="${accessor}"]`);
+  const bodyContainer = canvasElement.querySelector(".st-body-container");
+  if (!bodyContainer) throw new Error("Body container not found");
+
+  const cells = bodyContainer.querySelectorAll(`[data-accessor="${accessor}"]`);
   const cell = cells[rowIndex] as HTMLElement;
-  expect(cell).toBeInTheDocument();
+  if (!cell) throw new Error(`Cell at row ${rowIndex} with accessor "${accessor}" not found`);
+  expect(cell).toBeTruthy();
 
   const cellContent = cell.querySelector(".st-cell-content");
   expect(cellContent?.textContent?.trim()).toBe(expectedValue);
@@ -212,8 +221,6 @@ export const MinimalTableWithRequiredProps: StoryObj = {
     );
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const canvas = within(canvasElement);
-
     // Validate basic structure
     await validateBasicTableStructure(canvasElement);
 
@@ -261,7 +268,8 @@ export const TableWithFixedHeight: StoryObj = {
 
     // Validate table has fixed height
     const tableRoot = canvasElement.querySelector(".simple-table-root") as HTMLElement;
-    expect(tableRoot).toBeInTheDocument();
+    if (!tableRoot) throw new Error("Table root not found");
+    expect(tableRoot).toBeTruthy();
 
     // The table should have a height style applied
     const computedStyle = window.getComputedStyle(tableRoot);
@@ -269,7 +277,8 @@ export const TableWithFixedHeight: StoryObj = {
 
     // Validate scrolling is enabled
     const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLElement;
-    expect(bodyContainer).toBeInTheDocument();
+    if (!bodyContainer) throw new Error("Body container not found");
+    expect(bodyContainer).toBeTruthy();
 
     // Body should be scrollable
     const bodyComputedStyle = window.getComputedStyle(bodyContainer);
@@ -309,7 +318,8 @@ export const TableWithMaxHeight: StoryObj = {
 
     // Validate table has maxHeight
     const tableRoot = canvasElement.querySelector(".simple-table-root") as HTMLElement;
-    expect(tableRoot).toBeInTheDocument();
+    if (!tableRoot) throw new Error("Table root not found");
+    expect(tableRoot).toBeTruthy();
 
     // With only 5 rows, table should be smaller than 600px
     const actualHeight = tableRoot.offsetHeight;
@@ -353,7 +363,8 @@ export const TableWithoutHeight: StoryObj = {
 
     // Table should not have internal scrolling
     const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLElement;
-    expect(bodyContainer).toBeInTheDocument();
+    if (!bodyContainer) throw new Error("Body container not found");
+    expect(bodyContainer).toBeTruthy();
   },
 };
 
@@ -434,10 +445,10 @@ export const NestedDataAccessors: StoryObj = {
 
     // City and country should be rendered (values will vary based on data)
     const cityCell = canvasElement.querySelector('[data-accessor="user.profile.city"]');
-    expect(cityCell).toBeInTheDocument();
+    expect(cityCell).toBeTruthy();
 
     const countryCell = canvasElement.querySelector('[data-accessor="user.profile.country"]');
-    expect(countryCell).toBeInTheDocument();
+    expect(countryCell).toBeTruthy();
   },
 };
 
@@ -479,10 +490,10 @@ export const ArrayIndexAccessors: StoryObj = {
 
     // Array accessors should work
     const firstAwardCell = canvasElement.querySelector('[data-accessor="awards[0]"]');
-    expect(firstAwardCell).toBeInTheDocument();
+    expect(firstAwardCell).toBeTruthy();
 
     const albumTitleCell = canvasElement.querySelector('[data-accessor="albums[0].title"]');
-    expect(albumTitleCell).toBeInTheDocument();
+    expect(albumTitleCell).toBeTruthy();
   },
 };
 
@@ -518,7 +529,8 @@ export const ColumnWidthConfigurations: StoryObj = {
 
     // Validate header cells exist
     const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
-    expect(headerMain).toBeInTheDocument();
+    if (!headerMain) throw new Error("Header main not found");
+    expect(headerMain).toBeTruthy();
 
     // Check that grid template columns is set
     const gridTemplateColumns = headerMain.style.gridTemplateColumns;
@@ -567,11 +579,11 @@ export const DataTypesRendering: StoryObj = {
 
     // Boolean should render as checkbox or true/false
     const booleanCell = canvasElement.querySelector('[data-accessor="isActive"]');
-    expect(booleanCell).toBeInTheDocument();
+    expect(booleanCell).toBeTruthy();
 
     // Date should be rendered
     const dateCell = canvasElement.querySelector('[data-accessor="joinDate"]');
-    expect(dateCell).toBeInTheDocument();
+    expect(dateCell).toBeTruthy();
   },
 };
 
@@ -603,10 +615,10 @@ export const ViewportRelativeHeight: StoryObj = {
     await validateBasicTableStructure(canvasElement);
 
     const tableRoot = canvasElement.querySelector(".simple-table-root") as HTMLElement;
-    expect(tableRoot).toBeInTheDocument();
+    if (!tableRoot) throw new Error("Table root not found");
+    expect(tableRoot).toBeTruthy();
 
     // Height should be set to 50vh
-    const computedStyle = window.getComputedStyle(tableRoot);
     expect(tableRoot.style.height).toBe("50vh");
   },
 };
@@ -643,12 +655,15 @@ export const ComprehensiveStructureValidation: StoryObj = {
 
     // Detailed DOM structure validation
     const tableRoot = canvasElement.querySelector(".simple-table-root");
-    expect(tableRoot).toBeInTheDocument();
+    if (!tableRoot) throw new Error("Table root not found");
+    expect(tableRoot).toBeTruthy();
 
     // Validate header structure
     const headerContainer = canvasElement.querySelector(".st-header-container");
-    const headerMain = headerContainer?.querySelector(".st-header-main");
-    expect(headerMain).toBeInTheDocument();
+    if (!headerContainer) throw new Error("Header container not found");
+    const headerMain = headerContainer.querySelector(".st-header-main");
+    if (!headerMain) throw new Error("Header main not found");
+    expect(headerMain).toBeTruthy();
 
     const headerCells = canvasElement.querySelectorAll(".st-header-cell");
     expect(headerCells.length).toBe(4);
@@ -656,14 +671,16 @@ export const ComprehensiveStructureValidation: StoryObj = {
     // Each header should have label text
     headerCells.forEach((cell) => {
       const labelText = cell.querySelector(".st-header-label-text");
-      expect(labelText).toBeInTheDocument();
+      expect(labelText).toBeTruthy();
       expect(labelText?.textContent).toBeTruthy();
     });
 
     // Validate body structure
     const bodyContainer = canvasElement.querySelector(".st-body-container");
-    const bodyMain = bodyContainer?.querySelector(".st-body-main");
-    expect(bodyMain).toBeInTheDocument();
+    if (!bodyContainer) throw new Error("Body container not found");
+    const bodyMain = bodyContainer.querySelector(".st-body-main");
+    if (!bodyMain) throw new Error("Body main not found");
+    expect(bodyMain).toBeTruthy();
 
     // Validate rows
     const rows = canvasElement.querySelectorAll(".st-row");
@@ -681,9 +698,11 @@ export const ComprehensiveStructureValidation: StoryObj = {
 
     // Validate that cells have proper structure
     const firstCell = canvasElement.querySelector(".st-cell");
-    expect(firstCell).toBeInTheDocument();
+    if (!firstCell) throw new Error("First cell not found");
+    expect(firstCell).toBeTruthy();
 
-    const cellContent = firstCell?.querySelector(".st-cell-content");
-    expect(cellContent).toBeInTheDocument();
+    const cellContent = firstCell.querySelector(".st-cell-content");
+    if (!cellContent) throw new Error("Cell content not found");
+    expect(cellContent).toBeTruthy();
   },
 };

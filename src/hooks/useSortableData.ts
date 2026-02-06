@@ -173,17 +173,17 @@ const useSortableData = ({
       else {
         // Get custom sorting order or use default: ["asc", "desc", null]
         const sortingOrder = targetHeader.sortingOrder || ["asc", "desc", null];
-        
+
         // Find current position in the cycle
         let currentIndex = -1;
         if (sort && sort.key.accessor === accessor) {
           currentIndex = sortingOrder.indexOf(sort.direction);
         }
-        
+
         // Move to next position in cycle
         const nextIndex = (currentIndex + 1) % sortingOrder.length;
         const nextDirection = sortingOrder[nextIndex];
-        
+
         if (nextDirection === null) {
           newSortColumn = null;
         } else {
@@ -237,17 +237,17 @@ const useSortableData = ({
 
       // Get custom sorting order or use default: ["asc", "desc", null]
       const sortingOrder = targetHeader.sortingOrder || ["asc", "desc", null];
-      
+
       // Find current position in the cycle
       let currentIndex = -1;
       if (sort && sort.key.accessor === accessor) {
         currentIndex = sortingOrder.indexOf(sort.direction);
       }
-      
+
       // Move to next position in cycle
       const nextIndex = (currentIndex + 1) % sortingOrder.length;
       const nextDirection = sortingOrder[nextIndex];
-      
+
       if (nextDirection === null) {
         previewSortColumn = null;
       } else {
