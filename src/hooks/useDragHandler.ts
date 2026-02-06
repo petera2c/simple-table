@@ -98,7 +98,7 @@ export function swapHeaders(
   return { newHeaders, emergencyBreak };
 }
 
-function insertHeaderAcrossSections(
+export function insertHeaderAcrossSections(
   headers: HeaderObject[],
   draggedHeader: HeaderObject,
   hoveredHeader: HeaderObject

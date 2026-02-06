@@ -10,7 +10,7 @@ import {
   findClosestValidSeparatorIndex,
   FlattenedHeader,
 } from "./columnEditorUtils";
-import { getHeaderIndexPath, swapHeaders } from "../../../hooks/useDragHandler";
+import { insertHeaderAcrossSections } from "../../../hooks/useDragHandler";
 
 // Component to render a single header row
 const ColumnEditorCheckbox = ({
@@ -109,28 +109,44 @@ const ColumnEditorCheckbox = ({
   };
 
   const onDragEnd = () => {
-    if (!draggingRow || hoveredSeparatorIndex === null) return;
+    const cancelDrag = () => {
+      setDraggingRow(null);
+      setHoveredSeparatorIndex(null);
+    };
+    if (!draggingRow || hoveredSeparatorIndex === null) {
+      cancelDrag();
+      return;
+    }
+    const targetRowIndex =
+      draggingRow.visualIndex >= hoveredSeparatorIndex
+        ? hoveredSeparatorIndex + 1
+        : hoveredSeparatorIndex;
 
-    const hoveredHeader = flattenedHeaders[hoveredSeparatorIndex + 1];
-    console.log(hoveredHeader.header.accessor);
+    const hoveredHeader = flattenedHeaders[targetRowIndex];
+    if (!hoveredHeader) {
+      cancelDrag();
+      return;
+    }
 
-    const draggedHeaderIndexPath = getHeaderIndexPath(headers, draggingRow.header.accessor);
-    const hoveredHeaderIndexPath = getHeaderIndexPath(headers, hoveredHeader.header.accessor);
+    if (draggingRow.header.accessor === flattenedHeaders[hoveredSeparatorIndex]?.header.accessor) {
+      cancelDrag();
+      return;
+    }
 
-    if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) return;
-
-    const { newHeaders, emergencyBreak } = swapHeaders(
+    const { newHeaders, emergencyBreak } = insertHeaderAcrossSections(
       headers,
-      draggedHeaderIndexPath,
-      hoveredHeaderIndexPath
+      draggingRow.header,
+      hoveredHeader.header
     );
 
-    if (emergencyBreak) return;
+    if (emergencyBreak) {
+      cancelDrag();
+      return;
+    }
 
     onColumnOrderChange?.(newHeaders);
     setHeaders(newHeaders);
-    setDraggingRow(null);
-    setHoveredSeparatorIndex(null);
+    cancelDrag();
   };
 
   // Handle checkbox change
@@ -173,6 +189,12 @@ const ColumnEditorCheckbox = ({
 
   return (
     <>
+      {rowIndex === 0 && (
+        <div
+          className="st-column-editor-drag-separator"
+          style={{ opacity: hoveredSeparatorIndex === -1 ? 1 : 0 }}
+        />
+      )}
       <div
         className="st-header-checkbox-item"
         style={{ paddingLeft }}
