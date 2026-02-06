@@ -79,3 +79,95 @@ export const buildColumnVisibilityState = (headers: HeaderObject[]): ColumnVisib
   headers.forEach(processHeader);
   return visibilityState;
 };
+
+// Type for flattened header with metadata
+export type FlattenedHeader = {
+  header: HeaderObject;
+  visualIndex: number;
+  depth: number;
+  parent: HeaderObject | null;
+};
+
+export const findClosestValidSeparatorIndex = ({
+  flattenedHeaders,
+  draggingRow,
+  hoveredRowIndex,
+  isTopHalfOfRow,
+}: {
+  flattenedHeaders: FlattenedHeader[];
+  draggingRow: FlattenedHeader;
+  hoveredRowIndex: number;
+  isTopHalfOfRow: boolean;
+}): number | null => {
+  const hoveredRow = flattenedHeaders[hoveredRowIndex];
+
+  if (hoveredRow.depth === draggingRow.depth) {
+    if (hoveredRow.parent?.accessor !== draggingRow.parent?.accessor) {
+      return null;
+    }
+
+    if (isTopHalfOfRow || hoveredRow.header.children) {
+      return hoveredRowIndex - 1;
+    } else {
+      return hoveredRowIndex;
+    }
+  } else if (draggingRow.depth < hoveredRow.depth) {
+    // We need to go up the tree to find a depth match
+    // Start with the current hovered row and walk up the parent chain
+    let currentRow = hoveredRow;
+    let currentIndex = hoveredRowIndex;
+
+    // Recursively find the ancestor at the same depth as draggingRow
+    while (currentRow.parent && currentRow.depth > draggingRow.depth) {
+      // Capture the parent accessor before the findIndex callback
+      const parentAccessor = currentRow.parent.accessor;
+
+      // Find the parent in the flattened headers
+      const parentIndex = flattenedHeaders.findIndex((fh) => fh.header.accessor === parentAccessor);
+
+      if (parentIndex === -1) break;
+
+      currentRow = flattenedHeaders[parentIndex];
+      currentIndex = parentIndex;
+    }
+
+    // Now currentRow should be at the same depth as draggingRow
+    // We need to figure out which part of this subtree we're hovering over
+
+    // Find all rows in this subtree (currentRow and its descendants)
+    const subtreeStartIndex = currentIndex;
+    let subtreeEndIndex = currentIndex;
+
+    // Find the end of the subtree by looking for the next row at the same or shallower depth
+    for (let i = currentIndex + 1; i < flattenedHeaders.length; i++) {
+      if (flattenedHeaders[i].depth <= currentRow.depth) {
+        break;
+      }
+      subtreeEndIndex = i;
+    }
+
+    const subtreeSize = subtreeEndIndex - subtreeStartIndex + 1;
+    const hoveredPositionInSubtree = hoveredRowIndex - subtreeStartIndex;
+
+    // Determine if we're in the top half or bottom half of the subtree
+    let isInTopHalfOfSubtree = hoveredPositionInSubtree < subtreeSize / 2;
+
+    // If odd number of rows in subtree and we're on the middle row, use isTopHalfOfRow to decide
+    if (subtreeSize % 2 === 1) {
+      const middleIndex = Math.floor(subtreeSize / 2);
+      if (hoveredPositionInSubtree === middleIndex) {
+        isInTopHalfOfSubtree = isTopHalfOfRow;
+      }
+    }
+
+    // For top half of subtree, insert before the parent
+    if (isInTopHalfOfSubtree) {
+      return currentIndex - 1;
+    } else {
+      // For bottom half, insert after the parent (and its entire subtree)
+      return subtreeEndIndex;
+    }
+  } else {
+    return null;
+  }
+};

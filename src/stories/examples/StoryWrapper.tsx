@@ -1,6 +1,5 @@
 import React from "react";
 import Theme from "../../types/Theme";
-import ColumnEditorPosition from "../../types/ColumnEditorPosition";
 import { CustomThemeProps } from "../../types/CustomTheme";
 
 // Universal props that can be controlled via Storybook args
@@ -33,8 +32,6 @@ export interface UniversalTableProps {
 
   // Configuration Props
   rowsPerPage?: number;
-  columnEditorText?: string;
-  columnEditorPosition?: ColumnEditorPosition;
 }
 
 interface StoryWrapperProps extends UniversalTableProps {
@@ -78,8 +75,6 @@ export const defaultUniversalArgs: UniversalTableProps = {
   externalSortHandling: false,
   externalFilterHandling: false,
   rowsPerPage: 10,
-  columnEditorText: "Columns",
-  columnEditorPosition: "right",
 };
 
 // ArgTypes for universal props
@@ -169,14 +164,5 @@ export const universalArgTypes = {
   rowsPerPage: {
     control: { type: "number" as const, min: 5, max: 100, step: 5 },
     description: "Number of rows per page (when pagination is enabled)",
-  },
-  columnEditorText: {
-    control: { type: "text" as const },
-    description: "Text for the column editor button",
-  },
-  columnEditorPosition: {
-    control: { type: "select" as const },
-    options: ["left", "right"],
-    description: "Position of the column editor",
   },
 };

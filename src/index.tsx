@@ -6,7 +6,6 @@ import BoundingBox from "./types/BoundingBox";
 import Cell from "./types/Cell";
 import CellChangeProps from "./types/CellChangeProps";
 import CellValue from "./types/CellValue";
-import ColumnEditorPosition from "./types/ColumnEditorPosition";
 import DragHandlerProps from "./types/DragHandlerProps";
 import EnumOption from "./types/EnumOption";
 import HeaderObject, {
@@ -57,6 +56,12 @@ import {
   EmptyStateRendererProps,
 } from "./types/RowStateRendererProps";
 import { CustomTheme, DEFAULT_CUSTOM_THEME } from "./types/CustomTheme";
+import {
+  ColumnEditorConfig,
+  ColumnEditorSearchFunction,
+  DEFAULT_COLUMN_EDITOR_CONFIG,
+} from "./types/ColumnEditorConfig";
+import { IconsConfig } from "./types/IconsConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
 import { rowIdToString } from "./utils/rowUtils";
 
@@ -66,6 +71,7 @@ export {
   BarChart,
   DefaultEmptyState,
   DEFAULT_CUSTOM_THEME,
+  DEFAULT_COLUMN_EDITOR_CONFIG,
   rowIdToString,
 };
 
@@ -84,7 +90,8 @@ export type {
   CellRendererProps,
   CellValue,
   ChartOptions,
-  ColumnEditorPosition,
+  ColumnEditorConfig,
+  ColumnEditorSearchFunction,
   ColumnType,
   ColumnVisibilityState,
   Comparator,
@@ -103,6 +110,7 @@ export type {
   FooterRendererProps,
   GetRowId,
   GetRowIdParams,
+  IconsConfig,
   LoadingStateRenderer,
   LoadingStateRendererProps,
   HeaderDropdown,

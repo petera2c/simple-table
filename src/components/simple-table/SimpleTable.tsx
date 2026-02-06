@@ -2,7 +2,14 @@ import { useState, useRef, useEffect, useReducer, useMemo, useCallback } from "r
 import useSelection from "../../hooks/useSelection";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
-import { AngleLeftIcon, AngleRightIcon, DescIcon, AscIcon, FilterIcon } from "../../icons";
+import {
+  AngleLeftIcon,
+  AngleRightIcon,
+  DescIcon,
+  AscIcon,
+  FilterIcon,
+  DragIcon,
+} from "../../icons";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
@@ -35,12 +42,21 @@ import { generateRowId, rowIdToString, flattenRowsWithGrouping } from "../../uti
 import useExpandedDepths from "../../hooks/useExpandedDepths";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
+import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
+import { checkDeprecatedProps } from "../../utils/deprecatedPropsWarnings";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
 
 const SimpleTable = (props: SimpleTableProps) => {
   const [isClient, setIsClient] = useState(false);
+
+  // Check for deprecated props before defaults are applied
+  useEffect(() => {
+    checkDeprecatedProps(props);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -55,8 +71,8 @@ const SimpleTableComp = ({
   cellUpdateFlash = false,
   className,
   columnBorders = false,
-  columnEditorPosition = "right",
-  columnEditorText = "Columns",
+  columnEditorConfig = DEFAULT_COLUMN_EDITOR_CONFIG,
+  columnEditorText,
   columnReordering = false,
   columnResizing = false,
   copyHeadersToClipboard = false,
@@ -70,24 +86,25 @@ const SimpleTableComp = ({
   enableStickyParents = false,
   errorStateRenderer,
   expandAll = true,
-  expandIcon = <AngleRightIcon className="st-expand-icon" />,
+  expandIcon: expandIconDeprecated,
   externalFilterHandling = false,
   externalSortHandling = false,
-  filterIcon = <FilterIcon className="st-header-icon" />,
+  filterIcon: filterIconDeprecated,
   footerRenderer,
-  headerCollapseIcon = <AngleRightIcon className="st-header-icon" />,
+  headerCollapseIcon: headerCollapseIconDeprecated,
   headerDropdown,
-  headerExpandIcon = <AngleLeftIcon className="st-header-icon" />,
+  headerExpandIcon: headerExpandIconDeprecated,
   height,
   hideFooter = false,
   hideHeader = false,
+  icons,
   includeHeadersInCSVExport = true,
   initialSortColumn,
   initialSortDirection = "asc",
   isLoading = false,
   loadingStateRenderer,
   maxHeight,
-  nextIcon = <AngleRightIcon className="st-next-prev-icon" />,
+  nextIcon: nextIconDeprecated,
   onCellClick,
   onCellEdit,
   onColumnOrderChange,
@@ -102,7 +119,7 @@ const SimpleTableComp = ({
   onRowGroupExpand,
   onRowSelectionChange,
   onSortChange,
-  prevIcon = <AngleLeftIcon className="st-next-prev-icon" />,
+  prevIcon: prevIconDeprecated,
   rowButtons,
   rowGrouping,
   getRowId,
@@ -112,8 +129,8 @@ const SimpleTableComp = ({
   selectableColumns = false,
   serverSidePagination = false,
   shouldPaginate = false,
-  sortDownIcon = <DescIcon className="st-header-icon" />,
-  sortUpIcon = <AscIcon className="st-header-icon" />,
+  sortDownIcon: sortDownIconDeprecated,
+  sortUpIcon: sortUpIconDeprecated,
   tableEmptyStateRenderer = <DefaultEmptyState />,
   tableRef,
   theme = "light",
@@ -122,6 +139,43 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
   useOddEvenRowBackground = false,
 }: SimpleTableProps) => {
+  // Merge icons config with backward compatibility for deprecated props
+  const resolvedIcons = useMemo(() => {
+    const defaultIcons = {
+      drag: <DragIcon className="st-drag-icon" />,
+      expand: <AngleRightIcon className="st-expand-icon" />,
+      filter: <FilterIcon className="st-header-icon" />,
+      headerCollapse: <AngleRightIcon className="st-header-icon" />,
+      headerExpand: <AngleLeftIcon className="st-header-icon" />,
+      next: <AngleRightIcon className="st-next-prev-icon" />,
+      prev: <AngleLeftIcon className="st-next-prev-icon" />,
+      sortDown: <DescIcon className="st-header-icon" />,
+      sortUp: <AscIcon className="st-header-icon" />,
+    };
+
+    return {
+      drag: icons?.drag ?? defaultIcons.drag,
+      expand: icons?.expand ?? expandIconDeprecated ?? defaultIcons.expand,
+      filter: icons?.filter ?? filterIconDeprecated ?? defaultIcons.filter,
+      headerCollapse:
+        icons?.headerCollapse ?? headerCollapseIconDeprecated ?? defaultIcons.headerCollapse,
+      headerExpand: icons?.headerExpand ?? headerExpandIconDeprecated ?? defaultIcons.headerExpand,
+      next: icons?.next ?? nextIconDeprecated ?? defaultIcons.next,
+      prev: icons?.prev ?? prevIconDeprecated ?? defaultIcons.prev,
+      sortDown: icons?.sortDown ?? sortDownIconDeprecated ?? defaultIcons.sortDown,
+      sortUp: icons?.sortUp ?? sortUpIconDeprecated ?? defaultIcons.sortUp,
+    };
+  }, [
+    icons,
+    expandIconDeprecated,
+    filterIconDeprecated,
+    headerCollapseIconDeprecated,
+    headerExpandIconDeprecated,
+    nextIconDeprecated,
+    prevIconDeprecated,
+    sortDownIconDeprecated,
+    sortUpIconDeprecated,
+  ]);
   // Merge customTheme with defaults - all properties will be defined after merge
   const customTheme = useMemo(
     () =>
@@ -130,6 +184,20 @@ const SimpleTableComp = ({
         ...customThemeProp,
       } as CustomTheme),
     [customThemeProp]
+  );
+
+  // Merge columnEditorConfig with defaults and legacy props
+  // Priority: columnEditorConfig > legacy props > defaults
+  const mergedColumnEditorConfig = useMemo(
+    () => ({
+      text: columnEditorConfig?.text ?? columnEditorText ?? DEFAULT_COLUMN_EDITOR_CONFIG.text,
+      searchEnabled:
+        columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
+      searchPlaceholder:
+        columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+      searchFunction: columnEditorConfig?.searchFunction,
+    }),
+    [columnEditorConfig, columnEditorText]
   );
 
   const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } = customTheme;
@@ -880,14 +948,15 @@ const SimpleTableComp = ({
         columnsWithSelectedCells,
         copyHeadersToClipboard,
         draggedHeaderRef,
+        dragIcon: resolvedIcons.drag,
         editColumns,
         emptyStateRenderer,
         enableHeaderEditing,
         enableRowSelection,
         errorStateRenderer,
         expandedDepths,
-        expandIcon,
-        filterIcon,
+        expandIcon: resolvedIcons.expand,
+        filterIcon: resolvedIcons.filter,
         filters,
         forceUpdate,
         getBorderClass,
@@ -899,10 +968,10 @@ const SimpleTableComp = ({
         handleRowSelect,
         handleSelectAll,
         handleToggleRow,
-        headerCollapseIcon,
+        headerCollapseIcon: resolvedIcons.headerCollapse,
         headerContainerRef,
         headerDropdown,
-        headerExpandIcon,
+        headerExpandIcon: resolvedIcons.headerExpand,
         headerHeight,
         headerRegistry: headerRegistryRef.current,
         headers: effectiveHeaders,
@@ -921,7 +990,7 @@ const SimpleTableComp = ({
         loadingStateRenderer,
         mainBodyRef,
         maxHeaderDepth,
-        nextIcon,
+        nextIcon: resolvedIcons.next,
         onCellClick,
         onCellEdit,
         onColumnOrderChange,
@@ -934,7 +1003,7 @@ const SimpleTableComp = ({
         onTableHeaderDragEnd,
         pinnedLeftRef,
         pinnedRightRef,
-        prevIcon,
+        prevIcon: resolvedIcons.prev,
         rowButtons,
         rowGrouping,
         rowHeight,
@@ -962,8 +1031,8 @@ const SimpleTableComp = ({
         setExpandedRows,
         setCollapsedRows,
         shouldPaginate,
-        sortDownIcon,
-        sortUpIcon,
+        sortDownIcon: resolvedIcons.sortDown,
+        sortUpIcon: resolvedIcons.sortUp,
         tableBodyContainerRef,
         tableEmptyStateRenderer,
         tableRows: currentTableRows,
@@ -1008,11 +1077,13 @@ const SimpleTableComp = ({
                 heightMap={heightMap}
               />
               <TableColumnEditor
-                columnEditorText={columnEditorText}
+                columnEditorText={mergedColumnEditorConfig.text}
                 editColumns={editColumns}
                 headers={headers}
                 open={columnEditorOpen}
-                position={columnEditorPosition}
+                searchEnabled={mergedColumnEditorConfig.searchEnabled}
+                searchPlaceholder={mergedColumnEditorConfig.searchPlaceholder}
+                searchFunction={mergedColumnEditorConfig.searchFunction}
                 setOpen={setColumnEditorOpen}
               />
             </div>

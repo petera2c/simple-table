@@ -13,5 +13,6 @@ export { default as AngleUpIcon } from "./AngleUpIcon";
 export { default as AscIcon } from "./AscIcon";
 export { default as CheckIcon } from "./CheckIcon";
 export { default as DescIcon } from "./DescIcon";
+export { default as DragIcon } from "./DragIcon";
 export { default as FilterIcon } from "./FilterIcon";
 export { default as SelectIcon } from "./SelectIcon";

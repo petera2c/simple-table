@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { DragEvent } from "react";
 import Checkbox from "../../Checkbox";
 import HeaderObject from "../../../types/HeaderObject";
 import { useTableContext } from "../../../context/TableContext";
@@ -7,30 +7,147 @@ import {
   findAndMarkParentsVisible,
   updateParentHeaders,
   buildColumnVisibilityState,
+  findClosestValidSeparatorIndex,
+  FlattenedHeader,
 } from "./columnEditorUtils";
+import { insertHeaderAcrossSections } from "../../../hooks/useDragHandler";
 
-// Recursive component to render headers with proper indentation
+// Component to render a single header row
 const ColumnEditorCheckbox = ({
   allHeaders,
   depth = 0,
   doesAnyHeaderHaveChildren,
+  draggingRow,
+  expandedHeaders,
+  flattenedHeaders,
+  forceExpanded = false,
   header,
+  hoveredSeparatorIndex,
   isCheckedOverride,
+  rowIndex,
+  setDraggingRow,
+  setExpandedHeaders,
+  setHoveredSeparatorIndex,
 }: {
   allHeaders: HeaderObject[];
   depth?: number;
   doesAnyHeaderHaveChildren: boolean;
+  draggingRow: FlattenedHeader | null;
+  expandedHeaders: Set<string>;
+  flattenedHeaders: FlattenedHeader[];
+  forceExpanded?: boolean;
   header: HeaderObject;
+  hoveredSeparatorIndex: number | null;
   isCheckedOverride?: boolean;
+  rowIndex?: number;
+  setDraggingRow: (row: FlattenedHeader | null) => void;
+  setExpandedHeaders: (headers: Set<string>) => void;
+  setHoveredSeparatorIndex: (index: number | null) => void;
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const { expandIcon, headers, setHeaders, onColumnVisibilityChange } = useTableContext();
-  const paddingLeft = doesAnyHeaderHaveChildren ? `${depth * 16}px` : "8px";
+  const {
+    dragIcon,
+    expandIcon,
+    headers,
+    setHeaders,
+    onColumnVisibilityChange,
+    onColumnOrderChange,
+  } = useTableContext();
+  const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
   const isChecked =
     isCheckedOverride ??
     !(header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children)));
+
+  // Check if this header is expanded
+  const isExpanded = expandedHeaders.has(header.accessor);
+  const shouldExpand = forceExpanded || isExpanded;
+
+  // Toggle expansion
+  const toggleExpanded = () => {
+    if (forceExpanded) return;
+
+    const newExpanded = new Set(expandedHeaders);
+    if (isExpanded) {
+      newExpanded.delete(header.accessor);
+    } else {
+      newExpanded.add(header.accessor);
+    }
+    setExpandedHeaders(newExpanded);
+  };
+
+  // Drag handlers
+  const onDragStart = (event: DragEvent) => {
+    event.dataTransfer.effectAllowed = "move";
+    if (rowIndex === undefined) return;
+    setDraggingRow(flattenedHeaders[rowIndex]);
+  };
+
+  const onDragEnter = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  const onDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+
+    if (rowIndex !== undefined && draggingRow) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const mouseY = event.clientY;
+      const rowMiddle = rect.top + rect.height / 2;
+      const isTopHalfOfRow = mouseY < rowMiddle;
+
+      // Find the closest valid separator index based on hierarchy constraints
+      const validSeparatorIndex = findClosestValidSeparatorIndex({
+        flattenedHeaders,
+        draggingRow,
+        hoveredRowIndex: rowIndex,
+        isTopHalfOfRow,
+      });
+
+      setHoveredSeparatorIndex(validSeparatorIndex);
+    }
+  };
+
+  const onDragEnd = () => {
+    const cancelDrag = () => {
+      setDraggingRow(null);
+      setHoveredSeparatorIndex(null);
+    };
+    if (!draggingRow || hoveredSeparatorIndex === null) {
+      cancelDrag();
+      return;
+    }
+    const targetRowIndex =
+      draggingRow.visualIndex >= hoveredSeparatorIndex
+        ? hoveredSeparatorIndex + 1
+        : hoveredSeparatorIndex;
+
+    const hoveredHeader = flattenedHeaders[targetRowIndex];
+    if (!hoveredHeader) {
+      cancelDrag();
+      return;
+    }
+
+    if (draggingRow.header.accessor === flattenedHeaders[hoveredSeparatorIndex]?.header.accessor) {
+      cancelDrag();
+      return;
+    }
+
+    const { newHeaders, emergencyBreak } = insertHeaderAcrossSections(
+      headers,
+      draggingRow.header,
+      hoveredHeader.header
+    );
+
+    if (emergencyBreak) {
+      cancelDrag();
+      return;
+    }
+
+    onColumnOrderChange?.(newHeaders);
+    setHeaders(newHeaders);
+    cancelDrag();
+  };
 
   // Handle checkbox change
   const handleCheckboxChange = (checked: boolean) => {
@@ -72,17 +189,31 @@ const ColumnEditorCheckbox = ({
 
   return (
     <>
-      <div className="st-header-checkbox-item" style={{ paddingLeft }}>
+      {rowIndex === 0 && (
+        <div
+          className="st-column-editor-drag-separator"
+          style={{ opacity: hoveredSeparatorIndex === -1 ? 1 : 0 }}
+        />
+      )}
+      <div
+        className="st-header-checkbox-item"
+        style={{ paddingLeft }}
+        draggable
+        onDragStart={onDragStart}
+        onDragEnter={onDragEnter}
+        onDragOver={onDragOver}
+        onDragEnd={onDragEnd}
+      >
         {doesAnyHeaderHaveChildren && (
           <div className="st-header-icon-container">
             {hasChildren ? (
               <div
                 className={`st-collapsible-header-icon st-expand-icon-container ${
-                  isExpanded ? "expanded" : "collapsed"
+                  shouldExpand ? "expanded" : "collapsed"
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsExpanded(!isExpanded);
+                  toggleExpanded();
                 }}
               >
                 {expandIcon}
@@ -90,24 +221,14 @@ const ColumnEditorCheckbox = ({
             ) : null}
           </div>
         )}
-        <Checkbox checked={isChecked} onChange={handleCheckboxChange}>
-          {header.label}
-        </Checkbox>
+        <Checkbox checked={isChecked} onChange={handleCheckboxChange}></Checkbox>
+        <div className="st-drag-icon-container">{dragIcon}</div>
+        <div className="st-column-label-container">{header.label}</div>
       </div>
-      {hasChildren && isExpanded && header.children && (
-        <div className="st-nested-headers">
-          {header.children.map((childHeader, index) => (
-            <ColumnEditorCheckbox
-              allHeaders={allHeaders}
-              depth={depth + 1}
-              doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
-              header={childHeader}
-              key={`${childHeader.accessor}-${index}`}
-              isCheckedOverride={!isChecked ? false : undefined}
-            />
-          ))}
-        </div>
-      )}
+      <div
+        className="st-column-editor-drag-separator"
+        style={{ opacity: hoveredSeparatorIndex === rowIndex ? 1 : 0 }}
+      />
     </>
   );
 };

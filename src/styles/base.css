@@ -972,16 +972,76 @@ input {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: auto;
-  gap: var(--st-spacing-medium);
-  padding: var(--st-spacing-medium) var(--st-spacing-small);
   border-left: var(--st-border-width) solid var(--st-border-color);
   height: 100%;
+}
+
+/* Column Editor Search Wrapper */
+.st-column-editor-search-wrapper {
+  position: sticky;
+  top: 0;
+  background-color: var(--st-column-editor-popout-background-color);
+  z-index: 1;
+  padding: var(--st-spacing-medium);
+}
+
+/* Column Editor Search Styles */
+.st-column-editor-search {
+}
+
+/* Column Editor List */
+.st-column-editor-list {
+  display: flex;
+  flex-direction: column;
+  padding-right: var(--st-spacing-medium);
+  padding-left: var(--st-spacing-medium);
+  padding-bottom: var(--st-spacing-medium);
 }
 
 /* Column Editor Header Checkbox Styles */
 .st-header-checkbox-item {
   display: flex;
   align-items: center;
+  gap: var(--st-spacing-small);
+  padding-top: var(--st-spacing-small);
+  padding-bottom: var(--st-spacing-small);
+}
+
+.st-column-label-container {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-drag-icon-container {
+  display: flex;
+  align-items: center;
+  cursor: grab;
+  opacity: 0.5;
+  transition: opacity var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-drag-icon-container:hover {
+  opacity: 1;
+}
+
+.st-drag-icon-container:active {
+  cursor: grabbing;
+}
+
+.st-drag-icon {
+  fill: currentColor;
+}
+
+.st-column-editor-drag-separator {
+  height: 2px;
+  width: 100%;
+  background-color: var(--st-drag-separator-color);
+  margin: 2px 0;
+  border-radius: 1px;
+  transition: opacity 0.2s ease;
 }
 
 .st-header-icon-container {
@@ -1004,7 +1064,6 @@ input {
 .st-nested-headers {
   display: flex;
   flex-direction: column;
-  gap: var(--st-spacing-medium);
 }
 
 .st-column-editor-popout.open {
@@ -1026,6 +1085,10 @@ input {
   align-items: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .st-checkbox-input {

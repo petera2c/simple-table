@@ -59,6 +59,7 @@ interface TableContextType {
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   expandedDepths: Set<number>;
+  dragIcon?: ReactNode;
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;
