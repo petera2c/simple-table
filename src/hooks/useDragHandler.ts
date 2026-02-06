@@ -9,7 +9,7 @@ const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 let prevUpdateTime = Date.now();
 let prevDraggingPosition = { screenX: 0, screenY: 0 };
 
-const getHeaderIndexPath = (
+export const getHeaderIndexPath = (
   headers: HeaderObject[],
   targetAccessor: Accessor,
   currentPath: number[] = []
@@ -51,7 +51,7 @@ const updateHeaderPinnedProperty = (
   return updatedHeader;
 };
 
-function swapHeaders(
+export function swapHeaders(
   headers: HeaderObject[],
   draggedPath: number[],
   hoveredPath: number[]

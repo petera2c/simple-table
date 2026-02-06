@@ -10,38 +10,39 @@ import {
   findClosestValidSeparatorIndex,
   FlattenedHeader,
 } from "./columnEditorUtils";
+import { getHeaderIndexPath, swapHeaders } from "../../../hooks/useDragHandler";
 
 // Component to render a single header row
 const ColumnEditorCheckbox = ({
   allHeaders,
   depth = 0,
   doesAnyHeaderHaveChildren,
-  header,
-  isCheckedOverride,
-  forceExpanded = false,
-  rowIndex,
   draggingRow,
-  setDraggingRow,
-  hoveredSeparatorIndex,
-  setHoveredSeparatorIndex,
   expandedHeaders,
-  setExpandedHeaders,
   flattenedHeaders,
+  forceExpanded = false,
+  header,
+  hoveredSeparatorIndex,
+  isCheckedOverride,
+  rowIndex,
+  setDraggingRow,
+  setExpandedHeaders,
+  setHoveredSeparatorIndex,
 }: {
   allHeaders: HeaderObject[];
   depth?: number;
   doesAnyHeaderHaveChildren: boolean;
-  header: HeaderObject;
-  isCheckedOverride?: boolean;
-  forceExpanded?: boolean;
-  rowIndex?: number;
-  draggingRow: HeaderObject | null;
-  setDraggingRow: (row: HeaderObject | null) => void;
-  hoveredSeparatorIndex: number | null;
-  setHoveredSeparatorIndex: (index: number | null) => void;
+  draggingRow: FlattenedHeader | null;
   expandedHeaders: Set<string>;
-  setExpandedHeaders: (headers: Set<string>) => void;
   flattenedHeaders: FlattenedHeader[];
+  forceExpanded?: boolean;
+  header: HeaderObject;
+  hoveredSeparatorIndex: number | null;
+  isCheckedOverride?: boolean;
+  rowIndex?: number;
+  setDraggingRow: (row: FlattenedHeader | null) => void;
+  setExpandedHeaders: (headers: Set<string>) => void;
+  setHoveredSeparatorIndex: (index: number | null) => void;
 }) => {
   const {
     dragIcon,
@@ -78,7 +79,8 @@ const ColumnEditorCheckbox = ({
   // Drag handlers
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.effectAllowed = "move";
-    setDraggingRow(header);
+    if (rowIndex === undefined) return;
+    setDraggingRow(flattenedHeaders[rowIndex]);
   };
 
   const onDragEnter = (event: DragEvent<HTMLDivElement>) => {
@@ -92,56 +94,41 @@ const ColumnEditorCheckbox = ({
       const rect = event.currentTarget.getBoundingClientRect();
       const mouseY = event.clientY;
       const rowMiddle = rect.top + rect.height / 2;
-      const isTopHalf = mouseY < rowMiddle;
+      const isTopHalfOfRow = mouseY < rowMiddle;
 
       // Find the closest valid separator index based on hierarchy constraints
-      const validSeparatorIndex = findClosestValidSeparatorIndex(
+      const validSeparatorIndex = findClosestValidSeparatorIndex({
         flattenedHeaders,
         draggingRow,
-        rowIndex,
-        isTopHalf
-      );
+        hoveredRowIndex: rowIndex,
+        isTopHalfOfRow,
+      });
 
       setHoveredSeparatorIndex(validSeparatorIndex);
     }
   };
 
   const onDragEnd = () => {
-    // Only reorder if we have valid drag and drop targets
-    if (draggingRow && hoveredSeparatorIndex !== null && rowIndex !== undefined) {
-      // Find the dragged row's index in the top-level headers
-      const draggedIndex = allHeaders.findIndex((h) => h.accessor === draggingRow.accessor);
+    if (!draggingRow || hoveredSeparatorIndex === null) return;
 
-      if (draggedIndex !== -1) {
-        // Create a copy of headers
-        const newHeaders = [...allHeaders];
+    const hoveredHeader = flattenedHeaders[hoveredSeparatorIndex + 1];
+    console.log(hoveredHeader.header.accessor);
 
-        // Remove the dragged item
-        const [draggedItem] = newHeaders.splice(draggedIndex, 1);
+    const draggedHeaderIndexPath = getHeaderIndexPath(headers, draggingRow.header.accessor);
+    const hoveredHeaderIndexPath = getHeaderIndexPath(headers, hoveredHeader.header.accessor);
 
-        // Calculate the insertion index
-        // hoveredSeparatorIndex represents the separator after that row
-        // So we insert at hoveredSeparatorIndex + 1
-        let insertIndex = hoveredSeparatorIndex + 1;
+    if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) return;
 
-        // If we removed an item before the insert position, adjust the index
-        if (draggedIndex < insertIndex) {
-          insertIndex--;
-        }
+    const { newHeaders, emergencyBreak } = swapHeaders(
+      headers,
+      draggedHeaderIndexPath,
+      hoveredHeaderIndexPath
+    );
 
-        // Insert at the new position
-        newHeaders.splice(insertIndex, 0, draggedItem);
+    if (emergencyBreak) return;
 
-        // Update headers
-        setHeaders(newHeaders);
-
-        // Notify consumer of order change
-        if (onColumnOrderChange) {
-          onColumnOrderChange(newHeaders);
-        }
-      }
-    }
-
+    onColumnOrderChange?.(newHeaders);
+    setHeaders(newHeaders);
     setDraggingRow(null);
     setHoveredSeparatorIndex(null);
   };

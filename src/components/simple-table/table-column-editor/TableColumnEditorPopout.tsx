@@ -57,7 +57,7 @@ const TableColumnEditorPopout = ({
   searchFunction,
 }: TableColumnEditorPopoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [draggingRow, setDraggingRow] = useState<HeaderObject | null>(null);
+  const [draggingRow, setDraggingRow] = useState<FlattenedHeader | null>(null);
   const [hoveredSeparatorIndex, setHoveredSeparatorIndex] = useState<number | null>(null);
 
   // Initialize with all headers expanded by default

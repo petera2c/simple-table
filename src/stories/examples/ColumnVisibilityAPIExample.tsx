@@ -268,8 +268,6 @@ const ColumnVisibilityAPIExampleComponent: React.FC<UniversalTableProps> = (prop
     showStatus("Salary column shown");
   };
 
-  console.log("props", props);
-
   return (
     <div style={{ padding: "20px" }}>
       {statusMessage && (
