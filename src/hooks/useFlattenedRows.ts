@@ -86,7 +86,7 @@ const useFlattenedRows = ({
           rowPath,
           rowIndexPath,
           absoluteRowIndex: index,
-          isLastGroupRow: true,
+          isLastGroupRow: false,
         };
       });
       // For non-grouped rows, each row is its own "parent" with end position = index + 1
@@ -115,7 +115,7 @@ const useFlattenedRows = ({
       currentDepth: number,
       parentIdPath: (string | number)[] = [],
       parentIndexPath: number[] = [],
-      parentIndices: number[] = [],
+      parentIndices: number[] = []
     ): void => {
       currentRows.forEach((row, index) => {
         const currentGroupingKey = rowGrouping[currentDepth];
@@ -178,7 +178,7 @@ const useFlattenedRows = ({
           currentDepth,
           expandedDepths,
           expandedRows,
-          collapsedRows,
+          collapsedRows
         );
 
         // If row is expanded and has nested data for the current grouping level
