@@ -262,7 +262,6 @@ export const SelectAllFunctionality: StoryObj = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const user = userEvent.setup();
 
     // Get header checkbox
     const headerCheckbox = getHeaderCheckbox(canvasElement);
