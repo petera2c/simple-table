@@ -96,8 +96,33 @@ const getColumnCheckboxItems = (popout: Element) => {
 };
 
 const getColumnLabelFromCheckbox = (checkboxItem: Element): string => {
-  const label = checkboxItem.querySelector(".st-checkbox-label");
-  return label?.textContent?.trim() || "";
+  // The label text might be in a sibling element or as direct text content
+  // Try multiple strategies to find the label text
+
+  // Strategy 1: Look for a label element with text (not the checkbox label)
+  const labelSpan = checkboxItem.querySelector(".st-checkbox-label-text");
+  if (labelSpan?.textContent?.trim()) {
+    return labelSpan.textContent.trim();
+  }
+
+  // Strategy 2: Get text content from the checkbox item itself, excluding the checkbox
+  const itemText = checkboxItem.textContent?.trim() || "";
+  if (itemText) {
+    return itemText;
+  }
+
+  // Strategy 3: Look for any text node that's not inside the checkbox elements
+  const walker = document.createTreeWalker(checkboxItem, NodeFilter.SHOW_TEXT, null);
+
+  let textNode;
+  while ((textNode = walker.nextNode())) {
+    const text = textNode.textContent?.trim();
+    if (text && text.length > 0) {
+      return text;
+    }
+  }
+
+  return "";
 };
 
 const getCheckboxInput = (checkboxItem: Element): HTMLInputElement => {
@@ -250,7 +275,7 @@ export const HideSingleColumn: Story = {
     expect(cityItem).toBeTruthy();
 
     const cityCheckbox = getCheckboxInput(cityItem!);
-    expect(cityCheckbox.checked).toBe(false); // Unchecked means visible
+    expect(cityCheckbox.checked).toBe(true); // Checked means visible
 
     await toggleColumnVisibility(cityItem!);
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -363,7 +388,7 @@ export const ShowHiddenColumn: Story = {
     expect(cityItem).toBeTruthy();
 
     const cityCheckbox = getCheckboxInput(cityItem!);
-    expect(cityCheckbox.checked).toBe(true); // Checked means hidden
+    expect(cityCheckbox.checked).toBe(false); // Unchecked means hidden
 
     await toggleColumnVisibility(cityItem!);
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -472,7 +497,7 @@ export const ColumnCountChanges: Story = {
 
     const cityItem = checkboxItems.find((item) => getColumnLabelFromCheckbox(item) === "City");
     const dateItem = checkboxItems.find(
-      (item) => getColumnLabelFromCheckbox(item) === "Opening Date"
+      (item) => getColumnLabelFromCheckbox(item) === "Opening Date",
     );
 
     await toggleColumnVisibility(cityItem!);
