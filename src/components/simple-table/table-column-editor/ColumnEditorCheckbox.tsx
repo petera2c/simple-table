@@ -45,9 +45,8 @@ const ColumnEditorCheckbox = ({
   setHoveredSeparatorIndex: (index: number | null) => void;
 }) => {
   const {
-    dragIcon,
-    expandIcon,
     headers,
+    icons,
     setHeaders,
     onColumnVisibilityChange,
     onColumnOrderChange,
@@ -216,13 +215,13 @@ const ColumnEditorCheckbox = ({
                   toggleExpanded();
                 }}
               >
-                {expandIcon}
+                {icons.expand}
               </div>
             ) : null}
           </div>
         )}
         <Checkbox checked={isChecked} onChange={handleCheckboxChange}></Checkbox>
-        <div className="st-drag-icon-container">{dragIcon}</div>
+        <div className="st-drag-icon-container">{icons.drag}</div>
         <div className="st-column-label-container">{header.label}</div>
       </div>
       <div

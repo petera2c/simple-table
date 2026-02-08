@@ -57,6 +57,21 @@ jobs:
         if: steps.version-check.outputs.version_changed == 'true'
         run: npm ci
 
+      - name: Build Storybook
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: npm run build-storybook
+
+      - name: Install Playwright
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Serve Storybook and run tests
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: |
+          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "npx http-server storybook-static --port 6006 --silent" \
+            "npx wait-on --timeout 60000 http://localhost:6006 && npm run test-storybook:ci"
+
       - name: Build package
         if: steps.version-check.outputs.version_changed == 'true'
         run: npm run build

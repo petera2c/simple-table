@@ -117,12 +117,12 @@ const TableCell = ({
     enableRowSelection,
     expandedDepths,
     expandedRows,
-    expandIcon,
     handleMouseDown,
     handleMouseOver,
     handleRowSelect,
     headers,
     hoveredHeaderRef,
+    icons,
     isCopyFlashing,
     isLoading,
     isRowSelected,
@@ -694,7 +694,7 @@ const TableCell = ({
               : undefined
           }
         >
-          {expandIcon}
+          {icons.expand}
         </div>
       ) : null}
 

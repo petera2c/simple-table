@@ -8,7 +8,7 @@ interface DatePickerProps {
 }
 
 const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
-  const { nextIcon, prevIcon } = useTableContext();
+  const { icons } = useTableContext();
   const [currentDate, setCurrentDate] = useState(value || new Date());
   const [currentView, setCurrentView] = useState<"days" | "months" | "years">("days");
 
@@ -201,13 +201,13 @@ const DatePicker = ({ onChange, onClose, value }: DatePickerProps) => {
         {currentView === "days" && (
           <>
             <button onClick={handlePrevMonth} className="st-datepicker-nav-btn">
-              {prevIcon}
+              {icons.prev}
             </button>
             <div className="st-datepicker-header-label" onClick={() => setCurrentView("months")}>
               {formatMonth(currentDate)} {currentDate.getFullYear()}
             </div>
             <button onClick={handleNextMonth} className="st-datepicker-nav-btn">
-              {nextIcon}
+              {icons.next}
             </button>
           </>
         )}

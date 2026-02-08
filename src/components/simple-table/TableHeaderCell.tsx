@@ -74,15 +74,13 @@ const TableHeaderCell = ({
     draggedHeaderRef,
     enableHeaderEditing,
     enableRowSelection,
-    filterIcon,
     filters,
     handleApplyFilter,
     handleClearFilter,
     handleSelectAll,
-    headerCollapseIcon,
     headerDropdown,
-    headerExpandIcon,
     headerRegistry,
+    icons,
     headers,
     hoveredHeaderRef,
     onColumnOrderChange,
@@ -101,8 +99,6 @@ const TableHeaderCell = ({
     setIsResizing,
     setSelectedCells,
     setSelectedColumns,
-    sortDownIcon,
-    sortUpIcon,
     tableBodyContainerRef,
   } = useTableContext();
 
@@ -499,12 +495,12 @@ const TableHeaderCell = ({
       role="button"
       aria-label={`Sort ${header.label} ${sort.direction === "asc" ? "descending" : "ascending"}`}
     >
-      {sort.direction === "asc" && sortUpIcon && sortUpIcon}
-      {sort.direction === "desc" && sortDownIcon && sortDownIcon}
+      {sort.direction === "asc" && icons.sortUp && icons.sortUp}
+      {sort.direction === "desc" && icons.sortDown && icons.sortDown}
     </div>
   );
 
-  const FilterIconComponent = filterable && filterIcon && (
+  const FilterIconComponent = filterable && icons.filter && (
     <div
       className="st-icon-container"
       onClick={handleFilterIconClick}
@@ -532,7 +528,7 @@ const TableHeaderCell = ({
       aria-expanded={isFilterDropdownOpen}
       aria-haspopup="dialog"
     >
-      {cloneElement(filterIcon as React.ReactElement, {
+      {cloneElement(icons.filter as React.ReactElement, {
         style: {
           fill: currentFilter
             ? "var(--st-button-active-background-color)"
@@ -571,7 +567,7 @@ const TableHeaderCell = ({
       aria-label={`${isCollapsed ? "Expand" : "Collapse"} ${header.label} column`}
       aria-expanded={!isCollapsed}
     >
-      {isCollapsed ? headerCollapseIcon : headerExpandIcon}
+      {isCollapsed ? icons.headerCollapse : icons.headerExpand}
     </div>
   );
 

@@ -60,11 +60,8 @@ interface TableContextType {
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   expandedDepths: Set<number>;
-  dragIcon?: ReactNode;
-  expandIcon?: ReactNode;
-  filterIcon?: ReactNode;
   filters: TableFilterState;
-  icons?: IconsConfig;
+  icons: IconsConfig;
   includeHeadersInCSVExport: boolean;
   loadingStateRenderer?: LoadingStateRenderer;
   errorStateRenderer?: ErrorStateRenderer;
@@ -82,10 +79,8 @@ interface TableContextType {
   handleRowSelect?: (rowId: string, isSelected: boolean) => void;
   handleSelectAll?: (isSelected: boolean) => void;
   handleToggleRow?: (rowId: string) => void;
-  headerCollapseIcon?: ReactNode;
   headerContainerRef: RefObject<HTMLDivElement>;
   headerDropdown?: HeaderDropdown;
-  headerExpandIcon?: ReactNode;
   headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
   heightOffsets?: HeightOffsets;
@@ -101,7 +96,6 @@ interface TableContextType {
   isSelected: (cell: Cell) => boolean;
   isWarningFlashing: (cell: Cell) => boolean;
   mainBodyRef: RefObject<HTMLDivElement>;
-  nextIcon: ReactNode;
   onCellEdit?: (props: any) => void;
   onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
@@ -114,7 +108,6 @@ interface TableContextType {
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
-  prevIcon: ReactNode;
   rowButtons?: RowButton[];
   rowGrouping?: Accessor[];
   rowHeight: number;
@@ -141,8 +134,6 @@ interface TableContextType {
   setExpandedRows: Dispatch<SetStateAction<Map<string, number>>>;
   setCollapsedRows: Dispatch<SetStateAction<Map<string, number>>>;
   shouldPaginate: boolean;
-  sortDownIcon: ReactNode;
-  sortUpIcon: ReactNode;
   tableBodyContainerRef: RefObject<HTMLDivElement>;
   tableEmptyStateRenderer?: ReactNode;
   tableRows: TableRow[];
