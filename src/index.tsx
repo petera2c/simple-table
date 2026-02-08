@@ -36,7 +36,12 @@ import TableRowProps from "./types/TableRowProps";
 import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
 import { FilterCondition, TableFilterState } from "./types/FilterTypes";
-import { QuickFilterConfig, QuickFilterGetter, QuickFilterMode } from "./types/QuickFilterTypes";
+import {
+  QuickFilterConfig,
+  QuickFilterGetter,
+  QuickFilterGetterProps,
+  QuickFilterMode,
+} from "./types/QuickFilterTypes";
 import { ColumnVisibilityState } from "./types/ColumnVisibilityTypes";
 import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
 import CellClickProps from "./types/CellClickProps";
@@ -124,6 +129,7 @@ export type {
   OnSortProps,
   QuickFilterConfig,
   QuickFilterGetter,
+  QuickFilterGetterProps,
   QuickFilterMode,
   Row,
   RowButtonProps,
