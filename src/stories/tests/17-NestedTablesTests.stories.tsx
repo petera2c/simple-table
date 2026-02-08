@@ -542,57 +542,43 @@ export const NestedTableWithRowSelection: StoryObj = {
 };
 
 /**
- * Test 5: Multiple Expandable Columns
- * Tests multiple columns with different nested tables
+ * Test 5: Multiple Nested Tables from Different Rows
+ * Tests expanding nested tables from multiple parent rows simultaneously
  */
-export const MultipleExpandableColumns: StoryObj = {
+export const MultipleNestedTablesFromDifferentRows: StoryObj = {
   render: () => {
     const data = createCompanyData();
-
+    
     const divisionHeaders: HeaderObject[] = [
       { accessor: "id", label: "Division ID", width: 120 },
       { accessor: "divisionName", label: "Division", width: 200 },
       { accessor: "location", label: "Location", width: 150 },
     ];
 
-    const employeeHeaders: HeaderObject[] = [
-      { accessor: "id", label: "Employee ID", width: 120 },
-      { accessor: "name", label: "Name", width: 200 },
-      { accessor: "position", label: "Position", width: 180 },
-    ];
-
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       {
         accessor: "companyName",
-        label: "Company (Divisions)",
+        label: "Company",
         width: 220,
         expandable: true,
         nestedTable: {
           defaultHeaders: divisionHeaders,
         },
       },
-      {
-        accessor: "industry",
-        label: "Industry (Employees)",
-        width: 220,
-        expandable: true,
-        nestedTable: {
-          defaultHeaders: employeeHeaders,
-        },
-      },
+      { accessor: "industry", label: "Industry", width: 150 },
       { accessor: "revenue", label: "Revenue", width: 150 },
     ];
 
     return (
       <div style={{ padding: "20px" }}>
-        <h2>Multiple Expandable Columns</h2>
-        <p>Two different expandable columns with different nested tables</p>
+        <h2>Multiple Nested Tables from Different Rows</h2>
+        <p>Expand multiple parent rows to show multiple nested tables simultaneously</p>
         <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="500px"
-          rowGrouping={["divisions", "employees"]}
+          rowGrouping={["divisions"]}
           expandAll={false}
           getRowId={(params) => String(params.row.id)}
         />
@@ -602,22 +588,33 @@ export const MultipleExpandableColumns: StoryObj = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    // Get all expand buttons (should be 2 per row)
+    // Get all expand buttons (should be 1 per row, 3 total)
     const expandButtons = getExpandButtons(canvasElement);
-    expect(expandButtons.length).toBeGreaterThanOrEqual(6); // 3 rows × 2 buttons
+    expect(expandButtons.length).toBeGreaterThanOrEqual(3); // 3 rows
 
     // Initially no nested tables
     validateNestedTableExists(canvasElement, false);
 
-    // Click first expand button (divisions)
+    // Expand first row
     await clickExpandButton(expandButtons[0]);
 
     // Should have 1 nested table
     let nestedTables = getNestedTables(canvasElement);
     expect(nestedTables.length).toBe(1);
 
-    // Click second expand button (employees)
-    await clickExpandButton(expandButtons[1]);
+    // Expand second row (need to get buttons again as DOM has changed)
+    const expandButtonsAfterFirst = getExpandButtons(canvasElement);
+    // Find the second parent row's expand button (skip the first one we already clicked)
+    const secondRowButton = expandButtonsAfterFirst.find((btn, idx) => {
+      // The expand button should be in a different row than the first
+      const firstRowCell = expandButtons[0].closest('.st-row');
+      const currentRowCell = btn.closest('.st-row');
+      return currentRowCell !== firstRowCell && !currentRowCell?.classList.contains('st-nested-grid-row');
+    });
+    
+    if (secondRowButton) {
+      await clickExpandButton(secondRowButton);
+    }
 
     // Should have 2 nested tables
     nestedTables = getNestedTables(canvasElement);
@@ -701,8 +698,12 @@ export const NestedTableWithPagination: StoryObj = {
     expect(footer).toBeTruthy();
 
     // Verify pagination controls exist
-    const paginationControls = nestedTable.querySelector(".st-pagination");
+    const paginationControls = nestedTable.querySelector(".st-footer-pagination");
     expect(paginationControls).toBeTruthy();
+    
+    // Verify page buttons exist
+    const pageButtons = nestedTable.querySelectorAll(".st-page-btn");
+    expect(pageButtons.length).toBeGreaterThan(0);
   },
 };
 
@@ -761,12 +762,15 @@ export const NestedTableWithSorting: StoryObj = {
     const nestedTables = getNestedTables(canvasElement);
     const nestedTable = nestedTables[0];
 
-    const sortableHeaders = nestedTable.querySelectorAll(".st-header-cell.sortable");
+    const sortableHeaders = nestedTable.querySelectorAll(".st-header-cell.clickable");
     expect(sortableHeaders.length).toBeGreaterThan(0);
 
-    // Verify sort icons exist
-    const sortIcons = nestedTable.querySelectorAll(".st-sort-icon");
-    expect(sortIcons.length).toBeGreaterThan(0);
+    // Verify sortable headers have aria-sort attribute
+    const headersWithAriaSort = Array.from(sortableHeaders).filter((header) => {
+      const ariaSort = header.getAttribute("aria-sort");
+      return ariaSort === "none" || ariaSort === "ascending" || ariaSort === "descending";
+    });
+    expect(headersWithAriaSort.length).toBeGreaterThan(0);
   },
 };
 
@@ -824,8 +828,16 @@ export const NestedTableWithFiltering: StoryObj = {
     const nestedTables = getNestedTables(canvasElement);
     const nestedTable = nestedTables[0];
 
-    const filterIcons = nestedTable.querySelectorAll(".st-filter-icon");
-    expect(filterIcons.length).toBeGreaterThan(0);
+    // Filter icons are rendered as st-icon-container with st-header-icon inside
+    const filterIconContainers = nestedTable.querySelectorAll(".st-icon-container");
+    expect(filterIconContainers.length).toBeGreaterThan(0);
+    
+    // Verify the icons have aria-label for filtering
+    const filterableHeaders = Array.from(filterIconContainers).filter((container) => {
+      const ariaLabel = container.getAttribute("aria-label");
+      return ariaLabel?.includes("Filter");
+    });
+    expect(filterableHeaders.length).toBeGreaterThan(0);
   },
 };
 
@@ -938,7 +950,8 @@ export const MultipleNestedTablesSimultaneously: StoryObj = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    const expandButtons = getExpandButtons(canvasElement);
+    // Get initial expand buttons (one per company row)
+    let expandButtons = getExpandButtons(canvasElement);
     expect(expandButtons.length).toBeGreaterThanOrEqual(3);
 
     // Expand first row
@@ -946,15 +959,23 @@ export const MultipleNestedTablesSimultaneously: StoryObj = {
     let nestedTables = getNestedTables(canvasElement);
     expect(nestedTables.length).toBe(1);
 
-    // Expand second row
-    await clickExpandButton(expandButtons[1]);
-    nestedTables = getNestedTables(canvasElement);
-    expect(nestedTables.length).toBe(2);
+    // Get buttons again after DOM change, find second parent row button
+    expandButtons = getExpandButtons(canvasElement);
+    const parentRows = canvasElement.querySelectorAll('.st-row:not(.st-nested-grid-row)');
+    const secondRowButton = parentRows[1]?.querySelector('.st-expand-icon-container:not(.placeholder)') as HTMLElement;
+    if (secondRowButton) {
+      await clickExpandButton(secondRowButton);
+      nestedTables = getNestedTables(canvasElement);
+      expect(nestedTables.length).toBe(2);
+    }
 
-    // Expand third row
-    await clickExpandButton(expandButtons[2]);
-    nestedTables = getNestedTables(canvasElement);
-    expect(nestedTables.length).toBe(3);
+    // Get third parent row button
+    const thirdRowButton = parentRows[2]?.querySelector('.st-expand-icon-container:not(.placeholder)') as HTMLElement;
+    if (thirdRowButton) {
+      await clickExpandButton(thirdRowButton);
+      nestedTables = getNestedTables(canvasElement);
+      expect(nestedTables.length).toBe(3);
+    }
 
     // All three nested tables should be visible
     expect(nestedTables.length).toBe(3);

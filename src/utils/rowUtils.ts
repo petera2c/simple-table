@@ -47,6 +47,63 @@ export const calculateNestedGridHeight = ({
 };
 
 /**
+ * Calculate the final wrapper height for a nested grid, accounting for custom heights
+ * 
+ * @param calculatedHeight - The default calculated height based on child rows
+ * @param customHeight - Optional custom height from nestedTable config (e.g., "200px" or 200)
+ * @param customTheme - Custom theme configuration for padding
+ * @returns Final height in pixels for the wrapper (includes padding)
+ */
+export const calculateFinalNestedGridHeight = ({
+  calculatedHeight,
+  customHeight,
+  customTheme,
+}: {
+  calculatedHeight: number;
+  customHeight?: string | number;
+  customTheme: CustomTheme;
+}): number => {
+  // If a custom height is specified, add padding to get the wrapper height
+  if (customHeight) {
+    const heightValue = typeof customHeight === "string" 
+      ? parseFloat(customHeight) // Parse "200px" to 200
+      : customHeight;
+    return heightValue + customTheme.nestedGridPaddingTop + customTheme.nestedGridPaddingBottom;
+  }
+
+  // Otherwise, use the calculated height (which already includes padding)
+  return calculatedHeight;
+};
+
+/**
+ * Calculate the inner height for a nested SimpleTable component
+ * This accounts for the padding that's applied to the wrapper
+ * 
+ * @param calculatedHeight - The total height of the nested grid row (from calculateNestedGridHeight)
+ * @param customHeight - Optional custom height from nestedTable config (e.g., "200px")
+ * @param customTheme - Custom theme configuration for padding
+ * @returns Height value to pass to the nested SimpleTable (string with units)
+ */
+export const calculateNestedTableHeight = ({
+  calculatedHeight,
+  customHeight,
+  customTheme,
+}: {
+  calculatedHeight: number;
+  customHeight?: string | number;
+  customTheme: CustomTheme;
+}): string => {
+  // If a custom height is specified in the nestedTable config, use that
+  if (customHeight) {
+    return typeof customHeight === "string" ? customHeight : `${customHeight}px`;
+  }
+
+  // Otherwise, calculate from the parent's calculated height minus padding
+  const innerHeight = calculatedHeight - customTheme.nestedGridPaddingTop - customTheme.nestedGridPaddingBottom;
+  return `${innerHeight}px`;
+};
+
+/**
  * Parse a path segment that may contain array notation
  * Example: "albums[0]" returns { key: "albums", index: 0 }
  *          "name" returns { key: "name", index: null }
@@ -415,10 +472,19 @@ export const flattenRowsWithGrouping = ({
             expandableHeader.nestedTable.customTheme?.rowHeight || rowHeight;
           const nestedGridHeaderHeight =
             expandableHeader.nestedTable.customTheme?.headerHeight || headerHeight;
+          
+          // First calculate the default height based on child rows
           const calculatedHeight = calculateNestedGridHeight({
             childRowCount: nestedRows.length,
             rowHeight: nestedGridRowHeight,
             headerHeight: nestedGridHeaderHeight,
+            customTheme,
+          });
+
+          // Calculate final height accounting for custom heights
+          const finalHeight = calculateFinalNestedGridHeight({
+            calculatedHeight,
+            customHeight: expandableHeader.nestedTable.height,
             customTheme,
           });
 
@@ -437,7 +503,7 @@ export const flattenRowsWithGrouping = ({
               parentRow: row,
               expandableHeader,
               childAccessor: currentGroupingKey,
-              calculatedHeight,
+              calculatedHeight: finalHeight, // Use finalHeight which accounts for custom heights
             },
             absoluteRowIndex: position,
           });

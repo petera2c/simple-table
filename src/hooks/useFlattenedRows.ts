@@ -9,6 +9,7 @@ import {
   getNestedRows,
   isRowExpanded,
   calculateNestedGridHeight,
+  calculateFinalNestedGridHeight,
 } from "../utils/rowUtils";
 import { HeightOffsets } from "../utils/infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
@@ -200,6 +201,8 @@ const useFlattenedRows = ({
               expandableHeader.nestedTable.customTheme?.rowHeight || rowHeight;
             const nestedGridHeaderHeight =
               expandableHeader.nestedTable.customTheme?.headerHeight || headerHeight;
+            
+            // First calculate the default height based on child rows
             const calculatedHeight = calculateNestedGridHeight({
               childRowCount: nestedRows.length,
               rowHeight: nestedGridRowHeight,
@@ -207,8 +210,15 @@ const useFlattenedRows = ({
               customTheme,
             });
 
+            // Calculate final height accounting for custom heights
+            const finalHeight = calculateFinalNestedGridHeight({
+              calculatedHeight,
+              customHeight: expandableHeader.nestedTable.height,
+              customTheme,
+            });
+
             // Calculate extra height (beyond standard row height)
-            const extraHeight = calculatedHeight - rowHeight;
+            const extraHeight = finalHeight - rowHeight;
 
             // Add to height offsets array (kept sorted by position)
             heightOffsets.push([nestedGridPosition, extraHeight]);
@@ -228,7 +238,7 @@ const useFlattenedRows = ({
                 parentRow: row,
                 expandableHeader,
                 childAccessor: currentGroupingKey,
-                calculatedHeight,
+                calculatedHeight: finalHeight, // Use finalHeight which accounts for custom heights
               },
               absoluteRowIndex: nestedGridPosition,
             });
