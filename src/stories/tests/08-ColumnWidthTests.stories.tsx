@@ -85,7 +85,6 @@ const getGridTemplateColumns = (canvasElement: HTMLElement): string => {
   // Grid template is on the header-main element
   const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
   if (!headerMain) {
-    console.log("Header main not found");
     return "";
   }
   // Use inline style, not computed style

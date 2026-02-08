@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { expect } from "@storybook/test";
 import { HeaderObject, SimpleTable, TableRefType } from "../..";
 
@@ -28,7 +28,7 @@ const getCellValue = (rowIndex: number, accessor: string): string | null => {
   const cell = getCellElement(rowIndex, accessor);
   if (!cell) return null;
 
-  const contentSpan = cell.querySelector(".st-cell-content span");
+  const contentSpan = cell.querySelector(".st-cell-content");
   return contentSpan?.textContent || null;
 };
 
@@ -56,8 +56,24 @@ type Story = StoryObj<typeof SimpleTable>;
 // TEST COMPONENT
 // ============================================================================
 
+// Expose tableRef for testing
+let testTableRef: TableRefType | null = null;
+
 const LiveUpdatesTestComponent = () => {
   const tableRef = useRef<TableRefType>(null);
+
+  // Expose ref for tests
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (tableRef.current) {
+        testTableRef = tableRef.current;
+      }
+    }, 200);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const headers: HeaderObject[] = [
     { accessor: "id", label: "ID", width: 60, type: "number" },
@@ -79,7 +95,7 @@ const LiveUpdatesTestComponent = () => {
     { accessor: "sales", label: "Sales", width: 120, type: "number" },
   ];
 
-  const [data, setData] = useState([
+  const initialData = [
     {
       id: 1,
       product: "Widget A",
@@ -101,52 +117,14 @@ const LiveUpdatesTestComponent = () => {
       stock: 15,
       sales: 63,
     },
-  ]);
-
-  useEffect(() => {
-    // Update prices every 2 seconds
-    const priceInterval = setInterval(() => {
-      setData((prevData) =>
-        prevData.map((row) => ({
-          ...row,
-          price: Number((Math.random() * 50 + 10).toFixed(2)),
-        }))
-      );
-    }, 2000);
-
-    // Decrease stock every 3 seconds
-    const stockInterval = setInterval(() => {
-      setData((prevData) =>
-        prevData.map((row) => ({
-          ...row,
-          stock: Math.max(0, row.stock - Math.floor(Math.random() * 5 + 1)),
-        }))
-      );
-    }, 3000);
-
-    // Increase sales every 3 seconds
-    const salesInterval = setInterval(() => {
-      setData((prevData) =>
-        prevData.map((row) => ({
-          ...row,
-          sales: row.sales + Math.floor(Math.random() * 10 + 1),
-        }))
-      );
-    }, 3000);
-
-    return () => {
-      clearInterval(priceInterval);
-      clearInterval(stockInterval);
-      clearInterval(salesInterval);
-    };
-  }, []);
+  ];
 
   return (
     <div style={{ padding: "20px" }}>
       <SimpleTable
         tableRef={tableRef}
         defaultHeaders={headers}
-        rows={data}
+        rows={initialData}
         getRowId={(params) => String(params.row.id)}
         height="400px"
         cellUpdateFlash={true}
@@ -160,42 +138,38 @@ const LiveUpdatesTestComponent = () => {
 // ============================================================================
 
 /**
- * Test 1: Price Changes Detection
- * Tests that price values change over time
+ * Test 1: Update Data API - Price Update
+ * Tests that updateData API updates cell values and triggers flash
  */
-export const PriceChangesDetection: Story = {
+export const UpdateDataAPIPrice: Story = {
   render: () => <LiveUpdatesTestComponent />,
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    // Wait for component to mount
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for component to mount and ref to be available
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Capture initial prices
-    const initialPrices: string[] = [];
-    for (let i = 0; i < 3; i++) {
-      const price = getCellValue(i, "price");
-      if (price) {
-        initialPrices.push(price);
-      }
-    }
+    // Verify tableRef is available
+    expect(testTableRef).toBeTruthy();
 
-    expect(initialPrices.length).toBeGreaterThanOrEqual(2);
+    // Get initial price value at row 0
+    const initialPrice = getCellValue(0, "price");
+    expect(initialPrice).toBeTruthy();
 
-    // Wait for price updates (prices update every 2 seconds)
-    await new Promise((resolve) => setTimeout(resolve, 4000));
+    // Update the price using the API at row 0
+    testTableRef?.updateData({
+      accessor: "price",
+      rowIndex: 0,
+      newValue: 99.99,
+    });
 
-    // Check if any price has changed
-    let changeDetected = false;
-    for (let i = 0; i < initialPrices.length; i++) {
-      const currentPrice = getCellValue(i, "price");
-      if (currentPrice && currentPrice !== initialPrices[i]) {
-        changeDetected = true;
-        break;
-      }
-    }
+    // Wait for update to apply
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
-    expect(changeDetected).toBe(true);
+    // Verify the price changed
+    const updatedPrice = getCellValue(0, "price");
+    expect(updatedPrice).toBe("$99.99");
+    expect(updatedPrice).not.toBe(initialPrice);
   },
 };
 
@@ -208,146 +182,151 @@ export const FlashAnimationDetection: Story = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    // Wait for component to mount
+    // Wait for component to mount and ref to be available
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    expect(testTableRef).toBeTruthy();
+
+    // Verify no flash initially
+    expect(hasCellUpdatingClass(1, "price")).toBe(false);
+
+    // Trigger an update
+    testTableRef!.updateData({
+      accessor: "price",
+      rowIndex: 1,
+      newValue: 88.88,
+    });
+
+    // Check immediately for flash class (it should appear right away)
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(hasCellUpdatingClass(1, "price")).toBe(true);
+
+    // Wait for flash animation to complete
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    let flashDetected = false;
-    const maxChecks = 15;
-    let checks = 0;
-
-    // Check for flash animations on price cells
-    while (checks < maxChecks && !flashDetected) {
-      for (let row = 0; row < 3; row++) {
-        if (hasCellUpdatingClass(row, "price")) {
-          flashDetected = true;
-          break;
-        }
-      }
-
-      if (!flashDetected) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        checks++;
-      }
-    }
-
-    expect(flashDetected).toBe(true);
+    // Flash should be gone
+    expect(hasCellUpdatingClass(1, "price")).toBe(false);
   },
 };
 
 /**
- * Test 3: Stock Decrease
- * Tests that stock values decrease over time
+ * Test 3: Update Data API - Stock Update
+ * Tests that updateData API can update stock values
  */
-export const StockDecrease: Story = {
+export const UpdateDataAPIStock: Story = {
   render: () => <LiveUpdatesTestComponent />,
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    // Wait for component to mount
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for component to mount and ref to be available
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
+    expect(testTableRef).toBeTruthy();
+
+    // Get initial stock value
     const initialStock = getCellValue(0, "stock");
     expect(initialStock).toBeTruthy();
 
-    // Wait for stock changes (stocks decrease every 3 seconds)
-    await new Promise((resolve) => setTimeout(resolve, 6000));
+    // Update stock using the API
+    testTableRef!.updateData({
+      accessor: "stock",
+      rowIndex: 0,
+      newValue: 100,
+    });
 
-    const finalStock = getCellValue(0, "stock");
-    expect(finalStock).toBeTruthy();
+    // Wait for update to apply
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Parse stock values (remove commas if present)
-    const initialStockNum = parseInt(initialStock!.replace(/,/g, ""));
-    const finalStockNum = parseInt(finalStock!.replace(/,/g, ""));
-
-    // Stock should have decreased or stayed the same (if it was already 0)
-    expect(finalStockNum).toBeLessThanOrEqual(initialStockNum);
+    // Verify the stock changed
+    const updatedStock = getCellValue(0, "stock");
+    expect(updatedStock).toBe("100");
+    expect(updatedStock).not.toBe(initialStock);
   },
 };
 
 /**
- * Test 4: Sales Increase
- * Tests that sales values increase over time
+ * Test 4: Update Data API - Sales Update
+ * Tests that updateData API can update sales values
  */
-export const SalesIncrease: Story = {
+export const UpdateDataAPISales: Story = {
   render: () => <LiveUpdatesTestComponent />,
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    // Wait for component to mount
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for component to mount and ref to be available
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
+    expect(testTableRef).toBeTruthy();
+
+    // Get initial sales value
     const initialSales = getCellValue(0, "sales");
     expect(initialSales).toBeTruthy();
 
-    // Wait for sales changes (sales increase every 3 seconds)
-    await new Promise((resolve) => setTimeout(resolve, 6000));
+    // Update sales using the API
+    testTableRef!.updateData({
+      accessor: "sales",
+      rowIndex: 0,
+      newValue: 500,
+    });
 
-    const finalSales = getCellValue(0, "sales");
-    expect(finalSales).toBeTruthy();
+    // Wait for update to apply
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Parse sales values (remove commas if present)
-    const initialSalesNum = parseInt(initialSales!.replace(/,/g, ""));
-    const finalSalesNum = parseInt(finalSales!.replace(/,/g, ""));
-
-    // Sales should have increased
-    expect(finalSalesNum).toBeGreaterThan(initialSalesNum);
+    // Verify the sales changed
+    const updatedSales = getCellValue(0, "sales");
+    expect(updatedSales).toBe("500");
+    expect(updatedSales).not.toBe(initialSales);
   },
 };
 
 /**
- * Test 5: Multiple Updates Over Time
- * Tests that multiple updates occur across different time intervals
+ * Test 5: Multiple Cell Updates
+ * Tests that multiple cells can be updated via the API
  */
-export const MultipleUpdatesOverTime: Story = {
+export const MultipleCellUpdates: Story = {
   render: () => <LiveUpdatesTestComponent />,
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    // Wait for component to mount
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for component to mount and ref to be available
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const priceSnapshots: string[][] = [];
-    const snapshotInterval = 2500;
-    const totalSnapshots = 3;
+    expect(testTableRef).toBeTruthy();
 
-    // Take initial snapshot
-    const initialPrices: string[] = [];
-    for (let i = 0; i < 3; i++) {
-      const price = getCellValue(i, "price");
-      if (price) {
-        initialPrices.push(price);
-      }
-    }
-    priceSnapshots.push(initialPrices);
+    // Get initial values for multiple cells
+    const initialPrice0 = getCellValue(0, "price");
+    const initialPrice1 = getCellValue(1, "price");
+    const initialStock2 = getCellValue(2, "stock");
 
-    // Take additional snapshots
-    for (let i = 1; i < totalSnapshots; i++) {
-      await new Promise((resolve) => setTimeout(resolve, snapshotInterval));
-      const currentPrices: string[] = [];
-      for (let row = 0; row < 3; row++) {
-        const price = getCellValue(row, "price");
-        if (price) {
-          currentPrices.push(price);
-        }
-      }
-      priceSnapshots.push(currentPrices);
-    }
+    expect(initialPrice0).toBeTruthy();
+    expect(initialPrice1).toBeTruthy();
+    expect(initialStock2).toBeTruthy();
 
-    // Verify that prices changed between snapshots
-    let changesDetected = 0;
-    for (let snapshot = 1; snapshot < priceSnapshots.length; snapshot++) {
-      const previousPrices = priceSnapshots[snapshot - 1];
-      const currentPrices = priceSnapshots[snapshot];
+    // Update multiple cells
+    testTableRef!.updateData({
+      accessor: "price",
+      rowIndex: 0,
+      newValue: 11.11,
+    });
 
-      for (let row = 0; row < Math.min(previousPrices.length, currentPrices.length); row++) {
-        if (previousPrices[row] !== currentPrices[row]) {
-          changesDetected++;
-          break;
-        }
-      }
-    }
+    testTableRef!.updateData({
+      accessor: "price",
+      rowIndex: 1,
+      newValue: 22.22,
+    });
 
-    // Expect changes in at least 1 out of 2 snapshot intervals
-    expect(changesDetected).toBeGreaterThanOrEqual(1);
+    testTableRef!.updateData({
+      accessor: "stock",
+      rowIndex: 2,
+      newValue: 999,
+    });
+
+    // Wait for updates to apply
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Verify all cells changed
+    expect(getCellValue(0, "price")).toBe("$11.11");
+    expect(getCellValue(1, "price")).toBe("$22.22");
+    expect(getCellValue(2, "stock")).toBe("999");
   },
 };
