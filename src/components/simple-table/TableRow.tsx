@@ -55,7 +55,6 @@ const TableRow = ({
     isRowSelected,
     loadingStateRenderer,
     maxHeaderDepth,
-    rows,
     useHoverRowBackground,
     useOddEvenRowBackground,
   } = useTableContext();
