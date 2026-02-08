@@ -18,6 +18,7 @@ import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../context/TableContext";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import useFilterableData from "../../hooks/useFilterableData";
+import useQuickFilter from "../../hooks/useQuickFilter";
 import { useContentHeight } from "../../hooks/useContentHeight";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
 import useWindowResize from "../../hooks/useWindowResize";
@@ -120,6 +121,7 @@ const SimpleTableComp = ({
   onRowSelectionChange,
   onSortChange,
   prevIcon: prevIconDeprecated,
+  quickFilter,
   rowButtons,
   rowGrouping,
   getRowId,
@@ -571,7 +573,14 @@ const SimpleTableComp = ({
     rowGrouping,
   });
 
-  // Use filter hook
+  // Apply quick filter first (global search across columns)
+  const quickFilteredRows = useQuickFilter({
+    rows: aggregatedRows,
+    headers: effectiveHeaders,
+    quickFilter,
+  });
+
+  // Use filter hook (column-specific filters)
   const {
     filters,
     filteredRows,
@@ -580,7 +589,7 @@ const SimpleTableComp = ({
     clearAllFilters,
     computeFilteredRowsPreview,
   } = useFilterableData({
-    rows: aggregatedRows,
+    rows: quickFilteredRows,
     headers: effectiveHeaders,
     externalFilterHandling,
     onFilterChange,
@@ -889,6 +898,7 @@ const SimpleTableComp = ({
     onColumnVisibilityChange,
     onPageChange,
     paginatableRows,
+    quickFilter,
     rowGrouping,
     rowIndexMap: rowIndexMapRef,
     rows: effectiveRows,

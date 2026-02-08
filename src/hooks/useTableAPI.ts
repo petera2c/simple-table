@@ -10,6 +10,7 @@ import { exportTableToCSV } from "../utils/csvExportUtils";
 import HeaderObject from "../types/HeaderObject";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { SortDirection } from "../types/SortColumn";
+import { QuickFilterConfig } from "../types/QuickFilterTypes";
 
 /**
  * Wraps a function to return a Promise that resolves after the next tick.
@@ -42,6 +43,7 @@ const useTableAPI = ({
   onColumnVisibilityChange,
   onPageChange,
   paginatableRows,
+  quickFilter,
   rowGrouping,
   rowIndexMap,
   rows,
@@ -76,6 +78,7 @@ const useTableAPI = ({
   onColumnVisibilityChange?: (visibilityState: Record<string, boolean>) => void;
   onPageChange?: (page: number) => void | Promise<void>;
   paginatableRows: TableRow[];
+  quickFilter?: QuickFilterConfig;
   rowGrouping?: Accessor[];
   rowIndexMap: MutableRefObject<Map<string | number, number>>;
   rows: Row[];
@@ -325,6 +328,12 @@ const useTableAPI = ({
             onColumnVisibilityChange(visibility);
           }
         }),
+        setQuickFilter: (text: string) => {
+          // Trigger the onChange callback if provided in quickFilter config
+          if (quickFilter?.onChange) {
+            quickFilter.onChange(text);
+          }
+        },
       };
     }
   }, [
@@ -342,6 +351,7 @@ const useTableAPI = ({
     onColumnVisibilityChange,
     onPageChange,
     paginatableRows,
+    quickFilter,
     rowGrouping,
     rowIndexMap,
     rows,

@@ -23,6 +23,7 @@ import { CustomThemeProps } from "./CustomTheme";
 import { GetRowId } from "./GetRowId";
 import { ColumnEditorConfig } from "./ColumnEditorConfig";
 import { IconsConfig } from "./IconsConfig";
+import { QuickFilterConfig } from "./QuickFilterTypes";
 
 export interface SimpleTableProps {
   allowAnimations?: boolean; // Flag for allowing animations
@@ -80,6 +81,7 @@ export interface SimpleTableProps {
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   prevIcon?: ReactNode; // @deprecated Use icons.prev instead
+  quickFilter?: QuickFilterConfig; // Global search configuration across all columns
   rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
   getRowId?: GetRowId; // Function to generate unique row IDs for stable row identification across data changes. Receives row data, depth, index, paths, and grouping key. If not provided, uses index-based IDs.
