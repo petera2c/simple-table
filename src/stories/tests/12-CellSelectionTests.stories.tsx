@@ -43,32 +43,34 @@ const waitForTable = async (timeout = 5000) => {
 const getCellElement = (
   canvasElement: HTMLElement,
   rowIndex: number,
-  colIndex: number
+  colIndex: number,
 ): HTMLElement | null => {
   return canvasElement.querySelector(
-    `[data-row-index="${rowIndex}"][data-col-index="${colIndex}"]`
+    `[data-row-index="${rowIndex}"][data-col-index="${colIndex}"]`,
   ) as HTMLElement;
 };
 
 const clickCell = async (
   canvasElement: HTMLElement,
   rowIndex: number,
-  colIndex: number
+  colIndex: number,
 ): Promise<void> => {
   const cell = getCellElement(canvasElement, rowIndex, colIndex);
-  expect(cell).toBeTruthy();
+  if (!cell) {
+    throw new Error(`Cell not found at row ${rowIndex}, col ${colIndex}`);
+  }
 
   const mouseDownEvent = new MouseEvent("mousedown", {
     bubbles: true,
     cancelable: true,
   });
-  cell!.dispatchEvent(mouseDownEvent);
+  cell.dispatchEvent(mouseDownEvent);
 
   const mouseUpEvent = new MouseEvent("mouseup", {
     bubbles: true,
     cancelable: true,
   });
-  cell!.dispatchEvent(mouseUpEvent);
+  cell.dispatchEvent(mouseUpEvent);
 
   await new Promise((resolve) => setTimeout(resolve, 150));
 };
@@ -78,20 +80,24 @@ const selectCellRange = async (
   startRow: number,
   startCol: number,
   endRow: number,
-  endCol: number
+  endCol: number,
 ): Promise<void> => {
   const startCell = getCellElement(canvasElement, startRow, startCol);
   const endCell = getCellElement(canvasElement, endRow, endCol);
 
-  expect(startCell).toBeTruthy();
-  expect(endCell).toBeTruthy();
+  if (!startCell) {
+    throw new Error(`Start cell not found at row ${startRow}, col ${startCol}`);
+  }
+  if (!endCell) {
+    throw new Error(`End cell not found at row ${endRow}, col ${endCol}`);
+  }
 
   // Mouse down on start cell
   const mouseDownEvent = new MouseEvent("mousedown", {
     bubbles: true,
     cancelable: true,
   });
-  startCell!.dispatchEvent(mouseDownEvent);
+  startCell.dispatchEvent(mouseDownEvent);
 
   await new Promise((resolve) => setTimeout(resolve, 10));
 
@@ -120,7 +126,7 @@ const selectCellRange = async (
     bubbles: true,
     cancelable: true,
   });
-  endCell!.dispatchEvent(mouseUpEvent);
+  endCell.dispatchEvent(mouseUpEvent);
 
   await new Promise((resolve) => setTimeout(resolve, 200));
 };
@@ -128,19 +134,21 @@ const selectCellRange = async (
 const isCellSelected = (
   canvasElement: HTMLElement,
   rowIndex: number,
-  colIndex: number
+  colIndex: number,
 ): boolean => {
   const cell = getCellElement(canvasElement, rowIndex, colIndex);
   return (
     cell?.classList.contains("st-cell-selected") ||
     cell?.classList.contains("st-cell-selected-first") ||
+    cell?.classList.contains("st-cell-column-selected") ||
+    cell?.classList.contains("st-cell-column-selected-first") ||
     false
   );
 };
 
 const getSelectedCellCount = (canvasElement: HTMLElement): number => {
   const selectedCells = canvasElement.querySelectorAll(
-    ".st-cell-selected, .st-cell-selected-first"
+    ".st-cell-selected, .st-cell-selected-first, .st-cell-column-selected, .st-cell-column-selected-first"
   );
   return selectedCells.length;
 };
@@ -163,10 +171,7 @@ const clearCellSelection = async (canvasElement: HTMLElement): Promise<void> => 
   await new Promise((resolve) => setTimeout(resolve, 100));
 };
 
-const clickColumnHeader = async (
-  canvasElement: HTMLElement,
-  colIndex: number
-): Promise<void> => {
+const clickColumnHeader = async (canvasElement: HTMLElement, colIndex: number): Promise<void> => {
   const headers = canvasElement.querySelectorAll(".st-header-cell");
   const header = headers[colIndex] as HTMLElement;
   expect(header).toBeTruthy();
@@ -189,10 +194,7 @@ const isColumnSelected = (canvasElement: HTMLElement, colIndex: number): boolean
 
   let selectedCount = 0;
   cellsInColumn.forEach((cell) => {
-    if (
-      cell.classList.contains("st-cell-selected") ||
-      cell.classList.contains("st-cell-selected-first")
-    ) {
+    if (cell.classList.contains("st-cell-column-selected")) {
       selectedCount++;
     }
   });
