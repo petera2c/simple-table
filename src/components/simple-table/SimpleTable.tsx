@@ -958,6 +958,7 @@ const SimpleTableComp = ({
         expandIcon: resolvedIcons.expand,
         filterIcon: resolvedIcons.filter,
         filters,
+        icons: resolvedIcons,
         forceUpdate,
         getBorderClass,
         handleApplyFilter,

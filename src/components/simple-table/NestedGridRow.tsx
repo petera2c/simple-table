@@ -38,14 +38,7 @@ const NestedGridRow = ({
     loadingStateRenderer,
     errorStateRenderer,
     emptyStateRenderer,
-    expandIcon,
-    filterIcon,
-    sortUpIcon,
-    sortDownIcon,
-    nextIcon,
-    prevIcon,
-    headerCollapseIcon,
-    headerExpandIcon,
+    icons,
   } = useTableContext();
 
   const nestedGridConfig = expandableHeader.nestedTable;
@@ -98,14 +91,7 @@ const NestedGridRow = ({
         loadingStateRenderer={loadingStateRenderer}
         errorStateRenderer={errorStateRenderer}
         emptyStateRenderer={emptyStateRenderer}
-        expandIcon={expandIcon}
-        filterIcon={filterIcon}
-        sortUpIcon={sortUpIcon}
-        sortDownIcon={sortDownIcon}
-        nextIcon={nextIcon}
-        prevIcon={prevIcon}
-        headerCollapseIcon={headerCollapseIcon}
-        headerExpandIcon={headerExpandIcon}
+        icons={icons}
         // onRowGroupExpand comes from nestedGridConfig if provided
         // Each nested table should have its own explicit handler
       />

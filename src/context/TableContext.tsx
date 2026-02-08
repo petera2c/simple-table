@@ -28,6 +28,7 @@ import {
 } from "../types/RowStateRendererProps";
 import { HeightOffsets } from "../utils/infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
+import { IconsConfig } from "../types/IconsConfig";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -63,6 +64,7 @@ interface TableContextType {
   expandIcon?: ReactNode;
   filterIcon?: ReactNode;
   filters: TableFilterState;
+  icons?: IconsConfig;
   includeHeadersInCSVExport: boolean;
   loadingStateRenderer?: LoadingStateRenderer;
   errorStateRenderer?: ErrorStateRenderer;
