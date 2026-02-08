@@ -16,7 +16,7 @@ import { SortDirection } from "../types/SortColumn";
  * This ensures React state updates have completed before the promise resolves.
  */
 const asyncStateUpdate = <TArgs extends any[]>(
-  fn: (...args: TArgs) => void
+  fn: (...args: TArgs) => void,
 ): ((...args: TArgs) => Promise<void>) => {
   return (...args: TArgs) => {
     return new Promise<void>((resolve) => {
@@ -82,13 +82,13 @@ const useTableAPI = ({
   rowsPerPage: number;
   serverSidePagination: boolean;
   setCollapsedRows: (
-    rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)
+    rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>),
   ) => void;
   setColumnEditorOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentPage: (page: number) => void;
   setExpandedDepths: (depths: Set<number> | ((prev: Set<number>) => Set<number>)) => void;
   setExpandedRows: (
-    rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)
+    rows: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>),
   ) => void;
   setHeaders: React.Dispatch<React.SetStateAction<HeaderObject[]>>;
   setRows: (rows: Row[]) => void;
@@ -105,16 +105,20 @@ const useTableAPI = ({
     if (tableRef) {
       tableRef.current = {
         updateData: ({ accessor, rowIndex, newValue }: UpdateDataProps) => {
-          // Get the row ID using the index (for top-level rows, the ID is just the index)
+          // Get the row from the data source
           const row = rows?.[rowIndex];
           if (row) {
-            const rowId = rowIdToString([rowIndex]);
-            const key = getCellKey({ rowId, accessor });
-            const cell = cellRegistryRef.current.get(key);
+            // Get the actual rowId from the flattened rows which includes custom IDs from getRowId
+            const flattenedRow = flattenedRows.find((r) => r.absoluteRowIndex === rowIndex);
+            if (flattenedRow) {
+              const rowId = rowIdToString(flattenedRow.rowId);
+              const key = getCellKey({ rowId, accessor });
+              const cell = cellRegistryRef.current.get(key);
 
-            if (cell) {
-              // If the cell is registered (visible), update it directly
-              cell.updateContent(newValue);
+              if (cell) {
+                // If the cell is registered (visible), update it directly
+                cell.updateContent(newValue);
+              }
             }
 
             // Always update the data source - now directly on the row
@@ -285,7 +289,7 @@ const useTableAPI = ({
         toggleColumnEditor: (open?: boolean) => {
           // Only allow toggling if editColumns is enabled
           if (!editColumns) return;
-          
+
           if (open !== undefined) {
             // Explicitly set the state
             setColumnEditorOpen(open);
@@ -300,13 +304,15 @@ const useTableAPI = ({
             return headers.map((header) => {
               const accessor = String(header.accessor);
               const shouldUpdate = accessor in visibility;
-              
+
               return {
                 ...header,
                 // Update hide property if this accessor is in the visibility object
                 hide: shouldUpdate ? !visibility[accessor] : header.hide,
                 // Recursively update children if they exist
-                children: header.children ? updateHeaderVisibility(header.children) : header.children,
+                children: header.children
+                  ? updateHeaderVisibility(header.children)
+                  : header.children,
               };
             });
           };

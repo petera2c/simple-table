@@ -31,7 +31,7 @@ const TableFooter = ({
   totalPages,
   totalRows,
 }: TableFooterProps) => {
-  const { nextIcon, prevIcon } = useTableContext();
+  const { icons } = useTableContext();
   const [hasMoreData, setHasMoreData] = useState(true);
   const hasPrevPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
@@ -164,8 +164,8 @@ const TableFooter = ({
           onPrevPage: handlePrevPage,
           hasNextPage: !isNextDisabled,
           hasPrevPage: !isPrevDisabled,
-          nextIcon,
-          prevIcon,
+          nextIcon: icons.next,
+          prevIcon: icons.prev,
         })}
       </>
     );
@@ -208,7 +208,7 @@ const TableFooter = ({
           disabled={isPrevDisabled}
           aria-label="Go to previous page"
         >
-          {prevIcon}
+          {icons.prev}
         </button>
 
         <button
@@ -217,7 +217,7 @@ const TableFooter = ({
           disabled={isNextDisabled}
           aria-label="Go to next page"
         >
-          {nextIcon}
+          {icons.next}
         </button>
       </div>
     </div>

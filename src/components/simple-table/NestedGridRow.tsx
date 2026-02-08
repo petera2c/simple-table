@@ -1,7 +1,7 @@
 import SimpleTable from "./SimpleTable";
 import Row from "../../types/Row";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
-import { getNestedValue } from "../../utils/rowUtils";
+import { getNestedValue, calculateNestedTableHeight, calculateFinalNestedGridHeight } from "../../utils/rowUtils";
 import { useTableContext } from "../../context/TableContext";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 
@@ -38,14 +38,7 @@ const NestedGridRow = ({
     loadingStateRenderer,
     errorStateRenderer,
     emptyStateRenderer,
-    expandIcon,
-    filterIcon,
-    sortUpIcon,
-    sortDownIcon,
-    nextIcon,
-    prevIcon,
-    headerCollapseIcon,
-    headerExpandIcon,
+    icons,
   } = useTableContext();
 
   const nestedGridConfig = expandableHeader.nestedTable;
@@ -66,15 +59,25 @@ const NestedGridRow = ({
   const nextLevelGrouping = rowGrouping && rowGrouping[depth + 1];
   const childRowGrouping = nextLevelGrouping ? rowGrouping?.slice(depth + 1) : undefined;
 
-  // The SimpleTable height should exclude the padding and borders since those are applied to the wrapper
-  const tableHeight =
-    calculatedHeight - customTheme.nestedGridPaddingTop - customTheme.nestedGridPaddingBottom;
-
   // Merge parent customTheme with nested grid's customTheme (if provided)
   // This allows nested grids to inherit parent dimensions while optionally overriding them
   const nestedCustomTheme = nestedGridConfig.customTheme
     ? { ...customTheme, ...nestedGridConfig.customTheme }
     : customTheme;
+
+  // Calculate the height for the nested table using the shared utility
+  const tableHeight = calculateNestedTableHeight({
+    calculatedHeight,
+    customHeight: nestedGridConfig.height,
+    customTheme,
+  });
+
+  // Calculate wrapper height using the shared utility
+  const wrapperHeight = calculateFinalNestedGridHeight({
+    calculatedHeight,
+    customHeight: nestedGridConfig.height,
+    customTheme,
+  });
 
   return (
     <div
@@ -82,7 +85,7 @@ const NestedGridRow = ({
       data-index={index}
       style={{
         transform: `translate3d(0, ${calculateRowTopPosition({ position, rowHeight: parentRowHeight, heightOffsets, customTheme })}px, 0)`,
-        height: `${calculatedHeight}px`,
+        height: `${wrapperHeight}px`,
         paddingTop: `${customTheme.nestedGridPaddingTop}px`,
         paddingBottom: `${customTheme.nestedGridPaddingBottom}px`,
       }}
@@ -92,20 +95,13 @@ const NestedGridRow = ({
         rows={childRows}
         theme={theme}
         customTheme={nestedCustomTheme}
-        height={`${tableHeight}px`}
+        height={tableHeight}
         rowGrouping={childRowGrouping}
         // Inherit props from parent table
         loadingStateRenderer={loadingStateRenderer}
         errorStateRenderer={errorStateRenderer}
         emptyStateRenderer={emptyStateRenderer}
-        expandIcon={expandIcon}
-        filterIcon={filterIcon}
-        sortUpIcon={sortUpIcon}
-        sortDownIcon={sortDownIcon}
-        nextIcon={nextIcon}
-        prevIcon={prevIcon}
-        headerCollapseIcon={headerCollapseIcon}
-        headerExpandIcon={headerExpandIcon}
+        icons={icons}
         // onRowGroupExpand comes from nestedGridConfig if provided
         // Each nested table should have its own explicit handler
       />

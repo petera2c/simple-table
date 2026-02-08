@@ -9,6 +9,9 @@
     "build-storybook": "storybook build",
     "preview": "rollup -c -w",
     "test-storybook": "test-storybook",
+    "test-storybook:watch": "test-storybook --watch",
+    "test-storybook:coverage": "test-storybook --coverage",
+    "test-storybook:ci": "test-storybook --url http://localhost:6006",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"

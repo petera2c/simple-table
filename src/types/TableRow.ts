@@ -19,9 +19,10 @@ type TableRow = {
   // Path to reach this row using array indices (always available)
   // Example: [0, 1, 2] means rows[0].stores[1].products[2]
   rowIndexPath?: number[];
-  // If this row is a state indicator (loading/error/empty), this contains the state info and parent row ID
+  // If this row is a state indicator (loading/error/empty), this contains the state info and parent row
   stateIndicator?: {
     parentRowId: string | number;
+    parentRow: Row;
     state: RowState;
   };
   // If this row is a loading skeleton (used when expanding rows without a custom loadingStateRenderer)

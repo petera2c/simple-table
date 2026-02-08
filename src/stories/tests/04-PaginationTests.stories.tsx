@@ -94,15 +94,16 @@ const getPaginationFooter = (canvasElement: HTMLElement): HTMLElement | null => 
   return canvasElement.querySelector(".st-footer") as HTMLElement;
 };
 
-const getCurrentPageFromFooter = (canvasElement: HTMLElement): number | null => {
-  const footer = getPaginationFooter(canvasElement);
-  if (!footer) return null;
-
-  // Look for current page indicator in footer
-  const pageText = footer.textContent;
-  const match = pageText?.match(/Page (\d+)/);
-  return match ? parseInt(match[1]) : null;
-};
+// Utility for getting current page from footer (prepared for future tests)
+// const getCurrentPageFromFooter = (canvasElement: HTMLElement): number | null => {
+//   const footer = getPaginationFooter(canvasElement);
+//   if (!footer) return null;
+//   
+//   // Look for current page indicator in footer
+//   const pageText = footer.textContent;
+//   const match = pageText?.match(/Page (\d+)/);
+//   return match ? parseInt(match[1]) : null;
+// };
 
 const clickNextPageButton = async (canvasElement: HTMLElement) => {
   const footer = getPaginationFooter(canvasElement);
