@@ -103,7 +103,7 @@ export const parseSmartFilter = (query: string): SmartFilterToken[] => {
 export const matchesSimpleFilter = (
   value: string,
   filterText: string,
-  caseSensitive: boolean
+  caseSensitive: boolean,
 ): boolean => {
   if (!filterText) return true;
 
@@ -111,73 +111,4 @@ export const matchesSimpleFilter = (
   const searchFilter = caseSensitive ? filterText : filterText.toLowerCase();
 
   return searchValue.includes(searchFilter);
-};
-
-/**
- * Checks if a value matches smart filter tokens
- */
-export const matchesSmartFilter = (
-  value: string,
-  tokens: SmartFilterToken[],
-  caseSensitive: boolean,
-  accessor?: Accessor
-): boolean => {
-  const searchValue = caseSensitive ? value : value.toLowerCase();
-
-  for (const token of tokens) {
-    switch (token.type) {
-      case "word": {
-        const searchToken = caseSensitive ? token.value : token.value.toLowerCase();
-        if (!searchValue.includes(searchToken)) {
-          return false;
-        }
-        break;
-      }
-
-      case "phrase": {
-        const searchToken = caseSensitive ? token.value : token.value.toLowerCase();
-        if (!searchValue.includes(searchToken)) {
-          return false;
-        }
-        break;
-      }
-
-      case "negation": {
-        const searchToken = caseSensitive ? token.value : token.value.toLowerCase();
-        if (searchValue.includes(searchToken)) {
-          return false;
-        }
-        break;
-      }
-
-      case "columnSpecific": {
-        // Only apply column-specific filter if this is the target column
-        if (accessor === token.column) {
-          const searchToken = caseSensitive ? token.value : token.value.toLowerCase();
-          if (!searchValue.includes(searchToken)) {
-            return false;
-          }
-        }
-        // If this is not the target column, skip this token (it will be checked on the right column)
-        break;
-      }
-    }
-  }
-
-  return true;
-};
-
-/**
- * Checks if a row has any column-specific tokens that need to be matched
- */
-export const hasUnmatchedColumnSpecificTokens = (
-  tokens: SmartFilterToken[],
-  matchedColumns: Set<Accessor>
-): boolean => {
-  for (const token of tokens) {
-    if (token.type === "columnSpecific" && token.column && !matchedColumns.has(token.column)) {
-      return true;
-    }
-  }
-  return false;
 };

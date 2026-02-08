@@ -218,7 +218,7 @@ export const BasicQuickFilterSimpleMode: StoryObj = {
 
     // Type "engineering" in search box
     const input = canvasElement.querySelector(
-      'input[data-testid="quick-filter-input"]'
+      'input[data-testid="quick-filter-input"]',
     ) as HTMLInputElement;
     if (!input) throw new Error("Search input not found");
 
@@ -311,7 +311,7 @@ export const SmartModeMultiWord: StoryObj = {
 
     // Type "engineering active" - should match only active engineering employees
     const input = canvasElement.querySelector(
-      'input[data-testid="smart-filter-input"]'
+      'input[data-testid="smart-filter-input"]',
     ) as HTMLInputElement;
     if (!input) throw new Error("Search input not found");
 
@@ -389,7 +389,7 @@ export const SmartModePhraseSearch: StoryObj = {
     const user = userEvent.setup();
 
     const input = canvasElement.querySelector(
-      'input[data-testid="phrase-filter-input"]'
+      'input[data-testid="phrase-filter-input"]',
     ) as HTMLInputElement;
     if (!input) throw new Error("Search input not found");
 
@@ -461,7 +461,7 @@ export const SmartModeNegation: StoryObj = {
     const user = userEvent.setup();
 
     const input = canvasElement.querySelector(
-      'input[data-testid="negation-filter-input"]'
+      'input[data-testid="negation-filter-input"]',
     ) as HTMLInputElement;
     if (!input) throw new Error("Search input not found");
 
@@ -536,7 +536,7 @@ export const SmartModeColumnSpecific: StoryObj = {
     const user = userEvent.setup();
 
     const input = canvasElement.querySelector(
-      'input[data-testid="column-filter-input"]'
+      'input[data-testid="column-filter-input"]',
     ) as HTMLInputElement;
     if (!input) throw new Error("Search input not found");
 
@@ -618,10 +618,10 @@ export const CaseSensitivity: StoryObj = {
     const user = userEvent.setup();
 
     const input = canvasElement.querySelector(
-      'input[data-testid="case-filter-input"]'
+      'input[data-testid="case-filter-input"]',
     ) as HTMLInputElement;
     const checkbox = canvasElement.querySelector(
-      'input[data-testid="case-sensitive-checkbox"]'
+      'input[data-testid="case-sensitive-checkbox"]',
     ) as HTMLInputElement;
     if (!input || !checkbox) throw new Error("Input or checkbox not found");
 
@@ -752,7 +752,7 @@ export const ProgrammaticControl: StoryObj = {
 
     // Click "Filter Engineering" button
     const applyBtn = canvasElement.querySelector(
-      'button[data-testid="apply-filter-btn"]'
+      'button[data-testid="apply-filter-btn"]',
     ) as HTMLElement;
     if (!applyBtn) throw new Error("Apply button not found");
     await user.click(applyBtn);
@@ -764,7 +764,7 @@ export const ProgrammaticControl: StoryObj = {
 
     // Click "Clear Filter" button
     const clearBtn = canvasElement.querySelector(
-      'button[data-testid="clear-filter-btn"]'
+      'button[data-testid="clear-filter-btn"]',
     ) as HTMLElement;
     if (!clearBtn) throw new Error("Clear button not found");
     await user.click(clearBtn);
