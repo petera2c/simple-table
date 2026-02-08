@@ -132,12 +132,6 @@ const TableRow = ({
         );
       }
 
-      // Get the parent row from rows using the parentRowId
-      // parentRowId is a string like "0" or "1-stores-5", so we compare it directly
-      const parentRow = rows.find(
-        (r, index) => rowIdToString([index]) === stateIndicator.parentRowId
-      );
-
       return (
         <div
           className="st-row st-state-row"
@@ -154,7 +148,7 @@ const TableRow = ({
           }}
         >
           <RowStateIndicator
-            parentRow={parentRow || {}}
+            parentRow={stateIndicator.parentRow}
             rowState={stateIndicator.state}
             gridTemplateColumns={gridTemplateColumns}
             loadingStateRenderer={loadingStateRenderer}

@@ -256,6 +256,7 @@ const useFlattenedRows = ({
                 rowIndexPath,
                 stateIndicator: {
                   parentRowId: rowIdKey,
+                  parentRow: row,
                   state: rowState,
                 },
                 absoluteRowIndex: statePosition,

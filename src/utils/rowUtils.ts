@@ -465,6 +465,7 @@ export const flattenRowsWithGrouping = ({
               rowIndexPath,
               stateIndicator: {
                 parentRowId: rowIdKey,
+                parentRow: row,
                 state: rowState,
               },
               absoluteRowIndex: position,
