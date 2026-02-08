@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useRef } from "react";
-import { expect, userEvent } from "@storybook/test";
-import { Row, SimpleTable, TableRefType } from "../..";
+import { expect } from "@storybook/test";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -252,10 +251,6 @@ const validateNestedTableExists = (canvasElement: HTMLElement, shouldExist: bool
   }
 };
 
-const countNestedTables = (canvasElement: HTMLElement): number => {
-  return getNestedTables(canvasElement).length;
-};
-
 // ============================================================================
 // TEST CASES
 // ============================================================================
@@ -314,7 +309,6 @@ export const BasicNestedTable: StoryObj = {
 
     // Get expand buttons
     const expandButtons = getExpandButtons(canvasElement);
-    console.log(expandButtons);
     expect(expandButtons.length).toBeGreaterThan(0);
 
     // Click first expand button
@@ -548,7 +542,7 @@ export const NestedTableWithRowSelection: StoryObj = {
 export const MultipleNestedTablesFromDifferentRows: StoryObj = {
   render: () => {
     const data = createCompanyData();
-    
+
     const divisionHeaders: HeaderObject[] = [
       { accessor: "id", label: "Division ID", width: 120 },
       { accessor: "divisionName", label: "Division", width: 200 },
@@ -607,11 +601,13 @@ export const MultipleNestedTablesFromDifferentRows: StoryObj = {
     // Find the second parent row's expand button (skip the first one we already clicked)
     const secondRowButton = expandButtonsAfterFirst.find((btn, idx) => {
       // The expand button should be in a different row than the first
-      const firstRowCell = expandButtons[0].closest('.st-row');
-      const currentRowCell = btn.closest('.st-row');
-      return currentRowCell !== firstRowCell && !currentRowCell?.classList.contains('st-nested-grid-row');
+      const firstRowCell = expandButtons[0].closest(".st-row");
+      const currentRowCell = btn.closest(".st-row");
+      return (
+        currentRowCell !== firstRowCell && !currentRowCell?.classList.contains("st-nested-grid-row")
+      );
     });
-    
+
     if (secondRowButton) {
       await clickExpandButton(secondRowButton);
     }
@@ -700,7 +696,7 @@ export const NestedTableWithPagination: StoryObj = {
     // Verify pagination controls exist
     const paginationControls = nestedTable.querySelector(".st-footer-pagination");
     expect(paginationControls).toBeTruthy();
-    
+
     // Verify page buttons exist
     const pageButtons = nestedTable.querySelectorAll(".st-page-btn");
     expect(pageButtons.length).toBeGreaterThan(0);
@@ -831,7 +827,7 @@ export const NestedTableWithFiltering: StoryObj = {
     // Filter icons are rendered as st-icon-container with st-header-icon inside
     const filterIconContainers = nestedTable.querySelectorAll(".st-icon-container");
     expect(filterIconContainers.length).toBeGreaterThan(0);
-    
+
     // Verify the icons have aria-label for filtering
     const filterableHeaders = Array.from(filterIconContainers).filter((container) => {
       const ariaLabel = container.getAttribute("aria-label");
@@ -960,22 +956,40 @@ export const MultipleNestedTablesSimultaneously: StoryObj = {
     expect(nestedTables.length).toBe(1);
 
     // Get buttons again after DOM change, find second parent row button
+    // Need to select only top-level rows from the main table, not nested table rows
+    // The structure is: .st-body-main > .st-row (parent rows and nested grid rows)
+    // We need to filter out nested grid rows and only get parent-level data rows
     expandButtons = getExpandButtons(canvasElement);
-    const parentRows = canvasElement.querySelectorAll('.st-row:not(.st-nested-grid-row)');
-    const secondRowButton = parentRows[1]?.querySelector('.st-expand-icon-container:not(.placeholder)') as HTMLElement;
-    if (secondRowButton) {
-      await clickExpandButton(secondRowButton);
-      nestedTables = getNestedTables(canvasElement);
-      expect(nestedTables.length).toBe(2);
-    }
+
+    // Get all rows from the main table body (not from nested tables)
+    const mainTableBody = canvasElement.querySelector(
+      ".simple-table-root > .st-wrapper-container > .st-content-wrapper > .st-content > .st-body-container > .st-body-main",
+    );
+    const allMainRows = mainTableBody
+      ? Array.from(mainTableBody.children).filter(
+          (el) =>
+            el.classList.contains("st-row") &&
+            !el.classList.contains("st-nested-grid-row") &&
+            !el.classList.contains("st-row-separator"),
+        )
+      : [];
+
+    const secondRowButton = allMainRows[1]?.querySelector(
+      ".st-expand-icon-container:not(.placeholder)",
+    ) as HTMLElement;
+    expect(secondRowButton).toBeTruthy();
+    await clickExpandButton(secondRowButton);
+    nestedTables = getNestedTables(canvasElement);
+    expect(nestedTables.length).toBe(2);
 
     // Get third parent row button
-    const thirdRowButton = parentRows[2]?.querySelector('.st-expand-icon-container:not(.placeholder)') as HTMLElement;
-    if (thirdRowButton) {
-      await clickExpandButton(thirdRowButton);
-      nestedTables = getNestedTables(canvasElement);
-      expect(nestedTables.length).toBe(3);
-    }
+    const thirdRowButton = allMainRows[2]?.querySelector(
+      ".st-expand-icon-container:not(.placeholder)",
+    ) as HTMLElement;
+    expect(thirdRowButton).toBeTruthy();
+    await clickExpandButton(thirdRowButton);
+    nestedTables = getNestedTables(canvasElement);
+    expect(nestedTables.length).toBe(3);
 
     // All three nested tables should be visible
     expect(nestedTables.length).toBe(3);
