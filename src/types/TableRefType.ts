@@ -62,6 +62,8 @@ type TableRefType = {
   toggleColumnEditor: (open?: boolean) => void;
   /** Apply column visibility changes. Pass an object with column accessors as keys and boolean visibility as values. */
   applyColumnVisibility: (visibility: { [accessor: string]: boolean }) => Promise<void>;
+  /** Set the quick filter text programmatically. Triggers the onChange callback if provided in quickFilter config. */
+  setQuickFilter: (text: string) => void;
 };
 
 export default TableRefType;

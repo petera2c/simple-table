@@ -43,6 +43,9 @@ import ProgrammaticSortExampleComponent, {
 import ProgrammaticFilterExampleComponent, {
   programmaticFilterExampleDefaults,
 } from "./examples/ProgrammaticFilterExample";
+import QuickFilterExampleComponent, {
+  quickFilterExampleDefaults,
+} from "./examples/QuickFilterExample";
 import RowGroupingExample from "./examples/row-grouping/RowGrouping";
 import RowHeightExample from "./examples/RowHeightExample";
 import SelectableCellsExample from "./examples/SelectableCells";
@@ -741,6 +744,27 @@ export const ProgrammaticSort: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates programmatic control of table sorting via the tableRef API. Use getSortState() to retrieve the current sort configuration, and applySortState() to programmatically sort by any column. This example shows how to build custom sort controls outside the table that can read and manipulate the sort state. Perfect for creating custom UIs, dashboards, or automation workflows.",
+      },
+    },
+  },
+};
+
+export const QuickFilter: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...quickFilterExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: QuickFilterExampleComponent,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates quick filter / global search functionality that searches across all columns with a single input. Supports both simple mode (basic text matching) and smart mode with advanced features: multi-word search (matches rows containing all words), phrase search with quotes, negation with minus sign, and column-specific search. Similar to AG Grid's quickFilterText feature, this provides a fast way for users to find data without setting up individual column filters.",
       },
     },
   },

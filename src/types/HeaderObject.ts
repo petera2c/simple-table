@@ -6,6 +6,7 @@ import { CellRenderer } from "./CellRendererProps";
 import { HeaderRenderer } from "./HeaderRendererProps";
 import CellValue from "./CellValue";
 import { SimpleTableProps } from "./SimpleTableProps";
+import { QuickFilterGetter } from "./QuickFilterTypes";
 
 // Accessor can be:
 // - A simple key of Row (e.g., "name")
@@ -121,6 +122,8 @@ type HeaderObject = {
     | "headerExpandIcon"
   >;
   pinned?: Pinned;
+  quickFilterable?: boolean; // Default: true - whether column is searchable via quick filter
+  quickFilterGetter?: QuickFilterGetter; // Custom value extraction for quick filter
   singleRowChildren?: boolean; // When true, renders parent and children on the same row instead of tree hierarchy
   tooltip?: string; // Optional tooltip text to display on hover
   type?: ColumnType;

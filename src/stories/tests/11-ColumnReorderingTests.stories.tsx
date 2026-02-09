@@ -86,7 +86,7 @@ const getColumnOrderFromSection = (section: Element): string[] => {
 const performDragAndDrop = async (
   sourceElement: HTMLElement,
   targetElement: HTMLElement,
-  description: string
+  description: string,
 ): Promise<boolean> => {
   try {
     const sourceRect = sourceElement.getBoundingClientRect();
@@ -712,9 +712,6 @@ export const ActualDragAndDropReordering: Story = {
 
     // Get the new column order after drag and drop
     const newOrder = getHeaderLabels(canvasElement);
-    console.log("Initial order:", initialOrder);
-    console.log("New order after drag:", newOrder);
-    console.log("Drag operation success:", success);
 
     // Verify the drag operation completed
     expect(success).toBe(true);
@@ -725,7 +722,6 @@ export const ActualDragAndDropReordering: Story = {
 
     // Check if the order changed (successful reorder)
     const orderChanged = JSON.stringify(newOrder) !== JSON.stringify(initialOrder);
-    console.log("Order changed:", orderChanged);
 
     // If order changed, verify the columns moved
     if (orderChanged) {
@@ -779,14 +775,13 @@ export const DragAndDropWithPinnedColumns: Story = {
 
     // Test 1: Drag within pinned left section (ID → Name)
     const initialPinnedLeftOrder = getColumnOrderFromSection(pinnedLeftSection!);
-    console.log("Initial pinned left order:", initialPinnedLeftOrder);
     expect(initialPinnedLeftOrder).toEqual(["ID", "Name"]);
 
     const idLabel = pinnedLeftSection!.querySelector(
-      "[id*='header-id'] .st-header-label"
+      "[id*='header-id'] .st-header-label",
     ) as HTMLElement;
     const nameLabel = pinnedLeftSection!.querySelector(
-      "[id*='header-name'] .st-header-label"
+      "[id*='header-name'] .st-header-label",
     ) as HTMLElement;
 
     expect(idLabel).toBeTruthy();
@@ -796,25 +791,22 @@ export const DragAndDropWithPinnedColumns: Story = {
     expect(success1).toBe(true);
 
     const newPinnedLeftOrder = getColumnOrderFromSection(pinnedLeftSection!);
-    console.log("New pinned left order:", newPinnedLeftOrder);
 
     const pinnedLeftChanged =
       JSON.stringify(newPinnedLeftOrder) !== JSON.stringify(initialPinnedLeftOrder);
     if (pinnedLeftChanged) {
-      console.log("Pinned left columns reordered successfully");
       expect(pinnedLeftChanged).toBe(true);
     }
 
     // Test 2: Drag within main section (Email → Department)
     const initialMainOrder = getColumnOrderFromSection(mainSection!);
-    console.log("Initial main order:", initialMainOrder);
     expect(initialMainOrder).toEqual(["Email", "Department"]);
 
     const emailLabel = mainSection!.querySelector(
-      "[id*='header-email'] .st-header-label"
+      "[id*='header-email'] .st-header-label",
     ) as HTMLElement;
     const deptLabel = mainSection!.querySelector(
-      "[id*='header-department'] .st-header-label"
+      "[id*='header-department'] .st-header-label",
     ) as HTMLElement;
 
     expect(emailLabel).toBeTruthy();
@@ -824,11 +816,9 @@ export const DragAndDropWithPinnedColumns: Story = {
     expect(success2).toBe(true);
 
     const newMainOrder = getColumnOrderFromSection(mainSection!);
-    console.log("New main order:", newMainOrder);
 
     const mainChanged = JSON.stringify(newMainOrder) !== JSON.stringify(initialMainOrder);
     if (mainChanged) {
-      console.log("Main columns reordered successfully");
       expect(mainChanged).toBe(true);
     }
 
