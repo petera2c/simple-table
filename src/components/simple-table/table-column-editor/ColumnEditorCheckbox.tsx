@@ -11,6 +11,7 @@ import {
   FlattenedHeader,
 } from "./columnEditorUtils";
 import { insertHeaderAcrossSections } from "../../../hooks/useDragHandler";
+import { deepClone } from "../../../utils/generalUtils";
 
 // Component to render a single header row
 const ColumnEditorCheckbox = ({
@@ -44,13 +45,8 @@ const ColumnEditorCheckbox = ({
   setExpandedHeaders: (headers: Set<string>) => void;
   setHoveredSeparatorIndex: (index: number | null) => void;
 }) => {
-  const {
-    headers,
-    icons,
-    setHeaders,
-    onColumnVisibilityChange,
-    onColumnOrderChange,
-  } = useTableContext();
+  const { headers, icons, setHeaders, onColumnVisibilityChange, onColumnOrderChange } =
+    useTableContext();
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
@@ -121,30 +117,68 @@ const ColumnEditorCheckbox = ({
         ? hoveredSeparatorIndex + 1
         : hoveredSeparatorIndex;
 
-    const hoveredHeader = flattenedHeaders[targetRowIndex];
+    let hoveredHeader = flattenedHeaders[targetRowIndex];
     if (!hoveredHeader) {
       cancelDrag();
       return;
     }
 
-    if (draggingRow.header.accessor === flattenedHeaders[hoveredSeparatorIndex]?.header.accessor) {
+    // If dragging row is at shallower depth and hovering over a deeper child,
+    // use the parent instead for reordering at the parent level
+    if (draggingRow.depth < hoveredHeader.depth && hoveredHeader.parent) {
+      const parentIndex = flattenedHeaders.findIndex(
+        (h) => h.header.accessor === hoveredHeader.parent!.accessor,
+      );
+      if (parentIndex !== -1) {
+        hoveredHeader = flattenedHeaders[parentIndex];
+      }
+    }
+
+    if (draggingRow.header.accessor === hoveredHeader.header.accessor) {
       cancelDrag();
       return;
     }
 
-    const { newHeaders, emergencyBreak } = insertHeaderAcrossSections(
-      headers,
-      draggingRow.header,
-      hoveredHeader.header
-    );
+    const getSiblingArray = (headers: HeaderObject[], indexPath: number[]): HeaderObject[] => {
+      let current = headers;
+      for (let i = 0; i < indexPath.length - 1; i++) {
+        current = current[indexPath[i]].children!;
+      }
+      return current;
+    };
+
+    const setSiblingArray = (
+      headers: HeaderObject[],
+      indexPath: number[],
+      newSiblings: HeaderObject[],
+    ): HeaderObject[] => {
+      if (indexPath.length === 1) {
+        // Root level - return the new siblings as the new root array
+        return newSiblings;
+      }
+      let current = headers;
+      for (let i = 0; i < indexPath.length - 2; i++) {
+        current = current[indexPath[i]].children!;
+      }
+      current[indexPath[indexPath.length - 2]].children = newSiblings;
+      return headers;
+    };
+
+    const { newHeaders, emergencyBreak } = insertHeaderAcrossSections({
+      headers: getSiblingArray(headers, draggingRow.indexPath),
+      draggedHeader: draggingRow.header,
+      hoveredHeader: hoveredHeader.header,
+    });
 
     if (emergencyBreak) {
       cancelDrag();
       return;
     }
 
-    onColumnOrderChange?.(newHeaders);
-    setHeaders(newHeaders);
+    const updatedHeaders = setSiblingArray(deepClone(headers), draggingRow.indexPath, newHeaders);
+
+    onColumnOrderChange?.(updatedHeaders);
+    setHeaders(updatedHeaders);
     cancelDrag();
   };
 

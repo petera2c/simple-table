@@ -33,7 +33,7 @@ const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): b
 const filterHeaders = (
   headers: HeaderObject[],
   searchTerm: string,
-  searchFunction?: ColumnEditorSearchFunction
+  searchFunction?: ColumnEditorSearchFunction,
 ): HeaderObject[] => {
   if (!searchTerm.trim()) {
     return headers;
@@ -77,31 +77,38 @@ const TableColumnEditorPopout = ({
 
   const doesAnyHeaderHaveChildren = useMemo(
     () => headers.some((header) => header.children && header.children.length > 0),
-    [headers]
+    [headers],
   );
 
   const filteredHeaders = useMemo(
     () => (searchEnabled ? filterHeaders(headers, searchTerm, searchFunction) : headers),
-    [headers, searchTerm, searchEnabled, searchFunction]
+    [headers, searchTerm, searchEnabled, searchFunction],
   );
 
   const flattenedHeaders = useMemo(() => {
     const result: FlattenedHeader[] = [];
     const forceExpanded = searchEnabled && searchTerm.trim().length > 0;
 
-    const flatten = (
-      headerList: HeaderObject[],
-      depth: number = 0,
-      parent: HeaderObject | null = null
-    ) => {
-      headerList.forEach((header) => {
+    const flatten = ({
+      headers,
+      depth = 0,
+      parent = null,
+      currentPath = [],
+    }: {
+      headers: HeaderObject[];
+      depth: number;
+      parent: HeaderObject | null;
+      currentPath: number[];
+    }) => {
+      headers.forEach((header, index) => {
         // Skip selection columns and excluded headers
         if (header.isSelectionColumn || header.excludeFromRender) {
           return;
         }
 
         const visualIndex = result.length;
-        result.push({ header, visualIndex, depth, parent });
+        const indexPath = [...currentPath, index];
+        result.push({ header, visualIndex, depth, parent, indexPath });
 
         // Check if this header should be expanded
         const hasChildren = header.children && header.children.length > 0;
@@ -109,12 +116,17 @@ const TableColumnEditorPopout = ({
 
         // Recursively flatten children if expanded
         if (hasChildren && shouldExpand && header.children) {
-          flatten(header.children, depth + 1, header);
+          flatten({
+            headers: header.children,
+            depth: depth + 1,
+            parent: header,
+            currentPath: indexPath,
+          });
         }
       });
     };
 
-    flatten(filteredHeaders);
+    flatten({ headers: filteredHeaders, depth: 0, parent: null, currentPath: [] });
     return result;
   }, [filteredHeaders, expandedHeaders, searchEnabled, searchTerm]);
 

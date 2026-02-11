@@ -12,7 +12,7 @@ let prevDraggingPosition = { screenX: 0, screenY: 0 };
 export const getHeaderIndexPath = (
   headers: HeaderObject[],
   targetAccessor: Accessor,
-  currentPath: number[] = []
+  currentPath: number[] = [],
 ): number[] | null => {
   for (let i = 0; i < headers.length; i++) {
     const header = headers[i];
@@ -37,7 +37,7 @@ const getHeaderSection = (header: HeaderObject): "left" | "main" | "right" => {
 // Helper function to update header's pinned property based on target section
 const updateHeaderPinnedProperty = (
   header: HeaderObject,
-  targetSection: "left" | "main" | "right"
+  targetSection: "left" | "main" | "right",
 ): HeaderObject => {
   const updatedHeader = { ...header };
   if (targetSection === "left") {
@@ -54,7 +54,7 @@ const updateHeaderPinnedProperty = (
 export function swapHeaders(
   headers: HeaderObject[],
   draggedPath: number[],
-  hoveredPath: number[]
+  hoveredPath: number[],
 ): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
   // Create a deep copy of headers using our custom deep clone function
   const newHeaders = deepClone(headers);
@@ -98,11 +98,15 @@ export function swapHeaders(
   return { newHeaders, emergencyBreak };
 }
 
-export function insertHeaderAcrossSections(
-  headers: HeaderObject[],
-  draggedHeader: HeaderObject,
-  hoveredHeader: HeaderObject
-): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
+export function insertHeaderAcrossSections({
+  headers,
+  draggedHeader,
+  hoveredHeader,
+}: {
+  headers: HeaderObject[];
+  draggedHeader: HeaderObject;
+  hoveredHeader: HeaderObject;
+}): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
   const newHeaders = deepClone(headers);
   let emergencyBreak = false;
 
@@ -185,7 +189,7 @@ const useDragHandler = ({
     const { screenX, screenY } = event;
     const distance = Math.sqrt(
       Math.pow(screenX - prevDraggingPosition.screenX, 2) +
-        Math.pow(screenY - prevDraggingPosition.screenY, 2)
+        Math.pow(screenY - prevDraggingPosition.screenY, 2),
     );
 
     hoveredHeaderRef.current = hoveredHeader;
@@ -202,7 +206,7 @@ const useDragHandler = ({
 
     if (isCrossSectionDrag) {
       // Handle cross-section dragging with insertion
-      const result = insertHeaderAcrossSections(headers, draggedHeader, hoveredHeader);
+      const result = insertHeaderAcrossSections({ headers, draggedHeader, hoveredHeader });
       newHeaders = result.newHeaders;
       emergencyBreak = result.emergencyBreak;
     } else {

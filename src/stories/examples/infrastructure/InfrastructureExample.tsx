@@ -899,6 +899,7 @@ export default function InfrastructureExampleComponent({
       columnReordering
       columnResizing
       defaultHeaders={HEADERS}
+      editColumns
       height={height ? height : "70dvh"}
       rows={data}
       selectableCells

@@ -5,7 +5,7 @@ import { ColumnVisibilityState } from "../../../types/ColumnVisibilityTypes";
 export const findAndMarkParentsVisible = (
   headers: HeaderObject[],
   childAccessor: Accessor,
-  visited: Set<string> = new Set()
+  visited: Set<string> = new Set(),
 ) => {
   for (const header of headers) {
     // Skip if already processed this header
@@ -86,6 +86,7 @@ export type FlattenedHeader = {
   visualIndex: number;
   depth: number;
   parent: HeaderObject | null;
+  indexPath: number[];
 };
 
 export const findClosestValidSeparatorIndex = ({
