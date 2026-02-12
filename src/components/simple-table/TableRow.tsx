@@ -212,6 +212,7 @@ const TableRow = ({
         useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""
       } ${isSelected ? "selected" : ""}`}
       data-index={index}
+      role="row"
       aria-rowindex={position + maxHeaderDepth + 1}
       onMouseEnter={() => {
         // Don't apply hover effects during animations

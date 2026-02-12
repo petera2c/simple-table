@@ -626,6 +626,7 @@ const TableHeaderCell = ({
     <Animate
       className={className}
       id={getCellId({ accessor: header.accessor, rowId: "header" })}
+      role="columnheader"
       aria-sort={getAriaSort()}
       aria-colindex={colIndex + 1}
       aria-describedby={headerDescription ? descriptionId : undefined}

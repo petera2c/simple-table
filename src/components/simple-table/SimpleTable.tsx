@@ -1051,6 +1051,7 @@ const SimpleTableComp = ({
         className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
           columnBorders ? "st-column-borders" : ""
         }`}
+        role="grid"
         style={
           maxHeight
             ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
