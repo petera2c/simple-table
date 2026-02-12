@@ -27,15 +27,42 @@ export const getHeaderIndexPath = (
   return null;
 };
 
+// Get the sibling array at a given index path (navigates to parent's children)
+export const getSiblingArray = (headers: HeaderObject[], indexPath: number[]): HeaderObject[] => {
+  let current = headers;
+  for (let i = 0; i < indexPath.length - 1; i++) {
+    current = current[indexPath[i]].children!;
+  }
+  return current;
+};
+
+// Set the sibling array at a given index path back into the tree
+export const setSiblingArray = (
+  headers: HeaderObject[],
+  indexPath: number[],
+  newSiblings: HeaderObject[],
+): HeaderObject[] => {
+  if (indexPath.length === 1) {
+    // Root level - return the new siblings as the new root array
+    return newSiblings;
+  }
+  let current = headers;
+  for (let i = 0; i < indexPath.length - 2; i++) {
+    current = current[indexPath[i]].children!;
+  }
+  current[indexPath[indexPath.length - 2]].children = newSiblings;
+  return headers;
+};
+
 // Helper function to determine which section a header belongs to based on its pinned property
-const getHeaderSection = (header: HeaderObject): "left" | "main" | "right" => {
+export const getHeaderSection = (header: HeaderObject): "left" | "main" | "right" => {
   if (header.pinned === "left") return "left";
   if (header.pinned === "right") return "right";
   return "main";
 };
 
 // Helper function to update header's pinned property based on target section
-const updateHeaderPinnedProperty = (
+export const updateHeaderPinnedProperty = (
   header: HeaderObject,
   targetSection: "left" | "main" | "right",
 ): HeaderObject => {

@@ -10,7 +10,11 @@ import {
   findClosestValidSeparatorIndex,
   FlattenedHeader,
 } from "./columnEditorUtils";
-import { insertHeaderAcrossSections } from "../../../hooks/useDragHandler";
+import {
+  getSiblingArray,
+  setSiblingArray,
+  insertHeaderAcrossSections,
+} from "../../../hooks/useDragHandler";
 import { deepClone } from "../../../utils/generalUtils";
 
 // Component to render a single header row
@@ -138,31 +142,6 @@ const ColumnEditorCheckbox = ({
       cancelDrag();
       return;
     }
-
-    const getSiblingArray = (headers: HeaderObject[], indexPath: number[]): HeaderObject[] => {
-      let current = headers;
-      for (let i = 0; i < indexPath.length - 1; i++) {
-        current = current[indexPath[i]].children!;
-      }
-      return current;
-    };
-
-    const setSiblingArray = (
-      headers: HeaderObject[],
-      indexPath: number[],
-      newSiblings: HeaderObject[],
-    ): HeaderObject[] => {
-      if (indexPath.length === 1) {
-        // Root level - return the new siblings as the new root array
-        return newSiblings;
-      }
-      let current = headers;
-      for (let i = 0; i < indexPath.length - 2; i++) {
-        current = current[indexPath[i]].children!;
-      }
-      current[indexPath[indexPath.length - 2]].children = newSiblings;
-      return headers;
-    };
 
     const { newHeaders, emergencyBreak } = insertHeaderAcrossSections({
       headers: getSiblingArray(headers, draggingRow.indexPath),
