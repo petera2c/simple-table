@@ -293,7 +293,7 @@ export const SortButtonAriaAttributes: StoryObj = {
 
     // Sortable headers should have aria-sort="none" initially
     const nameHeader = canvasElement.querySelector(
-      '[id*="header"][id*="name"].st-header-cell'
+      '[id*="header"][id*="name"].st-header-cell',
     ) as HTMLElement;
 
     // Find the header cell for "Name" by checking header label text
@@ -313,26 +313,30 @@ export const SortButtonAriaAttributes: StoryObj = {
     if (!ageHeaderCell) throw new Error("Age header cell not found");
 
     // Sortable columns should have aria-sort="none" when not sorted
-    expect(nameHeaderCell.getAttribute("aria-sort")).toBe("none");
-    expect(ageHeaderCell.getAttribute("aria-sort")).toBe("none");
+    expect((nameHeaderCell as HTMLElement).getAttribute("aria-sort")).toBe("none");
+    expect((ageHeaderCell as HTMLElement).getAttribute("aria-sort")).toBe("none");
 
     // Non-sortable column should NOT have aria-sort
     if (deptHeaderCell) {
-      expect(deptHeaderCell.getAttribute("aria-sort")).toBeNull();
+      expect((deptHeaderCell as HTMLElement).getAttribute("aria-sort")).toBeNull();
     }
 
     // Click to sort by Name
-    const nameLabel = nameHeaderCell.querySelector(".st-header-label") as HTMLElement;
+    const nameLabel = (nameHeaderCell as HTMLElement).querySelector(
+      ".st-header-label",
+    ) as HTMLElement;
     if (!nameLabel) throw new Error("Name header label not found");
     await user.click(nameLabel);
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // After sort, header should have aria-sort="ascending" or "descending"
-    const sortValue = nameHeaderCell.getAttribute("aria-sort");
+    const sortValue = (nameHeaderCell as HTMLElement).getAttribute("aria-sort");
     expect(sortValue === "ascending" || sortValue === "descending").toBe(true);
 
     // Check that sort icon has proper aria-label
-    const sortIcon = nameHeaderCell.querySelector('[role="button"][aria-label*="Sort"]');
+    const sortIcon = (nameHeaderCell as HTMLElement).querySelector(
+      '[role="button"][aria-label*="Sort"]',
+    );
     if (sortIcon) {
       const sortAriaLabel = sortIcon.getAttribute("aria-label");
       expect(sortAriaLabel).toBeTruthy();
@@ -430,7 +434,7 @@ export const RowSelectionCheckboxAria: StoryObj = {
 
     // Header "Select all" checkbox should exist with proper aria-label
     const selectAllCheckbox = canvasElement.querySelector(
-      'input[type="checkbox"][aria-label="Select all rows"]'
+      'input[type="checkbox"][aria-label="Select all rows"]',
     ) as HTMLInputElement;
     expect(selectAllCheckbox).toBeTruthy();
     expect(selectAllCheckbox.getAttribute("aria-checked")).toBe("false");
@@ -446,9 +450,7 @@ export const RowSelectionCheckboxAria: StoryObj = {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Row checkbox should have aria-label with row context
-    const rowCheckbox = firstRow.querySelector(
-      'input[type="checkbox"]'
-    ) as HTMLInputElement;
+    const rowCheckbox = firstRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     if (!rowCheckbox) throw new Error("Row checkbox not found");
 
     expect(rowCheckbox.getAttribute("aria-label")).toBeTruthy();
@@ -468,9 +470,7 @@ export const RowSelectionCheckboxAria: StoryObj = {
     await user.hover(selectionCell);
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const updatedCheckbox = firstRow.querySelector(
-      'input[type="checkbox"]'
-    ) as HTMLInputElement;
+    const updatedCheckbox = firstRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     if (updatedCheckbox) {
       expect(updatedCheckbox.getAttribute("aria-checked")).toBe("true");
     }
@@ -508,7 +508,9 @@ export const ExpandCollapseRowGroupAria: StoryObj = {
     await waitForTable();
 
     // Find expand/collapse buttons
-    const expandButtons = canvasElement.querySelectorAll('[role="button"][aria-label*="row group"]');
+    const expandButtons = canvasElement.querySelectorAll(
+      '[role="button"][aria-label*="row group"]',
+    );
 
     // There should be expand buttons for rows with children
     expect(expandButtons.length).toBeGreaterThan(0);
@@ -524,9 +526,7 @@ export const ExpandCollapseRowGroupAria: StoryObj = {
       // Should have descriptive aria-label
       const ariaLabel = button.getAttribute("aria-label");
       expect(ariaLabel).toBeTruthy();
-      expect(
-        ariaLabel!.includes("Expand") || ariaLabel!.includes("Collapse")
-      ).toBe(true);
+      expect(ariaLabel!.includes("Expand") || ariaLabel!.includes("Collapse")).toBe(true);
 
       // Should be focusable via keyboard
       expect(button.getAttribute("tabindex")).toBe("0");
@@ -534,7 +534,7 @@ export const ExpandCollapseRowGroupAria: StoryObj = {
 
     // Non-expandable rows should have aria-hidden on the expand icon container
     const presentationIcons = canvasElement.querySelectorAll(
-      '.st-expand-icon-container[aria-hidden="true"]'
+      '.st-expand-icon-container[aria-hidden="true"]',
     );
     // Rows without children should have presentation icons
     if (presentationIcons.length > 0) {
@@ -577,7 +577,7 @@ export const PaginationAriaAttributes: StoryObj = {
     const user = userEvent.setup();
 
     // Page buttons should have aria-label
-    const pageButtons = canvasElement.querySelectorAll('.st-page-btn');
+    const pageButtons = canvasElement.querySelectorAll(".st-page-btn");
     expect(pageButtons.length).toBeGreaterThan(0);
 
     pageButtons.forEach((btn) => {
@@ -587,13 +587,13 @@ export const PaginationAriaAttributes: StoryObj = {
     });
 
     // Current page button should have aria-current="page"
-    const currentPageBtn = canvasElement.querySelector('.st-page-btn.active');
+    const currentPageBtn = canvasElement.querySelector(".st-page-btn.active");
     if (currentPageBtn) {
       expect(currentPageBtn.getAttribute("aria-current")).toBe("page");
     }
 
     // Non-active page buttons should NOT have aria-current
-    const nonActivePageBtns = canvasElement.querySelectorAll('.st-page-btn:not(.active)');
+    const nonActivePageBtns = canvasElement.querySelectorAll(".st-page-btn:not(.active)");
     nonActivePageBtns.forEach((btn) => {
       const ariaCurrent = btn.getAttribute("aria-current");
       expect(ariaCurrent === null || ariaCurrent === undefined).toBe(true);
@@ -613,7 +613,7 @@ export const PaginationAriaAttributes: StoryObj = {
     await user.click(nextBtn as HTMLElement);
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const newCurrentPageBtn = canvasElement.querySelector('.st-page-btn.active');
+    const newCurrentPageBtn = canvasElement.querySelector(".st-page-btn.active");
     if (newCurrentPageBtn) {
       expect(newCurrentPageBtn.getAttribute("aria-current")).toBe("page");
       expect(newCurrentPageBtn.textContent?.trim()).toBe("2");
@@ -621,7 +621,7 @@ export const PaginationAriaAttributes: StoryObj = {
 
     // Previous button should now be enabled
     const updatedPrevBtn = canvasElement.querySelector(
-      'button[aria-label="Go to previous page"]'
+      'button[aria-label="Go to previous page"]',
     ) as HTMLButtonElement;
     expect(updatedPrevBtn?.disabled).toBe(false);
   },
@@ -644,12 +644,7 @@ export const ResizeHandleAriaAttributes: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Resize Handle ARIA Attributes</h2>
-        <SimpleTable
-          defaultHeaders={headers}
-          rows={data}
-          height="400px"
-          columnResizing={true}
-        />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" columnResizing={true} />
       </div>
     );
   },
@@ -715,7 +710,9 @@ export const KeyboardNavigationArrowKeys: StoryObj = {
     // The clicked cell should be selected (has selection class)
     const selectedCells = bodyContainer.querySelectorAll(".st-cell-selected, .selected");
     // At least one cell should be focused/selected after click
-    expect(selectedCells.length + bodyContainer.querySelectorAll(".st-cell-focused").length).toBeGreaterThanOrEqual(0);
+    expect(
+      selectedCells.length + bodyContainer.querySelectorAll(".st-cell-focused").length,
+    ).toBeGreaterThanOrEqual(0);
 
     // Navigate right with arrow key
     await user.keyboard("{ArrowRight}");
@@ -772,7 +769,7 @@ export const KeyboardExpandCollapse: StoryObj = {
 
     // Find the first expand button
     const expandButton = canvasElement.querySelector(
-      '[role="button"][aria-label*="Expand row group"]'
+      '[role="button"][aria-label*="Expand row group"]',
     ) as HTMLElement;
 
     if (!expandButton) throw new Error("Expand button not found");
@@ -791,7 +788,7 @@ export const KeyboardExpandCollapse: StoryObj = {
     // After expansion, the aria-label should change to "Collapse"
     // Re-query since the DOM may have updated
     const updatedButton = canvasElement.querySelector(
-      '[role="button"][aria-label*="row group"][aria-expanded="true"]'
+      '[role="button"][aria-label*="row group"][aria-expanded="true"]',
     );
     if (updatedButton) {
       expect(updatedButton.getAttribute("aria-expanded")).toBe("true");
@@ -800,7 +797,7 @@ export const KeyboardExpandCollapse: StoryObj = {
 
     // Press Space to collapse (on the same or re-queried button)
     const collapseButton = canvasElement.querySelector(
-      '[role="button"][aria-label*="Collapse row group"]'
+      '[role="button"][aria-label*="Collapse row group"]',
     ) as HTMLElement;
     if (collapseButton) {
       collapseButton.focus();
@@ -976,8 +973,8 @@ export const HeaderCellsMissingRole: StoryObj = {
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Header/Row/Cell Roles (Known Gap)</h2>
         <p style={{ marginBottom: "1rem", color: "#666" }}>
-          Header cells should have role="columnheader", rows role="row", body cells
-          role="gridcell" for proper screen reader table navigation.
+          Header cells should have role="columnheader", rows role="row", body cells role="gridcell"
+          for proper screen reader table navigation.
         </p>
         <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
@@ -1029,12 +1026,7 @@ export const FocusManagementTabOrder: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Focus Management - Tab Order</h2>
-        <SimpleTable
-          defaultHeaders={headers}
-          rows={data}
-          height="400px"
-          columnResizing={true}
-        />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" columnResizing={true} />
       </div>
     );
   },
@@ -1087,7 +1079,7 @@ export const SelectAllCheckboxKeyboardAccessible: StoryObj = {
 
     // Find the select-all checkbox
     const selectAllCheckbox = canvasElement.querySelector(
-      'input[type="checkbox"][aria-label="Select all rows"]'
+      'input[type="checkbox"][aria-label="Select all rows"]',
     ) as HTMLInputElement;
 
     if (!selectAllCheckbox) throw new Error("Select all checkbox not found");
@@ -1112,7 +1104,7 @@ export const SelectAllCheckboxKeyboardAccessible: StoryObj = {
 
     // After activation, should be checked
     const updatedCheckbox = canvasElement.querySelector(
-      'input[type="checkbox"][aria-label="Select all rows"]'
+      'input[type="checkbox"][aria-label="Select all rows"]',
     ) as HTMLInputElement;
     if (updatedCheckbox) {
       expect(updatedCheckbox.checked).toBe(true);
