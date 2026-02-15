@@ -43,6 +43,7 @@ interface HeaderCellProps {
   parentHeader?: HeaderObject;
   reverse?: boolean;
   sort: SortColumn | null;
+  isLastHeader?: boolean;
 }
 
 const TableHeaderCell = ({
@@ -55,6 +56,7 @@ const TableHeaderCell = ({
   parentHeader,
   reverse,
   sort,
+  isLastHeader = false,
 }: HeaderCellProps) => {
   // Local state for filter dropdown and editing
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
@@ -425,7 +427,7 @@ const TableHeaderCell = ({
     return null;
   }
 
-  const ResizeHandle = columnResizing && !isSelectionColumn && (
+  const ResizeHandle = columnResizing && !isSelectionColumn && !isLastHeader && (
     <div
       className="st-header-resize-handle-container"
       role="separator"
