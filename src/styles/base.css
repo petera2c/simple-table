@@ -887,6 +887,9 @@ input {
   border: none;
   border-radius: var(--st-border-radius);
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .st-page-btn:hover {
