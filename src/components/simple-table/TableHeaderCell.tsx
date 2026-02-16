@@ -20,9 +20,11 @@ import {
   getHeaderDescriptionId,
   getHeaderDescription,
 } from "../../utils/headerUtils";
+import { calculateHeaderContentWidth } from "../../utils/headerWidthUtils";
 import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
+import { getHeaderIndexPath, getSiblingArray, setSiblingArray } from "../../hooks/useDragHandler";
 import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
@@ -423,6 +425,28 @@ const TableHeaderCell = ({
     };
   }, []);
 
+  // Handler for double-clicking resize handle to auto-size column
+  const handleResizeHandleDoubleClick = useCallback(() => {
+    const contentWidth = calculateHeaderContentWidth(header.accessor);
+    
+    // Get the path to the header in the nested structure
+    const path = getHeaderIndexPath(headers, header.accessor);
+    if (!path) return;
+
+    // Get the sibling array containing this header
+    const siblings = getSiblingArray(headers, path);
+    const headerIndex = path[path.length - 1];
+    
+    // Update the header with the new width
+    const updatedSiblings = siblings.map((h, i) => 
+      i === headerIndex ? { ...h, width: contentWidth } : h
+    );
+    
+    // Set the updated sibling array back into the headers tree
+    const updatedHeaders = setSiblingArray(headers, path, updatedSiblings);
+    setHeaders(updatedHeaders);
+  }, [header.accessor, headers, setHeaders]);
+
   if (!header) {
     return null;
   }
@@ -479,6 +503,7 @@ const TableHeaderCell = ({
           limit: 10,
         });
       }}
+      onDoubleClick={handleResizeHandleDoubleClick}
     >
       <div className="st-header-resize-handle" />
     </div>

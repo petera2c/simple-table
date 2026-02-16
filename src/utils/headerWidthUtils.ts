@@ -9,7 +9,7 @@ import { getCellId } from "./cellUtils";
  */
 export const findLeafHeaders = (
   header: HeaderObject,
-  collapsedHeaders?: Set<Accessor>
+  collapsedHeaders?: Set<Accessor>,
 ): HeaderObject[] => {
   // Skip hidden headers
   if (header.hide) {
@@ -59,7 +59,7 @@ export const getHeaderWidthInPixels = (header: HeaderObject): number => {
   // For fr, %, or any other format, get the actual DOM element width
   else {
     const cellElement = document.getElementById(
-      getCellId({ accessor: header.accessor, rowId: "header" })
+      getCellId({ accessor: header.accessor, rowId: "header" }),
     );
     return cellElement?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
@@ -94,7 +94,7 @@ export const getHeaderMinWidth = (header: HeaderObject): number => {
  */
 export const getAllVisibleLeafHeaders = (
   headers: HeaderObject[],
-  collapsedHeaders?: Set<Accessor>
+  collapsedHeaders?: Set<Accessor>,
 ): HeaderObject[] => {
   const leafHeaders: HeaderObject[] = [];
   headers.forEach((header) => {
@@ -111,7 +111,7 @@ export const getAllVisibleLeafHeaders = (
  */
 export const convertPixelWidthsToFr = (
   headers: HeaderObject[],
-  collapsedHeaders?: Set<Accessor>
+  collapsedHeaders?: Set<Accessor>,
 ): HeaderObject[] => {
   const processHeader = (header: HeaderObject): HeaderObject => {
     // Process children recursively first
@@ -134,4 +134,130 @@ export const convertPixelWidthsToFr = (
   };
 
   return headers.map(processHeader);
+};
+
+/**
+ * Calculate the total width of a header cell's content by measuring all child elements
+ * This is used for auto-sizing columns to fit their header content
+ *
+ * @param accessor - The accessor of the header to measure
+ * @returns The total width in pixels including padding, gap, and content width
+ */
+export const calculateHeaderContentWidth = (accessor: Accessor): number => {
+  // Get the header cell element from the DOM
+  const headerCellElement = document.getElementById(getCellId({ accessor, rowId: "header" }));
+
+  if (!headerCellElement) {
+    return TABLE_HEADER_CELL_WIDTH_DEFAULT;
+  }
+
+  // Get the computed styles to access padding and gap
+  const computedStyle = window.getComputedStyle(headerCellElement);
+  const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+  const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+  const gap = parseFloat(computedStyle.gap) || 0;
+
+  console.log("headerCell padding:", paddingLeft, paddingRight);
+  console.log("headerCell gap:", gap);
+
+  // Initialize total width with padding
+  let totalWidth = paddingLeft + paddingRight;
+
+  // Measure the actual text content width
+  const headerLabelElement = headerCellElement.querySelector(".st-header-label") as HTMLElement;
+  if (headerLabelElement) {
+    const textSpan = headerLabelElement.querySelector(".st-header-label-text") as HTMLElement;
+    if (textSpan) {
+      // Create a temporary element to measure the actual text width
+      const tempSpan = document.createElement("span");
+      tempSpan.style.visibility = "hidden";
+      tempSpan.style.position = "absolute";
+      tempSpan.style.whiteSpace = "nowrap";
+      tempSpan.style.width = "auto";
+
+      // Copy all computed styles from the original span
+      const textStyle = window.getComputedStyle(textSpan);
+      tempSpan.style.font = textStyle.font;
+      tempSpan.style.fontSize = textStyle.fontSize;
+      tempSpan.style.fontWeight = textStyle.fontWeight;
+      tempSpan.style.fontFamily = textStyle.fontFamily;
+      tempSpan.style.letterSpacing = textStyle.letterSpacing;
+      tempSpan.style.padding = textStyle.padding;
+
+      tempSpan.textContent = textSpan.textContent;
+
+      document.body.appendChild(tempSpan);
+      const actualTextWidth = tempSpan.offsetWidth;
+      document.body.removeChild(tempSpan);
+
+      console.log("actualTextWidth:", actualTextWidth);
+      console.log("textSpan padding:", textStyle.paddingLeft, textStyle.paddingRight);
+      console.log("textSpan margin:", textStyle.marginLeft, textStyle.marginRight);
+      
+      // Also check if the header label itself has padding
+      const headerLabelStyle = window.getComputedStyle(headerLabelElement);
+      console.log("headerLabel padding:", headerLabelStyle.paddingLeft, headerLabelStyle.paddingRight);
+      console.log("headerLabel margin:", headerLabelStyle.marginLeft, headerLabelStyle.marginRight);
+
+      totalWidth += actualTextWidth;
+    }
+  }
+
+  // Loop through all direct children to measure icons
+  const children = Array.from(headerCellElement.children);
+  let visibleItemCount = 1; // Start with 1 for the text we already measured
+
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i] as HTMLElement;
+
+    // Skip the header label (we already measured its text)
+    if (child.classList.contains("st-header-label")) {
+      continue;
+    }
+
+    // Don't skip the resize handle - it contributes to the content width
+    // (even though it's positioned, it still takes up visual space)
+
+    // Skip screen reader only elements (visually hidden)
+    if (child.classList.contains("st-sr-only")) {
+      continue;
+    }
+
+    // Get the computed styles for this child
+    const childStyle = window.getComputedStyle(child);
+
+    // Skip if display is none
+    if (childStyle.display === "none") {
+      continue;
+    }
+
+    // Get the width of the child element (icons)
+    const childWidth = child.offsetWidth || 0;
+    
+    // Get margins
+    const marginLeft = parseFloat(childStyle.marginLeft) || 0;
+    const marginRight = parseFloat(childStyle.marginRight) || 0;
+    
+    console.log("icon child:", child.className, "width:", childWidth, "margins:", marginLeft, marginRight);
+    
+    // Add child width and margins to total
+    totalWidth += childWidth + marginLeft + marginRight;
+    visibleItemCount++;
+  }
+
+  // Add gaps between items (n-1 gaps for n items)
+  if (gap > 0 && visibleItemCount > 1) {
+    const gapTotal = gap * (visibleItemCount - 1);
+    console.log("adding gap:", gapTotal, "for", visibleItemCount, "items");
+    totalWidth += gapTotal;
+  }
+
+  console.log("totalWidth before buffer:", totalWidth);
+
+  // Add a small buffer to account for rounding and browser rendering differences
+  const buffer = 4;
+
+  console.log("final width:", totalWidth + buffer);
+
+  return totalWidth + buffer;
 };

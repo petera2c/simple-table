@@ -1,4 +1,4 @@
-import { Fragment, RefObject, useMemo, useRef } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import { useTableContext } from "../../context/TableContext";
 import TableRow from "../../types/TableRow";
 import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
