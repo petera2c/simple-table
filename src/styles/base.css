@@ -664,6 +664,11 @@ input {
   background-color: var(--st-resize-handle-color);
 }
 
+/* Add extra padding to the last column when resize handle is hidden (autoExpandColumns) */
+.st-header-cell.st-no-resize {
+  padding-right: var(--st-resize-handle-container-width);
+}
+
 .st-row-separator {
   position: absolute;
   min-width: 100%;

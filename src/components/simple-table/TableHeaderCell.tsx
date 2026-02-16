@@ -198,7 +198,7 @@ const TableHeaderCell = ({
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : ""
   } ${isHeaderSelected ? "st-header-selected" : ""} ${
     hasHighlightedCell && !isHeaderSelected ? "st-header-has-highlighted-cell" : ""
-  }`;
+  } ${isLastHeader ? "st-no-resize" : ""}`;
 
   // Hooks
   const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({

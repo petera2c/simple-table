@@ -896,6 +896,7 @@ export default function InfrastructureExampleComponent({
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       defaultHeaders={HEADERS}
