@@ -38,21 +38,21 @@ const TableHeaderSection = ({
       if (!displayCell({ header, pinned, headers, collapsedHeaders })) {
         return [];
       }
-      
+
       if (!header.children || header.children.length === 0) {
         // This is a leaf header
         return [header];
       }
-      
+
       // Recursively get leaf headers from children
       return header.children.flatMap((child) => getLeafHeaders(child));
     };
-    
+
     // Get all leaf headers from all top-level headers in this section
     const allLeafHeaders = headers.flatMap((header) => getLeafHeaders(header));
-    
+
     if (allLeafHeaders.length === 0) return -1;
-    
+
     // Get the last leaf header's index
     const lastLeafHeader = allLeafHeaders[allLeafHeaders.length - 1];
     return columnIndices[lastLeafHeader.accessor];
@@ -68,7 +68,7 @@ const TableHeaderSection = ({
       header: HeaderObject,
       depth: number,
       isFirst = false,
-      parentHeader?: HeaderObject
+      parentHeader?: HeaderObject,
     ) => {
       if (!displayCell({ header, pinned, headers, collapsedHeaders })) return 0;
 
@@ -79,7 +79,7 @@ const TableHeaderSection = ({
 
       const childrenLength =
         header.children?.filter((child) =>
-          displayCell({ header: child, pinned, headers, collapsedHeaders })
+          displayCell({ header: child, pinned, headers, collapsedHeaders }),
         ).length ?? 0;
 
       const gridColumnStart = columnCounter;
@@ -138,7 +138,7 @@ const TableHeaderSection = ({
 
     // Process all top-level headers
     const topLevelHeaders = headers.filter((header) =>
-      displayCell({ header, pinned, headers, collapsedHeaders })
+      displayCell({ header, pinned, headers, collapsedHeaders }),
     );
 
     let isFirstHeader = true;
