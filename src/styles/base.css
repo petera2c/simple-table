@@ -266,14 +266,16 @@ input {
   pointer-events: none;
 }
 
-.st-sticky-top > * {
-  pointer-events: auto;
-}
-
 .st-sticky-section-left,
 .st-sticky-section-main,
 .st-sticky-section-right {
   overflow: hidden;
+  pointer-events: none;
+}
+
+.st-sticky-top .st-row,
+.st-sticky-top .st-row-separator {
+  pointer-events: auto;
 }
 
 .st-sticky-section-left {
@@ -1115,7 +1117,8 @@ input {
   border: var(--st-border-width) solid var(--st-checkbox-border-color);
   border-radius: var(--st-border-radius);
   background-color: white;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease),
+  transition:
+    background-color var(--st-transition-duration) var(--st-transition-ease),
     border-color var(--st-transition-duration) var(--st-transition-ease);
 }
 

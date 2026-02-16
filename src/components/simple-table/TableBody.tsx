@@ -256,6 +256,7 @@ const TableBody = ({
           scrollbarWidth={scrollbarWidth}
           setHoveredIndex={setHoveredIndex}
           stickyParents={stickyParents}
+          tableBodyContainerRef={tableBodyContainerRef}
         />
       )}
 
