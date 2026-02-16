@@ -1,6 +1,7 @@
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { getCellId } from "./cellUtils";
+import { getNestedValue } from "./rowUtils";
 
 /**
  * Find all leaf headers (headers without children) in a header tree
@@ -137,13 +138,23 @@ export const convertPixelWidthsToFr = (
 };
 
 /**
- * Calculate the total width of a header cell's content by measuring all child elements
- * This is used for auto-sizing columns to fit their header content
+ * Calculate the optimal width for a column by measuring both header and cell content
+ * This is used for auto-sizing columns to fit their content (like Excel/Google Sheets)
  *
  * @param accessor - The accessor of the header to measure
- * @returns The total width in pixels including padding, gap, and content width
+ * @param options - Configuration options
+ * @returns The optimal width in pixels
  */
-export const calculateHeaderContentWidth = (accessor: Accessor): number => {
+export const calculateHeaderContentWidth = (
+  accessor: Accessor,
+  options?: {
+    rows?: any[]; // Array of row data to sample
+    header?: HeaderObject; // Header object for valueFormatter/valueGetter
+    maxWidth?: number; // Maximum width (default: 500px)
+    sampleSize?: number; // Number of rows to sample (default: 50)
+  },
+): number => {
+  const { rows, header, maxWidth = 500, sampleSize = 50 } = options || {};
   // Get the header cell element from the DOM
   const headerCellElement = document.getElementById(getCellId({ accessor, rowId: "header" }));
 
@@ -156,9 +167,6 @@ export const calculateHeaderContentWidth = (accessor: Accessor): number => {
   const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
   const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
   const gap = parseFloat(computedStyle.gap) || 0;
-
-  console.log("headerCell padding:", paddingLeft, paddingRight);
-  console.log("headerCell gap:", gap);
 
   // Initialize total width with padding
   let totalWidth = paddingLeft + paddingRight;
@@ -189,15 +197,6 @@ export const calculateHeaderContentWidth = (accessor: Accessor): number => {
       document.body.appendChild(tempSpan);
       const actualTextWidth = tempSpan.offsetWidth;
       document.body.removeChild(tempSpan);
-
-      console.log("actualTextWidth:", actualTextWidth);
-      console.log("textSpan padding:", textStyle.paddingLeft, textStyle.paddingRight);
-      console.log("textSpan margin:", textStyle.marginLeft, textStyle.marginRight);
-      
-      // Also check if the header label itself has padding
-      const headerLabelStyle = window.getComputedStyle(headerLabelElement);
-      console.log("headerLabel padding:", headerLabelStyle.paddingLeft, headerLabelStyle.paddingRight);
-      console.log("headerLabel margin:", headerLabelStyle.marginLeft, headerLabelStyle.marginRight);
 
       totalWidth += actualTextWidth;
     }
@@ -233,13 +232,11 @@ export const calculateHeaderContentWidth = (accessor: Accessor): number => {
 
     // Get the width of the child element (icons)
     const childWidth = child.offsetWidth || 0;
-    
+
     // Get margins
     const marginLeft = parseFloat(childStyle.marginLeft) || 0;
     const marginRight = parseFloat(childStyle.marginRight) || 0;
-    
-    console.log("icon child:", child.className, "width:", childWidth, "margins:", marginLeft, marginRight);
-    
+
     // Add child width and margins to total
     totalWidth += childWidth + marginLeft + marginRight;
     visibleItemCount++;
@@ -248,16 +245,91 @@ export const calculateHeaderContentWidth = (accessor: Accessor): number => {
   // Add gaps between items (n-1 gaps for n items)
   if (gap > 0 && visibleItemCount > 1) {
     const gapTotal = gap * (visibleItemCount - 1);
-    console.log("adding gap:", gapTotal, "for", visibleItemCount, "items");
     totalWidth += gapTotal;
   }
 
-  console.log("totalWidth before buffer:", totalWidth);
+  // Now measure cell content widths from row data
+  let maxCellWidth = 0;
+
+  if (rows && rows.length > 0) {
+    // Sample rows for performance
+    const rowsToSample = Math.min(rows.length, sampleSize);
+
+    // Create a temporary element to measure text
+    const tempDiv = document.createElement("div");
+    tempDiv.style.visibility = "hidden";
+    tempDiv.style.position = "absolute";
+    tempDiv.style.whiteSpace = "nowrap";
+    tempDiv.style.width = "auto";
+
+    // Copy font styles from a sample cell content span
+    let cellPaddingLeft = 0;
+    let cellPaddingRight = 0;
+    const sampleCellContent = document.querySelector(".st-cell-content") as HTMLElement;
+    if (sampleCellContent) {
+      const cellStyle = window.getComputedStyle(sampleCellContent);
+      tempDiv.style.font = cellStyle.font;
+      tempDiv.style.fontSize = cellStyle.fontSize;
+      tempDiv.style.fontFamily = cellStyle.fontFamily;
+      // Get padding from the cell content span
+      cellPaddingLeft = parseFloat(cellStyle.paddingLeft) || 0;
+      cellPaddingRight = parseFloat(cellStyle.paddingRight) || 0;
+    }
+
+    document.body.appendChild(tempDiv);
+
+    for (let i = 0; i < rowsToSample; i++) {
+      const row = rows[i];
+
+      // Get the value using valueGetter if available, otherwise use accessor
+      let value;
+      if (header?.valueGetter) {
+        value = header.valueGetter({ accessor, row, rowIndex: i });
+      } else {
+        // Use getNestedValue to support nested accessors like "user.name"
+        value = getNestedValue(row, accessor);
+      }
+
+      // Format the value if valueFormatter is available
+      let displayValue = value;
+      if (header?.valueFormatter && value !== null && value !== undefined) {
+        displayValue = header.valueFormatter({
+          accessor,
+          colIndex: 0,
+          row,
+          rowIndex: i,
+          value,
+        });
+      }
+
+      // Convert to string for measurement
+      const textContent = displayValue != null ? String(displayValue) : "";
+
+      // Measure the text width
+      tempDiv.textContent = textContent;
+      const textWidth = tempDiv.offsetWidth;
+
+      // Add cell padding to get total cell width
+      const cellWidth = textWidth + cellPaddingLeft + cellPaddingRight;
+
+      if (cellWidth > maxCellWidth) {
+        maxCellWidth = cellWidth;
+      }
+    }
+
+    document.body.removeChild(tempDiv);
+  }
+
+  // Use the larger of header width or max cell width
+  let optimalWidth = Math.max(totalWidth, maxCellWidth);
+
+  // Apply max width constraint
+  if (optimalWidth > maxWidth) {
+    optimalWidth = maxWidth;
+  }
 
   // Add a small buffer to account for rounding and browser rendering differences
-  const buffer = 4;
+  const buffer = 2;
 
-  console.log("final width:", totalWidth + buffer);
-
-  return totalWidth + buffer;
+  return optimalWidth + buffer;
 };
