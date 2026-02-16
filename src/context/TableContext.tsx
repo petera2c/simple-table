@@ -101,6 +101,7 @@ interface TableContextType {
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void;
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void;
+  onColumnWidthChange?: (headers: HeaderObject[]) => void;
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
   onLoadMore?: () => void;
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;

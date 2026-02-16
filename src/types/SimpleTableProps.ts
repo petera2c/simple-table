@@ -71,6 +71,7 @@ export interface SimpleTableProps {
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void; // Callback when a column is selected/clicked
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void; // Callback when column visibility changes
+  onColumnWidthChange?: (headers: HeaderObject[]) => void; // Callback when column widths change (resize or auto-size)
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void; // Callback when a header is edited

@@ -89,6 +89,7 @@ const TableHeaderCell = ({
     hoveredHeaderRef,
     onColumnOrderChange,
     onColumnSelect,
+    onColumnWidthChange,
     onHeaderEdit,
     onSort,
     onTableHeaderDragEnd,
@@ -451,7 +452,12 @@ const TableHeaderCell = ({
     // Set the updated sibling array back into the headers tree
     const updatedHeaders = setSiblingArray(headers, path, updatedSiblings);
     setHeaders(updatedHeaders);
-  }, [header, headers, rows, setHeaders]);
+    
+    // Notify consumer of width change
+    if (onColumnWidthChange) {
+      onColumnWidthChange(updatedHeaders);
+    }
+  }, [header, headers, rows, setHeaders, onColumnWidthChange]);
 
   if (!header) {
     return null;
@@ -482,6 +488,7 @@ const TableHeaderCell = ({
             collapsedHeaders,
             autoExpandColumns,
             reverse,
+            onColumnWidthChange,
           } as HandleResizeStartProps,
           limit: 10,
         });
@@ -505,6 +512,7 @@ const TableHeaderCell = ({
             collapsedHeaders,
             autoExpandColumns,
             reverse,
+            onColumnWidthChange,
           } as HandleResizeStartProps,
           limit: 10,
         });
