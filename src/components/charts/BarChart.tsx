@@ -56,6 +56,7 @@ const BarChart: React.FC<BarChartProps> = ({
       preserveAspectRatio="none"
       className={`st-bar-chart ${className}`}
       style={{ display: "block" }}
+      shapeRendering="crispEdges"
     >
       {data.map((value, index) => {
         const x = index * (barWidth + gap);
@@ -87,7 +88,7 @@ const BarChart: React.FC<BarChartProps> = ({
             width={barWidth}
             height={adjustedHeight}
             fill={color || "var(--st-chart-color)"}
-            rx={1} // Slight rounding for modern look
+            rx={0.5} // Subtle rounding for modern look
           />
         );
       })}

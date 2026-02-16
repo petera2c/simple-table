@@ -1909,3 +1909,18 @@ input {
   align-items: center;
   background-color: var(--st-body-background-color);
 }
+
+/* ========================================== */
+/* Chart Styles */
+/* ========================================== */
+
+/* Crisp, pixel-perfect chart rendering */
+.st-line-area-chart,
+.st-bar-chart {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.st-bar-chart rect {
+  shape-rendering: crispEdges;
+}
