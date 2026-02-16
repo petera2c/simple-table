@@ -23,8 +23,8 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
   height = 30,
   color,
   fillColor,
-  fillOpacity = 0.2,
-  strokeWidth = 2,
+  fillOpacity = 0.25,
+  strokeWidth = 1.5,
   className = "",
   min: customMin,
   max: customMax,
@@ -74,6 +74,7 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
       preserveAspectRatio="none"
       className={`st-line-area-chart ${className}`}
       style={{ display: "block" }}
+      shapeRendering="geometricPrecision"
     >
       {/* Area fill */}
       <path
@@ -81,7 +82,6 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
         fill={fillColor || "var(--st-chart-fill-color)"}
         fillOpacity={fillOpacity}
         stroke="none"
-        vectorEffect="non-scaling-stroke"
       />
       {/* Line stroke */}
       <path
@@ -91,7 +91,6 @@ const LineAreaChart: React.FC<LineAreaChartProps> = ({
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

@@ -119,8 +119,8 @@
 
   /* Utility colors */
   --st-loading-skeleton-bg-color: #f3f4f6;
-  --st-chart-color: #60a5fa;
-  --st-chart-fill-color: #93c5fd;
+  --st-chart-color: #3b82f6;
+  --st-chart-fill-color: #dbeafe;
 
   /* Drag and drop colors */
   --st-drag-separator-color: #3b82f6;
@@ -227,7 +227,7 @@
 }
 
 /* Hide buttons beyond the 9th one to prevent overflow */
-.theme-modern-light .st-page-btn:nth-child(n+10):not(.active) {
+.theme-modern-light .st-page-btn:nth-child(n + 10):not(.active) {
   display: none;
 }
 
