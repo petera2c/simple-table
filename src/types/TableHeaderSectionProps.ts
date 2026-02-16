@@ -1,4 +1,4 @@
-import { UIEventHandler, Ref } from "react";
+import { UIEventHandler, RefObject } from "react";
 import { Pinned } from "./Pinned";
 import SortColumn from "./SortColumn";
 import { HeaderObject } from "..";
@@ -11,7 +11,7 @@ interface TableHeaderSectionProps {
   headers: HeaderObject[];
   maxDepth: number;
   pinned?: Pinned;
-  sectionRef: Ref<HTMLDivElement>;
+  sectionRef: RefObject<HTMLDivElement>;
   sort: SortColumn | null;
   width?: number;
 }

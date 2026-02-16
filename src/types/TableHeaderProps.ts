@@ -1,9 +1,9 @@
-import { Ref } from "react";
+import { RefObject } from "react";
 import SortColumn from "./SortColumn";
 import HeaderObject from "./HeaderObject";
 
 type TableHeaderProps = {
-  centerHeaderRef: Ref<HTMLDivElement>;
+  centerHeaderRef: RefObject<HTMLDivElement>;
   headers: HeaderObject[];
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
