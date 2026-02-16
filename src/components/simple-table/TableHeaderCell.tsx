@@ -93,6 +93,7 @@ const TableHeaderCell = ({
     onSort,
     onTableHeaderDragEnd,
     headerHeight,
+    rows,
     selectColumns,
     selectableColumns,
     selectedColumns,
@@ -427,7 +428,12 @@ const TableHeaderCell = ({
 
   // Handler for double-clicking resize handle to auto-size column
   const handleResizeHandleDoubleClick = useCallback(() => {
-    const contentWidth = calculateHeaderContentWidth(header.accessor);
+    const contentWidth = calculateHeaderContentWidth(header.accessor, {
+      rows,
+      header,
+      maxWidth: 500,
+      sampleSize: 50,
+    });
     
     // Get the path to the header in the nested structure
     const path = getHeaderIndexPath(headers, header.accessor);
@@ -445,7 +451,7 @@ const TableHeaderCell = ({
     // Set the updated sibling array back into the headers tree
     const updatedHeaders = setSiblingArray(headers, path, updatedSiblings);
     setHeaders(updatedHeaders);
-  }, [header.accessor, headers, setHeaders]);
+  }, [header, headers, rows, setHeaders]);
 
   if (!header) {
     return null;
