@@ -55,7 +55,7 @@ const TableBody = ({
 
   // Direct DOM manipulation for hover - no React re-renders
   const setHoveredIndex = useCallback(
-    (index: number | null) => {
+    (position: number | null) => {
       // Clear ALL hovered rows across all tables (including nested ones)
       // This ensures only one table's rows are hovered at a time
       document.querySelectorAll(".st-row.hovered").forEach((el) => {
@@ -63,11 +63,11 @@ const TableBody = ({
       });
       hoveredRowRefs.current.clear();
 
-      if (index !== null && tableBodyContainerRef.current) {
-        // Find all rows with this index within this specific table's body container
+      if (position !== null && tableBodyContainerRef.current) {
+        // Find all rows with this position within this specific table's body container
         // Only select direct child rows of the body sections (not nested table rows)
         const bodyContainer = tableBodyContainerRef.current;
-        const selector = `.st-row[data-index="${index}"]:not(.st-nested-grid-row)`;
+        const selector = `.st-row[data-index="${position}"]:not(.st-nested-grid-row)`;
 
         // Query within the specific container, but filter to only direct section children
         const allRows = bodyContainer.querySelectorAll(selector);
@@ -82,9 +82,20 @@ const TableBody = ({
             hoveredRowRefs.current.add(rowElement);
           }
         });
+
+        // Also find sticky rows with this position (they're in .st-sticky-top, a sibling of body container)
+        const stickyContainer = bodyContainer.previousElementSibling;
+        if (stickyContainer && stickyContainer.classList.contains("st-sticky-top")) {
+          const stickyRows = stickyContainer.querySelectorAll(selector);
+          stickyRows.forEach((row) => {
+            const rowElement = row as HTMLElement;
+            rowElement.classList.add("hovered");
+            hoveredRowRefs.current.add(rowElement);
+          });
+        }
       }
     },
-    [tableBodyContainerRef]
+    [tableBodyContainerRef],
   );
 
   // Clear hover state when animations start
@@ -119,7 +130,7 @@ const TableBody = ({
   const totalRowCount = getTotalRowCount(tableRows);
   const totalHeight = useMemo(
     () => calculateTotalHeight(totalRowCount, rowHeight, heightOffsets, customTheme),
-    [totalRowCount, rowHeight, heightOffsets, customTheme]
+    [totalRowCount, rowHeight, heightOffsets, customTheme],
   );
 
   // Calculate column indices for all headers (including pinned) in one place
@@ -166,7 +177,7 @@ const TableBody = ({
         }, 1000);
       }
     },
-    [onLoadMore, shouldPaginate, isLoadingMore]
+    [onLoadMore, shouldPaginate, isLoadingMore],
   );
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -197,8 +208,8 @@ const TableBody = ({
         newScrollTop > previousScrollTop
           ? "down"
           : newScrollTop < previousScrollTop
-          ? "up"
-          : "none";
+            ? "up"
+            : "none";
 
       // Update scroll position and direction for asymmetric buffering
       setScrollTop(newScrollTop);

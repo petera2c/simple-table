@@ -1,0 +1,285 @@
+/* Modern Dark Theme - Clean, minimal dark design inspired by contemporary table UIs
+ * 
+ * Design Philosophy:
+ * - Subtle borders on dark backgrounds for depth
+ * - Dark gray base with lighter text for reduced eye strain
+ * - Hover states with subtle brightness changes
+ * - Generous padding (12px) for better readability
+ * - Rounded corners (8px) for a softer appearance
+ * - Modern blue accent (#60a5fa) for interactive elements (lighter for dark mode)
+ * - High contrast text for accessibility
+ * - Lightweight visual hierarchy
+ * 
+ * Inspired by: GitHub dark mode, VS Code, and modern dark UIs
+ */
+.theme-modern-dark {
+  /* Layout/Structure variables - Tighter, more compact */
+  --st-border-radius: 8px;
+  --st-cell-padding: 12px;
+
+  /* Spacing variables - Reduced for cleaner look */
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+
+  /* Scrollbar variables - Dark minimal */
+  --st-scrollbar-bg-color: #111827;
+  --st-scrollbar-thumb-color: #4b5563;
+  --st-scrollbar-width: thin;
+
+  /* Base/Structural colors - Subtle dark borders */
+  --st-border-color: #374151;
+  --st-footer-background-color: #1f2937;
+  --st-last-group-row-separator-border-color: #4b5563;
+
+  /* Row colors - Dark background, subtle hover */
+  --st-odd-row-background-color: #1f2937;
+  --st-even-row-background-color: #1f2937;
+  --st-hover-row-background-color: #374151;
+  --st-selected-row-background-color: #1e3a5f;
+
+  /* Column colors - No alternating columns by default */
+  --st-odd-column-background-color: #1f2937;
+  --st-even-column-background-color: #1f2937;
+
+  /* Header colors - Minimal, clean dark header */
+  --st-header-background-color: #1f2937;
+  --st-sub-header-background-color: #111827;
+  --st-header-label-color: #f3f4f6;
+  --st-header-icon-color: #9ca3af;
+
+  /* Cell colors - Clean, high contrast light text */
+  --st-cell-color: #f3f4f6;
+  --st-cell-odd-row-color: #d1d5db;
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --st-sub-cell-background-color: #111827;
+  --st-sub-cell-hover-background-color: #1f2937;
+
+  /* Selection colors - Subtle blue tint for dark mode */
+  --st-selected-cell-background-color: #1e40af;
+  --st-selected-first-cell-background-color: #1e3a8a;
+  --st-selected-cell-color: #dbeafe;
+  --st-selected-first-cell-color: #dbeafe;
+  --st-selected-sub-cell-background-color: #1e3a8a;
+  --st-selected-sub-cell-color: #dbeafe;
+  --st-dragging-background-color: #374151;
+  --st-dragging-sub-header-background-color: #4b5563;
+
+  /* Interactive element colors */
+  --st-resize-handle-color: #4b5563;
+  --st-resize-handle-selected-color: #60a5fa;
+
+  /* Border colors - Modern blue accent (lighter for dark mode) */
+  --st-selected-border-color: #60a5fa;
+  --st-editable-cell-focus-border-color: #60a5fa;
+  --st-focus-ring-color: #60a5fa;
+
+  /* Button colors - Clean, minimal dark */
+  --st-button-hover-background-color: #374151;
+  --st-button-active-background-color: #3b82f6;
+  --st-next-prev-btn-color: #9ca3af;
+  --st-next-prev-btn-disabled-color: #4b5563;
+  --st-page-btn-color: #d1d5db;
+  --st-page-btn-hover-background-color: #374151;
+
+  /* Checkbox colors */
+  --st-checkbox-checked-background-color: #3b82f6;
+  --st-checkbox-checked-border-color: #3b82f6;
+  --st-checkbox-border-color: #4b5563;
+
+  /* Column editor colors */
+  --st-column-editor-background-color: #1f2937;
+  --st-column-editor-popout-background-color: #1f2937;
+  --st-column-editor-text-color: #9ca3af;
+
+  /* Form element colors */
+  --st-datepicker-weekday-color: #9ca3af;
+  --st-datepicker-other-month-color: #4b5563;
+  --st-filter-button-disabled-background-color: #374151;
+  --st-filter-button-disabled-text-color: #6b7280;
+
+  /* Flash/Animation colors */
+  --st-cell-flash-color: #1e40af;
+  --st-copy-flash-color: #60a5fa;
+  --st-warning-flash-color: #ef4444;
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: #f3f4f6;
+  --st-tooltip-text-color: #111827;
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 6px 10px;
+  --st-tooltip-font-size: 12px;
+  --st-tooltip-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: #3b82f6;
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+  --st-header-highlight-indicator-color: #1e40af;
+  --st-selection-highlight-indicator-color: #374151;
+
+  /* Utility colors */
+  --st-loading-skeleton-bg-color: #374151;
+  --st-chart-color: #60a5fa;
+  --st-chart-fill-color: #3b82f6;
+
+  /* Drag and drop colors */
+  --st-drag-separator-color: #60a5fa;
+
+  /* Body background for state rows */
+  --st-body-background-color: #1f2937;
+}
+
+/* Modern Dark theme specific overrides for even cleaner look */
+.theme-modern-dark .st-wrapper {
+  border: 1px solid #374151;
+}
+
+/* Subtle header border */
+.theme-modern-dark .st-header-pinned-left,
+.theme-modern-dark .st-header-main,
+.theme-modern-dark .st-header-pinned-right {
+  border-bottom: 1px solid #374151;
+}
+
+/* Remove heavy borders on pinned sections */
+.theme-modern-dark .st-header-pinned-left,
+.theme-modern-dark .st-body-pinned-left {
+  border-right: 1px solid #374151;
+}
+
+.theme-modern-dark .st-header-pinned-right,
+.theme-modern-dark .st-body-pinned-right {
+  border-left: 1px solid #374151;
+}
+
+/* Cleaner row separators */
+.theme-modern-dark .st-row-separator {
+  background-color: #374151;
+}
+
+/* Lighter header cell styling */
+.theme-modern-dark .st-header-cell {
+  font-weight: 500;
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+/* Cleaner cell text */
+.theme-modern-dark .st-cell-content {
+  font-size: 14px;
+  color: #f3f4f6;
+}
+
+/* Subtle hover effect */
+.theme-modern-dark .st-row.hovered {
+  transition: background-color 0.15s ease;
+}
+
+/* Modern footer styling */
+.theme-modern-dark .st-footer {
+  border-top: 1px solid #374151;
+  background-color: #1f2937;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+/* Footer text color */
+.theme-modern-dark .st-footer-results-text {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+/* Footer pagination container - hide extra buttons on smaller screens */
+.theme-modern-dark .st-footer-pagination {
+  gap: 2px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+/* Pagination ellipsis */
+.theme-modern-dark .st-page-ellipsis {
+  color: #9ca3af;
+  font-weight: 400;
+  padding: 0 4px;
+}
+
+/* Cleaner pagination buttons - more compact */
+.theme-modern-dark .st-page-btn {
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #d1d5db;
+  padding: 6px 8px;
+  min-width: 36px;
+  transition: all 0.15s ease;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.theme-modern-dark .st-page-btn:hover {
+  background-color: #374151;
+}
+
+.theme-modern-dark .st-page-btn.active {
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+}
+
+/* Hide buttons beyond the 9th one to prevent overflow */
+.theme-modern-dark .st-page-btn:nth-child(n+10):not(.active) {
+  display: none;
+}
+
+/* Always show active button and adjacent buttons */
+.theme-modern-dark .st-page-btn.active,
+.theme-modern-dark .st-page-btn.active + .st-page-btn,
+.theme-modern-dark .st-page-btn:has(+ .st-page-btn.active) {
+  display: inline-flex;
+}
+
+/* Next/Prev buttons */
+.theme-modern-dark .st-next-prev-btn {
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.theme-modern-dark .st-next-prev-btn:not(.disabled):hover {
+  background-color: #374151;
+}
+
+.theme-modern-dark .st-next-prev-btn.disabled > * {
+  fill: #4b5563;
+}
+
+/* Modern scrollbar */
+.theme-modern-dark .st-horizontal-scrollbar-container {
+  border-top: 1px solid #374151;
+  background-color: #111827;
+}
+
+/* Cleaner group headers */
+.theme-modern-dark .st-group-header {
+  border-bottom: 1px solid #374151;
+  font-weight: 500;
+}
+
+/* Modern checkbox styling */
+.theme-modern-dark .st-checkbox-custom {
+  border-radius: 4px;
+  border: 1.5px solid #4b5563;
+  background-color: #1f2937;
+}
+
+.theme-modern-dark .st-checkbox-custom.st-checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Empty state styling */
+.theme-modern-dark .st-empty-state {
+  color: #9ca3af;
+}

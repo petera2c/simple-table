@@ -1,8 +1,7 @@
-import { UIEventHandler } from "react";
+import { UIEventHandler, RefObject } from "react";
 import { Pinned } from "./Pinned";
 import SortColumn from "./SortColumn";
 import { HeaderObject } from "..";
-import { RefObject } from "react";
 import { ColumnIndices } from "../utils/columnIndicesUtils";
 
 interface TableHeaderSectionProps {

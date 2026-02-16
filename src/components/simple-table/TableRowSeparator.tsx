@@ -91,7 +91,6 @@ const TableRowSeparator = ({
         position: "absolute" as const,
         top: 0,
         left: 0,
-        right: 0,
         transform: `translateY(${topPosition}px)`,
       }
     : {

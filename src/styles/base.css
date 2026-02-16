@@ -266,14 +266,11 @@ input {
   pointer-events: none;
 }
 
-.st-sticky-top > * {
-  pointer-events: auto;
-}
-
 .st-sticky-section-left,
 .st-sticky-section-main,
 .st-sticky-section-right {
   overflow: hidden;
+  pointer-events: none;
 }
 
 .st-sticky-section-left {
@@ -890,6 +887,9 @@ input {
   border: none;
   border-radius: var(--st-border-radius);
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .st-page-btn:hover {
@@ -1115,7 +1115,8 @@ input {
   border: var(--st-border-width) solid var(--st-checkbox-border-color);
   border-radius: var(--st-border-radius);
   background-color: white;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease),
+  transition:
+    background-color var(--st-transition-duration) var(--st-transition-ease),
     border-color var(--st-transition-duration) var(--st-transition-ease);
 }
 

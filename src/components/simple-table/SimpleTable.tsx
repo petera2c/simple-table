@@ -111,6 +111,7 @@ const SimpleTableComp = ({
   onColumnOrderChange,
   onColumnSelect,
   onColumnVisibilityChange,
+  onColumnWidthChange,
   onFilterChange,
   onGridReady,
   onHeaderEdit,
@@ -135,7 +136,7 @@ const SimpleTableComp = ({
   sortUpIcon: sortUpIconDeprecated,
   tableEmptyStateRenderer = <DefaultEmptyState />,
   tableRef,
-  theme = "light",
+  theme = "modern-light",
   totalRowCount,
   useHoverRowBackground = true,
   useOddColumnBackground = false,
@@ -184,8 +185,8 @@ const SimpleTableComp = ({
       ({
         ...DEFAULT_CUSTOM_THEME,
         ...customThemeProp,
-      } as CustomTheme),
-    [customThemeProp]
+      }) as CustomTheme,
+    [customThemeProp],
   );
 
   // Merge columnEditorConfig with defaults and legacy props
@@ -199,7 +200,7 @@ const SimpleTableComp = ({
         columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
       searchFunction: columnEditorConfig?.searchFunction,
     }),
-    [columnEditorConfig, columnEditorText]
+    [columnEditorConfig, columnEditorText],
   );
 
   const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } = customTheme;
@@ -326,7 +327,7 @@ const SimpleTableComp = ({
   }, [defaultHeaders]);
 
   const [collapsedHeaders, setCollapsedHeaders] = useState<Set<Accessor>>(
-    getInitialCollapsedHeaders
+    getInitialCollapsedHeaders,
   );
 
   // Update headers when defaultHeaders prop changes
@@ -466,8 +467,8 @@ const SimpleTableComp = ({
           typeof header.width === "number"
             ? header.width
             : typeof header.width === "string" && header.width.endsWith("px")
-            ? parseFloat(header.width)
-            : 150;
+              ? parseFloat(header.width)
+              : 150;
         return total + width;
       }, 0);
 
@@ -496,8 +497,8 @@ const SimpleTableComp = ({
           typeof header.width === "number"
             ? header.width
             : typeof header.width === "string" && header.width.endsWith("px")
-            ? parseFloat(header.width)
-            : 150;
+              ? parseFloat(header.width)
+              : 150;
 
         let newWidth: number;
         if (index === leafHeaders.length - 1) {
@@ -546,8 +547,8 @@ const SimpleTableComp = ({
             typeof header.width === "number"
               ? header.width
               : typeof header.width === "string" && header.width.endsWith("px")
-              ? parseFloat(header.width)
-              : 150;
+                ? parseFloat(header.width)
+                : 150;
 
           return {
             ...header,
@@ -712,7 +713,7 @@ const SimpleTableComp = ({
       rowHeight,
       headerHeight,
       customTheme,
-    ]
+    ],
   );
 
   const computeFlattenedSortedRowsPreview = useCallback(
@@ -764,7 +765,7 @@ const SimpleTableComp = ({
       rowHeight,
       headerHeight,
       customTheme,
-    ]
+    ],
   );
 
   // Calculate content height using hook (after flattenedRows is available)
@@ -859,7 +860,7 @@ const SimpleTableComp = ({
         updateSort({ accessor });
       }, 0);
     },
-    [prepareForSortChange, updateSort]
+    [prepareForSortChange, updateSort],
   );
 
   const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
@@ -934,7 +935,7 @@ const SimpleTableComp = ({
         updateFilter(filter);
       }, 0);
     },
-    [prepareForFilterChange, updateFilter]
+    [prepareForFilterChange, updateFilter],
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)
@@ -1001,6 +1002,7 @@ const SimpleTableComp = ({
         onColumnOrderChange,
         onColumnSelect,
         onColumnVisibilityChange,
+        onColumnWidthChange,
         onHeaderEdit,
         onLoadMore,
         onRowGroupExpand,
@@ -1056,8 +1058,8 @@ const SimpleTableComp = ({
           maxHeight
             ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
             : height
-            ? { height }
-            : {}
+              ? { height }
+              : {}
         }
       >
         <ScrollSync>

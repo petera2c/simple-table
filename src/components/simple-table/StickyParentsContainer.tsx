@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import { useTableContext } from "../../context/TableContext";
 import TableRow from "../../types/TableRow";
 import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
@@ -9,6 +9,7 @@ import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import HeaderObject from "../../types/HeaderObject";
 import { CumulativeHeightMap } from "../../utils/infiniteScrollUtils";
+import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 
 interface StickyParentsContainerProps {
   calculatedHeaderHeight: number;
@@ -46,6 +47,11 @@ const StickyParentsContainer = ({
   partiallyVisibleRows,
 }: StickyParentsContainerProps) => {
   const { collapsedHeaders, customTheme, editColumns, headers, rowHeight } = useTableContext();
+
+  // Create refs for each section to sync scroll (must be at top level)
+  const leftSectionRef = useRef<HTMLDivElement>(null);
+  const centerSectionRef = useRef<HTMLDivElement>(null);
+  const rightSectionRef = useRef<HTMLDivElement>(null);
 
   // Calculate offset for transitioning between sibling trees and determine which sticky parents should have the offset applied
   const { treeTransitionOffset, offsetStartIndex } = useMemo(() => {
@@ -93,7 +99,7 @@ const StickyParentsContainer = ({
         break;
       } else if (nextParent.depth < currentParent.depth) {
         newTreeStartIndex = stickyParents.findIndex(
-          (parent) => parent.depth === currentParent.depth
+          (parent) => parent.depth === currentParent.depth,
         );
         break;
       }
@@ -168,11 +174,13 @@ const StickyParentsContainer = ({
     sectionHeaders: HeaderObject[],
     pinned?: "left" | "right",
     width?: number,
-    columnIndexStart: number = 0
+    columnIndexStart: number = 0,
+    ref?: React.RefObject<HTMLDivElement>,
   ) => {
     return (
       <div
         className={pinned ? `st-sticky-section-${pinned}` : "st-sticky-section-main"}
+        ref={ref}
         style={{
           position: "relative",
           height: `${stickyHeight}px`,
@@ -246,34 +254,45 @@ const StickyParentsContainer = ({
         top: `${calculatedHeaderHeight}px`,
       }}
     >
-      {/* Left pinned section */}
-      {pinnedLeftColumns.length > 0 &&
-        renderStickySection(
-          pinnedLeftTemplateColumns,
-          pinnedLeftColumns,
-          "left",
-          pinnedLeftWidth,
-          0
-        )}
-
-      {/* Main center section */}
-      {renderStickySection(
-        mainTemplateColumns,
-        currentHeaders,
-        undefined,
-        undefined,
-        pinnedLeftColumns.length
+      {/* Left pinned section - wrapped with ScrollSyncPane */}
+      {pinnedLeftColumns.length > 0 && (
+        <ScrollSyncPane childRef={leftSectionRef} group="pinned-left">
+          {renderStickySection(
+            pinnedLeftTemplateColumns,
+            pinnedLeftColumns,
+            "left",
+            pinnedLeftWidth,
+            0,
+            leftSectionRef,
+          )}
+        </ScrollSyncPane>
       )}
 
-      {/* Right pinned section */}
-      {pinnedRightColumns.length > 0 &&
-        renderStickySection(
-          pinnedRightTemplateColumns,
-          pinnedRightColumns,
-          "right",
-          pinnedRightWidth,
-          pinnedLeftColumns.length + currentHeaders.length
+      {/* Main center section - wrapped with ScrollSyncPane */}
+      <ScrollSyncPane childRef={centerSectionRef} group="default">
+        {renderStickySection(
+          mainTemplateColumns,
+          currentHeaders,
+          undefined,
+          undefined,
+          pinnedLeftColumns.length,
+          centerSectionRef,
         )}
+      </ScrollSyncPane>
+
+      {/* Right pinned section - wrapped with ScrollSyncPane */}
+      {pinnedRightColumns.length > 0 && (
+        <ScrollSyncPane childRef={rightSectionRef} group="pinned-right">
+          {renderStickySection(
+            pinnedRightTemplateColumns,
+            pinnedRightColumns,
+            "right",
+            pinnedRightWidth,
+            pinnedLeftColumns.length + currentHeaders.length,
+            rightSectionRef,
+          )}
+        </ScrollSyncPane>
+      )}
     </div>
   );
 };

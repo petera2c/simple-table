@@ -55,7 +55,7 @@ export default StoryWrapper;
 
 // Default args for universal props
 export const defaultUniversalArgs: UniversalTableProps = {
-  theme: "light",
+  theme: "modern-light",
   useOddColumnBackground: false,
   useHoverRowBackground: true,
   useOddEvenRowBackground: false,
@@ -81,7 +81,7 @@ export const defaultUniversalArgs: UniversalTableProps = {
 export const universalArgTypes = {
   theme: {
     control: { type: "select" as const },
-    options: ["sky", "violet", "neutral", "light", "dark"],
+    options: ["modern-light", "modern-dark", "light", "dark", "sky", "violet", "neutral", "frost"],
     description: "Select the theme for the table",
   },
   useOddColumnBackground: {

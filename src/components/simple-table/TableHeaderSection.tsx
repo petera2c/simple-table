@@ -28,7 +28,35 @@ const TableHeaderSection = ({
   sort,
   width,
 }: TableHeaderSectionProps) => {
-  const { collapsedHeaders } = useTableContext();
+  const { collapsedHeaders, autoExpandColumns } = useTableContext();
+
+  // Calculate the last header cell index for this section
+  // We need to find the last leaf header (actual column) in this section
+  const lastHeaderIndex = useMemo(() => {
+    // Helper to get all leaf headers recursively
+    const getLeafHeaders = (header: HeaderObject): HeaderObject[] => {
+      if (!displayCell({ header, pinned, headers, collapsedHeaders })) {
+        return [];
+      }
+
+      if (!header.children || header.children.length === 0) {
+        // This is a leaf header
+        return [header];
+      }
+
+      // Recursively get leaf headers from children
+      return header.children.flatMap((child) => getLeafHeaders(child));
+    };
+
+    // Get all leaf headers from all top-level headers in this section
+    const allLeafHeaders = headers.flatMap((header) => getLeafHeaders(header));
+
+    if (allLeafHeaders.length === 0) return -1;
+
+    // Get the last leaf header's index
+    const lastLeafHeader = allLeafHeaders[allLeafHeaders.length - 1];
+    return columnIndices[lastLeafHeader.accessor];
+  }, [headers, pinned, collapsedHeaders, columnIndices]);
 
   // First, flatten all headers into grid cells
   const gridCells = useMemo(() => {
@@ -40,7 +68,7 @@ const TableHeaderSection = ({
       header: HeaderObject,
       depth: number,
       isFirst = false,
-      parentHeader?: HeaderObject
+      parentHeader?: HeaderObject,
     ) => {
       if (!displayCell({ header, pinned, headers, collapsedHeaders })) return 0;
 
@@ -51,7 +79,7 @@ const TableHeaderSection = ({
 
       const childrenLength =
         header.children?.filter((child) =>
-          displayCell({ header: child, pinned, headers, collapsedHeaders })
+          displayCell({ header: child, pinned, headers, collapsedHeaders }),
         ).length ?? 0;
 
       const gridColumnStart = columnCounter;
@@ -110,7 +138,7 @@ const TableHeaderSection = ({
 
     // Process all top-level headers
     const topLevelHeaders = headers.filter((header) =>
-      displayCell({ header, pinned, headers, collapsedHeaders })
+      displayCell({ header, pinned, headers, collapsedHeaders }),
     );
 
     let isFirstHeader = true;
@@ -150,6 +178,7 @@ const TableHeaderSection = ({
               parentHeader={cell.parentHeader}
               reverse={pinned === "right"}
               sort={sort}
+              isLastHeader={autoExpandColumns && cell.colIndex === lastHeaderIndex}
             />
           ))}
         </>

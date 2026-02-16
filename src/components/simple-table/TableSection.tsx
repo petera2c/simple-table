@@ -1,11 +1,4 @@
-import {
-  Fragment,
-  MutableRefObject,
-  useMemo,
-  forwardRef,
-  useRef,
-  useImperativeHandle,
-} from "react";
+import { Fragment, useMemo, forwardRef, useRef, useImperativeHandle } from "react";
 import TableRow from "./TableRow";
 import TableRowType from "../../types/TableRow";
 import TableRowSeparator from "./TableRowSeparator";
@@ -62,10 +55,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
 
     return (
-      <ScrollSyncPane
-        childRef={internalRef as MutableRefObject<HTMLElement | null>}
-        group={scrollSyncGroup}
-      >
+      <ScrollSyncPane childRef={internalRef} group={scrollSyncGroup}>
         <div
           className={className}
           ref={internalRef}
