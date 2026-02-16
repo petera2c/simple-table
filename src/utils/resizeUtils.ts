@@ -88,6 +88,7 @@ export const handleResizeStart = ({
   collapsedHeaders,
   autoExpandColumns = false,
   reverse = false,
+  onColumnWidthChange,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
   const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
@@ -221,6 +222,11 @@ export const handleResizeStart = ({
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
       setIsResizing(false);
+      
+      // Notify consumer of width change
+      if (onColumnWidthChange) {
+        onColumnWidthChange([...headers]);
+      }
     };
 
     document.addEventListener("touchmove", handleTouchMove);
@@ -234,6 +240,11 @@ export const handleResizeStart = ({
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       setIsResizing(false);
+      
+      // Notify consumer of width change
+      if (onColumnWidthChange) {
+        onColumnWidthChange([...headers]);
+      }
     };
 
     document.addEventListener("mousemove", handleMouseMove);

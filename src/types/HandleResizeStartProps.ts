@@ -16,4 +16,5 @@ export type HandleResizeStartProps = {
   collapsedHeaders: Set<Accessor>;
   autoExpandColumns: boolean;
   reverse: boolean;
+  onColumnWidthChange?: (headers: HeaderObject[]) => void;
 };

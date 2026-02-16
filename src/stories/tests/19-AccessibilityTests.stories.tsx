@@ -291,11 +291,6 @@ export const SortButtonAriaAttributes: StoryObj = {
     await waitForTable();
     const user = userEvent.setup();
 
-    // Sortable headers should have aria-sort="none" initially
-    const nameHeader = canvasElement.querySelector(
-      '[id*="header"][id*="name"].st-header-cell',
-    ) as HTMLElement;
-
     // Find the header cell for "Name" by checking header label text
     const headerCells = canvasElement.querySelectorAll(".st-header-cell");
     let nameHeaderCell: HTMLElement | null = null;

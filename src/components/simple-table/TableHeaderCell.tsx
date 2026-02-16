@@ -20,9 +20,11 @@ import {
   getHeaderDescriptionId,
   getHeaderDescription,
 } from "../../utils/headerUtils";
+import { calculateHeaderContentWidth } from "../../utils/headerWidthUtils";
 import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
+import { getHeaderIndexPath, getSiblingArray, setSiblingArray } from "../../hooks/useDragHandler";
 import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
@@ -43,6 +45,7 @@ interface HeaderCellProps {
   parentHeader?: HeaderObject;
   reverse?: boolean;
   sort: SortColumn | null;
+  isLastHeader?: boolean;
 }
 
 const TableHeaderCell = ({
@@ -55,6 +58,7 @@ const TableHeaderCell = ({
   parentHeader,
   reverse,
   sort,
+  isLastHeader = false,
 }: HeaderCellProps) => {
   // Local state for filter dropdown and editing
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
@@ -85,10 +89,12 @@ const TableHeaderCell = ({
     hoveredHeaderRef,
     onColumnOrderChange,
     onColumnSelect,
+    onColumnWidthChange,
     onHeaderEdit,
     onSort,
     onTableHeaderDragEnd,
     headerHeight,
+    rows,
     selectColumns,
     selectableColumns,
     selectedColumns,
@@ -421,11 +427,43 @@ const TableHeaderCell = ({
     };
   }, []);
 
+  // Handler for double-clicking resize handle to auto-size column
+  const handleResizeHandleDoubleClick = useCallback(() => {
+    const contentWidth = calculateHeaderContentWidth(header.accessor, {
+      rows,
+      header,
+      maxWidth: 500,
+      sampleSize: 50,
+    });
+    
+    // Get the path to the header in the nested structure
+    const path = getHeaderIndexPath(headers, header.accessor);
+    if (!path) return;
+
+    // Get the sibling array containing this header
+    const siblings = getSiblingArray(headers, path);
+    const headerIndex = path[path.length - 1];
+    
+    // Update the header with the new width
+    const updatedSiblings = siblings.map((h, i) => 
+      i === headerIndex ? { ...h, width: contentWidth } : h
+    );
+    
+    // Set the updated sibling array back into the headers tree
+    const updatedHeaders = setSiblingArray(headers, path, updatedSiblings);
+    setHeaders(updatedHeaders);
+    
+    // Notify consumer of width change
+    if (onColumnWidthChange) {
+      onColumnWidthChange(updatedHeaders);
+    }
+  }, [header, headers, rows, setHeaders, onColumnWidthChange]);
+
   if (!header) {
     return null;
   }
 
-  const ResizeHandle = columnResizing && !isSelectionColumn && (
+  const ResizeHandle = columnResizing && !isSelectionColumn && !isLastHeader && (
     <div
       className="st-header-resize-handle-container"
       role="separator"
@@ -450,6 +488,7 @@ const TableHeaderCell = ({
             collapsedHeaders,
             autoExpandColumns,
             reverse,
+            onColumnWidthChange,
           } as HandleResizeStartProps,
           limit: 10,
         });
@@ -473,10 +512,12 @@ const TableHeaderCell = ({
             collapsedHeaders,
             autoExpandColumns,
             reverse,
+            onColumnWidthChange,
           } as HandleResizeStartProps,
           limit: 10,
         });
       }}
+      onDoubleClick={handleResizeHandleDoubleClick}
     >
       <div className="st-header-resize-handle" />
     </div>
@@ -528,7 +569,7 @@ const TableHeaderCell = ({
       aria-expanded={isFilterDropdownOpen}
       aria-haspopup="dialog"
     >
-      {cloneElement(icons.filter as React.ReactElement, {
+      {cloneElement(icons.filter as React.ReactElement<any>, {
         style: {
           fill: currentFilter
             ? "var(--st-button-active-background-color)"

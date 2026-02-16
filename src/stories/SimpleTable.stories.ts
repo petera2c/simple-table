@@ -118,6 +118,7 @@ import CustomHeaderRenderingExample, {
   customHeaderRenderingExampleDefaults,
 } from "./examples/CustomHeaderRenderingExample";
 import NestedGridExample from "./examples/NestedGridExample";
+import ColumnWidthChangeExample from "./examples/ColumnWidthChangeExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -310,6 +311,23 @@ export const CollapsibleColumns: StoryObj<UniversalTableProps> = {
   argTypes: universalArgTypes,
   render: (args) =>
     React.createElement(StoryWrapper, { ExampleComponent: CollapsibleColumnsExample, ...args }),
+};
+
+export const ColumnWidthChange: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, { ExampleComponent: ColumnWidthChangeExample, ...args }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the onColumnWidthChange callback that fires when column widths are changed through resizing or auto-sizing (double-click). This allows consumers to persist user preferences for column widths. The callback receives the updated headers array with the new width values.",
+      },
+    },
+  },
 };
 
 export const ColumnVisibilityAPI: StoryObj<UniversalTableProps> = {
