@@ -530,7 +530,7 @@ const TableHeaderCell = ({
       aria-expanded={isFilterDropdownOpen}
       aria-haspopup="dialog"
     >
-      {cloneElement(icons.filter as React.ReactElement, {
+      {cloneElement(icons.filter as React.ReactElement<any>, {
         style: {
           fill: currentFilter
             ? "var(--st-button-active-background-color)"

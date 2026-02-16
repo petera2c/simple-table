@@ -5,8 +5,8 @@ const useScrollbarVisibility = ({
   mainSectionRef,
   scrollbarWidth,
 }: {
-  headerContainerRef?: RefObject<HTMLElement | null>;
-  mainSectionRef?: RefObject<HTMLElement | null>;
+  headerContainerRef?: RefObject<HTMLElement>;
+  mainSectionRef?: RefObject<HTMLElement>;
   scrollbarWidth: number;
 }) => {
   const [isMainSectionScrollable, setIsMainSectionScrollable] = useState(false);

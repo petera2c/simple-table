@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import { useTableContext } from "../../context/TableContext";
 import TableRow from "../../types/TableRow";
 import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
@@ -9,6 +9,7 @@ import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import HeaderObject from "../../types/HeaderObject";
 import { CumulativeHeightMap } from "../../utils/infiniteScrollUtils";
+import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 
 interface StickyParentsContainerProps {
   calculatedHeaderHeight: number;
@@ -46,6 +47,8 @@ const StickyParentsContainer = ({
   partiallyVisibleRows,
 }: StickyParentsContainerProps) => {
   const { collapsedHeaders, customTheme, editColumns, headers, rowHeight } = useTableContext();
+
+  const stickyParentsContainerRef = useRef<HTMLDivElement>(null);
 
   // Calculate offset for transitioning between sibling trees and determine which sticky parents should have the offset applied
   const { treeTransitionOffset, offsetStartIndex } = useMemo(() => {
@@ -93,7 +96,7 @@ const StickyParentsContainer = ({
         break;
       } else if (nextParent.depth < currentParent.depth) {
         newTreeStartIndex = stickyParents.findIndex(
-          (parent) => parent.depth === currentParent.depth
+          (parent) => parent.depth === currentParent.depth,
         );
         break;
       }
@@ -168,7 +171,7 @@ const StickyParentsContainer = ({
     sectionHeaders: HeaderObject[],
     pinned?: "left" | "right",
     width?: number,
-    columnIndexStart: number = 0
+    columnIndexStart: number = 0,
   ) => {
     return (
       <div
@@ -238,43 +241,45 @@ const StickyParentsContainer = ({
   })`;
 
   return (
-    <div
-      className="st-sticky-top"
-      style={{
-        height: `${stickyHeight}px`,
-        width: containerWidth,
-        top: `${calculatedHeaderHeight}px`,
-      }}
-    >
-      {/* Left pinned section */}
-      {pinnedLeftColumns.length > 0 &&
-        renderStickySection(
-          pinnedLeftTemplateColumns,
-          pinnedLeftColumns,
-          "left",
-          pinnedLeftWidth,
-          0
+    <ScrollSyncPane childRef={stickyParentsContainerRef} group="sticky-parents">
+      <div
+        className="st-sticky-top"
+        style={{
+          height: `${stickyHeight}px`,
+          width: containerWidth,
+          top: `${calculatedHeaderHeight}px`,
+        }}
+      >
+        {/* Left pinned section */}
+        {pinnedLeftColumns.length > 0 &&
+          renderStickySection(
+            pinnedLeftTemplateColumns,
+            pinnedLeftColumns,
+            "left",
+            pinnedLeftWidth,
+            0,
+          )}
+
+        {/* Main center section */}
+        {renderStickySection(
+          mainTemplateColumns,
+          currentHeaders,
+          undefined,
+          undefined,
+          pinnedLeftColumns.length,
         )}
 
-      {/* Main center section */}
-      {renderStickySection(
-        mainTemplateColumns,
-        currentHeaders,
-        undefined,
-        undefined,
-        pinnedLeftColumns.length
-      )}
-
-      {/* Right pinned section */}
-      {pinnedRightColumns.length > 0 &&
-        renderStickySection(
-          pinnedRightTemplateColumns,
-          pinnedRightColumns,
-          "right",
-          pinnedRightWidth,
-          pinnedLeftColumns.length + currentHeaders.length
-        )}
-    </div>
+        {/* Right pinned section */}
+        {pinnedRightColumns.length > 0 &&
+          renderStickySection(
+            pinnedRightTemplateColumns,
+            pinnedRightColumns,
+            "right",
+            pinnedRightWidth,
+            pinnedLeftColumns.length + currentHeaders.length,
+          )}
+      </div>
+    </ScrollSyncPane>
   );
 };
 

@@ -84,7 +84,7 @@ const TableBody = ({
         });
       }
     },
-    [tableBodyContainerRef]
+    [tableBodyContainerRef],
   );
 
   // Clear hover state when animations start
@@ -119,7 +119,7 @@ const TableBody = ({
   const totalRowCount = getTotalRowCount(tableRows);
   const totalHeight = useMemo(
     () => calculateTotalHeight(totalRowCount, rowHeight, heightOffsets, customTheme),
-    [totalRowCount, rowHeight, heightOffsets, customTheme]
+    [totalRowCount, rowHeight, heightOffsets, customTheme],
   );
 
   // Calculate column indices for all headers (including pinned) in one place
@@ -166,7 +166,7 @@ const TableBody = ({
         }, 1000);
       }
     },
-    [onLoadMore, shouldPaginate, isLoadingMore]
+    [onLoadMore, shouldPaginate, isLoadingMore],
   );
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -197,8 +197,8 @@ const TableBody = ({
         newScrollTop > previousScrollTop
           ? "down"
           : newScrollTop < previousScrollTop
-          ? "up"
-          : "none";
+            ? "up"
+            : "none";
 
       // Update scroll position and direction for asymmetric buffering
       setScrollTop(newScrollTop);
