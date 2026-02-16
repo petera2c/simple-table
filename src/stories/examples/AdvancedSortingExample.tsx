@@ -233,7 +233,7 @@ const headers: HeaderObject[] = [
 ];
 
 export const advancedSortingExampleDefaults: Partial<UniversalTableProps> = {
-  theme: "light",
+  theme: "modern-light",
   selectableCells: false,
   height: "600px",
 };

@@ -192,7 +192,7 @@ const headers: HeaderObject[] = [
 ];
 
 export const csvExportFormattingExampleDefaults: Partial<UniversalTableProps> = {
-  theme: "light",
+  theme: "modern-light",
   selectableCells: false,
   height: "500px",
 };
@@ -275,12 +275,7 @@ const CSVExportFormattingExample: React.FC<UniversalTableProps> = (props) => {
           📥 Export to CSV
         </button>
       </div>
-      <SimpleTable
-        tableRef={tableRef}
-        rows={sampleData}
-        defaultHeaders={headers}
-        {...props}
-      />
+      <SimpleTable tableRef={tableRef} rows={sampleData} defaultHeaders={headers} {...props} />
     </div>
   );
 };

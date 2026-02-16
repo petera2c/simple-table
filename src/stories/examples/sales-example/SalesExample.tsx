@@ -8,7 +8,7 @@ export const salesExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,
-  theme: "dark" as const,
+  theme: "modern-dark" as const,
   height: "70dvh",
 };
 

@@ -697,7 +697,7 @@ export const Pagination: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
     ...paginationDefaults,
-    theme: "dark",
+    theme: "modern-dark",
   },
   argTypes: universalArgTypes,
   render: (args) =>
@@ -708,7 +708,7 @@ export const PaginationAPI: StoryObj<UniversalTableProps> = {
   args: {
     ...defaultUniversalArgs,
     ...paginationDefaults,
-    theme: "dark",
+    theme: "modern-dark",
   },
   argTypes: universalArgTypes,
   render: (args) =>

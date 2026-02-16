@@ -178,7 +178,7 @@ const TableHeaderSection = ({
               parentHeader={cell.parentHeader}
               reverse={pinned === "right"}
               sort={sort}
-              isLastHeader={autoExpandColumns && cell.colIndex === lastHeaderIndex}
+              isLastHeader={autoExpandColumns && !pinned && cell.colIndex === lastHeaderIndex}
             />
           ))}
         </>

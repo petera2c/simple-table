@@ -178,7 +178,7 @@ const headers: HeaderObject[] = [
 ];
 
 export const clipboardFormattingExampleDefaults: Partial<UniversalTableProps> = {
-  theme: "light",
+  theme: "modern-light",
   selectableCells: true,
   height: "500px",
 };
