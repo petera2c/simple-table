@@ -1,0 +1,275 @@
+/* Modern Light Theme - Clean, minimal design inspired by contemporary table UIs
+ * 
+ * Design Philosophy:
+ * - Subtle borders (#f3f4f6) for a clean, uncluttered look
+ * - White backgrounds with minimal color variation
+ * - Hover states instead of alternating row colors
+ * - Generous padding (12px) for better readability
+ * - Rounded corners (8px) for a softer appearance
+ * - Modern blue accent (#3b82f6) for interactive elements
+ * - High contrast text (#111827) for accessibility
+ * - Lightweight visual hierarchy
+ * 
+ * Inspired by: Tailwind UI, Shadcn UI, and modern SaaS dashboards
+ */
+.theme-modern-light {
+  /* Layout/Structure variables - Tighter, more compact */
+  --st-border-radius: 8px;
+  --st-cell-padding: 12px;
+
+  /* Spacing variables - Reduced for cleaner look */
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+
+  /* Scrollbar variables - Minimal */
+  --st-scrollbar-bg-color: #fafafa;
+  --st-scrollbar-thumb-color: #d1d5db;
+  --st-scrollbar-width: thin;
+
+  /* Base/Structural colors - Very subtle borders */
+  --st-border-color: #f3f4f6;
+  --st-footer-background-color: var(--st-white);
+  --st-last-group-row-separator-border-color: #e5e7eb;
+
+  /* Row colors - Clean white background, subtle hover */
+  --st-odd-row-background-color: var(--st-white);
+  --st-even-row-background-color: var(--st-white);
+  --st-hover-row-background-color: #f9fafb;
+  --st-selected-row-background-color: #eff6ff;
+
+  /* Column colors - No alternating columns by default */
+  --st-odd-column-background-color: var(--st-white);
+  --st-even-column-background-color: var(--st-white);
+
+  /* Header colors - Minimal, clean header */
+  --st-header-background-color: var(--st-white);
+  --st-sub-header-background-color: #fafafa;
+  --st-header-label-color: #111827;
+  --st-header-icon-color: #6b7280;
+
+  /* Cell colors - Clean, high contrast text */
+  --st-cell-color: #111827;
+  --st-cell-odd-row-color: #374151;
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --st-sub-cell-background-color: #f9fafb;
+  --st-sub-cell-hover-background-color: #f3f4f6;
+
+  /* Selection colors - Subtle blue tint */
+  --st-selected-cell-background-color: #dbeafe;
+  --st-selected-first-cell-background-color: #eff6ff;
+  --st-selected-cell-color: #1e40af;
+  --st-selected-first-cell-color: #1e40af;
+  --st-selected-sub-cell-background-color: #bfdbfe;
+  --st-selected-sub-cell-color: #1e40af;
+  --st-dragging-background-color: #f3f4f6;
+  --st-dragging-sub-header-background-color: #e5e7eb;
+
+  /* Interactive element colors */
+  --st-resize-handle-color: #e5e7eb;
+  --st-resize-handle-selected-color: #3b82f6;
+
+  /* Border colors - Modern blue accent */
+  --st-selected-border-color: #3b82f6;
+  --st-editable-cell-focus-border-color: #3b82f6;
+  --st-focus-ring-color: #3b82f6;
+
+  /* Button colors - Clean, minimal */
+  --st-button-hover-background-color: #f3f4f6;
+  --st-button-active-background-color: #3b82f6;
+  --st-next-prev-btn-color: #6b7280;
+  --st-next-prev-btn-disabled-color: #d1d5db;
+  --st-page-btn-color: #6b7280;
+  --st-page-btn-hover-background-color: #f3f4f6;
+
+  /* Checkbox colors */
+  --st-checkbox-checked-background-color: #3b82f6;
+  --st-checkbox-checked-border-color: #3b82f6;
+  --st-checkbox-border-color: #d1d5db;
+
+  /* Column editor colors */
+  --st-column-editor-background-color: var(--st-white);
+  --st-column-editor-popout-background-color: var(--st-white);
+  --st-column-editor-text-color: #6b7280;
+
+  /* Form element colors */
+  --st-datepicker-weekday-color: #6b7280;
+  --st-datepicker-other-month-color: #d1d5db;
+  --st-filter-button-disabled-background-color: #f3f4f6;
+  --st-filter-button-disabled-text-color: #9ca3af;
+
+  /* Flash/Animation colors */
+  --st-cell-flash-color: #dbeafe;
+  --st-copy-flash-color: #3b82f6;
+  --st-warning-flash-color: #fca5a5;
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: #1f2937;
+  --st-tooltip-text-color: var(--st-white);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 6px 10px;
+  --st-tooltip-font-size: 12px;
+  --st-tooltip-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: #3b82f6;
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+  --st-header-highlight-indicator-color: #dbeafe;
+  --st-selection-highlight-indicator-color: #f3f4f6;
+
+  /* Utility colors */
+  --st-loading-skeleton-bg-color: #f3f4f6;
+  --st-chart-color: #60a5fa;
+  --st-chart-fill-color: #93c5fd;
+
+  /* Drag and drop colors */
+  --st-drag-separator-color: #3b82f6;
+
+  /* Body background for state rows */
+  --st-body-background-color: var(--st-white);
+}
+
+/* Modern Light theme specific overrides for even cleaner look */
+.theme-modern-light .st-wrapper {
+  border: 1px solid #f3f4f6;
+}
+
+/* Subtle header border */
+.theme-modern-light .st-header-pinned-left,
+.theme-modern-light .st-header-main,
+.theme-modern-light .st-header-pinned-right {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Remove heavy borders on pinned sections */
+.theme-modern-light .st-header-pinned-left,
+.theme-modern-light .st-body-pinned-left {
+  border-right: 1px solid #f3f4f6;
+}
+
+.theme-modern-light .st-header-pinned-right,
+.theme-modern-light .st-body-pinned-right {
+  border-left: 1px solid #f3f4f6;
+}
+
+/* Cleaner row separators */
+.theme-modern-light .st-row-separator {
+  background-color: #f9fafb;
+}
+
+/* Lighter header cell styling */
+.theme-modern-light .st-header-cell {
+  font-weight: 500;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Cleaner cell text */
+.theme-modern-light .st-cell-content {
+  font-size: 14px;
+  color: #111827;
+}
+
+/* Subtle hover effect */
+.theme-modern-light .st-row.hovered {
+  transition: background-color 0.15s ease;
+}
+
+/* Modern footer styling */
+.theme-modern-light .st-footer {
+  border-top: 1px solid #f3f4f6;
+  background-color: var(--st-white);
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+/* Footer text styling */
+.theme-modern-light .st-footer-results-text {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Footer pagination container - hide extra buttons on smaller screens */
+.theme-modern-light .st-footer-pagination {
+  gap: 2px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+/* Pagination ellipsis */
+.theme-modern-light .st-page-ellipsis {
+  color: #9ca3af;
+  font-weight: 400;
+  padding: 0 4px;
+}
+
+/* Cleaner pagination buttons - more compact */
+.theme-modern-light .st-page-btn {
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  padding: 6px 8px;
+  min-width: 36px;
+  transition: all 0.15s ease;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.theme-modern-light .st-page-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.theme-modern-light .st-page-btn.active {
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+}
+
+/* Hide buttons beyond the 9th one to prevent overflow */
+.theme-modern-light .st-page-btn:nth-child(n+10):not(.active) {
+  display: none;
+}
+
+/* Always show active button and adjacent buttons */
+.theme-modern-light .st-page-btn.active,
+.theme-modern-light .st-page-btn.active + .st-page-btn,
+.theme-modern-light .st-page-btn:has(+ .st-page-btn.active) {
+  display: inline-flex;
+}
+
+/* Next/Prev buttons */
+.theme-modern-light .st-next-prev-btn {
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.theme-modern-light .st-next-prev-btn:not(.disabled):hover {
+  background-color: #f3f4f6;
+}
+
+/* Modern scrollbar */
+.theme-modern-light .st-horizontal-scrollbar-container {
+  border-top: 1px solid #f3f4f6;
+  background-color: #fafafa;
+}
+
+/* Cleaner group headers */
+.theme-modern-light .st-group-header {
+  border-bottom: 1px solid #f3f4f6;
+  font-weight: 500;
+}
+
+/* Modern checkbox styling */
+.theme-modern-light .st-checkbox-custom {
+  border-radius: 4px;
+  border: 1.5px solid #d1d5db;
+}
+
+.theme-modern-light .st-checkbox-custom.st-checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
