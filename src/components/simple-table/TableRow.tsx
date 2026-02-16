@@ -210,13 +210,13 @@ const TableRow = ({
       className={`st-row ${isSticky ? "st-sticky-parent" : ""} ${
         useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""
       } ${isSelected ? "selected" : ""}`}
-      data-index={index}
+      data-index={position}
       role="row"
       aria-rowindex={position + maxHeaderDepth + 1}
       onMouseEnter={() => {
         // Don't apply hover effects during animations
         if (!isAnimating && useHoverRowBackground) {
-          setHoveredIndex(index);
+          setHoveredIndex(position);
         }
       }}
       style={rowStyle}
