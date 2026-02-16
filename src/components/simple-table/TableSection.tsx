@@ -62,10 +62,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
 
     return (
-      <ScrollSyncPane
-        childRef={internalRef as MutableRefObject<HTMLElement | null>}
-        group={scrollSyncGroup}
-      >
+      <ScrollSyncPane childRef={internalRef} group={scrollSyncGroup}>
         <div
           className={className}
           ref={internalRef}

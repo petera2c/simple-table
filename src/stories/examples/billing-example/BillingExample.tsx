@@ -2,6 +2,7 @@ import { HEADERS } from "./billing-headers";
 import SimpleTable from "../../../components/simple-table/SimpleTable";
 import billingData from "./billing-data.json";
 import { UniversalTableProps } from "../StoryWrapper";
+import Row from "../../../types/Row";
 
 // Default args specific to BillingExample - exported for reuse in stories and tests
 export const billingExampleDefaults = {
@@ -26,8 +27,7 @@ const BillingExample = (props: UniversalTableProps) => {
       initialSortDirection="desc"
       onGridReady={() => {}}
       rowGrouping={["invoices", "charges"]}
-      // @ts-ignore
-      rows={billingData}
+      rows={billingData as Row[]}
       selectableCells
       theme={props.theme}
       useOddColumnBackground
