@@ -27,7 +27,6 @@ interface StickyParentsContainerProps {
   scrollbarWidth: number;
   setHoveredIndex: (index: number | null) => void;
   stickyParents: TableRow[];
-  tableBodyContainerRef: RefObject<HTMLDivElement>;
 }
 
 const StickyParentsContainer = ({
@@ -46,7 +45,6 @@ const StickyParentsContainer = ({
   scrollTop,
   heightMap,
   partiallyVisibleRows,
-  tableBodyContainerRef,
 }: StickyParentsContainerProps) => {
   const { collapsedHeaders, customTheme, editColumns, headers, rowHeight } = useTableContext();
 
@@ -247,21 +245,9 @@ const StickyParentsContainer = ({
     editColumns ? `${COLUMN_EDIT_WIDTH}px` : "0px"
   })`;
 
-  // Handle wheel events to forward scroll to body container
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (tableBodyContainerRef.current) {
-      // Forward the scroll to the body container
-      tableBodyContainerRef.current.scrollTop += e.deltaY;
-      tableBodyContainerRef.current.scrollLeft += e.deltaX;
-      // Prevent default to avoid double scrolling
-      e.preventDefault();
-    }
-  };
-
   return (
     <div
       className="st-sticky-top"
-      onWheel={handleWheel}
       style={{
         height: `${stickyHeight}px`,
         width: containerWidth,
