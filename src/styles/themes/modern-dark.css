@@ -57,10 +57,10 @@
   /* Selection colors - Subtle blue tint for dark mode */
   --st-selected-cell-background-color: #1e40af;
   --st-selected-first-cell-background-color: #1e3a8a;
-  --st-selected-cell-color: #dbeafe;
-  --st-selected-first-cell-color: #dbeafe;
+  --st-selected-cell-color: #f3f4f6;
+  --st-selected-first-cell-color: #f3f4f6;
   --st-selected-sub-cell-background-color: #1e3a8a;
-  --st-selected-sub-cell-color: #dbeafe;
+  --st-selected-sub-cell-color: #f3f4f6;
   --st-dragging-background-color: #374151;
   --st-dragging-sub-header-background-color: #4b5563;
 
