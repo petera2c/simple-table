@@ -21,8 +21,9 @@ export const displayCell = ({
   // Check if manually hidden or excluded from render
   if (header.hide || header.excludeFromRender) return null;
 
-  // Check pinning
-  if ((pinned || header.pinned) && header.pinned !== pinned) return null;
+  // Check pinning - only filter out if header has an explicit pinned value that differs
+  // This allows children without explicit pinned values to inherit from their parent's section
+  if (header.pinned !== undefined && header.pinned !== pinned) return null;
 
   // Check if parent is collapsed and this child should be hidden
   if (
