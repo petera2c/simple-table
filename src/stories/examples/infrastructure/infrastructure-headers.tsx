@@ -21,7 +21,6 @@ export const HEADERS: HeaderObject[] = [
     },
   },
   {
-    pinned: "left",
     accessor: "serverName",
     align: "left",
     filterable: true,

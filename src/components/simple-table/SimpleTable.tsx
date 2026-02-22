@@ -304,7 +304,7 @@ const SimpleTableComp = ({
   }, [internalIsLoading, localRows, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [headers, setHeaders] = useState(defaultHeaders);
+  const [headers, setHeadersInternal] = useState(defaultHeaders);
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
@@ -333,7 +333,7 @@ const SimpleTableComp = ({
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
-    setHeaders(defaultHeaders);
+    setHeadersInternal(defaultHeaders);
   }, [defaultHeaders]);
 
   // Row selection hook - placeholder, will be defined after flattenedRows
@@ -409,16 +409,15 @@ const SimpleTableComp = ({
     };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
-  // Automatically scale main section columns to fill available width when autoExpandColumns is enabled
-  useAutoScaleMainSection({
+  // Get the wrapped setHeaders that applies auto-scaling
+  const setHeaders = useAutoScaleMainSection({
     autoExpandColumns,
     containerWidth,
-    isResizing,
-    headers,
     pinnedLeftWidth,
     pinnedRightWidth,
     mainBodyRef,
-    setHeaders,
+    isResizing,
+    setHeaders: setHeadersInternal,
   });
 
   const aggregatedRows = useAggregatedRows({
@@ -716,9 +715,12 @@ const SimpleTableComp = ({
     [prepareForSortChange, updateSort],
   );
 
-  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
-    setHeaders(newHeaders);
-  }, []);
+  const onTableHeaderDragEnd = useCallback(
+    (newHeaders: HeaderObject[]) => {
+      setHeaders(newHeaders);
+    },
+    [setHeaders],
+  );
 
   // Handle outside click
   useHandleOutsideClick({
