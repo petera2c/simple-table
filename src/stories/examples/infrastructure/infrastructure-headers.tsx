@@ -21,6 +21,7 @@ export const HEADERS: HeaderObject[] = [
     },
   },
   {
+    pinned: "left",
     accessor: "serverName",
     align: "left",
     filterable: true,
@@ -337,6 +338,7 @@ export const HEADERS: HeaderObject[] = [
   },
 
   {
+    pinned: "right",
     accessor: "status",
     label: "Status",
     width: 130,
