@@ -37,6 +37,7 @@ export const HEADERS: HeaderObject[] = [
     label: "Performance Metrics",
     width: 690,
     isSortable: false,
+    pinned: "left",
     children: [
       {
         accessor: "cpuHistory",
