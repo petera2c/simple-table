@@ -124,12 +124,7 @@ export const handleResizeStart = ({
     const sectionHeaders = headers.filter((h) => h.pinned === header.pinned);
     const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
     leafHeaders.forEach((h) => {
-      const width =
-        typeof h.width === "number"
-          ? h.width
-          : typeof h.width === "string" && h.width.endsWith("px")
-          ? parseFloat(h.width)
-          : 100;
+      const width = getHeaderWidthInPixels(h);
       initialWidthsMap.set(h.accessor as string, width);
     });
 
@@ -541,9 +536,18 @@ export const handleResizeWithAutoExpand = ({
     const isLeftmost = firstChildIndex === 0;
     const isRightmost = lastChildIndex === leafHeaders.length - 1;
 
+    // For pinned sections, when resizing the boundary column (facing the main section),
+    // we should grow/shrink the pinned section itself, not compensate from siblings
+    const isLeftPinnedBoundary = resizedHeader.pinned === "left" && isRightmost;
+    const isRightPinnedBoundary = resizedHeader.pinned === "right" && isLeftmost;
+    const isSectionBoundary = isLeftPinnedBoundary || isRightPinnedBoundary;
+
     let columnsToShrink: HeaderObject[];
 
-    if (isLeftmost) {
+    if (isSectionBoundary) {
+      // At section boundary: don't compensate, just grow/shrink the pinned section
+      columnsToShrink = [];
+    } else if (isLeftmost) {
       // Leftmost: shrink columns to the right
       columnsToShrink = leafHeaders.slice(lastChildIndex + 1);
     } else if (isRightmost) {
@@ -560,23 +564,26 @@ export const handleResizeWithAutoExpand = ({
 
     if (delta > 0) {
       // GROWING parent: Check if we need to shrink other columns
-      const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
-
       let actualDelta = delta;
       let needsCompensation = false;
 
-      if (newTotalWidthIfNoCompensation > sectionWidth) {
-        // We would exceed section width
-        needsCompensation = true;
+      // If at section boundary (columnsToShrink is empty), allow unlimited growth
+      if (columnsToShrink.length > 0) {
+        const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
 
-        // Calculate max possible shrinkage
-        const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
-          const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-          const canShrink = Math.max(0, initialWidth - ABSOLUTE_MIN_COLUMN_WIDTH);
-          return total + canShrink;
-        }, 0);
+        if (newTotalWidthIfNoCompensation > sectionWidth) {
+          // We would exceed section width
+          needsCompensation = true;
 
-        actualDelta = Math.min(delta, maxPossibleShrinkage);
+          // Calculate max possible shrinkage
+          const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
+            const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+            const canShrink = Math.max(0, initialWidth - ABSOLUTE_MIN_COLUMN_WIDTH);
+            return total + canShrink;
+          }, 0);
+
+          actualDelta = Math.min(delta, maxPossibleShrinkage);
+        }
       }
 
       // Resize all children proportionally
@@ -644,9 +651,18 @@ export const handleResizeWithAutoExpand = ({
   const isLeftmost = resizedIndex === 0;
   const isRightmost = resizedIndex === leafHeaders.length - 1;
 
+  // For pinned sections, when resizing the boundary column (facing the main section),
+  // we should grow/shrink the pinned section itself, not compensate from siblings
+  const isLeftPinnedBoundary = resizedHeader.pinned === "left" && isRightmost;
+  const isRightPinnedBoundary = resizedHeader.pinned === "right" && isLeftmost;
+  const isSectionBoundary = isLeftPinnedBoundary || isRightPinnedBoundary;
+
   let columnsToShrink: HeaderObject[];
 
-  if (isLeftmost) {
+  if (isSectionBoundary) {
+    // At section boundary: don't compensate, just grow/shrink the pinned section
+    columnsToShrink = [];
+  } else if (isLeftmost) {
     // Leftmost: always shrink to the right
     columnsToShrink = leafHeaders.slice(resizedIndex + 1);
   } else if (isRightmost) {
@@ -662,8 +678,8 @@ export const handleResizeWithAutoExpand = ({
   }
 
   if (columnsToShrink.length === 0) {
-    // No columns to compensate - shouldn't happen in autoExpand mode
-    // But if it does, just resize normally
+    // No columns to compensate - this happens when resizing a boundary column of a pinned section
+    // In this case, just resize normally to grow/shrink the pinned section itself
     // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
     const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
     resizedHeader.width = Math.max(startWidth + delta, minWidth);
