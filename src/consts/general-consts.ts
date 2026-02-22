@@ -26,6 +26,8 @@ export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
 export const PINNED_BORDER_WIDTH = 1;
 export const MAX_PINNED_WIDTH_PERCENT = 0.8;
 export const ABSOLUTE_MIN_COLUMN_WIDTH = 30; // Absolute minimum width for columns in autoExpandColumns mode
+export const CHART_COLUMN_TYPES = ["lineAreaChart", "barChart"];
+export const MIN_CHART_COLUMN_WIDTH = 150;
 
 /**
  * Get the maximum allowed width percentage for pinned columns based on viewport width
