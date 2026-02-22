@@ -1,7 +1,7 @@
 import {
   TABLE_HEADER_CELL_WIDTH_DEFAULT,
   CHART_COLUMN_TYPES,
-  MIN_CHART_COLUMN_WIDTH,
+  OPTIMAL_CHART_COLUMN_WIDTH,
 } from "../consts/general-consts";
 import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
@@ -333,7 +333,7 @@ export const calculateHeaderContentWidth = (
 
   // For chart columns, apply a minimum width
   if (isChartColumn) {
-    optimalWidth = Math.max(optimalWidth, MIN_CHART_COLUMN_WIDTH);
+    optimalWidth = Math.max(optimalWidth, OPTIMAL_CHART_COLUMN_WIDTH);
   }
 
   // Apply max width constraint
