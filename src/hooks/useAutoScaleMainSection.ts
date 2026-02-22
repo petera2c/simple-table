@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, RefObject } from "react";
 import HeaderObject from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
+import { getHeaderMinWidth } from "../utils/headerWidthUtils";
 
 interface AutoScaleOptions {
   autoExpandColumns: boolean;
@@ -28,6 +29,75 @@ const getLeafHeaders = (
     }
   });
   return leaves;
+};
+
+/**
+ * Check if a section can apply autoExpandColumns based on minWidth constraints
+ */
+const canAutoExpandSection = (
+  leafHeaders: HeaderObject[],
+  availableSectionWidth: number,
+): boolean => {
+  const totalMinWidth = leafHeaders.reduce((total, header) => {
+    return total + getHeaderMinWidth(header);
+  }, 0);
+
+  // If minWidths don't fit, we need horizontal scroll
+  return totalMinWidth <= availableSectionWidth;
+};
+
+/**
+ * Scale headers in a specific section to fill available width
+ */
+const scaleSection = (
+  leafHeaders: HeaderObject[],
+  availableSectionWidth: number,
+): Map<string, number> => {
+  const scaledWidths = new Map<string, number>();
+
+  const totalCurrentWidth = leafHeaders.reduce((total, header) => {
+    const width =
+      typeof header.width === "number"
+        ? header.width
+        : typeof header.width === "string" && header.width.endsWith("px")
+          ? parseFloat(header.width)
+          : 150;
+    return total + width;
+  }, 0);
+
+  if (totalCurrentWidth === 0) return scaledWidths;
+
+  const scaleFactor = availableSectionWidth / totalCurrentWidth;
+
+  // Only scale if needed (avoid tiny adjustments)
+  if (Math.abs(scaleFactor - 1) < 0.01) {
+    return scaledWidths;
+  }
+
+  let accumulatedWidth = 0;
+
+  leafHeaders.forEach((header, index) => {
+    const currentWidth =
+      typeof header.width === "number"
+        ? header.width
+        : typeof header.width === "string" && header.width.endsWith("px")
+          ? parseFloat(header.width)
+          : 150;
+
+    let newWidth: number;
+    if (index === leafHeaders.length - 1) {
+      // Last column gets the remaining width to ensure exact total
+      newWidth = availableSectionWidth - accumulatedWidth;
+    } else {
+      // Round intermediate columns
+      newWidth = Math.round(currentWidth * scaleFactor);
+      accumulatedWidth += newWidth;
+    }
+
+    scaledWidths.set(header.accessor as string, newWidth);
+  });
+
+  return scaledWidths;
 };
 
 /**
@@ -61,61 +131,42 @@ export const applyAutoScaleToHeaders = (
     availableMainSectionWidth = Math.max(0, containerWidth - pinnedLeftWidth - pinnedRightWidth);
   }
 
-  // If there's no space for the main section, don't scale
-  if (availableMainSectionWidth <= 0) return headers;
-
-  // Calculate total width based on leaf headers in main section only (not pinned)
+  // Get leaf headers for each section
+  const leftSectionHeaders = headers.filter((h) => h.pinned === "left");
+  const rightSectionHeaders = headers.filter((h) => h.pinned === "right");
   const mainSectionHeaders = headers.filter((h) => !h.pinned);
-  const leafHeaders = getLeafHeaders(mainSectionHeaders, undefined);
 
-  if (leafHeaders.length === 0) return headers;
+  const leftLeafHeaders = getLeafHeaders(leftSectionHeaders, "left");
+  const rightLeafHeaders = getLeafHeaders(rightSectionHeaders, "right");
+  const mainLeafHeaders = getLeafHeaders(mainSectionHeaders, undefined);
 
-  const totalCurrentWidth = leafHeaders.reduce((total, header) => {
-    const width =
-      typeof header.width === "number"
-        ? header.width
-        : typeof header.width === "string" && header.width.endsWith("px")
-          ? parseFloat(header.width)
-          : 150;
-    return total + width;
-  }, 0);
+  // Check each section to see if it can apply autoExpandColumns
+  const canExpandLeft = leftLeafHeaders.length > 0 && canAutoExpandSection(leftLeafHeaders, pinnedLeftWidth);
+  const canExpandRight = rightLeafHeaders.length > 0 && canAutoExpandSection(rightLeafHeaders, pinnedRightWidth);
+  const canExpandMain = mainLeafHeaders.length > 0 && availableMainSectionWidth > 0 && canAutoExpandSection(mainLeafHeaders, availableMainSectionWidth);
 
-  if (totalCurrentWidth === 0) return headers;
+  // Calculate scaled widths for each section that can be expanded
+  const scaledWidths = new Map<string, number>();
 
-  // Calculate scale factor to fill available main section width
-  const scaleFactor = availableMainSectionWidth / totalCurrentWidth;
-
-  // Only scale if needed (avoid tiny adjustments)
-  if (Math.abs(scaleFactor - 1) < 0.01) {
-    return headers;
+  if (canExpandLeft) {
+    const leftScaledWidths = scaleSection(leftLeafHeaders, pinnedLeftWidth);
+    leftScaledWidths.forEach((width, accessor) => scaledWidths.set(accessor, width));
   }
 
-  // Pre-calculate all scaled widths to handle rounding properly
-  const scaledWidths = new Map<string, number>();
-  let accumulatedWidth = 0;
+  if (canExpandRight) {
+    const rightScaledWidths = scaleSection(rightLeafHeaders, pinnedRightWidth);
+    rightScaledWidths.forEach((width, accessor) => scaledWidths.set(accessor, width));
+  }
 
-  leafHeaders.forEach((header, index) => {
-    if (header.pinned) return; // Skip pinned columns
+  if (canExpandMain) {
+    const mainScaledWidths = scaleSection(mainLeafHeaders, availableMainSectionWidth);
+    mainScaledWidths.forEach((width, accessor) => scaledWidths.set(accessor, width));
+  }
 
-    const currentWidth =
-      typeof header.width === "number"
-        ? header.width
-        : typeof header.width === "string" && header.width.endsWith("px")
-          ? parseFloat(header.width)
-          : 150;
-
-    let newWidth: number;
-    if (index === leafHeaders.length - 1) {
-      // Last column gets the remaining width to ensure exact total
-      newWidth = availableMainSectionWidth - accumulatedWidth;
-    } else {
-      // Round intermediate columns
-      newWidth = Math.round(currentWidth * scaleFactor);
-      accumulatedWidth += newWidth;
-    }
-
-    scaledWidths.set(header.accessor as string, newWidth);
-  });
+  // If no sections can be expanded, return headers unchanged
+  if (scaledWidths.size === 0) {
+    return headers;
+  }
 
   // Recursively scale all headers (including nested children)
   const scaleHeader = (header: HeaderObject, rootPinned?: Pinned): HeaderObject => {
@@ -124,17 +175,9 @@ export const applyAutoScaleToHeaders = (
     const currentRootPinned = rootPinned ?? header.pinned;
     const scaledChildren = header.children?.map((child) => scaleHeader(child, currentRootPinned));
 
-    // Only scale leaf headers (columns without children) that are not pinned
+    // Only scale leaf headers (columns without children)
     if (!header.children || header.children.length === 0) {
-      // Don't scale pinned columns (use rootPinned - child may inherit from parent)
-      if (currentRootPinned) {
-        return {
-          ...header,
-          children: scaledChildren,
-        };
-      }
-
-      // Use pre-calculated width from the map
+      // Use pre-calculated width from the map if available
       const newWidth = scaledWidths.get(header.accessor as string);
       if (newWidth !== undefined) {
         return {
@@ -144,17 +187,9 @@ export const applyAutoScaleToHeaders = (
         };
       }
 
-      // Fallback (shouldn't happen)
-      const currentWidth =
-        typeof header.width === "number"
-          ? header.width
-          : typeof header.width === "string" && header.width.endsWith("px")
-            ? parseFloat(header.width)
-            : 150;
-
+      // No scaling for this header - return as is
       return {
         ...header,
-        width: Math.round(currentWidth * scaleFactor),
         children: scaledChildren,
       };
     }

@@ -3,6 +3,7 @@ import {
   CHART_COLUMN_TYPES,
   MIN_CHART_COLUMN_WIDTH,
 } from "../consts/general-consts";
+import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { getCellId } from "./cellUtils";
 import { getNestedValue } from "./rowUtils";
@@ -91,7 +92,7 @@ export const removeAllFractionalWidths = (header: HeaderObject): void => {
  * Calculate the minimum width for a header
  */
 export const getHeaderMinWidth = (header: HeaderObject): number => {
-  return typeof header.minWidth === "number" ? header.minWidth : 40;
+  return typeof header.minWidth === "number" ? header.minWidth : MIN_COLUMN_WIDTH;
 };
 
 /**

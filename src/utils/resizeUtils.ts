@@ -8,7 +8,7 @@ import {
   getHeaderMinWidth,
   getAllVisibleLeafHeaders,
 } from "./headerWidthUtils";
-import { getResponsiveMaxPinnedPercent, ABSOLUTE_MIN_COLUMN_WIDTH } from "../consts/general-consts";
+import { MIN_COLUMN_WIDTH, getMaxPinnedSectionPercent } from "../consts/column-constraints";
 import { calculatePinnedWidth } from "./headerUtils";
 import { findParentHeader } from "./collapseUtils";
 
@@ -41,15 +41,25 @@ const calculateMaxHeaderWidth = ({
   }
 
   const containerWidth = tableContainer.clientWidth;
-  // Use responsive max pinned percent based on viewport width for better mobile compatibility
-  const maxPinnedPercent = getResponsiveMaxPinnedPercent(window.innerWidth);
-  const maxPinnedSectionWidth = containerWidth * maxPinnedPercent;
 
   // If this is not a pinned header, don't impose a maximum width constraint
   // Main section columns can grow as needed since they have horizontal scroll
   if (!header.pinned) {
     return Infinity; // No max width limit for main section columns
   }
+
+  // Check if we have both pinned sections to apply appropriate constraints
+  const hasPinnedLeft = headers.some((h) => h.pinned === "left" && !h.hide);
+  const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
+
+  // Get the appropriate max percent based on number of pinned sections
+  // Use containerWidth (st-body-container width) for responsive breakpoints
+  const maxPinnedPercent = getMaxPinnedSectionPercent(
+    containerWidth,
+    hasPinnedLeft,
+    hasPinnedRight,
+  );
+  const maxPinnedSectionWidth = containerWidth * maxPinnedPercent;
 
   // For pinned headers, calculate the current width of the pinned section (excluding the header being resized)
   const pinnedHeaders = headers.filter(
@@ -309,12 +319,10 @@ const handleParentHeaderResize = ({
 export const recalculateAllSectionWidths = ({
   headers,
   containerWidth,
-  maxPinnedWidthPercent = getResponsiveMaxPinnedPercent(window.innerWidth),
   collapsedHeaders,
 }: {
   headers: HeaderObject[];
   containerWidth?: number;
-  maxPinnedWidthPercent?: number;
   collapsedHeaders?: Set<string>;
 }) => {
   let leftWidth = 0;
@@ -347,9 +355,20 @@ export const recalculateAllSectionWidths = ({
 
   // Apply width limits if container width is provided
   if (containerWidth && containerWidth > 0) {
-    const maxPinnedWidth = containerWidth * maxPinnedWidthPercent;
+    // Check if we have both pinned sections
+    const hasPinnedLeft = leftWidth > 0;
+    const hasPinnedRight = rightWidth > 0;
 
-    // Limit each pinned section to the specified percentage of container width
+    // Get the appropriate max percent based on number of pinned sections
+    // Use containerWidth (st-body-container width) for responsive breakpoints
+    const maxPercent = getMaxPinnedSectionPercent(
+      containerWidth,
+      hasPinnedLeft,
+      hasPinnedRight,
+    );
+    const maxPinnedWidth = containerWidth * maxPercent;
+
+    // Limit each pinned section to the calculated percentage of container width
     if (leftWidth > maxPinnedWidth) {
       leftWidth = maxPinnedWidth;
     }
@@ -420,11 +439,11 @@ const distributeCompensationProportionally = ({
   while (remainingCompensation > 0.5) {
     // 0.5px threshold to avoid floating point issues
     // Calculate headroom for each column (initial width - minWidth)
-    // In autoExpandColumns mode, we use ABSOLUTE_MIN_COLUMN_WIDTH instead of header minWidth
+    // In autoExpandColumns mode, we use MIN_COLUMN_WIDTH instead of header minWidth
     const headrooms = columnsToShrink.map((col) => {
       // Use initial width from the map (captured at drag start)
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-      const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
+      const minWidth = MIN_COLUMN_WIDTH;
       return {
         column: col,
         headroom: Math.max(0, initialWidth - minWidth),
@@ -467,9 +486,9 @@ const distributeCompensationProportionally = ({
       remainingCompensation -= compensationDistributed;
     } else {
       // CASE 2: All columns at minWidth
-      // Start shrinking minWidths equally, but not below ABSOLUTE_MIN_COLUMN_WIDTH
+      // Start shrinking minWidths equally, but not below MIN_COLUMN_WIDTH
       const columnsAboveAbsoluteMin = headrooms.filter(
-        (h) => h.minWidth > ABSOLUTE_MIN_COLUMN_WIDTH,
+        (h) => h.minWidth > MIN_COLUMN_WIDTH,
       );
 
       if (columnsAboveAbsoluteMin.length > 0) {
@@ -480,7 +499,7 @@ const distributeCompensationProportionally = ({
 
         let compensationDistributed = 0;
         columnsAboveAbsoluteMin.forEach((item, index) => {
-          const maxShrink = item.minWidth - ABSOLUTE_MIN_COLUMN_WIDTH;
+          const maxShrink = item.minWidth - MIN_COLUMN_WIDTH;
           let compensation = Math.min(compensationPerColumn, maxShrink);
 
           // Last column takes remaining
@@ -490,7 +509,7 @@ const distributeCompensationProportionally = ({
 
           const newWidth = item.initialWidth - compensation;
           item.column.width = newWidth;
-          item.column.minWidth = Math.max(newWidth, ABSOLUTE_MIN_COLUMN_WIDTH);
+          item.column.minWidth = Math.max(newWidth, MIN_COLUMN_WIDTH);
           compensationDistributed += compensation;
         });
 
@@ -592,7 +611,7 @@ export const handleResizeWithAutoExpand = ({
           // Calculate max possible shrinkage
           const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
             const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-            const canShrink = Math.max(0, initialWidth - ABSOLUTE_MIN_COLUMN_WIDTH);
+            const canShrink = Math.max(0, initialWidth - MIN_COLUMN_WIDTH);
             return total + canShrink;
           }, 0);
 
@@ -611,7 +630,7 @@ export const handleResizeWithAutoExpand = ({
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
         // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-        const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
+        const minWidth = MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
       });
 
@@ -631,14 +650,14 @@ export const handleResizeWithAutoExpand = ({
 
       const newTotalWidth = Math.max(
         startWidth + delta,
-        ABSOLUTE_MIN_COLUMN_WIDTH * childrenToResize.length,
+        MIN_COLUMN_WIDTH * childrenToResize.length,
       );
       const scaleFactor = newTotalWidth / totalOriginalWidth;
 
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
         // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-        const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
+        const minWidth = MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
       });
 
@@ -695,13 +714,13 @@ export const handleResizeWithAutoExpand = ({
     // No columns to compensate - this happens when resizing a boundary column of a pinned section
     // In this case, just resize normally to grow/shrink the pinned section itself
     // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-    const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
+    const minWidth = MIN_COLUMN_WIDTH;
     resizedHeader.width = Math.max(startWidth + delta, minWidth);
     return;
   }
 
   // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-  const minWidth = ABSOLUTE_MIN_COLUMN_WIDTH;
+  const minWidth = MIN_COLUMN_WIDTH;
 
   // Calculate current total width and what it would be after resize
   const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
@@ -720,7 +739,7 @@ export const handleResizeWithAutoExpand = ({
     // Calculate how much others can shrink
     const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-      const canShrink = Math.max(0, initialWidth - ABSOLUTE_MIN_COLUMN_WIDTH);
+      const canShrink = Math.max(0, initialWidth - MIN_COLUMN_WIDTH);
       return total + canShrink;
     }, 0);
 
