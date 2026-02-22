@@ -25,4 +25,4 @@ export const COLUMN_EDIT_WIDTH = 29.5;
 export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
 export const PINNED_BORDER_WIDTH = 1;
 export const CHART_COLUMN_TYPES = ["lineAreaChart", "barChart"];
-export const MIN_CHART_COLUMN_WIDTH = 150;
+export const OPTIMAL_CHART_COLUMN_WIDTH = 150;
