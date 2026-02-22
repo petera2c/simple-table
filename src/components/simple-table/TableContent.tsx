@@ -94,21 +94,21 @@ const TableContent = ({
 
   const tableBodyProps: TableBodyProps = {
     calculatedHeaderHeight,
+    heightMap,
     mainTemplateColumns,
+    partiallyVisibleRows,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,
     pinnedLeftWidth,
     pinnedRightColumns,
     pinnedRightTemplateColumns,
     pinnedRightWidth,
-    rowsToRender,
-    stickyParents,
     regularRows,
-    partiallyVisibleRows,
-    heightMap,
+    rowsToRender,
     setScrollDirection,
     setScrollTop,
     shouldShowEmptyState,
+    stickyParents,
     tableRows,
   };
 
