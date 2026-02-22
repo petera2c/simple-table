@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, RefObject } from "react";
 import HeaderObject from "../types/HeaderObject";
+import { Pinned } from "../types/Pinned";
 
 interface AutoScaleOptions {
   autoExpandColumns: boolean;
@@ -11,12 +12,17 @@ interface AutoScaleOptions {
 }
 
 // Helper to get all leaf headers (actual columns that render)
-const getLeafHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+// rootPinned is passed from parent - used to filter leaves by section
+const getLeafHeaders = (
+  headers: HeaderObject[],
+  rootPinned?: Pinned,
+): HeaderObject[] => {
   const leaves: HeaderObject[] = [];
   headers.forEach((header) => {
     if (header.hide) return;
+    const currentRootPinned = rootPinned ?? header.pinned;
     if (header.children && header.children.length > 0) {
-      leaves.push(...getLeafHeaders(header.children));
+      leaves.push(...getLeafHeaders(header.children, currentRootPinned));
     } else {
       leaves.push(header);
     }
@@ -60,7 +66,7 @@ export const applyAutoScaleToHeaders = (
 
   // Calculate total width based on leaf headers in main section only (not pinned)
   const mainSectionHeaders = headers.filter((h) => !h.pinned);
-  const leafHeaders = getLeafHeaders(mainSectionHeaders);
+  const leafHeaders = getLeafHeaders(mainSectionHeaders, undefined);
 
   if (leafHeaders.length === 0) return headers;
 
@@ -112,15 +118,16 @@ export const applyAutoScaleToHeaders = (
   });
 
   // Recursively scale all headers (including nested children)
-  const scaleHeader = (header: HeaderObject): HeaderObject => {
+  const scaleHeader = (header: HeaderObject, rootPinned?: Pinned): HeaderObject => {
     if (header.hide) return header;
 
-    const scaledChildren = header.children?.map(scaleHeader);
+    const currentRootPinned = rootPinned ?? header.pinned;
+    const scaledChildren = header.children?.map((child) => scaleHeader(child, currentRootPinned));
 
     // Only scale leaf headers (columns without children) that are not pinned
     if (!header.children || header.children.length === 0) {
-      // Don't scale pinned columns
-      if (header.pinned) {
+      // Don't scale pinned columns (use rootPinned - child may inherit from parent)
+      if (currentRootPinned) {
         return {
           ...header,
           children: scaledChildren,
@@ -159,7 +166,7 @@ export const applyAutoScaleToHeaders = (
     };
   };
 
-  return headers.map(scaleHeader);
+  return headers.map((header) => scaleHeader(header, header.pinned));
 };
 
 interface UseAutoScaleMainSectionProps {
@@ -210,7 +217,9 @@ export const useAutoScaleMainSection = ({
         const newHeaders =
           typeof headersOrUpdater === "function" ? headersOrUpdater(prevHeaders) : headersOrUpdater;
 
-        return applyAutoScaleToHeaders(newHeaders, optionsRef.current);
+        const newHeadersScaled = applyAutoScaleToHeaders(newHeaders, optionsRef.current);
+
+        return newHeadersScaled;
       });
     },
     [setHeaders],

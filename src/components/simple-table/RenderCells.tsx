@@ -31,8 +31,9 @@ const RenderCells = ({
   tableRow,
 }: RenderCellsProps) => {
   const { collapsedHeaders } = useTableContext();
+
   const filteredHeaders = headers.filter((header) =>
-    displayCell({ header, pinned, headers, collapsedHeaders })
+    displayCell({ header, pinned, headers, collapsedHeaders, rootPinned: header.pinned }),
   );
 
   return (
@@ -45,6 +46,7 @@ const RenderCells = ({
           <RecursiveRenderCells
             columnIndices={columnIndices}
             displayRowNumber={displayRowNumber}
+            rootPinned={header.pinned}
             header={header}
             headers={headers}
             key={cellKey}
@@ -68,6 +70,7 @@ const RecursiveRenderCells = ({
   nestedIndex,
   parentHeader,
   pinned,
+  rootPinned,
   rowIndex,
   rowIndices,
   tableRow,
@@ -79,6 +82,7 @@ const RecursiveRenderCells = ({
   nestedIndex: number;
   parentHeader?: HeaderObject;
   pinned?: Pinned;
+  rootPinned?: Pinned;
   rowIndex: number;
   rowIndices: RowIndices;
   tableRow: TableRowType;
@@ -94,7 +98,7 @@ const RecursiveRenderCells = ({
 
   if (header.children && header.children.length > 0) {
     const filteredChildren = header.children.filter((child) =>
-      displayCell({ header: child, pinned, headers, collapsedHeaders })
+      displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned }),
     );
 
     // With singleRowChildren, we render both parent and children as siblings
@@ -127,6 +131,7 @@ const RecursiveRenderCells = ({
               <RecursiveRenderCells
                 columnIndices={columnIndices}
                 displayRowNumber={displayRowNumber}
+                rootPinned={rootPinned}
                 header={child}
                 headers={headers}
                 key={childCellKey}
@@ -152,6 +157,7 @@ const RecursiveRenderCells = ({
             <RecursiveRenderCells
               columnIndices={columnIndices}
               displayRowNumber={displayRowNumber}
+              rootPinned={rootPinned}
               header={child}
               headers={headers}
               key={childCellKey}
