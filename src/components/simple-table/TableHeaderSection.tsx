@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { displayCell } from "../../utils/cellUtils";
+import { Pinned } from "../../types/Pinned";
 import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
@@ -34,8 +35,8 @@ const TableHeaderSection = ({
   // We need to find the last leaf header (actual column) in this section
   const lastHeaderIndex = useMemo(() => {
     // Helper to get all leaf headers recursively
-    const getLeafHeaders = (header: HeaderObject): HeaderObject[] => {
-      if (!displayCell({ header, pinned, headers, collapsedHeaders })) {
+    const getLeafHeaders = (header: HeaderObject, rootPinned?: Pinned): HeaderObject[] => {
+      if (!displayCell({ header, pinned, headers, collapsedHeaders, rootPinned })) {
         return [];
       }
 
@@ -45,11 +46,11 @@ const TableHeaderSection = ({
       }
 
       // Recursively get leaf headers from children
-      return header.children.flatMap((child) => getLeafHeaders(child));
+      return header.children.flatMap((child) => getLeafHeaders(child, rootPinned));
     };
 
     // Get all leaf headers from all top-level headers in this section
-    const allLeafHeaders = headers.flatMap((header) => getLeafHeaders(header));
+    const allLeafHeaders = headers.flatMap((header) => getLeafHeaders(header, header.pinned));
 
     if (allLeafHeaders.length === 0) return -1;
 
@@ -69,8 +70,9 @@ const TableHeaderSection = ({
       depth: number,
       isFirst = false,
       parentHeader?: HeaderObject,
+      rootPinned?: Pinned,
     ) => {
-      if (!displayCell({ header, pinned, headers, collapsedHeaders })) return 0;
+      if (!displayCell({ header, pinned, headers, collapsedHeaders, rootPinned })) return 0;
 
       // Only increment for non-first siblings
       if (!isFirst) {
@@ -79,7 +81,7 @@ const TableHeaderSection = ({
 
       const childrenLength =
         header.children?.filter((child) =>
-          displayCell({ header: child, pinned, headers, collapsedHeaders }),
+          displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned }),
         ).length ?? 0;
 
       const gridColumnStart = columnCounter;
@@ -125,9 +127,9 @@ const TableHeaderSection = ({
 
         let isFirstChild = !shouldIncrementForChildren; // If we increment, first child is not "first"
         header.children.forEach((child) => {
-          if (displayCell({ header: child, pinned, headers, collapsedHeaders })) {
+          if (displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned })) {
             // Pass current header as parent for children
-            processHeader(child, childDepth, isFirstChild, header);
+            processHeader(child, childDepth, isFirstChild, header, rootPinned);
             isFirstChild = false;
           }
         });
@@ -138,12 +140,12 @@ const TableHeaderSection = ({
 
     // Process all top-level headers
     const topLevelHeaders = headers.filter((header) =>
-      displayCell({ header, pinned, headers, collapsedHeaders }),
+      displayCell({ header, pinned, headers, collapsedHeaders, rootPinned: header.pinned }),
     );
 
     let isFirstHeader = true;
     topLevelHeaders.forEach((header) => {
-      processHeader(header, 1, isFirstHeader);
+      processHeader(header, 1, isFirstHeader, undefined, header.pinned);
       isFirstHeader = false;
     });
 
