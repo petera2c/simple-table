@@ -74,6 +74,7 @@ const TableHeaderCell = ({
     columnBorders,
     columnReordering,
     columnResizing,
+    containerWidth,
     columnsWithSelectedCells,
     draggedHeaderRef,
     enableHeaderEditing,
@@ -262,7 +263,7 @@ const TableHeaderCell = ({
       setLocalLabel(newLabel);
       // Update the header object
       const updatedHeaders = headers.map((h) =>
-        h.accessor === header.accessor ? { ...h, label: newLabel } : h
+        h.accessor === header.accessor ? { ...h, label: newLabel } : h,
       );
       setHeaders(updatedHeaders);
 
@@ -271,7 +272,7 @@ const TableHeaderCell = ({
         onHeaderEdit(header, newLabel);
       }
     },
-    [headers, setHeaders, onHeaderEdit, header]
+    [headers, setHeaders, onHeaderEdit, header],
   );
 
   // Close header dropdown
@@ -295,7 +296,7 @@ const TableHeaderCell = ({
         return newSet;
       });
     },
-    [setCollapsedHeaders, isCollapsed, header.accessor]
+    [setCollapsedHeaders, isCollapsed, header.accessor],
   );
 
   // Sort and select handler
@@ -317,7 +318,7 @@ const TableHeaderCell = ({
 
       // Check if this header is already selected and header editing is enabled
       const isHeaderAlreadySelected = columnsToSelect.some((columnIndex) =>
-        selectedColumns.has(columnIndex)
+        selectedColumns.has(columnIndex),
       );
 
       if (enableHeaderEditing && isHeaderAlreadySelected && !event.shiftKey) {
@@ -435,7 +436,7 @@ const TableHeaderCell = ({
       maxWidth: 500,
       sampleSize: 50,
     });
-    
+
     // Get the path to the header in the nested structure
     const path = getHeaderIndexPath(headers, header.accessor);
     if (!path) return;
@@ -443,16 +444,16 @@ const TableHeaderCell = ({
     // Get the sibling array containing this header
     const siblings = getSiblingArray(headers, path);
     const headerIndex = path[path.length - 1];
-    
+
     // Update the header with the new width
-    const updatedSiblings = siblings.map((h, i) => 
-      i === headerIndex ? { ...h, width: contentWidth } : h
+    const updatedSiblings = siblings.map((h, i) =>
+      i === headerIndex ? { ...h, width: contentWidth } : h,
     );
-    
+
     // Set the updated sibling array back into the headers tree
     const updatedHeaders = setSiblingArray(headers, path, updatedSiblings);
     setHeaders(updatedHeaders);
-    
+
     // Notify consumer of width change
     if (onColumnWidthChange) {
       onColumnWidthChange(updatedHeaders);
@@ -472,23 +473,23 @@ const TableHeaderCell = ({
       onMouseDown={(event: MouseEvent) => {
         // Get the start width from the DOM element directly if ref is not available
         const startWidth = document.getElementById(
-          getCellId({ accessor: header.accessor, rowId: "header" })
+          getCellId({ accessor: header.accessor, rowId: "header" }),
         )?.offsetWidth;
 
         throttle({
           callback: handleResizeStart,
           callbackProps: {
+            autoExpandColumns,
+            collapsedHeaders,
+            containerWidth,
             event: event.nativeEvent,
             header,
             headers,
+            onColumnWidthChange,
+            reverse,
             setHeaders,
             setIsResizing,
-            tableBodyContainerRef,
             startWidth,
-            collapsedHeaders,
-            autoExpandColumns,
-            reverse,
-            onColumnWidthChange,
           } as HandleResizeStartProps,
           limit: 10,
         });
@@ -496,23 +497,23 @@ const TableHeaderCell = ({
       onTouchStart={(event: TouchEvent) => {
         // Get the start width from the DOM element directly if ref is not available
         const startWidth = document.getElementById(
-          getCellId({ accessor: header.accessor, rowId: "header" })
+          getCellId({ accessor: header.accessor, rowId: "header" }),
         )?.offsetWidth;
 
         throttle({
           callback: handleResizeStart,
           callbackProps: {
+            autoExpandColumns,
+            collapsedHeaders,
+            containerWidth,
             event,
             header,
             headers,
+            onColumnWidthChange,
+            reverse,
             setHeaders,
             setIsResizing,
-            tableBodyContainerRef,
             startWidth,
-            collapsedHeaders,
-            autoExpandColumns,
-            reverse,
-            onColumnWidthChange,
           } as HandleResizeStartProps,
           limit: 10,
         });
@@ -627,8 +628,8 @@ const TableHeaderCell = ({
           header.align === "right"
             ? "right-aligned"
             : header.align === "center"
-            ? "center-aligned"
-            : "left-aligned"
+              ? "center-aligned"
+              : "left-aligned"
         }`}
       >
         {isSelectionColumn ? (
