@@ -106,7 +106,6 @@ const TableHeaderCell = ({
     setIsResizing,
     setSelectedCells,
     setSelectedColumns,
-    tableBodyContainerRef,
   } = useTableContext();
 
   // Derived state
