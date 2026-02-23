@@ -25,7 +25,6 @@ import useWindowResize from "../../hooks/useWindowResize";
 import { FilterCondition } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
-import { getResponsiveMaxPinnedPercent } from "../../consts/general-consts";
 import { useTableDimensions } from "../../hooks/useTableDimensions";
 import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
@@ -45,6 +44,7 @@ import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { checkDeprecatedProps } from "../../utils/deprecatedPropsWarnings";
+import { useAutoScaleMainSection } from "../../hooks/useAutoScaleMainSection";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
@@ -303,7 +303,7 @@ const SimpleTableComp = ({
   }, [internalIsLoading, localRows, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [headers, setHeaders] = useState(defaultHeaders);
+  const [headers, setHeadersInternal] = useState(defaultHeaders);
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
@@ -332,7 +332,7 @@ const SimpleTableComp = ({
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
-    setHeaders(defaultHeaders);
+    setHeadersInternal(defaultHeaders);
   }, [defaultHeaders]);
 
   // Row selection hook - placeholder, will be defined after flattenedRows
@@ -381,10 +381,6 @@ const SimpleTableComp = ({
     tableBodyContainerRef,
   });
 
-  // Track the last container width we scaled to and visible column count
-  const lastScaledWidthRef = useRef<number>(0);
-  const lastVisibleColumnCountRef = useRef<number>(0);
-
   // Calculate the width of the sections
   const {
     mainBodyWidth,
@@ -393,14 +389,10 @@ const SimpleTableComp = ({
     pinnedLeftContentWidth,
     pinnedRightContentWidth,
   } = useMemo(() => {
-    // Get responsive max pinned percent based on viewport width for better mobile compatibility
-    const maxPinnedWidthPercent = getResponsiveMaxPinnedPercent(window.innerWidth);
-
     const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
       recalculateAllSectionWidths({
         headers: effectiveHeaders,
         containerWidth,
-        maxPinnedWidthPercent,
         collapsedHeaders,
       });
     return {
@@ -412,161 +404,16 @@ const SimpleTableComp = ({
     };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
 
-  // Scale columns to fill container width when autoExpandColumns is enabled
-  useEffect(() => {
-    if (!autoExpandColumns || containerWidth === 0 || isResizing) return;
-
-    // Helper to get all leaf headers (actual columns that render)
-    const getLeafHeaders = (headers: HeaderObject[]): HeaderObject[] => {
-      const leaves: HeaderObject[] = [];
-      headers.forEach((header) => {
-        if (header.hide) return;
-        if (header.children && header.children.length > 0) {
-          leaves.push(...getLeafHeaders(header.children));
-        } else {
-          leaves.push(header);
-        }
-      });
-      return leaves;
-    };
-
-    // Calculate the available viewport width for the main section
-    // Use the actual DOM width of the main body section if available
-    // Otherwise calculate from container minus pinned sections
-    let availableMainSectionWidth: number;
-    if (mainBodyRef.current) {
-      // Use the actual measured width from the DOM (most accurate)
-      availableMainSectionWidth = mainBodyRef.current.clientWidth;
-    } else {
-      // Fallback calculation: container minus pinned sections
-      // Note: pinnedLeftWidth and pinnedRightWidth already include PINNED_BORDER_WIDTH
-      availableMainSectionWidth = Math.max(0, containerWidth - pinnedLeftWidth - pinnedRightWidth);
-    }
-
-    // If there's no space for the main section, don't scale
-    if (availableMainSectionWidth <= 0) return;
-
-    // Count visible columns in main section only (exclude pinned columns)
-    const mainSectionHeaders = headers.filter((h) => !h.pinned);
-    const visibleColumnCount = getLeafHeaders(mainSectionHeaders).length;
-    const visibleColumnCountChanged = visibleColumnCount !== lastVisibleColumnCountRef.current;
-
-    // Only rescale if container width changed significantly OR visible column count changed
-    if (
-      !visibleColumnCountChanged &&
-      Math.abs(availableMainSectionWidth - lastScaledWidthRef.current) < 10
-    )
-      return;
-
-    setHeaders((currentHeaders) => {
-      // Calculate total width based on leaf headers in main section only (not pinned)
-      const mainSectionHeaders = currentHeaders.filter((h) => !h.pinned);
-      const leafHeaders = getLeafHeaders(mainSectionHeaders);
-      const totalCurrentWidth = leafHeaders.reduce((total, header) => {
-        const width =
-          typeof header.width === "number"
-            ? header.width
-            : typeof header.width === "string" && header.width.endsWith("px")
-              ? parseFloat(header.width)
-              : 150;
-        return total + width;
-      }, 0);
-
-      if (totalCurrentWidth === 0) return currentHeaders;
-
-      // Calculate scale factor to fill available main section width
-      const scaleFactor = availableMainSectionWidth / totalCurrentWidth;
-
-      // Only scale if needed (avoid tiny adjustments)
-      if (Math.abs(scaleFactor - 1) < 0.01) {
-        return currentHeaders;
-      }
-
-      lastScaledWidthRef.current = availableMainSectionWidth;
-      lastVisibleColumnCountRef.current = leafHeaders.length;
-
-      // Pre-calculate all scaled widths to handle rounding properly
-      // We'll track the accumulated width and adjust the last column to match exactly
-      const scaledWidths = new Map<string, number>();
-      let accumulatedWidth = 0;
-
-      leafHeaders.forEach((header, index) => {
-        if (header.pinned) return; // Skip pinned columns
-
-        const currentWidth =
-          typeof header.width === "number"
-            ? header.width
-            : typeof header.width === "string" && header.width.endsWith("px")
-              ? parseFloat(header.width)
-              : 150;
-
-        let newWidth: number;
-        if (index === leafHeaders.length - 1) {
-          // Last column gets the remaining width to ensure exact total
-          newWidth = availableMainSectionWidth - accumulatedWidth;
-        } else {
-          // Round intermediate columns
-          newWidth = Math.round(currentWidth * scaleFactor);
-          accumulatedWidth += newWidth;
-        }
-
-        scaledWidths.set(header.accessor as string, newWidth);
-      });
-
-      // Recursively scale all headers (including nested children)
-      // Only scale headers in the main section (not pinned)
-      const scaleHeader = (header: HeaderObject): HeaderObject => {
-        if (header.hide) return header;
-
-        const scaledChildren = header.children?.map(scaleHeader);
-
-        // Only scale leaf headers (columns without children) that are not pinned
-        if (!header.children || header.children.length === 0) {
-          // Don't scale pinned columns
-          if (header.pinned) {
-            return {
-              ...header,
-              children: scaledChildren,
-            };
-          }
-
-          // Use pre-calculated width from the map
-          const newWidth = scaledWidths.get(header.accessor as string);
-          if (newWidth !== undefined) {
-            // In autoExpandColumns mode, we don't enforce minWidth to prevent horizontal overflow
-            // The CSS will handle this via the updated getColumnWidth function
-            return {
-              ...header,
-              width: newWidth,
-              children: scaledChildren,
-            };
-          }
-
-          // Fallback (shouldn't happen)
-          const currentWidth =
-            typeof header.width === "number"
-              ? header.width
-              : typeof header.width === "string" && header.width.endsWith("px")
-                ? parseFloat(header.width)
-                : 150;
-
-          return {
-            ...header,
-            width: Math.round(currentWidth * scaleFactor),
-            children: scaledChildren,
-          };
-        }
-
-        // For parent headers, just update children
-        return {
-          ...header,
-          children: scaledChildren,
-        };
-      };
-
-      return currentHeaders.map(scaleHeader);
-    });
-  }, [autoExpandColumns, containerWidth, isResizing, headers, pinnedLeftWidth, pinnedRightWidth]);
+  // Get the wrapped setHeaders that applies auto-scaling
+  const setHeaders = useAutoScaleMainSection({
+    autoExpandColumns,
+    containerWidth,
+    pinnedLeftWidth,
+    pinnedRightWidth,
+    mainBodyRef,
+    isResizing,
+    setHeaders: setHeadersInternal,
+  });
 
   const aggregatedRows = useAggregatedRows({
     rows: effectiveRows,
@@ -863,9 +710,12 @@ const SimpleTableComp = ({
     [prepareForSortChange, updateSort],
   );
 
-  const onTableHeaderDragEnd = useCallback((newHeaders: HeaderObject[]) => {
-    setHeaders(newHeaders);
-  }, []);
+  const onTableHeaderDragEnd = useCallback(
+    (newHeaders: HeaderObject[]) => {
+      setHeaders(newHeaders);
+    },
+    [setHeaders],
+  );
 
   // Handle outside click
   useHandleOutsideClick({
@@ -956,6 +806,7 @@ const SimpleTableComp = ({
         columnBorders,
         columnReordering,
         columnResizing,
+        containerWidth,
         columnsWithSelectedCells,
         copyHeadersToClipboard,
         draggedHeaderRef,

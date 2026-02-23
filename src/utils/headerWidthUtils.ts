@@ -1,4 +1,9 @@
-import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../consts/general-consts";
+import {
+  TABLE_HEADER_CELL_WIDTH_DEFAULT,
+  CHART_COLUMN_TYPES,
+  OPTIMAL_CHART_COLUMN_WIDTH,
+} from "../consts/general-consts";
+import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { getCellId } from "./cellUtils";
 import { getNestedValue } from "./rowUtils";
@@ -87,7 +92,7 @@ export const removeAllFractionalWidths = (header: HeaderObject): void => {
  * Calculate the minimum width for a header
  */
 export const getHeaderMinWidth = (header: HeaderObject): number => {
-  return typeof header.minWidth === "number" ? header.minWidth : 40;
+  return typeof header.minWidth === "number" ? header.minWidth : MIN_COLUMN_WIDTH;
 };
 
 /**
@@ -128,7 +133,7 @@ export const convertPixelWidthsToFr = (
     return {
       ...header,
       width: `${frValue}fr`,
-      minWidth: typeof minWidth === "number" ? minWidth : parseFloat(minWidth as string),
+      minWidth: typeof minWidth === "number" ? minWidth : parseFloat(minWidth),
       children: processedChildren,
       __originalPixelWidth: pixelWidth, // Store original for reference
     } as HeaderObject & { __originalPixelWidth?: number };
@@ -251,7 +256,10 @@ export const calculateHeaderContentWidth = (
   // Now measure cell content widths from row data
   let maxCellWidth = 0;
 
-  if (rows && rows.length > 0) {
+  // For chart columns, skip cell content measurement and use a minimum width
+  const isChartColumn = header && header.type && CHART_COLUMN_TYPES.includes(header.type as any);
+
+  if (rows && rows.length > 0 && !isChartColumn) {
     // Sample rows for performance
     const rowsToSample = Math.min(rows.length, sampleSize);
 
@@ -322,6 +330,11 @@ export const calculateHeaderContentWidth = (
 
   // Use the larger of header width or max cell width
   let optimalWidth = Math.max(totalWidth, maxCellWidth);
+
+  // For chart columns, apply a minimum width
+  if (isChartColumn) {
+    optimalWidth = Math.max(optimalWidth, OPTIMAL_CHART_COLUMN_WIDTH);
+  }
 
   // Apply max width constraint
   if (optimalWidth > maxWidth) {

@@ -12,17 +12,16 @@ export const displayCell = ({
   pinned,
   headers,
   collapsedHeaders,
+  rootPinned,
 }: {
   header: HeaderObject;
   pinned?: Pinned;
   headers?: HeaderObject[];
   collapsedHeaders?: Set<Accessor>;
+  rootPinned?: Pinned;
 }) => {
   // Check if manually hidden or excluded from render
-  if (header.hide || header.excludeFromRender) return null;
-
-  // Check pinning
-  if ((pinned || header.pinned) && header.pinned !== pinned) return null;
+  if (header.hide || header.excludeFromRender || rootPinned !== pinned) return null;
 
   // Check if parent is collapsed and this child should be hidden
   if (

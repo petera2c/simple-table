@@ -15,6 +15,7 @@ interface TableSectionProps {
   columnIndices: ColumnIndices;
   headers: HeaderObject[];
   pinned?: Pinned;
+  regularRows: TableRowType[];
   rowHeight: number;
   rowIndices: RowIndices;
   rowsToRender: TableRowType[];
@@ -22,7 +23,6 @@ interface TableSectionProps {
   templateColumns: string;
   totalHeight: number;
   width?: number;
-  regularRows: TableRowType[];
 }
 
 const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
@@ -37,7 +37,6 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       setHoveredIndex,
       templateColumns,
       totalHeight,
-      rowsToRender,
       width,
       regularRows,
     },
