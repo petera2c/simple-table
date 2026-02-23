@@ -14,10 +14,7 @@ interface AutoScaleOptions {
 
 // Helper to get all leaf headers (actual columns that render)
 // rootPinned is passed from parent - used to filter leaves by section
-const getLeafHeaders = (
-  headers: HeaderObject[],
-  rootPinned?: Pinned,
-): HeaderObject[] => {
+const getLeafHeaders = (headers: HeaderObject[], rootPinned?: Pinned): HeaderObject[] => {
   const leaves: HeaderObject[] = [];
   headers.forEach((header) => {
     if (header.hide) return;
@@ -141,9 +138,14 @@ export const applyAutoScaleToHeaders = (
   const mainLeafHeaders = getLeafHeaders(mainSectionHeaders, undefined);
 
   // Check each section to see if it can apply autoExpandColumns
-  const canExpandLeft = leftLeafHeaders.length > 0 && canAutoExpandSection(leftLeafHeaders, pinnedLeftWidth);
-  const canExpandRight = rightLeafHeaders.length > 0 && canAutoExpandSection(rightLeafHeaders, pinnedRightWidth);
-  const canExpandMain = mainLeafHeaders.length > 0 && availableMainSectionWidth > 0 && canAutoExpandSection(mainLeafHeaders, availableMainSectionWidth);
+  const canExpandLeft =
+    leftLeafHeaders.length > 0 && canAutoExpandSection(leftLeafHeaders, pinnedLeftWidth);
+  const canExpandRight =
+    rightLeafHeaders.length > 0 && canAutoExpandSection(rightLeafHeaders, pinnedRightWidth);
+  const canExpandMain =
+    mainLeafHeaders.length > 0 &&
+    availableMainSectionWidth > 0 &&
+    canAutoExpandSection(mainLeafHeaders, availableMainSectionWidth);
 
   // Calculate scaled widths for each section that can be expanded
   const scaledWidths = new Map<string, number>();
@@ -201,7 +203,9 @@ export const applyAutoScaleToHeaders = (
     };
   };
 
-  return headers.map((header) => scaleHeader(header, header.pinned));
+  const scaledHeaders = headers.map((header) => scaleHeader(header, header.pinned));
+
+  return scaledHeaders;
 };
 
 interface UseAutoScaleMainSectionProps {

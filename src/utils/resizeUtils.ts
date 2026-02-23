@@ -8,7 +8,11 @@ import {
   getHeaderMinWidth,
   getAllVisibleLeafHeaders,
 } from "./headerWidthUtils";
-import { MIN_COLUMN_WIDTH, getMaxPinnedSectionPercent } from "../consts/column-constraints";
+import {
+  MIN_COLUMN_WIDTH,
+  getMaxPinnedSectionPercent,
+  getMaxPinnedSectionWidth,
+} from "../consts/column-constraints";
 import { calculatePinnedWidth } from "./headerUtils";
 import { findParentHeader } from "./collapseUtils";
 
@@ -95,17 +99,17 @@ const calculateMaxHeaderWidth = ({
  * Handler for when resize dragging starts
  */
 export const handleResizeStart = ({
+  autoExpandColumns,
+  collapsedHeaders,
+  containerWidth,
   event,
   header,
   headers,
+  onColumnWidthChange,
+  reverse = false,
   setHeaders,
   setIsResizing,
-  tableBodyContainerRef,
   startWidth,
-  collapsedHeaders,
-  autoExpandColumns,
-  reverse = false,
-  onColumnWidthChange,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
   const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
@@ -148,14 +152,11 @@ export const handleResizeStart = ({
       initialWidthsMap.set(h.accessor as string, width);
     });
 
-    // Get the appropriate width for the section being resized
-    if (tableBodyContainerRef.current) {
-      const fullContainerWidth = tableBodyContainerRef.current.clientWidth;
-
-      // Calculate widths of pinned sections
+    // Calculate widths of pinned sections using the passed containerWidth
+    if (containerWidth > 0) {
       const { leftWidth, rightWidth } = recalculateAllSectionWidths({
         headers,
-        containerWidth: fullContainerWidth,
+        containerWidth,
         collapsedHeaders,
       });
 
@@ -166,7 +167,7 @@ export const handleResizeStart = ({
         sectionWidth = rightWidth;
       } else {
         // Main section: full width minus pinned sections
-        sectionWidth = Math.max(0, fullContainerWidth - leftWidth - rightWidth);
+        sectionWidth = Math.max(0, containerWidth - leftWidth - rightWidth);
       }
     }
   }
@@ -197,6 +198,8 @@ export const handleResizeStart = ({
         sectionWidth,
         isParentResize: childrenToResize.length > 1,
         childrenToResize,
+        headers,
+        containerWidth,
       });
     } else {
       // Normal resize mode
@@ -361,11 +364,7 @@ export const recalculateAllSectionWidths = ({
 
     // Get the appropriate max percent based on number of pinned sections
     // Use containerWidth (st-body-container width) for responsive breakpoints
-    const maxPercent = getMaxPinnedSectionPercent(
-      containerWidth,
-      hasPinnedLeft,
-      hasPinnedRight,
-    );
+    const maxPercent = getMaxPinnedSectionPercent(containerWidth, hasPinnedLeft, hasPinnedRight);
     const maxPinnedWidth = containerWidth * maxPercent;
 
     // Limit each pinned section to the calculated percentage of container width
@@ -487,9 +486,7 @@ const distributeCompensationProportionally = ({
     } else {
       // CASE 2: All columns at minWidth
       // Start shrinking minWidths equally, but not below MIN_COLUMN_WIDTH
-      const columnsAboveAbsoluteMin = headrooms.filter(
-        (h) => h.minWidth > MIN_COLUMN_WIDTH,
-      );
+      const columnsAboveAbsoluteMin = headrooms.filter((h) => h.minWidth > MIN_COLUMN_WIDTH);
 
       if (columnsAboveAbsoluteMin.length > 0) {
         // Distribute equally among columns that can still shrink
@@ -527,30 +524,57 @@ const distributeCompensationProportionally = ({
  * Columns to the right (or left for right-pinned) shrink proportionally
  */
 export const handleResizeWithAutoExpand = ({
-  delta,
-  startWidth,
-  resizedHeader,
-  sectionHeaders,
-  rootPinned,
-  reverse,
-  collapsedHeaders,
-  initialWidthsMap,
-  sectionWidth,
-  isParentResize = false,
   childrenToResize = [],
+  collapsedHeaders,
+  delta,
+  initialWidthsMap,
+  isParentResize = false,
+  resizedHeader,
+  reverse,
+  rootPinned,
+  sectionHeaders,
+  sectionWidth,
+  startWidth,
+  headers,
+  containerWidth,
 }: {
-  delta: number;
-  startWidth: number;
-  resizedHeader: HeaderObject;
-  sectionHeaders: HeaderObject[];
-  rootPinned: Pinned | undefined;
-  reverse: boolean;
-  collapsedHeaders?: Set<string>;
-  initialWidthsMap: Map<string, number>;
-  sectionWidth: number;
-  isParentResize?: boolean;
   childrenToResize?: HeaderObject[];
+  collapsedHeaders?: Set<string>;
+  delta: number;
+  initialWidthsMap: Map<string, number>;
+  isParentResize?: boolean;
+  resizedHeader: HeaderObject;
+  reverse: boolean;
+  rootPinned: Pinned | undefined;
+  sectionHeaders: HeaderObject[];
+  sectionWidth: number;
+  startWidth: number;
+  headers: HeaderObject[];
+  containerWidth: number;
 }): void => {
+  // For pinned sections, clamp delta to prevent exceeding max section width
+  // This prevents the drag from causing unwanted auto-scaling of other columns
+  let clampedDelta = delta;
+  if (rootPinned && containerWidth > 0) {
+    // Check if we have both pinned sections
+    const hasPinnedLeft = headers.some((h) => h.pinned === "left" && !h.hide);
+    const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
+
+    // Calculate the max allowed width for this pinned section
+    const maxSectionWidth = getMaxPinnedSectionWidth(containerWidth, hasPinnedLeft, hasPinnedRight);
+
+    const currentSectionWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+    const newSectionWidth = currentSectionWidth + delta;
+
+    // If growing beyond max section width, clamp the delta
+    if (delta > 0 && newSectionWidth > maxSectionWidth) {
+      clampedDelta = Math.max(0, maxSectionWidth - currentSectionWidth);
+    }
+  }
+
+  // Use clamped delta for all calculations
+  delta = clampedDelta;
+
   // Special handling for parent header resize (multiple children)
   if (isParentResize && childrenToResize.length > 1) {
     const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
@@ -631,7 +655,8 @@ export const handleResizeWithAutoExpand = ({
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
         // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
         const minWidth = MIN_COLUMN_WIDTH;
-        child.width = Math.max(originalWidth * scaleFactor, minWidth);
+        const newWidth = Math.max(originalWidth * scaleFactor, minWidth);
+        child.width = newWidth;
       });
 
       // Compensate other columns only if needed
@@ -746,7 +771,6 @@ export const handleResizeWithAutoExpand = ({
     // Limit growth to what can be compensated
     const actualGrowth = Math.min(delta, maxPossibleShrinkage);
     resizedHeader.width = startWidth + actualGrowth;
-
     // Shrink other columns by the amount needed
     if (actualGrowth > 0) {
       distributeCompensationProportionally({
@@ -758,10 +782,10 @@ export const handleResizeWithAutoExpand = ({
   } else {
     // SHRINKING: Distribute the freed space to other columns
     const newWidth = Math.max(startWidth + delta, minWidth);
+
     const actualShrinkage = startWidth - newWidth;
 
     resizedHeader.width = newWidth;
-
     // Distribute the freed space (negative compensation = grow others)
     if (actualShrinkage > 0) {
       distributeCompensationProportionally({

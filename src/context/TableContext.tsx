@@ -54,6 +54,7 @@ interface TableContextType {
   columnBorders: boolean;
   columnReordering: boolean;
   columnResizing: boolean;
+  containerWidth: number;
   copyHeadersToClipboard: boolean;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   editColumns?: boolean;

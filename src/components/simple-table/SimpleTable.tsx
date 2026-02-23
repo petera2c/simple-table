@@ -806,6 +806,7 @@ const SimpleTableComp = ({
         columnBorders,
         columnReordering,
         columnResizing,
+        containerWidth,
         columnsWithSelectedCells,
         copyHeadersToClipboard,
         draggedHeaderRef,
