@@ -650,6 +650,7 @@ input {
   fill: var(--st-header-label-color);
 }
 .st-header-resize-handle-container {
+  flex-shrink: 0;
   width: var(--st-resize-handle-container-width);
   height: 100%;
 

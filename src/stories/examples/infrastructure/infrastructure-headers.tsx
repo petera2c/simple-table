@@ -22,7 +22,6 @@ export const HEADERS: HeaderObject[] = [
   },
   {
     accessor: "serverName",
-    align: "left",
     filterable: true,
     isEditable: false,
     isSortable: true,
@@ -36,6 +35,7 @@ export const HEADERS: HeaderObject[] = [
     label: "Performance Metrics",
     width: 690,
     isSortable: false,
+    pinned: "left",
     children: [
       {
         accessor: "cpuHistory",
@@ -337,6 +337,7 @@ export const HEADERS: HeaderObject[] = [
   },
 
   {
+    pinned: "right",
     accessor: "status",
     label: "Status",
     width: 130,

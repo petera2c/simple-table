@@ -24,17 +24,5 @@ export const calculateBufferRowCount = (rowHeight: number): number => {
 export const COLUMN_EDIT_WIDTH = 29.5;
 export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
 export const PINNED_BORDER_WIDTH = 1;
-export const MAX_PINNED_WIDTH_PERCENT = 0.8;
-export const ABSOLUTE_MIN_COLUMN_WIDTH = 30; // Absolute minimum width for columns in autoExpandColumns mode
-
-/**
- * Get the maximum allowed width percentage for pinned columns based on viewport width
- * This ensures better mobile compatibility by reducing pinned column space on smaller screens
- * @param viewportWidth - The current viewport width in pixels
- * @returns The maximum percentage (0-1) of container width that pinned columns can occupy
- */
-export const getResponsiveMaxPinnedPercent = (viewportWidth: number): number => {
-  if (viewportWidth < 480) return 0.3; // 40% on small phones
-  if (viewportWidth < 768) return 0.4; // 50% on tablets
-  return MAX_PINNED_WIDTH_PERCENT; // 80% on desktop
-};
+export const CHART_COLUMN_TYPES = ["lineAreaChart", "barChart"];
+export const OPTIMAL_CHART_COLUMN_WIDTH = 150;
