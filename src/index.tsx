@@ -49,6 +49,10 @@ import HeaderRendererProps, {
   HeaderRenderer,
   HeaderRendererComponents,
 } from "./types/HeaderRendererProps";
+import ColumnEditorRowRendererProps, {
+  ColumnEditorRowRenderer,
+  ColumnEditorRowRendererComponents,
+} from "./types/ColumnEditorRowRendererProps";
 import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps";
 import { RowButtonProps } from "./types/RowButton";
 import FooterRendererProps from "./types/FooterRendererProps";
@@ -83,6 +87,9 @@ export type {
   CellValue,
   ChartOptions,
   ColumnEditorConfig,
+  ColumnEditorRowRenderer,
+  ColumnEditorRowRendererComponents,
+  ColumnEditorRowRendererProps,
   ColumnEditorSearchFunction,
   ColumnType,
   ColumnVisibilityState,
