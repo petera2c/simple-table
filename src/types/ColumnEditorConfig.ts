@@ -25,7 +25,9 @@ export interface ColumnEditorConfig {
   rowRenderer?: ColumnEditorRowRenderer;
 }
 
-export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<Omit<ColumnEditorConfig, "searchFunction">> = {
+export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
+  Omit<ColumnEditorConfig, "searchFunction" | "rowRenderer">
+> = {
   text: "Columns",
   searchEnabled: true,
   searchPlaceholder: "Search columns...",
