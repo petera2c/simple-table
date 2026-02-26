@@ -199,6 +199,7 @@ const SimpleTableComp = ({
       searchPlaceholder:
         columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
       searchFunction: columnEditorConfig?.searchFunction,
+      rowRenderer: columnEditorConfig?.rowRenderer,
     }),
     [columnEditorConfig, columnEditorText],
   );
@@ -804,6 +805,7 @@ const SimpleTableComp = ({
         clearSelection,
         collapsedHeaders,
         columnBorders,
+        columnEditorConfig: mergedColumnEditorConfig,
         columnReordering,
         columnResizing,
         containerWidth,

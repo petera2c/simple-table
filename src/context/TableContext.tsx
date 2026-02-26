@@ -29,6 +29,7 @@ import {
 import { HeightOffsets } from "../utils/infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
 import { IconsConfig } from "../types/IconsConfig";
+import { ColumnEditorConfig } from "../types/ColumnEditorConfig";
 
 // Define the interface for cell registry entries
 export interface CellRegistryEntry {
@@ -52,6 +53,7 @@ interface TableContextType {
   clearSelection?: () => void;
   collapsedHeaders: Set<Accessor>;
   columnBorders: boolean;
+  columnEditorConfig: ColumnEditorConfig;
   columnReordering: boolean;
   columnResizing: boolean;
   containerWidth: number;

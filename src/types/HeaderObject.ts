@@ -4,7 +4,6 @@ import EnumOption from "./EnumOption";
 import { AggregationConfig } from "./AggregationTypes";
 import { CellRenderer } from "./CellRendererProps";
 import { HeaderRenderer } from "./HeaderRendererProps";
-import { ColumnEditorRowRenderer } from "./ColumnEditorRowRendererProps";
 import CellValue from "./CellValue";
 import { SimpleTableProps } from "./SimpleTableProps";
 import { QuickFilterGetter } from "./QuickFilterTypes";
@@ -88,7 +87,6 @@ type HeaderObject = {
   children?: HeaderObject[];
   collapsible?: boolean; // This is used to determine if the column is collapsible
   collapseDefault?: boolean; // When true, this column starts collapsed
-  columnEditorRowRenderer?: ColumnEditorRowRenderer; // Custom renderer for column editor row layout
   comparator?: Comparator; // Custom sorting function based on row-level metadata
   disableReorder?: boolean;
   enumOptions?: EnumOption[];

@@ -49,8 +49,14 @@ const ColumnEditorCheckbox = ({
   setExpandedHeaders: (headers: Set<string>) => void;
   setHoveredSeparatorIndex: (index: number | null) => void;
 }) => {
-  const { headers, icons, setHeaders, onColumnVisibilityChange, onColumnOrderChange } =
-    useTableContext();
+  const {
+    columnEditorConfig,
+    headers,
+    icons,
+    setHeaders,
+    onColumnVisibilityChange,
+    onColumnOrderChange,
+  } = useTableContext();
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
@@ -200,22 +206,21 @@ const ColumnEditorCheckbox = ({
   };
 
   // Create component elements for custom renderer
-  const ExpandIconComponent = doesAnyHeaderHaveChildren &&
-    hasChildren && (
-      <div className="st-header-icon-container">
-        <div
-          className={`st-collapsible-header-icon st-expand-icon-container ${
-            shouldExpand ? "expanded" : "collapsed"
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleExpanded();
-          }}
-        >
-          {icons.expand}
-        </div>
+  const ExpandIconComponent = doesAnyHeaderHaveChildren && hasChildren && (
+    <div className="st-header-icon-container">
+      <div
+        className={`st-collapsible-header-icon st-expand-icon-container ${
+          shouldExpand ? "expanded" : "collapsed"
+        }`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleExpanded();
+        }}
+      >
+        {icons.expand}
       </div>
-    );
+    </div>
+  );
 
   const CheckboxComponent = <Checkbox checked={isChecked} onChange={handleCheckboxChange} />;
 
@@ -240,41 +245,41 @@ const ColumnEditorCheckbox = ({
         onDragOver={onDragOver}
         onDragEnd={onDragEnd}
       >
-        {header.columnEditorRowRenderer
-          ? header.columnEditorRowRenderer({
-              accessor: header.accessor,
-              header,
-              components: {
-                expandIcon: ExpandIconComponent || undefined,
-                checkbox: CheckboxComponent,
-                dragIcon: DragIconComponent,
-                labelContent: LabelContent,
-              },
-            })
-          : (
-            <>
-              {doesAnyHeaderHaveChildren && (
-                <div className="st-header-icon-container">
-                  {hasChildren ? (
-                    <div
-                      className={`st-collapsible-header-icon st-expand-icon-container ${
-                        shouldExpand ? "expanded" : "collapsed"
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleExpanded();
-                      }}
-                    >
-                      {icons.expand}
-                    </div>
-                  ) : null}
-                </div>
-              )}
-              <Checkbox checked={isChecked} onChange={handleCheckboxChange}></Checkbox>
-              <div className="st-drag-icon-container">{icons.drag}</div>
-              <div className="st-column-label-container">{header.label}</div>
-            </>
-          )}
+        {columnEditorConfig.rowRenderer ? (
+          columnEditorConfig.rowRenderer({
+            accessor: header.accessor,
+            header,
+            components: {
+              expandIcon: ExpandIconComponent || undefined,
+              checkbox: CheckboxComponent,
+              dragIcon: DragIconComponent,
+              labelContent: LabelContent,
+            },
+          })
+        ) : (
+          <>
+            {doesAnyHeaderHaveChildren && (
+              <div className="st-header-icon-container">
+                {hasChildren ? (
+                  <div
+                    className={`st-collapsible-header-icon st-expand-icon-container ${
+                      shouldExpand ? "expanded" : "collapsed"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleExpanded();
+                    }}
+                  >
+                    {icons.expand}
+                  </div>
+                ) : null}
+              </div>
+            )}
+            <Checkbox checked={isChecked} onChange={handleCheckboxChange}></Checkbox>
+            <div className="st-drag-icon-container">{icons.drag}</div>
+            <div className="st-column-label-container">{header.label}</div>
+          </>
+        )}
       </div>
       <div
         className="st-column-editor-drag-separator"

@@ -1,4 +1,5 @@
 import HeaderObject from "./HeaderObject";
+import { ColumnEditorRowRenderer } from "./ColumnEditorRowRendererProps";
 
 /**
  * Custom search function for filtering columns in the column editor
@@ -20,6 +21,8 @@ export interface ColumnEditorConfig {
   searchPlaceholder?: string;
   /** Custom search function to override default search behavior. Receives header and searchTerm, returns true if header matches. */
   searchFunction?: ColumnEditorSearchFunction;
+  /** Custom renderer for column editor row layout to reposition icons and labels */
+  rowRenderer?: ColumnEditorRowRenderer;
 }
 
 export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<Omit<ColumnEditorConfig, "searchFunction">> = {

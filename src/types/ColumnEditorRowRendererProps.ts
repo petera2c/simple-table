@@ -12,7 +12,7 @@ export interface ColumnEditorRowRendererComponents {
 interface ColumnEditorRowRendererProps {
   accessor: Accessor;
   header: HeaderObject;
-  components?: ColumnEditorRowRendererComponents;
+  components: ColumnEditorRowRendererComponents;
 }
 
 export type ColumnEditorRowRenderer = (props: ColumnEditorRowRendererProps) => ReactNode | string;
