@@ -5,10 +5,12 @@ import { HeaderObject } from "..";
 import { ColumnIndices } from "../utils/columnIndicesUtils";
 
 interface TableHeaderSectionProps {
+  calculatedHeaderHeight: number;
   columnIndices: ColumnIndices;
   gridTemplateColumns: string;
   handleScroll?: UIEventHandler<HTMLDivElement>;
   headers: HeaderObject[];
+  leftOffset?: number;
   maxDepth: number;
   pinned?: Pinned;
   sectionRef: RefObject<HTMLDivElement>;

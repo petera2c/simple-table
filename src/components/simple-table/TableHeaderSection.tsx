@@ -19,10 +19,12 @@ type GridCell = {
 };
 
 const TableHeaderSection = ({
+  calculatedHeaderHeight,
   columnIndices,
   gridTemplateColumns,
   handleScroll,
   headers,
+  leftOffset = 0,
   maxDepth,
   pinned,
   sectionRef,
@@ -164,7 +166,8 @@ const TableHeaderSection = ({
         style={{
           gridTemplateColumns,
           width,
-          position: "relative",
+          left: leftOffset > 0 ? `${leftOffset + 1}px` : undefined,
+          height: calculatedHeaderHeight,
         }}
       >
         <>

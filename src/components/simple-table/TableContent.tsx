@@ -80,6 +80,7 @@ const TableContent = ({
   }, [pinnedRightColumns, collapsedHeaders, autoExpandColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
+    calculatedHeaderHeight,
     centerHeaderRef,
     headers,
     mainTemplateColumns,
@@ -117,7 +118,12 @@ const TableContent = ({
       className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
       style={{ width: editColumns ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)` : "100%" }}
     >
-      {!hideHeader && <TableHeader {...tableHeaderProps} />}
+      {!hideHeader && (
+        <>
+          <TableHeader {...tableHeaderProps} />
+          <div className="st-header-spacer" style={{ height: `${calculatedHeaderHeight}px` }} />
+        </>
+      )}
       <TableBody {...tableBodyProps} />
     </div>
   );

@@ -6,16 +6,17 @@ import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import { canDisplaySection } from "../../utils/generalUtils";
 
 const TableHeader = ({
+  calculatedHeaderHeight,
   centerHeaderRef,
   headers,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
+  pinnedLeftWidth,
   pinnedRightColumns,
   pinnedRightTemplateColumns,
-  sort,
-  pinnedLeftWidth,
   pinnedRightWidth,
+  sort,
 }: TableHeaderProps) => {
   const {
     headerContainerRef,
@@ -50,6 +51,7 @@ const TableHeader = ({
     >
       {canDisplaySection(headers, "left") && (
         <TableHeaderSection
+          calculatedHeaderHeight={calculatedHeaderHeight}
           columnIndices={columnIndices}
           gridTemplateColumns={pinnedLeftTemplateColumns}
           handleScroll={undefined}
@@ -63,6 +65,7 @@ const TableHeader = ({
       )}
 
       <TableHeaderSection
+        calculatedHeaderHeight={calculatedHeaderHeight}
         columnIndices={columnIndices}
         gridTemplateColumns={mainTemplateColumns}
         handleScroll={undefined}
@@ -70,10 +73,12 @@ const TableHeader = ({
         maxDepth={maxHeaderDepth}
         sectionRef={centerHeaderRef}
         sort={sort}
+        leftOffset={canDisplaySection(headers, "left") ? pinnedLeftWidth : 0}
       />
 
       {canDisplaySection(headers, "right") && (
         <TableHeaderSection
+          calculatedHeaderHeight={calculatedHeaderHeight}
           columnIndices={columnIndices}
           gridTemplateColumns={pinnedRightTemplateColumns}
           handleScroll={undefined}
@@ -83,6 +88,7 @@ const TableHeader = ({
           sectionRef={pinnedRightRef}
           sort={sort}
           width={pinnedRightWidth}
+          leftOffset={canDisplaySection(headers, "left") ? pinnedLeftWidth : 0}
         />
       )}
     </div>
