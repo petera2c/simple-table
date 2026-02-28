@@ -14,6 +14,7 @@ import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 interface TableContentLocalProps {
   calculatedHeaderHeight: number;
   hideHeader: boolean;
+  mainBodyWidth: number;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
   setScrollTop: (scrollTop: number) => void;
@@ -31,6 +32,7 @@ interface TableContentLocalProps {
 const TableContent = ({
   calculatedHeaderHeight,
   hideHeader,
+  mainBodyWidth,
   pinnedLeftWidth,
   pinnedRightWidth,
   setScrollTop,
@@ -83,6 +85,7 @@ const TableContent = ({
     calculatedHeaderHeight,
     centerHeaderRef,
     headers,
+    mainBodyWidth,
     mainTemplateColumns,
     pinnedLeftColumns,
     pinnedLeftTemplateColumns,

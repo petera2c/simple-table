@@ -8,6 +8,7 @@ import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
 import { rowIdToString } from "../../utils/rowUtils";
+import { useMultiScrollSync } from "../../hooks/useHeaderBodyScrollSync";
 
 const TableBody = ({
   calculatedHeaderHeight,
@@ -36,6 +37,8 @@ const TableBody = ({
     heightOffsets,
     isAnimating,
     mainBodyRef,
+    pinnedLeftRef,
+    pinnedRightRef,
     onLoadMore,
     rowHeight,
     scrollbarWidth,
@@ -120,6 +123,18 @@ const TableBody = ({
       }
     };
   }, []);
+
+  // Set up scroll synchronization between body and header sections
+  const scrollSyncConfigs = useMemo(
+    () => [
+      { sourceRef: pinnedLeftRef, targetSelector: ".st-header-pinned-left" },
+      { sourceRef: mainBodyRef, targetSelector: ".st-header-main" },
+      { sourceRef: pinnedRightRef, targetSelector: ".st-header-pinned-right" },
+    ],
+    [pinnedLeftRef, mainBodyRef, pinnedRightRef],
+  );
+
+  useMultiScrollSync(scrollSyncConfigs);
 
   // Refs
   const scrollTimeoutRef = useRef<number | null>(null);

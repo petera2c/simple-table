@@ -1,6 +1,7 @@
 import React, { FC, PropsWithChildren, useCallback, useRef } from "react";
 
 import { ScrollSyncContext } from "../../context/useScrollSyncContext";
+import { syncScrollLeft, hasScrollableContent } from "../../utils/scrollSyncUtils";
 
 export interface ScrollSyncProps {}
 export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children }) => {
@@ -14,12 +15,9 @@ export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children })
   }, []);
 
   const syncScrollPosition = useCallback((scrolledPane: HTMLElement, pane: HTMLElement) => {
-    const { clientWidth, scrollLeft, scrollWidth } = scrolledPane;
-
-    const scrollLeftOffset = scrollWidth - clientWidth;
-
-    if (scrollLeftOffset > 0) {
-      pane.scrollLeft = scrollLeft;
+    // Only sync if there's scrollable content
+    if (hasScrollableContent(scrolledPane)) {
+      syncScrollLeft(scrolledPane, pane);
     }
   }, []);
 
@@ -29,15 +27,19 @@ export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children })
 
   const addEvents = useCallback(
     (node: HTMLElement, groups: string[]) => {
+      let rafId: number | null = null;
+      
       node.onscroll = () => {
-        window.requestAnimationFrame(() => {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+        }
+        
+        rafId = window.requestAnimationFrame(() => {
           groups.forEach((group) => {
             panesRef.current[group]?.forEach((pane) => {
-              /* For all panes beside the currently scrolling one */
               if (node !== pane) {
                 removeEvents(pane);
                 syncScrollPosition(node, pane);
-                /* Re-attach event listeners after we're done scrolling */
                 window.requestAnimationFrame(() => {
                   const paneGroups = Object.keys(panesRef.current).filter((paneGroup) =>
                     panesRef.current[paneGroup].includes(pane)
@@ -47,6 +49,7 @@ export const ScrollSync: FC<PropsWithChildren<ScrollSyncProps>> = ({ children })
               }
             });
           });
+          rafId = null;
         });
       };
     },

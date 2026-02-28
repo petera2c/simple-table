@@ -164,13 +164,17 @@ const TableHeaderSection = ({
         {...(handleScroll && { onScroll: handleScroll })}
         ref={sectionRef}
         style={{
-          gridTemplateColumns,
-          width,
           left: leftOffset > 0 ? `${leftOffset + 1}px` : undefined,
           height: calculatedHeaderHeight,
+          ...(!pinned && { flexGrow: 1 }),
         }}
       >
-        <>
+        <div
+          className="st-header-grid"
+          style={{
+            gridTemplateColumns,
+          }}
+        >
           {gridCells.map((cell) => (
             <TableHeaderCell
               colIndex={cell.colIndex}
@@ -186,7 +190,7 @@ const TableHeaderSection = ({
               isLastHeader={autoExpandColumns && !pinned && cell.colIndex === lastHeaderIndex}
             />
           ))}
-        </>
+        </div>
       </div>
     </ScrollSyncPane>
   );

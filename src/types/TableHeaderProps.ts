@@ -6,6 +6,7 @@ type TableHeaderProps = {
   calculatedHeaderHeight: number;
   centerHeaderRef: RefObject<HTMLDivElement>;
   headers: HeaderObject[];
+  mainBodyWidth: number;
   mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftTemplateColumns: string;

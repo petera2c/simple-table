@@ -4,11 +4,13 @@ import TableHeaderSection from "./TableHeaderSection";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import { canDisplaySection } from "../../utils/generalUtils";
+import { useMultiScrollSync } from "../../hooks/useHeaderBodyScrollSync";
 
 const TableHeader = ({
   calculatedHeaderHeight,
   centerHeaderRef,
   headers,
+  mainBodyWidth,
   mainTemplateColumns,
   pinnedLeftColumns,
   pinnedLeftTemplateColumns,
@@ -42,6 +44,18 @@ const TableHeader = ({
     return Object.keys(columnIndices).length;
   }, [columnIndices]);
 
+  // Set up scroll synchronization between header and body sections
+  const scrollSyncConfigs = useMemo(
+    () => [
+      { sourceRef: pinnedLeftRef, targetSelector: ".st-body-pinned-left" },
+      { sourceRef: centerHeaderRef, targetSelector: ".st-body-main" },
+      { sourceRef: pinnedRightRef, targetSelector: ".st-body-pinned-right" },
+    ],
+    [pinnedLeftRef, centerHeaderRef, pinnedRightRef],
+  );
+
+  useMultiScrollSync(scrollSyncConfigs);
+
   return (
     <div
       className="st-header-container"
@@ -73,6 +87,7 @@ const TableHeader = ({
         maxDepth={maxHeaderDepth}
         sectionRef={centerHeaderRef}
         sort={sort}
+        width={mainBodyWidth}
         leftOffset={canDisplaySection(headers, "left") ? pinnedLeftWidth : 0}
       />
 
