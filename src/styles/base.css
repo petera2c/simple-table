@@ -207,6 +207,11 @@ input {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 
+.st-header-grid {
+  display: grid;
+  min-width: 100%;
+}
+
 .st-horizontal-scrollbar-middle,
 .st-horizontal-scrollbar-left,
 .st-horizontal-scrollbar-right,
