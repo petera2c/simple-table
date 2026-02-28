@@ -194,9 +194,15 @@ input {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 
+.st-header-spacer {
+  width: 100%;
+  flex-shrink: 0;
+}
+
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
+  position: absolute;
   display: grid;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
@@ -402,7 +408,6 @@ input {
 
 /* Styles for table header cells */
 .st-header-cell {
-  position: sticky;
   top: 0;
   background-color: var(--st-header-background-color);
   font-weight: var(--st-font-weight-bold);
