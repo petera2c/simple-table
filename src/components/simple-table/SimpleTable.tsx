@@ -45,6 +45,7 @@ import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { checkDeprecatedProps } from "../../utils/deprecatedPropsWarnings";
 import { useAutoScaleMainSection } from "../../hooks/useAutoScaleMainSection";
+import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
@@ -407,6 +408,9 @@ const SimpleTableComp = ({
       pinnedRightContentWidth: rightContentWidth,
     };
   }, [effectiveHeaders, containerWidth, collapsedHeaders]);
+
+  // Calculate the main section container width (not content width)
+  const mainSectionContainerWidth = containerWidth - pinnedLeftWidth - pinnedRightWidth;
 
   // Get the wrapped setHeaders that applies auto-scaling
   const setHeaders = useAutoScaleMainSection({
@@ -911,11 +915,18 @@ const SimpleTableComp = ({
         }`}
         role="grid"
         style={
-          maxHeight
-            ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
-            : height
-              ? { height }
-              : {}
+          {
+            ...(maxHeight
+              ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
+              : height
+                ? { height }
+                : {}),
+            ...({
+              "--st-main-section-width": `${mainSectionContainerWidth}px`,
+              "--st-scrollbar-width": `${scrollbarWidth}px`,
+              "--st-editor-width": editColumns ? `${COLUMN_EDIT_WIDTH}px` : "0px",
+            } as Record<string, string>),
+          } as React.CSSProperties
         }
       >
         <ScrollSync>
