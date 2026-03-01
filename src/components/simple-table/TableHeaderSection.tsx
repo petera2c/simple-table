@@ -167,12 +167,15 @@ const TableHeaderSection = ({
           left: leftOffset > 0 ? `${leftOffset + 1}px` : undefined,
           height: calculatedHeaderHeight,
           ...(!pinned && { flexGrow: 1 }),
+          ...(!pinned && { width: `var(--st-main-section-width)` }),
+          ...(pinned && { width }),
         }}
       >
         <div
           className="st-header-grid"
           style={{
             gridTemplateColumns,
+            ...(pinned && { width }),
           }}
         >
           {gridCells.map((cell) => (

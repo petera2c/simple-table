@@ -55,7 +55,7 @@ export default StoryWrapper;
 
 // Default args for universal props
 export const defaultUniversalArgs: UniversalTableProps = {
-  theme: "modern-light",
+  theme: "light",
   useOddColumnBackground: false,
   useHoverRowBackground: true,
   useOddEvenRowBackground: false,
