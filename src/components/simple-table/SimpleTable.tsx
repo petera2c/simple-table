@@ -362,6 +362,9 @@ const SimpleTableComp = ({
   }, [enableRowSelection, headers, selectionColumnWidth]);
 
   const [scrollTop, setScrollTop] = useState<number>(0);
+  const [scrollLeftPinnedLeft, setScrollLeftPinnedLeft] = useState<number>(0);
+  const [scrollLeftMain, setScrollLeftMain] = useState<number>(0);
+  const [scrollLeftPinnedRight, setScrollLeftPinnedRight] = useState<number>(0);
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
 
   // Manage expandedDepths state with automatic cleanup on rowGrouping changes
@@ -924,7 +927,13 @@ const SimpleTableComp = ({
                 mainBodyWidth={mainBodyWidth}
                 pinnedLeftWidth={pinnedLeftWidth}
                 pinnedRightWidth={pinnedRightWidth}
+                scrollLeftPinnedLeft={scrollLeftPinnedLeft}
+                scrollLeftMain={scrollLeftMain}
+                scrollLeftPinnedRight={scrollLeftPinnedRight}
                 setScrollTop={setScrollTop}
+                setScrollLeftPinnedLeft={setScrollLeftPinnedLeft}
+                setScrollLeftMain={setScrollLeftMain}
+                setScrollLeftPinnedRight={setScrollLeftPinnedRight}
                 setScrollDirection={setScrollDirection}
                 shouldShowEmptyState={shouldShowEmptyState}
                 sort={sort}

@@ -18,6 +18,9 @@ const TableHeader = ({
   pinnedRightColumns,
   pinnedRightTemplateColumns,
   pinnedRightWidth,
+  scrollLeftPinnedLeft,
+  scrollLeftMain,
+  scrollLeftPinnedRight,
   sort,
 }: TableHeaderProps) => {
   const {

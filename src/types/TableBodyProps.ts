@@ -17,6 +17,9 @@ interface TableBodyProps {
   rowsToRender: TableRow[];
   setScrollDirection: (direction: "up" | "down" | "none") => void;
   setScrollTop: (scrollTop: number) => void;
+  setScrollLeftPinnedLeft: (scrollLeft: number) => void;
+  setScrollLeftMain: (scrollLeft: number) => void;
+  setScrollLeftPinnedRight: (scrollLeft: number) => void;
   shouldShowEmptyState: boolean;
   stickyParents: TableRow[];
   tableRows: TableRow[];
