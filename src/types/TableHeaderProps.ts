@@ -14,6 +14,9 @@ type TableHeaderProps = {
   pinnedRightColumns: HeaderObject[];
   pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
+  scrollLeftPinnedLeft: number;
+  scrollLeftMain: number;
+  scrollLeftPinnedRight: number;
   sort: SortColumn | null;
 };
 

@@ -17,7 +17,13 @@ interface TableContentLocalProps {
   mainBodyWidth: number;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
+  scrollLeftPinnedLeft: number;
+  scrollLeftMain: number;
+  scrollLeftPinnedRight: number;
   setScrollTop: (scrollTop: number) => void;
+  setScrollLeftPinnedLeft: (scrollLeft: number) => void;
+  setScrollLeftMain: (scrollLeft: number) => void;
+  setScrollLeftPinnedRight: (scrollLeft: number) => void;
   setScrollDirection: (direction: "up" | "down" | "none") => void;
   shouldShowEmptyState: boolean;
   sort: SortColumn | null;
@@ -35,7 +41,13 @@ const TableContent = ({
   mainBodyWidth,
   pinnedLeftWidth,
   pinnedRightWidth,
+  scrollLeftPinnedLeft,
+  scrollLeftMain,
+  scrollLeftPinnedRight,
   setScrollTop,
+  setScrollLeftPinnedLeft,
+  setScrollLeftMain,
+  setScrollLeftPinnedRight,
   setScrollDirection,
   shouldShowEmptyState,
   sort,
@@ -81,40 +93,89 @@ const TableContent = ({
     });
   }, [pinnedRightColumns, collapsedHeaders, autoExpandColumns]);
 
-  const tableHeaderProps: TableHeaderProps = {
-    calculatedHeaderHeight,
-    centerHeaderRef,
-    headers,
-    mainBodyWidth,
-    mainTemplateColumns,
-    pinnedLeftColumns,
-    pinnedLeftTemplateColumns,
-    pinnedRightColumns,
-    pinnedRightTemplateColumns,
-    sort,
-    pinnedLeftWidth,
-    pinnedRightWidth,
-  };
+  const tableHeaderProps: TableHeaderProps = useMemo(
+    () => ({
+      calculatedHeaderHeight,
+      centerHeaderRef,
+      headers,
+      mainBodyWidth,
+      mainTemplateColumns,
+      pinnedLeftColumns,
+      pinnedLeftTemplateColumns,
+      pinnedRightColumns,
+      pinnedRightTemplateColumns,
+      sort,
+      pinnedLeftWidth,
+      pinnedRightWidth,
+      scrollLeftPinnedLeft,
+      scrollLeftMain,
+      scrollLeftPinnedRight,
+    }),
+    [
+      calculatedHeaderHeight,
+      centerHeaderRef,
+      headers,
+      mainBodyWidth,
+      mainTemplateColumns,
+      pinnedLeftColumns,
+      pinnedLeftTemplateColumns,
+      pinnedRightColumns,
+      pinnedRightTemplateColumns,
+      sort,
+      pinnedLeftWidth,
+      pinnedRightWidth,
+      scrollLeftPinnedLeft,
+      scrollLeftMain,
+      scrollLeftPinnedRight,
+    ],
+  );
 
-  const tableBodyProps: TableBodyProps = {
-    calculatedHeaderHeight,
-    heightMap,
-    mainTemplateColumns,
-    partiallyVisibleRows,
-    pinnedLeftColumns,
-    pinnedLeftTemplateColumns,
-    pinnedLeftWidth,
-    pinnedRightColumns,
-    pinnedRightTemplateColumns,
-    pinnedRightWidth,
-    regularRows,
-    rowsToRender,
-    setScrollDirection,
-    setScrollTop,
-    shouldShowEmptyState,
-    stickyParents,
-    tableRows,
-  };
+  const tableBodyProps: TableBodyProps = useMemo(
+    () => ({
+      calculatedHeaderHeight,
+      heightMap,
+      mainTemplateColumns,
+      partiallyVisibleRows,
+      pinnedLeftColumns,
+      pinnedLeftTemplateColumns,
+      pinnedLeftWidth,
+      pinnedRightColumns,
+      pinnedRightTemplateColumns,
+      pinnedRightWidth,
+      regularRows,
+      rowsToRender,
+      setScrollDirection,
+      setScrollTop,
+      setScrollLeftPinnedLeft,
+      setScrollLeftMain,
+      setScrollLeftPinnedRight,
+      shouldShowEmptyState,
+      stickyParents,
+      tableRows,
+    }),
+    [
+      calculatedHeaderHeight,
+      heightMap,
+      mainTemplateColumns,
+      partiallyVisibleRows,
+      pinnedLeftColumns,
+      pinnedLeftTemplateColumns,
+      pinnedLeftWidth,
+      pinnedRightColumns,
+      pinnedRightTemplateColumns,
+      pinnedRightWidth,
+      regularRows,
+      rowsToRender,
+      setScrollDirection,
+      setScrollTop,
+      setScrollLeftPinnedLeft,
+      setScrollLeftMain,
+      setScrollLeftPinnedRight,
+      shouldShowEmptyState,
+      stickyParents,
+      tableRows,
+    ],
+  );
 
   return (
     <div
