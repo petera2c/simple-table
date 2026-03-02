@@ -100,18 +100,54 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     // Check if section can be displayed
     const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
 
-    // Filter headers for this section
-    const filteredHeaders = useMemo(
-      () =>
-        headers.filter((header) =>
-          displayCell({ header, pinned, headers, collapsedHeaders, rootPinned: header.pinned }),
-        ),
-      [headers, pinned, collapsedHeaders],
-    );
+    // Get leaf headers (actual columns) for this section
+    const leafHeaders = useMemo(() => {
+      const leaves: HeaderObject[] = [];
 
-    // Build absolute cell data for all visible cells
+      const processHeader = (header: HeaderObject, rootPinned?: Pinned) => {
+        if (!displayCell({ header, pinned, headers, collapsedHeaders, rootPinned })) {
+          return;
+        }
+
+        if (!header.children || header.children.length === 0) {
+          // This is a leaf header
+          leaves.push(header);
+          return;
+        }
+
+        // Recursively get leaf headers from children
+        header.children.forEach((child) => processHeader(child, rootPinned));
+      };
+
+      // Process all top-level headers for this section
+      headers.forEach((header) => processHeader(header, header.pinned));
+
+      return leaves;
+    }, [headers, pinned, collapsedHeaders]);
+
+    // Build absolute cell data for all visible cells with position information
     const absoluteCells = useMemo(() => {
       const cells: AbsoluteBodyCell[] = [];
+
+      // Helper to get column width in pixels
+      const getColumnWidth = (header: HeaderObject): number => {
+        const { width } = header;
+        if (typeof width === "number") return width;
+        if (typeof width === "string" && width.endsWith("px")) {
+          return parseFloat(width);
+        }
+        return 150; // Default width
+      };
+
+      // Calculate cumulative left positions for each leaf header
+      const headerPositions = new Map<string, { left: number; width: number }>();
+      let currentLeft = 0;
+      
+      leafHeaders.forEach((header) => {
+        const width = getColumnWidth(header);
+        headerPositions.set(header.accessor, { left: currentLeft, width });
+        currentLeft += width;
+      });
 
       regularRows.forEach((tableRow) => {
         // Skip state indicator rows and nested table rows for now
@@ -122,7 +158,16 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
         const rowId = rowIdToString(tableRow.rowId);
         const isOdd = tableRow.position % 2 === 0;
 
-        filteredHeaders.forEach((header) => {
+        // Calculate vertical position for this row
+        const topPosition = calculateRowTopPosition({
+          position: tableRow.position,
+          rowHeight,
+          heightOffsets,
+          customTheme,
+        });
+
+        leafHeaders.forEach((header) => {
+          const position = headerPositions.get(header.accessor);
           cells.push({
             header,
             row: tableRow.row,
@@ -133,12 +178,16 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             depth: tableRow.depth,
             isOdd,
             tableRow,
+            left: position?.left ?? 0,
+            top: topPosition,
+            width: position?.width ?? 150,
+            height: rowHeight,
           });
         });
       });
 
       return cells;
-    }, [regularRows, filteredHeaders, columnIndices]);
+    }, [regularRows, leafHeaders, columnIndices, rowHeight, heightOffsets, customTheme]);
 
     // Build render context
     const renderContext: CellRenderContext = useMemo(
@@ -231,10 +280,33 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     // Render cells using DOM manipulation
     useEffect(() => {
       if (internalRef.current) {
-        renderBodyCells(internalRef.current, absoluteCells, renderContext);
+        const initialScrollLeft = internalRef.current.scrollLeft || 0;
+        renderBodyCells(internalRef.current, absoluteCells, renderContext, initialScrollLeft);
       }
 
       return () => cleanupBodyCellRendering();
+    }, [absoluteCells, renderContext]);
+
+    // Expose render function via ref for scroll sync to call
+    useEffect(() => {
+      const section = internalRef.current;
+      
+      if (section) {
+        // Store render function on the section element so scroll sync can call it
+        (section as any).__renderBodyCells = (scrollLeft: number) => {
+          if (section) {
+            renderBodyCells(section, absoluteCells, renderContext, scrollLeft);
+          }
+        };
+      }
+      
+      return () => {
+        if (section) {
+          delete (section as any).__renderBodyCells;
+        }
+      };
+      // Refs are stable and don't need to be in dependencies
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [absoluteCells, renderContext]);
 
     // Early return after all hooks

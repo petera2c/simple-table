@@ -25,6 +25,10 @@ export interface AbsoluteBodyCell {
   depth: number;
   isOdd: boolean;
   tableRow: any; // Full table row object
+  left: number; // Horizontal position
+  top: number; // Vertical position
+  width: number; // Cell width
+  height: number; // Cell height
 }
 
 // Cell selection/interaction data
@@ -702,6 +706,10 @@ const createBodyCellElement = (cell: AbsoluteBodyCell, context: CellRenderContex
     hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : "",
     isLastColumnInSection ? "st-last-column" : "",
     isSubCell ? "st-sub-cell" : "",
+    // Add row background classes for odd/even rows
+    context.useOddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
+    // Add selected row class
+    context.isRowSelected?.(rowId) ? "st-cell-selected-row" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -712,6 +720,13 @@ const createBodyCellElement = (cell: AbsoluteBodyCell, context: CellRenderContex
   cellElement.id = getCellId({ accessor: header.accessor, rowId });
   cellElement.setAttribute("role", "gridcell");
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
+
+  // Apply absolute positioning like headers
+  cellElement.style.position = "absolute";
+  cellElement.style.left = `${cell.left}px`;
+  cellElement.style.top = `${cell.top}px`;
+  cellElement.style.width = `${cell.width}px`;
+  cellElement.style.height = `${cell.height}px`;
 
   // Create content span
   const contentSpan = document.createElement("span");
@@ -823,7 +838,48 @@ const createBodyCellElement = (cell: AbsoluteBodyCell, context: CellRenderContex
     addTrackedEventListener(cellElement, "click", handleClick);
   }
 
+  // Row hover handlers - find all cells with same rowIndex and toggle hover class
+  if (context.useHoverRowBackground) {
+    const handleMouseEnter = () => {
+      // Find all cells with this row index across all sections
+      const allCellsInRow = document.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+      allCellsInRow.forEach((cell) => cell.classList.add("st-row-hovered"));
+    };
+
+    const handleMouseLeave = () => {
+      // Remove hover class from all cells with this row index
+      const allCellsInRow = document.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+      allCellsInRow.forEach((cell) => cell.classList.remove("st-row-hovered"));
+    };
+
+    addTrackedEventListener(cellElement, "mouseenter", handleMouseEnter);
+    addTrackedEventListener(cellElement, "mouseleave", handleMouseLeave);
+  }
+
+  // Add data attribute for row index to enable row-level hover
+  cellElement.setAttribute("data-row-index", String(rowIndex));
+
   return cellElement;
+};
+
+// Helper to filter visible cells based on horizontal scroll
+const getVisibleBodyCells = (
+  cells: AbsoluteBodyCell[],
+  scrollLeft: number,
+  viewportWidth: number,
+  overscan: number = 200,
+): AbsoluteBodyCell[] => {
+  if (cells.length === 0) return [];
+
+  const visibleLeft = scrollLeft - overscan;
+  const visibleRight = scrollLeft + viewportWidth + overscan;
+
+  const visibleCells = cells.filter((cell) => {
+    const cellRight = cell.left + cell.width;
+    return cellRight >= visibleLeft && cell.left <= visibleRight;
+  });
+
+  return visibleCells;
 };
 
 // Main render function
@@ -831,88 +887,27 @@ export const renderBodyCells = (
   container: HTMLElement,
   cells: AbsoluteBodyCell[],
   context: CellRenderContext,
+  scrollLeft: number = 0,
 ): void => {
   // Clean up previous event listeners
   cleanupBodyCellRendering();
 
-  // Remove only DOM-rendered rows (not React-rendered separators/state rows)
-  // Look for rows that were created by us (they have a specific marker or we can identify them)
-  const existingRows = Array.from(
-    container.querySelectorAll(
-      ".st-row:not(.st-state-row):not(.st-nested-grid-row):not(.st-state-row-spacer):not(.st-nested-grid-spacer)",
-    ),
-  );
-  existingRows.forEach((row) => {
-    // Only remove if it's a regular row (has cells as children)
-    if (row.querySelector(".st-cell")) {
-      row.remove();
-    }
-  });
+  // Remove only DOM-rendered cells (not React-rendered separators/state rows)
+  const existingCells = Array.from(container.querySelectorAll(".st-cell"));
+  existingCells.forEach((cell) => cell.remove());
 
-  // Group cells by row
-  const cellsByRow = new Map<string, AbsoluteBodyCell[]>();
-  cells.forEach((cell) => {
-    const key = `${cell.rowIndex}`;
-    if (!cellsByRow.has(key)) {
-      cellsByRow.set(key, []);
-    }
-    cellsByRow.get(key)!.push(cell);
-  });
+  // Get viewport width for horizontal virtual scrolling
+  const viewportWidth = container.clientWidth || 0;
 
-  // Render each row with its cells
-  cellsByRow.forEach((rowCells, rowKey) => {
-    if (rowCells.length === 0) return;
+  // For pinned sections, always render all cells (they don't scroll horizontally)
+  // For main section, only render visible cells based on scroll position
+  const cellsToRender = context.pinned
+    ? cells
+    : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
 
-    const firstCell = rowCells[0];
-    const { rowIndex, isOdd, tableRow } = firstCell;
-
-    // Create row container
-    const rowElement = document.createElement("div");
-    rowElement.className = `st-row ${
-      context.useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""
-    } ${context.isRowSelected?.(firstCell.rowId) ? "selected" : ""}`;
-    rowElement.setAttribute("data-index", String(rowIndex));
-    rowElement.setAttribute("role", "row");
-    rowElement.style.gridTemplateColumns = context.templateColumns;
-
-    // Position the row using the same calculation as TableRow
-    const topPosition = calculateRowTopPosition({
-      position: tableRow.position,
-      rowHeight: context.rowHeight,
-      heightOffsets: context.heightOffsets,
-      customTheme: context.customTheme,
-    });
-    rowElement.style.top = `${topPosition}px`;
-    rowElement.style.height = `${context.rowHeight}px`;
-
-    // Add hover handler
-    const handleMouseEnter = () => {
-      if (context.useHoverRowBackground) {
-        // Find all rows with this index and add hovered class
-        const allRowsWithIndex = container.parentElement?.querySelectorAll(
-          `.st-row[data-index="${rowIndex}"]`,
-        );
-        allRowsWithIndex?.forEach((row) => row.classList.add("hovered"));
-      }
-    };
-
-    const handleMouseLeave = () => {
-      // Remove hovered class from all rows with this index
-      const allRowsWithIndex = container.parentElement?.querySelectorAll(
-        `.st-row[data-index="${rowIndex}"]`,
-      );
-      allRowsWithIndex?.forEach((row) => row.classList.remove("hovered"));
-    };
-
-    addTrackedEventListener(rowElement, "mouseenter", handleMouseEnter);
-    addTrackedEventListener(rowElement, "mouseleave", handleMouseLeave);
-
-    // Render cells in this row
-    rowCells.forEach((cell) => {
-      const cellElement = createBodyCellElement(cell, context);
-      rowElement.appendChild(cellElement);
-    });
-
-    container.appendChild(rowElement);
+  // Render each cell directly to the container (no row wrappers)
+  cellsToRender.forEach((cell) => {
+    const cellElement = createBodyCellElement(cell, context);
+    container.appendChild(cellElement);
   });
 };
