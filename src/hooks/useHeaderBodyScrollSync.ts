@@ -72,9 +72,15 @@ export const useMultiScrollSync = (configs: ScrollSyncConfig[]) => {
 
         // If the source element has a render function attached, call it with scroll position
         // This enables virtual scrolling for header cells
-        const renderFn = (sourceElement as any).__renderHeaderCells;
-        if (typeof renderFn === "function") {
-          renderFn(sourceElement.scrollLeft);
+        const headerRenderFn = (sourceElement as any).__renderHeaderCells;
+        if (typeof headerRenderFn === "function") {
+          headerRenderFn(sourceElement.scrollLeft);
+        }
+
+        // Call body render function if it exists
+        const bodyRenderFn = (sourceElement as any).__renderBodyCells;
+        if (typeof bodyRenderFn === "function") {
+          bodyRenderFn(sourceElement.scrollLeft);
         }
       };
 

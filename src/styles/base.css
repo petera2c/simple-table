@@ -410,6 +410,30 @@ input {
   color: var(--st-cell-color);
 }
 
+/* Cell-level row background classes (for absolute positioned cells) */
+.st-cell.st-cell-even-row {
+  background-color: var(--st-even-row-background-color);
+}
+.st-cell.st-cell-odd-row {
+  background-color: var(--st-odd-row-background-color);
+}
+.st-cell.st-cell-even-row .st-cell-content {
+  color: var(--st-cell-color);
+}
+.st-cell.st-cell-odd-row .st-cell-content {
+  color: var(--st-cell-odd-row-color);
+}
+
+/* Selected row styling for cells */
+.st-cell.st-cell-selected-row {
+  background-color: var(--st-selected-row-background-color);
+}
+
+/* Row hover styling for cells */
+.st-cell.st-row-hovered:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
+  background-color: var(--st-hover-row-background-color);
+}
+
 /* Styles for table header cells */
 .st-header-cell {
   top: 0;
