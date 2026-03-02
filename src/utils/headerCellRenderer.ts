@@ -49,6 +49,7 @@ export interface HeaderRenderContext {
   headers: HeaderObject[];
   rows: Row[];
   headerHeight: number;
+  lastHeaderIndex: number;
   onSort: (accessor: Accessor) => void;
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearFilter: (accessor: Accessor) => void;
@@ -911,16 +912,16 @@ const createHeaderCellElement = (
   const isLastColumnInSection = (() => {
     if (!columnBorders) return false;
     
-    const pinnedLeftColumns = headers.filter((h) => h.pinned === "left");
-    const mainColumns = headers.filter((h) => !h.pinned);
-    const pinnedRightColumns = headers.filter((h) => h.pinned === "right");
-    
-    if (header.pinned === "left") {
-      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
-    } else if (header.pinned === "right") {
-      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
+    // Check if this is the last leaf column in the section
+    // For leaf headers, colIndex matches the column index
+    // For parent headers, we need to check if any of their leaf columns is the last
+    if (!header.children || header.children.length === 0) {
+      // Leaf header: check if its column index is the last
+      return colIndex === context.lastHeaderIndex;
     } else {
-      return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
+      // Parent header: check if it contains the last column
+      const leafIndices = getHeaderLeafIndices(header, colIndex);
+      return leafIndices.includes(context.lastHeaderIndex);
     }
   })();
   
@@ -1071,24 +1072,60 @@ const getLastHeaderIndex = (absoluteCells: AbsoluteCell[]): number => {
   return lastCell.colIndex;
 };
 
+// Calculate which cells are visible based on scroll position and viewport
+const getVisibleCells = (
+  absoluteCells: AbsoluteCell[],
+  scrollLeft: number,
+  viewportWidth: number,
+  overscan: number = 200 // pixels to render beyond viewport
+): AbsoluteCell[] => {
+  if (absoluteCells.length === 0) return [];
+  
+  const visibleLeft = scrollLeft - overscan;
+  const visibleRight = scrollLeft + viewportWidth + overscan;
+  
+  return absoluteCells.filter((cell) => {
+    const cellRight = cell.left + cell.width;
+    // Cell is visible if it overlaps with the visible range
+    return cellRight >= visibleLeft && cell.left <= visibleRight;
+  });
+};
+
 export const renderHeaderCells = (
   container: HTMLElement,
   absoluteCells: AbsoluteCell[],
-  context: HeaderRenderContext
+  context: HeaderRenderContext,
+  scrollLeft: number = 0
 ): void => {
   cleanupEventListeners();
   
+  // Get container width for viewport calculation
+  const viewportWidth = container.parentElement?.clientWidth || container.clientWidth || 0;
+  
+  // For pinned sections, always render all cells (they don't scroll)
+  // For main section, only render visible cells based on scroll position
+  const cellsToRender = context.pinned 
+    ? absoluteCells 
+    : getVisibleCells(absoluteCells, scrollLeft, viewportWidth);
+  
+  // Clear container
   container.innerHTML = "";
   
   const lastHeaderIndex = getLastHeaderIndex(absoluteCells);
   
-  absoluteCells.forEach((cell) => {
+  // Render only visible cells
+  cellsToRender.forEach((cell) => {
     const isLastHeader = Boolean(context.autoExpandColumns && !context.pinned && 
       cell.colIndex === lastHeaderIndex);
     
     const cellElement = createHeaderCellElement(cell, context, isLastHeader);
     container.appendChild(cellElement);
   });
+  
+  // Store scroll position for future reference
+  if (!context.pinned) {
+    container.dataset.lastScrollLeft = String(scrollLeft);
+  }
 };
 
 export const cleanupHeaderCellRendering = cleanupEventListeners;

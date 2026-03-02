@@ -3,10 +3,10 @@ import { syncScrollLeft } from "../utils/scrollSyncUtils";
 
 /**
  * IMPORTANT: This hook is different from the ScrollSync context system!
- * 
+ *
  * - ScrollSync (context-based): Syncs elements within the same group (e.g., all elements with group="default")
  *   Used for syncing body sections with sticky parents.
- * 
+ *
  * - useHeaderBodyScrollSync (this hook): Direct 1-to-1 sync between specific pairs (header ↔ body)
  *   Used for syncing each header section with its corresponding body section.
  */
@@ -31,7 +31,7 @@ export const useScrollSync = (sourceRef: RefObject<HTMLElement>, targetSelector:
       const targetElement = sourceElement.parentElement?.parentElement?.querySelector(
         targetSelector,
       ) as HTMLElement | null;
-      
+
       if (targetElement) {
         syncScrollLeft(sourceElement, targetElement);
       }
@@ -48,6 +48,7 @@ export const useScrollSync = (sourceRef: RefObject<HTMLElement>, targetSelector:
 /**
  * Hook to set up bidirectional scroll sync for multiple header-body section pairs
  * This creates direct 1-to-1 sync relationships between specific elements.
+ * Also triggers header cell re-rendering for virtual scrolling if render function is available.
  * 
  * Example: Syncing header sections with their corresponding body sections
  * @param configs - Array of scroll sync configurations
@@ -67,6 +68,13 @@ export const useMultiScrollSync = (configs: ScrollSyncConfig[]) => {
         
         if (targetElement) {
           syncScrollLeft(sourceElement, targetElement);
+        }
+        
+        // If the source element has a render function attached, call it with scroll position
+        // This enables virtual scrolling for header cells
+        const renderFn = (sourceElement as any).__renderHeaderCells;
+        if (typeof renderFn === "function") {
+          renderFn(sourceElement.scrollLeft);
         }
       };
 

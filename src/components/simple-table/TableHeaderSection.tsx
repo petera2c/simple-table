@@ -5,7 +5,11 @@ import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import { useTableContext } from "../../context/TableContext";
-import { renderHeaderCells, cleanupHeaderCellRendering, HeaderRenderContext } from "../../utils/headerCellRenderer";
+import {
+  renderHeaderCells,
+  cleanupHeaderCellRendering,
+  HeaderRenderContext,
+} from "../../utils/headerCellRenderer";
 
 // Define a type for absolute positioned cell
 type AbsoluteCell = {
@@ -30,8 +34,8 @@ const TableHeaderSection = ({
   sort,
   width,
 }: TableHeaderSectionProps) => {
-  const { 
-    collapsedHeaders, 
+  const {
+    collapsedHeaders,
     autoExpandColumns,
     columnBorders,
     columnReordering,
@@ -71,11 +75,11 @@ const TableHeaderSection = ({
     headerRegistry,
     areAllRowsSelected,
   } = useTableContext();
-  
+
   const headerGridRef = useRef<HTMLDivElement>(null);
 
   // Calculate the last header cell index for this section
-  // We need to find the last leaf header (actual column) in this section
+  // Used to apply st-last-column class for proper border styling
   const lastHeaderIndex = useMemo(() => {
     // Helper to get all leaf headers recursively
     const getLeafHeaders = (header: HeaderObject, rootPinned?: Pinned): HeaderObject[] => {
@@ -240,105 +244,130 @@ const TableHeaderSection = ({
   ]);
 
   // Build context for header cell rendering
-  const renderContext: HeaderRenderContext = useMemo(() => ({
-    collapsedHeaders,
-    columnBorders,
-    columnReordering,
-    columnResizing,
-    containerWidth,
-    columnsWithSelectedCells,
-    enableHeaderEditing,
-    enableRowSelection,
-    filters,
-    forceUpdate,
-    icons,
-    mainBodyRef,
-    pinnedLeftRef,
-    pinnedRightRef,
-    selectedColumns,
-    sort,
-    autoExpandColumns,
-    selectableColumns,
-    headers,
-    rows,
-    headerHeight,
-    onSort,
-    handleApplyFilter,
-    handleClearFilter,
-    handleSelectAll,
-    setCollapsedHeaders,
-    setHeaders,
-    setIsResizing,
-    onColumnWidthChange,
-    onColumnOrderChange,
-    onTableHeaderDragEnd,
-    onHeaderEdit,
-    onColumnSelect,
-    selectColumns,
-    setSelectedColumns,
-    setSelectedCells,
-    setInitialFocusedCell,
-    areAllRowsSelected,
-    draggedHeaderRef,
-    hoveredHeaderRef,
-    headerRegistry,
-    reverse: pinned === "right",
-    pinned,
-  }), [
-    collapsedHeaders,
-    columnBorders,
-    columnReordering,
-    columnResizing,
-    containerWidth,
-    columnsWithSelectedCells,
-    enableHeaderEditing,
-    enableRowSelection,
-    filters,
-    forceUpdate,
-    icons,
-    mainBodyRef,
-    pinnedLeftRef,
-    pinnedRightRef,
-    selectedColumns,
-    sort,
-    autoExpandColumns,
-    selectableColumns,
-    headers,
-    rows,
-    headerHeight,
-    onSort,
-    handleApplyFilter,
-    handleClearFilter,
-    handleSelectAll,
-    setCollapsedHeaders,
-    setHeaders,
-    setIsResizing,
-    onColumnWidthChange,
-    onColumnOrderChange,
-    onTableHeaderDragEnd,
-    onHeaderEdit,
-    onColumnSelect,
-    selectColumns,
-    setSelectedColumns,
-    setSelectedCells,
-    setInitialFocusedCell,
-    areAllRowsSelected,
-    draggedHeaderRef,
-    hoveredHeaderRef,
-    headerRegistry,
-    pinned,
-  ]);
+  const renderContext: HeaderRenderContext = useMemo(
+    () => ({
+      collapsedHeaders,
+      columnBorders,
+      columnReordering,
+      columnResizing,
+      containerWidth,
+      columnsWithSelectedCells,
+      enableHeaderEditing,
+      enableRowSelection,
+      filters,
+      forceUpdate,
+      icons,
+      mainBodyRef,
+      pinnedLeftRef,
+      pinnedRightRef,
+      selectedColumns,
+      sort,
+      autoExpandColumns,
+      selectableColumns,
+      headers,
+      rows,
+      headerHeight,
+      lastHeaderIndex,
+      onSort,
+      handleApplyFilter,
+      handleClearFilter,
+      handleSelectAll,
+      setCollapsedHeaders,
+      setHeaders,
+      setIsResizing,
+      onColumnWidthChange,
+      onColumnOrderChange,
+      onTableHeaderDragEnd,
+      onHeaderEdit,
+      onColumnSelect,
+      selectColumns,
+      setSelectedColumns,
+      setSelectedCells,
+      setInitialFocusedCell,
+      areAllRowsSelected,
+      draggedHeaderRef,
+      hoveredHeaderRef,
+      headerRegistry,
+      reverse: pinned === "right",
+      pinned,
+    }),
+    [
+      collapsedHeaders,
+      columnBorders,
+      columnReordering,
+      columnResizing,
+      containerWidth,
+      columnsWithSelectedCells,
+      enableHeaderEditing,
+      enableRowSelection,
+      filters,
+      forceUpdate,
+      icons,
+      mainBodyRef,
+      pinnedLeftRef,
+      pinnedRightRef,
+      selectedColumns,
+      sort,
+      autoExpandColumns,
+      selectableColumns,
+      headers,
+      rows,
+      headerHeight,
+      lastHeaderIndex,
+      onSort,
+      handleApplyFilter,
+      handleClearFilter,
+      handleSelectAll,
+      setCollapsedHeaders,
+      setHeaders,
+      setIsResizing,
+      onColumnWidthChange,
+      onColumnOrderChange,
+      onTableHeaderDragEnd,
+      onHeaderEdit,
+      onColumnSelect,
+      selectColumns,
+      setSelectedColumns,
+      setSelectedCells,
+      setInitialFocusedCell,
+      areAllRowsSelected,
+      draggedHeaderRef,
+      hoveredHeaderRef,
+      headerRegistry,
+      pinned,
+    ],
+  );
 
   // Render header cells using DOM manipulation
+  // This effect runs on mount and when dependencies change
   useEffect(() => {
     if (headerGridRef.current) {
-      renderHeaderCells(headerGridRef.current, absoluteCells, renderContext);
+      const initialScrollLeft = sectionRef.current?.scrollLeft || 0;
+      renderHeaderCells(headerGridRef.current, absoluteCells, renderContext, initialScrollLeft);
     }
-    
+
     return () => {
       cleanupHeaderCellRendering();
     };
-  }, [absoluteCells, renderContext]);
+  }, [absoluteCells, renderContext, sectionRef]);
+
+  // Expose render function via ref for scroll sync to call
+  useEffect(() => {
+    if (sectionRef.current && headerGridRef.current) {
+      // Store render function on the section element so scroll sync can call it
+      (sectionRef.current as any).__renderHeaderCells = (scrollLeft: number) => {
+        if (headerGridRef.current) {
+          renderHeaderCells(headerGridRef.current, absoluteCells, renderContext, scrollLeft);
+        }
+      };
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        delete (sectionRef.current as any).__renderHeaderCells;
+      }
+    };
+  }, [absoluteCells, renderContext, sectionRef, headerGridRef]);
 
   // Determine scroll sync group based on pinned state
   const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
@@ -357,7 +386,11 @@ const TableHeaderSection = ({
           ...(pinned && { width }),
         }}
       >
-        <div ref={headerGridRef} className="st-header-grid" style={{ height: calculatedHeaderHeight }} />
+        <div
+          ref={headerGridRef}
+          className="st-header-grid"
+          style={{ height: calculatedHeaderHeight }}
+        />
       </div>
     </ScrollSyncPane>
   );
