@@ -90,6 +90,16 @@ let prevUpdateTime = Date.now();
 let prevDraggingPosition = { screenX: 0, screenY: 0 };
 let prevHeaders: HeaderObject[] | null = null;
 
+// Track rendered cells for incremental updates (per container)
+const renderedCellsMap = new WeakMap<HTMLElement, Map<string, HTMLElement>>();
+
+const getRenderedCells = (container: HTMLElement): Map<string, HTMLElement> => {
+  if (!renderedCellsMap.has(container)) {
+    renderedCellsMap.set(container, new Map());
+  }
+  return renderedCellsMap.get(container)!;
+};
+
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 
 const throttle = (callback: () => void, limit: number) => {
@@ -1095,8 +1105,6 @@ export const renderHeaderCells = (
   context: HeaderRenderContext,
   scrollLeft: number = 0
 ): void => {
-  cleanupEventListeners();
-  
   // Get container width for viewport calculation
   const viewportWidth = container.parentElement?.clientWidth || container.clientWidth || 0;
   
@@ -1106,18 +1114,34 @@ export const renderHeaderCells = (
     ? absoluteCells 
     : getVisibleCells(absoluteCells, scrollLeft, viewportWidth);
   
-  // Clear container
-  container.innerHTML = "";
-  
   const lastHeaderIndex = getLastHeaderIndex(absoluteCells);
+  const renderedCells = getRenderedCells(container);
   
-  // Render only visible cells
+  // Build set of cell IDs that should be visible
+  const visibleCellIds = new Set(
+    cellsToRender.map(cell => getCellId({ accessor: cell.header.accessor, rowId: "header" }))
+  );
+  
+  // Remove cells that are no longer visible
+  renderedCells.forEach((element, cellId) => {
+    if (!visibleCellIds.has(cellId)) {
+      element.remove();
+      renderedCells.delete(cellId);
+    }
+  });
+  
+  // Add new cells that aren't rendered yet
   cellsToRender.forEach((cell) => {
-    const isLastHeader = Boolean(context.autoExpandColumns && !context.pinned && 
-      cell.colIndex === lastHeaderIndex);
+    const cellId = getCellId({ accessor: cell.header.accessor, rowId: "header" });
     
-    const cellElement = createHeaderCellElement(cell, context, isLastHeader);
-    container.appendChild(cellElement);
+    if (!renderedCells.has(cellId)) {
+      const isLastHeader = Boolean(context.autoExpandColumns && !context.pinned && 
+        cell.colIndex === lastHeaderIndex);
+      
+      const cellElement = createHeaderCellElement(cell, context, isLastHeader);
+      container.appendChild(cellElement);
+      renderedCells.set(cellId, cellElement);
+    }
   });
   
   // Store scroll position for future reference
@@ -1126,4 +1150,10 @@ export const renderHeaderCells = (
   }
 };
 
-export const cleanupHeaderCellRendering = cleanupEventListeners;
+export const cleanupHeaderCellRendering = (container?: HTMLElement) => {
+  cleanupEventListeners();
+  if (container) {
+    const renderedCells = getRenderedCells(container);
+    renderedCells.clear();
+  }
+};

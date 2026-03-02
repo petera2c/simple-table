@@ -138,12 +138,27 @@ const addTrackedEventListener = (
   eventListeners.push({ element, event, handler, options });
 };
 
+// Track rendered cells for incremental updates (per container)
+const renderedCellsMap = new WeakMap<HTMLElement, Map<string, HTMLElement>>();
+
+const getRenderedCells = (container: HTMLElement): Map<string, HTMLElement> => {
+  if (!renderedCellsMap.has(container)) {
+    renderedCellsMap.set(container, new Map());
+  }
+  return renderedCellsMap.get(container)!;
+};
+
 // Cleanup all event listeners
-export const cleanupBodyCellRendering = () => {
+export const cleanupBodyCellRendering = (container?: HTMLElement) => {
   eventListeners.forEach(({ element, event, handler, options }) => {
     element.removeEventListener(event, handler, options);
   });
   eventListeners = [];
+  
+  if (container) {
+    const renderedCells = getRenderedCells(container);
+    renderedCells.clear();
+  }
 };
 
 // SVG icon data (same as header renderer)
@@ -889,13 +904,6 @@ export const renderBodyCells = (
   context: CellRenderContext,
   scrollLeft: number = 0,
 ): void => {
-  // Clean up previous event listeners
-  cleanupBodyCellRendering();
-
-  // Remove only DOM-rendered cells (not React-rendered separators/state rows)
-  const existingCells = Array.from(container.querySelectorAll(".st-cell"));
-  existingCells.forEach((cell) => cell.remove());
-
   // Get viewport width for horizontal virtual scrolling
   const viewportWidth = container.clientWidth || 0;
 
@@ -905,9 +913,29 @@ export const renderBodyCells = (
     ? cells
     : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
 
-  // Render each cell directly to the container (no row wrappers)
+  const renderedCells = getRenderedCells(container);
+  
+  // Build set of cell IDs that should be visible
+  const visibleCellIds = new Set(
+    cellsToRender.map(cell => getCellId({ accessor: cell.header.accessor, rowId: cell.rowId }))
+  );
+  
+  // Remove cells that are no longer visible
+  renderedCells.forEach((element, cellId) => {
+    if (!visibleCellIds.has(cellId)) {
+      element.remove();
+      renderedCells.delete(cellId);
+    }
+  });
+  
+  // Add new cells that aren't rendered yet
   cellsToRender.forEach((cell) => {
-    const cellElement = createBodyCellElement(cell, context);
-    container.appendChild(cellElement);
+    const cellId = getCellId({ accessor: cell.header.accessor, rowId: cell.rowId });
+    
+    if (!renderedCells.has(cellId)) {
+      const cellElement = createBodyCellElement(cell, context);
+      container.appendChild(cellElement);
+      renderedCells.set(cellId, cellElement);
+    }
   });
 };
