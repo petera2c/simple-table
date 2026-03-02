@@ -7,7 +7,6 @@ import { ColumnIndices } from "../utils/columnIndicesUtils";
 interface TableHeaderSectionProps {
   calculatedHeaderHeight: number;
   columnIndices: ColumnIndices;
-  gridTemplateColumns: string;
   handleScroll?: UIEventHandler<HTMLDivElement>;
   headers: HeaderObject[];
   leftOffset?: number;

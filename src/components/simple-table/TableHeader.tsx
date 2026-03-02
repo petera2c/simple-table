@@ -11,16 +11,10 @@ const TableHeader = ({
   centerHeaderRef,
   headers,
   mainBodyWidth,
-  mainTemplateColumns,
   pinnedLeftColumns,
-  pinnedLeftTemplateColumns,
   pinnedLeftWidth,
   pinnedRightColumns,
-  pinnedRightTemplateColumns,
   pinnedRightWidth,
-  scrollLeftPinnedLeft,
-  scrollLeftMain,
-  scrollLeftPinnedRight,
   sort,
 }: TableHeaderProps) => {
   const {
@@ -70,7 +64,6 @@ const TableHeader = ({
         <TableHeaderSection
           calculatedHeaderHeight={calculatedHeaderHeight}
           columnIndices={columnIndices}
-          gridTemplateColumns={pinnedLeftTemplateColumns}
           handleScroll={undefined}
           headers={headers}
           maxDepth={maxHeaderDepth}
@@ -84,7 +77,6 @@ const TableHeader = ({
       <TableHeaderSection
         calculatedHeaderHeight={calculatedHeaderHeight}
         columnIndices={columnIndices}
-        gridTemplateColumns={mainTemplateColumns}
         handleScroll={undefined}
         headers={headers}
         maxDepth={maxHeaderDepth}
@@ -98,7 +90,6 @@ const TableHeader = ({
         <TableHeaderSection
           calculatedHeaderHeight={calculatedHeaderHeight}
           columnIndices={columnIndices}
-          gridTemplateColumns={pinnedRightTemplateColumns}
           handleScroll={undefined}
           headers={headers}
           maxDepth={maxHeaderDepth}

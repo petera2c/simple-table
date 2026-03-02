@@ -1,11 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { displayCell } from "../../utils/cellUtils";
 import { Pinned } from "../../types/Pinned";
-import TableHeaderCell from "./TableHeaderCell";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import { useTableContext } from "../../context/TableContext";
+import { renderHeaderCells, cleanupHeaderCellRendering, HeaderRenderContext } from "../../utils/headerCellRenderer";
 
 // Define a type for absolute positioned cell
 type AbsoluteCell = {
@@ -21,7 +21,6 @@ type AbsoluteCell = {
 const TableHeaderSection = ({
   calculatedHeaderHeight,
   columnIndices,
-  gridTemplateColumns,
   handleScroll,
   headers,
   leftOffset = 0,
@@ -31,7 +30,49 @@ const TableHeaderSection = ({
   sort,
   width,
 }: TableHeaderSectionProps) => {
-  const { collapsedHeaders, autoExpandColumns } = useTableContext();
+  const { 
+    collapsedHeaders, 
+    autoExpandColumns,
+    columnBorders,
+    columnReordering,
+    columnResizing,
+    containerWidth,
+    columnsWithSelectedCells,
+    draggedHeaderRef,
+    enableHeaderEditing,
+    enableRowSelection,
+    filters,
+    forceUpdate,
+    handleApplyFilter,
+    handleClearFilter,
+    handleSelectAll,
+    hoveredHeaderRef,
+    icons,
+    mainBodyRef,
+    onColumnOrderChange,
+    onColumnSelect,
+    onColumnWidthChange,
+    onHeaderEdit,
+    onSort,
+    onTableHeaderDragEnd,
+    headerHeight,
+    pinnedLeftRef,
+    pinnedRightRef,
+    rows,
+    selectColumns,
+    selectableColumns,
+    selectedColumns,
+    setCollapsedHeaders,
+    setHeaders,
+    setInitialFocusedCell,
+    setIsResizing,
+    setSelectedCells,
+    setSelectedColumns,
+    headerRegistry,
+    areAllRowsSelected,
+  } = useTableContext();
+  
+  const headerGridRef = useRef<HTMLDivElement>(null);
 
   // Calculate the last header cell index for this section
   // We need to find the last leaf header (actual column) in this section
@@ -104,7 +145,7 @@ const TableHeaderSection = ({
         // Parent takes up just 1 column width, spans to bottom
         cellWidth = getColumnWidth(header);
         cellHeight = calculatedHeaderHeight - top;
-        
+
         // Add parent cell
         cells.push({
           header,
@@ -129,12 +170,12 @@ const TableHeaderSection = ({
       } else if (hasChildren) {
         // Normal tree mode: parent spans all children columns, only 1 row
         cellHeight = rowHeight;
-        
+
         // Calculate total width by processing children first
         let childLeft = cellLeft;
         const childDepth = depth + 1;
         let totalChildWidth = 0;
-        
+
         header.children?.forEach((child) => {
           if (displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned })) {
             const childWidth = processHeader(child, childDepth, childLeft, header, rootPinned);
@@ -144,7 +185,7 @@ const TableHeaderSection = ({
         });
 
         cellWidth = totalChildWidth;
-        
+
         // Add parent cell spanning all children
         cells.push({
           header,
@@ -161,7 +202,7 @@ const TableHeaderSection = ({
         // Leaf node: own width, spans to bottom
         cellWidth = getColumnWidth(header);
         cellHeight = calculatedHeaderHeight - top;
-        
+
         cells.push({
           header,
           left: cellLeft,
@@ -188,7 +229,116 @@ const TableHeaderSection = ({
     });
 
     return cells;
-  }, [headers, maxDepth, pinned, columnIndices, collapsedHeaders, calculatedHeaderHeight, rowHeight]);
+  }, [
+    headers,
+    maxDepth,
+    pinned,
+    columnIndices,
+    collapsedHeaders,
+    calculatedHeaderHeight,
+    rowHeight,
+  ]);
+
+  // Build context for header cell rendering
+  const renderContext: HeaderRenderContext = useMemo(() => ({
+    collapsedHeaders,
+    columnBorders,
+    columnReordering,
+    columnResizing,
+    containerWidth,
+    columnsWithSelectedCells,
+    enableHeaderEditing,
+    enableRowSelection,
+    filters,
+    forceUpdate,
+    icons,
+    mainBodyRef,
+    pinnedLeftRef,
+    pinnedRightRef,
+    selectedColumns,
+    sort,
+    autoExpandColumns,
+    selectableColumns,
+    headers,
+    rows,
+    headerHeight,
+    onSort,
+    handleApplyFilter,
+    handleClearFilter,
+    handleSelectAll,
+    setCollapsedHeaders,
+    setHeaders,
+    setIsResizing,
+    onColumnWidthChange,
+    onColumnOrderChange,
+    onTableHeaderDragEnd,
+    onHeaderEdit,
+    onColumnSelect,
+    selectColumns,
+    setSelectedColumns,
+    setSelectedCells,
+    setInitialFocusedCell,
+    areAllRowsSelected,
+    draggedHeaderRef,
+    hoveredHeaderRef,
+    headerRegistry,
+    reverse: pinned === "right",
+    pinned,
+  }), [
+    collapsedHeaders,
+    columnBorders,
+    columnReordering,
+    columnResizing,
+    containerWidth,
+    columnsWithSelectedCells,
+    enableHeaderEditing,
+    enableRowSelection,
+    filters,
+    forceUpdate,
+    icons,
+    mainBodyRef,
+    pinnedLeftRef,
+    pinnedRightRef,
+    selectedColumns,
+    sort,
+    autoExpandColumns,
+    selectableColumns,
+    headers,
+    rows,
+    headerHeight,
+    onSort,
+    handleApplyFilter,
+    handleClearFilter,
+    handleSelectAll,
+    setCollapsedHeaders,
+    setHeaders,
+    setIsResizing,
+    onColumnWidthChange,
+    onColumnOrderChange,
+    onTableHeaderDragEnd,
+    onHeaderEdit,
+    onColumnSelect,
+    selectColumns,
+    setSelectedColumns,
+    setSelectedCells,
+    setInitialFocusedCell,
+    areAllRowsSelected,
+    draggedHeaderRef,
+    hoveredHeaderRef,
+    headerRegistry,
+    pinned,
+  ]);
+
+  // Render header cells using DOM manipulation
+  useEffect(() => {
+    if (headerGridRef.current) {
+      renderHeaderCells(headerGridRef.current, absoluteCells, renderContext);
+    }
+    
+    return () => {
+      cleanupHeaderCellRendering();
+    };
+  }, [absoluteCells, renderContext]);
 
   // Determine scroll sync group based on pinned state
   const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
@@ -207,25 +357,7 @@ const TableHeaderSection = ({
           ...(pinned && { width }),
         }}
       >
-        <div className="st-header-grid" style={{ height: calculatedHeaderHeight }}>
-          {absoluteCells.map((cell) => (
-            <TableHeaderCell
-              colIndex={cell.colIndex}
-              header={cell.header}
-              key={cell.header.accessor}
-              parentHeader={cell.parentHeader}
-              reverse={pinned === "right"}
-              sort={sort}
-              isLastHeader={autoExpandColumns && !pinned && cell.colIndex === lastHeaderIndex}
-              absolutePosition={{
-                left: cell.left,
-                top: cell.top,
-                width: cell.width,
-                height: cell.height,
-              }}
-            />
-          ))}
-        </div>
+        <div ref={headerGridRef} className="st-header-grid" style={{ height: calculatedHeaderHeight }} />
       </div>
     </ScrollSyncPane>
   );

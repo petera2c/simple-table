@@ -7,16 +7,10 @@ type TableHeaderProps = {
   centerHeaderRef: RefObject<HTMLDivElement>;
   headers: HeaderObject[];
   mainBodyWidth: number;
-  mainTemplateColumns: string;
   pinnedLeftColumns: HeaderObject[];
-  pinnedLeftTemplateColumns: string;
   pinnedLeftWidth: number;
   pinnedRightColumns: HeaderObject[];
-  pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
-  scrollLeftPinnedLeft: number;
-  scrollLeftMain: number;
-  scrollLeftPinnedRight: number;
   sort: SortColumn | null;
 };
 
