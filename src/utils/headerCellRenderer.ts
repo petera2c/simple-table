@@ -15,7 +15,6 @@ import {
   getHeaderSection 
 } from "../hooks/useDragHandler";
 import { handleResizeStart } from "./resizeUtils";
-import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
 import { DRAG_THROTTLE_LIMIT } from "../consts/general-consts";
 import { hasCollapsibleChildren } from "./collapseUtils";
 import { DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
@@ -886,7 +885,6 @@ const createHeaderCellElement = (
     draggedHeaderRef,
     hoveredHeaderRef,
     reverse,
-    headers,
   } = context;
   
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;

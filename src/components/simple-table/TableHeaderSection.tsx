@@ -233,15 +233,7 @@ const TableHeaderSection = ({
     });
 
     return cells;
-  }, [
-    headers,
-    maxDepth,
-    pinned,
-    columnIndices,
-    collapsedHeaders,
-    calculatedHeaderHeight,
-    rowHeight,
-  ]);
+  }, [headers, pinned, columnIndices, collapsedHeaders, calculatedHeaderHeight, rowHeight]);
 
   // Build context for header cell rendering
   const renderContext: HeaderRenderContext = useMemo(
@@ -353,21 +345,24 @@ const TableHeaderSection = ({
 
   // Expose render function via ref for scroll sync to call
   useEffect(() => {
-    if (sectionRef.current && headerGridRef.current) {
+    const section = sectionRef.current;
+    const headerGrid = headerGridRef.current;
+
+    if (section && headerGrid) {
       // Store render function on the section element so scroll sync can call it
-      (sectionRef.current as any).__renderHeaderCells = (scrollLeft: number) => {
-        if (headerGridRef.current) {
-          renderHeaderCells(headerGridRef.current, absoluteCells, renderContext, scrollLeft);
+      (section as any).__renderHeaderCells = (scrollLeft: number) => {
+        if (headerGrid) {
+          renderHeaderCells(headerGrid, absoluteCells, renderContext, scrollLeft);
         }
       };
     }
 
     return () => {
-      if (sectionRef.current) {
-        delete (sectionRef.current as any).__renderHeaderCells;
+      if (section) {
+        delete (section as any).__renderHeaderCells;
       }
     };
-  }, [absoluteCells, renderContext, sectionRef, headerGridRef]);
+  }, [absoluteCells, renderContext, sectionRef]);
 
   // Determine scroll sync group based on pinned state
   const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
