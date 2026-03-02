@@ -1,14 +1,11 @@
-// Event listener tracking
-interface EventListenerEntry {
-  element: HTMLElement;
+// Event listener tracking - store listeners per element
+const elementListenersMap = new WeakMap<HTMLElement, Array<{
   event: string;
   handler: EventListener;
   options?: AddEventListenerOptions;
-}
+}>>();
 
-let eventListeners: EventListenerEntry[] = [];
-
-// Helper to track event listeners
+// Helper to track event listeners per element
 export const addTrackedEventListener = (
   element: HTMLElement,
   event: string,
@@ -16,7 +13,12 @@ export const addTrackedEventListener = (
   options?: AddEventListenerOptions,
 ) => {
   element.addEventListener(event, handler, options);
-  eventListeners.push({ element, event, handler, options });
+  
+  // Track this listener on the element
+  if (!elementListenersMap.has(element)) {
+    elementListenersMap.set(element, []);
+  }
+  elementListenersMap.get(element)!.push({ event, handler, options });
 };
 
 // Track rendered cells for incremental updates (per container)
@@ -31,10 +33,9 @@ export const getRenderedCells = (container: HTMLElement): Map<string, HTMLElemen
 
 // Cleanup all event listeners
 export const cleanupBodyCellRendering = (container?: HTMLElement) => {
-  eventListeners.forEach(({ element, event, handler, options }) => {
-    element.removeEventListener(event, handler, options);
-  });
-  eventListeners = [];
+  // No longer need to clean up all listeners globally
+  // Event listeners are now tracked per element via WeakMap
+  // and will be garbage collected when elements are removed
   
   if (container) {
     const renderedCells = getRenderedCells(container);
