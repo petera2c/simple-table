@@ -1,0 +1,277 @@
+import CellValue from "../../types/CellValue";
+import { getCellId } from "../cellUtils";
+import { getNestedValue, setNestedValue } from "../rowUtils";
+import { AbsoluteBodyCell, CellData, CellRenderContext } from "./types";
+import { addTrackedEventListener } from "./eventTracking";
+import { createEditableInput } from "./editing";
+import { createCellContent } from "./content";
+
+// Calculate cell class names based on current state
+export const calculateBodyCellClasses = (
+  cell: AbsoluteBodyCell,
+  context: CellRenderContext,
+): string => {
+  const { header, rowIndex, colIndex, rowId, depth, isOdd } = cell;
+
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
+  const clickable = Boolean(header?.isEditable);
+
+  // Calculate selection states
+  const cellData: CellData = { rowIndex, colIndex, rowId };
+  const borderClass = context.getBorderClass(cellData);
+  const isHighlighted = context.isSelected(cellData);
+  const isInitialFocused = context.isInitialFocusedCell(cellData);
+  const isCellCopyFlashing = context.isCopyFlashing(cellData);
+  const isCellWarningFlashing = context.isWarningFlashing(cellData);
+
+  // Check column selection
+  const isColumnSelected = context.selectedColumns.has(colIndex);
+  const isIndividuallySelected = isHighlighted && !isColumnSelected;
+
+  // Check if row has selected cells
+  const hasHighlightedCellInRow =
+    isSelectionColumn && context.rowsWithSelectedCells.has(String(rowId));
+
+  // Check if this is the last column in section
+  const isLastColumnInSection = (() => {
+    if (!context.columnBorders) return false;
+
+    const pinnedLeftColumns = context.headers.filter((h) => h.pinned === "left");
+    const mainColumns = context.headers.filter((h) => !h.pinned);
+    const pinnedRightColumns = context.headers.filter((h) => h.pinned === "right");
+
+    if (header.pinned === "left") {
+      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
+    } else if (header.pinned === "right") {
+      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
+    } else {
+      return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
+    }
+  })();
+
+  // Check if this is a sub-cell
+  const isSubCell = false;
+
+  // Build class names
+  return [
+    "st-cell",
+    depth > 0 && header.expandable ? `st-cell-depth-${depth}` : "",
+    isIndividuallySelected
+      ? isInitialFocused
+        ? `st-cell-selected-first ${borderClass}`
+        : `st-cell-selected ${borderClass}`
+      : "",
+    isColumnSelected
+      ? isInitialFocused
+        ? "st-cell-column-selected-first"
+        : "st-cell-column-selected"
+      : "",
+    clickable ? "clickable" : "",
+    isCellCopyFlashing
+      ? isInitialFocused
+        ? "st-cell-copy-flash-first"
+        : "st-cell-copy-flash"
+      : "",
+    isCellWarningFlashing
+      ? isInitialFocused
+        ? "st-cell-warning-flash-first"
+        : "st-cell-warning-flash"
+      : "",
+    context.useOddColumnBackground ? (colIndex % 2 === 0 ? "even-column" : "odd-column") : "",
+    isSelectionColumn ? "st-selection-cell" : "",
+    hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : "",
+    isLastColumnInSection ? "st-last-column" : "",
+    isSubCell ? "st-sub-cell" : "",
+    context.useOddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
+    context.isRowSelected?.(rowId) ? "st-cell-selected-row" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+// Create a single body cell element
+export const createBodyCellElement = (
+  cell: AbsoluteBodyCell,
+  context: CellRenderContext,
+): HTMLElement => {
+  const { header, row, rowIndex, colIndex, rowId } = cell;
+
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
+
+  // Calculate cell data for state checks
+  const cellData: CellData = { rowIndex, colIndex, rowId };
+  const isInitialFocused = context.isInitialFocusedCell(cellData);
+
+  // Get class names
+  const classNames = calculateBodyCellClasses(cell, context);
+
+  // Create cell element
+  const cellElement = document.createElement("div");
+  cellElement.className = classNames;
+  cellElement.id = getCellId({ accessor: header.accessor, rowId });
+  cellElement.setAttribute("role", "gridcell");
+  cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
+
+  // Apply absolute positioning like headers
+  cellElement.style.position = "absolute";
+  cellElement.style.left = `${cell.left}px`;
+  cellElement.style.top = `${cell.top}px`;
+  cellElement.style.width = `${cell.width}px`;
+  cellElement.style.height = `${cell.height}px`;
+
+  // Create content span
+  const contentSpan = document.createElement("span");
+  contentSpan.className = `st-cell-content ${
+    header.align === "right"
+      ? "right-aligned"
+      : header.align === "center"
+        ? "center-aligned"
+        : "left-aligned"
+  }`;
+
+  // Track editing state
+  let isEditing = false;
+
+  const renderCellContent = () => {
+    contentSpan.innerHTML = "";
+    if (isEditing) {
+      const currentValue = getNestedValue(row, header.accessor);
+      const input = createEditableInput(cell, context, currentValue, () => {
+        isEditing = false;
+        renderCellContent();
+        // Re-register cell in registry after editing
+        registerCellInRegistry();
+      });
+      contentSpan.appendChild(input);
+    } else {
+      createCellContent(cell, context, contentSpan);
+    }
+  };
+
+  renderCellContent();
+  cellElement.appendChild(contentSpan);
+
+  // Register cell in registry for direct updates
+  const registerCellInRegistry = () => {
+    if (context.cellRegistry && !isSelectionColumn) {
+      const key = `${rowId}-${header.accessor}`;
+      context.cellRegistry.set(key, {
+        updateContent: (newValue: CellValue) => {
+          if (!isEditing) {
+            // Update the row data
+            setNestedValue(row, header.accessor, newValue);
+
+            // Re-render cell content
+            renderCellContent();
+
+            // Add update flash animation
+            if (context.cellUpdateFlash) {
+              cellElement.classList.add(
+                isInitialFocused ? "st-cell-updating-first" : "st-cell-updating",
+              );
+              setTimeout(() => {
+                cellElement.classList.remove("st-cell-updating-first", "st-cell-updating");
+              }, 800);
+            }
+          }
+        },
+      });
+    }
+  };
+
+  registerCellInRegistry();
+
+  // Event handlers
+  if (!isEditing && !isSelectionColumn) {
+    const handleMouseDown = () => {
+      context.handleMouseDown(cellData);
+    };
+
+    const handleMouseOver = () => {
+      context.handleMouseOver(cellData);
+    };
+
+    addTrackedEventListener(cellElement, "mousedown", handleMouseDown);
+    addTrackedEventListener(cellElement, "mouseover", handleMouseOver);
+  }
+
+  // Keyboard navigation
+  const handleKeyDown = (event: Event) => {
+    const keyEvent = event as KeyboardEvent;
+
+    if (isEditing || isSelectionColumn) {
+      return;
+    }
+
+    // Start editing on F2 or Enter
+    if ((keyEvent.key === "F2" || keyEvent.key === "Enter") && header.isEditable && !isEditing) {
+      keyEvent.preventDefault();
+      isEditing = true;
+      renderCellContent();
+    }
+  };
+
+  addTrackedEventListener(cellElement, "keydown", handleKeyDown);
+
+  // Cell click callback
+  if (context.onCellClick && !isSelectionColumn) {
+    const handleClick = () => {
+      const currentValue = getNestedValue(row, header.accessor);
+      context.onCellClick?.({
+        accessor: header.accessor,
+        colIndex,
+        row,
+        rowIndex,
+        value: currentValue,
+      });
+    };
+
+    addTrackedEventListener(cellElement, "click", handleClick);
+  }
+
+  // Row hover handlers - find all cells with same rowIndex and toggle hover class
+  if (context.useHoverRowBackground) {
+    const handleMouseEnter = () => {
+      // Find all cells with this row index across all sections
+      const allCellsInRow = document.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+      allCellsInRow.forEach((cell) => cell.classList.add("st-row-hovered"));
+    };
+
+    const handleMouseLeave = () => {
+      // Remove hover class from all cells with this row index
+      const allCellsInRow = document.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+      allCellsInRow.forEach((cell) => cell.classList.remove("st-row-hovered"));
+    };
+
+    addTrackedEventListener(cellElement, "mouseenter", handleMouseEnter);
+    addTrackedEventListener(cellElement, "mouseleave", handleMouseLeave);
+  }
+
+  // Add data attribute for row index to enable row-level hover
+  cellElement.setAttribute("data-row-index", String(rowIndex));
+
+  return cellElement;
+};
+
+// Update an existing body cell element with current state
+export const updateBodyCellElement = (
+  cellElement: HTMLElement,
+  cell: AbsoluteBodyCell,
+  context: CellRenderContext,
+): void => {
+  const { rowIndex, colIndex, rowId } = cell;
+  const cellData: CellData = { rowIndex, colIndex, rowId };
+
+  // Update classes to reflect current state
+  cellElement.className = calculateBodyCellClasses(cell, context);
+
+  // Update tabindex for focus
+  const isInitialFocused = context.isInitialFocusedCell(cellData);
+  cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
+
+  // Update position (may have changed due to column resize or scroll)
+  cellElement.style.left = `${cell.left}px`;
+  cellElement.style.top = `${cell.top}px`;
+  cellElement.style.width = `${cell.width}px`;
+  cellElement.style.height = `${cell.height}px`;
+};
