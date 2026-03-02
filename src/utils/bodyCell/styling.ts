@@ -181,7 +181,7 @@ export const createBodyCellElement = (
 
   registerCellInRegistry();
 
-  // Event handlers
+  // Event handlers for cell selection
   if (!isEditing && !isSelectionColumn) {
     const handleMouseDown = () => {
       context.handleMouseDown(cellData);
