@@ -37,15 +37,21 @@ import Tooltip from "../Tooltip";
 
 interface HeaderCellProps {
   colIndex: number;
-  gridColumnEnd: number;
-  gridColumnStart: number;
-  gridRowEnd: number;
-  gridRowStart: number;
+  gridColumnEnd?: number;
+  gridColumnStart?: number;
+  gridRowEnd?: number;
+  gridRowStart?: number;
   header: HeaderObject;
   parentHeader?: HeaderObject;
   reverse?: boolean;
   sort: SortColumn | null;
   isLastHeader?: boolean;
+  absolutePosition?: {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  };
 }
 
 const TableHeaderCell = ({
@@ -59,6 +65,7 @@ const TableHeaderCell = ({
   reverse,
   sort,
   isLastHeader = false,
+  absolutePosition,
 }: HeaderCellProps) => {
   // Local state for filter dropdown and editing
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
@@ -680,13 +687,25 @@ const TableHeaderCell = ({
           });
         }
       }}
-      style={{
-        gridRowStart,
-        gridRowEnd,
-        gridColumnStart,
-        gridColumnEnd,
-        ...(gridRowEnd - gridRowStart > 1 ? {} : { height: headerHeight }),
-      }}
+      style={
+        absolutePosition
+          ? {
+              position: "absolute",
+              left: `${absolutePosition.left}px`,
+              top: `${absolutePosition.top}px`,
+              width: `${absolutePosition.width}px`,
+              height: `${absolutePosition.height}px`,
+            }
+          : {
+              gridRowStart,
+              gridRowEnd,
+              gridColumnStart,
+              gridColumnEnd,
+              ...(gridRowEnd && gridRowStart && gridRowEnd - gridRowStart > 1
+                ? {}
+                : { height: headerHeight }),
+            }
+      }
     >
       {reverse && ResizeHandle}
       {!header.headerRenderer && header.align === "right" && CollapseIconComponent}
