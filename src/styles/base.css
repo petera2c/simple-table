@@ -203,12 +203,11 @@ input {
 .st-header-main,
 .st-header-pinned-right {
   position: absolute;
-  display: grid;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 
 .st-header-grid {
-  display: grid;
+  position: relative;
   min-width: 100%;
 }
 

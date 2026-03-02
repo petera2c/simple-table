@@ -7,13 +7,13 @@ import { HeaderObject } from "../..";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import { useTableContext } from "../../context/TableContext";
 
-// Define a type for grid cell position
-type GridCell = {
+// Define a type for absolute positioned cell
+type AbsoluteCell = {
   header: HeaderObject;
-  gridColumnStart: number;
-  gridColumnEnd: number;
-  gridRowStart: number;
-  gridRowEnd: number;
+  left: number; // Pixel position from left
+  top: number; // Pixel position from top
+  width: number; // Width in pixels
+  height: number; // Height in pixels
   colIndex: number;
   parentHeader?: HeaderObject; // Reference to parent header for styling purposes
 };
@@ -61,83 +61,119 @@ const TableHeaderSection = ({
     return columnIndices[lastLeafHeader.accessor];
   }, [headers, pinned, collapsedHeaders, columnIndices]);
 
-  // First, flatten all headers into grid cells
-  const gridCells = useMemo(() => {
-    const cells: GridCell[] = [];
-    let columnCounter = 1;
+  // Calculate row height for each depth level
+  const rowHeight = calculatedHeaderHeight / maxDepth;
+
+  // First, flatten all headers into absolute positioned cells
+  const absoluteCells = useMemo(() => {
+    const cells: AbsoluteCell[] = [];
+
+    // Helper to get column width in pixels
+    const getColumnWidth = (header: HeaderObject): number => {
+      const { width } = header;
+      if (typeof width === "number") return width;
+      if (typeof width === "string" && width.endsWith("px")) {
+        return parseFloat(width);
+      }
+      return 150; // Default width
+    };
 
     // Helper function to process a header and its children
     const processHeader = (
       header: HeaderObject,
       depth: number,
-      isFirst = false,
+      parentLeft: number,
       parentHeader?: HeaderObject,
       rootPinned?: Pinned,
-    ) => {
+    ): number => {
       if (!displayCell({ header, pinned, headers, collapsedHeaders, rootPinned })) return 0;
-
-      // Only increment for non-first siblings
-      if (!isFirst) {
-        columnCounter++;
-      }
 
       const childrenLength =
         header.children?.filter((child) =>
           displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned }),
         ).length ?? 0;
 
-      const gridColumnStart = columnCounter;
-      const gridRowStart = depth;
+      const hasChildren = childrenLength > 0;
+      const top = (depth - 1) * rowHeight;
 
-      // With singleRowChildren, parent and children are all on the same row
-      let gridColumnEnd: number;
-      let gridRowEnd: number;
+      let cellWidth: number;
+      let cellHeight: number;
+      let cellLeft = parentLeft;
 
-      if (header.singleRowChildren && childrenLength > 0) {
-        // Parent takes up just 1 column, spans to bottom
-        gridColumnEnd = gridColumnStart + 1;
-        gridRowEnd = maxDepth + 1;
-      } else if (childrenLength > 0) {
-        // Normal tree mode: parent spans all children columns, only 1 row
-        gridColumnEnd = gridColumnStart + childrenLength;
-        gridRowEnd = depth + 1;
-      } else {
-        // Leaf node: 1 column, spans to bottom
-        gridColumnEnd = gridColumnStart + 1;
-        gridRowEnd = maxDepth + 1;
-      }
+      if (header.singleRowChildren && hasChildren) {
+        // Parent takes up just 1 column width, spans to bottom
+        cellWidth = getColumnWidth(header);
+        cellHeight = calculatedHeaderHeight - top;
+        
+        // Add parent cell
+        cells.push({
+          header,
+          left: cellLeft,
+          top,
+          width: cellWidth,
+          height: cellHeight,
+          colIndex: columnIndices[header.accessor],
+          parentHeader,
+        });
 
-      // Add parent cell to grid
-      cells.push({
-        header,
-        gridColumnStart,
-        gridColumnEnd,
-        gridRowStart,
-        gridRowEnd,
-        colIndex: columnIndices[header.accessor],
-        parentHeader, // Pass parent reference for styling
-      });
-
-      // Process children if any
-      if (header.children && header.children.length > 0) {
-        // If singleRowChildren is true, render children at the same depth as parent
-        const childDepth = header.singleRowChildren ? depth : depth + 1;
-
-        // For singleRowChildren, we need to continue incrementing columns
-        // But for normal mode, children start at the same column as parent
-        const shouldIncrementForChildren = header.singleRowChildren;
-
-        let isFirstChild = !shouldIncrementForChildren; // If we increment, first child is not "first"
-        header.children.forEach((child) => {
+        // Children are at same depth, positioned after parent
+        let childLeft = cellLeft + cellWidth;
+        header.children?.forEach((child) => {
           if (displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned })) {
-            // Pass current header as parent for children
-            processHeader(child, childDepth, isFirstChild, header, rootPinned);
-            isFirstChild = false;
+            const childWidth = processHeader(child, depth, childLeft, header, rootPinned);
+            childLeft += childWidth;
           }
         });
-      }
 
-      return gridColumnEnd - gridColumnStart;
+        return cellWidth + (childLeft - cellLeft - cellWidth);
+      } else if (hasChildren) {
+        // Normal tree mode: parent spans all children columns, only 1 row
+        cellHeight = rowHeight;
+        
+        // Calculate total width by processing children first
+        let childLeft = cellLeft;
+        const childDepth = depth + 1;
+        let totalChildWidth = 0;
+        
+        header.children?.forEach((child) => {
+          if (displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned })) {
+            const childWidth = processHeader(child, childDepth, childLeft, header, rootPinned);
+            childLeft += childWidth;
+            totalChildWidth += childWidth;
+          }
+        });
+
+        cellWidth = totalChildWidth;
+        
+        // Add parent cell spanning all children
+        cells.push({
+          header,
+          left: cellLeft,
+          top,
+          width: cellWidth,
+          height: cellHeight,
+          colIndex: columnIndices[header.accessor],
+          parentHeader,
+        });
+
+        return cellWidth;
+      } else {
+        // Leaf node: own width, spans to bottom
+        cellWidth = getColumnWidth(header);
+        cellHeight = calculatedHeaderHeight - top;
+        
+        cells.push({
+          header,
+          left: cellLeft,
+          top,
+          width: cellWidth,
+          height: cellHeight,
+          colIndex: columnIndices[header.accessor],
+          parentHeader,
+        });
+
+        return cellWidth;
+      }
     };
 
     // Process all top-level headers
@@ -145,14 +181,14 @@ const TableHeaderSection = ({
       displayCell({ header, pinned, headers, collapsedHeaders, rootPinned: header.pinned }),
     );
 
-    let isFirstHeader = true;
+    let currentLeft = 0;
     topLevelHeaders.forEach((header) => {
-      processHeader(header, 1, isFirstHeader, undefined, header.pinned);
-      isFirstHeader = false;
+      const headerWidth = processHeader(header, 1, currentLeft, undefined, header.pinned);
+      currentLeft += headerWidth;
     });
 
     return cells;
-  }, [headers, maxDepth, pinned, columnIndices, collapsedHeaders]);
+  }, [headers, maxDepth, pinned, columnIndices, collapsedHeaders, calculatedHeaderHeight, rowHeight]);
 
   // Determine scroll sync group based on pinned state
   const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
@@ -171,26 +207,22 @@ const TableHeaderSection = ({
           ...(pinned && { width }),
         }}
       >
-        <div
-          className="st-header-grid"
-          style={{
-            gridTemplateColumns,
-            ...(pinned && { width }),
-          }}
-        >
-          {gridCells.map((cell) => (
+        <div className="st-header-grid" style={{ height: calculatedHeaderHeight }}>
+          {absoluteCells.map((cell) => (
             <TableHeaderCell
               colIndex={cell.colIndex}
-              gridColumnEnd={cell.gridColumnEnd}
-              gridColumnStart={cell.gridColumnStart}
-              gridRowEnd={cell.gridRowEnd}
-              gridRowStart={cell.gridRowStart}
               header={cell.header}
               key={cell.header.accessor}
               parentHeader={cell.parentHeader}
               reverse={pinned === "right"}
               sort={sort}
               isLastHeader={autoExpandColumns && !pinned && cell.colIndex === lastHeaderIndex}
+              absolutePosition={{
+                left: cell.left,
+                top: cell.top,
+                width: cell.width,
+                height: cell.height,
+              }}
             />
           ))}
         </div>
