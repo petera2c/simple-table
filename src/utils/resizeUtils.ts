@@ -15,6 +15,107 @@ import {
 } from "../consts/column-constraints";
 import { calculatePinnedWidth } from "./headerUtils";
 import { findParentHeader } from "./collapseUtils";
+import { getCellId } from "./cellUtils";
+
+/**
+ * Update column widths and positions directly in the DOM without triggering React re-renders
+ * This is used during resize drag for better performance
+ *
+ * IMPORTANT: Positions are calculated per pinned section (left/main/right each start at 0)
+ */
+const updateColumnWidthsInDOM = (headers: HeaderObject[], collapsedHeaders?: Set<string>): void => {
+  // Group headers by pinned section
+  const pinnedLeftHeaders: HeaderObject[] = [];
+  const mainHeaders: HeaderObject[] = [];
+  const pinnedRightHeaders: HeaderObject[] = [];
+
+  headers.forEach((header) => {
+    if (header.hide) return;
+    const pinned = getRootPinned(header, headers);
+    if (pinned === "left") {
+      pinnedLeftHeaders.push(header);
+    } else if (pinned === "right") {
+      pinnedRightHeaders.push(header);
+    } else {
+      mainHeaders.push(header);
+    }
+  });
+
+  // Helper to recursively calculate positions for all headers (parents and children)
+  const calculateHeaderPositions = (
+    header: HeaderObject,
+    currentLeft: number,
+    positions: Map<string, { left: number; width: number }>,
+  ): number => {
+    const startLeft = currentLeft;
+
+    if (header.children && header.children.length > 0) {
+      // This is a parent header - recursively process children
+      header.children.forEach((child) => {
+        if (child.hide) return;
+        currentLeft = calculateHeaderPositions(child, currentLeft, positions);
+      });
+
+      // Set parent's position based on children's total width
+      const parentWidth = currentLeft - startLeft;
+      positions.set(header.accessor, { left: startLeft, width: parentWidth });
+    } else {
+      // This is a leaf header
+      const width = getHeaderWidthInPixels(header);
+      positions.set(header.accessor, { left: currentLeft, width });
+      currentLeft += width;
+    }
+
+    return currentLeft;
+  };
+
+  // Helper to calculate positions for a section (each section starts at left: 0)
+  // Returns positions for both leaf headers and parent headers
+  const calculateSectionPositions = (
+    sectionHeaders: HeaderObject[],
+  ): Map<string, { left: number; width: number }> => {
+    const positions = new Map<string, { left: number; width: number }>();
+    let currentLeft = 0;
+
+    sectionHeaders.forEach((header) => {
+      currentLeft = calculateHeaderPositions(header, currentLeft, positions);
+    });
+
+    return positions;
+  };
+
+  // Calculate positions for each section independently
+  const pinnedLeftPositions = calculateSectionPositions(pinnedLeftHeaders);
+  const mainPositions = calculateSectionPositions(mainHeaders);
+  const pinnedRightPositions = calculateSectionPositions(pinnedRightHeaders);
+
+  // Combine all positions
+  const allPositions = new Map<string, { left: number; width: number }>();
+  pinnedLeftPositions.forEach((value, key) => allPositions.set(key, value));
+  mainPositions.forEach((value, key) => allPositions.set(key, value));
+  pinnedRightPositions.forEach((value, key) => allPositions.set(key, value));
+
+  // Update each header and its body cells
+  allPositions.forEach((position, accessor) => {
+    const { left, width } = position;
+
+    // Update header cell
+    const headerCell = document.getElementById(getCellId({ accessor, rowId: "header" }));
+    if (headerCell) {
+      headerCell.style.left = `${left}px`;
+      headerCell.style.width = `${width}px`;
+    }
+
+    // Update all body cells in this column (only for leaf headers, not parents)
+    const bodyCells = document.querySelectorAll(`[id$="-${accessor}"]`);
+    bodyCells.forEach((cell) => {
+      if (cell instanceof HTMLElement && !cell.id.endsWith("-header")) {
+        cell.style.left = `${left}px`;
+        cell.style.width = `${width}px`;
+      }
+    });
+  });
+};
 
 /**
  * Get the pinned value from the root header (for nested headers, children inherit from parent)
@@ -172,7 +273,7 @@ export const handleResizeStart = ({
     }
   }
 
-  const handleMove = (clientX: number) => {
+  const handleMove = (clientX: number, finalUpdate: boolean = false) => {
     // Calculate the width delta (how much the width has changed)
     // For right-pinned headers, delta is reversed
     const delta = rootPinned === "right" ? startX - clientX : clientX - startX;
@@ -228,19 +329,55 @@ export const handleResizeStart = ({
       });
     }
 
-    const newHeaders = [...headers];
-    setHeaders(newHeaders);
+    if (finalUpdate) {
+      // Final update: sync React state
+      const newHeaders = [...headers];
+      setHeaders(newHeaders);
+    } else {
+      // During drag: update DOM only for better performance
+      updateColumnWidthsInDOM(headers, collapsedHeaders);
+    }
+  };
+
+  // Use RAF to batch resize updates
+  let rafId: number | null = null;
+  let pendingClientX: number | null = null;
+  let lastClientX = startX; // Track last position for final update
+
+  const scheduleUpdate = (clientX: number) => {
+    lastClientX = clientX;
+    pendingClientX = clientX;
+
+    if (rafId === null) {
+      rafId = requestAnimationFrame(() => {
+        if (pendingClientX !== null) {
+          handleMove(pendingClientX, false); // false = DOM only, no React update
+          pendingClientX = null;
+        }
+        rafId = null;
+      });
+    }
   };
 
   if (isTouchEvent) {
     const handleTouchMove = (event: TouchEvent) => {
       const touch = event.touches[0];
-      handleMove(touch.clientX);
+      scheduleUpdate(touch.clientX);
     };
 
     const handleTouchEnd = () => {
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
+
+      // Cancel any pending RAF
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
+      // Final update with React state sync
+      handleMove(lastClientX, true); // true = update React state
+
       setIsResizing(false);
 
       // Notify consumer of width change
@@ -253,12 +390,22 @@ export const handleResizeStart = ({
     document.addEventListener("touchend", handleTouchEnd);
   } else {
     const handleMouseMove = (event: MouseEvent) => {
-      handleMove(event.clientX);
+      scheduleUpdate(event.clientX);
     };
 
     const handleMouseUp = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+
+      // Cancel any pending RAF
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
+      // Final update with React state sync
+      handleMove(lastClientX, true); // true = update React state
+
       setIsResizing(false);
 
       // Notify consumer of width change
