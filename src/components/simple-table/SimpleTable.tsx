@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useReducer, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useReducer, useMemo, useCallback, useLayoutEffect } from "react";
 import { SelectionManager } from "../../managers/SelectionManager";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
@@ -26,10 +26,10 @@ import { FilterCondition } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
 import { useTableDimensions } from "../../hooks/useTableDimensions";
-import useExternalFilters from "../../hooks/useExternalFilters";
 import useExternalSort from "../../hooks/useExternalSort";
-import useScrollbarWidth from "../../hooks/useScrollbarWidth";
-import useOnGridReady from "../../hooks/useOnGridReady";
+import { calculateScrollbarWidth } from "../../hooks/scrollbarWidth";
+import callOnGridReady from "../../hooks/onGridReady";
+import callOnFilterChange from "../../hooks/externalFilters";
 import useTableAPI from "../../hooks/useTableAPI";
 import useTableRowProcessing from "../../hooks/useTableRowProcessing";
 import useFlattenedRows from "../../hooks/useFlattenedRows";
@@ -278,7 +278,14 @@ const SimpleTableComp = ({
   }, [isLoading]);
 
   // Apply aggregation to current rows
-  const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
+  const [scrollbarWidth, setScrollbarWidth] = useState(0);
+  
+  // Calculate scrollbar width
+  useLayoutEffect(() => {
+    if (!tableBodyContainerRef.current) return;
+    const width = calculateScrollbarWidth(tableBodyContainerRef.current);
+    setScrollbarWidth(width);
+  }, [tableBodyContainerRef]);
 
   // Track vertical scrollbar visibility
   const { isMainSectionScrollable } = useScrollbarVisibility({
@@ -822,7 +829,10 @@ const SimpleTableComp = ({
     tableBodyContainerRef,
     setScrollbarWidth,
   });
-  useOnGridReady({ onGridReady });
+  // Call onGridReady callback when component mounts
+  useEffect(() => {
+    callOnGridReady(onGridReady);
+  }, [onGridReady]);
   useTableAPI({
     cellRegistryRef,
     clearAllFilters,
@@ -859,7 +869,10 @@ const SimpleTableComp = ({
     updateSort,
     visibleRows: rowsToRender,
   });
-  useExternalFilters({ filters, onFilterChange });
+  // Call onFilterChange callback when filters change
+  useEffect(() => {
+    callOnFilterChange(filters, onFilterChange);
+  }, [filters, onFilterChange]);
   useExternalSort({ sort, onSortChange });
 
   // Custom filter handler that respects external filter handling flag
