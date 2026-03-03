@@ -1,4 +1,12 @@
-import { useState, useRef, useEffect, useReducer, useMemo, useCallback, useLayoutEffect } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useReducer,
+  useMemo,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import { SelectionManager } from "../../managers/SelectionManager";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
@@ -19,9 +27,9 @@ import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../con
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import useFilterableData from "../../hooks/useFilterableData";
 import useQuickFilter from "../../hooks/useQuickFilter";
-import { useContentHeight } from "../../hooks/useContentHeight";
-import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
-import useWindowResize from "../../hooks/useWindowResize";
+import { calculateContentHeight } from "../../hooks/contentHeight";
+import HandleOutsideClickManager from "../../hooks/handleOutsideClick";
+import WindowResizeManager from "../../hooks/windowResize";
 import { FilterCondition } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { useAggregatedRows } from "../../hooks/useAggregatedRows";
@@ -34,12 +42,12 @@ import useTableAPI from "../../hooks/useTableAPI";
 import useTableRowProcessing from "../../hooks/useTableRowProcessing";
 import useFlattenedRows from "../../hooks/useFlattenedRows";
 import { useRowSelection } from "../../hooks/useRowSelection";
-import useAriaAnnouncements from "../../hooks/useAriaAnnouncements";
+import AriaAnnouncementManager from "../../hooks/ariaAnnouncements";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
-import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
+import ScrollbarVisibilityManager from "../../hooks/scrollbarVisibility";
 import RowState from "../../types/RowState";
 import { generateRowId, rowIdToString, flattenRowsWithGrouping } from "../../utils/rowUtils";
-import useExpandedDepths from "../../hooks/useExpandedDepths";
+import ExpandedDepthsManager, { initializeExpandedDepths } from "../../hooks/expandedDepths";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
@@ -279,7 +287,7 @@ const SimpleTableComp = ({
 
   // Apply aggregation to current rows
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
-  
+
   // Calculate scrollbar width
   useLayoutEffect(() => {
     if (!tableBodyContainerRef.current) return;
@@ -288,11 +296,40 @@ const SimpleTableComp = ({
   }, [tableBodyContainerRef]);
 
   // Track vertical scrollbar visibility
-  const { isMainSectionScrollable } = useScrollbarVisibility({
-    headerContainerRef,
-    mainSectionRef: tableBodyContainerRef,
-    scrollbarWidth,
-  });
+  const [isMainSectionScrollable, setIsMainSectionScrollable] = useState(false);
+  const scrollbarVisibilityManagerRef = useRef<ScrollbarVisibilityManager | null>(null);
+
+  useEffect(() => {
+    if (
+      !scrollbarVisibilityManagerRef.current &&
+      headerContainerRef.current &&
+      tableBodyContainerRef.current
+    ) {
+      scrollbarVisibilityManagerRef.current = new ScrollbarVisibilityManager({
+        headerContainer: headerContainerRef.current,
+        mainSection: tableBodyContainerRef.current,
+        scrollbarWidth,
+      });
+
+      scrollbarVisibilityManagerRef.current.subscribe((isScrollable) => {
+        setIsMainSectionScrollable(isScrollable);
+      });
+
+      setIsMainSectionScrollable(
+        scrollbarVisibilityManagerRef.current.getIsMainSectionScrollable(),
+      );
+    }
+
+    return () => {
+      scrollbarVisibilityManagerRef.current?.destroy();
+      scrollbarVisibilityManagerRef.current = null;
+    };
+  }, []);
+
+  // Update scrollbar width when it changes
+  useEffect(() => {
+    scrollbarVisibilityManagerRef.current?.setScrollbarWidth(scrollbarWidth);
+  }, [scrollbarWidth]);
   const effectiveRows = useMemo(() => {
     if (internalIsLoading && localRows.length === 0) {
       // Calculate how many rows can fit in the visible area
@@ -370,20 +407,61 @@ const SimpleTableComp = ({
   }, [enableRowSelection, headers, selectionColumnWidth]);
 
   const [scrollTop, setScrollTop] = useState<number>(0);
-  const [scrollLeftPinnedLeft, setScrollLeftPinnedLeft] = useState<number>(0);
-  const [scrollLeftMain, setScrollLeftMain] = useState<number>(0);
-  const [scrollLeftPinnedRight, setScrollLeftPinnedRight] = useState<number>(0);
+  const scrollLeftPinnedLeft = 0;
+  const scrollLeftMain = 0;
+  const scrollLeftPinnedRight = 0;
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
 
   // Manage expandedDepths state with automatic cleanup on rowGrouping changes
-  const { expandedDepths, setExpandedDepths } = useExpandedDepths(expandAll, rowGrouping);
+  const [expandedDepths, setExpandedDepths] = useState<Set<number>>(() =>
+    initializeExpandedDepths(expandAll, rowGrouping),
+  );
+  const expandedDepthsManagerRef = useRef<ExpandedDepthsManager | null>(null);
+
+  useEffect(() => {
+    if (!expandedDepthsManagerRef.current) {
+      expandedDepthsManagerRef.current = new ExpandedDepthsManager(expandAll, rowGrouping);
+      expandedDepthsManagerRef.current.subscribe((depths) => {
+        setExpandedDepths(depths);
+      });
+    }
+
+    return () => {
+      expandedDepthsManagerRef.current?.destroy();
+      expandedDepthsManagerRef.current = null;
+    };
+  }, []);
+
+  // Update when rowGrouping changes
+  useEffect(() => {
+    expandedDepthsManagerRef.current?.updateRowGrouping(rowGrouping);
+  }, [rowGrouping]);
 
   // Track user's manual row expansion/collapse preferences
   const [expandedRows, setExpandedRows] = useState<Map<string, number>>(new Map());
   const [collapsedRows, setCollapsedRows] = useState<Map<string, number>>(new Map());
 
   // Aria-live announcements for screen readers
-  const { announcement, announce } = useAriaAnnouncements();
+  const [announcement, setAnnouncement] = useState<string>("");
+  const ariaAnnouncementManagerRef = useRef<AriaAnnouncementManager | null>(null);
+
+  useEffect(() => {
+    if (!ariaAnnouncementManagerRef.current) {
+      ariaAnnouncementManagerRef.current = new AriaAnnouncementManager();
+      ariaAnnouncementManagerRef.current.subscribe((message) => {
+        setAnnouncement(message);
+      });
+    }
+
+    return () => {
+      ariaAnnouncementManagerRef.current?.destroy();
+      ariaAnnouncementManagerRef.current = null;
+    };
+  }, []);
+
+  const announce = useCallback((message: string) => {
+    ariaAnnouncementManagerRef.current?.announce(message);
+  }, []);
 
   // Calculate table dimensions (container width, header height, and max header depth)
   const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = useTableDimensions({
@@ -630,17 +708,32 @@ const SimpleTableComp = ({
     ],
   );
 
-  // Calculate content height using hook (after flattenedRows is available)
-  const contentHeight = useContentHeight({
-    height,
-    maxHeight,
-    rowHeight,
-    shouldPaginate,
-    rowsPerPage,
-    totalRowCount: totalRowCount ?? paginatableRows.length,
-    headerHeight: calculatedHeaderHeight,
-    footerHeight: shouldPaginate && !hideFooter ? footerHeight : undefined,
-  });
+  // Calculate content height (after flattenedRows is available)
+  const contentHeight = useMemo(
+    () =>
+      calculateContentHeight({
+        height,
+        maxHeight,
+        rowHeight,
+        shouldPaginate,
+        rowsPerPage,
+        totalRowCount: totalRowCount ?? paginatableRows.length,
+        headerHeight: calculatedHeaderHeight,
+        footerHeight: shouldPaginate && !hideFooter ? footerHeight : undefined,
+      }),
+    [
+      height,
+      maxHeight,
+      rowHeight,
+      shouldPaginate,
+      rowsPerPage,
+      totalRowCount,
+      paginatableRows.length,
+      calculatedHeaderHeight,
+      hideFooter,
+      footerHeight,
+    ],
+  );
 
   // Process rows through pagination and virtualization (now operates on flattened rows)
   const {
@@ -769,8 +862,10 @@ const SimpleTableComp = ({
   // Expose manager state as getters (these don't trigger re-renders, which is fine since DOM is updated directly)
   const selectedCells = selectionManagerRef.current?.getSelectedCells() || new Set();
   const selectedColumns = selectionManagerRef.current?.getSelectedColumns() || new Set();
-  const columnsWithSelectedCells = selectionManagerRef.current?.getColumnsWithSelectedCells() || new Set();
-  const rowsWithSelectedCells = selectionManagerRef.current?.getRowsWithSelectedCells() || new Set();
+  const columnsWithSelectedCells =
+    selectionManagerRef.current?.getColumnsWithSelectedCells() || new Set();
+  const rowsWithSelectedCells =
+    selectionManagerRef.current?.getRowsWithSelectedCells() || new Set();
   const startCell = { current: selectionManagerRef.current?.getStartCell() || null };
 
   // Create setters for backward compatibility
@@ -779,16 +874,18 @@ const SimpleTableComp = ({
   }, []);
 
   const setSelectedCells = useCallback((value: React.SetStateAction<Set<string>>) => {
-    const cells = typeof value === 'function' 
-      ? value(selectionManagerRef.current?.getSelectedCells() || new Set())
-      : value;
+    const cells =
+      typeof value === "function"
+        ? value(selectionManagerRef.current?.getSelectedCells() || new Set())
+        : value;
     selectionManagerRef.current?.setSelectedCells(cells);
   }, []);
 
   const setSelectedColumns = useCallback((value: React.SetStateAction<Set<number>>) => {
-    const columns = typeof value === 'function'
-      ? value(selectionManagerRef.current?.getSelectedColumns() || new Set())
-      : value;
+    const columns =
+      typeof value === "function"
+        ? value(selectionManagerRef.current?.getSelectedColumns() || new Set())
+        : value;
     selectionManagerRef.current?.setSelectedColumns(columns);
   }, []);
 
@@ -814,7 +911,42 @@ const SimpleTableComp = ({
   );
 
   // Handle outside click
-  useHandleOutsideClick({
+  const handleOutsideClickManagerRef = useRef<HandleOutsideClickManager | null>(null);
+
+  useEffect(() => {
+    if (!handleOutsideClickManagerRef.current) {
+      handleOutsideClickManagerRef.current = new HandleOutsideClickManager({
+        selectableColumns,
+        selectedCells,
+        selectedColumns,
+        setSelectedCells,
+        setSelectedColumns,
+        activeHeaderDropdown,
+        setActiveHeaderDropdown,
+        startCell,
+      });
+      handleOutsideClickManagerRef.current.startListening();
+    }
+
+    return () => {
+      handleOutsideClickManagerRef.current?.destroy();
+      handleOutsideClickManagerRef.current = null;
+    };
+  }, []);
+
+  // Update config when dependencies change
+  useEffect(() => {
+    handleOutsideClickManagerRef.current?.updateConfig({
+      selectableColumns,
+      selectedCells,
+      selectedColumns,
+      setSelectedCells,
+      setSelectedColumns,
+      activeHeaderDropdown,
+      setActiveHeaderDropdown,
+      startCell,
+    });
+  }, [
     selectableColumns,
     selectedCells,
     selectedColumns,
@@ -823,12 +955,32 @@ const SimpleTableComp = ({
     activeHeaderDropdown,
     setActiveHeaderDropdown,
     startCell,
-  });
-  useWindowResize({
-    forceUpdate,
-    tableBodyContainerRef,
-    setScrollbarWidth,
-  });
+  ]);
+  // Window resize handler
+  const windowResizeManagerRef = useRef<WindowResizeManager | null>(null);
+
+  useLayoutEffect(() => {
+    if (!windowResizeManagerRef.current) {
+      windowResizeManagerRef.current = new WindowResizeManager();
+
+      windowResizeManagerRef.current.addCallback(() => {
+        // Force a re-render of the table
+        forceUpdate();
+        // Re-calculate the width of the scrollbar and table content
+        if (!tableBodyContainerRef.current) return;
+
+        const newScrollbarWidth =
+          tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
+
+        setScrollbarWidth(newScrollbarWidth);
+      });
+    }
+
+    return () => {
+      windowResizeManagerRef.current?.destroy();
+      windowResizeManagerRef.current = null;
+    };
+  }, [forceUpdate, tableBodyContainerRef, setScrollbarWidth]);
   // Call onGridReady callback when component mounts
   useEffect(() => {
     callOnGridReady(onGridReady);
@@ -1036,9 +1188,6 @@ const SimpleTableComp = ({
                 scrollLeftMain={scrollLeftMain}
                 scrollLeftPinnedRight={scrollLeftPinnedRight}
                 setScrollTop={setScrollTop}
-                setScrollLeftPinnedLeft={setScrollLeftPinnedLeft}
-                setScrollLeftMain={setScrollLeftMain}
-                setScrollLeftPinnedRight={setScrollLeftPinnedRight}
                 setScrollDirection={setScrollDirection}
                 shouldShowEmptyState={shouldShowEmptyState}
                 sort={sort}

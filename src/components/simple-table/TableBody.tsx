@@ -1,5 +1,5 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
-import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
+import ScrollbarVisibilityManager from "../../hooks/scrollbarVisibility";
 import TableSection from "./TableSection";
 import StickyParentsContainer from "./StickyParentsContainer";
 import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
@@ -21,9 +21,6 @@ const TableBody = ({
   pinnedRightWidth,
   rowsToRender,
   setScrollTop,
-  setScrollLeftPinnedLeft,
-  setScrollLeftMain,
-  setScrollLeftPinnedRight,
   setScrollDirection,
   shouldShowEmptyState,
   tableRows,
@@ -112,11 +109,27 @@ const TableBody = ({
   }, [isAnimating, setHoveredIndex]);
 
   // Add state for section widths
-  useScrollbarVisibility({
-    headerContainerRef,
-    mainSectionRef: tableBodyContainerRef,
-    scrollbarWidth,
-  });
+  const scrollbarVisibilityManagerRef = useRef<ScrollbarVisibilityManager | null>(null);
+  
+  useEffect(() => {
+    if (!scrollbarVisibilityManagerRef.current && headerContainerRef?.current && tableBodyContainerRef?.current) {
+      scrollbarVisibilityManagerRef.current = new ScrollbarVisibilityManager({
+        headerContainer: headerContainerRef.current,
+        mainSection: tableBodyContainerRef.current,
+        scrollbarWidth,
+      });
+    }
+    
+    return () => {
+      scrollbarVisibilityManagerRef.current?.destroy();
+      scrollbarVisibilityManagerRef.current = null;
+    };
+  }, []);
+  
+  // Update scrollbar width when it changes
+  useEffect(() => {
+    scrollbarVisibilityManagerRef.current?.setScrollbarWidth(scrollbarWidth);
+  }, [scrollbarWidth]);
 
   // Clean up scroll timeout on unmount
   useEffect(() => {
