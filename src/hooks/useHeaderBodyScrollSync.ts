@@ -66,41 +66,46 @@ export const useMultiScrollSync = (configs: ScrollSyncConfig[]) => {
       const handleScroll = () => {
         const scrollLeft = sourceElement.scrollLeft;
         pendingScrolls.set(sourceElement, scrollLeft);
-        
+
         // If already scheduled, skip
         if (rafIds.has(sourceElement)) return;
-        
+
         // Schedule RAF for this element
         const rafId = requestAnimationFrame(() => {
           const latestScrollLeft = pendingScrolls.get(sourceElement);
           if (latestScrollLeft === undefined) return;
-          
-          const targetElement = sourceElement.parentElement?.parentElement?.querySelector(
-            targetSelector,
-          ) as HTMLElement | null;
 
-          if (targetElement) {
-            syncScrollLeft(sourceElement, targetElement);
+          // Check if render functions exist (for virtual scrolling)
+          const headerRenderFn = (sourceElement as any).__renderHeaderCells;
+          const bodyRenderFn = (sourceElement as any).__renderBodyCells;
+          const hasRenderFunctions = typeof headerRenderFn === "function" || typeof bodyRenderFn === "function";
+
+          // Only sync scrollLeft if there are NO render functions
+          // Render functions handle positioning themselves and don't need scroll sync
+          if (!hasRenderFunctions) {
+            const targetElement = sourceElement.parentElement?.parentElement?.querySelector(
+              targetSelector,
+            ) as HTMLElement | null;
+
+            if (targetElement) {
+              syncScrollLeft(sourceElement, targetElement);
+            }
           }
 
-          // If the source element has a render function attached, call it with scroll position
-          // This enables virtual scrolling for header cells
-          const headerRenderFn = (sourceElement as any).__renderHeaderCells;
+          // Call render functions if they exist - they handle their own positioning
           if (typeof headerRenderFn === "function") {
             headerRenderFn(latestScrollLeft);
           }
 
-          // Call body render function if it exists
-          const bodyRenderFn = (sourceElement as any).__renderBodyCells;
           if (typeof bodyRenderFn === "function") {
             bodyRenderFn(latestScrollLeft);
           }
-          
+
           // Clean up
           rafIds.delete(sourceElement);
           pendingScrolls.delete(sourceElement);
         });
-        
+
         rafIds.set(sourceElement, rafId);
       };
 
@@ -113,7 +118,7 @@ export const useMultiScrollSync = (configs: ScrollSyncConfig[]) => {
       rafIds.forEach((rafId) => cancelAnimationFrame(rafId));
       rafIds.clear();
       pendingScrolls.clear();
-      
+
       handlers.forEach((handler, element) => {
         element.removeEventListener("scroll", handler);
       });
