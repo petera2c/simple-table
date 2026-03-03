@@ -279,14 +279,15 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
 
     // Render cells using DOM manipulation
     useEffect(() => {
-      if (internalRef.current) {
-        const initialScrollLeft = internalRef.current.scrollLeft || 0;
-        renderBodyCells(internalRef.current, absoluteCells, renderContext, initialScrollLeft);
+      const element = internalRef.current;
+      if (element) {
+        const initialScrollLeft = element.scrollLeft || 0;
+        renderBodyCells(element, absoluteCells, renderContext, initialScrollLeft);
       }
 
       return () => {
-        if (internalRef.current) {
-          cleanupBodyCellRendering(internalRef.current);
+        if (element) {
+          cleanupBodyCellRendering(element);
         }
       };
     }, [absoluteCells, renderContext]);
