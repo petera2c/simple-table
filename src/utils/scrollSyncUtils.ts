@@ -17,7 +17,7 @@ export const syncScrollLeft = (source: HTMLElement, target: HTMLElement): void =
 
 /**
  * Checks if an element has scrollable content
- * 
+ *
  * @param element - The element to check
  * @returns true if the element has horizontal scrollable content
  */
