@@ -1,4 +1,3 @@
-import { DragEvent } from "react";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
@@ -199,7 +198,7 @@ const useDragHandler = ({
     event,
     hoveredHeader,
   }: {
-    event: DragEvent<HTMLDivElement>;
+    event: DragEvent;
     hoveredHeader: HeaderObject;
   }) => {
     // Prevent click event from firing
@@ -209,8 +208,9 @@ const useDragHandler = ({
     if (!headers || !draggedHeaderRef.current) return;
 
     // Get the animations on the header
-    const animations = event.currentTarget.getAnimations();
-    const isAnimating = animations.some((animation) => animation.playState === "running");
+    const target = event.currentTarget;
+    const animations = target && (target as HTMLElement).getAnimations ? (target as HTMLElement).getAnimations() : [];
+    const isAnimating = animations.some((animation: Animation) => animation.playState === "running");
 
     // Get the distance between the previous dragging position and the current position
     const { screenX, screenY } = event;

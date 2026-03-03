@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { QuickFilterConfig, SmartFilterToken } from "../types/QuickFilterTypes";
 import Row from "../types/Row";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
@@ -6,22 +5,21 @@ import { getNestedValue } from "../utils/rowUtils";
 import CellValue from "../types/CellValue";
 import { parseSmartFilter, matchesSimpleFilter } from "../utils/quickFilterUtils";
 
-interface UseQuickFilterProps {
+interface FilterRowsWithQuickFilterProps {
   rows: Row[];
   headers: HeaderObject[];
   quickFilter?: QuickFilterConfig;
 }
 
 /**
- * Hook to filter rows based on quick filter configuration
+ * Pure function to filter rows based on quick filter configuration
  * Supports both simple (contains) and smart (multi-word, phrases, negation, column-specific) modes
  */
-const useQuickFilter = ({ rows, headers, quickFilter }: UseQuickFilterProps): Row[] => {
-  return useMemo(() => {
-    // If no quick filter or empty text, return all rows
-    if (!quickFilter || !quickFilter.text || quickFilter.text.trim() === "") {
-      return rows;
-    }
+export const filterRowsWithQuickFilter = ({ rows, headers, quickFilter }: FilterRowsWithQuickFilterProps): Row[] => {
+  // If no quick filter or empty text, return all rows
+  if (!quickFilter || !quickFilter.text || quickFilter.text.trim() === "") {
+    return rows;
+  }
 
     const {
       text,
@@ -204,7 +202,6 @@ const useQuickFilter = ({ rows, headers, quickFilter }: UseQuickFilterProps): Ro
         });
       }
     });
-  }, [rows, headers, quickFilter]);
 };
 
-export default useQuickFilter;
+export default filterRowsWithQuickFilter;

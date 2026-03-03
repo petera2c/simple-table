@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import {
@@ -20,12 +20,12 @@ interface RowStateIndicatorProps {
  * Component that renders loading/error/empty states for a row
  * Spans the full width of the table (grid column 1 / -1)
  */
-const RowStateIndicator: React.FC<RowStateIndicatorProps> = ({
+const RowStateIndicator = ({
   rowState,
   loadingStateRenderer,
   errorStateRenderer,
   emptyStateRenderer,
-}) => {
+}: RowStateIndicatorProps) => {
   let content: ReactNode = null;
 
   if (rowState.loading && loadingStateRenderer) {

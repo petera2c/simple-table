@@ -26,15 +26,16 @@ import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../context/TableContext";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import useFilterableData from "../../hooks/useFilterableData";
-import useQuickFilter from "../../hooks/useQuickFilter";
+import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateContentHeight } from "../../hooks/contentHeight";
 import HandleOutsideClickManager from "../../hooks/handleOutsideClick";
 import WindowResizeManager from "../../hooks/windowResize";
 import { FilterCondition } from "../../types/FilterTypes";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
-import { useAggregatedRows } from "../../hooks/useAggregatedRows";
+import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
 import { useTableDimensions } from "../../hooks/useTableDimensions";
-import useExternalSort from "../../hooks/useExternalSort";
+import callOnSortChange from "../../hooks/useExternalSort";
+import usePrevious from "../../hooks/usePrevious";
 import { calculateScrollbarWidth } from "../../hooks/scrollbarWidth";
 import callOnGridReady from "../../hooks/onGridReady";
 import callOnFilterChange from "../../hooks/externalFilters";
@@ -508,18 +509,18 @@ const SimpleTableComp = ({
     setHeaders: setHeadersInternal,
   });
 
-  const aggregatedRows = useAggregatedRows({
+  const aggregatedRows = useMemo(() => calculateAggregatedRows({
     rows: effectiveRows,
     headers,
     rowGrouping,
-  });
+  }), [effectiveRows, headers, rowGrouping]);
 
   // Apply quick filter first (global search across columns)
-  const quickFilteredRows = useQuickFilter({
+  const quickFilteredRows = useMemo(() => filterRowsWithQuickFilter({
     rows: aggregatedRows,
     headers: effectiveHeaders,
     quickFilter,
-  });
+  }), [aggregatedRows, effectiveHeaders, quickFilter]);
 
   // Use filter hook (column-specific filters)
   const {
@@ -1025,7 +1026,12 @@ const SimpleTableComp = ({
   useEffect(() => {
     callOnFilterChange(filters, onFilterChange);
   }, [filters, onFilterChange]);
-  useExternalSort({ sort, onSortChange });
+  
+  // Call onSortChange callback when sort changes
+  const previousSort = usePrevious(sort);
+  useEffect(() => {
+    callOnSortChange(sort, previousSort, onSortChange);
+  }, [sort, previousSort, onSortChange]);
 
   // Custom filter handler that respects external filter handling flag
   const handleApplyFilter = useCallback(
