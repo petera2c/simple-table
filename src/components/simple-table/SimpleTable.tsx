@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useReducer, useMemo, useCallback } from "react";
-import useSelection from "../../hooks/useSelection";
+import { SelectionManager } from "../../managers/SelectionManager";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
 import {
@@ -674,35 +674,116 @@ const SimpleTableComp = ({
 
   // Create a registry for header cells to enable direct updates (like editing)
   const headerRegistryRef = useRef<Map<string, HeaderRegistryEntry>>(new Map());
-  const {
-    getBorderClass,
-    handleMouseDown,
-    handleMouseOver,
-    isCopyFlashing,
-    isInitialFocusedCell,
-    isSelected,
-    isWarningFlashing,
-    selectColumns,
-    selectedCells,
-    selectedColumns,
-    setInitialFocusedCell,
-    setSelectedCells,
-    setSelectedColumns,
-    columnsWithSelectedCells,
-    rowsWithSelectedCells,
-    startCell,
-  } = useSelection({
+  // Initialize SelectionManager
+  const selectionManagerRef = useRef<SelectionManager | null>(null);
+
+  // Initialize manager once
+  if (!selectionManagerRef.current) {
+    selectionManagerRef.current = new SelectionManager({
+      selectableCells,
+      headers: effectiveHeaders,
+      tableRows: currentTableRows,
+      onCellEdit,
+      cellRegistry: cellRegistryRef.current,
+      collapsedHeaders,
+      rowHeight,
+      enableRowSelection,
+      copyHeadersToClipboard,
+      customTheme,
+    });
+  }
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      selectionManagerRef.current?.destroy();
+    };
+  }, []);
+
+  // Update manager when props change
+  useEffect(() => {
+    selectionManagerRef.current?.updateConfig({
+      selectableCells,
+      headers: effectiveHeaders,
+      tableRows: currentTableRows,
+      onCellEdit,
+      cellRegistry: cellRegistryRef.current,
+      collapsedHeaders,
+      rowHeight,
+      enableRowSelection,
+      copyHeadersToClipboard,
+      customTheme,
+    });
+  }, [
     selectableCells,
-    headers: effectiveHeaders,
-    tableRows: currentTableRows,
+    effectiveHeaders,
+    currentTableRows,
     onCellEdit,
-    cellRegistry: cellRegistryRef.current,
     collapsedHeaders,
     rowHeight,
     enableRowSelection,
     copyHeadersToClipboard,
     customTheme,
-  });
+  ]);
+
+  // Create stable references to manager methods
+  const getBorderClass = useCallback((cell: any) => {
+    return selectionManagerRef.current?.getBorderClass(cell) || "";
+  }, []);
+
+  const handleMouseDown = useCallback((cell: any) => {
+    selectionManagerRef.current?.handleMouseDown(cell);
+  }, []);
+
+  const handleMouseOver = useCallback((cell: any) => {
+    selectionManagerRef.current?.handleMouseOver(cell);
+  }, []);
+
+  const isCopyFlashing = useCallback((cell: any) => {
+    return selectionManagerRef.current?.isCopyFlashing(cell) || false;
+  }, []);
+
+  const isInitialFocusedCell = useCallback((cell: any) => {
+    return selectionManagerRef.current?.isInitialFocusedCell(cell) || false;
+  }, []);
+
+  const isSelected = useCallback((cell: any) => {
+    return selectionManagerRef.current?.isSelected(cell) || false;
+  }, []);
+
+  const isWarningFlashing = useCallback((cell: any) => {
+    return selectionManagerRef.current?.isWarningFlashing(cell) || false;
+  }, []);
+
+  const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
+    selectionManagerRef.current?.selectColumns(columnIndices, isShiftKey);
+  }, []);
+
+  // Expose manager state as getters (these don't trigger re-renders, which is fine since DOM is updated directly)
+  const selectedCells = selectionManagerRef.current?.getSelectedCells() || new Set();
+  const selectedColumns = selectionManagerRef.current?.getSelectedColumns() || new Set();
+  const columnsWithSelectedCells = selectionManagerRef.current?.getColumnsWithSelectedCells() || new Set();
+  const rowsWithSelectedCells = selectionManagerRef.current?.getRowsWithSelectedCells() || new Set();
+  const startCell = { current: selectionManagerRef.current?.getStartCell() || null };
+
+  // Create setters for backward compatibility
+  const setInitialFocusedCell = useCallback((cell: any) => {
+    // This is handled internally by the manager
+  }, []);
+
+  const setSelectedCells = useCallback((value: React.SetStateAction<Set<string>>) => {
+    const cells = typeof value === 'function' 
+      ? value(selectionManagerRef.current?.getSelectedCells() || new Set())
+      : value;
+    selectionManagerRef.current?.setSelectedCells(cells);
+  }, []);
+
+  const setSelectedColumns = useCallback((value: React.SetStateAction<Set<number>>) => {
+    const columns = typeof value === 'function'
+      ? value(selectionManagerRef.current?.getSelectedColumns() || new Set())
+      : value;
+    selectionManagerRef.current?.setSelectedColumns(columns);
+  }, []);
 
   // Memoize handlers
   const onSort = useCallback(
