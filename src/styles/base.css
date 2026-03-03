@@ -183,6 +183,7 @@ input {
 .st-header-container {
   display: flex;
   background-color: var(--st-header-background-color);
+  flex-shrink: 0;
 }
 
 .st-header-container.st-header-scroll-padding::after {
@@ -192,11 +193,6 @@ input {
   flex-shrink: 0;
   background-color: var(--st-header-background-color);
   border-bottom: var(--st-border-width) solid var(--st-border-color);
-}
-
-.st-header-spacer {
-  width: 100%;
-  flex-shrink: 0;
 }
 
 .st-header-pinned-left,
@@ -430,7 +426,9 @@ input {
 }
 
 /* Row hover styling for cells */
-.st-cell.st-row-hovered:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
+.st-cell.st-row-hovered:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   background-color: var(--st-hover-row-background-color);
 }
 

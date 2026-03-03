@@ -59,6 +59,9 @@ const TableHeader = ({
       ref={headerContainerRef}
       aria-rowcount={tableRows.length + maxHeaderDepth}
       aria-colcount={totalColumns}
+      style={{
+        height: calculatedHeaderHeight,
+      }}
     >
       {canDisplaySection(headers, "left") && (
         <TableHeaderSection
