@@ -21,9 +21,6 @@ interface TableContentLocalProps {
   scrollLeftMain: number;
   scrollLeftPinnedRight: number;
   setScrollTop: (scrollTop: number) => void;
-  setScrollLeftPinnedLeft: (scrollLeft: number) => void;
-  setScrollLeftMain: (scrollLeft: number) => void;
-  setScrollLeftPinnedRight: (scrollLeft: number) => void;
   setScrollDirection: (direction: "up" | "down" | "none") => void;
   shouldShowEmptyState: boolean;
   sort: SortColumn | null;
@@ -45,9 +42,6 @@ const TableContent = ({
   scrollLeftMain,
   scrollLeftPinnedRight,
   setScrollTop,
-  setScrollLeftPinnedLeft,
-  setScrollLeftMain,
-  setScrollLeftPinnedRight,
   setScrollDirection,
   shouldShowEmptyState,
   sort,
@@ -146,9 +140,6 @@ const TableContent = ({
       rowsToRender,
       setScrollDirection,
       setScrollTop,
-      setScrollLeftPinnedLeft,
-      setScrollLeftMain,
-      setScrollLeftPinnedRight,
       shouldShowEmptyState,
       stickyParents,
       tableRows,
@@ -168,9 +159,6 @@ const TableContent = ({
       rowsToRender,
       setScrollDirection,
       setScrollTop,
-      setScrollLeftPinnedLeft,
-      setScrollLeftMain,
-      setScrollLeftPinnedRight,
       shouldShowEmptyState,
       stickyParents,
       tableRows,
