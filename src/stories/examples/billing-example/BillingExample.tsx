@@ -18,19 +18,11 @@ export const billingExampleDefaults = {
 const BillingExample = (props: UniversalTableProps) => {
   return (
     <SimpleTable
-      columnReordering
-      columnResizing
       defaultHeaders={HEADERS}
-      editColumns
       height={"70dvh"}
-      initialSortColumn="amount" // Show highest amounts first
-      initialSortDirection="desc"
-      onGridReady={() => {}}
       rowGrouping={["invoices", "charges"]}
       rows={billingData as Row[]}
-      selectableCells
       theme={props.theme}
-      useOddColumnBackground
     />
   );
 };

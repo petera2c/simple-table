@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+type CSSProperties = Record<string, string | number | undefined>;
 
 const CheckIcon = ({ className, style }: { className?: string; style?: CSSProperties }) => (
   <svg

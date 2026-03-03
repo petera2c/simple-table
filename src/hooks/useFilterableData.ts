@@ -1,36 +1,8 @@
-import { useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useReducer } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
-import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import { getNestedValue } from "../utils/rowUtils";
-import useHeaderLookup from "./useHeaderLookup";
-
-// Helper function to compute filtered rows for a given filter state
-const computeFilteredRows = ({
-  externalFilterHandling,
-  tableRows,
-  filterState,
-}: {
-  externalFilterHandling: boolean;
-  tableRows: Row[];
-  filterState: TableFilterState | null;
-}): Row[] => {
-  if (externalFilterHandling) return tableRows;
-  if (!filterState || Object.keys(filterState).length === 0) return tableRows;
-
-  return tableRows.filter((row) => {
-    return Object.values(filterState).every((filter) => {
-      try {
-        const cellValue = getNestedValue(row, filter.accessor);
-        return applyFilterToValue(cellValue, filter);
-      } catch (error) {
-        console.warn(`Filter error for accessor ${filter.accessor}:`, error);
-        return true; // Include row if filter fails
-      }
-    });
-  });
-};
+import { FilterManager, FilterManagerConfig } from "../managers/FilterManager";
 
 interface UseFilterableDataProps {
   rows: Row[];
@@ -46,7 +18,6 @@ interface UseFilterableDataReturn {
   clearFilter: (accessor: Accessor) => void;
   clearAllFilters: () => void;
   filters: TableFilterState;
-  // Function to compute what rows would be after applying a filter (for pre-animation calculation)
   computeFilteredRowsPreview: (filter: FilterCondition) => Row[];
 }
 
@@ -57,100 +28,60 @@ const useFilterableData = ({
   onFilterChange,
   announce,
 }: UseFilterableDataProps): UseFilterableDataReturn => {
-  // Single filter state instead of complex 3-state system
-  const [filters, setFilters] = useState<TableFilterState>({});
+  const managerRef = useRef<FilterManager>();
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  // Create O(1) lookup map for headers
-  const headerLookup = useHeaderLookup(headers);
-
-  // Compute current filtered rows
-  const filteredRows = useMemo(() => {
-    return computeFilteredRows({
+  if (!managerRef.current) {
+    const config: FilterManagerConfig = {
+      rows,
+      headers,
       externalFilterHandling,
-      tableRows: rows,
-      filterState: filters,
+      onFilterChange,
+      announce,
+    };
+    managerRef.current = new FilterManager(config);
+  }
+
+  useEffect(() => {
+    const manager = managerRef.current!;
+    const unsubscribe = manager.subscribe(() => {
+      forceUpdate();
     });
-  }, [rows, filters, externalFilterHandling]);
 
-  // Filter update handler
-  const updateFilter = useCallback(
-    (filter: FilterCondition) => {
-      const newFilterState = {
-        ...filters,
-        [filter.accessor]: filter,
-      };
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
-      setFilters(newFilterState);
-      onFilterChange?.(newFilterState);
+  useEffect(() => {
+    managerRef.current!.updateConfig({
+      rows,
+      headers,
+      externalFilterHandling,
+      onFilterChange,
+      announce,
+    });
+  }, [rows, headers, externalFilterHandling, onFilterChange, announce]);
 
-      // Announce filter change to screen readers
-      if (announce) {
-        const header = headerLookup.get(filter.accessor);
-        if (header) {
-          announce(`Filter applied to ${header.label}`);
-        }
-      }
-    },
-    [filters, onFilterChange, announce, headerLookup]
-  );
+  useEffect(() => {
+    return () => {
+      managerRef.current?.destroy();
+    };
+  }, []);
 
-  // Clear single filter
-  const clearFilter = useCallback(
-    (accessor: Accessor) => {
-      const newFilterState = { ...filters };
-      delete newFilterState[accessor];
-
-      setFilters(newFilterState);
-      onFilterChange?.(newFilterState);
-
-      // Announce filter removal to screen readers
-      if (announce) {
-        const header = headerLookup.get(accessor);
-        if (header) {
-          announce(`Filter removed from ${header.label}`);
-        }
-      }
-    },
-    [filters, onFilterChange, announce, headerLookup]
-  );
-
-  // Clear all filters
-  const clearAllFilters = useCallback(() => {
-    setFilters({});
-    onFilterChange?.({});
-
-    // Announce all filters cleared to screen readers
-    if (announce) {
-      announce("All filters cleared");
-    }
-  }, [onFilterChange, announce]);
-
-  // Function to preview what rows would be after applying a filter
-  // This is used for pre-animation calculation
-  const computeFilteredRowsPreview = useCallback(
-    (filter: FilterCondition) => {
-      const previewFilterState = {
-        ...filters,
-        [filter.accessor]: filter,
-      };
-
-      return computeFilteredRows({
-        externalFilterHandling,
-        tableRows: rows,
-        filterState: previewFilterState,
-      });
-    },
-    [filters, rows, externalFilterHandling]
-  );
+  const manager = managerRef.current;
+  const state = manager.getState();
 
   return {
-    filteredRows,
-    updateFilter,
-    clearFilter,
-    clearAllFilters,
-    filters,
-    computeFilteredRowsPreview,
+    filteredRows: state.filteredRows,
+    updateFilter: (filter: FilterCondition) => manager.updateFilter(filter),
+    clearFilter: (accessor: Accessor) => manager.clearFilter(accessor),
+    clearAllFilters: () => manager.clearAllFilters(),
+    filters: state.filters,
+    computeFilteredRowsPreview: (filter: FilterCondition) => 
+      manager.computeFilteredRowsPreview(filter),
   };
 };
 
 export default useFilterableData;
+

@@ -1,0 +1,190 @@
+import { syncScrollLeft } from "../utils/scrollSyncUtils";
+
+export interface ScrollSyncConfig {
+  sourceElement: HTMLElement;
+  targetSelector: string;
+}
+
+export interface ScrollManagerConfig {
+  onLoadMore?: () => void;
+  infiniteScrollThreshold?: number;
+}
+
+export interface ScrollManagerState {
+  scrollTop: number;
+  scrollLeft: number;
+  scrollDirection: "up" | "down" | "none";
+  isScrolling: boolean;
+}
+
+type StateChangeCallback = (state: ScrollManagerState) => void;
+
+export class ScrollManager {
+  private config: ScrollManagerConfig;
+  private state: ScrollManagerState;
+  private subscribers: Set<StateChangeCallback> = new Set();
+  private scrollSyncConfigs: ScrollSyncConfig[] = [];
+  private scrollHandlers: Map<HTMLElement, () => void> = new Map();
+  private rafIds: Map<HTMLElement, number> = new Map();
+  private pendingScrolls: Map<HTMLElement, number> = new Map();
+  private lastScrollTop: number = 0;
+  private scrollTimeoutId: number | null = null;
+
+  constructor(config: ScrollManagerConfig) {
+    this.config = config;
+    
+    this.state = {
+      scrollTop: 0,
+      scrollLeft: 0,
+      scrollDirection: "none",
+      isScrolling: false,
+    };
+  }
+
+  updateConfig(config: Partial<ScrollManagerConfig>): void {
+    this.config = { ...this.config, ...config };
+  }
+
+  subscribe(callback: StateChangeCallback): () => void {
+    this.subscribers.add(callback);
+    return () => {
+      this.subscribers.delete(callback);
+    };
+  }
+
+  private notifySubscribers(): void {
+    this.subscribers.forEach((cb) => cb(this.state));
+  }
+
+  setupScrollSync(configs: ScrollSyncConfig[]): void {
+    this.cleanupScrollSync();
+    this.scrollSyncConfigs = configs;
+
+    configs.forEach(({ sourceElement, targetSelector }) => {
+      if (!sourceElement) return;
+
+      const handleScroll = () => {
+        const scrollLeft = sourceElement.scrollLeft;
+        this.pendingScrolls.set(sourceElement, scrollLeft);
+
+        if (this.rafIds.has(sourceElement)) return;
+
+        const rafId = requestAnimationFrame(() => {
+          const latestScrollLeft = this.pendingScrolls.get(sourceElement);
+          if (latestScrollLeft === undefined) return;
+
+          const headerRenderFn = (sourceElement as any).__renderHeaderCells;
+          const bodyRenderFn = (sourceElement as any).__renderBodyCells;
+          const hasRenderFunctions = typeof headerRenderFn === "function" || typeof bodyRenderFn === "function";
+
+          if (!hasRenderFunctions) {
+            const targetElement = sourceElement.parentElement?.parentElement?.querySelector(
+              targetSelector,
+            ) as HTMLElement | null;
+
+            if (targetElement) {
+              syncScrollLeft(sourceElement, targetElement);
+            }
+          }
+
+          if (typeof headerRenderFn === "function") {
+            headerRenderFn(latestScrollLeft);
+          }
+
+          if (typeof bodyRenderFn === "function") {
+            bodyRenderFn(latestScrollLeft);
+          }
+
+          this.rafIds.delete(sourceElement);
+          this.pendingScrolls.delete(sourceElement);
+        });
+
+        this.rafIds.set(sourceElement, rafId);
+      };
+
+      sourceElement.addEventListener("scroll", handleScroll, { passive: true });
+      this.scrollHandlers.set(sourceElement, handleScroll);
+    });
+  }
+
+  private cleanupScrollSync(): void {
+    this.rafIds.forEach((rafId) => cancelAnimationFrame(rafId));
+    this.rafIds.clear();
+    this.pendingScrolls.clear();
+
+    this.scrollHandlers.forEach((handler, element) => {
+      element.removeEventListener("scroll", handler);
+    });
+    this.scrollHandlers.clear();
+  }
+
+  handleScroll(scrollTop: number, scrollLeft: number, containerHeight: number, contentHeight: number): void {
+    const direction = scrollTop > this.lastScrollTop ? "down" : scrollTop < this.lastScrollTop ? "up" : "none";
+    this.lastScrollTop = scrollTop;
+
+    this.state = {
+      scrollTop,
+      scrollLeft,
+      scrollDirection: direction,
+      isScrolling: true,
+    };
+
+    if (this.scrollTimeoutId !== null) {
+      clearTimeout(this.scrollTimeoutId);
+    }
+
+    this.scrollTimeoutId = window.setTimeout(() => {
+      this.state = {
+        ...this.state,
+        isScrolling: false,
+      };
+      this.notifySubscribers();
+    }, 150);
+
+    if (this.config.onLoadMore && this.config.infiniteScrollThreshold) {
+      const distanceFromBottom = contentHeight - (scrollTop + containerHeight);
+      if (distanceFromBottom < this.config.infiniteScrollThreshold) {
+        this.config.onLoadMore();
+      }
+    }
+
+    this.notifySubscribers();
+  }
+
+  setScrolling(isScrolling: boolean): void {
+    this.state = {
+      ...this.state,
+      isScrolling,
+    };
+    this.notifySubscribers();
+  }
+
+  getState(): ScrollManagerState {
+    return this.state;
+  }
+
+  getScrollTop(): number {
+    return this.state.scrollTop;
+  }
+
+  getScrollLeft(): number {
+    return this.state.scrollLeft;
+  }
+
+  getScrollDirection(): "up" | "down" | "none" {
+    return this.state.scrollDirection;
+  }
+
+  isScrolling(): boolean {
+    return this.state.isScrolling;
+  }
+
+  destroy(): void {
+    this.cleanupScrollSync();
+    if (this.scrollTimeoutId !== null) {
+      clearTimeout(this.scrollTimeoutId);
+      this.scrollTimeoutId = null;
+    }
+    this.subscribers.clear();
+  }
+}
