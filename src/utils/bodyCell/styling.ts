@@ -111,6 +111,11 @@ export const createBodyCellElement = (
   cellElement.id = getCellId({ accessor: header.accessor, rowId });
   cellElement.setAttribute("role", "gridcell");
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
+  
+  // Set data attributes for selection manager to query
+  cellElement.setAttribute("data-row-index", String(rowIndex));
+  cellElement.setAttribute("data-col-index", String(colIndex));
+  cellElement.setAttribute("data-row-id", String(rowId));
 
   // Apply absolute positioning like headers
   cellElement.style.position = "absolute";
@@ -246,9 +251,6 @@ export const createBodyCellElement = (
     addTrackedEventListener(cellElement, "mouseenter", handleMouseEnter);
     addTrackedEventListener(cellElement, "mouseleave", handleMouseLeave);
   }
-
-  // Add data attribute for row index to enable row-level hover
-  cellElement.setAttribute("data-row-index", String(rowIndex));
 
   return cellElement;
 };
