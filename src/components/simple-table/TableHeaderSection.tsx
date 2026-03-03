@@ -339,7 +339,9 @@ const TableHeaderSection = ({
     }
 
     return () => {
-      cleanupHeaderCellRendering();
+      if (headerGridRef.current) {
+        cleanupHeaderCellRendering(headerGridRef.current);
+      }
     };
   }, [absoluteCells, renderContext, sectionRef]);
 

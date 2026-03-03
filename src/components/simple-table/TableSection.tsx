@@ -142,7 +142,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       // Calculate cumulative left positions for each leaf header
       const headerPositions = new Map<string, { left: number; width: number }>();
       let currentLeft = 0;
-      
+
       leafHeaders.forEach((header) => {
         const width = getColumnWidth(header);
         headerPositions.set(header.accessor, { left: currentLeft, width });
@@ -284,13 +284,17 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
         renderBodyCells(internalRef.current, absoluteCells, renderContext, initialScrollLeft);
       }
 
-      return () => cleanupBodyCellRendering();
+      return () => {
+        if (internalRef.current) {
+          cleanupBodyCellRendering(internalRef.current);
+        }
+      };
     }, [absoluteCells, renderContext]);
 
     // Expose render function via ref for scroll sync to call
     useEffect(() => {
       const section = internalRef.current;
-      
+
       if (section) {
         // Store render function on the section element so scroll sync can call it
         (section as any).__renderBodyCells = (scrollLeft: number) => {
@@ -299,7 +303,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
           }
         };
       }
-      
+
       return () => {
         if (section) {
           delete (section as any).__renderBodyCells;

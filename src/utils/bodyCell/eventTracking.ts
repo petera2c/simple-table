@@ -39,6 +39,10 @@ export const cleanupBodyCellRendering = (container?: HTMLElement) => {
   
   if (container) {
     const renderedCells = getRenderedCells(container);
+    // Remove all rendered cell elements from the DOM
+    renderedCells.forEach((element) => {
+      element.remove();
+    });
     renderedCells.clear();
   }
 };

@@ -56,12 +56,12 @@ export const renderBodyCells = (
     : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
 
   const renderedCells = getRenderedCells(container);
-  
+
   // Build set of cell IDs that should be visible
   const visibleCellIds = new Set(
-    cellsToRender.map(cell => getCellId({ accessor: cell.header.accessor, rowId: cell.rowId }))
+    cellsToRender.map((cell) => getCellId({ accessor: cell.header.accessor, rowId: cell.rowId })),
   );
-  
+
   // Remove cells that are no longer visible
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
@@ -69,11 +69,11 @@ export const renderBodyCells = (
       renderedCells.delete(cellId);
     }
   });
-  
+
   // Add new cells or update existing ones
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: cell.rowId });
-    
+
     if (!renderedCells.has(cellId)) {
       // Create new cell
       const cellElement = createBodyCellElement(cell, context);
