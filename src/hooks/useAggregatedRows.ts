@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { AggregationConfig } from "../types/AggregationTypes";
 import Row from "../types/Row";
@@ -6,7 +5,7 @@ import { flattenAllHeaders } from "../utils/headerUtils";
 import { isRowArray, getNestedValue, setNestedValue } from "../utils/rowUtils";
 import { RowManager } from "../managers/RowManager";
 
-interface UseAggregatedRowsProps {
+interface CalculateAggregatedRowsProps {
   rows?: Row[];
   headers?: HeaderObject[];
   rowGrouping?: string[];
@@ -88,57 +87,60 @@ const calculateAggregation = (
   return config.formatResult ? config.formatResult(result) : result;
 };
 
-export const useAggregatedRows = (props: UseAggregatedRowsProps) => {
+/**
+ * Pure function to calculate aggregated rows based on row grouping and aggregation configuration
+ */
+export const calculateAggregatedRows = (props: CalculateAggregatedRowsProps): Row[] => {
   const { rows = [], headers = [], rowGrouping, rowManager } = props;
 
-  return useMemo(() => {
-    if (rowManager) {
-      return rowManager.getAggregatedRows();
-    }
-    if (!rowGrouping || rowGrouping.length === 0) {
-      return rows;
-    }
+  if (rowManager) {
+    return rowManager.getAggregatedRows();
+  }
+  if (!rowGrouping || rowGrouping.length === 0) {
+    return rows;
+  }
 
-    const aggregationHeaders = getAllAggregationHeaders(headers);
+  const aggregationHeaders = getAllAggregationHeaders(headers);
 
-    if (aggregationHeaders.length === 0) {
-      return rows;
-    }
+  if (aggregationHeaders.length === 0) {
+    return rows;
+  }
 
-    const aggregatedRows = JSON.parse(JSON.stringify(rows));
+  const aggregatedRows = JSON.parse(JSON.stringify(rows));
 
-    const processRows = (rowsToProcess: Row[], groupingLevel: number = 0): Row[] => {
-      return rowsToProcess.map((row) => {
-        const currentGroupKey = rowGrouping[groupingLevel];
-        const nextGroupKey = rowGrouping[groupingLevel + 1];
+  const processRows = (rowsToProcess: Row[], groupingLevel: number = 0): Row[] => {
+    return rowsToProcess.map((row) => {
+      const currentGroupKey = rowGrouping[groupingLevel];
+      const nextGroupKey = rowGrouping[groupingLevel + 1];
 
-        const currentGroupValue = row[currentGroupKey];
-        if (currentGroupValue && isRowArray(currentGroupValue)) {
-          const processedChildren = processRows(currentGroupValue, groupingLevel + 1);
+      const currentGroupValue = row[currentGroupKey];
+      if (currentGroupValue && isRowArray(currentGroupValue)) {
+        const processedChildren = processRows(currentGroupValue, groupingLevel + 1);
 
-          const aggregatedRow = { ...row };
-          aggregatedRow[currentGroupKey] = processedChildren;
+        const aggregatedRow = { ...row };
+        aggregatedRow[currentGroupKey] = processedChildren;
 
-          aggregationHeaders.forEach((header) => {
-            const aggregatedValue = calculateAggregation(
-              processedChildren,
-              header.accessor,
-              header.aggregation!,
-              nextGroupKey
-            );
+        aggregationHeaders.forEach((header) => {
+          const aggregatedValue = calculateAggregation(
+            processedChildren,
+            header.accessor,
+            header.aggregation!,
+            nextGroupKey
+          );
 
-            if (aggregatedValue !== undefined) {
-              setNestedValue(aggregatedRow, header.accessor, aggregatedValue);
-            }
-          });
+          if (aggregatedValue !== undefined) {
+            setNestedValue(aggregatedRow, header.accessor, aggregatedValue);
+          }
+        });
 
-          return aggregatedRow;
-        }
+        return aggregatedRow;
+      }
 
-        return row;
-      });
-    };
+      return row;
+    });
+  };
 
-    return processRows(aggregatedRows);
-  }, [rows, headers, rowGrouping, rowManager]);
+  return processRows(aggregatedRows);
 };
+
+export default calculateAggregatedRows;

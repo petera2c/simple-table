@@ -1,4 +1,4 @@
-import { DragEvent } from "react";
+import type { DragEvent as ReactDragEvent } from "react";
 import Checkbox from "../../Checkbox";
 import HeaderObject from "../../../types/HeaderObject";
 import { useTableContext } from "../../../context/TableContext";
@@ -82,17 +82,19 @@ const ColumnEditorCheckbox = ({
   };
 
   // Drag handlers
-  const onDragStart = (event: DragEvent) => {
-    event.dataTransfer.effectAllowed = "move";
+  const onDragStart = (event: ReactDragEvent<HTMLDivElement>) => {
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = "move";
+    }
     if (rowIndex === undefined) return;
     setDraggingRow(flattenedHeaders[rowIndex]);
   };
 
-  const onDragEnter = (event: DragEvent<HTMLDivElement>) => {
+  const onDragEnter = (event: ReactDragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
-  const onDragOver = (event: DragEvent<HTMLDivElement>) => {
+  const onDragOver = (event: ReactDragEvent<HTMLDivElement>) => {
     event.preventDefault();
 
     if (rowIndex !== undefined && draggingRow) {

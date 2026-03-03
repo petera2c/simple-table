@@ -1,29 +1,26 @@
-import { useEffect } from "react";
 import SortColumn from "../types/SortColumn";
-import usePrevious from "./usePrevious";
 
-const useExternalSort = ({
-  sort,
-  onSortChange,
-}: {
-  sort: SortColumn | null;
-  onSortChange?: (sort: SortColumn | null) => void;
-}) => {
-  const previousSort = usePrevious(sort);
-
-  // On sort change, if there is an external sort handling, call the onSortChange prop
-  useEffect(() => {
-    if (
-      sort &&
-      (previousSort?.key.accessor !== sort.key.accessor ||
-        previousSort?.direction !== sort.direction)
-    ) {
-      onSortChange?.(sort);
-    } else if (!sort && previousSort) {
-      // Sort was cleared
-      onSortChange?.(null);
-    }
-  }, [sort, previousSort, onSortChange]);
+/**
+ * Pure function to check if sort has changed and call the callback if needed
+ * @param sort - Current sort state
+ * @param previousSort - Previous sort state
+ * @param onSortChange - Callback to invoke when sort changes
+ */
+export const callOnSortChange = (
+  sort: SortColumn | null,
+  previousSort: SortColumn | null,
+  onSortChange?: (sort: SortColumn | null) => void
+): void => {
+  if (
+    sort &&
+    (previousSort?.key.accessor !== sort.key.accessor ||
+      previousSort?.direction !== sort.direction)
+  ) {
+    onSortChange?.(sort);
+  } else if (!sort && previousSort) {
+    // Sort was cleared
+    onSortChange?.(null);
+  }
 };
 
-export default useExternalSort;
+export default callOnSortChange;
