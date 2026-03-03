@@ -182,12 +182,7 @@ const TableContent = ({
       className={`st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`}
       style={{ width: editColumns ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)` : "100%" }}
     >
-      {!hideHeader && (
-        <>
-          <TableHeader {...tableHeaderProps} />
-          <div className="st-header-spacer" style={{ height: `${calculatedHeaderHeight}px` }} />
-        </>
-      )}
+      {!hideHeader && <TableHeader {...tableHeaderProps} />}
       <TableBody {...tableBodyProps} />
     </div>
   );
