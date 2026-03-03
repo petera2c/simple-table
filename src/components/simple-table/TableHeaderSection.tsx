@@ -333,14 +333,15 @@ const TableHeaderSection = ({
   // Render header cells using DOM manipulation
   // This effect runs on mount and when dependencies change
   useEffect(() => {
-    if (headerGridRef.current) {
+    const headerGrid = headerGridRef.current;
+    if (headerGrid) {
       const initialScrollLeft = sectionRef.current?.scrollLeft || 0;
-      renderHeaderCells(headerGridRef.current, absoluteCells, renderContext, initialScrollLeft);
+      renderHeaderCells(headerGrid, absoluteCells, renderContext, initialScrollLeft);
     }
 
     return () => {
-      if (headerGridRef.current) {
-        cleanupHeaderCellRendering(headerGridRef.current);
+      if (headerGrid) {
+        cleanupHeaderCellRendering(headerGrid);
       }
     };
   }, [absoluteCells, renderContext, sectionRef]);
