@@ -1,9 +1,13 @@
-import { MutableRefObject, Dispatch, SetStateAction, RefObject } from "react";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import SortColumn from "../../types/SortColumn";
 import { TableFilterState, FilterCondition } from "../../types/FilterTypes";
 import { IconsConfig } from "../../types/IconsConfig";
 import Row from "../../types/Row";
+
+type SetStateAction<T> = T | ((prevState: T) => T);
+type Dispatch<A> = (value: A) => void;
+type MutableRefObject<T> = { current: T };
+type RefObject<T> = { readonly current: T | null };
 
 export interface AbsoluteCell {
   header: HeaderObject;

@@ -1,8 +1,10 @@
-import { Dispatch, SetStateAction } from "react";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import CellValue from "../../types/CellValue";
 import { IconsConfig } from "../../types/IconsConfig";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
+
+type SetStateAction<T> = T | ((prevState: T) => T);
+type Dispatch<A> = (value: A) => void;
 
 // Types for cell data
 export interface AbsoluteBodyCell {

@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+type CSSProperties = Record<string, string | number | undefined>;
 
 const FilterIcon = ({ className, style }: { className?: string; style?: CSSProperties }) => (
   <svg
