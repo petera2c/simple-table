@@ -56,7 +56,11 @@ export class SectionRenderer {
 
     if (!section) {
       section = document.createElement("div");
-      section.className = `st-header-section${pinned ? ` st-pinned-${pinned}` : " st-main"}`;
+      section.className = pinned === "left"
+        ? "st-header-pinned-left"
+        : pinned === "right"
+        ? "st-header-pinned-right"
+        : "st-header-main";
       section.setAttribute("role", "rowgroup");
       this.headerSections.set(sectionKey, section);
     }
@@ -81,8 +85,9 @@ export class SectionRenderer {
     });
 
     section.style.cssText = `
+      position: relative;
       ${sectionWidth !== undefined ? `width: ${sectionWidth}px;` : ""}
-      grid-template-columns: ${gridTemplateColumns};
+      ${!pinned ? "flex-grow: 1;" : ""}
       height: ${maxHeaderDepth * headerHeight}px;
     `;
 
@@ -115,7 +120,11 @@ export class SectionRenderer {
 
     if (!section) {
       section = document.createElement("div");
-      section.className = `st-body-section${pinned ? ` st-pinned-${pinned}` : " st-main"}`;
+      section.className = pinned === "left"
+        ? "st-body-pinned-left"
+        : pinned === "right"
+        ? "st-body-pinned-right"
+        : "st-body-main";
       section.setAttribute("role", "rowgroup");
       this.bodySections.set(sectionKey, section);
     }
@@ -139,9 +148,12 @@ export class SectionRenderer {
       autoExpandColumns,
     });
 
+    const totalHeight = rows.length * rowHeight;
     section.style.cssText = `
+      position: relative;
       ${sectionWidth !== undefined ? `width: ${sectionWidth}px;` : ""}
-      grid-template-columns: ${gridTemplateColumns};
+      ${!pinned ? "flex-grow: 1;" : ""}
+      height: ${totalHeight}px;
     `;
 
     const absoluteCells = this.calculateAbsoluteBodyCells(
@@ -164,13 +176,14 @@ export class SectionRenderer {
   ): AbsoluteCell[] {
     const cells: AbsoluteCell[] = [];
     let colIndex = 0;
+    let currentLeft = 0;
 
     const processHeader = (
       header: HeaderObject,
       depth: number,
       parentHeader?: HeaderObject,
-    ): void => {
-      if (header.hide || header.excludeFromRender) return;
+    ): number => {
+      if (header.hide || header.excludeFromRender) return 0;
 
       const isCollapsed = collapsedHeaders.has(header.accessor);
       const hasChildren = header.children && header.children.length > 0;
@@ -189,7 +202,7 @@ export class SectionRenderer {
           const width = typeof header.width === "number" ? header.width : 150;
           cells.push({
             header,
-            left: colIndex * width,
+            left: currentLeft,
             top: depth * headerHeight,
             width,
             height: headerHeight,
@@ -197,17 +210,21 @@ export class SectionRenderer {
             parentHeader,
           });
           colIndex++;
+          currentLeft += width;
+
+          let childrenWidth = 0;
+          visibleChildren.forEach((child) => {
+            childrenWidth += processHeader(child, depth + 1, header);
+          });
+
+          return width + childrenWidth;
         }
 
-        visibleChildren.forEach((child) => {
-          processHeader(child, depth + 1, header);
-        });
-
-        if (!header.singleRowChildren && visibleChildren.length === 0) {
+        if (visibleChildren.length === 0) {
           const width = typeof header.width === "number" ? header.width : 150;
           cells.push({
             header,
-            left: colIndex * width,
+            left: currentLeft,
             top: depth * headerHeight,
             width,
             height: (maxDepth - depth) * headerHeight,
@@ -215,12 +232,22 @@ export class SectionRenderer {
             parentHeader,
           });
           colIndex++;
+          currentLeft += width;
+          return width;
         }
+
+        // Parent with children - accumulate children widths
+        let totalChildrenWidth = 0;
+        visibleChildren.forEach((child) => {
+          totalChildrenWidth += processHeader(child, depth + 1, header);
+        });
+
+        return totalChildrenWidth;
       } else {
         const width = typeof header.width === "number" ? header.width : 150;
         cells.push({
           header,
-          left: colIndex * width,
+          left: currentLeft,
           top: depth * headerHeight,
           width,
           height: (maxDepth - depth) * headerHeight,
@@ -228,6 +255,8 @@ export class SectionRenderer {
           parentHeader,
         });
         colIndex++;
+        currentLeft += width;
+        return width;
       }
     };
 
@@ -246,9 +275,18 @@ export class SectionRenderer {
 
     const leafHeaders = this.getLeafHeaders(headers, collapsedHeaders);
 
+    // Build header positions map with accumulated widths
+    const headerPositions = new Map<string, { left: number; width: number }>();
+    let currentLeft = 0;
+    leafHeaders.forEach((header) => {
+      const width = typeof header.width === "number" ? header.width : 150;
+      headerPositions.set(header.accessor, { left: currentLeft, width });
+      currentLeft += width;
+    });
+
     rows.forEach((tableRow, rowIndex) => {
       leafHeaders.forEach((header, colIndex) => {
-        const width = typeof header.width === "number" ? header.width : 150;
+        const position = headerPositions.get(header.accessor);
         cells.push({
           header,
           row: tableRow.row,
@@ -259,9 +297,9 @@ export class SectionRenderer {
           depth: tableRow.depth,
           isOdd: rowIndex % 2 === 1,
           tableRow,
-          left: colIndex * width,
+          left: position?.left ?? 0,
           top: rowIndex * rowHeight,
-          width,
+          width: position?.width ?? 150,
           height: rowHeight,
         });
       });

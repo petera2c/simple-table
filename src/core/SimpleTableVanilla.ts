@@ -2,49 +2,26 @@ import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { TableAPI } from "../types/TableAPI";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
-import TableRow from "../types/TableRow";
-import SortColumn, { SortDirection } from "../types/SortColumn";
-import { FilterCondition, TableFilterState } from "../types/FilterTypes";
-import { ColumnVisibilityState } from "../types/ColumnVisibilityTypes";
-import { CustomTheme, DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
-import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../types/ColumnEditorConfig";
-import UpdateDataProps from "../types/UpdateCellProps";
-import { SetHeaderRenameProps, ExportToCSVProps } from "../types/TableAPI";
+import { CustomTheme } from "../types/CustomTheme";
 import RowState from "../types/RowState";
 
-import { TableStateManager } from "../managers/TableStateManager";
-import { AutoScaleManager, applyAutoScaleToHeaders } from "../managers/AutoScaleManager";
+import { AutoScaleManager } from "../managers/AutoScaleManager";
 import { DimensionManager } from "../managers/DimensionManager";
 import { ScrollManager } from "../managers/ScrollManager";
 import WindowResizeManager from "../hooks/windowResize";
 import HandleOutsideClickManager from "../hooks/handleOutsideClick";
 import ScrollbarVisibilityManager from "../hooks/scrollbarVisibility";
-import ExpandedDepthsManager, { initializeExpandedDepths } from "../hooks/expandedDepths";
+import ExpandedDepthsManager from "../hooks/expandedDepths";
 import AriaAnnouncementManager from "../hooks/ariaAnnouncements";
 
-import { flattenRows } from "../utils/rowFlattening";
-import { processRows } from "../utils/rowProcessing";
-import { recalculateAllSectionWidths } from "../utils/resizeUtils";
-import { calculateContentHeight } from "../hooks/contentHeight";
-import { filterRowsWithQuickFilter } from "../hooks/useQuickFilter";
-import { calculateAggregatedRows } from "../hooks/useAggregatedRows";
 import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
-import { createSelectionHeader } from "../utils/rowSelectionUtils";
 import { checkDeprecatedProps } from "../utils/deprecatedPropsWarnings";
-import { exportTableToCSV } from "../utils/csvExportUtils";
-import { calculateColumnIndices } from "../utils/columnIndicesUtils";
 
-import {
-  createAngleLeftIcon,
-  createAngleRightIcon,
-  createDescIcon,
-  createAscIcon,
-  createFilterIcon,
-  createDragIcon,
-} from "../icons";
-import { COLUMN_EDIT_WIDTH } from "../consts/general-consts";
-import { TableRenderer } from "./rendering/TableRenderer";
+import { TableInitializer, ResolvedIcons, MergedColumnEditorConfig } from "./initialization/TableInitializer";
+import { DOMManager, DOMElements, DOMRefs } from "./dom/DOMManager";
+import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/RenderOrchestrator";
+import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
 
 import "../styles/all-themes.css";
 
@@ -52,31 +29,17 @@ export class SimpleTableVanilla {
   private container: HTMLElement;
   private config: SimpleTableConfig;
   private customTheme: CustomTheme;
-  private mergedColumnEditorConfig: any;
-  private resolvedIcons: any;
+  private mergedColumnEditorConfig: MergedColumnEditorConfig;
+  private resolvedIcons: ResolvedIcons;
 
-  private rootElement: HTMLElement | null = null;
-  private wrapperContainer: HTMLElement | null = null;
-  private contentWrapper: HTMLElement | null = null;
-  private headerContainer: HTMLElement | null = null;
-  private bodyContainer: HTMLElement | null = null;
-  private footerContainer: HTMLElement | null = null;
-  private columnEditorContainer: HTMLElement | null = null;
-  private ariaLiveRegion: HTMLElement | null = null;
-
-  private mainBodyRef: { current: HTMLDivElement | null } = { current: null };
-  private pinnedLeftRef: { current: HTMLDivElement | null } = { current: null };
-  private pinnedRightRef: { current: HTMLDivElement | null } = { current: null };
-  private headerContainerRef: { current: HTMLDivElement | null } = { current: null };
-  private tableBodyContainerRef: { current: HTMLDivElement | null } = { current: null };
-  private horizontalScrollbarRef: { current: HTMLElement | null } = { current: null };
+  private domManager: DOMManager;
+  private renderOrchestrator: RenderOrchestrator;
 
   private draggedHeaderRef: { current: HeaderObject | null } = { current: null };
   private hoveredHeaderRef: { current: HeaderObject | null } = { current: null };
 
   private localRows: Row[] = [];
   private headers: HeaderObject[] = [];
-  private effectiveHeaders: HeaderObject[] = [];
   private currentPage: number = 1;
   private scrollTop: number = 0;
   private scrollDirection: "up" | "down" | "none" = "none";
@@ -86,7 +49,6 @@ export class SimpleTableVanilla {
   private scrollbarWidth: number = 0;
   private isMainSectionScrollable: boolean = false;
   private columnEditorOpen: boolean = false;
-  private activeHeaderDropdown: HeaderObject | null = null;
   private collapsedHeaders: Set<Accessor> = new Set();
   private expandedDepths: Set<number> = new Set();
   private expandedRows: Map<string, number> = new Map();
@@ -98,7 +60,6 @@ export class SimpleTableVanilla {
   private headerRegistry: Map<string, any> = new Map();
   private rowIndexMap: Map<string | number, number> = new Map();
 
-  private stateManager: TableStateManager | null = null;
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
   private scrollManager: ScrollManager | null = null;
@@ -108,8 +69,6 @@ export class SimpleTableVanilla {
   private expandedDepthsManager: ExpandedDepthsManager | null = null;
   private ariaAnnouncementManager: AriaAnnouncementManager | null = null;
 
-  private tableRenderer: TableRenderer | null = null;
-
   private mounted: boolean = false;
 
   constructor(container: HTMLElement, config: SimpleTableConfig) {
@@ -118,80 +77,25 @@ export class SimpleTableVanilla {
 
     checkDeprecatedProps(config as any);
 
-    this.customTheme = {
-      ...DEFAULT_CUSTOM_THEME,
-      ...config.customTheme,
-    };
-
-    this.mergedColumnEditorConfig = {
-      text:
-        config.columnEditorConfig?.text ??
-        config.columnEditorText ??
-        DEFAULT_COLUMN_EDITOR_CONFIG.text,
-      searchEnabled:
-        config.columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
-      searchPlaceholder:
-        config.columnEditorConfig?.searchPlaceholder ??
-        DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
-      searchFunction: config.columnEditorConfig?.searchFunction,
-      rowRenderer: config.columnEditorConfig?.rowRenderer,
-    };
-
-    this.resolvedIcons = this.resolveIcons();
+    this.customTheme = TableInitializer.mergeCustomTheme(config);
+    this.mergedColumnEditorConfig = TableInitializer.mergeColumnEditorConfig(config);
+    this.resolvedIcons = TableInitializer.resolveIcons(config);
 
     this.localRows = [...config.rows];
     this.headers = [...config.defaultHeaders];
     this.columnEditorOpen = config.editColumnsInitOpen ?? false;
     this.internalIsLoading = config.isLoading ?? false;
 
-    this.collapsedHeaders = this.getInitialCollapsedHeaders();
-    this.expandedDepths = initializeExpandedDepths(config.expandAll ?? true, config.rowGrouping);
+    this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(config.defaultHeaders);
+    this.expandedDepths = TableInitializer.getInitialExpandedDepths(config);
+
+    this.domManager = new DOMManager();
+    this.renderOrchestrator = new RenderOrchestrator();
 
     this.rebuildRowIndexMap();
     this.initializeManagers();
   }
 
-  private resolveIcons(): any {
-    const defaultIcons = {
-      drag: createDragIcon("st-drag-icon"),
-      expand: createAngleRightIcon("st-expand-icon"),
-      filter: createFilterIcon("st-header-icon"),
-      headerCollapse: createAngleRightIcon("st-header-icon"),
-      headerExpand: createAngleLeftIcon("st-header-icon"),
-      next: createAngleRightIcon("st-next-prev-icon"),
-      prev: createAngleLeftIcon("st-next-prev-icon"),
-      sortDown: createDescIcon("st-header-icon"),
-      sortUp: createAscIcon("st-header-icon"),
-    };
-
-    return {
-      drag: this.config.icons?.drag ?? defaultIcons.drag,
-      expand: this.config.icons?.expand ?? defaultIcons.expand,
-      filter: this.config.icons?.filter ?? defaultIcons.filter,
-      headerCollapse: this.config.icons?.headerCollapse ?? defaultIcons.headerCollapse,
-      headerExpand: this.config.icons?.headerExpand ?? defaultIcons.headerExpand,
-      next: this.config.icons?.next ?? defaultIcons.next,
-      prev: this.config.icons?.prev ?? defaultIcons.prev,
-      sortDown: this.config.icons?.sortDown ?? defaultIcons.sortDown,
-      sortUp: this.config.icons?.sortUp ?? defaultIcons.sortUp,
-    };
-  }
-
-  private getInitialCollapsedHeaders(): Set<Accessor> {
-    const collapsed = new Set<Accessor>();
-    const processHeaders = (hdrs: HeaderObject[]) => {
-      hdrs.forEach((header) => {
-        if (header.collapseDefault && header.collapsible) {
-          collapsed.add(header.accessor);
-        }
-        if (header.children) {
-          processHeaders(header.children);
-        }
-      });
-    };
-    processHeaders(this.config.defaultHeaders);
-    return collapsed;
-  }
 
   private rebuildRowIndexMap(): void {
     this.rowIndexMap.clear();
@@ -210,8 +114,6 @@ export class SimpleTableVanilla {
   }
 
   private initializeManagers(): void {
-    this.tableRenderer = new TableRenderer();
-
     this.ariaAnnouncementManager = new AriaAnnouncementManager();
     this.ariaAnnouncementManager.subscribe((message) => {
       this.announcement = message;
@@ -234,7 +136,7 @@ export class SimpleTableVanilla {
       return;
     }
 
-    this.createDOMStructure();
+    this.domManager.createDOMStructure(this.container, this.config);
     this.setupManagers();
     this.render();
     this.mounted = true;
@@ -244,62 +146,22 @@ export class SimpleTableVanilla {
     }
   }
 
-  private createDOMStructure(): void {
-    const theme = this.config.theme ?? "modern-light";
-    const className = this.config.className ?? "";
-    const columnBorders = this.config.columnBorders ?? false;
-
-    this.rootElement = document.createElement("div");
-    this.rootElement.className = `simple-table-root st-wrapper theme-${theme} ${className} ${
-      columnBorders ? "st-column-borders" : ""
-    }`;
-    this.rootElement.setAttribute("role", "grid");
-
-    this.wrapperContainer = document.createElement("div");
-    this.wrapperContainer.className = "st-wrapper-container";
-
-    this.contentWrapper = document.createElement("div");
-    this.contentWrapper.className = "st-content-wrapper";
-
-    this.headerContainer = document.createElement("div");
-    this.headerContainer.className = "st-header-container";
-    this.headerContainerRef.current = this.headerContainer as HTMLDivElement;
-
-    this.bodyContainer = document.createElement("div");
-    this.bodyContainer.className = "st-body-container";
-    this.tableBodyContainerRef.current = this.bodyContainer as HTMLDivElement;
-
-    this.columnEditorContainer = document.createElement("div");
-    this.columnEditorContainer.id = "st-column-editor-container";
-
-    this.footerContainer = document.createElement("div");
-    this.footerContainer.id = "st-footer-container";
-
-    this.ariaLiveRegion = document.createElement("div");
-    this.ariaLiveRegion.setAttribute("aria-live", "polite");
-    this.ariaLiveRegion.setAttribute("aria-atomic", "true");
-    this.ariaLiveRegion.className = "st-sr-only";
-
-    this.contentWrapper.appendChild(this.headerContainer);
-    this.contentWrapper.appendChild(this.bodyContainer);
-    this.contentWrapper.appendChild(this.columnEditorContainer);
-
-    this.wrapperContainer.appendChild(this.contentWrapper);
-    this.wrapperContainer.appendChild(this.footerContainer);
-
-    this.rootElement.appendChild(this.wrapperContainer);
-    this.rootElement.appendChild(this.ariaLiveRegion);
-
-    this.container.appendChild(this.rootElement);
-  }
-
   private setupManagers(): void {
-    if (!this.tableBodyContainerRef.current) return;
+    const refs = this.domManager.getRefs();
+    const elements = this.domManager.getElements();
+    
+    if (!refs.tableBodyContainerRef.current || !elements) return;
 
-    this.scrollbarWidth = calculateScrollbarWidth(this.tableBodyContainerRef.current);
+    this.scrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
+
+    const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
+      this.headers,
+      this.config,
+      this.customTheme,
+    );
 
     this.dimensionManager = new DimensionManager({
-      effectiveHeaders: this.effectiveHeaders,
+      effectiveHeaders,
       headerHeight: this.customTheme.headerHeight,
       rowHeight: this.customTheme.rowHeight,
       height: this.config.height,
@@ -309,7 +171,7 @@ export class SimpleTableVanilla {
         this.config.shouldPaginate && !this.config.hideFooter
           ? this.customTheme.footerHeight
           : undefined,
-      containerElement: this.tableBodyContainerRef.current,
+      containerElement: refs.tableBodyContainerRef.current,
     });
 
     this.dimensionManager.subscribe(() => {
@@ -332,7 +194,7 @@ export class SimpleTableVanilla {
           containerWidth: this.dimensionManager.getState().containerWidth,
           pinnedLeftWidth: 0,
           pinnedRightWidth: 0,
-          mainBodyRef: this.mainBodyRef,
+          mainBodyRef: refs.mainBodyRef,
           isResizing: this.isResizing,
         },
         () => {
@@ -341,10 +203,10 @@ export class SimpleTableVanilla {
       );
     }
 
-    if (this.headerContainerRef.current && this.tableBodyContainerRef.current) {
+    if (refs.headerContainerRef.current && refs.tableBodyContainerRef.current) {
       this.scrollbarVisibilityManager = new ScrollbarVisibilityManager({
-        headerContainer: this.headerContainerRef.current,
-        mainSection: this.tableBodyContainerRef.current,
+        headerContainer: refs.headerContainerRef.current,
+        mainSection: refs.tableBodyContainerRef.current,
         scrollbarWidth: this.scrollbarWidth,
       });
 
@@ -356,8 +218,8 @@ export class SimpleTableVanilla {
 
     this.windowResizeManager = new WindowResizeManager();
     this.windowResizeManager.addCallback(() => {
-      if (this.tableBodyContainerRef.current) {
-        const newScrollbarWidth = calculateScrollbarWidth(this.tableBodyContainerRef.current);
+      if (refs.tableBodyContainerRef.current) {
+        const newScrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
         this.scrollbarWidth = newScrollbarWidth;
         this.scrollbarVisibilityManager?.setScrollbarWidth(newScrollbarWidth);
       }
@@ -368,10 +230,11 @@ export class SimpleTableVanilla {
   }
 
   private setupEventListeners(): void {
-    if (!this.bodyContainer) return;
+    const elements = this.domManager.getElements();
+    if (!elements?.bodyContainer) return;
 
-    this.bodyContainer.addEventListener("scroll", this.handleScroll.bind(this));
-    this.bodyContainer.addEventListener("mouseleave", () => {
+    elements.bodyContainer.addEventListener("scroll", this.handleScroll.bind(this));
+    elements.bodyContainer.addEventListener("mouseleave", () => {
       this.clearHoveredRows();
     });
   }
@@ -404,37 +267,19 @@ export class SimpleTableVanilla {
   }
 
   private updateAriaLiveRegion(): void {
-    if (this.ariaLiveRegion) {
-      this.ariaLiveRegion.textContent = this.announcement;
+    const elements = this.domManager.getElements();
+    if (elements?.ariaLiveRegion) {
+      elements.ariaLiveRegion.textContent = this.announcement;
     }
   }
 
-  private getAllRowsInternal(): TableRow[] {
-    const flattenResult = flattenRows({
-      rows: this.localRows,
-      rowGrouping: this.config.rowGrouping,
-      getRowId: this.config.getRowId,
-      expandedRows: this.expandedRows,
-      collapsedRows: this.collapsedRows,
-      expandedDepths: this.expandedDepths,
-      rowStateMap: this.rowStateMap,
-      hasLoadingRenderer: Boolean(this.config.loadingStateRenderer),
-      hasErrorRenderer: Boolean(this.config.errorStateRenderer),
-      hasEmptyRenderer: Boolean(this.config.emptyStateRenderer),
-      headers: this.effectiveHeaders,
-      rowHeight: this.customTheme.rowHeight,
-      headerHeight: this.customTheme.headerHeight,
-      customTheme: this.customTheme,
-    });
-    return flattenResult.flattenedRows;
-  }
-
-  private getRendererDeps() {
+  private getRenderContext(): RenderContext {
+    const refs = this.domManager.getRefs();
     return {
       config: this.config,
       customTheme: this.customTheme,
       resolvedIcons: this.resolvedIcons,
-      effectiveHeaders: this.effectiveHeaders,
+      effectiveHeaders: [],
       headers: this.headers,
       localRows: this.localRows,
       collapsedHeaders: this.collapsedHeaders,
@@ -447,9 +292,9 @@ export class SimpleTableVanilla {
       headerRegistry: this.headerRegistry,
       draggedHeaderRef: this.draggedHeaderRef,
       hoveredHeaderRef: this.hoveredHeaderRef,
-      mainBodyRef: this.mainBodyRef,
-      pinnedLeftRef: this.pinnedLeftRef,
-      pinnedRightRef: this.pinnedRightRef,
+      mainBodyRef: refs.mainBodyRef,
+      pinnedLeftRef: refs.pinnedLeftRef,
+      pinnedRightRef: refs.pinnedRightRef,
       dimensionManager: this.dimensionManager,
       rowStateMap: this.rowStateMap,
       onRender: () => this.render(),
@@ -474,204 +319,31 @@ export class SimpleTableVanilla {
     };
   }
 
-  private computeEffectiveHeaders(): HeaderObject[] {
-    let processedHeaders = [...this.headers];
-
-    if (this.config.enableRowSelection && !this.headers?.[0]?.isSelectionColumn) {
-      const selectionHeader = createSelectionHeader(this.customTheme.selectionColumnWidth);
-      processedHeaders = [selectionHeader, ...processedHeaders];
-    }
-
-    return processedHeaders;
+  private getRenderState(): RenderState {
+    return {
+      currentPage: this.currentPage,
+      scrollTop: this.scrollTop,
+      scrollDirection: this.scrollDirection,
+      scrollbarWidth: this.scrollbarWidth,
+      isMainSectionScrollable: this.isMainSectionScrollable,
+      columnEditorOpen: this.columnEditorOpen,
+    };
   }
 
   private render(): void {
-    if (!this.mounted || !this.rootElement) return;
+    if (!this.mounted) return;
 
-    this.effectiveHeaders = this.computeEffectiveHeaders();
-
-    const dimensionState = this.dimensionManager?.getState() ?? {
-      containerWidth: 0,
-      calculatedHeaderHeight: this.customTheme.headerHeight,
-      maxHeaderDepth: 1,
-    };
-
-    const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = dimensionState;
-
-    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
-      recalculateAllSectionWidths({
-        headers: this.effectiveHeaders,
-        containerWidth,
-        collapsedHeaders: this.collapsedHeaders,
-      });
-
-    const mainSectionContainerWidth = containerWidth - leftWidth - rightWidth;
-
-    this.rootElement.style.cssText = `
-      ${this.config.maxHeight ? `max-height: ${typeof this.config.maxHeight === "number" ? this.config.maxHeight + "px" : this.config.maxHeight};` : ""}
-      ${this.config.height ? `height: ${typeof this.config.height === "number" ? this.config.height + "px" : this.config.height};` : ""}
-      --st-main-section-width: ${mainSectionContainerWidth}px;
-      --st-scrollbar-width: ${this.scrollbarWidth}px;
-      --st-editor-width: ${this.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px;
-    `;
-
-    let effectiveRows = this.localRows;
-    if (this.internalIsLoading && this.localRows.length === 0) {
-      let rowsToShow = this.config.shouldPaginate ? (this.config.rowsPerPage ?? 10) : 10;
-      if (this.isMainSectionScrollable) {
-        rowsToShow += 1;
-      }
-      effectiveRows = Array.from({ length: rowsToShow }, () => ({}));
-    }
-
-    const aggregatedRows = calculateAggregatedRows({
-      rows: effectiveRows,
-      headers: this.headers,
-      rowGrouping: this.config.rowGrouping,
-    });
-
-    const quickFilteredRows = filterRowsWithQuickFilter({
-      rows: aggregatedRows,
-      headers: this.effectiveHeaders,
-      quickFilter: this.config.quickFilter,
-    });
-
-    const flattenResult = flattenRows({
-      rows: quickFilteredRows,
-      rowGrouping: this.config.rowGrouping,
-      getRowId: this.config.getRowId,
-      expandedRows: this.expandedRows,
-      collapsedRows: this.collapsedRows,
-      expandedDepths: this.expandedDepths,
-      rowStateMap: this.rowStateMap,
-      hasLoadingRenderer: Boolean(this.config.loadingStateRenderer),
-      hasErrorRenderer: Boolean(this.config.errorStateRenderer),
-      hasEmptyRenderer: Boolean(this.config.emptyStateRenderer),
-      headers: this.effectiveHeaders,
-      rowHeight: this.customTheme.rowHeight,
-      headerHeight: this.customTheme.headerHeight,
-      customTheme: this.customTheme,
-    });
-
-    const contentHeight = calculateContentHeight({
-      height: this.config.height,
-      maxHeight: this.config.maxHeight,
-      rowHeight: this.customTheme.rowHeight,
-      shouldPaginate: this.config.shouldPaginate ?? false,
-      rowsPerPage: this.config.rowsPerPage ?? 10,
-      totalRowCount: this.config.totalRowCount ?? flattenResult.paginatableRows.length,
-      headerHeight: calculatedHeaderHeight,
-      footerHeight:
-        this.config.shouldPaginate && !this.config.hideFooter
-          ? this.customTheme.footerHeight
-          : undefined,
-    });
-
-    const processedResult = processRows({
-      flattenedRows: flattenResult.flattenedRows,
-      paginatableRows: flattenResult.paginatableRows,
-      parentEndPositions: flattenResult.parentEndPositions,
-      currentPage: this.currentPage,
-      rowsPerPage: this.config.rowsPerPage ?? 10,
-      shouldPaginate: this.config.shouldPaginate ?? false,
-      serverSidePagination: this.config.serverSidePagination ?? false,
-      contentHeight,
-      rowHeight: this.customTheme.rowHeight,
-      scrollTop: this.scrollTop,
-      scrollDirection: this.scrollDirection,
-      heightOffsets: flattenResult.heightOffsets,
-      customTheme: this.customTheme,
-      enableStickyParents: this.config.enableStickyParents ?? false,
-      rowGrouping: this.config.rowGrouping,
-    });
-
-    this.renderHeader(calculatedHeaderHeight, maxHeaderDepth);
-    this.renderBody(processedResult);
-    this.renderFooter(flattenResult.paginatableRows.length);
-    this.renderColumnEditor();
-    this.renderHorizontalScrollbar(
-      mainWidth,
-      leftWidth,
-      rightWidth,
-      leftContentWidth,
-      rightContentWidth,
-    );
-  }
-
-  private renderHeader(calculatedHeaderHeight: number, maxHeaderDepth: number): void {
-    if (!this.headerContainer || this.config.hideHeader || !this.tableRenderer) return;
+    const elements = this.domManager.getElements();
+    const refs = this.domManager.getRefs();
     
-    this.tableRenderer.renderHeader(
-      this.headerContainer,
-      calculatedHeaderHeight,
-      maxHeaderDepth,
-      this.getRendererDeps(),
-    );
-  }
+    if (!elements) return;
 
-
-  private renderBody(processedResult: any): void {
-    if (!this.bodyContainer || !this.tableRenderer) return;
-    
-    this.tableRenderer.renderBody(this.bodyContainer, processedResult, this.getRendererDeps());
-  }
-
-
-  private renderFooter(totalRows: number): void {
-    if (!this.footerContainer || !this.tableRenderer) return;
-    
-    this.tableRenderer.renderFooter(
-      this.footerContainer,
-      totalRows,
-      this.currentPage,
-      (page: number) => {
-        this.currentPage = page;
-        this.render();
-      },
-      this.getRendererDeps(),
-    );
-  }
-
-  private renderColumnEditor(): void {
-    if (!this.columnEditorContainer || !this.tableRenderer) return;
-    
-    this.tableRenderer.renderColumnEditor(
-      this.columnEditorContainer,
-      this.columnEditorOpen,
-      (open: boolean) => {
-        this.columnEditorOpen = open;
-        this.render();
-      },
+    this.renderOrchestrator.render(
+      elements,
+      refs,
+      this.getRenderContext(),
+      this.getRenderState(),
       this.mergedColumnEditorConfig,
-      this.getRendererDeps(),
-    );
-  }
-
-  private renderHorizontalScrollbar(
-    mainBodyWidth: number,
-    pinnedLeftWidth: number,
-    pinnedRightWidth: number,
-    pinnedLeftContentWidth: number,
-    pinnedRightContentWidth: number,
-  ): void {
-    if (
-      !this.wrapperContainer ||
-      !this.mainBodyRef.current ||
-      !this.tableBodyContainerRef.current ||
-      !this.tableRenderer
-    ) {
-      return;
-    }
-
-    this.tableRenderer.renderHorizontalScrollbar(
-      this.wrapperContainer,
-      mainBodyWidth,
-      pinnedLeftWidth,
-      pinnedRightWidth,
-      pinnedLeftContentWidth,
-      pinnedRightContentWidth,
-      this.tableBodyContainerRef.current,
-      this.getRendererDeps(),
     );
   }
 
@@ -692,10 +364,7 @@ export class SimpleTableVanilla {
     }
 
     if (config.customTheme !== undefined) {
-      this.customTheme = {
-        ...DEFAULT_CUSTOM_THEME,
-        ...config.customTheme,
-      };
+      this.customTheme = TableInitializer.mergeCustomTheme(this.config);
     }
 
     this.render();
@@ -713,190 +382,43 @@ export class SimpleTableVanilla {
     this.expandedDepthsManager?.destroy();
     this.ariaAnnouncementManager?.destroy();
 
-    this.tableRenderer?.cleanup();
-
-    if (this.rootElement && this.container.contains(this.rootElement)) {
-      this.container.removeChild(this.rootElement);
-    }
-
-    this.rootElement = null;
-    this.wrapperContainer = null;
-    this.contentWrapper = null;
-    this.headerContainer = null;
-    this.bodyContainer = null;
-    this.footerContainer = null;
-    this.columnEditorContainer = null;
-    this.ariaLiveRegion = null;
+    this.renderOrchestrator.cleanup();
+    this.domManager.destroy(this.container);
   }
 
   getAPI(): TableAPI {
-    return {
-      updateData: (props: UpdateDataProps) => {
-        const { rowIndex, accessor, newValue } = props;
-        if (rowIndex >= 0 && rowIndex < this.localRows.length) {
-          (this.localRows[rowIndex] as any)[accessor] = newValue;
-          this.render();
-        }
+    const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
+      this.headers,
+      this.config,
+      this.customTheme,
+    );
+
+    const context: TableAPIContext = {
+      config: this.config,
+      localRows: this.localRows,
+      effectiveHeaders,
+      headers: this.headers,
+      customTheme: this.customTheme,
+      currentPage: this.currentPage,
+      expandedRows: this.expandedRows,
+      collapsedRows: this.collapsedRows,
+      expandedDepths: this.expandedDepths,
+      rowStateMap: this.rowStateMap,
+      headerRegistry: this.headerRegistry,
+      columnEditorOpen: this.columnEditorOpen,
+      expandedDepthsManager: this.expandedDepthsManager,
+      onRender: () => this.render(),
+      setHeaders: (headers: HeaderObject[]) => {
+        this.headers = headers;
       },
-
-      setHeaderRename: (props: SetHeaderRenameProps) => {
-        const headerRegistry = this.headerRegistry.get(props.accessor as string);
-        if (headerRegistry) {
-          headerRegistry.setEditing(true);
-        }
-      },
-
-      getVisibleRows: (): TableRow[] => {
-        return [];
-      },
-
-      getAllRows: (): TableRow[] => {
-        return this.getAllRowsInternal();
-      },
-
-      getHeaders: (): HeaderObject[] => {
-        return this.effectiveHeaders;
-      },
-
-      exportToCSV: (props?: ExportToCSVProps) => {
-        const flattenResult = flattenRows({
-          rows: this.localRows,
-          rowGrouping: this.config.rowGrouping,
-          getRowId: this.config.getRowId,
-          expandedRows: this.expandedRows,
-          collapsedRows: this.collapsedRows,
-          expandedDepths: this.expandedDepths,
-          rowStateMap: this.rowStateMap,
-          hasLoadingRenderer: Boolean(this.config.loadingStateRenderer),
-          hasErrorRenderer: Boolean(this.config.errorStateRenderer),
-          hasEmptyRenderer: Boolean(this.config.emptyStateRenderer),
-          headers: this.effectiveHeaders,
-          rowHeight: this.customTheme.rowHeight,
-          headerHeight: this.customTheme.headerHeight,
-          customTheme: this.customTheme,
-        });
-        exportTableToCSV(
-          flattenResult.flattenedRows,
-          this.effectiveHeaders,
-          props?.filename,
-          this.config.includeHeadersInCSVExport ?? true,
-        );
-      },
-
-      getSortState: (): SortColumn | null => {
-        return null;
-      },
-
-      applySortState: async (props?: { accessor: Accessor; direction?: SortDirection }) => {},
-
-      getFilterState: (): TableFilterState => {
-        return {};
-      },
-
-      applyFilter: async (filter: FilterCondition) => {},
-
-      clearFilter: async (accessor: Accessor) => {},
-
-      clearAllFilters: async () => {},
-
-      getCurrentPage: (): number => {
-        return this.currentPage;
-      },
-
-      getTotalPages: (): number => {
-        const flattenResult = flattenRows({
-          rows: this.localRows,
-          rowGrouping: this.config.rowGrouping,
-          getRowId: this.config.getRowId,
-          expandedRows: this.expandedRows,
-          collapsedRows: this.collapsedRows,
-          expandedDepths: this.expandedDepths,
-          rowStateMap: this.rowStateMap,
-          hasLoadingRenderer: Boolean(this.config.loadingStateRenderer),
-          hasErrorRenderer: Boolean(this.config.errorStateRenderer),
-          hasEmptyRenderer: Boolean(this.config.emptyStateRenderer),
-          headers: this.effectiveHeaders,
-          rowHeight: this.customTheme.rowHeight,
-          headerHeight: this.customTheme.headerHeight,
-          customTheme: this.customTheme,
-        });
-        return Math.ceil(flattenResult.paginatableRows.length / (this.config.rowsPerPage ?? 10));
-      },
-
-      setPage: async (page: number) => {
+      setCurrentPage: (page: number) => {
         this.currentPage = page;
-        this.render();
-        if (this.config.onPageChange) {
-          await this.config.onPageChange(page);
-        }
       },
-
-      expandAll: () => {
-        this.expandedDepthsManager?.expandAll();
-      },
-
-      collapseAll: () => {
-        this.expandedDepthsManager?.collapseAll();
-      },
-
-      expandDepth: (depth: number) => {
-        this.expandedDepthsManager?.expandDepth(depth);
-      },
-
-      collapseDepth: (depth: number) => {
-        this.expandedDepthsManager?.collapseDepth(depth);
-      },
-
-      toggleDepth: (depth: number) => {
-        this.expandedDepthsManager?.toggleDepth(depth);
-      },
-
-      setExpandedDepths: (depths: Set<number>) => {
-        this.expandedDepths = depths;
-        this.render();
-      },
-
-      getExpandedDepths: (): Set<number> => {
-        return this.expandedDepths;
-      },
-
-      getGroupingProperty: (depth: number): Accessor | undefined => {
-        return this.config.rowGrouping?.[depth];
-      },
-
-      getGroupingDepth: (property: Accessor): number => {
-        return this.config.rowGrouping?.indexOf(property) ?? -1;
-      },
-
-      toggleColumnEditor: (open?: boolean) => {
-        this.columnEditorOpen = open !== undefined ? open : !this.columnEditorOpen;
-        this.render();
-      },
-
-      applyColumnVisibility: async (visibility: { [accessor: string]: boolean }) => {
-        const updatedHeaders = this.headers.map((header) => {
-          const accessor = header.accessor as string;
-          if (accessor in visibility) {
-            return { ...header, hide: !visibility[accessor] };
-          }
-          return header;
-        });
-        this.headers = updatedHeaders;
-        this.render();
-        if (this.config.onColumnVisibilityChange) {
-          const visibilityState: ColumnVisibilityState = {};
-          Object.entries(visibility).forEach(([accessor, visible]) => {
-            visibilityState[accessor] = visible;
-          });
-          this.config.onColumnVisibilityChange(visibilityState);
-        }
-      },
-
-      setQuickFilter: (text: string) => {
-        if (this.config.quickFilter?.onChange) {
-          this.config.quickFilter.onChange(text);
-        }
+      setColumnEditorOpen: (open: boolean) => {
+        this.columnEditorOpen = open;
       },
     };
+
+    return TableAPIImpl.createAPI(context);
   }
 }
