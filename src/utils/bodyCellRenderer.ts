@@ -47,13 +47,19 @@ export const renderBodyCells = (
   scrollLeft: number = 0,
 ): void => {
   // Get viewport width for horizontal virtual scrolling
-  const viewportWidth = container.clientWidth || 0;
+  // Use containerWidth from context (provided by DimensionManager) if available
+  const viewportWidth = context.containerWidth || container.clientWidth || 0;
 
   // For pinned sections, always render all cells (they don't scroll horizontally)
   // For main section, only render visible cells based on scroll position
   const cellsToRender = context.pinned
     ? cells
     : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
+
+  // Debug: Log virtualization info for main section (only once per render to avoid spam)
+  if (!context.pinned && cells.length > 0 && cells[0].rowIndex === 0) {
+    console.log(`[VIRT BODY] cells:${cells.length} → visible:${cellsToRender.length} | viewport:${viewportWidth}px scroll:${scrollLeft}px | source:${context.containerWidth ? 'DimensionManager' : 'DOM'}`);
+  }
 
   const renderedCells = getRenderedCells(container);
 

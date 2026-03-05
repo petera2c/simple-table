@@ -1,7 +1,10 @@
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
-import { renderHeaderCells, AbsoluteCell, HeaderRenderContext } from "../../utils/headerCellRenderer";
+import {
+  renderHeaderCells,
+  AbsoluteCell,
+  HeaderRenderContext,
+} from "../../utils/headerCellRenderer";
 import { renderBodyCells, AbsoluteBodyCell, CellRenderContext } from "../../utils/bodyCellRenderer";
-import { createGridTemplateColumns } from "../../utils/columnUtils";
 import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
 
@@ -56,11 +59,12 @@ export class SectionRenderer {
 
     if (!section) {
       section = document.createElement("div");
-      section.className = pinned === "left"
-        ? "st-header-pinned-left"
-        : pinned === "right"
-        ? "st-header-pinned-right"
-        : "st-header-main";
+      section.className =
+        pinned === "left"
+          ? "st-header-pinned-left"
+          : pinned === "right"
+            ? "st-header-pinned-right"
+            : "st-header-main";
       section.setAttribute("role", "rowgroup");
       this.headerSections.set(sectionKey, section);
     }
@@ -78,12 +82,6 @@ export class SectionRenderer {
 
     section.style.display = "";
 
-    const gridTemplateColumns = createGridTemplateColumns({
-      headers: filteredHeaders,
-      collapsedHeaders,
-      autoExpandColumns,
-    });
-
     section.style.cssText = `
       position: relative;
       ${sectionWidth !== undefined ? `width: ${sectionWidth}px;` : ""}
@@ -98,7 +96,17 @@ export class SectionRenderer {
       headerHeight,
     );
 
+    // Initial render with scrollLeft = 0
     renderHeaderCells(section, absoluteCells, { ...context, pinned }, 0);
+
+    // For main section (not pinned), attach render function for scroll updates
+    if (!pinned && section) {
+      (section as any).__renderHeaderCells = (scrollLeft: number) => {
+        if (section) {
+          renderHeaderCells(section, absoluteCells, { ...context, pinned }, scrollLeft);
+        }
+      };
+    }
 
     return section;
   }
@@ -120,11 +128,12 @@ export class SectionRenderer {
 
     if (!section) {
       section = document.createElement("div");
-      section.className = pinned === "left"
-        ? "st-body-pinned-left"
-        : pinned === "right"
-        ? "st-body-pinned-right"
-        : "st-body-main";
+      section.className =
+        pinned === "left"
+          ? "st-body-pinned-left"
+          : pinned === "right"
+            ? "st-body-pinned-right"
+            : "st-body-main";
       section.setAttribute("role", "rowgroup");
       this.bodySections.set(sectionKey, section);
     }
@@ -142,12 +151,6 @@ export class SectionRenderer {
 
     section.style.display = "";
 
-    const gridTemplateColumns = createGridTemplateColumns({
-      headers: filteredHeaders,
-      collapsedHeaders,
-      autoExpandColumns,
-    });
-
     const totalHeight = rows.length * rowHeight;
     section.style.cssText = `
       position: relative;
@@ -163,7 +166,17 @@ export class SectionRenderer {
       rowHeight,
     );
 
+    // Initial render with scrollLeft = 0
     renderBodyCells(section, absoluteCells, { ...context, pinned }, 0);
+
+    // For main section (not pinned), attach render function for scroll updates
+    if (!pinned && section) {
+      (section as any).__renderBodyCells = (scrollLeft: number) => {
+        if (section) {
+          renderBodyCells(section, absoluteCells, { ...context, pinned }, scrollLeft);
+        }
+      };
+    }
 
     return section;
   }
@@ -308,10 +321,7 @@ export class SectionRenderer {
     return cells;
   }
 
-  private getLeafHeaders(
-    headers: HeaderObject[],
-    collapsedHeaders: Set<Accessor>,
-  ): HeaderObject[] {
+  private getLeafHeaders(headers: HeaderObject[], collapsedHeaders: Set<Accessor>): HeaderObject[] {
     const leaves: HeaderObject[] = [];
 
     const processHeader = (header: HeaderObject): void => {

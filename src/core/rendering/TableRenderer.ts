@@ -262,6 +262,7 @@ export class TableRenderer {
       templateColumns: "",
       heightOffsets: processedResult.heightOffsets,
       customTheme: deps.customTheme,
+      containerWidth: dimensionState.containerWidth,
       onCellEdit: deps.config.onCellEdit,
       onCellClick: deps.config.onCellClick,
       onRowGroupExpand: deps.config.onRowGroupExpand,
