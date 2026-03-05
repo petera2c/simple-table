@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTableReact } from "../..";
+import { Row, SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -206,16 +206,16 @@ const performDragAndDrop = async (
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTableReact> = {
+const meta: Meta<typeof SimpleTable> = {
   title: "Tests/11-ColumnReorderingTests",
-  component: SimpleTableReact,
+  component: SimpleTable,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTableReact>;
+type Story = StoryObj<typeof SimpleTable>;
 
 // ============================================================================
 // TEST CASES
@@ -237,7 +237,7 @@ export const ColumnReorderingEnabled: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -276,7 +276,7 @@ export const ColumnReorderingDisabled: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={false}
           defaultHeaders={headers}
           rows={data}
@@ -321,7 +321,7 @@ export const DisableReorderOnSpecificColumn: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -370,7 +370,7 @@ export const OnColumnOrderChangeCallback: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -420,7 +420,7 @@ export const ColumnReorderingWithSorting: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -460,7 +460,7 @@ export const ColumnReorderingWithFiltering: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -499,7 +499,7 @@ export const ColumnReorderingWithPinnedColumns: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -558,7 +558,7 @@ export const DraggableAttributeOnHeaderLabels: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -604,7 +604,7 @@ export const MixedDraggableAndNonDraggable: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -645,7 +645,7 @@ export const InitialColumnOrder: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -679,7 +679,7 @@ export const ActualDragAndDropReordering: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -752,7 +752,7 @@ export const DragAndDropWithPinnedColumns: Story = {
 
     return (
       <div style={{ padding: "20px", width: "800px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           defaultHeaders={headers}
           rows={data}
@@ -845,7 +845,7 @@ export const ColumnReorderingWithResizing: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           columnReordering={true}
           columnResizing={true}
           defaultHeaders={headers}

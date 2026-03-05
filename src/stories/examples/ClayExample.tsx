@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { CellClickProps, SimpleTableReact, TableRefType } from "../..";
+import { CellClickProps, SimpleTable, TableRefType } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import Row from "../../types/Row";
@@ -197,7 +197,7 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
         ),
       },
     ],
-    [additionalColumns]
+    [additionalColumns],
   );
 
   // Sample data for the row buttons demo
@@ -358,8 +358,8 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
         )}
       </div>
 
-      {/* SimpleTableReact with Row Buttons */}
-      <SimpleTableReact
+      {/* SimpleTable with Row Buttons */}
+      <SimpleTable
         {...props}
         defaultHeaders={headers}
         enableHeaderEditing

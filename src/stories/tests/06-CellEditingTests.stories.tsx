@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -82,7 +82,7 @@ const waitForTable = async (timeout = 5000) => {
 const getCellElement = (
   canvasElement: HTMLElement,
   rowIndex: number,
-  accessor: string
+  accessor: string,
 ): HTMLElement | null => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return null;
@@ -166,15 +166,15 @@ export const BasicStringEditing: StoryObj = {
             Last Edit: {lastEdit}
           </div>
         )}
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
             setLastEdit(`${props.accessor} = ${props.newValue}`);
           }}
@@ -247,15 +247,17 @@ export const NumberEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Salary cells to edit them (numeric input only)
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: Number(props.newValue) } : row
-              )
+                row.id === props.row.id
+                  ? { ...row, [props.accessor]: Number(props.newValue) }
+                  : row,
+              ),
             );
           }}
         />
@@ -320,7 +322,7 @@ export const BooleanEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Active cells to select True/False from dropdown
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -332,8 +334,8 @@ export const BooleanEditing: StoryObj = {
                       ...row,
                       [props.accessor]: props.newValue === "true" || props.newValue === true,
                     }
-                  : row
-              )
+                  : row,
+              ),
             );
           }}
         />
@@ -358,7 +360,7 @@ export const BooleanEditing: StoryObj = {
 
     // Find the dropdown and click "True" option
     const trueOption = Array.from(document.querySelectorAll(".st-dropdown-item")).find(
-      (item) => item.textContent === "True"
+      (item) => item.textContent === "True",
     ) as HTMLElement;
     if (!trueOption) throw new Error("True option not found in dropdown");
 
@@ -406,15 +408,15 @@ export const EnumEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Role cells to select from dropdown options
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -439,7 +441,7 @@ export const EnumEditing: StoryObj = {
 
     // Find the dropdown and click "Manager" option
     const managerOption = Array.from(document.querySelectorAll(".st-dropdown-item")).find(
-      (item) => item.textContent === "Manager"
+      (item) => item.textContent === "Manager",
     ) as HTMLElement;
     if (!managerOption) throw new Error("Manager option not found in dropdown");
 
@@ -475,15 +477,15 @@ export const DateEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Hire Date cells to edit with date picker
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -538,15 +540,15 @@ export const NonEditableColumns: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Only First Name is editable. ID and Email should not respond to double-click
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -610,15 +612,15 @@ export const EscapeKeyCancelsEdit: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Edit a cell and press Escape to cancel changes
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -695,7 +697,7 @@ export const OnCellEditCallback: StoryObj = {
             <div>row.id: {callbackInfo.rowId}</div>
           </div>
         )}
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -707,8 +709,8 @@ export const OnCellEditCallback: StoryObj = {
             });
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />

@@ -1,4 +1,4 @@
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -13,7 +13,7 @@ export const chartsExampleDefaults = {
 const generateTrendData = (
   baseValue: number,
   volatility: number,
-  length: number = 12
+  length: number = 12,
 ): number[] => {
   const data: number[] = [];
   let current = baseValue;
@@ -189,7 +189,7 @@ const ChartsExample = (props: UniversalTableProps) => {
   ];
 
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       defaultHeaders={headers}
       rows={rows}

@@ -1,4 +1,4 @@
-import { ColumnVisibilityState, SimpleTableReact } from "../..";
+import { ColumnVisibilityState, SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -669,12 +669,11 @@ const headers: HeaderObject[] = [
 ];
 const CollapsibleColumnsExample = (props: UniversalTableProps) => {
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       defaultHeaders={headers}
       rows={SALES_DATA}
-      onColumnVisibilityChange={(visibleColumns: ColumnVisibilityState) => {
-      }}
+      onColumnVisibilityChange={(visibleColumns: ColumnVisibilityState) => {}}
     />
   );
 };

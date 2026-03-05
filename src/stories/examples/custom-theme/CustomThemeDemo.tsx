@@ -1,4 +1,4 @@
-import SimpleTableReact from "../../../components/simple-table/SimpleTableReact";
+import { SimpleTable } from "../../..";
 import HeaderObject from "../../../types/HeaderObject";
 import "./CustomTheme.css";
 
@@ -139,7 +139,7 @@ const data = [
 const CustomThemeDemo = ({ height = "400px" }: { height?: string | number }) => {
   return (
     <div className="custom-theme-container">
-      <SimpleTableReact
+      <SimpleTable
         columnResizing
         defaultHeaders={headers}
         height={height}

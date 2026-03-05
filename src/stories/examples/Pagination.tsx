@@ -1,5 +1,6 @@
 import { useState } from "react";
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -47,7 +48,7 @@ const PaginationExample = (props: UniversalTableProps) => {
         <p>This example simulates fetching data from a server. Check console for details.</p>
       </div>
 
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         defaultHeaders={HEADERS}
         onNextPage={onNextPage}

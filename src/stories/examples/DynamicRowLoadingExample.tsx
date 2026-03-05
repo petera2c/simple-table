@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import Row from "../../types/Row";
@@ -449,7 +450,7 @@ const DynamicRowLoadingExample = (props: UniversalTableProps) => {
         </div>
       </div>
 
-      <SimpleTableReact
+      <SimpleTable
         autoExpandColumns
         canExpandRowGroup={(row) => {
           // Only show expand icon if row has employeeCount > 0

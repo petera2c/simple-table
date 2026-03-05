@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -195,7 +195,7 @@ export const BasicQuickFilterSimpleMode: StoryObj = {
             borderRadius: "4px",
           }}
         />
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -292,7 +292,7 @@ export const SmartModeMultiWord: StoryObj = {
             borderRadius: "4px",
           }}
         />
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -371,7 +371,7 @@ export const SmartModePhraseSearch: StoryObj = {
             borderRadius: "4px",
           }}
         />
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -443,7 +443,7 @@ export const SmartModeNegation: StoryObj = {
             borderRadius: "4px",
           }}
         />
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -518,7 +518,7 @@ export const SmartModeColumnSpecific: StoryObj = {
             borderRadius: "4px",
           }}
         />
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -600,7 +600,7 @@ export const CaseSensitivity: StoryObj = {
           />
           Case Sensitive
         </label>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -729,7 +729,7 @@ export const ProgrammaticControl: StoryObj = {
             borderRadius: "4px",
           }}
         />
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"

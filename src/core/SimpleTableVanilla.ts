@@ -35,12 +35,6 @@ import { checkDeprecatedProps } from "../utils/deprecatedPropsWarnings";
 import { exportTableToCSV } from "../utils/csvExportUtils";
 import { calculateColumnIndices } from "../utils/columnIndicesUtils";
 
-import { createTableFooter } from "../utils/footer/createTableFooter";
-import { createColumnEditor } from "../utils/columnEditor/createColumnEditor";
-import {
-  createHorizontalScrollbar,
-  cleanupHorizontalScrollbar,
-} from "../utils/horizontalScrollbarRenderer";
 import {
   createAngleLeftIcon,
   createAngleRightIcon,
@@ -50,6 +44,7 @@ import {
   createDragIcon,
 } from "../icons";
 import { COLUMN_EDIT_WIDTH } from "../consts/general-consts";
+import { TableRenderer } from "./rendering/TableRenderer";
 
 import "../styles/all-themes.css";
 
@@ -113,8 +108,7 @@ export class SimpleTableVanilla {
   private expandedDepthsManager: ExpandedDepthsManager | null = null;
   private ariaAnnouncementManager: AriaAnnouncementManager | null = null;
 
-  private footerInstance: ReturnType<typeof createTableFooter> | null = null;
-  private columnEditorInstance: ReturnType<typeof createColumnEditor> | null = null;
+  private tableRenderer: TableRenderer | null = null;
 
   private mounted: boolean = false;
 
@@ -130,9 +124,15 @@ export class SimpleTableVanilla {
     };
 
     this.mergedColumnEditorConfig = {
-      text: config.columnEditorConfig?.text ?? config.columnEditorText ?? DEFAULT_COLUMN_EDITOR_CONFIG.text,
-      searchEnabled: config.columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
-      searchPlaceholder: config.columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+      text:
+        config.columnEditorConfig?.text ??
+        config.columnEditorText ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.text,
+      searchEnabled:
+        config.columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
+      searchPlaceholder:
+        config.columnEditorConfig?.searchPlaceholder ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
       searchFunction: config.columnEditorConfig?.searchFunction,
       rowRenderer: config.columnEditorConfig?.rowRenderer,
     };
@@ -145,10 +145,7 @@ export class SimpleTableVanilla {
     this.internalIsLoading = config.isLoading ?? false;
 
     this.collapsedHeaders = this.getInitialCollapsedHeaders();
-    this.expandedDepths = initializeExpandedDepths(
-      config.expandAll ?? true,
-      config.rowGrouping
-    );
+    this.expandedDepths = initializeExpandedDepths(config.expandAll ?? true, config.rowGrouping);
 
     this.rebuildRowIndexMap();
     this.initializeManagers();
@@ -213,6 +210,8 @@ export class SimpleTableVanilla {
   }
 
   private initializeManagers(): void {
+    this.tableRenderer = new TableRenderer();
+
     this.ariaAnnouncementManager = new AriaAnnouncementManager();
     this.ariaAnnouncementManager.subscribe((message) => {
       this.announcement = message;
@@ -221,7 +220,7 @@ export class SimpleTableVanilla {
 
     this.expandedDepthsManager = new ExpandedDepthsManager(
       this.config.expandAll ?? true,
-      this.config.rowGrouping
+      this.config.rowGrouping,
     );
     this.expandedDepthsManager.subscribe((depths) => {
       this.expandedDepths = depths;
@@ -306,7 +305,10 @@ export class SimpleTableVanilla {
       height: this.config.height,
       maxHeight: this.config.maxHeight,
       totalRowCount: this.localRows.length,
-      footerHeight: this.config.shouldPaginate && !this.config.hideFooter ? this.customTheme.footerHeight : undefined,
+      footerHeight:
+        this.config.shouldPaginate && !this.config.hideFooter
+          ? this.customTheme.footerHeight
+          : undefined,
       containerElement: this.tableBodyContainerRef.current,
     });
 
@@ -335,7 +337,7 @@ export class SimpleTableVanilla {
         },
         () => {
           this.render();
-        }
+        },
       );
     }
 
@@ -383,11 +385,7 @@ export class SimpleTableVanilla {
 
     const previousScrollTop = this.scrollTop;
     const direction: "up" | "down" | "none" =
-      newScrollTop > previousScrollTop
-        ? "down"
-        : newScrollTop < previousScrollTop
-        ? "up"
-        : "none";
+      newScrollTop > previousScrollTop ? "down" : newScrollTop < previousScrollTop ? "up" : "none";
 
     this.scrollDirection = direction;
 
@@ -431,13 +429,55 @@ export class SimpleTableVanilla {
     return flattenResult.flattenedRows;
   }
 
+  private getRendererDeps() {
+    return {
+      config: this.config,
+      customTheme: this.customTheme,
+      resolvedIcons: this.resolvedIcons,
+      effectiveHeaders: this.effectiveHeaders,
+      headers: this.headers,
+      localRows: this.localRows,
+      collapsedHeaders: this.collapsedHeaders,
+      collapsedRows: this.collapsedRows,
+      expandedRows: this.expandedRows,
+      expandedDepths: this.expandedDepths,
+      isResizing: this.isResizing,
+      internalIsLoading: this.internalIsLoading,
+      cellRegistry: this.cellRegistry,
+      headerRegistry: this.headerRegistry,
+      draggedHeaderRef: this.draggedHeaderRef,
+      hoveredHeaderRef: this.hoveredHeaderRef,
+      mainBodyRef: this.mainBodyRef,
+      pinnedLeftRef: this.pinnedLeftRef,
+      pinnedRightRef: this.pinnedRightRef,
+      dimensionManager: this.dimensionManager,
+      rowStateMap: this.rowStateMap,
+      onRender: () => this.render(),
+      setIsResizing: (value: boolean) => {
+        this.isResizing = value;
+      },
+      setHeaders: (headers: HeaderObject[]) => {
+        this.headers = headers;
+      },
+      setCollapsedHeaders: (headers: Set<Accessor>) => {
+        this.collapsedHeaders = headers;
+      },
+      setCollapsedRows: (rows: Map<string, number>) => {
+        this.collapsedRows = rows;
+      },
+      setExpandedRows: (rows: Map<string, number>) => {
+        this.expandedRows = rows;
+      },
+      setRowStateMap: (map: Map<string | number, any>) => {
+        this.rowStateMap = map;
+      },
+    };
+  }
+
   private computeEffectiveHeaders(): HeaderObject[] {
     let processedHeaders = [...this.headers];
 
-    if (
-      this.config.enableRowSelection &&
-      !this.headers?.[0]?.isSelectionColumn
-    ) {
+    if (this.config.enableRowSelection && !this.headers?.[0]?.isSelectionColumn) {
       const selectionHeader = createSelectionHeader(this.customTheme.selectionColumnWidth);
       processedHeaders = [selectionHeader, ...processedHeaders];
     }
@@ -458,17 +498,12 @@ export class SimpleTableVanilla {
 
     const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = dimensionState;
 
-    const {
-      mainWidth,
-      leftWidth,
-      rightWidth,
-      leftContentWidth,
-      rightContentWidth,
-    } = recalculateAllSectionWidths({
-      headers: this.effectiveHeaders,
-      containerWidth,
-      collapsedHeaders: this.collapsedHeaders,
-    });
+    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
+      recalculateAllSectionWidths({
+        headers: this.effectiveHeaders,
+        containerWidth,
+        collapsedHeaders: this.collapsedHeaders,
+      });
 
     const mainSectionContainerWidth = containerWidth - leftWidth - rightWidth;
 
@@ -554,147 +589,62 @@ export class SimpleTableVanilla {
     this.renderBody(processedResult);
     this.renderFooter(flattenResult.paginatableRows.length);
     this.renderColumnEditor();
-    this.renderHorizontalScrollbar(mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth);
+    this.renderHorizontalScrollbar(
+      mainWidth,
+      leftWidth,
+      rightWidth,
+      leftContentWidth,
+      rightContentWidth,
+    );
   }
 
   private renderHeader(calculatedHeaderHeight: number, maxHeaderDepth: number): void {
-    if (!this.headerContainer || this.config.hideHeader) return;
-
-    this.headerContainer.style.height = `${calculatedHeaderHeight}px`;
-    this.headerContainer.innerHTML = `
-      <div>Header rendering placeholder - implement with headerCellRenderer utility</div>
-    `;
+    if (!this.headerContainer || this.config.hideHeader || !this.tableRenderer) return;
+    
+    this.tableRenderer.renderHeader(
+      this.headerContainer,
+      calculatedHeaderHeight,
+      maxHeaderDepth,
+      this.getRendererDeps(),
+    );
   }
+
 
   private renderBody(processedResult: any): void {
-    if (!this.bodyContainer) return;
-
-    const shouldShowEmptyState = !this.internalIsLoading && processedResult.currentTableRows.length === 0;
-
-    if (shouldShowEmptyState) {
-      this.bodyContainer.innerHTML = "";
-      const emptyWrapper = document.createElement("div");
-      emptyWrapper.className = "st-empty-state-wrapper";
-      
-      if (typeof this.config.tableEmptyStateRenderer === "string") {
-        emptyWrapper.textContent = this.config.tableEmptyStateRenderer;
-      } else if (this.config.tableEmptyStateRenderer instanceof HTMLElement) {
-        emptyWrapper.appendChild(this.config.tableEmptyStateRenderer.cloneNode(true));
-      } else {
-        emptyWrapper.innerHTML = "<div class='st-empty-state'>No rows to display</div>";
-      }
-      
-      this.bodyContainer.appendChild(emptyWrapper);
-      return;
-    }
-
-    this.bodyContainer.innerHTML = `
-      <div>Body rendering placeholder - implement with bodyCellRenderer utility</div>
-    `;
+    if (!this.bodyContainer || !this.tableRenderer) return;
+    
+    this.tableRenderer.renderBody(this.bodyContainer, processedResult, this.getRendererDeps());
   }
 
+
   private renderFooter(totalRows: number): void {
-    if (!this.footerContainer) return;
-
-    if (this.config.hideFooter || !this.config.shouldPaginate) {
-      this.footerContainer.innerHTML = "";
-      return;
-    }
-
-    const totalPages = Math.ceil(totalRows / (this.config.rowsPerPage ?? 10));
-
-    if (this.footerInstance) {
-      this.footerInstance.update({
-        currentPage: this.currentPage,
-        hideFooter: this.config.hideFooter ?? false,
-        onPageChange: (page: number) => {
-          this.currentPage = page;
-          this.render();
-        },
-        onNextPage: this.config.onNextPage,
-        onUserPageChange: this.config.onPageChange,
-        rowsPerPage: this.config.rowsPerPage ?? 10,
-        shouldPaginate: this.config.shouldPaginate ?? false,
-        totalPages,
-        totalRows,
-      });
-    } else {
-      this.footerContainer.innerHTML = "";
-      const footer = createTableFooter({
-        currentPage: this.currentPage,
-        hideFooter: this.config.hideFooter ?? false,
-        onPageChange: (page: number) => {
-          this.currentPage = page;
-          this.render();
-        },
-        onNextPage: this.config.onNextPage,
-        onUserPageChange: this.config.onPageChange,
-        rowsPerPage: this.config.rowsPerPage ?? 10,
-        shouldPaginate: this.config.shouldPaginate ?? false,
-        totalPages,
-        totalRows,
-      });
-      this.footerInstance = footer;
-      this.footerContainer.appendChild(footer.element);
-    }
+    if (!this.footerContainer || !this.tableRenderer) return;
+    
+    this.tableRenderer.renderFooter(
+      this.footerContainer,
+      totalRows,
+      this.currentPage,
+      (page: number) => {
+        this.currentPage = page;
+        this.render();
+      },
+      this.getRendererDeps(),
+    );
   }
 
   private renderColumnEditor(): void {
-    if (!this.columnEditorContainer) return;
-
-    if (!this.config.editColumns) {
-      this.columnEditorContainer.innerHTML = "";
-      return;
-    }
-
-    if (this.columnEditorInstance) {
-      this.columnEditorInstance.update({
-        columnEditorText: this.mergedColumnEditorConfig.text,
-        editColumns: this.config.editColumns,
-        headers: this.headers,
-        open: this.columnEditorOpen,
-        searchEnabled: this.mergedColumnEditorConfig.searchEnabled,
-        searchPlaceholder: this.mergedColumnEditorConfig.searchPlaceholder,
-        searchFunction: this.mergedColumnEditorConfig.searchFunction,
-        columnEditorConfig: this.mergedColumnEditorConfig,
-        contextHeaders: this.headers,
-        setHeaders: (newHeaders: HeaderObject[]) => {
-          this.headers = newHeaders;
-          this.render();
-        },
-        onColumnVisibilityChange: this.config.onColumnVisibilityChange,
-        onColumnOrderChange: this.config.onColumnOrderChange,
-        setOpen: (open: boolean) => {
-          this.columnEditorOpen = open;
-          this.render();
-        },
-      });
-    } else {
-      this.columnEditorContainer.innerHTML = "";
-      const columnEditor = createColumnEditor({
-        columnEditorText: this.mergedColumnEditorConfig.text,
-        editColumns: this.config.editColumns,
-        headers: this.headers,
-        open: this.columnEditorOpen,
-        searchEnabled: this.mergedColumnEditorConfig.searchEnabled,
-        searchPlaceholder: this.mergedColumnEditorConfig.searchPlaceholder,
-        searchFunction: this.mergedColumnEditorConfig.searchFunction,
-        columnEditorConfig: this.mergedColumnEditorConfig,
-        contextHeaders: this.headers,
-        setHeaders: (newHeaders: HeaderObject[]) => {
-          this.headers = newHeaders;
-          this.render();
-        },
-        onColumnVisibilityChange: this.config.onColumnVisibilityChange,
-        onColumnOrderChange: this.config.onColumnOrderChange,
-        setOpen: (open: boolean) => {
-          this.columnEditorOpen = open;
-          this.render();
-        },
-      });
-      this.columnEditorInstance = columnEditor;
-      this.columnEditorContainer.appendChild(columnEditor.element);
-    }
+    if (!this.columnEditorContainer || !this.tableRenderer) return;
+    
+    this.tableRenderer.renderColumnEditor(
+      this.columnEditorContainer,
+      this.columnEditorOpen,
+      (open: boolean) => {
+        this.columnEditorOpen = open;
+        this.render();
+      },
+      this.mergedColumnEditorConfig,
+      this.getRendererDeps(),
+    );
   }
 
   private renderHorizontalScrollbar(
@@ -702,43 +652,27 @@ export class SimpleTableVanilla {
     pinnedLeftWidth: number,
     pinnedRightWidth: number,
     pinnedLeftContentWidth: number,
-    pinnedRightContentWidth: number
+    pinnedRightContentWidth: number,
   ): void {
-    if (!this.wrapperContainer || !this.mainBodyRef.current || !this.tableBodyContainerRef.current) {
+    if (
+      !this.wrapperContainer ||
+      !this.mainBodyRef.current ||
+      !this.tableBodyContainerRef.current ||
+      !this.tableRenderer
+    ) {
       return;
     }
 
-    if (this.horizontalScrollbarRef.current) {
-      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
-      this.horizontalScrollbarRef.current = null;
-    }
-
-    setTimeout(() => {
-      if (!this.mainBodyRef.current || !this.tableBodyContainerRef.current || !this.wrapperContainer) {
-        return;
-      }
-
-      const scrollbar = createHorizontalScrollbar({
-        mainBodyRef: this.mainBodyRef.current,
-        mainBodyWidth,
-        pinnedLeftWidth,
-        pinnedRightWidth,
-        pinnedLeftContentWidth,
-        pinnedRightContentWidth,
-        tableBodyContainerRef: this.tableBodyContainerRef.current,
-        editColumns: this.config.editColumns ?? false,
-      });
-
-      if (scrollbar) {
-        const contentWrapper = this.wrapperContainer.querySelector(".st-content-wrapper");
-        if (contentWrapper && contentWrapper.nextSibling) {
-          this.wrapperContainer.insertBefore(scrollbar, contentWrapper.nextSibling);
-        } else {
-          this.wrapperContainer.appendChild(scrollbar);
-        }
-        this.horizontalScrollbarRef.current = scrollbar;
-      }
-    }, 1);
+    this.tableRenderer.renderHorizontalScrollbar(
+      this.wrapperContainer,
+      mainBodyWidth,
+      pinnedLeftWidth,
+      pinnedRightWidth,
+      pinnedLeftContentWidth,
+      pinnedRightContentWidth,
+      this.tableBodyContainerRef.current,
+      this.getRendererDeps(),
+    );
   }
 
   update(config: Partial<SimpleTableConfig>): void {
@@ -779,12 +713,7 @@ export class SimpleTableVanilla {
     this.expandedDepthsManager?.destroy();
     this.ariaAnnouncementManager?.destroy();
 
-    this.footerInstance?.destroy();
-    this.columnEditorInstance?.destroy();
-
-    if (this.horizontalScrollbarRef.current) {
-      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
-    }
+    this.tableRenderer?.cleanup();
 
     if (this.rootElement && this.container.contains(this.rootElement)) {
       this.container.removeChild(this.rootElement);
@@ -850,7 +779,7 @@ export class SimpleTableVanilla {
           flattenResult.flattenedRows,
           this.effectiveHeaders,
           props?.filename,
-          this.config.includeHeadersInCSVExport ?? true
+          this.config.includeHeadersInCSVExport ?? true,
         );
       },
 
@@ -858,21 +787,17 @@ export class SimpleTableVanilla {
         return null;
       },
 
-      applySortState: async (props?: { accessor: Accessor; direction?: SortDirection }) => {
-      },
+      applySortState: async (props?: { accessor: Accessor; direction?: SortDirection }) => {},
 
       getFilterState: (): TableFilterState => {
         return {};
       },
 
-      applyFilter: async (filter: FilterCondition) => {
-      },
+      applyFilter: async (filter: FilterCondition) => {},
 
-      clearFilter: async (accessor: Accessor) => {
-      },
+      clearFilter: async (accessor: Accessor) => {},
 
-      clearAllFilters: async () => {
-      },
+      clearAllFilters: async () => {},
 
       getCurrentPage: (): number => {
         return this.currentPage;

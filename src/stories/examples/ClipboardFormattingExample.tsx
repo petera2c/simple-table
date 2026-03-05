@@ -1,5 +1,5 @@
 import React from "react";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -221,7 +221,7 @@ const ClipboardFormattingExample: React.FC<UniversalTableProps> = (props) => {
           </p>
         </div>
       </div>
-      <SimpleTableReact rows={sampleData} defaultHeaders={headers} {...props} />
+      <SimpleTable rows={sampleData} defaultHeaders={headers} {...props} />
     </div>
   );
 };

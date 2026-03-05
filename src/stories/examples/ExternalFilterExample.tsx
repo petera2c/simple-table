@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
@@ -263,7 +263,7 @@ const ExternalFilterExampleComponent: React.FC<UniversalTableProps> = (props) =>
     setFilters(filters);
   };
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       defaultHeaders={headers}
       rows={filteredData} // We provide the pre-filtered data

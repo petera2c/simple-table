@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { HeaderObject, SimpleTableReact, TableRefType } from "../..";
+import { HeaderObject, SimpleTable, TableRefType } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to LiveUpdates - exported for reuse in stories and tests
@@ -197,7 +197,7 @@ const LiveUpdatesExample = (props: UniversalTableProps) => {
   }, []);
 
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       defaultHeaders={headers}
       rows={initialData}

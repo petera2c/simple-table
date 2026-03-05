@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import { HeaderObject, TableRefType } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -333,7 +334,7 @@ const ExpansionControlExample = (props: UniversalTableProps) => {
         `"divisions" is at depth: ${divisionsDepth}\n` +
         `"teams" is at depth: ${teamsDepth}\n\n` +
         `Depth 0 property: ${depth0Prop}\n` +
-        `Depth 1 property: ${depth1Prop}`
+        `Depth 1 property: ${depth1Prop}`,
     );
   };
 
@@ -561,7 +562,7 @@ const ExpansionControlExample = (props: UniversalTableProps) => {
         </div>
       </div>
 
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         tableRef={tableRef}
         defaultHeaders={headers}

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -288,7 +288,7 @@ const verifySortByData = async (
   canvasElement: HTMLElement,
   accessor: string,
   expectedDirection: "asc" | "desc" | null,
-  dataType: "string" | "number" = "string"
+  dataType: "string" | "number" = "string",
 ) => {
   // Wait a bit for sort to complete and table to re-render
   await new Promise((resolve) => setTimeout(resolve, 200));
@@ -333,7 +333,7 @@ const verifyAscendingOrder = (data: string[], dataType: "string" | "number" = "s
           throw new Error(
             `Ascending order violated at index ${i}: ${current} > ${next} (values: "${
               data[i]
-            }" > "${data[i + 1]}")`
+            }" > "${data[i + 1]}")`,
           );
         }
       }
@@ -344,7 +344,7 @@ const verifyAscendingOrder = (data: string[], dataType: "string" | "number" = "s
         throw new Error(
           `Ascending order violated at index ${i}: "${data[i]}" > "${
             data[i + 1]
-          }" (comparison: ${comparison})`
+          }" (comparison: ${comparison})`,
         );
       }
     }
@@ -363,7 +363,7 @@ const verifyDescendingOrder = (data: string[], dataType: "string" | "number" = "
           throw new Error(
             `Descending order violated at index ${i}: ${current} < ${next} (values: "${
               data[i]
-            }" < "${data[i + 1]}")`
+            }" < "${data[i + 1]}")`,
           );
         }
       }
@@ -374,7 +374,7 @@ const verifyDescendingOrder = (data: string[], dataType: "string" | "number" = "
         throw new Error(
           `Descending order violated at index ${i}: "${data[i]}" < "${
             data[i + 1]
-          }" (comparison: ${comparison})`
+          }" (comparison: ${comparison})`,
         );
       }
     }
@@ -402,7 +402,7 @@ export const BasicStringSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Click "Name" header to cycle: unsorted → ascending → descending → unsorted
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -444,7 +444,7 @@ export const BasicNumberSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Click "Age" header to sort numeric values
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -488,7 +488,7 @@ export const CustomSortingOrderDescFirst: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Revenue column cycles: descending → ascending → unsorted (common for numbers)
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -536,7 +536,7 @@ export const CustomSortingOrderAlwaysSorted: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Priority column toggles between ascending and descending (never unsorted)
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -584,7 +584,7 @@ export const DateSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Dates sorted with newest first (descending → ascending → unsorted)
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -641,7 +641,7 @@ export const NestedAccessorSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Sorting by nested properties: user.name, user.profile.score
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -686,7 +686,7 @@ export const ArrayIndexAccessorSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Sorting by array elements: awards[0], albums[0].title, albums[0].year
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -738,7 +738,7 @@ export const CustomComparatorMultiField: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Sorts by priority first, then by revenue as tiebreaker
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -788,7 +788,7 @@ export const ValueGetterSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Displays formatted text but sorts by numeric seniorityLevel
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -826,7 +826,7 @@ export const InitialSortState: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Table loads pre-sorted by Revenue (descending)
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -884,7 +884,7 @@ export const OnSortChangeCallback: StoryObj = {
         >
           Sort State: {sortInfo}
         </div>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -947,7 +947,7 @@ export const ExternalSortHandling: StoryObj = {
         >
           Current Sort: {currentSort ? `${currentSort.column} (${currentSort.direction})` : "None"}
         </div>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={sortedData}
           height="400px"
@@ -1106,7 +1106,7 @@ export const ProgrammaticSortControl: StoryObj = {
         >
           Current Sort: {sortState}
         </div>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
       </div>
     );
   },
@@ -1184,7 +1184,7 @@ export const MultipleColumnsSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Each column has its own custom sort cycle
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },

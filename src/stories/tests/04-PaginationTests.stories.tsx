@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -98,7 +98,7 @@ const getPaginationFooter = (canvasElement: HTMLElement): HTMLElement | null => 
 // const getCurrentPageFromFooter = (canvasElement: HTMLElement): number | null => {
 //   const footer = getPaginationFooter(canvasElement);
 //   if (!footer) return null;
-//   
+//
 //   // Look for current page indicator in footer
 //   const pageText = footer.textContent;
 //   const match = pageText?.match(/Page (\d+)/);
@@ -130,7 +130,7 @@ const clickPreviousPageButton = async (canvasElement: HTMLElement) => {
 
   // Find previous button using aria-label
   const prevButton = footer.querySelector(
-    'button[aria-label="Go to previous page"]'
+    'button[aria-label="Go to previous page"]',
   ) as HTMLElement;
 
   if (!prevButton) throw new Error("Previous page button not found");
@@ -166,7 +166,7 @@ export const BasicPagination: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           50 rows with default pagination (10 rows per page)
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" shouldPaginate={true} />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" shouldPaginate={true} />
       </div>
     );
   },
@@ -204,7 +204,7 @@ export const CustomRowsPerPage: StoryObj = {
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Custom Rows Per Page</h2>
         <p style={{ marginBottom: "1rem", color: "#666" }}>50 rows with 20 rows per page</p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -247,7 +247,7 @@ export const PageNavigation: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Click Next/Previous buttons to navigate pages
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -319,7 +319,7 @@ export const OnPageChangeCallback: StoryObj = {
           <div>Current Page: {currentPage}</div>
           <div>Page Changes: {pageChangeCount}</div>
         </div>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -450,7 +450,7 @@ export const ProgrammaticPageControl: StoryObj = {
         >
           Current Page: {currentPage}
         </div>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -504,7 +504,7 @@ export const ProgrammaticPageControl: StoryObj = {
 export const ServerSidePagination: StoryObj = {
   render: () => {
     const [currentPageData, setCurrentPageData] = React.useState(
-      createPaginatedData(10).slice(0, 10)
+      createPaginatedData(10).slice(0, 10),
     );
     const [currentPage, setCurrentPage] = React.useState(1);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -552,7 +552,7 @@ export const ServerSidePagination: StoryObj = {
         >
           Current Page: {currentPage} | Loading: {isLoading ? "Yes" : "No"}
         </div>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={currentPageData}
           height="400px"
@@ -646,7 +646,7 @@ export const PaginationWithFiltering: StoryObj = {
             Clear Filter
           </button>
         </div>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -708,7 +708,7 @@ export const PaginationWithSorting: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Sort columns and navigate pages - sorting persists across pages
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -759,7 +759,7 @@ export const PaginationWithoutHeight: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Table adjusts to show all rows on current page (no internal scrolling)
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} shouldPaginate={true} rowsPerPage={10} />
+        <SimpleTable defaultHeaders={headers} rows={data} shouldPaginate={true} rowsPerPage={10} />
       </div>
     );
   },

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -32,7 +33,7 @@ const FilterColumnsExample = (props: UniversalTableProps) => {
   };
 
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       defaultHeaders={HEADERS}
       onCellEdit={updateCell}
