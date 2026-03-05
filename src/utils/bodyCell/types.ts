@@ -75,6 +75,7 @@ export interface CellRenderContext {
   templateColumns: string;
   heightOffsets?: any;
   customTheme?: any;
+  containerWidth?: number;
 
   // Callbacks
   onCellEdit?: (params: CellEditParams) => void;
