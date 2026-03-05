@@ -25,7 +25,7 @@ import {
 } from "../../utils/horizontalScrollbarRenderer";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
-import TableColumnEditor from "./table-column-editor/TableColumnEditor";
+import { createColumnEditor } from "../../utils/columnEditor/createColumnEditor";
 import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../context/TableContext";
 import { scrollSyncManager } from "../../utils/scrollSyncManager";
 import useFilterableData from "../../hooks/useFilterableData";
@@ -990,6 +990,67 @@ const SimpleTableComp = ({
     shouldShowEmptyState,
   ]);
 
+  // Create and manage vanilla JS column editor
+  const columnEditorRef = useRef<ReturnType<typeof createColumnEditor> | null>(null);
+
+  useEffect(() => {
+    const container = document.getElementById("st-column-editor-container");
+    if (!container) return;
+
+    const columnEditor = createColumnEditor({
+      columnEditorText: mergedColumnEditorConfig.text,
+      editColumns,
+      headers,
+      open: columnEditorOpen,
+      searchEnabled: mergedColumnEditorConfig.searchEnabled,
+      searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
+      searchFunction: mergedColumnEditorConfig.searchFunction,
+      columnEditorConfig: mergedColumnEditorConfig,
+      contextHeaders: headers,
+      setHeaders,
+      onColumnVisibilityChange,
+      onColumnOrderChange,
+      setOpen: setColumnEditorOpen,
+    });
+
+    columnEditorRef.current = columnEditor;
+    container.appendChild(columnEditor.element);
+
+    return () => {
+      columnEditor.destroy();
+      columnEditorRef.current = null;
+    };
+  }, []);
+
+  // Update column editor when props change
+  useEffect(() => {
+    if (columnEditorRef.current) {
+      columnEditorRef.current.update({
+        columnEditorText: mergedColumnEditorConfig.text,
+        editColumns,
+        headers,
+        open: columnEditorOpen,
+        searchEnabled: mergedColumnEditorConfig.searchEnabled,
+        searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
+        searchFunction: mergedColumnEditorConfig.searchFunction,
+        columnEditorConfig: mergedColumnEditorConfig,
+        contextHeaders: headers,
+        setHeaders,
+        onColumnVisibilityChange,
+        onColumnOrderChange,
+        setOpen: setColumnEditorOpen,
+      });
+    }
+  }, [
+    headers,
+    columnEditorOpen,
+    mergedColumnEditorConfig,
+    editColumns,
+    setHeaders,
+    onColumnVisibilityChange,
+    onColumnOrderChange,
+  ]);
+
   return (
     <TableProvider
       value={{
@@ -1140,16 +1201,7 @@ const SimpleTableComp = ({
               partiallyVisibleRows={partiallyVisibleRows}
               heightMap={heightMap}
             />
-            <TableColumnEditor
-              columnEditorText={mergedColumnEditorConfig.text}
-              editColumns={editColumns}
-              headers={headers}
-              open={columnEditorOpen}
-              searchEnabled={mergedColumnEditorConfig.searchEnabled}
-              searchPlaceholder={mergedColumnEditorConfig.searchPlaceholder}
-              searchFunction={mergedColumnEditorConfig.searchFunction}
-              setOpen={setColumnEditorOpen}
-            />
+            <div id="st-column-editor-container" />
           </div>
           {!shouldShowEmptyState && (
             <TableFooter
