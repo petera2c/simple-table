@@ -19,7 +19,10 @@ import {
   DragIcon,
 } from "../../icons";
 import TableContent from "./TableContent";
-import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
+import {
+  createHorizontalScrollbar,
+  cleanupHorizontalScrollbar,
+} from "../../utils/horizontalScrollbarRenderer";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
@@ -227,6 +230,7 @@ const SimpleTableComp = ({
   const pinnedRightRef = useRef<HTMLDivElement>(null);
   const tableBodyContainerRef = useRef<HTMLDivElement>(null);
   const headerContainerRef = useRef<HTMLDivElement>(null);
+  const horizontalScrollbarRef = useRef<HTMLElement | null>(null);
 
   // Force update function - needed early for header updates
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -918,6 +922,74 @@ const SimpleTableComp = ({
   // Check if we should show the empty state (no rows after filtering and not loading)
   const shouldShowEmptyState = !internalIsLoading && currentTableRows.length === 0;
 
+  // Render horizontal scrollbar using vanilla JS
+  useEffect(() => {
+    // Find parent container (wrapper container)
+    const wrapperContainer = document.querySelector(".st-wrapper-container");
+    if (!wrapperContainer || shouldShowEmptyState) {
+      // Cleanup existing scrollbar if any
+      if (horizontalScrollbarRef.current) {
+        cleanupHorizontalScrollbar(horizontalScrollbarRef.current);
+        horizontalScrollbarRef.current = null;
+      }
+      return;
+    }
+
+    // Cleanup existing scrollbar
+    if (horizontalScrollbarRef.current) {
+      cleanupHorizontalScrollbar(horizontalScrollbarRef.current);
+      horizontalScrollbarRef.current = null;
+    }
+
+    // Wait for layout to settle (similar to setTimeout in original)
+    setTimeout(() => {
+      if (
+        !mainBodyRef.current ||
+        !tableBodyContainerRef.current ||
+        shouldShowEmptyState
+      ) {
+        return;
+      }
+
+      const scrollbar = createHorizontalScrollbar({
+        mainBodyRef: mainBodyRef.current,
+        mainBodyWidth,
+        pinnedLeftWidth,
+        pinnedRightWidth,
+        pinnedLeftContentWidth,
+        pinnedRightContentWidth,
+        tableBodyContainerRef: tableBodyContainerRef.current,
+        editColumns,
+      });
+
+      if (scrollbar) {
+        // Insert after content-wrapper
+        const contentWrapper = wrapperContainer.querySelector(".st-content-wrapper");
+        if (contentWrapper && contentWrapper.nextSibling) {
+          wrapperContainer.insertBefore(scrollbar, contentWrapper.nextSibling);
+        } else {
+          wrapperContainer.appendChild(scrollbar);
+        }
+        horizontalScrollbarRef.current = scrollbar;
+      }
+    }, 1);
+
+    return () => {
+      if (horizontalScrollbarRef.current) {
+        cleanupHorizontalScrollbar(horizontalScrollbarRef.current);
+        horizontalScrollbarRef.current = null;
+      }
+    };
+  }, [
+    mainBodyWidth,
+    pinnedLeftWidth,
+    pinnedRightWidth,
+    pinnedLeftContentWidth,
+    pinnedRightContentWidth,
+    editColumns,
+    shouldShowEmptyState,
+  ]);
+
   return (
     <TableProvider
       value={{
@@ -1079,17 +1151,6 @@ const SimpleTableComp = ({
               setOpen={setColumnEditorOpen}
             />
           </div>
-          {!shouldShowEmptyState && (
-            <TableHorizontalScrollbar
-              mainBodyRef={mainBodyRef}
-              mainBodyWidth={mainBodyWidth}
-              pinnedLeftWidth={pinnedLeftWidth}
-              pinnedRightWidth={pinnedRightWidth}
-              pinnedLeftContentWidth={pinnedLeftContentWidth}
-              pinnedRightContentWidth={pinnedRightContentWidth}
-              tableBodyContainerRef={tableBodyContainerRef}
-            />
-          )}
           {!shouldShowEmptyState && (
             <TableFooter
               currentPage={currentPage}
