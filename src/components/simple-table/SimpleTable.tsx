@@ -11,12 +11,12 @@ import { SelectionManager } from "../../managers/SelectionManager";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { createTableFooter } from "../../utils/footer/createTableFooter";
 import {
-  AngleLeftIcon,
-  AngleRightIcon,
-  DescIcon,
-  AscIcon,
-  FilterIcon,
-  DragIcon,
+  createAngleLeftIcon,
+  createAngleRightIcon,
+  createDescIcon,
+  createAscIcon,
+  createFilterIcon,
+  createDragIcon,
 } from "../../icons";
 import TableContent from "./TableContent";
 import {
@@ -153,18 +153,25 @@ const SimpleTableComp = ({
   useOddColumnBackground = false,
   useOddEvenRowBackground = false,
 }: SimpleTableProps) => {
+  // Helper to wrap vanilla JS SVG elements as React nodes
+  const wrapSvgAsReactNode = useCallback((svg: SVGSVGElement) => {
+    const container = document.createElement('div');
+    container.appendChild(svg.cloneNode(true));
+    return <span dangerouslySetInnerHTML={{ __html: container.innerHTML }} />;
+  }, []);
+
   // Merge icons config with backward compatibility for deprecated props
   const resolvedIcons = useMemo(() => {
     const defaultIcons = {
-      drag: <DragIcon className="st-drag-icon" />,
-      expand: <AngleRightIcon className="st-expand-icon" />,
-      filter: <FilterIcon className="st-header-icon" />,
-      headerCollapse: <AngleRightIcon className="st-header-icon" />,
-      headerExpand: <AngleLeftIcon className="st-header-icon" />,
-      next: <AngleRightIcon className="st-next-prev-icon" />,
-      prev: <AngleLeftIcon className="st-next-prev-icon" />,
-      sortDown: <DescIcon className="st-header-icon" />,
-      sortUp: <AscIcon className="st-header-icon" />,
+      drag: wrapSvgAsReactNode(createDragIcon("st-drag-icon")),
+      expand: wrapSvgAsReactNode(createAngleRightIcon("st-expand-icon")),
+      filter: wrapSvgAsReactNode(createFilterIcon("st-header-icon")),
+      headerCollapse: wrapSvgAsReactNode(createAngleRightIcon("st-header-icon")),
+      headerExpand: wrapSvgAsReactNode(createAngleLeftIcon("st-header-icon")),
+      next: wrapSvgAsReactNode(createAngleRightIcon("st-next-prev-icon")),
+      prev: wrapSvgAsReactNode(createAngleLeftIcon("st-next-prev-icon")),
+      sortDown: wrapSvgAsReactNode(createDescIcon("st-header-icon")),
+      sortUp: wrapSvgAsReactNode(createAscIcon("st-header-icon")),
     };
 
     return {
@@ -180,6 +187,7 @@ const SimpleTableComp = ({
       sortUp: icons?.sortUp ?? sortUpIconDeprecated ?? defaultIcons.sortUp,
     };
   }, [
+    wrapSvgAsReactNode,
     icons,
     expandIconDeprecated,
     filterIconDeprecated,
