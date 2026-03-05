@@ -218,10 +218,6 @@ const StickyParentsContainer = ({
                 rowIndices={rowIndices}
                 setHoveredIndex={setHoveredIndex}
                 tableRow={tableRow}
-                isSticky={true}
-                stickyIndex={stickyIndex}
-                stickyOffset={rowOffset}
-                stickyZIndex={zIndex}
               />
               {/* Add separator after each sticky row */}
               <TableRowSeparator
