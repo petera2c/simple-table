@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent, fireEvent } from "@storybook/test";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -158,7 +158,7 @@ export const BasicRowSelection: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Click checkboxes to select individual rows
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -251,7 +251,7 @@ export const SelectAllFunctionality: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Use header checkbox to select/deselect all rows
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -322,7 +322,7 @@ export const PartialSelectionState: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Header checkbox shows indeterminate state when some (but not all) rows are selected
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -397,7 +397,7 @@ export const OnRowSelectionChangeCallback: StoryObj = {
           <div>Last action: {selectionInfo}</div>
           <div>Total selected: {selectedCount}</div>
         </div>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -476,7 +476,7 @@ export const SelectionWithPagination: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Selection state is maintained across pages
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -567,7 +567,7 @@ export const NoSelectionWithoutProp: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Checkboxes should not appear when enableRowSelection is false or not provided
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"

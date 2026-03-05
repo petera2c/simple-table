@@ -1,4 +1,4 @@
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import { useMemo } from "react";
@@ -318,7 +318,7 @@ const NestedGridExample = (props: UniversalTableProps) => {
         </p>
       </div>
 
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         defaultHeaders={companyHeaders}
         rows={sampleData}

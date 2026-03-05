@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { SimpleTable, TableRefType } from "../../index";
+import { SimpleTableReact, TableRefType } from "../../index";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 
 /**
@@ -184,7 +184,7 @@ const ServerSidePaginationExample = () => {
         </div>
       </div>
 
-      <SimpleTable
+      <SimpleTableReact
         tableRef={tableRef}
         defaultHeaders={SAAS_HEADERS}
         rows={rows}

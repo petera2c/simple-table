@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -269,7 +269,7 @@ const CSVExportSingleRowChildrenExample: React.FC<UniversalTableProps> = (props)
           📥 Export to CSV
         </button>
       </div>
-      <SimpleTable tableRef={tableRef} rows={sampleData} defaultHeaders={headers} {...props} />
+      <SimpleTableReact tableRef={tableRef} rows={sampleData} defaultHeaders={headers} {...props} />
     </div>
   );
 };

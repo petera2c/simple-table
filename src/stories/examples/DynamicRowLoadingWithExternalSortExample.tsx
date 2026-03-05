@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useCallback, useEffect } from "react";
-import { SimpleTable, HeaderObject, Row, OnRowGroupExpandProps, SortColumn } from "../../index";
+import { SimpleTableReact, HeaderObject, Row, OnRowGroupExpandProps, SortColumn } from "../../index";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // ============================================================================
@@ -734,7 +734,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
       </div>
 
       {/* Table */}
-      <SimpleTable
+      <SimpleTableReact
         columnResizing
         defaultHeaders={HEADERS}
         editColumns

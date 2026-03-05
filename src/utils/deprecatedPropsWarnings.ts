@@ -68,7 +68,7 @@ const DEPRECATED_PROPS: DeprecatedProp[] = [
  * Checks for deprecated props and logs console errors with helpful migration messages
  * @param props - The SimpleTable props to check
  */
-export const checkDeprecatedProps = (props: SimpleTableProps): void => {
+export const checkDeprecatedProps = (props: any): void => {
   // Only run in development mode
   if (process.env.NODE_ENV === "production") {
     return;

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTable } from "../..";
+import { Row, SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -95,16 +95,16 @@ const getGridTemplateColumns = (canvasElement: HTMLElement): string => {
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTable> = {
+const meta: Meta<typeof SimpleTableReact> = {
   title: "Tests/08-ColumnWidthTests",
-  component: SimpleTable,
+  component: SimpleTableReact,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTable>;
+type Story = StoryObj<typeof SimpleTableReact>;
 
 // ============================================================================
 // TEST CASES
@@ -126,7 +126,7 @@ export const FixedPixelWidths: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -178,7 +178,7 @@ export const AutoSizingWithOneFr: Story = {
 
     return (
       <div style={{ padding: "20px", width: "800px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -224,7 +224,7 @@ export const MinWidthConstraint: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -265,7 +265,7 @@ export const MaxWidthConstraint: Story = {
 
     return (
       <div style={{ padding: "20px", width: "1200px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -314,7 +314,7 @@ export const AutoExpandColumnsBasic: Story = {
 
     return (
       <div style={{ padding: "20px", width: "1000px" }}>
-        <SimpleTable
+        <SimpleTableReact
           autoExpandColumns={true}
           defaultHeaders={headers}
           rows={data}
@@ -367,7 +367,7 @@ export const AutoExpandColumnsIgnoresMinWidth: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           autoExpandColumns={true}
           defaultHeaders={headers}
           rows={data}
@@ -415,7 +415,7 @@ export const AutoExpandColumnsIgnoresMaxWidth: Story = {
 
     return (
       <div style={{ padding: "20px", width: "1200px" }}>
-        <SimpleTable
+        <SimpleTableReact
           autoExpandColumns={true}
           defaultHeaders={headers}
           rows={data}
@@ -465,7 +465,7 @@ export const MixedWidthStrategies: Story = {
 
     return (
       <div style={{ padding: "20px", width: "900px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -521,7 +521,7 @@ export const GridTemplateColumnsFormat: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -560,7 +560,7 @@ export const NarrowContainerBehavior: Story = {
 
     return (
       <div style={{ padding: "20px", width: "300px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -608,7 +608,7 @@ export const WideContainerBehavior: Story = {
 
     return (
       <div style={{ padding: "20px", width: "1600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}

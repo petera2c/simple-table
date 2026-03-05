@@ -1,7 +1,7 @@
 import HeaderObject from "../../types/HeaderObject";
 import { getCellId } from "../cellUtils";
 import { calculateHeaderContentWidth } from "../headerWidthUtils";
-import { getHeaderIndexPath, getSiblingArray, setSiblingArray } from "../../hooks/useDragHandler";
+import { getHeaderIndexPath, getSiblingArray, setSiblingArray } from "../../managers/DragHandlerManager";
 import { handleResizeStart } from "../resizeUtils";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener, throttle } from "./eventTracking";

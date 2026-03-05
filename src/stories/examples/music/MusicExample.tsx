@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { HEADERS } from "./music-headers";
 import Theme from "../../../types/Theme";
 import TableRefType from "../../../types/TableRefType";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../../components/simple-table/SimpleTableReact";
 
 import data from "./music-data.json";
 
@@ -24,7 +24,7 @@ export default function MusicExample({
   const tableRef = useRef<TableRefType | null>(null);
 
   return (
-    <SimpleTable
+    <SimpleTableReact
       columnReordering
       columnResizing
       defaultHeaders={HEADERS}

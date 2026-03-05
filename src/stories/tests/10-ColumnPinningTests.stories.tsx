@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTable } from "../..";
+import { Row, SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -117,16 +117,16 @@ const hasBorder = (element: HTMLElement | null, side: "left" | "right"): boolean
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTable> = {
+const meta: Meta<typeof SimpleTableReact> = {
   title: "Tests/10-ColumnPinningTests",
-  component: SimpleTable,
+  component: SimpleTableReact,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTable>;
+type Story = StoryObj<typeof SimpleTableReact>;
 
 // ============================================================================
 // TEST CASES
@@ -148,7 +148,7 @@ export const LeftPinnedColumn: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -200,7 +200,7 @@ export const RightPinnedColumn: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -253,7 +253,7 @@ export const BothLeftAndRightPinned: Story = {
 
     return (
       <div style={{ padding: "20px", width: "700px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -309,7 +309,7 @@ export const MultipleLeftPinnedColumns: Story = {
 
     return (
       <div style={{ padding: "20px", width: "700px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -354,7 +354,7 @@ export const MultipleRightPinnedColumns: Story = {
 
     return (
       <div style={{ padding: "20px", width: "700px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -398,7 +398,7 @@ export const PinnedColumnsWithBodySections: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -462,7 +462,7 @@ export const PinnedColumnsWithSorting: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -518,7 +518,7 @@ export const PinnedColumnsWithFiltering: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -564,7 +564,7 @@ export const NoPinnedColumns: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -611,7 +611,7 @@ export const PinnedColumnsWithAlignment: Story = {
 
     return (
       <div style={{ padding: "20px", width: "600px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}

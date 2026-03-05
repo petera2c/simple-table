@@ -1,4 +1,4 @@
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -108,7 +108,7 @@ const AutoExpandColumnsExampleComponent = (props: UniversalTableProps) => {
     { accessor: "status", label: "Status", width: 100, isSortable: true },
   ];
 
-  return <SimpleTable {...props} defaultHeaders={headers} rows={rows} />;
+  return <SimpleTableReact {...props} defaultHeaders={headers} rows={rows} />;
 };
 
 export default AutoExpandColumnsExampleComponent;

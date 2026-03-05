@@ -1,4 +1,4 @@
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { generateRetailSalesData } from "../data/retail-data";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -23,7 +23,7 @@ const AlignmentExample = (props: UniversalTableProps) => {
   return (
     <>
       <button onClick={() => tableRef.current?.exportToCSV()}>Export to CSV</button>
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         defaultHeaders={HEADERS}
         rows={EXAMPLE_DATA}

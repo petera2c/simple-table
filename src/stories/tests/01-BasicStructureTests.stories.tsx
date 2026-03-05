@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect } from "@storybook/test";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -216,7 +216,7 @@ export const MinimalTableWithRequiredProps: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Minimal Table (Required Props Only)</h2>
-        <SimpleTable defaultHeaders={headers} rows={data} />
+        <SimpleTableReact defaultHeaders={headers} rows={data} />
       </div>
     );
   },
@@ -259,7 +259,7 @@ export const TableWithFixedHeight: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Table with Fixed Height (400px)</h2>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -309,7 +309,7 @@ export const TableWithMaxHeight: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Table should shrink to fit 5 rows instead of taking full 600px height
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} maxHeight="600px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} maxHeight="600px" />
       </div>
     );
   },
@@ -350,7 +350,7 @@ export const TableWithoutHeight: StoryObj = {
         <h2 style={{ marginBottom: "1rem" }}>Table Without Height (Overflows Parent)</h2>
         <p style={{ marginBottom: "1rem", color: "#666" }}>Table expands to show all 20 rows</p>
         <div style={{ height: "400px", overflow: "auto", border: "2px solid #ccc" }}>
-          <SimpleTable defaultHeaders={headers} rows={data} />
+          <SimpleTableReact defaultHeaders={headers} rows={data} />
         </div>
       </div>
     );
@@ -388,7 +388,7 @@ export const TableWithGetRowId: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Uses row.id for stable row identification
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={({ row }) => String(row.id)}
@@ -430,7 +430,7 @@ export const NestedDataAccessors: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Accessing nested properties: user.name, user.profile.city, metadata.score
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -476,7 +476,7 @@ export const ArrayIndexAccessors: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Accessing array elements: awards[0], albums[0].title, albums[1].year
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -519,7 +519,7 @@ export const ColumnWidthConfigurations: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Mix of fixed pixel widths (80px, 200px, 100px) and flexible width (1fr)
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -564,7 +564,7 @@ export const DataTypesRendering: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Testing different data types: string, number, boolean, date
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -607,7 +607,7 @@ export const ViewportRelativeHeight: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Table height is 50% of viewport height
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} height="50vh" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="50vh" />
       </div>
     );
   },
@@ -641,7 +641,7 @@ export const ComprehensiveStructureValidation: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Comprehensive DOM Structure Validation</h2>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"

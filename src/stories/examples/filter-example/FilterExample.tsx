@@ -1,6 +1,6 @@
 import { PRODUCT_HEADERS } from "./filter-headers";
 import data from "./filter-data.json";
-import { SimpleTable } from "../../..";
+import { SimpleTableReact } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
 const shouldPaginate = false;
@@ -16,7 +16,7 @@ export const filterExampleDefaults = {
 
 export const FilterExampleComponent = (props: UniversalTableProps) => {
   return (
-    <SimpleTable
+    <SimpleTableReact
       {...props}
       defaultHeaders={PRODUCT_HEADERS}
       rows={data}

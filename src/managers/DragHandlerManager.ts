@@ -1,12 +1,8 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import DragHandlerProps from "../types/DragHandlerProps";
-import usePrevious from "./usePrevious";
 import { deepClone } from "../utils/generalUtils";
-import { useTableContext } from "../context/TableContext";
+import PreviousValueTracker from "../hooks/previousValue";
 
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
-let prevUpdateTime = Date.now();
-let prevDraggingPosition = { screenX: 0, screenY: 0 };
 
 export const getHeaderIndexPath = (
   headers: HeaderObject[],
@@ -26,7 +22,6 @@ export const getHeaderIndexPath = (
   return null;
 };
 
-// Get the sibling array at a given index path (navigates to parent's children)
 export const getSiblingArray = (headers: HeaderObject[], indexPath: number[]): HeaderObject[] => {
   let current = headers;
   for (let i = 0; i < indexPath.length - 1; i++) {
@@ -35,14 +30,12 @@ export const getSiblingArray = (headers: HeaderObject[], indexPath: number[]): H
   return current;
 };
 
-// Set the sibling array at a given index path back into the tree
 export const setSiblingArray = (
   headers: HeaderObject[],
   indexPath: number[],
   newSiblings: HeaderObject[],
 ): HeaderObject[] => {
   if (indexPath.length === 1) {
-    // Root level - return the new siblings as the new root array
     return newSiblings;
   }
   let current = headers;
@@ -53,14 +46,12 @@ export const setSiblingArray = (
   return headers;
 };
 
-// Helper function to determine which section a header belongs to based on its pinned property
 export const getHeaderSection = (header: HeaderObject): "left" | "main" | "right" => {
   if (header.pinned === "left") return "left";
   if (header.pinned === "right") return "right";
   return "main";
 };
 
-// Helper function to update header's pinned property based on target section
 export const updateHeaderPinnedProperty = (
   header: HeaderObject,
   targetSection: "left" | "main" | "right",
@@ -71,7 +62,6 @@ export const updateHeaderPinnedProperty = (
   } else if (targetSection === "right") {
     updatedHeader.pinned = "right";
   } else {
-    // For main section, remove the pinned property
     delete updatedHeader.pinned;
   }
   return updatedHeader;
@@ -82,11 +72,9 @@ export function swapHeaders(
   draggedPath: number[],
   hoveredPath: number[],
 ): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
-  // Create a deep copy of headers using our custom deep clone function
   const newHeaders = deepClone(headers);
   let emergencyBreak = false;
 
-  // Helper function to get a header at a given path
   function getHeaderAtPath(headers: HeaderObject[], path: number[]): HeaderObject {
     let current = headers;
     let header: HeaderObject | undefined;
@@ -97,15 +85,12 @@ export function swapHeaders(
     return header;
   }
 
-  // Helper function to set a header at a given path
   function setHeaderAtPath(headers: HeaderObject[], path: number[], value: HeaderObject): void {
     let current = headers;
     for (let i = 0; i < path.length - 1; i++) {
       if (current[path[i]].children) {
         current = current[path[i]].children!;
       } else {
-        // If the header is not a child, we need to break out of the loop
-        // This is an emergency because it meant that the header order has changed while this function was running
         emergencyBreak = true;
         break;
       }
@@ -113,11 +98,9 @@ export function swapHeaders(
     current[path[path.length - 1]] = value;
   }
 
-  // Get the headers at the dragged and hovered paths
   const draggedHeader = getHeaderAtPath(newHeaders, draggedPath);
   const hoveredHeader = getHeaderAtPath(newHeaders, hoveredPath);
 
-  // Swap the headers
   setHeaderAtPath(newHeaders, draggedPath, hoveredHeader);
   setHeaderAtPath(newHeaders, hoveredPath, draggedHeader);
 
@@ -137,10 +120,8 @@ export function insertHeaderAcrossSections({
   let emergencyBreak = false;
 
   try {
-    // Determine which sections the headers belong to
     const hoveredSection = getHeaderSection(hoveredHeader);
 
-    // Find the indices of both headers
     const draggedIndex = newHeaders.findIndex((h) => h.accessor === draggedHeader.accessor);
     const hoveredIndex = newHeaders.findIndex((h) => h.accessor === hoveredHeader.accessor);
 
@@ -149,27 +130,17 @@ export function insertHeaderAcrossSections({
       return { newHeaders, emergencyBreak };
     }
 
-    // Remove the dragged header from its current position
     const [removedHeader] = newHeaders.splice(draggedIndex, 1);
-
-    // Update the dragged header's pinned property to match the target section
     const updatedDraggedHeader = updateHeaderPinnedProperty(removedHeader, hoveredSection);
 
-    // Calculate the correct insertion index
-    // We want to place the dragged header at the hovered header's original position
     let insertionIndex = hoveredIndex;
 
-    // If dragged was before hovered, the hovered header shifts left after removal
-    // But we want to insert at the hovered header's ORIGINAL position
-    // So we don't adjust the index - we use the original hoveredIndex
     if (draggedIndex < hoveredIndex) {
       // Keep the original hovered index to place dragged at target's original position
     } else {
       // Dragged was after hovered, hovered position is unchanged after removal
     }
 
-    // Insert the updated dragged header at the target position
-    // This places it at the hovered header's position
     newHeaders.splice(insertionIndex, 0, updatedDraggedHeader);
   } catch (error) {
     console.error("Error in insertHeaderAcrossSections:", error);
@@ -179,46 +150,67 @@ export function insertHeaderAcrossSections({
   return { newHeaders, emergencyBreak };
 }
 
-const useDragHandler = ({
-  draggedHeaderRef,
-  headers,
-  hoveredHeaderRef,
-  onColumnOrderChange,
-  onTableHeaderDragEnd,
-}: DragHandlerProps) => {
-  const { setHeaders } = useTableContext();
-  const prevHeaders = usePrevious<HeaderObject[] | null>(headers);
+export interface DragHandlerManagerConfig {
+  headers: HeaderObject[];
+  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onHeadersChange?: (newHeaders: HeaderObject[]) => void;
+}
 
-  const handleDragStart = (header: HeaderObject) => {
-    draggedHeaderRef.current = header;
-    prevUpdateTime = Date.now();
-  };
+export class DragHandlerManager {
+  private config: DragHandlerManagerConfig;
+  private draggedHeader: HeaderObject | null = null;
+  private hoveredHeader: HeaderObject | null = null;
+  private prevUpdateTime: number = Date.now();
+  private prevDraggingPosition = { screenX: 0, screenY: 0 };
+  private prevHeadersTracker: PreviousValueTracker<HeaderObject[] | null>;
 
-  const handleDragOver = ({
+  constructor(config: DragHandlerManagerConfig) {
+    this.config = config;
+    this.prevHeadersTracker = new PreviousValueTracker<HeaderObject[] | null>(config.headers);
+  }
+
+  updateConfig(config: Partial<DragHandlerManagerConfig>): void {
+    this.config = { ...this.config, ...config };
+    if (config.headers) {
+      this.prevHeadersTracker.update(config.headers);
+    }
+  }
+
+  getDraggedHeader(): HeaderObject | null {
+    return this.draggedHeader;
+  }
+
+  getHoveredHeader(): HeaderObject | null {
+    return this.hoveredHeader;
+  }
+
+  handleDragStart(header: HeaderObject): void {
+    this.draggedHeader = header;
+    this.prevUpdateTime = Date.now();
+  }
+
+  handleDragOver({
     event,
     hoveredHeader,
   }: {
     event: DragEvent;
     hoveredHeader: HeaderObject;
-  }) => {
-    // Prevent click event from firing
+  }): void {
     event.preventDefault();
 
-    // If the headers are not set, don't allow the drag
-    if (!headers || !draggedHeaderRef.current) return;
+    if (!this.config.headers || !this.draggedHeader) return;
 
-    // Get the distance between the previous dragging position and the current position
     const { screenX, screenY } = event;
     const distance = Math.sqrt(
-      Math.pow(screenX - prevDraggingPosition.screenX, 2) +
-        Math.pow(screenY - prevDraggingPosition.screenY, 2),
+      Math.pow(screenX - this.prevDraggingPosition.screenX, 2) +
+        Math.pow(screenY - this.prevDraggingPosition.screenY, 2),
     );
 
-    hoveredHeaderRef.current = hoveredHeader;
+    this.hoveredHeader = hoveredHeader;
 
-    const draggedHeader = draggedHeaderRef.current;
+    const draggedHeader = this.draggedHeader;
 
-    // Check if this is a cross-section drag
     const draggedSection = getHeaderSection(draggedHeader);
     const hoveredSection = getHeaderSection(hoveredHeader);
     const isCrossSectionDrag = draggedSection !== hoveredSection;
@@ -227,15 +219,16 @@ const useDragHandler = ({
     let emergencyBreak = false;
 
     if (isCrossSectionDrag) {
-      // Handle cross-section dragging with insertion
-      const result = insertHeaderAcrossSections({ headers, draggedHeader, hoveredHeader });
+      const result = insertHeaderAcrossSections({
+        headers: this.config.headers,
+        draggedHeader,
+        hoveredHeader,
+      });
       newHeaders = result.newHeaders;
       emergencyBreak = result.emergencyBreak;
     } else {
-      // Handle same-section dragging (existing logic)
-      const currentHeaders = headers;
+      const currentHeaders = this.config.headers;
 
-      // Get the index paths of both headers
       const draggedHeaderIndexPath = getHeaderIndexPath(currentHeaders, draggedHeader.accessor);
       const hoveredHeaderIndexPath = getHeaderIndexPath(currentHeaders, hoveredHeader.accessor);
 
@@ -249,47 +242,38 @@ const useDragHandler = ({
       if (draggedHeaderDepth !== hoveredHeaderDepth) {
         const depthDifference = hoveredHeaderDepth - draggedHeaderDepth;
         if (depthDifference > 0) {
-          // Go up the hierarchy to find the parent at the same depth as the dragged header
           targetHoveredIndexPath = hoveredHeaderIndexPath.slice(0, -depthDifference);
         }
       }
 
-      // Check if both headers share the same parent (for nested headers)
-      // Headers share the same parent if all path indices match except the last one
       const haveSameParent = (path1: number[], path2: number[]): boolean => {
         if (path1.length !== path2.length) return false;
-        if (path1.length === 1) return true; // Top-level headers always share the same parent (root)
-        // Compare all indices except the last one (which is the position within the parent)
+        if (path1.length === 1) return true;
         return path1.slice(0, -1).every((index, i) => index === path2[i]);
       };
 
-      // If the headers don't share the same parent, don't allow the drag
       if (!haveSameParent(draggedHeaderIndexPath, targetHoveredIndexPath)) {
         return;
       }
 
-      // Create a copy of the headers
       const result = swapHeaders(currentHeaders, draggedHeaderIndexPath, targetHoveredIndexPath);
       newHeaders = result.newHeaders;
       emergencyBreak = result.emergencyBreak;
     }
 
     if (
-      // If the header is the same as the dragged header, don't allow the drag
       hoveredHeader.accessor === draggedHeader.accessor ||
-      // If the distance is less than 10, don't allow the drag
       distance < 10 ||
-      // If the new headers are the same as the previous headers, don't allow the drag
-      JSON.stringify(newHeaders) === JSON.stringify(headers) ||
+      JSON.stringify(newHeaders) === JSON.stringify(this.config.headers) ||
       emergencyBreak
     )
       return;
 
-    // Delay reverting headers to prevent quick reversion when dragging over wide columns.
     const now = Date.now();
+    const prevHeaders = this.prevHeadersTracker.get();
     const arePreviousHeadersAndNewHeadersTheSame =
       JSON.stringify(newHeaders) === JSON.stringify(prevHeaders);
-    const shouldRevertToPreviousHeaders = now - prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
+    const shouldRevertToPreviousHeaders = now - this.prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
 
     if (
       arePreviousHeadersAndNewHeadersTheSame &&
@@ -298,34 +282,28 @@ const useDragHandler = ({
       return;
     }
 
-    // Update the previous update time
-    prevUpdateTime = now;
+    this.prevUpdateTime = now;
+    this.prevDraggingPosition = { screenX, screenY };
 
-    // Update the previous dragging position
-    prevDraggingPosition = { screenX, screenY };
+    this.config.onTableHeaderDragEnd(newHeaders);
+  }
 
-    // Call the onTableHeaderDragEnd callback with the new headers
-    onTableHeaderDragEnd(newHeaders);
-  };
+  handleDragEnd(): void {
+    this.draggedHeader = null;
+    this.hoveredHeader = null;
 
-  const handleDragEnd = () => {
-    // Clear the refs first to remove dragging state
-    draggedHeaderRef.current = null;
-    hoveredHeaderRef.current = null;
-
-    // Use setHeaders to trigger a re-render and properly clear the st-dragging class
     setTimeout(() => {
-      setHeaders((prevHeaders) => [...prevHeaders]);
-      // Call the column order change callback
-      onColumnOrderChange?.(headers);
+      if (this.config.onHeadersChange) {
+        this.config.onHeadersChange([...this.config.headers]);
+      }
+      if (this.config.onColumnOrderChange) {
+        this.config.onColumnOrderChange(this.config.headers);
+      }
     }, 10);
-  };
+  }
 
-  return {
-    handleDragStart,
-    handleDragOver,
-    handleDragEnd,
-  };
-};
-
-export default useDragHandler;
+  destroy(): void {
+    this.draggedHeader = null;
+    this.hoveredHeader = null;
+  }
+}

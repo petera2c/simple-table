@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { CellClickProps, SimpleTable, TableRefType } from "../..";
+import { CellClickProps, SimpleTableReact, TableRefType } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import Row from "../../types/Row";
@@ -358,8 +358,8 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
         )}
       </div>
 
-      {/* SimpleTable with Row Buttons */}
-      <SimpleTable
+      {/* SimpleTableReact with Row Buttons */}
+      <SimpleTableReact
         {...props}
         defaultHeaders={headers}
         enableHeaderEditing

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CellClickProps, SimpleTable } from "../..";
+import { CellClickProps, SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import Row from "../../types/Row";
@@ -221,8 +221,8 @@ const RowSelectionExample = (props: UniversalTableProps) => {
         )}
       </div>
 
-      {/* SimpleTable with Row Selection */}
-      <SimpleTable
+      {/* SimpleTableReact with Row Selection */}
+      <SimpleTableReact
         {...props}
         defaultHeaders={headers}
         rows={rows}

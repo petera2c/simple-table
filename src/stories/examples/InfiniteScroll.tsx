@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import { SAAS_HEADERS } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -143,7 +143,7 @@ const InfiniteScrollExample = (props: UniversalTableProps) => {
           Loading more data...
         </div>
       )}
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         defaultHeaders={HEADERS}
         onCellEdit={updateCell}

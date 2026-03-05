@@ -1,6 +1,6 @@
 import HeaderObject from "../../types/HeaderObject";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
-import { FlattenedHeader } from "../../components/simple-table/table-column-editor/columnEditorUtils";
+import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { createColumnEditorRow } from "./createColumnEditorRow";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 

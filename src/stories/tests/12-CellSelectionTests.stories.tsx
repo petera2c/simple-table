@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTable } from "../..";
+import { Row, SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -206,16 +206,16 @@ const isColumnSelected = (canvasElement: HTMLElement, colIndex: number): boolean
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTable> = {
+const meta: Meta<typeof SimpleTableReact> = {
   title: "Tests/12 - Cell Selection",
-  component: SimpleTable,
+  component: SimpleTableReact,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTable>;
+type Story = StoryObj<typeof SimpleTableReact>;
 
 // ============================================================================
 // TEST CASES
@@ -237,7 +237,7 @@ export const SingleCellSelection: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -280,7 +280,7 @@ export const RangeSelection: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -325,7 +325,7 @@ export const SelectionReplacement: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -372,7 +372,7 @@ export const ColumnHeaderSelection: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -415,7 +415,7 @@ export const ClearSelection: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -457,7 +457,7 @@ export const LargeRangeSelection: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -506,7 +506,7 @@ export const MultipleColumnHeaderSelections: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}

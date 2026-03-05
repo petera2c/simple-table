@@ -1,4 +1,4 @@
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import HeaderObject from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -420,7 +420,7 @@ const rows = [
 
 const AggregateFunctionsDemo = (props: UniversalTableProps) => {
   return (
-    <SimpleTable
+    <SimpleTableReact
       {...props}
       defaultHeaders={headers}
       rows={rows}

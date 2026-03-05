@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import CellChangeProps from "../../types/CellChangeProps";
 import Row from "../../types/Row";
 import { RowId } from "../../types/RowId";
@@ -178,7 +178,7 @@ const EditableCellsExample = (props: UniversalTableProps) => {
   };
 
   return (
-    <SimpleTable
+    <SimpleTableReact
       {...props}
       defaultHeaders={HEADERS}
       onCellEdit={updateCell}

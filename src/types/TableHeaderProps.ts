@@ -1,6 +1,9 @@
-import { RefObject } from "react";
 import SortColumn from "./SortColumn";
 import HeaderObject from "./HeaderObject";
+
+export interface RefObject<T> {
+  current: T | null;
+}
 
 type TableHeaderProps = {
   calculatedHeaderHeight: number;

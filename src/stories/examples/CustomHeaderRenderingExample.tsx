@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import HeaderObject from "../../types/HeaderObject";
 import TableRefType from "../../types/TableRefType";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -116,7 +116,7 @@ const CustomHeaderRenderingExample = (props: UniversalTableProps) => {
   const tableRef = useRef<TableRefType>(null);
 
   return (
-    <SimpleTable
+    <SimpleTableReact
       {...props}
       defaultHeaders={HEADERS}
       rows={SAMPLE_DATA}

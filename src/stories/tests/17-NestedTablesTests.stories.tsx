@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect } from "@storybook/test";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -290,7 +290,7 @@ export const BasicNestedTable: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Basic Nested Table</h2>
         <p>Click the expand button to view divisions for each company</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -370,7 +370,7 @@ export const NestedTableIndependentColumns: StoryObj = {
           Parent table shows companies, nested table shows employees with completely different
           columns
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -443,7 +443,7 @@ export const NestedTableAutoExpandColumns: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Nested Table with autoExpandColumns</h2>
         <p>Nested table columns should auto-expand to fill available space</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -507,7 +507,7 @@ export const NestedTableWithRowSelection: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Nested Table with Row Selection</h2>
         <p>Nested table should have row selection checkboxes</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -568,7 +568,7 @@ export const MultipleNestedTablesFromDifferentRows: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Multiple Nested Tables from Different Rows</h2>
         <p>Expand multiple parent rows to show multiple nested tables simultaneously</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -668,7 +668,7 @@ export const NestedTableWithPagination: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Nested Table with Pagination</h2>
         <p>Nested table has 25 divisions with pagination (10 per page)</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="600px"
@@ -736,7 +736,7 @@ export const NestedTableWithSorting: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Nested Table with Sorting</h2>
         <p>Nested table columns are sortable</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -802,7 +802,7 @@ export const NestedTableWithFiltering: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Nested Table with Filtering</h2>
         <p>Nested table columns are filterable</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -868,7 +868,7 @@ export const CollapseNestedTable: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Collapse Nested Table</h2>
         <p>Expand and then collapse a nested table</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -932,7 +932,7 @@ export const MultipleNestedTablesSimultaneously: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Multiple Nested Tables Simultaneously</h2>
         <p>Expand multiple rows to show multiple nested tables at once</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="600px"
@@ -1029,7 +1029,7 @@ export const NestedTableWithCustomHeight: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Nested Table with Custom Height</h2>
         <p>Nested table has a fixed height of 200px</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -1092,7 +1092,7 @@ export const NestedTableWithGetRowId: StoryObj = {
       <div style={{ padding: "20px" }}>
         <h2>Nested Table with getRowId</h2>
         <p>Nested table uses custom getRowId function for stable row identification</p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
