@@ -207,11 +207,6 @@ const useDragHandler = ({
     // If the headers are not set, don't allow the drag
     if (!headers || !draggedHeaderRef.current) return;
 
-    // Get the animations on the header
-    const target = event.currentTarget;
-    const animations = target && (target as HTMLElement).getAnimations ? (target as HTMLElement).getAnimations() : [];
-    const isAnimating = animations.some((animation: Animation) => animation.playState === "running");
-
     // Get the distance between the previous dragging position and the current position
     const { screenX, screenY } = event;
     const distance = Math.sqrt(
@@ -280,8 +275,6 @@ const useDragHandler = ({
     }
 
     if (
-      // If the header is animating, don't allow the drag
-      isAnimating ||
       // If the header is the same as the dragged header, don't allow the drag
       hoveredHeader.accessor === draggedHeader.accessor ||
       // If the distance is less than 10, don't allow the drag

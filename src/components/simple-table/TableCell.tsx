@@ -16,7 +16,8 @@ import {
   setNestedValue,
   isRowExpanded as getIsRowExpanded,
 } from "../../utils/rowUtils";
-import { LineAreaChart, BarChart } from "../LazyComponents";
+import LineAreaChart from "../charts/LineAreaChart";
+import BarChart from "../charts/BarChart";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
 

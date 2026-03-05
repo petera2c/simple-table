@@ -35,7 +35,6 @@ const TableBody = ({
     headerContainerRef,
     headers,
     heightOffsets,
-    isAnimating,
     mainBodyRef,
     pinnedLeftRef,
     pinnedRightRef,
@@ -101,31 +100,28 @@ const TableBody = ({
     [tableBodyContainerRef],
   );
 
-  // Clear hover state when animations start
-  useEffect(() => {
-    if (isAnimating) {
-      setHoveredIndex(null);
-    }
-  }, [isAnimating, setHoveredIndex]);
-
   // Add state for section widths
   const scrollbarVisibilityManagerRef = useRef<ScrollbarVisibilityManager | null>(null);
-  
+
   useEffect(() => {
-    if (!scrollbarVisibilityManagerRef.current && headerContainerRef?.current && tableBodyContainerRef?.current) {
+    if (
+      !scrollbarVisibilityManagerRef.current &&
+      headerContainerRef?.current &&
+      tableBodyContainerRef?.current
+    ) {
       scrollbarVisibilityManagerRef.current = new ScrollbarVisibilityManager({
         headerContainer: headerContainerRef.current,
         mainSection: tableBodyContainerRef.current,
         scrollbarWidth,
       });
     }
-    
+
     return () => {
       scrollbarVisibilityManagerRef.current?.destroy();
       scrollbarVisibilityManagerRef.current = null;
     };
   }, []);
-  
+
   // Update scrollbar width when it changes
   useEffect(() => {
     scrollbarVisibilityManagerRef.current?.setScrollbarWidth(scrollbarWidth);
