@@ -80,6 +80,7 @@ export class RenderOrchestrator {
   render(
     elements: {
       rootElement: HTMLElement;
+      content: HTMLElement;
       headerContainer: HTMLElement;
       bodyContainer: HTMLElement;
       footerContainer: HTMLElement;
@@ -124,6 +125,12 @@ export class RenderOrchestrator {
       --st-scrollbar-width: ${state.scrollbarWidth}px;
       --st-editor-width: ${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px;
     `;
+
+    const columnResizing = context.config.columnResizing ?? false;
+    elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
+    elements.content.style.width = context.config.editColumns
+      ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
+      : "100%";
 
     let effectiveRows = context.localRows;
     if (context.internalIsLoading && context.localRows.length === 0) {

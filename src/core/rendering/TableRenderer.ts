@@ -78,6 +78,8 @@ export class TableRenderer {
       collapsedHeaders: deps.collapsedHeaders,
     });
 
+    container.style.width = `${leftWidth + mainWidth + rightWidth}px`;
+
     const headerContext: HeaderRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       columnBorders: deps.config.columnBorders ?? false,
