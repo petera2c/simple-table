@@ -3,7 +3,7 @@ import { displayCell } from "../../utils/cellUtils";
 import { Pinned } from "../../types/Pinned";
 import TableHeaderSectionProps from "../../types/TableHeaderSectionProps";
 import { HeaderObject } from "../..";
-import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
+import { scrollSyncManager } from "../../utils/scrollSyncManager";
 import { useTableContext } from "../../context/TableContext";
 import {
   renderHeaderCells,
@@ -367,30 +367,38 @@ const TableHeaderSection = ({
     };
   }, [absoluteCells, renderContext, sectionRef]);
 
-  // Determine scroll sync group based on pinned state
-  const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
+  // Register with scroll sync manager
+  useEffect(() => {
+    const element = sectionRef.current;
+    if (!element) return;
+
+    const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
+    scrollSyncManager.registerPane(element, [scrollSyncGroup]);
+
+    return () => {
+      scrollSyncManager.unregisterPane(element, [scrollSyncGroup]);
+    };
+  }, [pinned, sectionRef]);
 
   return (
-    <ScrollSyncPane childRef={sectionRef} group={scrollSyncGroup}>
+    <div
+      className={`st-header-${pinned ? `pinned-${pinned}` : "main"}`}
+      {...(handleScroll && { onScroll: handleScroll })}
+      ref={sectionRef}
+      style={{
+        left: leftOffset > 0 ? `${leftOffset + 1}px` : undefined,
+        height: calculatedHeaderHeight,
+        ...(!pinned && { flexGrow: 1 }),
+        ...(!pinned && { width: `var(--st-main-section-width)` }),
+        ...(pinned && { width }),
+      }}
+    >
       <div
-        className={`st-header-${pinned ? `pinned-${pinned}` : "main"}`}
-        {...(handleScroll && { onScroll: handleScroll })}
-        ref={sectionRef}
-        style={{
-          left: leftOffset > 0 ? `${leftOffset + 1}px` : undefined,
-          height: calculatedHeaderHeight,
-          ...(!pinned && { flexGrow: 1 }),
-          ...(!pinned && { width: `var(--st-main-section-width)` }),
-          ...(pinned && { width }),
-        }}
-      >
-        <div
-          ref={headerGridRef}
-          className="st-header-grid"
-          style={{ height: calculatedHeaderHeight }}
-        />
-      </div>
-    </ScrollSyncPane>
+        ref={headerGridRef}
+        className="st-header-grid"
+        style={{ height: calculatedHeaderHeight }}
+      />
+    </div>
   );
 };
 

@@ -24,7 +24,7 @@ import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
 import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../context/TableContext";
-import { ScrollSync } from "../scroll-sync/ScrollSync";
+import { scrollSyncManager } from "../../utils/scrollSyncManager";
 import useFilterableData from "../../hooks/useFilterableData";
 import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateContentHeight } from "../../hooks/contentHeight";
@@ -676,6 +676,7 @@ const SimpleTableComp = ({
   useEffect(() => {
     return () => {
       selectionManagerRef.current?.destroy();
+      scrollSyncManager.cleanup();
     };
   }, []);
 
@@ -1045,67 +1046,65 @@ const SimpleTableComp = ({
           } as React.CSSProperties
         }
       >
-        <ScrollSync>
-          <div className="st-wrapper-container">
-            <div className="st-content-wrapper">
-              <TableContent
-                calculatedHeaderHeight={calculatedHeaderHeight}
-                hideHeader={hideHeader}
-                mainBodyWidth={mainBodyWidth}
-                pinnedLeftWidth={pinnedLeftWidth}
-                pinnedRightWidth={pinnedRightWidth}
-                scrollLeftPinnedLeft={scrollLeftPinnedLeft}
-                scrollLeftMain={scrollLeftMain}
-                scrollLeftPinnedRight={scrollLeftPinnedRight}
-                setScrollTop={setScrollTop}
-                setScrollDirection={setScrollDirection}
-                shouldShowEmptyState={shouldShowEmptyState}
-                sort={sort}
-                tableRows={currentTableRows}
-                rowsToRender={rowsToRender}
-                stickyParents={stickyParents}
-                regularRows={regularRows}
-                partiallyVisibleRows={partiallyVisibleRows}
-                heightMap={heightMap}
-              />
-              <TableColumnEditor
-                columnEditorText={mergedColumnEditorConfig.text}
-                editColumns={editColumns}
-                headers={headers}
-                open={columnEditorOpen}
-                searchEnabled={mergedColumnEditorConfig.searchEnabled}
-                searchPlaceholder={mergedColumnEditorConfig.searchPlaceholder}
-                searchFunction={mergedColumnEditorConfig.searchFunction}
-                setOpen={setColumnEditorOpen}
-              />
-            </div>
-            {!shouldShowEmptyState && (
-              <TableHorizontalScrollbar
-                mainBodyRef={mainBodyRef}
-                mainBodyWidth={mainBodyWidth}
-                pinnedLeftWidth={pinnedLeftWidth}
-                pinnedRightWidth={pinnedRightWidth}
-                pinnedLeftContentWidth={pinnedLeftContentWidth}
-                pinnedRightContentWidth={pinnedRightContentWidth}
-                tableBodyContainerRef={tableBodyContainerRef}
-              />
-            )}
-            {!shouldShowEmptyState && (
-              <TableFooter
-                currentPage={currentPage}
-                footerRenderer={footerRenderer}
-                hideFooter={hideFooter}
-                onPageChange={setCurrentPage}
-                onNextPage={onNextPage}
-                onUserPageChange={onPageChange}
-                rowsPerPage={rowsPerPage}
-                shouldPaginate={shouldPaginate}
-                totalPages={Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage)}
-                totalRows={totalRowCount ?? paginatableRows.length}
-              />
-            )}
+        <div className="st-wrapper-container">
+          <div className="st-content-wrapper">
+            <TableContent
+              calculatedHeaderHeight={calculatedHeaderHeight}
+              hideHeader={hideHeader}
+              mainBodyWidth={mainBodyWidth}
+              pinnedLeftWidth={pinnedLeftWidth}
+              pinnedRightWidth={pinnedRightWidth}
+              scrollLeftPinnedLeft={scrollLeftPinnedLeft}
+              scrollLeftMain={scrollLeftMain}
+              scrollLeftPinnedRight={scrollLeftPinnedRight}
+              setScrollTop={setScrollTop}
+              setScrollDirection={setScrollDirection}
+              shouldShowEmptyState={shouldShowEmptyState}
+              sort={sort}
+              tableRows={currentTableRows}
+              rowsToRender={rowsToRender}
+              stickyParents={stickyParents}
+              regularRows={regularRows}
+              partiallyVisibleRows={partiallyVisibleRows}
+              heightMap={heightMap}
+            />
+            <TableColumnEditor
+              columnEditorText={mergedColumnEditorConfig.text}
+              editColumns={editColumns}
+              headers={headers}
+              open={columnEditorOpen}
+              searchEnabled={mergedColumnEditorConfig.searchEnabled}
+              searchPlaceholder={mergedColumnEditorConfig.searchPlaceholder}
+              searchFunction={mergedColumnEditorConfig.searchFunction}
+              setOpen={setColumnEditorOpen}
+            />
           </div>
-        </ScrollSync>
+          {!shouldShowEmptyState && (
+            <TableHorizontalScrollbar
+              mainBodyRef={mainBodyRef}
+              mainBodyWidth={mainBodyWidth}
+              pinnedLeftWidth={pinnedLeftWidth}
+              pinnedRightWidth={pinnedRightWidth}
+              pinnedLeftContentWidth={pinnedLeftContentWidth}
+              pinnedRightContentWidth={pinnedRightContentWidth}
+              tableBodyContainerRef={tableBodyContainerRef}
+            />
+          )}
+          {!shouldShowEmptyState && (
+            <TableFooter
+              currentPage={currentPage}
+              footerRenderer={footerRenderer}
+              hideFooter={hideFooter}
+              onPageChange={setCurrentPage}
+              onNextPage={onNextPage}
+              onUserPageChange={onPageChange}
+              rowsPerPage={rowsPerPage}
+              shouldPaginate={shouldPaginate}
+              totalPages={Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage)}
+              totalRows={totalRowCount ?? paginatableRows.length}
+            />
+          )}
+        </div>
 
         {/* Aria-live region for screen reader announcements */}
         <div aria-live="polite" aria-atomic="true" className="st-sr-only">
