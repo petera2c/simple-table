@@ -51,7 +51,6 @@ const TableRow = ({
     emptyStateRenderer,
     errorStateRenderer,
     heightOffsets,
-    isAnimating,
     isRowSelected,
     loadingStateRenderer,
     maxHeaderDepth,
@@ -214,8 +213,7 @@ const TableRow = ({
       role="row"
       aria-rowindex={position + maxHeaderDepth + 1}
       onMouseEnter={() => {
-        // Don't apply hover effects during animations
-        if (!isAnimating && useHoverRowBackground) {
+        if (useHoverRowBackground) {
           setHoveredIndex(position);
         }
       }}
