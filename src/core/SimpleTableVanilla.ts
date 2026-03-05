@@ -18,7 +18,11 @@ import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
 import { checkDeprecatedProps } from "../utils/deprecatedPropsWarnings";
 
-import { TableInitializer, ResolvedIcons, MergedColumnEditorConfig } from "./initialization/TableInitializer";
+import {
+  TableInitializer,
+  ResolvedIcons,
+  MergedColumnEditorConfig,
+} from "./initialization/TableInitializer";
 import { DOMManager, DOMElements, DOMRefs } from "./dom/DOMManager";
 import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/RenderOrchestrator";
 import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
@@ -75,7 +79,7 @@ export class SimpleTableVanilla {
     this.container = container;
     this.config = config;
 
-    checkDeprecatedProps(config as any);
+    checkDeprecatedProps(config);
 
     this.customTheme = TableInitializer.mergeCustomTheme(config);
     this.mergedColumnEditorConfig = TableInitializer.mergeColumnEditorConfig(config);
@@ -95,7 +99,6 @@ export class SimpleTableVanilla {
     this.rebuildRowIndexMap();
     this.initializeManagers();
   }
-
 
   private rebuildRowIndexMap(): void {
     this.rowIndexMap.clear();
@@ -149,7 +152,7 @@ export class SimpleTableVanilla {
   private setupManagers(): void {
     const refs = this.domManager.getRefs();
     const elements = this.domManager.getElements();
-    
+
     if (!refs.tableBodyContainerRef.current || !elements) return;
 
     this.scrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
@@ -335,7 +338,7 @@ export class SimpleTableVanilla {
 
     const elements = this.domManager.getElements();
     const refs = this.domManager.getRefs();
-    
+
     if (!elements) return;
 
     this.renderOrchestrator.render(
