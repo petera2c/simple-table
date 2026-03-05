@@ -4,6 +4,7 @@ export interface DOMElements {
   rootElement: HTMLElement;
   wrapperContainer: HTMLElement;
   contentWrapper: HTMLElement;
+  content: HTMLElement;
   headerContainer: HTMLElement;
   bodyContainer: HTMLElement;
   footerContainer: HTMLElement;
@@ -52,6 +53,9 @@ export class DOMManager {
     const contentWrapper = document.createElement("div");
     contentWrapper.className = "st-content-wrapper";
 
+    const content = document.createElement("div");
+    content.className = "st-content";
+
     const headerContainer = document.createElement("div");
     headerContainer.className = "st-header-container";
     this.refs.headerContainerRef.current = headerContainer as HTMLDivElement;
@@ -71,8 +75,10 @@ export class DOMManager {
     ariaLiveRegion.setAttribute("aria-atomic", "true");
     ariaLiveRegion.className = "st-sr-only";
 
-    contentWrapper.appendChild(headerContainer);
-    contentWrapper.appendChild(bodyContainer);
+    content.appendChild(headerContainer);
+    content.appendChild(bodyContainer);
+
+    contentWrapper.appendChild(content);
     contentWrapper.appendChild(columnEditorContainer);
 
     wrapperContainer.appendChild(contentWrapper);
@@ -87,6 +93,7 @@ export class DOMManager {
       rootElement,
       wrapperContainer,
       contentWrapper,
+      content,
       headerContainer,
       bodyContainer,
       footerContainer,
