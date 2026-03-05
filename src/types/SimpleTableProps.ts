@@ -26,7 +26,6 @@ import { IconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 
 export interface SimpleTableProps {
-  allowAnimations?: boolean; // Flag for allowing animations
   autoExpandColumns?: boolean; // Flag for converting pixel widths to proportional fr units that fill table width
   canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update

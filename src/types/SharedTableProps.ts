@@ -2,7 +2,6 @@ import { Ref, MutableRefObject } from "react";
 import HeaderObject from "./HeaderObject";
 
 interface SharedTableProps {
-  allowAnimations: boolean;
   centerHeaderRef: Ref<HTMLDivElement>;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   headerContainerRef: Ref<HTMLDivElement>;

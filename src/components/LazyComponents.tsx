@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import type AnimateComponent from "./animate/Animate";
 import type DatePickerComponent from "./date-picker/DatePicker";
 import type LineAreaChartComponent from "./charts/LineAreaChart";
 import type BarChartComponent from "./charts/BarChart";
@@ -10,31 +9,14 @@ import type BarChartComponent from "./charts/BarChart";
  */
 
 // Type-safe lazy imports
-const AnimateLazy = lazy(() => import("./animate/Animate"));
 const DatePickerLazy = lazy(() => import("./date-picker/DatePicker"));
 const LineAreaChartLazy = lazy(() => import("./charts/LineAreaChart"));
 const BarChartLazy = lazy(() => import("./charts/BarChart"));
 
 // Extract prop types from the imported components
-type AnimateProps = React.ComponentProps<typeof AnimateComponent>;
 type DatePickerProps = React.ComponentProps<typeof DatePickerComponent>;
 type LineAreaChartProps = React.ComponentProps<typeof LineAreaChartComponent>;
 type BarChartProps = React.ComponentProps<typeof BarChartComponent>;
-
-/**
- * Animate component with Suspense
- * Fallback renders a plain div to prevent layout shift
- */
-export const Animate = (props: AnimateProps) => {
-  // Destructure React-specific props that shouldn't be passed to DOM elements
-  const { parentRef, tableRow, ...domProps } = props;
-
-  return (
-    <Suspense fallback={<div {...domProps} />}>
-      <AnimateLazy {...props} />
-    </Suspense>
-  );
-};
 
 /**
  * DatePicker component with Suspense

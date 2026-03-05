@@ -16,7 +16,7 @@ import {
   setNestedValue,
   isRowExpanded as getIsRowExpanded,
 } from "../../utils/rowUtils";
-import { Animate, LineAreaChart, BarChart } from "../LazyComponents";
+import { LineAreaChart, BarChart } from "../LazyComponents";
 import Checkbox from "../Checkbox";
 import { RowButtonProps } from "../../types/RowButton";
 
@@ -618,7 +618,7 @@ const TableCell = ({
   }
 
   return (
-    <Animate
+    <div
       className={cellClassName}
       data-accessor={header.accessor}
       data-col-index={colIndex}
@@ -644,8 +644,6 @@ const TableCell = ({
       onMouseEnter={handleCellMouseEnter}
       onMouseLeave={handleCellMouseLeave}
       onMouseOver={handleCellMouseOver}
-      parentRef={tableBodyContainerRef}
-      tableRow={tableRow}
     >
       {header.expandable && canExpandFurther ? (
         <div
@@ -768,7 +766,7 @@ const TableCell = ({
             value={localContent}
           />
         )}
-    </Animate>
+    </div>
   );
 };
 
