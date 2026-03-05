@@ -9,7 +9,7 @@ import {
 } from "react";
 import { SelectionManager } from "../../managers/SelectionManager";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
-import TableFooter from "./TableFooter";
+import { createTableFooter } from "../../utils/footer/createTableFooter";
 import {
   AngleLeftIcon,
   AngleRightIcon,
@@ -1051,6 +1051,61 @@ const SimpleTableComp = ({
     onColumnOrderChange,
   ]);
 
+  // Create and manage vanilla JS footer
+  const footerRef = useRef<ReturnType<typeof createTableFooter> | null>(null);
+
+  useEffect(() => {
+    const container = document.getElementById("st-footer-container");
+    if (!container) return;
+
+    const footer = createTableFooter({
+      currentPage,
+      hideFooter,
+      onPageChange: setCurrentPage,
+      onNextPage,
+      onUserPageChange: onPageChange,
+      rowsPerPage,
+      shouldPaginate,
+      totalPages: Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage),
+      totalRows: totalRowCount ?? paginatableRows.length,
+    });
+
+    footerRef.current = footer;
+    container.appendChild(footer.element);
+
+    return () => {
+      footer.destroy();
+      footerRef.current = null;
+    };
+  }, []);
+
+  // Update footer when props change
+  useEffect(() => {
+    if (footerRef.current) {
+      footerRef.current.update({
+        currentPage,
+        hideFooter,
+        onPageChange: setCurrentPage,
+        onNextPage,
+        onUserPageChange: onPageChange,
+        rowsPerPage,
+        shouldPaginate: shouldPaginate && !shouldShowEmptyState,
+        totalPages: Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage),
+        totalRows: totalRowCount ?? paginatableRows.length,
+      });
+    }
+  }, [
+    currentPage,
+    hideFooter,
+    onNextPage,
+    onPageChange,
+    rowsPerPage,
+    shouldPaginate,
+    shouldShowEmptyState,
+    totalRowCount,
+    paginatableRows.length,
+  ]);
+
   return (
     <TableProvider
       value={{
@@ -1203,20 +1258,7 @@ const SimpleTableComp = ({
             />
             <div id="st-column-editor-container" />
           </div>
-          {!shouldShowEmptyState && (
-            <TableFooter
-              currentPage={currentPage}
-              footerRenderer={footerRenderer}
-              hideFooter={hideFooter}
-              onPageChange={setCurrentPage}
-              onNextPage={onNextPage}
-              onUserPageChange={onPageChange}
-              rowsPerPage={rowsPerPage}
-              shouldPaginate={shouldPaginate}
-              totalPages={Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage)}
-              totalRows={totalRowCount ?? paginatableRows.length}
-            />
-          )}
+          <div id="st-footer-container" />
         </div>
 
         {/* Aria-live region for screen reader announcements */}
