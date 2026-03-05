@@ -76,7 +76,6 @@ const SimpleTable = (props: SimpleTableProps) => {
 };
 
 const SimpleTableComp = ({
-  allowAnimations = false,
   autoExpandColumns = false,
   canExpandRowGroup,
   cellUpdateFlash = false,
@@ -509,18 +508,26 @@ const SimpleTableComp = ({
     setHeaders: setHeadersInternal,
   });
 
-  const aggregatedRows = useMemo(() => calculateAggregatedRows({
-    rows: effectiveRows,
-    headers,
-    rowGrouping,
-  }), [effectiveRows, headers, rowGrouping]);
+  const aggregatedRows = useMemo(
+    () =>
+      calculateAggregatedRows({
+        rows: effectiveRows,
+        headers,
+        rowGrouping,
+      }),
+    [effectiveRows, headers, rowGrouping],
+  );
 
   // Apply quick filter first (global search across columns)
-  const quickFilteredRows = useMemo(() => filterRowsWithQuickFilter({
-    rows: aggregatedRows,
-    headers: effectiveHeaders,
-    quickFilter,
-  }), [aggregatedRows, effectiveHeaders, quickFilter]);
+  const quickFilteredRows = useMemo(
+    () =>
+      filterRowsWithQuickFilter({
+        rows: aggregatedRows,
+        headers: effectiveHeaders,
+        quickFilter,
+      }),
+    [aggregatedRows, effectiveHeaders, quickFilter],
+  );
 
   // Use filter hook (column-specific filters)
   const {
@@ -586,128 +593,6 @@ const SimpleTableComp = ({
   handleToggleRow = rowSelectionHook.handleToggleRow;
   clearSelection = rowSelectionHook.clearSelection;
 
-  // Also flatten the original aggregated rows for animation baseline positions
-  const { flattenedRows: originalFlattenedRows } = useFlattenedRows({
-    rows: aggregatedRows,
-    rowGrouping,
-    getRowId,
-    expandedRows,
-    collapsedRows,
-    expandedDepths,
-    rowStateMap,
-    hasLoadingRenderer: Boolean(loadingStateRenderer),
-    hasErrorRenderer: Boolean(errorStateRenderer),
-    hasEmptyRenderer: Boolean(emptyStateRenderer),
-    headers: effectiveHeaders,
-    rowHeight,
-    headerHeight,
-    customTheme,
-  });
-
-  // Create flattened preview functions for animations
-  const computeFlattenedFilteredRowsPreview = useCallback(
-    (filter: FilterCondition) => {
-      const filteredPreview = computeFilteredRowsPreview(filter);
-      // Flatten the preview using the same logic as useFlattenedRows
-      if (!rowGrouping || rowGrouping.length === 0) {
-        return filteredPreview.map((row, index) => ({
-          row,
-          depth: 0,
-          displayPosition: index,
-          groupingKey: undefined,
-          position: index,
-          isLastGroupRow: false,
-          rowId: [index],
-          rowPath: [index],
-          absoluteRowIndex: index,
-        }));
-      }
-      return flattenRowsWithGrouping({
-        rows: filteredPreview,
-        rowGrouping,
-        getRowId,
-        expandedRows,
-        collapsedRows,
-        expandedDepths,
-        rowStateMap,
-        hasLoadingRenderer: Boolean(loadingStateRenderer),
-        hasErrorRenderer: Boolean(errorStateRenderer),
-        hasEmptyRenderer: Boolean(emptyStateRenderer),
-        headers: effectiveHeaders,
-        rowHeight,
-        headerHeight,
-        customTheme,
-      });
-    },
-    [
-      computeFilteredRowsPreview,
-      rowGrouping,
-      getRowId,
-      expandedRows,
-      collapsedRows,
-      expandedDepths,
-      rowStateMap,
-      loadingStateRenderer,
-      errorStateRenderer,
-      emptyStateRenderer,
-      effectiveHeaders,
-      rowHeight,
-      headerHeight,
-      customTheme,
-    ],
-  );
-
-  const computeFlattenedSortedRowsPreview = useCallback(
-    (accessor: Accessor) => {
-      const sortedPreview = computeSortedRowsPreview(accessor);
-      // Flatten the preview using the same logic as useFlattenedRows
-      if (!rowGrouping || rowGrouping.length === 0) {
-        return sortedPreview.map((row, index) => ({
-          row,
-          depth: 0,
-          displayPosition: index,
-          groupingKey: undefined,
-          position: index,
-          isLastGroupRow: false,
-          rowId: [index],
-          rowPath: [index],
-          absoluteRowIndex: index,
-        }));
-      }
-      return flattenRowsWithGrouping({
-        rows: sortedPreview,
-        rowGrouping,
-        getRowId,
-        expandedRows,
-        collapsedRows,
-        expandedDepths,
-        rowStateMap,
-        hasLoadingRenderer: Boolean(loadingStateRenderer),
-        hasErrorRenderer: Boolean(errorStateRenderer),
-        hasEmptyRenderer: Boolean(emptyStateRenderer),
-        headers: effectiveHeaders,
-        rowHeight,
-        headerHeight,
-        customTheme,
-      });
-    },
-    [
-      computeSortedRowsPreview,
-      rowGrouping,
-      getRowId,
-      expandedRows,
-      collapsedRows,
-      expandedDepths,
-      rowStateMap,
-      loadingStateRenderer,
-      errorStateRenderer,
-      emptyStateRenderer,
-      effectiveHeaders,
-      rowHeight,
-      headerHeight,
-      customTheme,
-    ],
-  );
 
   // Calculate content height (after flattenedRows is available)
   const contentHeight = useMemo(
@@ -740,25 +625,18 @@ const SimpleTableComp = ({
   const {
     currentTableRows,
     rowsToRender,
-    prepareForFilterChange,
-    prepareForSortChange,
-    isAnimating,
     stickyParents,
     regularRows,
     partiallyVisibleRows,
     paginatedHeightOffsets,
     heightMap,
   } = useTableRowProcessing({
-    allowAnimations,
-    computeFilteredRowsPreview: computeFlattenedFilteredRowsPreview,
-    computeSortedRowsPreview: computeFlattenedSortedRowsPreview,
     contentHeight,
     currentPage,
     customTheme,
     enableStickyParents,
     flattenedRows,
     heightOffsets,
-    originalFlattenedRows,
     paginatableRows,
     parentEndPositions,
     rowGrouping,
@@ -893,15 +771,9 @@ const SimpleTableComp = ({
   // Memoize handlers
   const onSort = useCallback(
     (accessor: Accessor) => {
-      // STAGE 1: Prepare animation by adding entering rows before applying sort
-      prepareForSortChange(accessor);
-
-      // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
-      setTimeout(() => {
-        updateSort({ accessor });
-      }, 0);
+      updateSort({ accessor });
     },
-    [prepareForSortChange, updateSort],
+    [updateSort],
   );
 
   const onTableHeaderDragEnd = useCallback(
@@ -1026,7 +898,7 @@ const SimpleTableComp = ({
   useEffect(() => {
     callOnFilterChange(filters, onFilterChange);
   }, [filters, onFilterChange]);
-  
+
   // Call onSortChange callback when sort changes
   const previousSort = usePrevious(sort);
   useEffect(() => {
@@ -1036,16 +908,10 @@ const SimpleTableComp = ({
   // Custom filter handler that respects external filter handling flag
   const handleApplyFilter = useCallback(
     (filter: FilterCondition) => {
-      // STAGE 1: Prepare animation by adding entering rows before applying filter
-      prepareForFilterChange(filter);
-
-      // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
-      setTimeout(() => {
-        // Update internal state and call external handler if provided
-        updateFilter(filter);
-      }, 0);
+      // Update internal state and call external handler if provided
+      updateFilter(filter);
     },
-    [prepareForFilterChange, updateFilter],
+    [updateFilter],
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)
@@ -1055,7 +921,6 @@ const SimpleTableComp = ({
     <TableProvider
       value={{
         activeHeaderDropdown,
-        allowAnimations,
         areAllRowsSelected,
         autoExpandColumns,
         canExpandRowGroup,
@@ -1097,7 +962,6 @@ const SimpleTableComp = ({
         heightOffsets: paginatedHeightOffsets,
         hoveredHeaderRef,
         includeHeadersInCSVExport,
-        isAnimating,
         isCopyFlashing,
         isInitialFocusedCell,
         isLoading: internalIsLoading,

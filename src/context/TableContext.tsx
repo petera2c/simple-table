@@ -44,7 +44,6 @@ export interface HeaderRegistryEntry {
 interface TableContextType {
   // Stable values that don't change frequently
   activeHeaderDropdown?: HeaderObject | null;
-  allowAnimations?: boolean;
   areAllRowsSelected?: () => boolean;
   autoExpandColumns?: boolean;
   canExpandRowGroup?: (row: Row) => boolean;
@@ -89,7 +88,6 @@ interface TableContextType {
   heightOffsets?: HeightOffsets;
   hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
   maxHeaderDepth: number;
-  isAnimating: boolean;
   isCopyFlashing: (cell: Cell) => boolean;
   isInitialFocusedCell: (cell: Cell) => boolean;
   isLoading?: boolean;

@@ -5,7 +5,6 @@ import Row from "./Row";
 import Cell from "./Cell";
 
 type TableRowProps = {
-  allowAnimations: boolean;
   currentRows: { [key: string]: any }[];
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
