@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent, fireEvent } from "@storybook/test";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -75,19 +75,19 @@ const getHeaderCheckbox = (canvasElement: HTMLElement): HTMLInputElement | null 
   // Try multiple selectors to find the header checkbox
   // First try in .st-header
   let checkbox = canvasElement.querySelector(
-    '.st-header input[type="checkbox"]'
+    '.st-header input[type="checkbox"]',
   ) as HTMLInputElement;
   if (checkbox) return checkbox;
 
   // Try in .st-header-label
   checkbox = canvasElement.querySelector(
-    '.st-header-label input[type="checkbox"]'
+    '.st-header-label input[type="checkbox"]',
   ) as HTMLInputElement;
   if (checkbox) return checkbox;
 
   // Try anywhere in the table root
   checkbox = canvasElement.querySelector(
-    '.simple-table-root input[type="checkbox"][aria-label*="Select all"]'
+    '.simple-table-root input[type="checkbox"][aria-label*="Select all"]',
   ) as HTMLInputElement;
   return checkbox;
 };
@@ -158,7 +158,7 @@ export const BasicRowSelection: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Click checkboxes to select individual rows
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -251,7 +251,7 @@ export const SelectAllFunctionality: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Use header checkbox to select/deselect all rows
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -322,7 +322,7 @@ export const PartialSelectionState: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Header checkbox shows indeterminate state when some (but not all) rows are selected
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -397,7 +397,7 @@ export const OnRowSelectionChangeCallback: StoryObj = {
           <div>Last action: {selectionInfo}</div>
           <div>Total selected: {selectedCount}</div>
         </div>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -476,7 +476,7 @@ export const SelectionWithPagination: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Selection state is maintained across pages
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -567,7 +567,7 @@ export const NoSelectionWithoutProp: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Checkboxes should not appear when enableRowSelection is false or not provided
         </p>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"

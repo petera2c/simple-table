@@ -4,7 +4,7 @@ import { HEADERS } from "./infrastructure-headers";
 import Theme from "../../../types/Theme";
 import TableRefType from "../../../types/TableRefType";
 import Row from "../../../types/Row";
-import SimpleTableReact from "../../../components/simple-table/SimpleTableReact";
+import { SimpleTable } from "../../..";
 
 export const infrastructureExampleDefaults = {
   columnResizing: true,
@@ -895,7 +895,7 @@ export default function InfrastructureExampleComponent({
   }
 
   return (
-    <SimpleTableReact
+    <SimpleTable
       autoExpandColumns
       columnReordering
       columnResizing

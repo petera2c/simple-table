@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import HeaderObject from "../../types/HeaderObject";
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import Theme from "../../types/Theme";
 
 const HEADERS: HeaderObject[] = [
@@ -125,7 +126,7 @@ const LoadingStateDemo = ({ height, theme }: { height?: string | number; theme?:
           Reload Data
         </button>
       </div>
-      <SimpleTableReact
+      <SimpleTable
         defaultHeaders={HEADERS}
         height="380px"
         isLoading={isLoading}

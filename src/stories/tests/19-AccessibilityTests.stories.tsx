@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent, fireEvent } from "@storybook/test";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -135,7 +135,7 @@ export const TableStructureAriaAttributes: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Table Structure ARIA Attributes</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -204,7 +204,7 @@ export const ScreenReaderLiveRegion: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Screen Reader Live Region</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -239,7 +239,7 @@ export const ScreenReaderOnlyTextVisibility: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>SR-Only Text Visibility</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="300px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="300px" />
       </div>
     );
   },
@@ -283,7 +283,7 @@ export const SortButtonAriaAttributes: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Sort Button ARIA Attributes</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -359,7 +359,7 @@ export const FilterButtonAriaAttributes: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Filter Button ARIA Attributes</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -414,7 +414,7 @@ export const RowSelectionCheckboxAria: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Row Selection Checkbox ARIA</h2>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -489,7 +489,7 @@ export const ExpandCollapseRowGroupAria: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Expand/Collapse Row Group ARIA</h2>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -557,7 +557,7 @@ export const PaginationAriaAttributes: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Pagination ARIA Attributes</h2>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -639,7 +639,7 @@ export const ResizeHandleAriaAttributes: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Resize Handle ARIA Attributes</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" columnResizing={true} />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" columnResizing={true} />
       </div>
     );
   },
@@ -684,7 +684,7 @@ export const KeyboardNavigationArrowKeys: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Keyboard Navigation - Arrow Keys</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -749,7 +749,7 @@ export const KeyboardExpandCollapse: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Keyboard Expand/Collapse</h2>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -820,7 +820,7 @@ export const HeaderDescriptionAriaDescribedby: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Header aria-describedby</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -870,7 +870,7 @@ export const RowButtonGroupAria: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Row Button Group ARIA</h2>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -933,7 +933,7 @@ export const TableRootMissingRole: StoryObj = {
           The table root should have role="grid" or role="table" for proper screen reader
           navigation. This test documents the current gap.
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="300px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="300px" />
       </div>
     );
   },
@@ -971,7 +971,7 @@ export const HeaderCellsMissingRole: StoryObj = {
           Header cells should have role="columnheader", rows role="row", body cells role="gridcell"
           for proper screen reader table navigation.
         </p>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -1021,7 +1021,7 @@ export const FocusManagementTabOrder: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Focus Management - Tab Order</h2>
-        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" columnResizing={true} />
+        <SimpleTable defaultHeaders={headers} rows={data} height="400px" columnResizing={true} />
       </div>
     );
   },
@@ -1060,7 +1060,7 @@ export const SelectAllCheckboxKeyboardAccessible: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Select All Checkbox - Keyboard</h2>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -1124,7 +1124,7 @@ export const FooterResultsTextForScreenReaders: StoryObj = {
     return (
       <div style={{ padding: "2rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>Footer Results Text</h2>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           height="400px"

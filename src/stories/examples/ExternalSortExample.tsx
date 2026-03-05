@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import SortColumn from "../../types/SortColumn";
@@ -233,7 +233,7 @@ const ExternalSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
         </div>
       </div>
 
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         defaultHeaders={headers}
         rows={rows}

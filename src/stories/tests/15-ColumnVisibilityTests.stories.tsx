@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTableReact } from "../..";
+import { Row, SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -152,16 +152,16 @@ const isColumnVisible = (canvasElement: HTMLElement, columnLabel: string): boole
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTableReact> = {
+const meta: Meta<typeof SimpleTable> = {
   title: "Tests/15 - Column Visibility",
-  component: SimpleTableReact,
+  component: SimpleTable,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTableReact>;
+type Story = StoryObj<typeof SimpleTable>;
 
 // ============================================================================
 // TEST CASES
@@ -185,7 +185,7 @@ export const ColumnEditorStructure: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -249,7 +249,7 @@ export const HideSingleColumn: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -308,7 +308,7 @@ export const HideMultipleColumns: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -363,7 +363,7 @@ export const ShowHiddenColumn: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -413,7 +413,7 @@ export const ToggleColumnMultipleTimes: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -474,7 +474,7 @@ export const ColumnCountChanges: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}

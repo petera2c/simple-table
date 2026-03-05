@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -178,7 +178,7 @@ const DynamicHeadersExample = (props: UniversalTableProps) => {
         </p>
       </div>
 
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         defaultHeaders={currentHeaders}
         rows={rows}

@@ -1,6 +1,11 @@
-import React from "react";
-import { useState, useCallback, useEffect } from "react";
-import { SimpleTableReact, HeaderObject, Row, OnRowGroupExpandProps, SortColumn } from "../../index";
+import React, { useState, useCallback, useEffect } from "react";
+import {
+  SimpleTable,
+  HeaderObject,
+  Row,
+  OnRowGroupExpandProps,
+  SortColumn,
+} from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // ============================================================================
@@ -378,7 +383,7 @@ const TOTAL_REGIONS = SERVER_DATA.length;
 const fetchRegions = async (
   page: number,
   pageSize: number,
-  sortColumn: SortColumn | null
+  sortColumn: SortColumn | null,
 ): Promise<{ regions: Region[]; totalCount: number }> => {
   await delay(1000); // Simulate network delay
 
@@ -554,7 +559,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
         setError(error instanceof Error ? error.message : "Failed to load data");
       }
     },
-    []
+    [],
   );
 
   // Handle sort button clicks
@@ -734,7 +739,7 @@ const DynamicRowLoadingWithExternalSortExample: React.FC<UniversalTableProps> = 
       </div>
 
       {/* Table */}
-      <SimpleTableReact
+      <SimpleTable
         columnResizing
         defaultHeaders={HEADERS}
         editColumns

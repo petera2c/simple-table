@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import TableRefType from "../../types/TableRefType";
@@ -455,7 +455,7 @@ const ProgrammaticFilterExampleComponent: React.FC<UniversalTableProps> = (props
         </div>
       </div>
 
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         tableRef={tableRef}
         defaultHeaders={headers}

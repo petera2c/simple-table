@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import TableRefType from "../../types/TableRefType";
@@ -134,7 +134,7 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
         setSortInfo(
           `Sorted by: ${currentSort.key.label || currentSort.key.accessor} (${
             currentSort.direction
-          })`
+          })`,
         );
       } else {
         setSortInfo("No sort applied");
@@ -273,7 +273,7 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
         </div>
       </div>
 
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         tableRef={tableRef}
         defaultHeaders={headers}

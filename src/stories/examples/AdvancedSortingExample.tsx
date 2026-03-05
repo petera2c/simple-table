@@ -1,5 +1,5 @@
 import React from "react";
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -266,7 +266,7 @@ const AdvancedSortingExample: React.FC<UniversalTableProps> = (props) => {
           </p>
         </div>
       </div>
-      <SimpleTableReact
+      <SimpleTable
         rows={sampleData}
         defaultHeaders={headers}
         {...props}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HeaderObject, SimpleTableReact } from "../..";
+import { HeaderObject, SimpleTable } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to CellHighlighting - exported for reuse in stories and tests
@@ -57,7 +57,7 @@ const CellHighlightingDemo = (props: UniversalTableProps) => {
   return (
     <div>
       <input value={search} onChange={(e) => setSearch(e.target.value)} />
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         defaultHeaders={headers}
         rows={data}

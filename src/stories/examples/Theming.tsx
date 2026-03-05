@@ -1,5 +1,6 @@
 import { useState } from "react";
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
 import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";
@@ -47,7 +48,7 @@ const ThemingExample = (props: UniversalTableProps) => {
 
   return (
     <div>
-      <SimpleTableReact
+      <SimpleTable
         {...props}
         defaultHeaders={HEADERS}
         onCellEdit={updateCell}

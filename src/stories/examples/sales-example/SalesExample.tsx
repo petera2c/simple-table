@@ -1,6 +1,6 @@
 import { SALES_HEADERS } from "./sales-headers";
 import data from "./sales-data.json";
-import { SimpleTableReact } from "../../..";
+import { SimpleTable } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
 // Default args specific to SalesExample - exported for reuse in stories and tests
@@ -17,7 +17,7 @@ const howManyRowsCanFit = 10;
 
 export const SalesExampleComponent = (props: UniversalTableProps) => {
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       autoExpandColumns
       enableRowSelection

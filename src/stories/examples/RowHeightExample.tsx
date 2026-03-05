@@ -1,4 +1,4 @@
-import { SimpleTableReact } from "../..";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -41,13 +41,7 @@ const RowHeightExampleComponent = (props: UniversalTableProps) => {
     { accessor: "role", label: "Role", width: 150 },
   ];
 
-  return (
-    <SimpleTableReact
-      {...props}
-      defaultHeaders={headers}
-      rows={rows}
-    />
-  );
+  return <SimpleTable {...props} defaultHeaders={headers} rows={rows} />;
 };
 
 export default RowHeightExampleComponent;

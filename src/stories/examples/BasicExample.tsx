@@ -1,4 +1,5 @@
-import { SimpleTableReact } from "../..";
+import React from "react";
+import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -43,11 +44,7 @@ const BasicExampleComponent = (props: UniversalTableProps) => {
 
   return (
     <div style={{}}>
-      <SimpleTableReact
-        {...props}
-        defaultHeaders={headers}
-        rows={createBasicData(100)}
-      />
+      <SimpleTable {...props} defaultHeaders={headers} rows={createBasicData(100)} />
     </div>
   );
 };

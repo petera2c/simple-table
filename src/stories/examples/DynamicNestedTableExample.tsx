@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import Row from "../../types/Row";
@@ -166,7 +167,7 @@ const DynamicNestedTableExample = (props: UniversalTableProps) => {
   );
 
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       autoExpandColumns
       defaultHeaders={companyHeaders}

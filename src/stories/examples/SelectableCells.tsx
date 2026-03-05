@@ -1,4 +1,5 @@
-import SimpleTableReact from "../../adapters/SimpleTableReactReact";
+import React from "react";
+import { SimpleTable } from "../..";
 import { generateRetailSalesData, RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -20,7 +21,7 @@ const HEADERS = RETAIL_SALES_HEADERS;
 
 const SelectableCellsExample = (props: UniversalTableProps) => {
   return (
-    <SimpleTableReact
+    <SimpleTable
       {...props}
       defaultHeaders={HEADERS}
       rows={EXAMPLE_DATA}

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useRef, useEffect } from "react";
 import { expect } from "@storybook/test";
-import { HeaderObject, SimpleTableReact, TableRefType } from "../..";
+import { HeaderObject, SimpleTable, TableRefType } from "../..";
 
 // ============================================================================
 // TEST UTILITIES
@@ -41,16 +41,16 @@ const hasCellUpdatingClass = (rowIndex: number, accessor: string): boolean => {
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTableReact> = {
+const meta: Meta<typeof SimpleTable> = {
   title: "Tests/14 - Live Updates",
-  component: SimpleTableReact,
+  component: SimpleTable,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTableReact>;
+type Story = StoryObj<typeof SimpleTable>;
 
 // ============================================================================
 // TEST COMPONENT
@@ -121,7 +121,7 @@ const LiveUpdatesTestComponent = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <SimpleTableReact
+      <SimpleTable
         tableRef={tableRef}
         defaultHeaders={headers}
         rows={initialData}

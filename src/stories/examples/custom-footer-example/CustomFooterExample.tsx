@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SimpleTableReact, FooterRendererProps } from "../../../index";
+import { SimpleTable, FooterRendererProps } from "../../../index";
 import { generateSaaSData } from "../../data/saas-data";
 
 // Example custom footer component similar to the Angular example
@@ -180,7 +180,7 @@ const CustomFooterExample = () => {
     <div style={{ padding: "2rem" }}>
       <h2>Custom Footer Example</h2>
       <p>This example shows how to use the footerRenderer prop to create a custom footer.</p>
-      <SimpleTableReact
+      <SimpleTable
         defaultHeaders={headers}
         rows={rows}
         shouldPaginate={true}

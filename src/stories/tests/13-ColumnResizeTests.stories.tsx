@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTableReact } from "../..";
+import { Row, SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -58,10 +58,7 @@ const getHeaderCells = (canvasElement: HTMLElement): HTMLElement[] => {
   return Array.from(canvasElement.querySelectorAll(".st-header-cell"));
 };
 
-const findHeaderCellByLabel = (
-  canvasElement: HTMLElement,
-  label: string
-): HTMLElement | null => {
+const findHeaderCellByLabel = (canvasElement: HTMLElement, label: string): HTMLElement | null => {
   const headers = getHeaderCells(canvasElement);
   for (const header of headers) {
     const labelElement = header.querySelector(".st-header-label");
@@ -74,12 +71,12 @@ const findHeaderCellByLabel = (
 
 const resizeColumn = async (
   headerCell: HTMLElement,
-  resizeAmount: number
+  resizeAmount: number,
 ): Promise<{ initialWidth: number; finalWidth: number }> => {
   const initialWidth = headerCell.getBoundingClientRect().width;
 
   const resizeHandle = headerCell.querySelector(
-    ".st-header-resize-handle-container"
+    ".st-header-resize-handle-container",
   ) as HTMLElement;
 
   if (!resizeHandle) {
@@ -125,16 +122,16 @@ const resizeColumn = async (
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTableReact> = {
+const meta: Meta<typeof SimpleTable> = {
   title: "Tests/13 - Column Resize",
-  component: SimpleTableReact,
+  component: SimpleTable,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTableReact>;
+type Story = StoryObj<typeof SimpleTable>;
 
 // ============================================================================
 // TEST CASES
@@ -156,7 +153,7 @@ export const BasicColumnResize: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -198,7 +195,7 @@ export const ResizeMultipleColumns: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -222,7 +219,7 @@ export const ResizeMultipleColumns: Story = {
     expect(storeNameHeader).toBeTruthy();
     const { initialWidth: storeInitial, finalWidth: storeFinal } = await resizeColumn(
       storeNameHeader!,
-      30
+      30,
     );
     expect(storeFinal - storeInitial).toBeGreaterThan(25);
 
@@ -231,7 +228,7 @@ export const ResizeMultipleColumns: Story = {
     expect(cityHeader).toBeTruthy();
     const { initialWidth: cityInitial, finalWidth: cityFinal } = await resizeColumn(
       cityHeader!,
-      40
+      40,
     );
     expect(cityFinal - cityInitial).toBeGreaterThan(35);
   },
@@ -252,7 +249,7 @@ export const ResizeToSmallerWidth: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -294,7 +291,7 @@ export const ResizeWithMinWidth: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -338,7 +335,7 @@ export const ResizeAllColumns: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTableReact
+        <SimpleTable
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
