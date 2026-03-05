@@ -1,7 +1,10 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import ScrollbarVisibilityManager from "../../hooks/scrollbarVisibility";
 import TableSection from "./TableSection";
-import StickyParentsContainer from "./StickyParentsContainer";
+import {
+  createStickyParentsContainer,
+  cleanupStickyParentsContainer,
+} from "../../utils/stickyParentsRenderer";
 import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
 import { useTableContext } from "../../context/TableContext";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
@@ -46,7 +49,11 @@ const TableBody = ({
     tableBodyContainerRef,
     tableEmptyStateRenderer,
     customTheme,
+    editColumns,
   } = useTableContext();
+
+  // Ref for sticky container
+  const stickyContainerRef = useRef<HTMLElement | null>(null);
 
   // Local state
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -251,6 +258,84 @@ const TableBody = ({
     });
   };
 
+  // Render sticky parents container via DOM manipulation
+  useEffect(() => {
+    if (shouldShowEmptyState || stickyParents.length === 0) {
+      // Clean up existing container if any
+      if (stickyContainerRef.current) {
+        cleanupStickyParentsContainer(stickyContainerRef.current);
+        stickyContainerRef.current = null;
+      }
+      return;
+    }
+
+    // Find the parent element to append sticky container to
+    const bodyContainer = tableBodyContainerRef.current;
+    if (!bodyContainer || !bodyContainer.parentElement) return;
+
+    // Create sticky container
+    const stickyContainer = createStickyParentsContainer(
+      {
+        calculatedHeaderHeight,
+        heightMap,
+        mainTemplateColumns,
+        partiallyVisibleRows,
+        pinnedLeftColumns,
+        pinnedLeftTemplateColumns,
+        pinnedLeftWidth,
+        pinnedRightColumns,
+        pinnedRightTemplateColumns,
+        pinnedRightWidth,
+        scrollTop: localScrollTop,
+        scrollbarWidth,
+        stickyParents,
+      },
+      {
+        collapsedHeaders,
+        customTheme,
+        editColumns: editColumns || false,
+        headers,
+        rowHeight,
+        heightOffsets,
+      },
+    );
+
+    if (stickyContainer) {
+      // Insert before body container
+      bodyContainer.parentElement.insertBefore(stickyContainer, bodyContainer);
+      stickyContainerRef.current = stickyContainer;
+    }
+
+    return () => {
+      if (stickyContainerRef.current) {
+        cleanupStickyParentsContainer(stickyContainerRef.current);
+        stickyContainerRef.current = null;
+      }
+    };
+  }, [
+    shouldShowEmptyState,
+    stickyParents,
+    calculatedHeaderHeight,
+    heightMap,
+    mainTemplateColumns,
+    partiallyVisibleRows,
+    pinnedLeftColumns,
+    pinnedLeftTemplateColumns,
+    pinnedLeftWidth,
+    pinnedRightColumns,
+    pinnedRightTemplateColumns,
+    pinnedRightWidth,
+    localScrollTop,
+    scrollbarWidth,
+    collapsedHeaders,
+    customTheme,
+    editColumns,
+    headers,
+    rowHeight,
+    heightOffsets,
+    tableBodyContainerRef,
+  ]);
+
   // Create all props needed for TableSection
   const commonProps = {
     columnIndices,
@@ -264,65 +349,41 @@ const TableBody = ({
   };
 
   return (
-    <>
-      {/* Sticky parents container - positioned absolutely on top */}
-      {!shouldShowEmptyState && (
-        <StickyParentsContainer
-          calculatedHeaderHeight={calculatedHeaderHeight}
-          heightMap={heightMap}
-          mainTemplateColumns={mainTemplateColumns}
-          partiallyVisibleRows={partiallyVisibleRows}
-          pinnedLeftColumns={pinnedLeftColumns}
-          pinnedLeftTemplateColumns={pinnedLeftTemplateColumns}
-          pinnedLeftWidth={pinnedLeftWidth}
-          pinnedRightColumns={pinnedRightColumns}
-          pinnedRightTemplateColumns={pinnedRightTemplateColumns}
-          pinnedRightWidth={pinnedRightWidth}
-          rowIndices={rowIndices}
-          scrollTop={localScrollTop}
-          scrollbarWidth={scrollbarWidth}
-          setHoveredIndex={setHoveredIndex}
-          stickyParents={stickyParents}
-        />
+    <div
+      className="st-body-container"
+      onMouseLeave={() => setHoveredIndex(null)}
+      onScroll={handleScroll}
+      ref={tableBodyContainerRef}
+    >
+      {shouldShowEmptyState ? (
+        <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
+      ) : (
+        <>
+          <TableSection
+            {...commonProps}
+            pinned="left"
+            templateColumns={pinnedLeftTemplateColumns}
+            totalHeight={totalHeight}
+            width={pinnedLeftWidth}
+          />
+          <TableSection
+            {...commonProps}
+            columnIndexStart={pinnedLeftColumns.length}
+            ref={mainBodyRef}
+            templateColumns={mainTemplateColumns}
+            totalHeight={totalHeight}
+          />
+          <TableSection
+            {...commonProps}
+            columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
+            pinned="right"
+            templateColumns={pinnedRightTemplateColumns}
+            totalHeight={totalHeight}
+            width={pinnedRightWidth}
+          />
+        </>
       )}
-
-      {/* Main scrolling body container */}
-      <div
-        className="st-body-container"
-        onMouseLeave={() => setHoveredIndex(null)}
-        onScroll={handleScroll}
-        ref={tableBodyContainerRef}
-      >
-        {shouldShowEmptyState ? (
-          <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
-        ) : (
-          <>
-            <TableSection
-              {...commonProps}
-              pinned="left"
-              templateColumns={pinnedLeftTemplateColumns}
-              totalHeight={totalHeight}
-              width={pinnedLeftWidth}
-            />
-            <TableSection
-              {...commonProps}
-              columnIndexStart={pinnedLeftColumns.length}
-              ref={mainBodyRef}
-              templateColumns={mainTemplateColumns}
-              totalHeight={totalHeight}
-            />
-            <TableSection
-              {...commonProps}
-              columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
-              pinned="right"
-              templateColumns={pinnedRightTemplateColumns}
-              totalHeight={totalHeight}
-              width={pinnedRightWidth}
-            />
-          </>
-        )}
-      </div>
-    </>
+    </div>
   );
 };
 

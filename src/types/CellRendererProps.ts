@@ -19,6 +19,6 @@ interface CellRendererProps {
 // Users should use valueFormatter for formatting, or return simple strings/numbers
 // Example:
 //   cellRenderer: ({ value, row }) => `${value} (${row.status})`
-export type CellRenderer = (props: CellRendererProps) => string | number | null;
+export type CellRenderer = (props: CellRendererProps) => string | number | null | any;
 
 export default CellRendererProps;

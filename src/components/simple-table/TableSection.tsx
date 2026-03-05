@@ -1,12 +1,10 @@
 import { Fragment, useMemo, forwardRef, useRef, useImperativeHandle, useEffect } from "react";
-import TableRow from "./TableRow";
 import TableRowType from "../../types/TableRow";
-import TableRowSeparator from "./TableRowSeparator";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
-import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
+import { scrollSyncManager } from "../../utils/scrollSyncManager";
 import { canDisplaySection } from "../../utils/generalUtils";
 import { rowIdToString } from "../../utils/rowUtils";
 import { useTableContext } from "../../context/TableContext";
@@ -18,6 +16,9 @@ import {
   CellRenderContext,
 } from "../../utils/bodyCellRenderer";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
+import { createRowSeparator, createSpacerRow } from "../../utils/rowSeparatorRenderer";
+import { createStateRow, cleanupStateRow } from "../../utils/stateRowRenderer";
+import NestedGridRow from "./NestedGridRow";
 
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
@@ -95,6 +96,9 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       isLoading,
       customTheme,
       heightOffsets,
+      loadingStateRenderer,
+      errorStateRenderer,
+      emptyStateRenderer,
     } = context;
 
     // Check if section can be displayed
@@ -277,20 +281,131 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       ],
     );
 
-    // Render cells using DOM manipulation
+    // Render cells, separators, and state rows using DOM manipulation
     useEffect(() => {
       const element = internalRef.current;
-      if (element) {
-        const initialScrollLeft = element.scrollLeft || 0;
-        renderBodyCells(element, absoluteCells, renderContext, initialScrollLeft);
-      }
+      if (!element) return;
+
+      // Track rendered special rows for cleanup
+      const renderedStateRows = new Map<string, HTMLElement>();
+      const renderedSeparators: HTMLElement[] = [];
+
+      const initialScrollLeft = element.scrollLeft || 0;
+
+      // Render regular cells
+      renderBodyCells(element, absoluteCells, renderContext, initialScrollLeft);
+
+      // Render separators and special rows
+      regularRows.forEach((tableRow, index) => {
+        // Render separator (except for first row)
+        if (index !== 0) {
+          const separator = createRowSeparator(
+            tableRow.position,
+            rowHeight,
+            templateColumns,
+            tableRow.isLastGroupRow || false,
+            heightOffsets,
+            customTheme,
+            false,
+          );
+          element.appendChild(separator);
+          renderedSeparators.push(separator);
+        }
+
+        // Handle state indicator rows
+        if (tableRow.stateIndicator) {
+          const shouldShowIndicator = tableRow.stateIndicator.state.triggerSection === pinned;
+
+          if (shouldShowIndicator) {
+            const hasRenderer =
+              (tableRow.stateIndicator.state.loading && loadingStateRenderer) ||
+              (tableRow.stateIndicator.state.error && errorStateRenderer) ||
+              (tableRow.stateIndicator.state.isEmpty && emptyStateRenderer);
+
+            if (hasRenderer) {
+              const stateRow = createStateRow(tableRow, {
+                index,
+                gridTemplateColumns: templateColumns,
+                rowHeight,
+                heightOffsets,
+                customTheme,
+                loadingStateRenderer,
+                errorStateRenderer,
+                emptyStateRenderer,
+              });
+
+              element.appendChild(stateRow);
+              renderedStateRows.set(`state-${tableRow.position}`, stateRow);
+            } else {
+              // Create spacer
+              const spacer = createSpacerRow(
+                tableRow.position,
+                rowHeight,
+                templateColumns,
+                heightOffsets,
+                customTheme,
+                "st-state-row-spacer",
+              );
+              element.appendChild(spacer);
+              renderedSeparators.push(spacer);
+            }
+          } else {
+            // Create spacer for other sections
+            const spacer = createSpacerRow(
+              tableRow.position,
+              rowHeight,
+              templateColumns,
+              heightOffsets,
+              customTheme,
+              "st-state-row-spacer",
+            );
+            element.appendChild(spacer);
+            renderedSeparators.push(spacer);
+          }
+        }
+
+        // Handle nested table spacers for pinned sections
+        if (tableRow.nestedTable && pinned) {
+          const spacer = createSpacerRow(
+            tableRow.position,
+            rowHeight,
+            templateColumns,
+            heightOffsets,
+            customTheme,
+            "st-nested-grid-spacer",
+            tableRow.nestedTable.calculatedHeight,
+          );
+          element.appendChild(spacer);
+          renderedSeparators.push(spacer);
+        }
+      });
 
       return () => {
-        if (element) {
-          cleanupBodyCellRendering(element);
-        }
+        // Cleanup state rows (unmount React)
+        renderedStateRows.forEach((element) => {
+          cleanupStateRow(element);
+        });
+
+        // Cleanup separators and spacers
+        renderedSeparators.forEach((element) => {
+          element.remove();
+        });
+
+        cleanupBodyCellRendering(element);
       };
-    }, [absoluteCells, renderContext]);
+    }, [
+      absoluteCells,
+      renderContext,
+      regularRows,
+      rowHeight,
+      templateColumns,
+      heightOffsets,
+      customTheme,
+      pinned,
+      loadingStateRenderer,
+      errorStateRenderer,
+      emptyStateRenderer,
+    ]);
 
     // Expose render function via ref for scroll sync to call
     useEffect(() => {
@@ -314,76 +429,54 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [absoluteCells, renderContext]);
 
+    // Register with scroll sync manager
+    useEffect(() => {
+      const element = internalRef.current;
+      if (!element) return;
+
+      const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
+      scrollSyncManager.registerPane(element, [scrollSyncGroup]);
+
+      return () => {
+        scrollSyncManager.unregisterPane(element, [scrollSyncGroup]);
+      };
+    }, [pinned]);
+
     // Early return after all hooks
     if (!canDisplay) return null;
 
-    // Determine scroll sync group based on pinned state
-    const scrollSyncGroup = pinned ? `pinned-${pinned}` : "default";
-
     return (
-      <ScrollSyncPane childRef={internalRef} group={scrollSyncGroup}>
-        <div
-          className={className}
-          ref={internalRef}
-          style={{
-            position: "relative",
-            height: `${totalHeight}px`,
-            width,
-            ...(!pinned && { flexGrow: 1 }),
-          }}
-        >
-          {/* Render row separators and special row types (state indicators, nested tables) */}
-          {regularRows.map((tableRow, index) => {
-            // Only render special row types with React
-            if (tableRow.stateIndicator || tableRow.nestedTable) {
-              const rowId = tableRow.stateIndicator
-                ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
-                : rowIdToString(tableRow.rowId);
+      <div
+        className={className}
+        ref={internalRef}
+        style={{
+          position: "relative",
+          height: `${totalHeight}px`,
+          width,
+          ...(!pinned && { flexGrow: 1 }),
+        }}
+      >
+        {/* Render nested tables with React (only in main section) */}
+        {regularRows.map((tableRow, index) => {
+          // Only render nested tables with React
+          if (tableRow.nestedTable && !pinned) {
+            return (
+              <NestedGridRow
+                key={`nested-${tableRow.position}`}
+                calculatedHeight={tableRow.nestedTable.calculatedHeight}
+                childAccessor={tableRow.nestedTable.childAccessor}
+                depth={tableRow.depth - 1}
+                expandableHeader={tableRow.nestedTable.expandableHeader}
+                index={index}
+                parentRow={tableRow.nestedTable.parentRow}
+                position={tableRow.position}
+              />
+            );
+          }
 
-              return (
-                <Fragment key={rowId}>
-                  {index !== 0 && (
-                    <TableRowSeparator
-                      displayStrongBorder={tableRow.isLastGroupRow}
-                      position={tableRow.position}
-                      rowHeight={rowHeight}
-                      templateColumns={templateColumns}
-                    />
-                  )}
-                  <TableRow
-                    columnIndexStart={columnIndexStart}
-                    columnIndices={columnIndices}
-                    gridTemplateColumns={templateColumns}
-                    headers={headers}
-                    index={index}
-                    pinned={pinned}
-                    rowHeight={rowHeight}
-                    rowIndices={rowIndices}
-                    setHoveredIndex={setHoveredIndex}
-                    tableRow={tableRow}
-                  />
-                </Fragment>
-              );
-            }
-
-            // For regular rows, only render separator (cells are handled by DOM renderer)
-            if (index !== 0) {
-              const rowId = rowIdToString(tableRow.rowId);
-              return (
-                <TableRowSeparator
-                  key={`separator-${rowId}`}
-                  displayStrongBorder={tableRow.isLastGroupRow}
-                  position={tableRow.position}
-                  rowHeight={rowHeight}
-                  templateColumns={templateColumns}
-                />
-              );
-            }
-
-            return null;
-          })}
-        </div>
-      </ScrollSyncPane>
+          return null;
+        })}
+      </div>
     );
   },
 );
