@@ -28,7 +28,7 @@ import Row from "./types/Row";
 import RowState from "./types/RowState";
 import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
-import TableCellProps from "./types/TableCellProps";
+// TableCellProps removed - no longer needed with DOM renderer
 import TableHeaderProps from "./types/TableHeaderProps";
 import TableRefType, { SetHeaderRenameProps, ExportToCSVProps } from "./types/TableRefType";
 import TableRowProps from "./types/TableRowProps";
@@ -132,7 +132,7 @@ export type {
   SharedTableProps,
   ShowWhen,
   SortColumn,
-  TableCellProps,
+  // TableCellProps removed - no longer needed with DOM renderer
   TableFilterState,
   TableHeaderProps,
   TableRefType,

@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import type { Accessor } from "./HeaderObject";
 import type Row from "./Row";
 import type Theme from "./Theme";
@@ -15,6 +14,11 @@ interface CellRendererProps {
   formattedValue?: string | number | string[] | number[] | null | undefined | boolean; // The formatted cell value (from valueFormatter if present)
 }
 
-export type CellRenderer = (props: CellRendererProps) => ReactNode | string;
+// BREAKING CHANGE: CellRenderer now returns string | number | null instead of ReactNode
+// React components are no longer supported in cell renderers
+// Users should use valueFormatter for formatting, or return simple strings/numbers
+// Example:
+//   cellRenderer: ({ value, row }) => `${value} (${row.status})`
+export type CellRenderer = (props: CellRendererProps) => string | number | null;
 
 export default CellRendererProps;

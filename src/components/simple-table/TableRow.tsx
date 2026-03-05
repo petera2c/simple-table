@@ -1,18 +1,16 @@
 import React from "react";
 import type TableRowType from "../../types/TableRow";
 import { calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
-import RenderCells from "./RenderCells";
 import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
 import { useTableContext } from "../../context/TableContext";
-import { rowIdToString } from "../../utils/rowUtils";
 import RowStateIndicator from "./RowStateIndicator";
-import { ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
 import NestedGridRow from "./NestedGridRow";
 
-// Define just the props needed for RenderCells
+// TableRow now only handles special row types (state indicators and nested tables)
+// Regular rows are rendered by the DOM renderer in TableSection
 interface TableRowProps {
   columnIndexStart?: number;
   columnIndices: ColumnIndices;
@@ -24,40 +22,23 @@ interface TableRowProps {
   rowIndices: RowIndices;
   setHoveredIndex: (index: number | null) => void;
   tableRow: TableRowType;
-  isSticky?: boolean;
-  stickyIndex?: number;
-  stickyOffset?: number;
-  stickyZIndex?: number;
 }
 
 const TableRow = ({
-  columnIndices,
-  columnIndexStart,
   gridTemplateColumns,
-  headers,
   index,
   pinned,
   rowHeight,
-  rowIndices,
-  setHoveredIndex,
   tableRow,
-  isSticky = false,
-  stickyIndex = 0,
-  stickyOffset = 0,
-  stickyZIndex,
 }: TableRowProps) => {
   const {
     customTheme,
     emptyStateRenderer,
     errorStateRenderer,
     heightOffsets,
-    isRowSelected,
     loadingStateRenderer,
-    maxHeaderDepth,
-    useHoverRowBackground,
-    useOddEvenRowBackground,
   } = useTableContext();
-  const { position, displayPosition, stateIndicator, nestedTable } = tableRow;
+  const { position, stateIndicator, nestedTable } = tableRow;
 
   // If this is a nested grid row, render it differently
   if (nestedTable) {
@@ -176,127 +157,10 @@ const TableRow = ({
     );
   }
 
-  // For regular rows, calculate row properties
-  const isOdd = position % 2 === 0;
-
-  // Get stable row ID for key (includes path for nested rows)
-  const rowId = rowIdToString(tableRow.rowId);
-
-  // Check if this row is selected
-  const isSelected = isRowSelected ? isRowSelected(rowId) : false;
-
-  // Calculate row style based on whether it's sticky or regular
-  const rowStyle = isSticky
-    ? {
-        gridTemplateColumns,
-        transform: `translateY(${
-          stickyIndex * (rowHeight + ROW_SEPARATOR_WIDTH) + stickyOffset
-        }px)`,
-        height: `${rowHeight}px`,
-        position: "absolute" as const,
-        top: 0,
-        left: 0,
-        zIndex: stickyZIndex,
-      }
-    : {
-        gridTemplateColumns,
-        top: calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme }),
-        height: `${rowHeight}px`,
-      };
-
-  return (
-    <div
-      className={`st-row ${isSticky ? "st-sticky-parent" : ""} ${
-        useOddEvenRowBackground ? (isOdd ? "even" : "odd") : ""
-      } ${isSelected ? "selected" : ""}`}
-      data-index={position}
-      role="row"
-      aria-rowindex={position + maxHeaderDepth + 1}
-      onMouseEnter={() => {
-        if (useHoverRowBackground) {
-          setHoveredIndex(position);
-        }
-      }}
-      style={rowStyle}
-    >
-      <RenderCells
-        columnIndexStart={columnIndexStart}
-        columnIndices={columnIndices}
-        displayRowNumber={displayPosition}
-        headers={headers}
-        key={rowId}
-        pinned={pinned}
-        rowIndex={position}
-        rowIndices={rowIndices}
-        tableRow={tableRow}
-      />
-    </div>
-  );
+  // This component should never reach here - it only handles special rows
+  // Regular rows are rendered by DOM renderer
+  return null;
 };
 
-/**
- * Custom comparison function for TableRow memoization
- * Compares row props to determine if re-render is needed
- * Prevents unnecessary re-renders when scrolling through virtualized list
- */
-const arePropsEqual = (prevProps: TableRowProps, nextProps: TableRowProps): boolean => {
-  // Check index and row position
-  if (
-    prevProps.index !== nextProps.index ||
-    prevProps.tableRow.position !== nextProps.tableRow.position ||
-    prevProps.tableRow.displayPosition !== nextProps.tableRow.displayPosition
-  ) {
-    return false;
-  }
-
-  // Check if the actual row data changed
-  if (prevProps.tableRow.row !== nextProps.tableRow.row) {
-    return false;
-  }
-
-  // Check if state indicator changed (for loading/error/empty rows)
-  if (prevProps.tableRow.stateIndicator !== nextProps.tableRow.stateIndicator) {
-    return false;
-  }
-
-  // Check row height
-  if (prevProps.rowHeight !== nextProps.rowHeight) {
-    return false;
-  }
-
-  // Check grid template columns
-  if (prevProps.gridTemplateColumns !== nextProps.gridTemplateColumns) {
-    return false;
-  }
-
-  // Check pinned state
-  if (prevProps.pinned !== nextProps.pinned) {
-    return false;
-  }
-
-  // Check if headers array changed (by reference)
-  if (prevProps.headers !== nextProps.headers) {
-    return false;
-  }
-
-  // Check if column/row indices changed (by reference)
-  if (prevProps.columnIndices !== nextProps.columnIndices) {
-    return false;
-  }
-
-  if (prevProps.rowIndices !== nextProps.rowIndices) {
-    return false;
-  }
-
-  // Column index start
-  if (prevProps.columnIndexStart !== nextProps.columnIndexStart) {
-    return false;
-  }
-
-  // All checks passed - props are equal
-  return true;
-};
-
-// Export memoized TableRow component with custom comparison
-// Reduces re-renders of rows that haven't changed during virtual scrolling
-export default React.memo(TableRow, arePropsEqual);
+// Export TableRow for special row types only
+export default TableRow;

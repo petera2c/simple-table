@@ -332,14 +332,14 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
             ...(!pinned && { flexGrow: 1 }),
           }}
         >
-          {/* Render row separators and state indicator rows using React (for now) */}
+          {/* Render row separators and special row types (state indicators, nested tables) */}
           {regularRows.map((tableRow, index) => {
-            const rowId = tableRow.stateIndicator
-              ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
-              : rowIdToString(tableRow.rowId);
-
-            // For state indicator rows and nested table rows, still use React
+            // Only render special row types with React
             if (tableRow.stateIndicator || tableRow.nestedTable) {
+              const rowId = tableRow.stateIndicator
+                ? `state-${tableRow.stateIndicator.parentRowId}-${tableRow.position}`
+                : rowIdToString(tableRow.rowId);
+
               return (
                 <Fragment key={rowId}>
                   {index !== 0 && (
@@ -366,19 +366,21 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
               );
             }
 
-            // For regular rows, render separator only
-            return (
-              <Fragment key={rowId}>
-                {index !== 0 && (
-                  <TableRowSeparator
-                    displayStrongBorder={tableRow.isLastGroupRow}
-                    position={tableRow.position}
-                    rowHeight={rowHeight}
-                    templateColumns={templateColumns}
-                  />
-                )}
-              </Fragment>
-            );
+            // For regular rows, only render separator (cells are handled by DOM renderer)
+            if (index !== 0) {
+              const rowId = rowIdToString(tableRow.rowId);
+              return (
+                <TableRowSeparator
+                  key={`separator-${rowId}`}
+                  displayStrongBorder={tableRow.isLastGroupRow}
+                  position={tableRow.position}
+                  rowHeight={rowHeight}
+                  templateColumns={templateColumns}
+                />
+              );
+            }
+
+            return null;
           })}
         </div>
       </ScrollSyncPane>

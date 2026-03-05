@@ -44,7 +44,7 @@ export const createRowNumber = (displayRowNumber: number): HTMLElement => {
   return rowNumber;
 };
 
-// Create row buttons (placeholder for now - will be enhanced)
+// Create row buttons
 export const createRowButtons = (
   cell: AbsoluteBodyCell,
   context: CellRenderContext,
@@ -55,9 +55,30 @@ export const createRowButtons = (
 
   const buttonsContainer = document.createElement("div");
   buttonsContainer.className = "st-row-buttons";
+  buttonsContainer.setAttribute("role", "group");
+  buttonsContainer.setAttribute("aria-label", `Actions for row ${cell.displayRowNumber + 1}`);
 
-  // For now, we'll skip rendering React components
-  // This would require a React Portal or converting buttons to vanilla JS
+  // Create button props
+  const buttonProps = {
+    row: cell.row,
+    rowIndex: cell.displayRowNumber,
+  };
+
+  // Render each button
+  context.rowButtons.forEach((buttonFn, index) => {
+    try {
+      const buttonElement = buttonFn(buttonProps);
+      
+      // Wrap in span for consistent styling
+      const buttonWrapper = document.createElement("span");
+      buttonWrapper.className = "st-row-button";
+      buttonWrapper.appendChild(buttonElement);
+      
+      buttonsContainer.appendChild(buttonWrapper);
+    } catch (error) {
+      console.error("Error rendering row button:", error);
+    }
+  });
 
   return buttonsContainer;
 };

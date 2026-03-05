@@ -3,7 +3,7 @@ import { getCellId } from "../cellUtils";
 import { getNestedValue, setNestedValue } from "../rowUtils";
 import { AbsoluteBodyCell, CellData, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
-import { createEditableInput } from "./editing";
+import { createEditor } from "./editing";
 import { createCellContent } from "./content";
 
 // Calculate cell class names based on current state
@@ -140,14 +140,19 @@ export const createBodyCellElement = (
   const renderCellContent = () => {
     contentSpan.innerHTML = "";
     if (isEditing) {
-      const currentValue = getNestedValue(row, header.accessor);
-      const input = createEditableInput(cell, context, currentValue, () => {
+      const editor = createEditor(cell, context, () => {
         isEditing = false;
         renderCellContent();
         // Re-register cell in registry after editing
         registerCellInRegistry();
       });
-      contentSpan.appendChild(input);
+      if (editor) {
+        // For dropdown editors, they're added to body/cell, not contentSpan
+        // For inline editors, add to contentSpan
+        if (editor.classList.contains("editable-cell-input")) {
+          contentSpan.appendChild(editor);
+        }
+      }
     } else {
       createCellContent(cell, context, contentSpan);
     }
