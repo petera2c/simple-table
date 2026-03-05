@@ -85,7 +85,7 @@ export const checkDeprecatedProps = (props: any): void => {
         typeof props[propName] === "string" ? JSON.stringify(props[propName]) : "<YourIcon />";
 
       console.error(
-        `${baseMessage}\n${replacementMessage}${additionalMessage}\n\nExample:\n<SimpleTable\n  ${objectName}={{\n    ${propertyName}: ${exampleValue}\n  }}\n/>`
+        `${baseMessage}\n${replacementMessage}${additionalMessage}\n\nExample:\n<SimpleTable\n  ${objectName}={{\n    ${propertyName}: ${exampleValue}\n  }}\n/>`,
       );
     }
   });

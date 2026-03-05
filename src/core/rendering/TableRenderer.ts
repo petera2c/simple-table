@@ -206,6 +206,7 @@ export class TableRenderer {
   renderBody(container: HTMLElement, processedResult: any, deps: TableRendererDeps): void {
     if (!container) return;
 
+    const rowsToRender = processedResult.rowsToRender || processedResult.currentTableRows;
     const shouldShowEmptyState =
       !deps.internalIsLoading && processedResult.currentTableRows.length === 0;
 
@@ -316,7 +317,7 @@ export class TableRenderer {
     if (pinnedLeftHeaders.length > 0) {
       const leftSection = this.sectionRenderer.renderBodySection({
         headers: deps.effectiveHeaders,
-        rows: processedResult.currentTableRows,
+        rows: rowsToRender,
         collapsedHeaders: deps.collapsedHeaders,
         autoExpandColumns: deps.config.autoExpandColumns,
         pinned: "left",
@@ -330,7 +331,7 @@ export class TableRenderer {
     if (mainHeaders.length > 0) {
       const mainSection = this.sectionRenderer.renderBodySection({
         headers: deps.effectiveHeaders,
-        rows: processedResult.currentTableRows,
+        rows: rowsToRender,
         collapsedHeaders: deps.collapsedHeaders,
         autoExpandColumns: deps.config.autoExpandColumns,
         context: bodyContext,
@@ -343,7 +344,7 @@ export class TableRenderer {
     if (pinnedRightHeaders.length > 0) {
       const rightSection = this.sectionRenderer.renderBodySection({
         headers: deps.effectiveHeaders,
-        rows: processedResult.currentTableRows,
+        rows: rowsToRender,
         collapsedHeaders: deps.collapsedHeaders,
         autoExpandColumns: deps.config.autoExpandColumns,
         pinned: "right",
