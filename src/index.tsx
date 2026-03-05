@@ -1,6 +1,6 @@
 import SimpleTable from "./components/simple-table/SimpleTable";
-import LineAreaChart from "./components/charts/LineAreaChart";
-import BarChart from "./components/charts/BarChart";
+import { createLineAreaChart, LineAreaChartProps } from "./utils/charts/createLineAreaChart";
+import { createBarChart, BarChartProps } from "./utils/charts/createBarChart";
 import BoundingBox from "./types/BoundingBox";
 import Cell from "./types/Cell";
 import CellChangeProps from "./types/CellChangeProps";
@@ -69,7 +69,7 @@ import { ColumnEditorConfig, ColumnEditorSearchFunction } from "./types/ColumnEd
 import { IconsConfig } from "./types/IconsConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
 
-export { SimpleTable, LineAreaChart, BarChart };
+export { SimpleTable };
 
 // Tree-shakeable icon exports (imported separately to reduce bundle size)
 export * from "./icons";
