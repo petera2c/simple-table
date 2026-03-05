@@ -52,7 +52,6 @@ import ScrollbarVisibilityManager from "../../hooks/scrollbarVisibility";
 import RowState from "../../types/RowState";
 import { generateRowId, rowIdToString, flattenRowsWithGrouping } from "../../utils/rowUtils";
 import ExpandedDepthsManager, { initializeExpandedDepths } from "../../hooks/expandedDepths";
-import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { checkDeprecatedProps } from "../../utils/deprecatedPropsWarnings";
@@ -146,7 +145,7 @@ const SimpleTableComp = ({
   shouldPaginate = false,
   sortDownIcon: sortDownIconDeprecated,
   sortUpIcon: sortUpIconDeprecated,
-  tableEmptyStateRenderer = <DefaultEmptyState />,
+  tableEmptyStateRenderer = <div className="st-empty-state">No rows to display</div>,
   tableRef,
   theme = "modern-light",
   totalRowCount,
