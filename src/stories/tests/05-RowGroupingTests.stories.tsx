@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -221,7 +221,7 @@ export const BasicSingleLevelGrouping: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Departments → Teams (single level hierarchy)
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -269,7 +269,7 @@ export const MultiLevelGrouping: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Departments → Teams → Members (three levels)
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"
@@ -355,7 +355,7 @@ export const StartCollapsed: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           All groups start collapsed - click to expand
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -401,7 +401,7 @@ export const ExpandCollapseInteraction: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Click expand icons to show/hide child rows
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -493,7 +493,7 @@ export const ProgrammaticExpandCollapseAll: StoryObj = {
             Collapse All
           </button>
         </div>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -645,7 +645,7 @@ export const ProgrammaticDepthControl: StoryObj = {
         >
           Expanded Depths: {expandedDepths}
         </div>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -729,7 +729,7 @@ export const OnRowGroupExpandCallback: StoryObj = {
             ))}
           </ul>
         </div>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -787,7 +787,7 @@ export const DynamicRowLoading: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Child rows loaded on-demand when parent is expanded
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={rows}
           height="400px"
@@ -874,7 +874,7 @@ export const CanExpandRowGroupConditional: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Only departments with budget &gt; 300000 can be expanded
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -930,7 +930,7 @@ export const RowGroupingWithGetRowId: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Stable row identification for grouped data
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -976,7 +976,7 @@ export const EnableStickyParents: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Parent rows stick to top while scrolling through children
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -1058,7 +1058,7 @@ export const GetGroupingPropertyAndDepth: StoryObj = {
         >
           {groupingInfo}
         </div>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -1106,7 +1106,7 @@ export const LastGroupRowSeparatorLogic: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Verifies that st-last-group-row class is only applied to separators after depth 0 rows
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="500px"

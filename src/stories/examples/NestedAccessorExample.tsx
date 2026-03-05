@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import HeaderObject, { ValueFormatterProps } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -364,7 +364,7 @@ const NestedAccessorExample = (props: UniversalTableProps) => {
         </li>
       </ul>
 
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         defaultHeaders={headers}
         height="500px"

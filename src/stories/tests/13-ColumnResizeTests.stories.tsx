@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTable } from "../..";
+import { Row, SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -125,16 +125,16 @@ const resizeColumn = async (
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTable> = {
+const meta: Meta<typeof SimpleTableReact> = {
   title: "Tests/13 - Column Resize",
-  component: SimpleTable,
+  component: SimpleTableReact,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTable>;
+type Story = StoryObj<typeof SimpleTableReact>;
 
 // ============================================================================
 // TEST CASES
@@ -156,7 +156,7 @@ export const BasicColumnResize: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -198,7 +198,7 @@ export const ResizeMultipleColumns: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -252,7 +252,7 @@ export const ResizeToSmallerWidth: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -294,7 +294,7 @@ export const ResizeWithMinWidth: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -338,7 +338,7 @@ export const ResizeAllColumns: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}

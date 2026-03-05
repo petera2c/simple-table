@@ -1,4 +1,4 @@
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -189,7 +189,7 @@ const ChartsExample = (props: UniversalTableProps) => {
   ];
 
   return (
-    <SimpleTable
+    <SimpleTableReact
       {...props}
       defaultHeaders={headers}
       rows={rows}

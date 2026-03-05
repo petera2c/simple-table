@@ -1,12 +1,11 @@
-import { ReactNode } from "react";
 import type { Accessor } from "./HeaderObject";
 import type HeaderObject from "./HeaderObject";
 
 export interface HeaderRendererComponents {
-  sortIcon?: ReactNode;
-  filterIcon?: ReactNode;
-  collapseIcon?: ReactNode;
-  labelContent?: ReactNode;
+  sortIcon?: any;
+  filterIcon?: any;
+  collapseIcon?: any;
+  labelContent?: any;
 }
 
 interface HeaderRendererProps {
@@ -16,6 +15,6 @@ interface HeaderRendererProps {
   components?: HeaderRendererComponents;
 }
 
-export type HeaderRenderer = (props: HeaderRendererProps) => ReactNode | string;
+export type HeaderRenderer = (props: HeaderRendererProps) => any;
 
 export default HeaderRendererProps;

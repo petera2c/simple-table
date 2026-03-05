@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useRef } from "react";
 import { expect } from "@storybook/test";
-import { SimpleTable, TableRefType } from "../..";
+import { SimpleTableReact, TableRefType } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -231,7 +231,7 @@ export const BasicCsvExport: StoryObj = {
         >
           Export to CSV
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -301,7 +301,7 @@ export const CsvExportWithCustomFilename: StoryObj = {
         >
           Export with Custom Filename
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="250px"
@@ -363,7 +363,7 @@ export const CsvExportIncludesAllPages: StoryObj = {
         >
           Export All Data
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -428,7 +428,7 @@ export const CsvExportWithoutHeaders: StoryObj = {
         >
           Export Without Headers
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -492,7 +492,7 @@ export const ExcludeColumnFromCsv: StoryObj = {
         >
           Export CSV
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -571,7 +571,7 @@ export const CsvExportWithValueFormatter: StoryObj = {
         >
           Export with Formatted Values
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -642,7 +642,7 @@ export const CsvExportWithExportValueGetter: StoryObj = {
         >
           Export with Custom Values
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -708,7 +708,7 @@ export const CsvExportWithFiltering: StoryObj = {
         >
           Export Filtered Data
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -771,7 +771,7 @@ export const CsvExportWithSorting: StoryObj = {
         >
           Export Sorted Data
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -831,7 +831,7 @@ export const CsvExportWithNestedData: StoryObj = {
         >
           Export Nested Data
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -902,7 +902,7 @@ export const CsvExportWithArrayAccessors: StoryObj = {
         >
           Export Array Data
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -974,7 +974,7 @@ export const MultipleCsvExports: StoryObj = {
         >
           Export 2
         </button>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"

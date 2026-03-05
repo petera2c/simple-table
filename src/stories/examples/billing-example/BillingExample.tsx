@@ -1,5 +1,5 @@
 import { HEADERS } from "./billing-headers";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../../components/simple-table/SimpleTableReact";
 import billingData from "./billing-data.json";
 import { UniversalTableProps } from "../StoryWrapper";
 import Row from "../../../types/Row";
@@ -17,7 +17,7 @@ export const billingExampleDefaults = {
 
 const BillingExample = (props: UniversalTableProps) => {
   return (
-    <SimpleTable
+    <SimpleTableReact
       defaultHeaders={HEADERS}
       height={"70dvh"}
       rowGrouping={["invoices", "charges"]}

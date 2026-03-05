@@ -14,10 +14,21 @@ export { DimensionManager } from "./DimensionManager";
 export type { DimensionManagerConfig, DimensionManagerState } from "./DimensionManager";
 
 export { ScrollManager } from "./ScrollManager";
-export type { ScrollManagerConfig, ScrollManagerState } from "./ScrollManager";
+export type { ScrollManagerConfig, ScrollManagerState, ScrollSyncConfig } from "./ScrollManager";
 
 export { SelectionManager } from "./SelectionManager";
 export type { SelectionManagerConfig } from "./SelectionManager";
 
 export { TableManager } from "./TableManager";
 export type { TableManagerConfig, TableManagerState } from "./TableManager";
+
+export { RowSelectionManager } from "./RowSelectionManager";
+export type { RowSelectionManagerConfig, RowSelectionManagerState } from "./RowSelectionManager";
+
+export { DragHandlerManager } from "./DragHandlerManager";
+export type { DragHandlerManagerConfig } from "./DragHandlerManager";
+
+export { TableStateManager } from "./TableStateManager";
+export type { TableStateManagerConfig, TableStateManagerState } from "./TableStateManager";
+
+export { AutoScaleManager, applyAutoScaleToHeaders } from "./AutoScaleManager";

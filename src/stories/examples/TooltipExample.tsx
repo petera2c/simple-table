@@ -1,4 +1,4 @@
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import { UniversalTableProps } from "./StoryWrapper";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
@@ -111,7 +111,7 @@ export const tooltipExampleDefaults = {
 
 const TooltipExample = (props: UniversalTableProps) => {
   return (
-    <SimpleTable
+    <SimpleTableReact
       {...props}
       defaultHeaders={HEADERS}
       rows={EXAMPLE_DATA}

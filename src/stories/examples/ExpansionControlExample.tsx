@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import { HeaderObject, TableRefType } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -561,7 +561,7 @@ const ExpansionControlExample = (props: UniversalTableProps) => {
         </div>
       </div>
 
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         tableRef={tableRef}
         defaultHeaders={headers}

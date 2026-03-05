@@ -6,7 +6,7 @@ import {
   swapHeaders,
   insertHeaderAcrossSections,
   getHeaderSection,
-} from "../../hooks/useDragHandler";
+} from "../../managers/DragHandlerManager";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { HeaderRenderContext } from "./types";
 import { createEditableInput } from "./editing";

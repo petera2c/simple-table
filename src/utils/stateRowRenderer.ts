@@ -1,6 +1,3 @@
-// State row renderer with React portal mounting (vanilla JS/TS container + React content)
-// Replaces RowStateIndicator.tsx React component
-
 import type TableRowType from "../types/TableRow";
 import { calculateRowTopPosition, HeightOffsets } from "./infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
@@ -8,10 +5,10 @@ import {
   LoadingStateRenderer,
   ErrorStateRenderer,
   EmptyStateRenderer,
+  LoadingStateRendererProps,
+  ErrorStateRendererProps,
+  EmptyStateRendererProps,
 } from "../types/RowStateRendererProps";
-
-// Use dynamic import to avoid TypeScript errors with react-dom
-declare const ReactDOM: any;
 
 export interface StateRowRenderContext {
   index: number;
@@ -24,7 +21,27 @@ export interface StateRowRenderContext {
   emptyStateRenderer?: EmptyStateRenderer;
 }
 
-// Create a state row element with React content mounted via portal
+function renderStateContent(
+  renderer: LoadingStateRenderer | ErrorStateRenderer | EmptyStateRenderer | undefined,
+  props: LoadingStateRendererProps | ErrorStateRendererProps | EmptyStateRendererProps
+): HTMLElement | string | null {
+  if (!renderer) return null;
+
+  if (typeof renderer === "string") {
+    return renderer;
+  }
+
+  if (renderer instanceof HTMLElement) {
+    return renderer.cloneNode(true) as HTMLElement;
+  }
+
+  if (typeof renderer === "function") {
+    return renderer(props as any);
+  }
+
+  return null;
+}
+
 export const createStateRow = (
   tableRow: TableRowType,
   context: StateRowRenderContext,
@@ -35,12 +52,10 @@ export const createStateRow = (
     throw new Error("createStateRow called without stateIndicator");
   }
 
-  // Create row wrapper
   const rowElement = document.createElement("div");
   rowElement.className = "st-row st-state-row";
   rowElement.dataset.index = String(context.index);
 
-  // Apply positioning
   rowElement.style.gridTemplateColumns = context.gridTemplateColumns;
   rowElement.style.transform = `translate3d(0, ${calculateRowTopPosition({
     position,
@@ -50,40 +65,44 @@ export const createStateRow = (
   })}px, 0)`;
   rowElement.style.height = `${context.rowHeight}px`;
 
-  // Create cell that spans all columns
   const cellElement = document.createElement("div");
   cellElement.className = "st-cell st-state-row-cell";
   cellElement.style.gridColumn = "1 / -1";
   cellElement.style.padding = "0";
 
-  // Determine which renderer to use
-  let reactRenderer: React.ReactNode = null;
+  let content: HTMLElement | string | null = null;
 
   if (stateIndicator.state.loading && context.loadingStateRenderer) {
-    reactRenderer = context.loadingStateRenderer;
+    content = renderStateContent(context.loadingStateRenderer, {
+      parentRow: stateIndicator.parentRow,
+    });
   } else if (stateIndicator.state.error && context.errorStateRenderer) {
-    reactRenderer = context.errorStateRenderer;
+    content = renderStateContent(context.errorStateRenderer, {
+      error: stateIndicator.state.error,
+      parentRow: stateIndicator.parentRow,
+    });
   } else if (stateIndicator.state.isEmpty && context.emptyStateRenderer) {
-    reactRenderer = context.emptyStateRenderer;
+    content = renderStateContent(context.emptyStateRenderer, {
+      message: stateIndicator.state.emptyMessage,
+      parentRow: stateIndicator.parentRow,
+    });
   }
 
-  // If we have a React renderer, mount it using render
-  if (reactRenderer) {
-    // Lazy load ReactDOM
-    const ReactDOMModule = require("react-dom");
-    ReactDOMModule.render(reactRenderer, cellElement);
+  if (content) {
+    if (typeof content === "string") {
+      cellElement.textContent = content;
+    } else if (content instanceof HTMLElement) {
+      cellElement.appendChild(content);
+    }
   }
 
   rowElement.appendChild(cellElement);
   return rowElement;
 };
 
-// Cleanup state row by unmounting React content
 export const cleanupStateRow = (rowElement: HTMLElement): void => {
   const cellElement = rowElement.querySelector(".st-state-row-cell");
   if (cellElement) {
-    // Lazy load ReactDOM
-    const ReactDOMModule = require("react-dom");
-    ReactDOMModule.unmountComponentAtNode(cellElement);
+    cellElement.innerHTML = "";
   }
 };

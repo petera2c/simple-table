@@ -1,5 +1,8 @@
-import { Dispatch, RefObject, SetStateAction, TouchEvent } from "react";
 import { HeaderObject, Accessor } from "..";
+
+export interface RefObject<T> {
+  current: T | null;
+}
 
 export type HandleResizeStartProps = {
   autoExpandColumns: boolean;
@@ -14,7 +17,7 @@ export type HandleResizeStartProps = {
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   reverse: boolean;
-  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
-  setIsResizing: Dispatch<SetStateAction<boolean>>;
+  setHeaders: (headers: HeaderObject[] | ((prev: HeaderObject[]) => HeaderObject[])) => void;
+  setIsResizing: (isResizing: boolean | ((prev: boolean) => boolean)) => void;
   startWidth: number;
 };

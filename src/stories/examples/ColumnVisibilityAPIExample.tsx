@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import TableRefType from "../../types/TableRefType";
@@ -430,7 +430,7 @@ const ColumnVisibilityAPIExampleComponent: React.FC<UniversalTableProps> = (prop
         </div>
       </div>
 
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         tableRef={tableRef}
         defaultHeaders={headers}

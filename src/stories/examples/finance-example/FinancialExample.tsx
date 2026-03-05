@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { HEADERS } from "./finance-headers";
 import financeData from "./finance-data.json";
 import TableRefType from "../../../types/TableRefType";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../../components/simple-table/SimpleTableReact";
 import { UniversalTableProps } from "../StoryWrapper";
 
 // Configuration for stock price updates
@@ -159,7 +159,7 @@ export const FinancialExample = (props: UniversalTableProps) => {
   }, []);
 
   return (
-    <SimpleTable
+    <SimpleTableReact
       {...props}
       defaultHeaders={HEADERS}
       rows={financeData}

@@ -1,12 +1,11 @@
-import { ReactNode } from "react";
 import type { Accessor } from "./HeaderObject";
 import type HeaderObject from "./HeaderObject";
 
 export interface ColumnEditorRowRendererComponents {
-  expandIcon?: ReactNode;
-  checkbox?: ReactNode;
-  dragIcon?: ReactNode;
-  labelContent?: ReactNode;
+  expandIcon?: any;
+  checkbox?: any;
+  dragIcon?: any;
+  labelContent?: any;
 }
 
 interface ColumnEditorRowRendererProps {
@@ -15,6 +14,6 @@ interface ColumnEditorRowRendererProps {
   components: ColumnEditorRowRendererComponents;
 }
 
-export type ColumnEditorRowRenderer = (props: ColumnEditorRowRendererProps) => ReactNode | string;
+export type ColumnEditorRowRenderer = (props: ColumnEditorRowRendererProps) => any;
 
 export default ColumnEditorRowRendererProps;

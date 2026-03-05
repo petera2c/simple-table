@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../adapters/SimpleTableReactReact";
 import { HeaderObject, TableRefType } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -530,7 +530,7 @@ const RowGroupingDemo = (props: UniversalTableProps) => {
           Toggle Divisions
         </button>
       </div>
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         defaultHeaders={headers}
         enableStickyParents

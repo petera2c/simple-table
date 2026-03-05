@@ -1,4 +1,4 @@
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../../components/simple-table/SimpleTableReact";
 import { HeaderObject, TableRefType } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 import { useRef } from "react";
@@ -203,7 +203,7 @@ const RowGroupingExample = (props: UniversalTableProps) => {
   return (
     <>
       <button onClick={() => tableRef.current?.exportToCSV()}>Export to CSV</button>
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         tableRef={tableRef}
         defaultHeaders={headers}

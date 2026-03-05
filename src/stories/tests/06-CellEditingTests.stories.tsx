@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -166,7 +166,7 @@ export const BasicStringEditing: StoryObj = {
             Last Edit: {lastEdit}
           </div>
         )}
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -247,7 +247,7 @@ export const NumberEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Salary cells to edit them (numeric input only)
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -320,7 +320,7 @@ export const BooleanEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Active cells to select True/False from dropdown
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -406,7 +406,7 @@ export const EnumEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Role cells to select from dropdown options
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -475,7 +475,7 @@ export const DateEditing: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Double-click on Hire Date cells to edit with date picker
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -538,7 +538,7 @@ export const NonEditableColumns: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Only First Name is editable. ID and Email should not respond to double-click
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -610,7 +610,7 @@ export const EscapeKeyCancelsEdit: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Edit a cell and press Escape to cancel changes
         </p>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"
@@ -695,7 +695,7 @@ export const OnCellEditCallback: StoryObj = {
             <div>row.id: {callbackInfo.rowId}</div>
           </div>
         )}
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="300px"

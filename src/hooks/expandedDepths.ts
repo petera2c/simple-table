@@ -81,6 +81,53 @@ export class ExpandedDepthsManager {
   }
 
   /**
+   * Expands all depths
+   */
+  expandAll(): void {
+    const allDepths = new Set<number>();
+    for (let i = 0; i < 10; i++) {
+      allDepths.add(i);
+    }
+    this.setExpandedDepths(allDepths);
+  }
+
+  /**
+   * Collapses all depths
+   */
+  collapseAll(): void {
+    this.setExpandedDepths(new Set());
+  }
+
+  /**
+   * Expands a specific depth
+   */
+  expandDepth(depth: number): void {
+    const newDepths = new Set(this.expandedDepths);
+    newDepths.add(depth);
+    this.setExpandedDepths(newDepths);
+  }
+
+  /**
+   * Collapses a specific depth
+   */
+  collapseDepth(depth: number): void {
+    const newDepths = new Set(this.expandedDepths);
+    newDepths.delete(depth);
+    this.setExpandedDepths(newDepths);
+  }
+
+  /**
+   * Toggles a specific depth
+   */
+  toggleDepth(depth: number): void {
+    if (this.expandedDepths.has(depth)) {
+      this.collapseDepth(depth);
+    } else {
+      this.expandDepth(depth);
+    }
+  }
+
+  /**
    * Cleans up the manager
    */
   destroy(): void {

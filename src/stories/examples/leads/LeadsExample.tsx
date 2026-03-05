@@ -5,7 +5,7 @@ import "./CustomTheme.css";
 import Theme from "../../../types/Theme";
 import Row from "../../../types/Row";
 import CellChangeProps from "../../../types/CellChangeProps";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import SimpleTableReact from "../../../components/simple-table/SimpleTableReact";
 import FooterRendererProps from "../../../types/FooterRendererProps";
 
 export const leadsExampleDefaults = {
@@ -435,7 +435,7 @@ const LeadsExampleComponent = ({
 
   return (
     <div className="custom-theme-container">
-      <SimpleTable
+      <SimpleTableReact
         columnResizing
         columnReordering
         defaultHeaders={LEADS_HEADERS}

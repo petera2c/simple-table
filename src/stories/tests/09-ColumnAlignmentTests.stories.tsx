@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTable } from "../..";
+import { Row, SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 // ============================================================================
@@ -80,16 +80,16 @@ const getJustifyContent = (element: HTMLElement | null): string => {
 // STORYBOOK META
 // ============================================================================
 
-const meta: Meta<typeof SimpleTable> = {
+const meta: Meta<typeof SimpleTableReact> = {
   title: "Tests/09-ColumnAlignmentTests",
-  component: SimpleTable,
+  component: SimpleTableReact,
   parameters: {
     layout: "padded",
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof SimpleTable>;
+type Story = StoryObj<typeof SimpleTableReact>;
 
 // ============================================================================
 // TEST CASES
@@ -110,7 +110,7 @@ export const LeftAlignment: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row.id)}
@@ -164,7 +164,7 @@ export const CenterAlignment: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -218,7 +218,7 @@ export const RightAlignment: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -274,7 +274,7 @@ export const MixedAlignment: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -336,7 +336,7 @@ export const DefaultAlignment: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -401,7 +401,7 @@ export const AlignmentWithSorting: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -462,7 +462,7 @@ export const AlignmentWithFiltering: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -508,7 +508,7 @@ export const AlignmentConsistencyAcrossRows: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}
@@ -554,7 +554,7 @@ export const AlignmentWithNumberTypes: Story = {
 
     return (
       <div style={{ padding: "20px" }}>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           getRowId={(params) => String(params.row?.id)}

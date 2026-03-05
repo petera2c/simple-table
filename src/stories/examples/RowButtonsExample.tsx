@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CellClickProps, SimpleTable } from "../..";
+import { CellClickProps, SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import Row from "../../types/Row";
@@ -370,8 +370,8 @@ const RowButtonsExample = (props: UniversalTableProps) => {
         )}
       </div>
 
-      {/* SimpleTable with Row Buttons */}
-      <SimpleTable
+      {/* SimpleTableReact with Row Buttons */}
+      <SimpleTableReact
         {...props}
         defaultHeaders={headers}
         rows={rows}

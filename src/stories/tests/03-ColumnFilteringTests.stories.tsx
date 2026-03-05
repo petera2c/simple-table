@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -250,7 +250,7 @@ export const BasicFilterableColumns: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           Name, Age, and Department columns have filter icons
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -391,7 +391,7 @@ export const ProgrammaticApplyFilter: StoryObj = {
         >
           Filter Status: {filterInfo}
         </div>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
       </div>
     );
   },
@@ -533,7 +533,7 @@ export const ProgrammaticClearFilter: StoryObj = {
         >
           Filter Status: {filterInfo}
         </div>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
       </div>
     );
   },
@@ -602,7 +602,7 @@ export const OnFilterChangeCallback: StoryObj = {
           <div>Active Filters: {filterCount}</div>
           <div>Last Filter: {lastFilter}</div>
         </div>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={data}
           height="400px"
@@ -710,7 +710,7 @@ export const ExternalFilterHandling: StoryObj = {
         >
           Current Filter: {currentFilter}
         </div>
-        <SimpleTable
+        <SimpleTableReact
           defaultHeaders={headers}
           rows={filteredData}
           height="400px"
@@ -779,7 +779,7 @@ export const FilterDifferentDataTypes: StoryObj = {
         <p style={{ marginBottom: "1rem", color: "#666" }}>
           All columns are filterable with type-specific operators
         </p>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" />
       </div>
     );
   },
@@ -875,7 +875,7 @@ export const GetFilterState: StoryObj = {
         >
           {filterState}
         </pre>
-        <SimpleTable defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
+        <SimpleTableReact defaultHeaders={headers} rows={data} height="400px" tableRef={tableRef} />
       </div>
     );
   },

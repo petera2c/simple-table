@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -114,7 +114,7 @@ const ColumnWidthChangeExample = (props: UniversalTableProps) => {
         headers. Column widths are automatically saved to localStorage and restored on page reload.
       </p>
 
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         defaultHeaders={headers}
         rows={data}

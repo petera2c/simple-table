@@ -1,10 +1,9 @@
-import { MutableRefObject, Dispatch, SetStateAction } from "react";
 import HeaderObject from "./HeaderObject";
 
 type useDragHandlerProps = {
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef: { current: HeaderObject | null };
   headers: HeaderObject[];
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  hoveredHeaderRef: { current: HeaderObject | null };
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
 };

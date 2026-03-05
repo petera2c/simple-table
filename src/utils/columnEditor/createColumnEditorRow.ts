@@ -7,12 +7,12 @@ import {
   buildColumnVisibilityState,
   findClosestValidSeparatorIndex,
   FlattenedHeader,
-} from "../../components/simple-table/table-column-editor/columnEditorUtils";
+} from "./columnEditorUtils";
 import {
   getSiblingArray,
   setSiblingArray,
   insertHeaderAcrossSections,
-} from "../../hooks/useDragHandler";
+} from "../../managers/DragHandlerManager";
 import { deepClone } from "../generalUtils";
 import { createCheckbox } from "./createCheckbox";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";

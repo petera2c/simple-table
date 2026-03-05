@@ -16,7 +16,7 @@
     "noEmit": false,
     "declaration": true,
     "declarationDir": "dist",
-    "jsx": "react-jsx"
+    "jsx": "react"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "rollup.config.js"]

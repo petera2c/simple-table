@@ -1,4 +1,4 @@
-import { useEffect, useRef, useReducer } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import Row from "../types/Row";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
@@ -28,10 +28,16 @@ const useFilterableData = ({
   onFilterChange,
   announce,
 }: UseFilterableDataProps): UseFilterableDataReturn => {
-  const managerRef = useRef<FilterManager>();
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  const managerRef = useRef<FilterManager | null>(null);
+  const [state, setState] = useState<{
+    filteredRows: Row[];
+    filters: TableFilterState;
+  }>({
+    filteredRows: [],
+    filters: {},
+  });
 
-  if (!managerRef.current) {
+  useEffect(() => {
     const config: FilterManagerConfig = {
       rows,
       headers,
@@ -40,21 +46,28 @@ const useFilterableData = ({
       announce,
     };
     managerRef.current = new FilterManager(config);
-  }
 
-  useEffect(() => {
-    const manager = managerRef.current!;
-    const unsubscribe = manager.subscribe(() => {
-      forceUpdate();
+    const unsubscribe = managerRef.current.subscribe((newState) => {
+      setState({
+        filteredRows: newState.filteredRows,
+        filters: newState.filters,
+      });
+    });
+
+    setState({
+      filteredRows: managerRef.current.getFilteredRows(),
+      filters: managerRef.current.getFilters(),
     });
 
     return () => {
       unsubscribe();
+      managerRef.current?.destroy();
+      managerRef.current = null;
     };
   }, []);
 
   useEffect(() => {
-    managerRef.current!.updateConfig({
+    managerRef.current?.updateConfig({
       rows,
       headers,
       externalFilterHandling,
@@ -63,23 +76,14 @@ const useFilterableData = ({
     });
   }, [rows, headers, externalFilterHandling, onFilterChange, announce]);
 
-  useEffect(() => {
-    return () => {
-      managerRef.current?.destroy();
-    };
-  }, []);
-
-  const manager = managerRef.current;
-  const state = manager.getState();
-
   return {
     filteredRows: state.filteredRows,
-    updateFilter: (filter: FilterCondition) => manager.updateFilter(filter),
-    clearFilter: (accessor: Accessor) => manager.clearFilter(accessor),
-    clearAllFilters: () => manager.clearAllFilters(),
+    updateFilter: (filter: FilterCondition) => managerRef.current?.updateFilter(filter),
+    clearFilter: (accessor: Accessor) => managerRef.current?.clearFilter(accessor),
+    clearAllFilters: () => managerRef.current?.clearAllFilters(),
     filters: state.filters,
     computeFilteredRowsPreview: (filter: FilterCondition) => 
-      manager.computeFilteredRowsPreview(filter),
+      managerRef.current?.computeFilteredRowsPreview(filter) ?? [],
   };
 };
 

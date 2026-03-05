@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SimpleTable } from "../..";
+import { SimpleTableReact } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -373,7 +373,7 @@ const QuickFilterExampleComponent: React.FC<UniversalTableProps> = (props) => {
         </div>
       </div>
 
-      <SimpleTable
+      <SimpleTableReact
         {...props}
         defaultHeaders={headers}
         rows={sampleData}
