@@ -37,7 +37,6 @@ export class DimensionManager {
     const maxHeaderDepth = this.calculateMaxHeaderDepth();
     const calculatedHeaderHeight = this.calculateHeaderHeight(maxHeaderDepth);
     const contentHeight = this.calculateContentHeight();
-    console.log(contentHeight);
 
     this.state = {
       containerWidth: 0,

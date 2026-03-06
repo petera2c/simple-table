@@ -42,10 +42,42 @@ export interface BodySectionParams {
   totalRowCount?: number;
 }
 
+interface BodyCellsCacheEntry {
+  cells: AbsoluteBodyCell[];
+  deps: {
+    headersHash: string;
+    rowsHash: string;
+    collapsedHeadersSize: number;
+    rowHeight: number;
+    heightOffsetsHash: string;
+  };
+}
+
+interface HeaderCellsCacheEntry {
+  cells: AbsoluteCell[];
+  deps: {
+    headersHash: string;
+    collapsedHeadersSize: number;
+    maxDepth: number;
+    headerHeight: number;
+  };
+}
+
+interface ContextCacheEntry {
+  context: CellRenderContext | HeaderRenderContext;
+  deps: {
+    contextHash: string;
+  };
+}
+
 export class SectionRenderer {
   private headerSections: Map<string, HTMLElement> = new Map();
   private bodySections: Map<string, HTMLElement> = new Map();
   private registeredBodySections: Map<string, { element: HTMLElement; groups: string[] }> = new Map();
+  
+  private bodyCellsCache: Map<string, BodyCellsCacheEntry> = new Map();
+  private headerCellsCache: Map<string, HeaderCellsCacheEntry> = new Map();
+  private contextCache: Map<string, ContextCacheEntry> = new Map();
 
   renderHeaderSection(params: HeaderSectionParams): HTMLElement {
     const {
@@ -94,21 +126,24 @@ export class SectionRenderer {
       height: ${maxHeaderDepth * headerHeight}px;
     `;
 
-    const absoluteCells = this.calculateAbsoluteHeaderCells(
+    const absoluteCells = this.getCachedHeaderCells(
+      sectionKey,
       filteredHeaders,
       collapsedHeaders,
       maxHeaderDepth,
       headerHeight,
     );
 
+    const cachedContext = this.getCachedContext(`header-${sectionKey}`, context, pinned);
+
     // Initial render with scrollLeft = 0
-    renderHeaderCells(section, absoluteCells, { ...context, pinned }, 0);
+    renderHeaderCells(section, absoluteCells, cachedContext, 0);
 
     // For main section (not pinned), attach render function for scroll updates
     if (!pinned && section) {
       (section as any).__renderHeaderCells = (scrollLeft: number) => {
         if (section) {
-          renderHeaderCells(section, absoluteCells, { ...context, pinned }, scrollLeft);
+          renderHeaderCells(section, absoluteCells, cachedContext, scrollLeft);
         }
       };
     }
@@ -176,7 +211,8 @@ export class SectionRenderer {
       height: ${totalHeight}px;
     `;
 
-    const absoluteCells = this.calculateAbsoluteBodyCells(
+    const absoluteCells = this.getCachedBodyCells(
+      sectionKey,
       filteredHeaders,
       rows,
       collapsedHeaders,
@@ -185,14 +221,16 @@ export class SectionRenderer {
       context.customTheme,
     );
 
+    const cachedContext = this.getCachedContext(`body-${sectionKey}`, context, pinned);
+
     // Initial render with scrollLeft = 0
-    renderBodyCells(section, absoluteCells, { ...context, pinned }, 0);
+    renderBodyCells(section, absoluteCells, cachedContext, 0);
 
     // For main section (not pinned), attach render function for scroll updates
     if (!pinned && section) {
       (section as any).__renderBodyCells = (scrollLeft: number) => {
         if (section) {
-          renderBodyCells(section, absoluteCells, { ...context, pinned }, scrollLeft);
+          renderBodyCells(section, absoluteCells, cachedContext, scrollLeft);
         }
       };
     }
@@ -397,6 +435,150 @@ export class SectionRenderer {
     return leaves;
   }
 
+  private createHeadersHash(headers: HeaderObject[]): string {
+    return headers.map(h => `${h.accessor}:${h.width}:${h.pinned || ''}`).join('|');
+  }
+
+  private createRowsHash(rows: TableRow[]): string {
+    if (rows.length === 0) return '0';
+    return `${rows.length}:${rows[0]?.position}:${rows[rows.length - 1]?.position}`;
+  }
+
+  private createHeightOffsetsHash(heightOffsets?: Array<[number, number]>): string {
+    if (!heightOffsets || heightOffsets.length === 0) return '';
+    return heightOffsets.map(([pos, height]) => `${pos}:${height}`).join('|');
+  }
+
+  private createContextHash(context: any): string {
+    const keys = [
+      'columnBorders', 'enableRowSelection', 'cellUpdateFlash',
+      'useOddColumnBackground', 'useHoverRowBackground', 'useOddEvenRowBackground',
+      'rowHeight', 'containerWidth'
+    ];
+    return keys.map(k => `${k}:${context[k]}`).join('|');
+  }
+
+  private getCachedBodyCells(
+    sectionKey: string,
+    headers: HeaderObject[],
+    rows: TableRow[],
+    collapsedHeaders: Set<Accessor>,
+    rowHeight: number,
+    heightOffsets?: Array<[number, number]>,
+    customTheme?: any,
+  ): AbsoluteBodyCell[] {
+    const cached = this.bodyCellsCache.get(sectionKey);
+    
+    const headersHash = this.createHeadersHash(headers);
+    const rowsHash = this.createRowsHash(rows);
+    const heightOffsetsHash = this.createHeightOffsetsHash(heightOffsets);
+    
+    if (cached &&
+        cached.deps.headersHash === headersHash &&
+        cached.deps.rowsHash === rowsHash &&
+        cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
+        cached.deps.rowHeight === rowHeight &&
+        cached.deps.heightOffsetsHash === heightOffsetsHash) {
+      return cached.cells;
+    }
+    
+    const cells = this.calculateAbsoluteBodyCells(
+      headers,
+      rows,
+      collapsedHeaders,
+      rowHeight,
+      heightOffsets,
+      customTheme,
+    );
+    
+    this.bodyCellsCache.set(sectionKey, {
+      cells,
+      deps: {
+        headersHash,
+        rowsHash,
+        collapsedHeadersSize: collapsedHeaders.size,
+        rowHeight,
+        heightOffsetsHash,
+      },
+    });
+    
+    return cells;
+  }
+
+  private getCachedHeaderCells(
+    sectionKey: string,
+    headers: HeaderObject[],
+    collapsedHeaders: Set<Accessor>,
+    maxDepth: number,
+    headerHeight: number,
+  ): AbsoluteCell[] {
+    const cached = this.headerCellsCache.get(sectionKey);
+    
+    const headersHash = this.createHeadersHash(headers);
+    
+    if (cached &&
+        cached.deps.headersHash === headersHash &&
+        cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
+        cached.deps.maxDepth === maxDepth &&
+        cached.deps.headerHeight === headerHeight) {
+      return cached.cells;
+    }
+    
+    const cells = this.calculateAbsoluteHeaderCells(
+      headers,
+      collapsedHeaders,
+      maxDepth,
+      headerHeight,
+    );
+    
+    this.headerCellsCache.set(sectionKey, {
+      cells,
+      deps: {
+        headersHash,
+        collapsedHeadersSize: collapsedHeaders.size,
+        maxDepth,
+        headerHeight,
+      },
+    });
+    
+    return cells;
+  }
+
+  private getCachedContext<T extends CellRenderContext | HeaderRenderContext>(
+    cacheKey: string,
+    context: T,
+    pinned?: "left" | "right",
+  ): T {
+    const cached = this.contextCache.get(cacheKey);
+    const contextHash = this.createContextHash(context);
+    
+    if (cached && cached.deps.contextHash === contextHash) {
+      return cached.context as T;
+    }
+    
+    const newContext = { ...context, pinned };
+    this.contextCache.set(cacheKey, {
+      context: newContext,
+      deps: { contextHash },
+    });
+    
+    return newContext as T;
+  }
+
+  invalidateCache(type?: "body" | "header" | "context" | "all"): void {
+    if (!type || type === "all") {
+      this.bodyCellsCache.clear();
+      this.headerCellsCache.clear();
+      this.contextCache.clear();
+    } else if (type === "body") {
+      this.bodyCellsCache.clear();
+    } else if (type === "header") {
+      this.headerCellsCache.clear();
+    } else if (type === "context") {
+      this.contextCache.clear();
+    }
+  }
+
   cleanup(): void {
     // Unregister all body sections from scrollSyncManager
     this.registeredBodySections.forEach(({ element, groups }) => {
@@ -406,5 +588,8 @@ export class SectionRenderer {
     
     this.headerSections.clear();
     this.bodySections.clear();
+    this.bodyCellsCache.clear();
+    this.headerCellsCache.clear();
+    this.contextCache.clear();
   }
 }

@@ -4,7 +4,7 @@
 import { getCellId } from "./cellUtils";
 import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
 import { getRenderedCells } from "./bodyCell/eventTracking";
-import { createBodyCellElement, updateBodyCellElement } from "./bodyCell/styling";
+import { createBodyCellElement, updateBodyCellElement, untrackCellByRow } from "./bodyCell/styling";
 
 // Re-export types for backward compatibility
 export type {
@@ -66,24 +66,42 @@ export const renderBodyCells = (
   // Remove cells that are no longer visible
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
+      // Untrack from row hover map before removing
+      const rowIndex = parseInt(element.getAttribute("data-row-index") || "-1", 10);
+      if (rowIndex >= 0) {
+        untrackCellByRow(rowIndex, element);
+      }
       element.remove();
       renderedCells.delete(cellId);
     }
   });
 
-  // Add new cells or update existing ones
+  // Batch create new cells using DocumentFragment
+  const fragment = document.createDocumentFragment();
+  const cellsToCreate: Array<{ cell: AbsoluteBodyCell; cellId: string }> = [];
+
+  // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: cell.rowId });
 
     if (!renderedCells.has(cellId)) {
-      // Create new cell
-      const cellElement = createBodyCellElement(cell, context);
-      container.appendChild(cellElement);
-      renderedCells.set(cellId, cellElement);
+      cellsToCreate.push({ cell, cellId });
     } else {
       // Update existing cell to reflect current state
       const cellElement = renderedCells.get(cellId)!;
       updateBodyCellElement(cellElement, cell, context);
     }
   });
+
+  // Second pass: batch create new cells
+  cellsToCreate.forEach(({ cell, cellId }) => {
+    const cellElement = createBodyCellElement(cell, context);
+    fragment.appendChild(cellElement);
+    renderedCells.set(cellId, cellElement);
+  });
+
+  // Single DOM operation to add all new cells
+  if (fragment.childNodes.length > 0) {
+    container.appendChild(fragment);
+  }
 };

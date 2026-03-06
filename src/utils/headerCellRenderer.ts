@@ -72,7 +72,11 @@ export const renderHeaderCells = (
     }
   });
 
-  // Add new cells or update existing ones
+  // Batch create new cells using DocumentFragment
+  const fragment = document.createDocumentFragment();
+  const cellsToCreate: Array<{ cell: AbsoluteCell; cellId: string; isLastHeader: boolean }> = [];
+
+  // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: "header" });
     const isLastHeader = Boolean(
@@ -80,16 +84,25 @@ export const renderHeaderCells = (
     );
 
     if (!renderedCells.has(cellId)) {
-      // Create new cell
-      const cellElement = createHeaderCellElement(cell, context, isLastHeader);
-      container.appendChild(cellElement);
-      renderedCells.set(cellId, cellElement);
+      cellsToCreate.push({ cell, cellId, isLastHeader });
     } else {
       // Update existing cell to reflect current state
       const cellElement = renderedCells.get(cellId)!;
       updateHeaderCellElement(cellElement, cell, context, isLastHeader);
     }
   });
+
+  // Second pass: batch create new cells
+  cellsToCreate.forEach(({ cell, cellId, isLastHeader }) => {
+    const cellElement = createHeaderCellElement(cell, context, isLastHeader);
+    fragment.appendChild(cellElement);
+    renderedCells.set(cellId, cellElement);
+  });
+
+  // Single DOM operation to add all new cells
+  if (fragment.childNodes.length > 0) {
+    container.appendChild(fragment);
+  }
 
   // Store scroll position for future reference
   if (!context.pinned) {

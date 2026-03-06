@@ -57,11 +57,34 @@ export interface RenderState {
   columnEditorOpen: boolean;
 }
 
+interface FlattenedRowsCache {
+  aggregatedRows: Row[];
+  quickFilteredRows: Row[];
+  flattenResult: any;
+  deps: {
+    rowsRef: Row[];
+    quickFilter: any;
+    expandedRowsSize: number;
+    collapsedRowsSize: number;
+    expandedDepthsSize: number;
+  };
+}
+
 export class RenderOrchestrator {
   private tableRenderer: TableRenderer;
+  private lastHeadersRef: HeaderObject[] | null = null;
+  private lastRowsRef: Row[] | null = null;
+  private flattenedRowsCache: FlattenedRowsCache | null = null;
 
   constructor() {
     this.tableRenderer = new TableRenderer();
+  }
+
+  invalidateCache(type?: "body" | "header" | "context" | "all"): void {
+    this.tableRenderer.invalidateCache(type);
+    if (!type || type === "all" || type === "body") {
+      this.flattenedRowsCache = null;
+    }
   }
 
   computeEffectiveHeaders(
@@ -97,6 +120,17 @@ export class RenderOrchestrator {
     state: RenderState,
     mergedColumnEditorConfig: MergedColumnEditorConfig,
   ): void {
+    // Invalidate caches when headers or rows change (by reference)
+    if (this.lastHeadersRef !== context.headers) {
+      this.invalidateCache("header");
+      this.invalidateCache("context");
+      this.lastHeadersRef = context.headers;
+    }
+    if (this.lastRowsRef !== context.localRows) {
+      this.invalidateCache("body");
+      this.lastRowsRef = context.localRows;
+    }
+
     const effectiveHeaders = this.computeEffectiveHeaders(
       context.headers,
       context.config,
@@ -143,34 +177,66 @@ export class RenderOrchestrator {
       effectiveRows = Array.from({ length: rowsToShow }, () => ({}));
     }
 
-    const aggregatedRows = calculateAggregatedRows({
-      rows: effectiveRows,
-      headers: context.headers,
-      rowGrouping: context.config.rowGrouping,
-    });
+    // Check if we can use cached flattened rows
+    const canUseCache = this.flattenedRowsCache &&
+      this.flattenedRowsCache.deps.rowsRef === context.localRows &&
+      this.flattenedRowsCache.deps.quickFilter === context.config.quickFilter &&
+      this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
+      this.flattenedRowsCache.deps.collapsedRowsSize === context.collapsedRows.size &&
+      this.flattenedRowsCache.deps.expandedDepthsSize === context.expandedDepths.size;
 
-    const quickFilteredRows = filterRowsWithQuickFilter({
-      rows: aggregatedRows,
-      headers: effectiveHeaders,
-      quickFilter: context.config.quickFilter,
-    });
+    let aggregatedRows: Row[];
+    let quickFilteredRows: Row[];
+    let flattenResult: any;
 
-    const flattenResult = flattenRows({
-      rows: quickFilteredRows,
-      rowGrouping: context.config.rowGrouping,
-      getRowId: context.config.getRowId,
-      expandedRows: context.expandedRows,
-      collapsedRows: context.collapsedRows,
-      expandedDepths: context.expandedDepths,
-      rowStateMap: context.rowStateMap,
-      hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
-      hasErrorRenderer: Boolean(context.config.errorStateRenderer),
-      hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
-      headers: effectiveHeaders,
-      rowHeight: context.customTheme.rowHeight,
-      headerHeight: context.customTheme.headerHeight,
-      customTheme: context.customTheme,
-    });
+    if (canUseCache && this.flattenedRowsCache) {
+      aggregatedRows = this.flattenedRowsCache.aggregatedRows;
+      quickFilteredRows = this.flattenedRowsCache.quickFilteredRows;
+      flattenResult = this.flattenedRowsCache.flattenResult;
+    } else {
+      aggregatedRows = calculateAggregatedRows({
+        rows: effectiveRows,
+        headers: context.headers,
+        rowGrouping: context.config.rowGrouping,
+      });
+
+      quickFilteredRows = filterRowsWithQuickFilter({
+        rows: aggregatedRows,
+        headers: effectiveHeaders,
+        quickFilter: context.config.quickFilter,
+      });
+
+      flattenResult = flattenRows({
+        rows: quickFilteredRows,
+        rowGrouping: context.config.rowGrouping,
+        getRowId: context.config.getRowId,
+        expandedRows: context.expandedRows,
+        collapsedRows: context.collapsedRows,
+        expandedDepths: context.expandedDepths,
+        rowStateMap: context.rowStateMap,
+        hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
+        hasErrorRenderer: Boolean(context.config.errorStateRenderer),
+        hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
+        headers: effectiveHeaders,
+        rowHeight: context.customTheme.rowHeight,
+        headerHeight: context.customTheme.headerHeight,
+        customTheme: context.customTheme,
+      });
+
+      // Cache the result
+      this.flattenedRowsCache = {
+        aggregatedRows,
+        quickFilteredRows,
+        flattenResult,
+        deps: {
+          rowsRef: context.localRows,
+          quickFilter: context.config.quickFilter,
+          expandedRowsSize: context.expandedRows.size,
+          collapsedRowsSize: context.collapsedRows.size,
+          expandedDepthsSize: context.expandedDepths.size,
+        },
+      };
+    }
 
     const contentHeight = calculateContentHeight({
       height: context.config.height,
