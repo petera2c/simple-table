@@ -56,6 +56,10 @@ export class TableRenderer {
     this.sectionRenderer = new SectionRenderer();
   }
 
+  invalidateCache(type?: "body" | "header" | "context" | "all"): void {
+    this.sectionRenderer.invalidateCache(type);
+  }
+
   renderHeader(
     container: HTMLElement,
     calculatedHeaderHeight: number,

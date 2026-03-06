@@ -6,6 +6,45 @@ import { addTrackedEventListener } from "./eventTracking";
 import { createEditor } from "./editing";
 import { createCellContent } from "./content";
 
+// Global map for efficient row hover tracking: rowIndex -> Set<HTMLElement>
+const rowCellsMap = new Map<number, Set<HTMLElement>>();
+
+// Track current hovered row for cleanup
+let currentHoveredRow: number | null = null;
+
+// Helper to add cell to row tracking
+const trackCellByRow = (rowIndex: number, cellElement: HTMLElement): void => {
+  if (!rowCellsMap.has(rowIndex)) {
+    rowCellsMap.set(rowIndex, new Set());
+  }
+  rowCellsMap.get(rowIndex)!.add(cellElement);
+};
+
+// Helper to remove cell from row tracking
+export const untrackCellByRow = (rowIndex: number, cellElement: HTMLElement): void => {
+  const cellSet = rowCellsMap.get(rowIndex);
+  if (cellSet) {
+    cellSet.delete(cellElement);
+    if (cellSet.size === 0) {
+      rowCellsMap.delete(rowIndex);
+    }
+  }
+};
+
+// Helper to set hover state for entire row
+const setRowHoverState = (rowIndex: number, hovered: boolean): void => {
+  const cellSet = rowCellsMap.get(rowIndex);
+  if (cellSet) {
+    cellSet.forEach((cell) => {
+      if (hovered) {
+        cell.classList.add("st-row-hovered");
+      } else {
+        cell.classList.remove("st-row-hovered");
+      }
+    });
+  }
+};
+
 // Calculate cell class names based on current state
 export const calculateBodyCellClasses = (
   cell: AbsoluteBodyCell,
@@ -239,18 +278,27 @@ export const createBodyCellElement = (
     addTrackedEventListener(cellElement, "click", handleClick);
   }
 
-  // Row hover handlers - find all cells with same rowIndex and toggle hover class
+  // Row hover handlers - use efficient Map-based tracking
   if (context.useHoverRowBackground) {
+    // Track this cell by row index
+    trackCellByRow(rowIndex, cellElement);
+
     const handleMouseEnter = () => {
-      // Find all cells with this row index across all sections
-      const allCellsInRow = document.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
-      allCellsInRow.forEach((cell) => cell.classList.add("st-row-hovered"));
+      // Clear previous hovered row if different
+      if (currentHoveredRow !== null && currentHoveredRow !== rowIndex) {
+        setRowHoverState(currentHoveredRow, false);
+      }
+      // Set hover state for current row
+      setRowHoverState(rowIndex, true);
+      currentHoveredRow = rowIndex;
     };
 
     const handleMouseLeave = () => {
-      // Remove hover class from all cells with this row index
-      const allCellsInRow = document.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
-      allCellsInRow.forEach((cell) => cell.classList.remove("st-row-hovered"));
+      // Remove hover state
+      setRowHoverState(rowIndex, false);
+      if (currentHoveredRow === rowIndex) {
+        currentHoveredRow = null;
+      }
     };
 
     addTrackedEventListener(cellElement, "mouseenter", handleMouseEnter);
