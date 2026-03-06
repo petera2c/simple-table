@@ -7,6 +7,7 @@ import {
 import { renderBodyCells, AbsoluteBodyCell, CellRenderContext } from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
+import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 
 interface SectionDimensions {
   mainWidth: number;
@@ -36,6 +37,8 @@ export interface BodySectionParams {
   context: CellRenderContext;
   sectionWidth?: number;
   rowHeight: number;
+  heightOffsets?: Array<[number, number]>;
+  totalRowCount?: number;
 }
 
 export class SectionRenderer {
@@ -121,6 +124,8 @@ export class SectionRenderer {
       context,
       sectionWidth,
       rowHeight,
+      heightOffsets,
+      totalRowCount,
     } = params;
 
     const sectionKey = pinned || "main";
@@ -151,7 +156,15 @@ export class SectionRenderer {
 
     section.style.display = "";
 
-    const totalHeight = rows.length * rowHeight;
+    // Calculate total height properly using calculateTotalHeight with heightOffsets
+    const rowCount = totalRowCount !== undefined ? totalRowCount : rows.length;
+    const totalHeight = calculateTotalHeight(
+      rowCount,
+      rowHeight,
+      heightOffsets,
+      context.customTheme
+    );
+    
     section.style.cssText = `
       position: relative;
       ${sectionWidth !== undefined ? `width: ${sectionWidth}px;` : ""}
@@ -164,6 +177,8 @@ export class SectionRenderer {
       rows,
       collapsedHeaders,
       rowHeight,
+      heightOffsets,
+      context.customTheme,
     );
 
     // Initial render with scrollLeft = 0
@@ -283,6 +298,8 @@ export class SectionRenderer {
     rows: TableRow[],
     collapsedHeaders: Set<Accessor>,
     rowHeight: number,
+    heightOffsets?: Array<[number, number]>,
+    customTheme?: any,
   ): AbsoluteBodyCell[] {
     const cells: AbsoluteBodyCell[] = [];
 
@@ -298,6 +315,16 @@ export class SectionRenderer {
     });
 
     rows.forEach((tableRow, rowIndex) => {
+      // Calculate proper top position using calculateRowTopPosition
+      const topPosition = customTheme
+        ? calculateRowTopPosition({
+            position: tableRow.position,
+            rowHeight,
+            heightOffsets,
+            customTheme,
+          })
+        : rowIndex * rowHeight;
+
       leafHeaders.forEach((header, colIndex) => {
         const position = headerPositions.get(header.accessor);
         cells.push({
@@ -311,7 +338,7 @@ export class SectionRenderer {
           isOdd: rowIndex % 2 === 1,
           tableRow,
           left: position?.left ?? 0,
-          top: rowIndex * rowHeight,
+          top: topPosition,
           width: position?.width ?? 150,
           height: rowHeight,
         });

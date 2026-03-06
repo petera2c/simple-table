@@ -74,6 +74,9 @@ export class SimpleTableVanilla {
   private ariaAnnouncementManager: AriaAnnouncementManager | null = null;
 
   private mounted: boolean = false;
+  private scrollRafId: number | null = null;
+  private scrollEndTimeoutId: number | null = null;
+  private lastScrollTop: number = 0;
 
   constructor(container: HTMLElement, config: SimpleTableConfig) {
     this.container = container;
@@ -246,21 +249,52 @@ export class SimpleTableVanilla {
     const element = e.currentTarget as HTMLDivElement;
     const newScrollTop = element.scrollTop;
 
+    // Set scrolling state immediately
     this.isScrolling = true;
-    this.scrollTop = newScrollTop;
 
-    const previousScrollTop = this.scrollTop;
-    const direction: "up" | "down" | "none" =
-      newScrollTop > previousScrollTop ? "down" : newScrollTop < previousScrollTop ? "up" : "none";
+    // Clear previous scroll end timeout
+    if (this.scrollEndTimeoutId !== null) {
+      clearTimeout(this.scrollEndTimeoutId);
+    }
 
-    this.scrollDirection = direction;
-
-    setTimeout(() => {
+    // Set up timeout to detect when scrolling ends
+    this.scrollEndTimeoutId = window.setTimeout(() => {
       this.isScrolling = false;
-      this.render();
+      this.scrollEndTimeoutId = null;
     }, 150);
 
-    this.render();
+    // Cancel any pending RAF
+    if (this.scrollRafId !== null) {
+      cancelAnimationFrame(this.scrollRafId);
+    }
+
+    // Use RAF to throttle scroll updates
+    this.scrollRafId = requestAnimationFrame(() => {
+      // Calculate scroll direction
+      const direction: "up" | "down" | "none" =
+        newScrollTop > this.lastScrollTop
+          ? "down"
+          : newScrollTop < this.lastScrollTop
+            ? "up"
+            : "none";
+
+      // Update state
+      this.scrollTop = newScrollTop;
+      this.scrollDirection = direction;
+      this.lastScrollTop = newScrollTop;
+
+      // Use scroll manager if available
+      if (this.scrollManager) {
+        const containerHeight = element.clientHeight;
+        const contentHeight = element.scrollHeight;
+        this.scrollManager.handleScroll(newScrollTop, element.scrollLeft, containerHeight, contentHeight);
+      }
+
+      // Trigger re-render for virtualization
+      this.render();
+
+      this.scrollRafId = null;
+    });
   }
 
   private clearHoveredRows(): void {
@@ -299,6 +333,7 @@ export class SimpleTableVanilla {
       pinnedLeftRef: refs.pinnedLeftRef,
       pinnedRightRef: refs.pinnedRightRef,
       dimensionManager: this.dimensionManager,
+      scrollManager: this.scrollManager,
       rowStateMap: this.rowStateMap,
       onRender: () => this.render(),
       setIsResizing: (value: boolean) => {
@@ -375,6 +410,16 @@ export class SimpleTableVanilla {
 
   destroy(): void {
     this.mounted = false;
+
+    // Clean up RAF and timeouts
+    if (this.scrollRafId !== null) {
+      cancelAnimationFrame(this.scrollRafId);
+      this.scrollRafId = null;
+    }
+    if (this.scrollEndTimeoutId !== null) {
+      clearTimeout(this.scrollEndTimeoutId);
+      this.scrollEndTimeoutId = null;
+    }
 
     this.dimensionManager?.destroy();
     this.scrollManager?.destroy();

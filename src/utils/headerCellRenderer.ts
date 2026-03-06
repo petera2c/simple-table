@@ -43,7 +43,8 @@ export const renderHeaderCells = (
 ): void => {
   // Get container width for viewport calculation
   // Use containerWidth from context (provided by DimensionManager) if available
-  const viewportWidth = context.containerWidth || container.parentElement?.clientWidth || container.clientWidth || 0;
+  const viewportWidth =
+    context.containerWidth || container.parentElement?.clientWidth || container.clientWidth || 0;
 
   // For pinned sections, always render all cells (they don't scroll)
   // For main section, only render visible cells based on scroll position
@@ -53,7 +54,6 @@ export const renderHeaderCells = (
 
   // Debug: Log virtualization info for main section
   if (!context.pinned && absoluteCells.length > 0) {
-    console.log(`[VIRT HEADER] cells:${absoluteCells.length} → visible:${cellsToRender.length} | viewport:${viewportWidth}px scroll:${scrollLeft}px | source:${context.containerWidth ? 'DimensionManager' : 'DOM'}`);
   }
 
   const lastHeaderIndex = getLastHeaderIndex(absoluteCells);
