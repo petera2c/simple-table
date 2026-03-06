@@ -50,6 +50,7 @@ export class TableRenderer {
   private footerInstance: ReturnType<typeof createTableFooter> | null = null;
   private columnEditorInstance: ReturnType<typeof createColumnEditor> | null = null;
   private horizontalScrollbarRef: { current: HTMLElement | null } = { current: null };
+  private scrollbarTimeoutId: number | null = null;
 
   constructor() {
     this.sectionRenderer = new SectionRenderer();
@@ -64,7 +65,6 @@ export class TableRenderer {
     if (!container || deps.config.hideHeader) return;
 
     container.style.height = `${calculatedHeaderHeight}px`;
-    container.innerHTML = "";
 
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,
@@ -148,6 +148,9 @@ export class TableRenderer {
     const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
     const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
 
+    // Track which sections should exist (like React's component list)
+    const sectionsToKeep: HTMLElement[] = [];
+
     if (pinnedLeftHeaders.length > 0) {
       const leftSection = this.sectionRenderer.renderHeaderSection({
         headers: deps.effectiveHeaders,
@@ -159,7 +162,10 @@ export class TableRenderer {
         context: headerContext,
         sectionWidth: leftWidth,
       });
-      container.appendChild(leftSection);
+      sectionsToKeep.push(leftSection);
+      if (!container.contains(leftSection)) {
+        container.appendChild(leftSection);
+      }
     }
 
     if (mainHeaders.length > 0) {
@@ -171,7 +177,10 @@ export class TableRenderer {
         headerHeight: deps.customTheme.headerHeight,
         context: headerContext,
       });
-      container.appendChild(mainSection);
+      sectionsToKeep.push(mainSection);
+      if (!container.contains(mainSection)) {
+        container.appendChild(mainSection);
+      }
     }
 
     if (pinnedRightHeaders.length > 0) {
@@ -185,8 +194,18 @@ export class TableRenderer {
         context: headerContext,
         sectionWidth: rightWidth,
       });
-      container.appendChild(rightSection);
+      sectionsToKeep.push(rightSection);
+      if (!container.contains(rightSection)) {
+        container.appendChild(rightSection);
+      }
     }
+
+    // Remove any orphaned sections (like React unmounting components)
+    Array.from(container.children).forEach((child) => {
+      if (!sectionsToKeep.includes(child as HTMLElement)) {
+        child.remove();
+      }
+    });
   }
 
   renderBody(container: HTMLElement, processedResult: any, deps: TableRendererDeps): void {
@@ -212,8 +231,6 @@ export class TableRenderer {
       container.appendChild(emptyWrapper);
       return;
     }
-
-    container.innerHTML = "";
 
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,
@@ -295,6 +312,9 @@ export class TableRenderer {
     const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
     const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
 
+    // Track which sections should exist (like React's component list)
+    const sectionsToKeep: HTMLElement[] = [];
+
     if (pinnedLeftHeaders.length > 0) {
       const leftSection = this.sectionRenderer.renderBodySection({
         headers: deps.effectiveHeaders,
@@ -308,7 +328,10 @@ export class TableRenderer {
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
       });
-      container.appendChild(leftSection);
+      sectionsToKeep.push(leftSection);
+      if (!container.contains(leftSection)) {
+        container.appendChild(leftSection);
+      }
     }
 
     if (mainHeaders.length > 0) {
@@ -323,7 +346,10 @@ export class TableRenderer {
         totalRowCount: processedResult.currentTableRows.length,
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
-      container.appendChild(mainSection);
+      sectionsToKeep.push(mainSection);
+      if (!container.contains(mainSection)) {
+        container.appendChild(mainSection);
+      }
     }
 
     if (pinnedRightHeaders.length > 0) {
@@ -339,8 +365,18 @@ export class TableRenderer {
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
       });
-      container.appendChild(rightSection);
+      sectionsToKeep.push(rightSection);
+      if (!container.contains(rightSection)) {
+        container.appendChild(rightSection);
+      }
     }
+
+    // Remove any orphaned sections (like React unmounting components)
+    Array.from(container.children).forEach((child) => {
+      if (!sectionsToKeep.includes(child as HTMLElement)) {
+        child.remove();
+      }
+    });
   }
 
   renderFooter(
@@ -461,12 +497,18 @@ export class TableRenderer {
       return;
     }
 
+    // Cancel any pending scrollbar creation
+    if (this.scrollbarTimeoutId !== null) {
+      clearTimeout(this.scrollbarTimeoutId);
+      this.scrollbarTimeoutId = null;
+    }
+
     if (this.horizontalScrollbarRef.current) {
       cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
       this.horizontalScrollbarRef.current = null;
     }
 
-    setTimeout(() => {
+    this.scrollbarTimeoutId = window.setTimeout(() => {
       if (!deps.mainBodyRef.current || !tableBodyContainerRef || !wrapperContainer) {
         return;
       }
@@ -491,6 +533,8 @@ export class TableRenderer {
         }
         this.horizontalScrollbarRef.current = scrollbar;
       }
+      
+      this.scrollbarTimeoutId = null;
     }, 1);
   }
 
@@ -498,6 +542,12 @@ export class TableRenderer {
     this.sectionRenderer.cleanup();
     this.footerInstance?.destroy();
     this.columnEditorInstance?.destroy();
+
+    // Cancel any pending scrollbar creation
+    if (this.scrollbarTimeoutId !== null) {
+      clearTimeout(this.scrollbarTimeoutId);
+      this.scrollbarTimeoutId = null;
+    }
 
     if (this.horizontalScrollbarRef.current) {
       cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);

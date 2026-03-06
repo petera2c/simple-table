@@ -8,6 +8,7 @@ import { renderBodyCells, AbsoluteBodyCell, CellRenderContext } from "../../util
 import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
 import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
+import { scrollSyncManager } from "../../utils/scrollSyncManager";
 
 interface SectionDimensions {
   mainWidth: number;
@@ -44,6 +45,7 @@ export interface BodySectionParams {
 export class SectionRenderer {
   private headerSections: Map<string, HTMLElement> = new Map();
   private bodySections: Map<string, HTMLElement> = new Map();
+  private registeredBodySections: Map<string, { element: HTMLElement; groups: string[] }> = new Map();
 
   renderHeaderSection(params: HeaderSectionParams): HTMLElement {
     const {
@@ -130,6 +132,7 @@ export class SectionRenderer {
 
     const sectionKey = pinned || "main";
     let section = this.bodySections.get(sectionKey);
+    let isNewSection = false;
 
     if (!section) {
       section = document.createElement("div");
@@ -141,6 +144,7 @@ export class SectionRenderer {
             : "st-body-main";
       section.setAttribute("role", "rowgroup");
       this.bodySections.set(sectionKey, section);
+      isNewSection = true;
     }
 
     const filteredHeaders = headers.filter((h) => {
@@ -191,6 +195,13 @@ export class SectionRenderer {
           renderBodyCells(section, absoluteCells, { ...context, pinned }, scrollLeft);
         }
       };
+    }
+
+    // Register section with scrollSyncManager for horizontal scrollbar sync
+    if (isNewSection) {
+      const group = pinned ? `pinned-${pinned}` : "default";
+      scrollSyncManager.registerPane(section, [group]);
+      this.registeredBodySections.set(sectionKey, { element: section, groups: [group] });
     }
 
     return section;
@@ -387,6 +398,12 @@ export class SectionRenderer {
   }
 
   cleanup(): void {
+    // Unregister all body sections from scrollSyncManager
+    this.registeredBodySections.forEach(({ element, groups }) => {
+      scrollSyncManager.unregisterPane(element, groups);
+    });
+    this.registeredBodySections.clear();
+    
     this.headerSections.clear();
     this.bodySections.clear();
   }
