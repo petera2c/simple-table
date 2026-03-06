@@ -136,8 +136,9 @@ export class SectionRenderer {
 
     const cachedContext = this.getCachedContext(`header-${sectionKey}`, context, pinned);
 
-    // Initial render with scrollLeft = 0
-    renderHeaderCells(section, absoluteCells, cachedContext, 0);
+    // Render with current scrollLeft to preserve scroll position during re-renders
+    const currentScrollLeft = section.scrollLeft;
+    renderHeaderCells(section, absoluteCells, cachedContext, currentScrollLeft);
 
     // For main section (not pinned), attach render function for scroll updates
     if (!pinned && section) {
@@ -223,8 +224,9 @@ export class SectionRenderer {
 
     const cachedContext = this.getCachedContext(`body-${sectionKey}`, context, pinned);
 
-    // Initial render with scrollLeft = 0
-    renderBodyCells(section, absoluteCells, cachedContext, 0);
+    // Render with current scrollLeft to preserve scroll position during re-renders
+    const currentScrollLeft = section.scrollLeft;
+    renderBodyCells(section, absoluteCells, cachedContext, currentScrollLeft);
 
     // For main section (not pinned), attach render function for scroll updates
     if (!pinned && section) {
