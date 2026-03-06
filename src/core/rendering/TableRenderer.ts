@@ -85,8 +85,6 @@ export class TableRenderer {
       collapsedHeaders: deps.collapsedHeaders,
     });
 
-    const mainSectionContainerWidth = dimensionState.containerWidth - leftWidth - rightWidth;
-
     const headerContext: HeaderRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       columnBorders: deps.config.columnBorders ?? false,
@@ -162,7 +160,6 @@ export class TableRenderer {
       const leftSection = this.sectionRenderer.renderHeaderSection({
         headers: deps.effectiveHeaders,
         collapsedHeaders: deps.collapsedHeaders,
-        autoExpandColumns: deps.config.autoExpandColumns,
         pinned: "left",
         maxHeaderDepth,
         headerHeight: deps.customTheme.headerHeight,
@@ -180,7 +177,6 @@ export class TableRenderer {
       const mainSection = this.sectionRenderer.renderHeaderSection({
         headers: deps.effectiveHeaders,
         collapsedHeaders: deps.collapsedHeaders,
-        autoExpandColumns: deps.config.autoExpandColumns,
         maxHeaderDepth,
         headerHeight: deps.customTheme.headerHeight,
         context: headerContext,
@@ -197,7 +193,6 @@ export class TableRenderer {
       const rightSection = this.sectionRenderer.renderHeaderSection({
         headers: deps.effectiveHeaders,
         collapsedHeaders: deps.collapsedHeaders,
-        autoExpandColumns: deps.config.autoExpandColumns,
         pinned: "right",
         maxHeaderDepth,
         headerHeight: deps.customTheme.headerHeight,
@@ -254,8 +249,6 @@ export class TableRenderer {
       containerWidth: dimensionState.containerWidth,
       collapsedHeaders: deps.collapsedHeaders,
     });
-
-    const mainSectionContainerWidth = dimensionState.containerWidth - leftWidth - rightWidth;
 
     const bodyContext: CellRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
@@ -333,7 +326,6 @@ export class TableRenderer {
         headers: deps.effectiveHeaders,
         rows: rowsToRender,
         collapsedHeaders: deps.collapsedHeaders,
-        autoExpandColumns: deps.config.autoExpandColumns,
         pinned: "left",
         context: bodyContext,
         sectionWidth: leftWidth,
@@ -353,7 +345,6 @@ export class TableRenderer {
         headers: deps.effectiveHeaders,
         rows: rowsToRender,
         collapsedHeaders: deps.collapsedHeaders,
-        autoExpandColumns: deps.config.autoExpandColumns,
         context: bodyContext,
         sectionWidth: mainWidth,
         rowHeight: deps.customTheme.rowHeight,
@@ -372,7 +363,6 @@ export class TableRenderer {
         headers: deps.effectiveHeaders,
         rows: rowsToRender,
         collapsedHeaders: deps.collapsedHeaders,
-        autoExpandColumns: deps.config.autoExpandColumns,
         pinned: "right",
         context: bodyContext,
         sectionWidth: rightWidth,

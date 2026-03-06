@@ -196,9 +196,6 @@ export class AutoScaleManager {
   }
 
   updateConfig(config: Partial<AutoScaleConfig>): void {
-    const oldIsResizing = this.config.isResizing;
-    const oldContainerWidth = this.config.containerWidth;
-
     this.config = { ...this.config, ...config };
 
     const newIsResizing = this.config.isResizing ?? false;

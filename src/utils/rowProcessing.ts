@@ -88,7 +88,6 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
     enableStickyParents,
     flattenedRows,
     heightOffsets,
-    paginatableRows,
     parentEndPositions,
     rowHeight,
     rowsPerPage,

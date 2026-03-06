@@ -77,7 +77,6 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     setDraggingRow,
     setExpandedHeaders,
     setHoveredSeparatorIndex,
-    columnEditorConfig,
     headers,
     setHeaders,
     onColumnVisibilityChange,

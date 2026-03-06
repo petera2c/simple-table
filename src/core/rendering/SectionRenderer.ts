@@ -10,18 +10,9 @@ import { rowIdToString } from "../../utils/rowUtils";
 import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import { scrollSyncManager } from "../../utils/scrollSyncManager";
 
-interface SectionDimensions {
-  mainWidth: number;
-  leftWidth: number;
-  rightWidth: number;
-  leftContentWidth: number;
-  rightContentWidth: number;
-}
-
 export interface HeaderSectionParams {
   headers: HeaderObject[];
   collapsedHeaders: Set<Accessor>;
-  autoExpandColumns?: boolean;
   pinned?: "left" | "right";
   maxHeaderDepth: number;
   headerHeight: number;
@@ -33,7 +24,6 @@ export interface BodySectionParams {
   headers: HeaderObject[];
   rows: TableRow[];
   collapsedHeaders: Set<Accessor>;
-  autoExpandColumns?: boolean;
   pinned?: "left" | "right";
   context: CellRenderContext;
   sectionWidth?: number;
@@ -84,7 +74,6 @@ export class SectionRenderer {
     const {
       headers,
       collapsedHeaders,
-      autoExpandColumns,
       pinned,
       maxHeaderDepth,
       headerHeight,
@@ -157,7 +146,6 @@ export class SectionRenderer {
       headers,
       rows,
       collapsedHeaders,
-      autoExpandColumns,
       pinned,
       context,
       sectionWidth,

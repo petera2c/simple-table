@@ -36,12 +36,10 @@ export const createDropdown = (options: CreateDropdownOptions) => {
   dropdownElement.appendChild(children);
 
   let triggerElement: HTMLElement | null = null;
-  let isPositioned = false;
 
   const calculatePosition = () => {
     if (!open || !dropdownElement.parentElement) return;
 
-    isPositioned = false;
     dropdownElement.style.visibility = "hidden";
 
     if (!triggerElement) {
@@ -126,7 +124,6 @@ export const createDropdown = (options: CreateDropdownOptions) => {
       }
 
       dropdownElement.className = `st-dropdown-content st-dropdown-${verticalPosition}-${horizontalPosition}`;
-      isPositioned = true;
       dropdownElement.style.visibility = "visible";
     });
   };

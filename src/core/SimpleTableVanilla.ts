@@ -23,7 +23,7 @@ import {
   ResolvedIcons,
   MergedColumnEditorConfig,
 } from "./initialization/TableInitializer";
-import { DOMManager, DOMElements, DOMRefs } from "./dom/DOMManager";
+import { DOMManager } from "./dom/DOMManager";
 import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/RenderOrchestrator";
 import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
 
