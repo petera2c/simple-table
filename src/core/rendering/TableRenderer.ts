@@ -82,7 +82,7 @@ export class TableRenderer {
       collapsedHeaders: deps.collapsedHeaders,
     });
 
-    container.style.width = `${leftWidth + mainWidth + rightWidth}px`;
+    const mainSectionContainerWidth = dimensionState.containerWidth - leftWidth - rightWidth;
 
     const headerContext: HeaderRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
@@ -180,6 +180,7 @@ export class TableRenderer {
         maxHeaderDepth,
         headerHeight: deps.customTheme.headerHeight,
         context: headerContext,
+        sectionWidth: mainWidth,
       });
       sectionsToKeep.push(mainSection);
       if (!container.contains(mainSection)) {
@@ -247,6 +248,8 @@ export class TableRenderer {
       containerWidth: dimensionState.containerWidth,
       collapsedHeaders: deps.collapsedHeaders,
     });
+
+    const mainSectionContainerWidth = dimensionState.containerWidth - leftWidth - rightWidth;
 
     const bodyContext: CellRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
@@ -332,6 +335,7 @@ export class TableRenderer {
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
       });
+      deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
       if (!container.contains(leftSection)) {
         container.appendChild(leftSection);
@@ -345,6 +349,7 @@ export class TableRenderer {
         collapsedHeaders: deps.collapsedHeaders,
         autoExpandColumns: deps.config.autoExpandColumns,
         context: bodyContext,
+        sectionWidth: mainWidth,
         rowHeight: deps.customTheme.rowHeight,
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
@@ -369,6 +374,7 @@ export class TableRenderer {
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
       });
+      deps.pinnedRightRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
       if (!container.contains(rightSection)) {
         container.appendChild(rightSection);
@@ -521,7 +527,10 @@ export class TableRenderer {
     }
 
     // If scrollbar already exists, keep it (like React keeping component mounted)
-    if (this.horizontalScrollbarRef.current && wrapperContainer.contains(this.horizontalScrollbarRef.current)) {
+    if (
+      this.horizontalScrollbarRef.current &&
+      wrapperContainer.contains(this.horizontalScrollbarRef.current)
+    ) {
       return;
     }
 
@@ -538,7 +547,10 @@ export class TableRenderer {
       }
 
       // Double-check it wasn't created by another render
-      if (this.horizontalScrollbarRef.current && wrapperContainer.contains(this.horizontalScrollbarRef.current)) {
+      if (
+        this.horizontalScrollbarRef.current &&
+        wrapperContainer.contains(this.horizontalScrollbarRef.current)
+      ) {
         this.scrollbarTimeoutId = null;
         return;
       }
@@ -563,7 +575,7 @@ export class TableRenderer {
         }
         this.horizontalScrollbarRef.current = scrollbar;
       }
-      
+
       this.scrollbarTimeoutId = null;
     }, 1);
   }
