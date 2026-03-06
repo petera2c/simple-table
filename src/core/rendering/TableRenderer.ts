@@ -497,19 +497,45 @@ export class TableRenderer {
       return;
     }
 
+    // Check if horizontal scrolling is needed
+    const clientWidth = deps.mainBodyRef.current.clientWidth;
+    const scrollWidth = deps.mainBodyRef.current.scrollWidth;
+    const threshold = 1;
+    const isScrollable = scrollWidth - clientWidth > threshold;
+
+    // If not scrollable, remove existing scrollbar if present
+    if (!isScrollable) {
+      if (this.horizontalScrollbarRef.current) {
+        cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
+        this.horizontalScrollbarRef.current = null;
+      }
+      if (this.scrollbarTimeoutId !== null) {
+        clearTimeout(this.scrollbarTimeoutId);
+        this.scrollbarTimeoutId = null;
+      }
+      return;
+    }
+
+    // If scrollbar already exists, keep it (like React keeping component mounted)
+    if (this.horizontalScrollbarRef.current && wrapperContainer.contains(this.horizontalScrollbarRef.current)) {
+      return;
+    }
+
     // Cancel any pending scrollbar creation
     if (this.scrollbarTimeoutId !== null) {
       clearTimeout(this.scrollbarTimeoutId);
       this.scrollbarTimeoutId = null;
     }
 
-    if (this.horizontalScrollbarRef.current) {
-      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
-      this.horizontalScrollbarRef.current = null;
-    }
-
+    // Create scrollbar only if it doesn't exist
     this.scrollbarTimeoutId = window.setTimeout(() => {
       if (!deps.mainBodyRef.current || !tableBodyContainerRef || !wrapperContainer) {
+        return;
+      }
+
+      // Double-check it wasn't created by another render
+      if (this.horizontalScrollbarRef.current && wrapperContainer.contains(this.horizontalScrollbarRef.current)) {
+        this.scrollbarTimeoutId = null;
         return;
       }
 
