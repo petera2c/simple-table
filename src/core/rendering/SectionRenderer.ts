@@ -73,8 +73,9 @@ interface ContextCacheEntry {
 export class SectionRenderer {
   private headerSections: Map<string, HTMLElement> = new Map();
   private bodySections: Map<string, HTMLElement> = new Map();
-  private registeredBodySections: Map<string, { element: HTMLElement; groups: string[] }> = new Map();
-  
+  private registeredBodySections: Map<string, { element: HTMLElement; groups: string[] }> =
+    new Map();
+
   private bodyCellsCache: Map<string, BodyCellsCacheEntry> = new Map();
   private headerCellsCache: Map<string, HeaderCellsCacheEntry> = new Map();
   private contextCache: Map<string, ContextCacheEntry> = new Map();
@@ -122,7 +123,6 @@ export class SectionRenderer {
     section.style.cssText = `
       position: relative;
       ${sectionWidth !== undefined ? `width: ${sectionWidth}px;` : ""}
-      ${!pinned ? "flex-grow: 1;" : ""}
       height: ${maxHeaderDepth * headerHeight}px;
     `;
 
@@ -201,9 +201,9 @@ export class SectionRenderer {
       rowCount,
       rowHeight,
       heightOffsets,
-      context.customTheme
+      context.customTheme,
     );
-    
+
     section.style.cssText = `
       position: relative;
       ${sectionWidth !== undefined ? `width: ${sectionWidth}px;` : ""}
@@ -436,26 +436,31 @@ export class SectionRenderer {
   }
 
   private createHeadersHash(headers: HeaderObject[]): string {
-    return headers.map(h => `${h.accessor}:${h.width}:${h.pinned || ''}`).join('|');
+    return headers.map((h) => `${h.accessor}:${h.width}:${h.pinned || ""}`).join("|");
   }
 
   private createRowsHash(rows: TableRow[]): string {
-    if (rows.length === 0) return '0';
+    if (rows.length === 0) return "0";
     return `${rows.length}:${rows[0]?.position}:${rows[rows.length - 1]?.position}`;
   }
 
   private createHeightOffsetsHash(heightOffsets?: Array<[number, number]>): string {
-    if (!heightOffsets || heightOffsets.length === 0) return '';
-    return heightOffsets.map(([pos, height]) => `${pos}:${height}`).join('|');
+    if (!heightOffsets || heightOffsets.length === 0) return "";
+    return heightOffsets.map(([pos, height]) => `${pos}:${height}`).join("|");
   }
 
   private createContextHash(context: any): string {
     const keys = [
-      'columnBorders', 'enableRowSelection', 'cellUpdateFlash',
-      'useOddColumnBackground', 'useHoverRowBackground', 'useOddEvenRowBackground',
-      'rowHeight', 'containerWidth'
+      "columnBorders",
+      "enableRowSelection",
+      "cellUpdateFlash",
+      "useOddColumnBackground",
+      "useHoverRowBackground",
+      "useOddEvenRowBackground",
+      "rowHeight",
+      "containerWidth",
     ];
-    return keys.map(k => `${k}:${context[k]}`).join('|');
+    return keys.map((k) => `${k}:${context[k]}`).join("|");
   }
 
   private getCachedBodyCells(
@@ -468,20 +473,22 @@ export class SectionRenderer {
     customTheme?: any,
   ): AbsoluteBodyCell[] {
     const cached = this.bodyCellsCache.get(sectionKey);
-    
+
     const headersHash = this.createHeadersHash(headers);
     const rowsHash = this.createRowsHash(rows);
     const heightOffsetsHash = this.createHeightOffsetsHash(heightOffsets);
-    
-    if (cached &&
-        cached.deps.headersHash === headersHash &&
-        cached.deps.rowsHash === rowsHash &&
-        cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
-        cached.deps.rowHeight === rowHeight &&
-        cached.deps.heightOffsetsHash === heightOffsetsHash) {
+
+    if (
+      cached &&
+      cached.deps.headersHash === headersHash &&
+      cached.deps.rowsHash === rowsHash &&
+      cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
+      cached.deps.rowHeight === rowHeight &&
+      cached.deps.heightOffsetsHash === heightOffsetsHash
+    ) {
       return cached.cells;
     }
-    
+
     const cells = this.calculateAbsoluteBodyCells(
       headers,
       rows,
@@ -490,7 +497,7 @@ export class SectionRenderer {
       heightOffsets,
       customTheme,
     );
-    
+
     this.bodyCellsCache.set(sectionKey, {
       cells,
       deps: {
@@ -501,7 +508,7 @@ export class SectionRenderer {
         heightOffsetsHash,
       },
     });
-    
+
     return cells;
   }
 
@@ -513,24 +520,26 @@ export class SectionRenderer {
     headerHeight: number,
   ): AbsoluteCell[] {
     const cached = this.headerCellsCache.get(sectionKey);
-    
+
     const headersHash = this.createHeadersHash(headers);
-    
-    if (cached &&
-        cached.deps.headersHash === headersHash &&
-        cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
-        cached.deps.maxDepth === maxDepth &&
-        cached.deps.headerHeight === headerHeight) {
+
+    if (
+      cached &&
+      cached.deps.headersHash === headersHash &&
+      cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
+      cached.deps.maxDepth === maxDepth &&
+      cached.deps.headerHeight === headerHeight
+    ) {
       return cached.cells;
     }
-    
+
     const cells = this.calculateAbsoluteHeaderCells(
       headers,
       collapsedHeaders,
       maxDepth,
       headerHeight,
     );
-    
+
     this.headerCellsCache.set(sectionKey, {
       cells,
       deps: {
@@ -540,7 +549,7 @@ export class SectionRenderer {
         headerHeight,
       },
     });
-    
+
     return cells;
   }
 
@@ -551,17 +560,17 @@ export class SectionRenderer {
   ): T {
     const cached = this.contextCache.get(cacheKey);
     const contextHash = this.createContextHash(context);
-    
+
     if (cached && cached.deps.contextHash === contextHash) {
       return cached.context as T;
     }
-    
+
     const newContext = { ...context, pinned };
     this.contextCache.set(cacheKey, {
       context: newContext,
       deps: { contextHash },
     });
-    
+
     return newContext as T;
   }
 
@@ -585,7 +594,7 @@ export class SectionRenderer {
       scrollSyncManager.unregisterPane(element, groups);
     });
     this.registeredBodySections.clear();
-    
+
     this.headerSections.clear();
     this.bodySections.clear();
     this.bodyCellsCache.clear();

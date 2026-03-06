@@ -36,6 +36,9 @@ export interface RenderContext {
   mainBodyRef: { current: HTMLDivElement | null };
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightRef: { current: HTMLDivElement | null };
+  mainHeaderRef: { current: HTMLDivElement | null };
+  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
+  pinnedRightHeaderRef: { current: HTMLDivElement | null };
   dimensionManager: DimensionManager | null;
   scrollManager: ScrollManager | null;
   rowStateMap: Map<string | number, RowState>;
@@ -401,7 +404,7 @@ export class RenderOrchestrator {
 
     const configs = [];
 
-    // Set up scroll sync for pinned left section
+    // Body → Header sync for pinned left section
     if (context.pinnedLeftRef.current) {
       configs.push({
         sourceElement: context.pinnedLeftRef.current,
@@ -409,7 +412,15 @@ export class RenderOrchestrator {
       });
     }
 
-    // Set up scroll sync for main section
+    // Header → Body sync for pinned left section
+    if (context.pinnedLeftHeaderRef.current) {
+      configs.push({
+        sourceElement: context.pinnedLeftHeaderRef.current,
+        targetSelector: ".st-body-pinned-left",
+      });
+    }
+
+    // Body → Header sync for main section
     if (context.mainBodyRef.current) {
       configs.push({
         sourceElement: context.mainBodyRef.current,
@@ -417,11 +428,27 @@ export class RenderOrchestrator {
       });
     }
 
-    // Set up scroll sync for pinned right section
+    // Header → Body sync for main section
+    if (context.mainHeaderRef.current) {
+      configs.push({
+        sourceElement: context.mainHeaderRef.current,
+        targetSelector: ".st-body-main",
+      });
+    }
+
+    // Body → Header sync for pinned right section
     if (context.pinnedRightRef.current) {
       configs.push({
         sourceElement: context.pinnedRightRef.current,
         targetSelector: ".st-header-pinned-right",
+      });
+    }
+
+    // Header → Body sync for pinned right section
+    if (context.pinnedRightHeaderRef.current) {
+      configs.push({
+        sourceElement: context.pinnedRightHeaderRef.current,
+        targetSelector: ".st-body-pinned-right",
       });
     }
 
@@ -451,6 +478,9 @@ export class RenderOrchestrator {
       mainBodyRef: context.mainBodyRef,
       pinnedLeftRef: context.pinnedLeftRef,
       pinnedRightRef: context.pinnedRightRef,
+      mainHeaderRef: context.mainHeaderRef,
+      pinnedLeftHeaderRef: context.pinnedLeftHeaderRef,
+      pinnedRightHeaderRef: context.pinnedRightHeaderRef,
       dimensionManager: context.dimensionManager,
       rowStateMap: context.rowStateMap,
       onRender: context.onRender,
