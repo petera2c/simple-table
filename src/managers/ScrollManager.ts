@@ -73,24 +73,27 @@ export class ScrollManager {
           const latestScrollLeft = this.pendingScrolls.get(sourceElement);
           if (latestScrollLeft === undefined) return;
 
-          const headerRenderFn = (sourceElement as any).__renderHeaderCells;
           const bodyRenderFn = (sourceElement as any).__renderBodyCells;
-          const hasRenderFunctions = typeof headerRenderFn === "function" || typeof bodyRenderFn === "function";
 
-          if (!hasRenderFunctions) {
-            const targetElement = sourceElement.parentElement?.parentElement?.querySelector(
-              targetSelector,
-            ) as HTMLElement | null;
+          // Find the target element (header section)
+          const targetElement = sourceElement.parentElement?.parentElement?.querySelector(
+            targetSelector,
+          ) as HTMLElement | null;
 
-            if (targetElement) {
+          if (targetElement) {
+            // Check if target has a render function
+            const headerRenderFn = (targetElement as any).__renderHeaderCells;
+            
+            if (typeof headerRenderFn === "function") {
+              // Use the render function for column virtualization
+              headerRenderFn(latestScrollLeft);
+            } else {
+              // Fallback to direct scroll sync
               syncScrollLeft(sourceElement, targetElement);
             }
           }
 
-          if (typeof headerRenderFn === "function") {
-            headerRenderFn(latestScrollLeft);
-          }
-
+          // Update the source element's own cells if it has a render function
           if (typeof bodyRenderFn === "function") {
             bodyRenderFn(latestScrollLeft);
           }

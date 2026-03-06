@@ -184,6 +184,8 @@ input {
   display: flex;
   background-color: var(--st-header-background-color);
   flex-shrink: 0;
+  width: 100%;
+  overflow: auto;
 }
 
 .st-header-container.st-header-scroll-padding::after {
