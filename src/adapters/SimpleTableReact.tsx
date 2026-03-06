@@ -38,11 +38,12 @@ export interface SimpleTableReactProps extends Omit<
 export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const tableInstanceRef = useRef<SimpleTableVanilla | null>(null);
+  const { tableRef } = props;
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const { tableRef, ...vanillaConfig } = props;
+    const { tableRef: _, ...vanillaConfig } = props;
 
     const table = new SimpleTableVanilla(containerRef.current, vanillaConfig as SimpleTableConfig);
     table.mount();
@@ -59,7 +60,7 @@ export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
         tableRef.current = null;
       }
     };
-  }, []);
+  }, [tableRef]);
 
   useEffect(() => {
     if (tableInstanceRef.current) {
