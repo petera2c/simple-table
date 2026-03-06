@@ -185,7 +185,6 @@ input {
   background-color: var(--st-header-background-color);
   flex-shrink: 0;
   width: 100%;
-  overflow: auto;
 }
 
 .st-header-container.st-header-scroll-padding::after {
@@ -200,7 +199,6 @@ input {
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
-  position: absolute;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
 }
 
@@ -244,9 +242,6 @@ input {
 .st-header-pinned-right,
 .st-body-pinned-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
-}
-.st-header-main {
-  flex-grow: 1;
 }
 .st-header-main::-webkit-scrollbar {
   display: none;

@@ -34,6 +34,9 @@ export interface TableRendererDeps {
   mainBodyRef: { current: HTMLDivElement | null };
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightRef: { current: HTMLDivElement | null };
+  mainHeaderRef: { current: HTMLDivElement | null };
+  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
+  pinnedRightHeaderRef: { current: HTMLDivElement | null };
   dimensionManager: DimensionManager | null;
   rowStateMap: Map<string | number, any>;
   onRender: () => void;
@@ -166,6 +169,7 @@ export class TableRenderer {
         context: headerContext,
         sectionWidth: leftWidth,
       });
+      deps.pinnedLeftHeaderRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
       if (!container.contains(leftSection)) {
         container.appendChild(leftSection);
@@ -182,6 +186,7 @@ export class TableRenderer {
         context: headerContext,
         sectionWidth: mainWidth,
       });
+      deps.mainHeaderRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
       if (!container.contains(mainSection)) {
         container.appendChild(mainSection);
@@ -199,6 +204,7 @@ export class TableRenderer {
         context: headerContext,
         sectionWidth: rightWidth,
       });
+      deps.pinnedRightHeaderRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
       if (!container.contains(rightSection)) {
         container.appendChild(rightSection);

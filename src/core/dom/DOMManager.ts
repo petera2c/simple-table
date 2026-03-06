@@ -16,6 +16,9 @@ export interface DOMRefs {
   mainBodyRef: { current: HTMLDivElement | null };
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightRef: { current: HTMLDivElement | null };
+  mainHeaderRef: { current: HTMLDivElement | null };
+  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
+  pinnedRightHeaderRef: { current: HTMLDivElement | null };
   headerContainerRef: { current: HTMLDivElement | null };
   tableBodyContainerRef: { current: HTMLDivElement | null };
   horizontalScrollbarRef: { current: HTMLElement | null };
@@ -30,6 +33,9 @@ export class DOMManager {
       mainBodyRef: { current: null },
       pinnedLeftRef: { current: null },
       pinnedRightRef: { current: null },
+      mainHeaderRef: { current: null },
+      pinnedLeftHeaderRef: { current: null },
+      pinnedRightHeaderRef: { current: null },
       headerContainerRef: { current: null },
       tableBodyContainerRef: { current: null },
       horizontalScrollbarRef: { current: null },
