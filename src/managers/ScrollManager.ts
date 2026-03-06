@@ -32,7 +32,7 @@ export class ScrollManager {
 
   constructor(config: ScrollManagerConfig) {
     this.config = config;
-    
+
     this.state = {
       scrollTop: 0,
       scrollLeft: 0,
@@ -83,10 +83,16 @@ export class ScrollManager {
           if (targetElement) {
             // Check if target has a render function
             const headerRenderFn = (targetElement as any).__renderHeaderCells;
-            
+
             if (typeof headerRenderFn === "function") {
               // Use the render function for column virtualization
               headerRenderFn(latestScrollLeft);
+              
+              // Also update the target's scrollLeft property to keep it in sync
+              // The render function only updates cell positions, not the scroll position itself
+              if (targetElement.scrollLeft !== latestScrollLeft) {
+                targetElement.scrollLeft = latestScrollLeft;
+              }
             } else {
               // Fallback to direct scroll sync
               syncScrollLeft(sourceElement, targetElement);
@@ -121,8 +127,14 @@ export class ScrollManager {
     this.scrollHandlers.clear();
   }
 
-  handleScroll(scrollTop: number, scrollLeft: number, containerHeight: number, contentHeight: number): void {
-    const direction = scrollTop > this.lastScrollTop ? "down" : scrollTop < this.lastScrollTop ? "up" : "none";
+  handleScroll(
+    scrollTop: number,
+    scrollLeft: number,
+    containerHeight: number,
+    contentHeight: number,
+  ): void {
+    const direction =
+      scrollTop > this.lastScrollTop ? "down" : scrollTop < this.lastScrollTop ? "up" : "none";
     this.lastScrollTop = scrollTop;
 
     this.state = {
