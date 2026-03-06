@@ -4,6 +4,7 @@ import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { DimensionManager } from "../../managers/DimensionManager";
+import { ScrollManager } from "../../managers/ScrollManager";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows } from "../../utils/rowFlattening";
 import { processRows } from "../../utils/rowProcessing";
@@ -36,6 +37,7 @@ export interface RenderContext {
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightRef: { current: HTMLDivElement | null };
   dimensionManager: DimensionManager | null;
+  scrollManager: ScrollManager | null;
   rowStateMap: Map<string | number, RowState>;
   onRender: () => void;
   setIsResizing: (value: boolean) => void;
@@ -210,6 +212,10 @@ export class RenderOrchestrator {
       context,
     );
     this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context);
+    
+    // Set up scroll synchronization after body is rendered
+    this.setupScrollSync(context);
+    
     this.renderFooter(
       elements.footerContainer,
       flattenResult.paginatableRows.length,
@@ -322,6 +328,40 @@ export class RenderOrchestrator {
       tableBodyContainer,
       deps,
     );
+  }
+
+  private setupScrollSync(context: RenderContext): void {
+    if (!context.scrollManager) return;
+
+    const configs = [];
+
+    // Set up scroll sync for pinned left section
+    if (context.pinnedLeftRef.current) {
+      configs.push({
+        sourceElement: context.pinnedLeftRef.current,
+        targetSelector: ".st-header-pinned-left",
+      });
+    }
+
+    // Set up scroll sync for main section
+    if (context.mainBodyRef.current) {
+      configs.push({
+        sourceElement: context.mainBodyRef.current,
+        targetSelector: ".st-header-main",
+      });
+    }
+
+    // Set up scroll sync for pinned right section
+    if (context.pinnedRightRef.current) {
+      configs.push({
+        sourceElement: context.pinnedRightRef.current,
+        targetSelector: ".st-header-pinned-right",
+      });
+    }
+
+    if (configs.length > 0) {
+      context.scrollManager.setupScrollSync(configs);
+    }
   }
 
   private buildRendererDeps(effectiveHeaders: HeaderObject[], context: RenderContext) {

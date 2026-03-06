@@ -56,11 +56,6 @@ export const renderBodyCells = (
     ? cells
     : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
 
-  // Debug: Log virtualization info for main section (only once per render to avoid spam)
-  if (!context.pinned && cells.length > 0 && cells[0].rowIndex === 0) {
-    console.log(`[VIRT BODY] cells:${cells.length} → visible:${cellsToRender.length} | viewport:${viewportWidth}px scroll:${scrollLeft}px | source:${context.containerWidth ? 'DimensionManager' : 'DOM'}`);
-  }
-
   const renderedCells = getRenderedCells(container);
 
   // Build set of cell IDs that should be visible

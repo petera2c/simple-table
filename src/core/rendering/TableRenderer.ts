@@ -99,18 +99,10 @@ export class TableRenderer {
       rows: deps.localRows,
       headerHeight: deps.customTheme.headerHeight,
       lastHeaderIndex: deps.effectiveHeaders.length - 1,
-      onSort: (accessor: Accessor) => {
-        console.log("Sort clicked:", accessor);
-      },
-      handleApplyFilter: (filter: FilterCondition) => {
-        console.log("Filter applied:", filter);
-      },
-      handleClearFilter: (accessor: Accessor) => {
-        console.log("Filter cleared:", accessor);
-      },
-      handleSelectAll: (checked: boolean) => {
-        console.log("Select all:", checked);
-      },
+      onSort: (accessor: Accessor) => {},
+      handleApplyFilter: (filter: FilterCondition) => {},
+      handleClearFilter: (accessor: Accessor) => {},
+      handleSelectAll: (checked: boolean) => {},
       setCollapsedHeaders: (value: any) => {
         if (typeof value === "function") {
           deps.setCollapsedHeaders(value(deps.collapsedHeaders));
@@ -138,18 +130,10 @@ export class TableRenderer {
       },
       onHeaderEdit: deps.config.onHeaderEdit,
       onColumnSelect: deps.config.onColumnSelect,
-      selectColumns: (columnIndices: number[]) => {
-        console.log("Select columns:", columnIndices);
-      },
-      setSelectedColumns: (value: any) => {
-        console.log("Set selected columns:", value);
-      },
-      setSelectedCells: (value: any) => {
-        console.log("Set selected cells:", value);
-      },
-      setInitialFocusedCell: (cell: any) => {
-        console.log("Set initial focused cell:", cell);
-      },
+      selectColumns: (columnIndices: number[]) => {},
+      setSelectedColumns: (value: any) => {},
+      setSelectedCells: (value: any) => {},
+      setInitialFocusedCell: (cell: any) => {},
       areAllRowsSelected: () => false,
       draggedHeaderRef: deps.draggedHeaderRef,
       hoveredHeaderRef: deps.hoveredHeaderRef,
@@ -266,15 +250,9 @@ export class TableRenderer {
       onCellEdit: deps.config.onCellEdit,
       onCellClick: deps.config.onCellClick,
       onRowGroupExpand: deps.config.onRowGroupExpand,
-      handleRowSelect: (rowId: string, checked: boolean) => {
-        console.log("Row select:", rowId, checked);
-      },
-      handleMouseDown: (cell: any) => {
-        console.log("Mouse down:", cell);
-      },
-      handleMouseOver: (cell: any) => {
-        console.log("Mouse over:", cell);
-      },
+      handleRowSelect: (rowId: string, checked: boolean) => {},
+      handleMouseDown: (cell: any) => {},
+      handleMouseOver: (cell: any) => {},
       cellRegistry: deps.cellRegistry,
       setCollapsedRows: (value: any) => {
         if (typeof value === "function") {
@@ -327,6 +305,8 @@ export class TableRenderer {
         context: bodyContext,
         sectionWidth: leftWidth,
         rowHeight: deps.customTheme.rowHeight,
+        heightOffsets: processedResult.heightOffsets,
+        totalRowCount: processedResult.currentTableRows.length,
       });
       container.appendChild(leftSection);
     }
@@ -339,6 +319,8 @@ export class TableRenderer {
         autoExpandColumns: deps.config.autoExpandColumns,
         context: bodyContext,
         rowHeight: deps.customTheme.rowHeight,
+        heightOffsets: processedResult.heightOffsets,
+        totalRowCount: processedResult.currentTableRows.length,
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       container.appendChild(mainSection);
@@ -354,6 +336,8 @@ export class TableRenderer {
         context: bodyContext,
         sectionWidth: rightWidth,
         rowHeight: deps.customTheme.rowHeight,
+        heightOffsets: processedResult.heightOffsets,
+        totalRowCount: processedResult.currentTableRows.length,
       });
       container.appendChild(rightSection);
     }

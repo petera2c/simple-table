@@ -1,5 +1,9 @@
 import HeaderObject from "../types/HeaderObject";
-import { CSS_VAR_BORDER_WIDTH, DEFAULT_BORDER_WIDTH, VIRTUALIZATION_THRESHOLD } from "../consts/general-consts";
+import {
+  CSS_VAR_BORDER_WIDTH,
+  DEFAULT_BORDER_WIDTH,
+  VIRTUALIZATION_THRESHOLD,
+} from "../consts/general-consts";
 
 export interface DimensionManagerConfig {
   effectiveHeaders: HeaderObject[];
@@ -29,11 +33,12 @@ export class DimensionManager {
 
   constructor(config: DimensionManagerConfig) {
     this.config = config;
-    
+
     const maxHeaderDepth = this.calculateMaxHeaderDepth();
     const calculatedHeaderHeight = this.calculateHeaderHeight(maxHeaderDepth);
     const contentHeight = this.calculateContentHeight();
-    
+    console.log(contentHeight);
+
     this.state = {
       containerWidth: 0,
       calculatedHeaderHeight,
@@ -50,7 +55,9 @@ export class DimensionManager {
     if (header.singleRowChildren && header.children?.length) {
       return 1;
     }
-    return header.children?.length ? 1 + Math.max(...header.children.map((h) => this.getHeaderDepth(h))) : 1;
+    return header.children?.length
+      ? 1 + Math.max(...header.children.map((h) => this.getHeaderDepth(h)))
+      : 1;
   }
 
   private calculateMaxHeaderDepth(): number {
@@ -114,7 +121,8 @@ export class DimensionManager {
 
       const actualHeaderHeight = headerHeight || rowHeight;
       const actualFooterHeight = footerHeight || 0;
-      const actualContentHeight = actualHeaderHeight + totalRowCount * rowHeight + actualFooterHeight;
+      const actualContentHeight =
+        actualHeaderHeight + totalRowCount * rowHeight + actualFooterHeight;
 
       if (actualContentHeight <= maxHeightPx || totalRowCount < VIRTUALIZATION_THRESHOLD) {
         return undefined;
@@ -155,11 +163,11 @@ export class DimensionManager {
   updateConfig(config: Partial<DimensionManagerConfig>): void {
     const oldHeaders = this.config.effectiveHeaders;
     const oldContainerElement = this.config.containerElement;
-    
+
     this.config = { ...this.config, ...config };
-    
+
     let needsUpdate = false;
-    
+
     if (config.effectiveHeaders && config.effectiveHeaders !== oldHeaders) {
       const maxHeaderDepth = this.calculateMaxHeaderDepth();
       const calculatedHeaderHeight = this.calculateHeaderHeight(maxHeaderDepth);
@@ -170,7 +178,7 @@ export class DimensionManager {
       };
       needsUpdate = true;
     }
-    
+
     if (config.height || config.maxHeight || config.totalRowCount !== undefined) {
       const contentHeight = this.calculateContentHeight();
       this.state = {
@@ -187,7 +195,7 @@ export class DimensionManager {
       this.observeContainer(config.containerElement);
       needsUpdate = true;
     }
-    
+
     if (needsUpdate) {
       this.notifySubscribers();
     }
