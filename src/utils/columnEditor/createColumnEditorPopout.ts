@@ -68,6 +68,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   let searchTerm = "";
   let draggingRow: FlattenedHeader | null = null;
   let hoveredSeparatorIndex: number | null = null;
+  let isDragging = false;
 
   const initialExpanded = new Set<string>();
   const collectAccessors = (headerList: HeaderObject[]) => {
@@ -120,17 +121,43 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
   const setDraggingRow = (row: FlattenedHeader | null) => {
     draggingRow = row;
-    render();
+    
+    if (row !== null) {
+      isDragging = true;
+    } else {
+      isDragging = false;
+      render();
+    }
   };
 
   const setHoveredSeparatorIndex = (index: number | null) => {
     hoveredSeparatorIndex = index;
-    render();
+    
+    if (!isDragging) {
+      render();
+    } else {
+      updateSeparatorVisibility();
+    }
   };
 
   const setExpandedHeaders = (headers: Set<string>) => {
     expandedHeaders = headers;
     render();
+  };
+
+  const updateSeparatorVisibility = () => {
+    const separators = listContainer.querySelectorAll(".st-column-editor-drag-separator");
+    
+    separators.forEach((separator, sepIndex) => {
+      const htmlSeparator = separator as HTMLElement;
+      
+      if (sepIndex === 0) {
+        htmlSeparator.style.opacity = hoveredSeparatorIndex === -1 ? "1" : "0";
+      } else {
+        const rowIndex = sepIndex - 1;
+        htmlSeparator.style.opacity = hoveredSeparatorIndex === rowIndex ? "1" : "0";
+      }
+    });
   };
 
   const doesAnyHeaderHaveChildren = () => {
@@ -195,6 +222,8 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
         depth: flatItem.depth,
         doesAnyHeaderHaveChildren: hasChildren,
         draggingRow,
+        getDraggingRow: () => draggingRow,
+        getHoveredSeparatorIndex: () => hoveredSeparatorIndex,
         expandedHeaders,
         flattenedHeaders,
         forceExpanded: searchEnabled && searchTerm.trim().length > 0,
