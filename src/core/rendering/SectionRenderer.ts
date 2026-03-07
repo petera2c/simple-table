@@ -303,11 +303,24 @@ export class SectionRenderer {
           return width;
         }
 
-        // Parent with children - accumulate children widths
+        // Parent with children - process children first, then add parent cell
+        const parentLeft = currentLeft;
         let totalChildrenWidth = 0;
         visibleChildren.forEach((child) => {
           totalChildrenWidth += processHeader(child, depth + 1, header);
         });
+
+        // Add parent cell spanning all children
+        cells.push({
+          header,
+          left: parentLeft,
+          top: depth * headerHeight,
+          width: totalChildrenWidth,
+          height: headerHeight,
+          colIndex,
+          parentHeader,
+        });
+        colIndex++;
 
         return totalChildrenWidth;
       } else {
