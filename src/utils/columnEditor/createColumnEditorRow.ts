@@ -46,6 +46,8 @@ export interface CreateColumnEditorRowOptions {
   depth: number;
   doesAnyHeaderHaveChildren: boolean;
   draggingRow: FlattenedHeader | null;
+  getDraggingRow?: () => FlattenedHeader | null;
+  getHoveredSeparatorIndex?: () => number | null;
   expandedHeaders: Set<string>;
   flattenedHeaders: FlattenedHeader[];
   forceExpanded: boolean;
@@ -68,6 +70,8 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     depth,
     doesAnyHeaderHaveChildren,
     draggingRow,
+    getDraggingRow,
+    getHoveredSeparatorIndex,
     expandedHeaders,
     flattenedHeaders,
     forceExpanded,
@@ -159,15 +163,18 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
 
-    if (draggingRow) {
-      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const currentDraggingRow = getDraggingRow ? getDraggingRow() : draggingRow;
+
+    if (currentDraggingRow) {
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
       const mouseY = event.clientY;
       const rowMiddle = rect.top + rect.height / 2;
       const isTopHalfOfRow = mouseY < rowMiddle;
 
       const validSeparatorIndex = findClosestValidSeparatorIndex({
         flattenedHeaders,
-        draggingRow,
+        draggingRow: currentDraggingRow,
         hoveredRowIndex: rowIndex,
         isTopHalfOfRow,
       });
@@ -177,20 +184,23 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
   };
 
   const onDragEnd = () => {
+    const currentDraggingRow = getDraggingRow ? getDraggingRow() : draggingRow;
+    const currentHoveredSeparatorIndex = getHoveredSeparatorIndex ? getHoveredSeparatorIndex() : hoveredSeparatorIndex;
+    
     const cancelDrag = () => {
       setDraggingRow(null);
       setHoveredSeparatorIndex(null);
     };
 
-    if (!draggingRow || hoveredSeparatorIndex === null) {
+    if (!currentDraggingRow || currentHoveredSeparatorIndex === null) {
       cancelDrag();
       return;
     }
 
     const targetRowIndex =
-      draggingRow.visualIndex >= hoveredSeparatorIndex
-        ? hoveredSeparatorIndex + 1
-        : hoveredSeparatorIndex;
+      currentDraggingRow.visualIndex >= currentHoveredSeparatorIndex
+        ? currentHoveredSeparatorIndex + 1
+        : currentHoveredSeparatorIndex;
 
     let hoveredHeader = flattenedHeaders[targetRowIndex];
     if (!hoveredHeader) {
@@ -198,7 +208,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
       return;
     }
 
-    if (draggingRow.depth < hoveredHeader.depth && hoveredHeader.parent) {
+    if (currentDraggingRow.depth < hoveredHeader.depth && hoveredHeader.parent) {
       const parentIndex = flattenedHeaders.findIndex(
         (h) => h.header.accessor === hoveredHeader.parent!.accessor,
       );
@@ -207,14 +217,14 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
       }
     }
 
-    if (draggingRow.header.accessor === hoveredHeader.header.accessor) {
+    if (currentDraggingRow.header.accessor === hoveredHeader.header.accessor) {
       cancelDrag();
       return;
     }
 
     const { newHeaders, emergencyBreak } = insertHeaderAcrossSections({
-      headers: getSiblingArray(headers, draggingRow.indexPath),
-      draggedHeader: draggingRow.header,
+      headers: getSiblingArray(headers, currentDraggingRow.indexPath),
+      draggedHeader: currentDraggingRow.header,
       hoveredHeader: hoveredHeader.header,
     });
 
@@ -223,7 +233,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
       return;
     }
 
-    const updatedHeaders = setSiblingArray(deepClone(headers), draggingRow.indexPath, newHeaders);
+    const updatedHeaders = setSiblingArray(deepClone(headers), currentDraggingRow.indexPath, newHeaders);
 
     onColumnOrderChange?.(updatedHeaders);
     setHeaders(updatedHeaders);
