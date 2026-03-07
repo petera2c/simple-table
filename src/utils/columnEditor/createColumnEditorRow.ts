@@ -91,8 +91,10 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
-  const isChecked =
-    !(header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children)));
+  const isChecked = !(
+    header.hide ||
+    (hasChildren && header.children && areAllChildrenHidden(header.children))
+  );
 
   const isExpanded = expandedHeaders.has(header.accessor);
   const shouldExpand = forceExpanded || isExpanded;
@@ -185,8 +187,10 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
 
   const onDragEnd = () => {
     const currentDraggingRow = getDraggingRow ? getDraggingRow() : draggingRow;
-    const currentHoveredSeparatorIndex = getHoveredSeparatorIndex ? getHoveredSeparatorIndex() : hoveredSeparatorIndex;
-    
+    const currentHoveredSeparatorIndex = getHoveredSeparatorIndex
+      ? getHoveredSeparatorIndex()
+      : hoveredSeparatorIndex;
+
     const cancelDrag = () => {
       setDraggingRow(null);
       setHoveredSeparatorIndex(null);
@@ -233,7 +237,11 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
       return;
     }
 
-    const updatedHeaders = setSiblingArray(deepClone(headers), currentDraggingRow.indexPath, newHeaders);
+    const updatedHeaders = setSiblingArray(
+      deepClone(headers),
+      currentDraggingRow.indexPath,
+      newHeaders,
+    );
 
     onColumnOrderChange?.(updatedHeaders);
     setHeaders(updatedHeaders);
