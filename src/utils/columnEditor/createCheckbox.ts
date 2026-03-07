@@ -46,8 +46,7 @@ export const createCheckbox = ({ checked, onChange, ariaLabel }: CreateCheckboxO
   }
 
   const toggleCheckbox = () => {
-    const newChecked = !input.checked;
-    input.checked = newChecked;
+    const newChecked = input.checked;
     input.setAttribute("aria-checked", newChecked.toString());
     
     if (newChecked) {
@@ -67,6 +66,16 @@ export const createCheckbox = ({ checked, onChange, ariaLabel }: CreateCheckboxO
     if (e.key === " ") {
       e.stopPropagation();
     }
+  });
+
+  // Prevent drag events from interfering with checkbox clicks
+  label.addEventListener("mousedown", (e: MouseEvent) => {
+    e.stopPropagation();
+  });
+  
+  label.addEventListener("dragstart", (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
   });
 
   label.appendChild(input);
