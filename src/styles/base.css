@@ -979,6 +979,7 @@ input {
   border-left: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-column-editor-text-color);
   flex-shrink: 0;
+  height: 100%;
 }
 
 .st-column-editor-text {

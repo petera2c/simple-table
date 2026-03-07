@@ -287,7 +287,12 @@ export class SimpleTableVanilla {
       if (this.scrollManager) {
         const containerHeight = element.clientHeight;
         const contentHeight = element.scrollHeight;
-        this.scrollManager.handleScroll(newScrollTop, element.scrollLeft, containerHeight, contentHeight);
+        this.scrollManager.handleScroll(
+          newScrollTop,
+          element.scrollLeft,
+          containerHeight,
+          contentHeight,
+        );
       }
 
       // Trigger re-render for virtualization
@@ -356,6 +361,9 @@ export class SimpleTableVanilla {
       },
       setRowStateMap: (map: Map<string | number, any>) => {
         this.rowStateMap = map;
+      },
+      setColumnEditorOpen: (open: boolean) => {
+        this.columnEditorOpen = open;
       },
     };
   }
@@ -466,7 +474,13 @@ export class SimpleTableVanilla {
         this.currentPage = page;
       },
       setColumnEditorOpen: (open: boolean) => {
+        console.log("[SimpleTableVanilla] setColumnEditorOpen called", {
+          previousOpen: this.columnEditorOpen,
+          newOpen: open,
+        });
         this.columnEditorOpen = open;
+        console.log("[SimpleTableVanilla] Triggering render after column editor state change");
+        this.render();
       },
     };
 

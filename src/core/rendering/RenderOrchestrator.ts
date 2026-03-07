@@ -49,6 +49,7 @@ export interface RenderContext {
   setCollapsedRows: (rows: Map<string, number>) => void;
   setExpandedRows: (rows: Map<string, number>) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
+  setColumnEditorOpen: (open: boolean) => void;
 }
 
 export interface RenderState {
@@ -109,10 +110,10 @@ export class RenderOrchestrator {
     elements: {
       rootElement: HTMLElement;
       content: HTMLElement;
+      contentWrapper: HTMLElement;
       headerContainer: HTMLElement;
       bodyContainer: HTMLElement;
       footerContainer: HTMLElement;
-      columnEditorContainer: HTMLElement;
       wrapperContainer: HTMLElement;
     },
     refs: {
@@ -181,7 +182,8 @@ export class RenderOrchestrator {
     }
 
     // Check if we can use cached flattened rows
-    const canUseCache = this.flattenedRowsCache &&
+    const canUseCache =
+      this.flattenedRowsCache &&
       this.flattenedRowsCache.deps.rowsRef === context.localRows &&
       this.flattenedRowsCache.deps.quickFilter === context.config.quickFilter &&
       this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
@@ -281,10 +283,10 @@ export class RenderOrchestrator {
       context,
     );
     this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context);
-    
+
     // Set up scroll synchronization after body is rendered
     this.setupScrollSync(context);
-    
+
     this.renderFooter(
       elements.footerContainer,
       flattenResult.paginatableRows.length,
@@ -293,7 +295,7 @@ export class RenderOrchestrator {
       context,
     );
     this.renderColumnEditor(
-      elements.columnEditorContainer,
+      elements.contentWrapper,
       state.columnEditorOpen,
       mergedColumnEditorConfig,
       effectiveHeaders,
@@ -355,7 +357,7 @@ export class RenderOrchestrator {
   }
 
   private renderColumnEditor(
-    columnEditorContainer: HTMLElement,
+    contentWrapper: HTMLElement,
     columnEditorOpen: boolean,
     mergedColumnEditorConfig: MergedColumnEditorConfig,
     effectiveHeaders: HeaderObject[],
@@ -363,9 +365,10 @@ export class RenderOrchestrator {
   ): void {
     const deps = this.buildRendererDeps(effectiveHeaders, context);
     this.tableRenderer.renderColumnEditor(
-      columnEditorContainer,
+      contentWrapper,
       columnEditorOpen,
       (open: boolean) => {
+        context.setColumnEditorOpen(open);
         context.onRender();
       },
       mergedColumnEditorConfig,
