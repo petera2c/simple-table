@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { HEADERS } from "./finance-headers";
 import financeData from "./finance-data.json";

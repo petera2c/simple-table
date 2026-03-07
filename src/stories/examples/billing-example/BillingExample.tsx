@@ -1,3 +1,4 @@
+import React from "react";
 import { HEADERS } from "./billing-headers";
 import { SimpleTable } from "../../..";
 import billingData from "./billing-data.json";

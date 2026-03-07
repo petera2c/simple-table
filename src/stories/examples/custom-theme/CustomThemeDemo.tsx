@@ -1,3 +1,4 @@
+import React from "react";
 import { SimpleTable } from "../../..";
 import HeaderObject from "../../../types/HeaderObject";
 import "./CustomTheme.css";
