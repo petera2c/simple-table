@@ -1,7 +1,7 @@
+import React, { useRef } from "react";
 import { SimpleTable } from "../../..";
 import { HeaderObject, TableRefType } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
-import { useRef } from "react";
 
 // Default args specific to RowGrouping - exported for reuse in stories and tests
 export const rowGroupingDefaults = {

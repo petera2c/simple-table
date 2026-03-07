@@ -1,3 +1,4 @@
+import React from "react";
 import { HEADERS } from "./manufacturing-headers";
 import MANUFACTURING_DATA from "./manufacturing-data.json";
 import { SimpleTable } from "../../..";

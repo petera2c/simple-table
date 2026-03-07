@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import HeaderObject from "../../../types/HeaderObject";
-import { useState } from "react";
 
 // Custom Email Enrich component
 const EmailEnrich = ({ rowId }: { rowId: string }) => {

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { SimpleTable, TableRefType } from "../../index";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 

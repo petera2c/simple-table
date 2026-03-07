@@ -1,3 +1,4 @@
+import React from "react";
 import { ColumnVisibilityState, SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";

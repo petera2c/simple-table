@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { LEADS_HEADERS } from "./leads-headers";
-import { useState } from "react";
 
 import "./CustomTheme.css";
 import Theme from "../../../types/Theme";

@@ -1,3 +1,4 @@
+import React from "react";
 import { SimpleTable } from "../../..";
 import { generateRetailSalesData, RETAIL_SALES_HEADERS } from "../../data/retail-data";
 import { UniversalTableProps } from "../StoryWrapper";

@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import React from "react";
+import React, { useRef } from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import TableRefType from "../../types/TableRefType";
