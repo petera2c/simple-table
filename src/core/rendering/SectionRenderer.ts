@@ -426,7 +426,14 @@ export class SectionRenderer {
   }
 
   private createHeadersHash(headers: HeaderObject[]): string {
-    return headers.map((h) => `${h.accessor}:${h.width}:${h.pinned || ""}`).join("|");
+    const hashHeader = (h: HeaderObject): string => {
+      let hash = `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}`;
+      if (h.children && h.children.length > 0) {
+        hash += `:children[${h.children.map(hashHeader).join(",")}]`;
+      }
+      return hash;
+    };
+    return headers.map(hashHeader).join("|");
   }
 
   private createRowsHash(rows: TableRow[]): string {
