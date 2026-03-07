@@ -83,10 +83,10 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
   const container = document.createElement("div");
   container.className = `st-column-editor-popout ${open ? "open" : ""}`;
-  container.addEventListener("click", (e) => e.stopPropagation());
 
   const content = document.createElement("div");
   content.className = "st-column-editor-popout-content";
+  content.addEventListener("click", (e) => e.stopPropagation());
 
   let searchInput: HTMLInputElement | null = null;
   if (searchEnabled) {
@@ -220,13 +220,17 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   const update = (newOptions: Partial<CreateColumnEditorPopoutOptions>) => {
     if (newOptions.headers !== undefined) headers = newOptions.headers;
     if (newOptions.searchEnabled !== undefined) searchEnabled = newOptions.searchEnabled;
-    if (newOptions.searchPlaceholder !== undefined) searchPlaceholder = newOptions.searchPlaceholder;
+    if (newOptions.searchPlaceholder !== undefined)
+      searchPlaceholder = newOptions.searchPlaceholder;
     if (newOptions.searchFunction !== undefined) searchFunction = newOptions.searchFunction;
-    if (newOptions.columnEditorConfig !== undefined) columnEditorConfig = newOptions.columnEditorConfig;
+    if (newOptions.columnEditorConfig !== undefined)
+      columnEditorConfig = newOptions.columnEditorConfig;
     if (newOptions.contextHeaders !== undefined) contextHeaders = newOptions.contextHeaders;
     if (newOptions.setHeaders !== undefined) setHeaders = newOptions.setHeaders;
-    if (newOptions.onColumnVisibilityChange !== undefined) onColumnVisibilityChange = newOptions.onColumnVisibilityChange;
-    if (newOptions.onColumnOrderChange !== undefined) onColumnOrderChange = newOptions.onColumnOrderChange;
+    if (newOptions.onColumnVisibilityChange !== undefined)
+      onColumnVisibilityChange = newOptions.onColumnVisibilityChange;
+    if (newOptions.onColumnOrderChange !== undefined)
+      onColumnOrderChange = newOptions.onColumnOrderChange;
 
     if (newOptions.open !== undefined) {
       open = newOptions.open;

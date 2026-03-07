@@ -20,7 +20,7 @@ export interface CreateColumnEditorOptions {
 }
 
 export const createColumnEditor = (options: CreateColumnEditorOptions) => {
-  const {
+  let {
     columnEditorText,
     editColumns,
     headers,
@@ -51,15 +51,14 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
   container.className = `st-column-editor ${open ? "open" : ""}`;
   container.style.width = `${COLUMN_EDIT_WIDTH}px`;
 
-  const handleClick = () => {
+  const handleClick = (e: MouseEvent) => {
     setOpen(!open);
   };
-
-  container.addEventListener("click", handleClick);
 
   const textDiv = document.createElement("div");
   textDiv.className = "st-column-editor-text";
   textDiv.textContent = columnEditorText;
+  container.addEventListener("click", handleClick);
   container.appendChild(textDiv);
 
   const popout = createColumnEditorPopout({
@@ -80,11 +79,16 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
   const instance = {
     update: (newOptions: Partial<CreateColumnEditorOptions>) => {
       if (newOptions.open !== undefined) {
+        open = newOptions.open;
         if (newOptions.open) {
           container.classList.add("open");
         } else {
           container.classList.remove("open");
         }
+      }
+
+      if (newOptions.setOpen !== undefined) {
+        setOpen = newOptions.setOpen;
       }
 
       if (newOptions.columnEditorText !== undefined) {

@@ -8,7 +8,6 @@ export interface DOMElements {
   headerContainer: HTMLElement;
   bodyContainer: HTMLElement;
   footerContainer: HTMLElement;
-  columnEditorContainer: HTMLElement;
   ariaLiveRegion: HTMLElement;
 }
 
@@ -70,9 +69,6 @@ export class DOMManager {
     bodyContainer.className = "st-body-container";
     this.refs.tableBodyContainerRef.current = bodyContainer as HTMLDivElement;
 
-    const columnEditorContainer = document.createElement("div");
-    columnEditorContainer.id = "st-column-editor-container";
-
     const footerContainer = document.createElement("div");
     footerContainer.id = "st-footer-container";
 
@@ -85,7 +81,6 @@ export class DOMManager {
     content.appendChild(bodyContainer);
 
     contentWrapper.appendChild(content);
-    contentWrapper.appendChild(columnEditorContainer);
 
     wrapperContainer.appendChild(contentWrapper);
     wrapperContainer.appendChild(footerContainer);
@@ -103,7 +98,6 @@ export class DOMManager {
       headerContainer,
       bodyContainer,
       footerContainer,
-      columnEditorContainer,
       ariaLiveRegion,
     };
 

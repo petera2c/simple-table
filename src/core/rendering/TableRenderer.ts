@@ -432,16 +432,19 @@ export class TableRenderer {
   }
 
   renderColumnEditor(
-    container: HTMLElement,
+    contentWrapper: HTMLElement,
     columnEditorOpen: boolean,
     setColumnEditorOpen: (open: boolean) => void,
     mergedColumnEditorConfig: any,
     deps: TableRendererDeps,
   ): void {
-    if (!container) return;
+    if (!contentWrapper) return;
 
     if (!deps.config.editColumns) {
-      container.innerHTML = "";
+      if (this.columnEditorInstance) {
+        this.columnEditorInstance.destroy();
+        this.columnEditorInstance = null;
+      }
       return;
     }
 
@@ -465,7 +468,6 @@ export class TableRenderer {
         setOpen: setColumnEditorOpen,
       });
     } else {
-      container.innerHTML = "";
       const columnEditor = createColumnEditor({
         columnEditorText: mergedColumnEditorConfig.text,
         editColumns: deps.config.editColumns,
@@ -485,7 +487,7 @@ export class TableRenderer {
         setOpen: setColumnEditorOpen,
       });
       this.columnEditorInstance = columnEditor;
-      container.appendChild(columnEditor.element);
+      contentWrapper.appendChild(columnEditor.element);
     }
   }
 
