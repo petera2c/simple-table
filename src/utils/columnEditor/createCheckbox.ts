@@ -2,21 +2,27 @@
  * Creates a vanilla JS checkbox element
  */
 
-const CHECK_ICON_SVG = `<svg
-  aria-hidden="true"
-  role="img"
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 448 512"
-  style="height: 10px;"
->
-  <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
-</svg>`;
-
 export interface CreateCheckboxOptions {
   checked: boolean;
   onChange: (checked: boolean) => void;
   ariaLabel?: string;
 }
+
+const createCheckmarkSVG = (): SVGSVGElement => {
+  const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgElement.setAttribute("aria-hidden", "true");
+  svgElement.setAttribute("role", "img");
+  svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  svgElement.setAttribute("viewBox", "0 0 448 512");
+  svgElement.setAttribute("class", "st-checkbox-checkmark");
+  svgElement.style.height = "10px";
+  
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z");
+  svgElement.appendChild(path);
+  
+  return svgElement;
+};
 
 export const createCheckbox = ({ checked, onChange, ariaLabel }: CreateCheckboxOptions) => {
   const label = document.createElement("label");
@@ -36,10 +42,7 @@ export const createCheckbox = ({ checked, onChange, ariaLabel }: CreateCheckboxO
   customCheckbox.setAttribute("aria-hidden", "true");
 
   if (checked) {
-    const checkmark = document.createElement("span");
-    checkmark.className = "st-checkbox-checkmark";
-    checkmark.innerHTML = CHECK_ICON_SVG;
-    customCheckbox.appendChild(checkmark);
+    customCheckbox.appendChild(createCheckmarkSVG());
   }
 
   const toggleCheckbox = () => {
@@ -49,10 +52,7 @@ export const createCheckbox = ({ checked, onChange, ariaLabel }: CreateCheckboxO
     
     if (newChecked) {
       customCheckbox.classList.add("st-checked");
-      const checkmark = document.createElement("span");
-      checkmark.className = "st-checkbox-checkmark";
-      checkmark.innerHTML = CHECK_ICON_SVG;
-      customCheckbox.appendChild(checkmark);
+      customCheckbox.appendChild(createCheckmarkSVG());
     } else {
       customCheckbox.classList.remove("st-checked");
       customCheckbox.innerHTML = "";
@@ -82,10 +82,7 @@ export const createCheckbox = ({ checked, onChange, ariaLabel }: CreateCheckboxO
         if (newChecked) {
           customCheckbox.classList.add("st-checked");
           customCheckbox.innerHTML = "";
-          const checkmark = document.createElement("span");
-          checkmark.className = "st-checkbox-checkmark";
-          checkmark.innerHTML = CHECK_ICON_SVG;
-          customCheckbox.appendChild(checkmark);
+          customCheckbox.appendChild(createCheckmarkSVG());
         } else {
           customCheckbox.classList.remove("st-checked");
           customCheckbox.innerHTML = "";
