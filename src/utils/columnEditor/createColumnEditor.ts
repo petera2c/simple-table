@@ -2,6 +2,7 @@ import HeaderObject from "../../types/HeaderObject";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
 import { createColumnEditorPopout } from "./createColumnEditorPopout";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
+import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 
 export interface CreateColumnEditorOptions {
   columnEditorText: string;
@@ -44,8 +45,6 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
       destroy: () => {},
     };
   }
-
-  const COLUMN_EDIT_WIDTH = 40;
 
   const container = document.createElement("div");
   container.className = `st-column-editor ${open ? "open" : ""}`;
