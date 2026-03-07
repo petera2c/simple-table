@@ -243,6 +243,11 @@ input {
 .st-body-pinned-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
+
+.st-header-main {
+  flex-grow: 1;
+}
+
 .st-header-main::-webkit-scrollbar {
   display: none;
 }
