@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { expect } from "@storybook/test";
 import { Row, SimpleTable } from "../..";
 import { HeaderObject } from "../..";

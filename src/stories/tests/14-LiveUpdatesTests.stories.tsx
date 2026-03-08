@@ -1,5 +1,5 @@
+import React, { useRef, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { useRef, useEffect } from "react";
 import { expect } from "@storybook/test";
 import { HeaderObject, SimpleTable, TableRefType } from "../..";
 

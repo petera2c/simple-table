@@ -1,3 +1,4 @@
+import React from "react";
 import { SALES_HEADERS } from "./sales-headers";
 import data from "./sales-data.json";
 import { SimpleTable } from "../../..";
