@@ -36,7 +36,7 @@ interface BodyCellsCacheEntry {
   cells: AbsoluteBodyCell[];
   deps: {
     headersHash: string;
-    rowsHash: string;
+    rowsRef: TableRow[];
     collapsedHeadersSize: number;
     rowHeight: number;
     heightOffsetsHash: string;
@@ -449,11 +449,6 @@ export class SectionRenderer {
     return headers.map(hashHeader).join("|");
   }
 
-  private createRowsHash(rows: TableRow[]): string {
-    if (rows.length === 0) return "0";
-    return `${rows.length}:${rows[0]?.position}:${rows[rows.length - 1]?.position}`;
-  }
-
   private createHeightOffsetsHash(heightOffsets?: Array<[number, number]>): string {
     if (!heightOffsets || heightOffsets.length === 0) return "";
     return heightOffsets.map(([pos, height]) => `${pos}:${height}`).join("|");
@@ -470,7 +465,23 @@ export class SectionRenderer {
       "rowHeight",
       "containerWidth",
     ];
-    return keys.map((k) => `${k}:${context[k]}`).join("|");
+    let hash = keys.map((k) => `${k}:${context[k]}`).join("|");
+
+    // Include sort state in hash for header context
+    if (context.sort) {
+      hash += `|sort:${context.sort.key.accessor}-${context.sort.direction}`;
+    } else {
+      hash += `|sort:none`;
+    }
+
+    // Include filter state in hash for header context
+    if (context.filters && Object.keys(context.filters).length > 0) {
+      hash += `|filters:${JSON.stringify(context.filters)}`;
+    } else {
+      hash += `|filters:none`;
+    }
+
+    return hash;
   }
 
   private getCachedBodyCells(
@@ -485,20 +496,19 @@ export class SectionRenderer {
     const cached = this.bodyCellsCache.get(sectionKey);
 
     const headersHash = this.createHeadersHash(headers);
-    const rowsHash = this.createRowsHash(rows);
     const heightOffsetsHash = this.createHeightOffsetsHash(heightOffsets);
 
-    if (
+    const cacheHit =
       cached &&
       cached.deps.headersHash === headersHash &&
-      cached.deps.rowsHash === rowsHash &&
+      cached.deps.rowsRef === rows &&
       cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
       cached.deps.rowHeight === rowHeight &&
-      cached.deps.heightOffsetsHash === heightOffsetsHash
-    ) {
+      cached.deps.heightOffsetsHash === heightOffsetsHash;
+
+    if (cacheHit) {
       return cached.cells;
     }
-
     const cells = this.calculateAbsoluteBodyCells(
       headers,
       rows,
@@ -512,7 +522,7 @@ export class SectionRenderer {
       cells,
       deps: {
         headersHash,
-        rowsHash,
+        rowsRef: rows,
         collapsedHeadersSize: collapsedHeaders.size,
         rowHeight,
         heightOffsetsHash,

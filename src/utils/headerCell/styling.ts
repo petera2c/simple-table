@@ -165,7 +165,27 @@ export const createHeaderCellElement = (
 
   if (header.headerRenderer) {
     const labelContent = createLabelContent(header, context);
-    labelElement.appendChild(labelContent);
+    
+    const renderedContent = header.headerRenderer({
+      accessor: header.accessor,
+      colIndex,
+      header,
+      components: {
+        sortIcon: sortIcon || undefined,
+        filterIcon: filterIcon || undefined,
+        collapseIcon: collapseIcon || undefined,
+        labelContent: labelContent,
+      },
+    });
+
+    // The headerRenderer should return a DOM element (HTMLElement)
+    // The React adapter wraps React-based headerRenderers to convert them to DOM elements
+    if (renderedContent instanceof HTMLElement) {
+      labelElement.appendChild(renderedContent);
+    } else {
+      // Fallback to default rendering if not a DOM element
+      labelElement.appendChild(labelContent);
+    }
   } else {
     const labelContent = createLabelContent(header, context);
     labelElement.appendChild(labelContent);
@@ -236,6 +256,8 @@ export const updateHeaderCellElement = (
   context: HeaderRenderContext,
   isLastHeader: boolean,
 ): void => {
+  const { header } = cell;
+  
   // Update classes to reflect current state
   cellElement.className = calculateHeaderCellClasses(cell, context, isLastHeader);
 
@@ -244,4 +266,48 @@ export const updateHeaderCellElement = (
   cellElement.style.top = `${cell.top}px`;
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
+  
+  // Update icons (sort/filter/collapse) - remove old ones and create new ones
+  const oldSortIcon = cellElement.querySelector('.st-icon-container[aria-label*="Sort"]');
+  const oldFilterIcon = cellElement.querySelector('.st-icon-container[aria-label*="Filter"]');
+  const oldCollapseIcon = cellElement.querySelector('.st-icon-container[aria-label*="Collapse"], .st-icon-container[aria-label*="Expand"]');
+  
+  oldSortIcon?.remove();
+  oldFilterIcon?.remove();
+  oldCollapseIcon?.remove();
+  
+  // Recreate icons with current state
+  const sortIcon = createSortIcon(header, context);
+  const filterIcon = createFilterIcon(header, context);
+  const collapseIcon = createCollapseIcon(header, context);
+  
+  // Insert icons in the correct position based on alignment
+  if (!header.headerRenderer && header.align === "right") {
+    if (collapseIcon) cellElement.insertBefore(collapseIcon, cellElement.firstChild);
+    if (filterIcon) cellElement.insertBefore(filterIcon, cellElement.firstChild);
+    if (sortIcon) cellElement.insertBefore(sortIcon, cellElement.firstChild);
+  } else if (!header.headerRenderer && header.align !== "right") {
+    const resizeHandle = cellElement.querySelector('.st-resize-handle');
+    if (sortIcon) {
+      if (resizeHandle) {
+        cellElement.insertBefore(sortIcon, resizeHandle);
+      } else {
+        cellElement.appendChild(sortIcon);
+      }
+    }
+    if (filterIcon) {
+      if (resizeHandle) {
+        cellElement.insertBefore(filterIcon, resizeHandle);
+      } else {
+        cellElement.appendChild(filterIcon);
+      }
+    }
+    if (collapseIcon) {
+      if (resizeHandle) {
+        cellElement.insertBefore(collapseIcon, resizeHandle);
+      } else {
+        cellElement.appendChild(collapseIcon);
+      }
+    }
+  }
 };

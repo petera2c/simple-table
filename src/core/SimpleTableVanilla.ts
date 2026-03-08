@@ -8,6 +8,8 @@ import RowState from "../types/RowState";
 import { AutoScaleManager } from "../managers/AutoScaleManager";
 import { DimensionManager } from "../managers/DimensionManager";
 import { ScrollManager } from "../managers/ScrollManager";
+import { SortManager } from "../managers/SortManager";
+import { FilterManager } from "../managers/FilterManager";
 import WindowResizeManager from "../hooks/windowResize";
 import HandleOutsideClickManager from "../hooks/handleOutsideClick";
 import ScrollbarVisibilityManager from "../hooks/scrollbarVisibility";
@@ -67,6 +69,8 @@ export class SimpleTableVanilla {
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
   private scrollManager: ScrollManager | null = null;
+  private sortManager: SortManager | null = null;
+  private filterManager: FilterManager | null = null;
   private windowResizeManager: WindowResizeManager | null = null;
   private handleOutsideClickManager: HandleOutsideClickManager | null = null;
   private scrollbarVisibilityManager: ScrollbarVisibilityManager | null = null;
@@ -132,6 +136,42 @@ export class SimpleTableVanilla {
     );
     this.expandedDepthsManager.subscribe((depths) => {
       this.expandedDepths = depths;
+      this.render();
+    });
+
+    const announce = (message: string) => {
+      if (this.ariaAnnouncementManager) {
+        this.ariaAnnouncementManager.announce(message);
+      }
+    };
+
+    this.sortManager = new SortManager({
+      headers: this.headers,
+      tableRows: this.localRows,
+      externalSortHandling: this.config.externalSortHandling || false,
+      onSortChange: this.config.onSortChange,
+      rowGrouping: this.config.rowGrouping,
+      initialSortColumn: this.config.initialSortColumn,
+      initialSortDirection: this.config.initialSortDirection,
+      announce,
+    });
+
+    this.sortManager.subscribe((state) => {
+      this.render();
+    });
+
+    this.filterManager = new FilterManager({
+      rows: this.localRows,
+      headers: this.headers,
+      externalFilterHandling: this.config.externalFilterHandling || false,
+      onFilterChange: this.config.onFilterChange,
+      announce,
+    });
+
+    this.filterManager.subscribe((filterState) => {
+      if (this.sortManager) {
+        this.sortManager.updateConfig({ tableRows: filterState.filteredRows });
+      }
       this.render();
     });
   }
@@ -342,6 +382,8 @@ export class SimpleTableVanilla {
       pinnedRightHeaderRef: refs.pinnedRightHeaderRef,
       dimensionManager: this.dimensionManager,
       scrollManager: this.scrollManager,
+      sortManager: this.sortManager,
+      filterManager: this.filterManager,
       rowStateMap: this.rowStateMap,
       onRender: () => this.render(),
       setIsResizing: (value: boolean) => {
@@ -402,10 +444,24 @@ export class SimpleTableVanilla {
     if (config.rows !== undefined) {
       this.localRows = [...config.rows];
       this.rebuildRowIndexMap();
+      
+      if (this.filterManager) {
+        this.filterManager.updateConfig({ rows: this.localRows });
+      }
+      if (this.sortManager) {
+        this.sortManager.updateConfig({ tableRows: this.localRows });
+      }
     }
 
     if (config.defaultHeaders !== undefined) {
       this.headers = [...config.defaultHeaders];
+      
+      if (this.filterManager) {
+        this.filterManager.updateConfig({ headers: this.headers });
+      }
+      if (this.sortManager) {
+        this.sortManager.updateConfig({ headers: this.headers });
+      }
     }
 
     if (config.isLoading !== undefined) {
@@ -434,6 +490,8 @@ export class SimpleTableVanilla {
 
     this.dimensionManager?.destroy();
     this.scrollManager?.destroy();
+    this.sortManager?.destroy();
+    this.filterManager?.destroy();
     this.autoScaleManager?.destroy();
     this.windowResizeManager?.destroy();
     this.handleOutsideClickManager?.destroy();

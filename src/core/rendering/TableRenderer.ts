@@ -13,6 +13,8 @@ import {
   cleanupHorizontalScrollbar,
 } from "../../utils/horizontalScrollbarRenderer";
 import { DimensionManager } from "../../managers/DimensionManager";
+import { SortManager } from "../../managers/SortManager";
+import { FilterManager } from "../../managers/FilterManager";
 
 export interface TableRendererDeps {
   config: SimpleTableConfig;
@@ -38,6 +40,8 @@ export interface TableRendererDeps {
   pinnedLeftHeaderRef: { current: HTMLDivElement | null };
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
   dimensionManager: DimensionManager | null;
+  sortManager: SortManager | null;
+  filterManager: FilterManager | null;
   rowStateMap: Map<string | number, any>;
   onRender: () => void;
   setIsResizing: (value: boolean) => void;
@@ -85,6 +89,9 @@ export class TableRenderer {
       collapsedHeaders: deps.collapsedHeaders,
     });
 
+    const sortState = deps.sortManager?.getState();
+    const filterState = deps.filterManager?.getState();
+
     const headerContext: HeaderRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       columnBorders: deps.config.columnBorders ?? false,
@@ -93,20 +100,32 @@ export class TableRenderer {
       containerWidth: dimensionState.containerWidth,
       enableHeaderEditing: deps.config.enableHeaderEditing,
       enableRowSelection: deps.config.enableRowSelection,
-      filters: {},
+      filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
       selectedColumns: new Set(),
       columnsWithSelectedCells: new Set(),
-      sort: null,
+      sort: sortState?.sort ?? null,
       autoExpandColumns: deps.config.autoExpandColumns,
       selectableColumns: deps.config.selectableColumns,
       headers: deps.effectiveHeaders,
       rows: deps.localRows,
       headerHeight: deps.customTheme.headerHeight,
       lastHeaderIndex: deps.effectiveHeaders.length - 1,
-      onSort: (accessor: Accessor) => {},
-      handleApplyFilter: (filter: FilterCondition) => {},
-      handleClearFilter: (accessor: Accessor) => {},
+      onSort: (accessor: Accessor) => {
+        if (deps.sortManager) {
+          deps.sortManager.updateSort({ accessor });
+        }
+      },
+      handleApplyFilter: (filter: FilterCondition) => {
+        if (deps.filterManager) {
+          deps.filterManager.updateFilter(filter);
+        }
+      },
+      handleClearFilter: (accessor: Accessor) => {
+        if (deps.filterManager) {
+          deps.filterManager.clearFilter(accessor);
+        }
+      },
       handleSelectAll: (checked: boolean) => {},
       setCollapsedHeaders: (value: any) => {
         if (typeof value === "function") {
