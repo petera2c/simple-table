@@ -1,5 +1,6 @@
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
+import { isRowExpanded } from "../rowUtils";
 
 // Create expand/collapse icon container for row grouping
 // Uses the icon from context.icons.expand (configured by user or default)
@@ -33,18 +34,47 @@ export const createExpandIcon = (
     event.stopPropagation();
 
     const { rowId, depth } = cell;
-    const rowIdStr = String(rowId);
 
-    if (isExpanded) {
+    // Recalculate current expanded state dynamically to avoid stale closure
+    const expandedDepthsSet = new Set(context.expandedDepths);
+    const currentIsExpanded = isRowExpanded(
+      rowId,
+      depth,
+      expandedDepthsSet,
+      context.expandedRows,
+      context.collapsedRows,
+    );
+
+    console.log(
+      "handleToggle - current state:",
+      currentIsExpanded,
+      "rowId:",
+      rowId,
+      "type:",
+      typeof rowId,
+      "depth:",
+      depth,
+    );
+    console.log(
+      "Before update - expandedRows:",
+      context.expandedRows,
+      "collapsedRows:",
+      context.collapsedRows,
+    );
+
+    if (currentIsExpanded) {
       // Collapse
+      console.log("Collapsing row:", rowId);
       context.setCollapsedRows((prev) => {
         const next = new Map(prev);
-        next.set(rowIdStr, depth);
+        next.set(rowId, depth);
+        console.log("After setCollapsedRows:", next);
         return next;
       });
       context.setExpandedRows((prev) => {
         const next = new Map(prev);
-        next.delete(rowIdStr);
+        next.delete(rowId);
+        console.log("After setExpandedRows (delete):", next);
         return next;
       });
       // Clear row state
@@ -55,14 +85,17 @@ export const createExpandIcon = (
       });
     } else {
       // Expand
+      console.log("Expanding row:", rowId);
       context.setExpandedRows((prev) => {
         const next = new Map(prev);
-        next.set(rowIdStr, depth);
+        next.set(rowId, depth);
+        console.log("After setExpandedRows:", next);
         return next;
       });
       context.setCollapsedRows((prev) => {
         const next = new Map(prev);
-        next.delete(rowIdStr);
+        next.delete(rowId);
+        console.log("After setCollapsedRows (delete):", next);
         return next;
       });
 

@@ -261,7 +261,14 @@ export const createBodyCellElement = (
 
   // Cell click callback
   if (context.onCellClick && !isSelectionColumn) {
-    const handleClick = () => {
+    const handleClick = (event: Event) => {
+      const target = event.target as HTMLElement;
+      
+      // Don't trigger cell click if the click originated from an expand icon
+      if (target.closest('.st-expand-icon-container')) {
+        return;
+      }
+      
       const currentValue = getNestedValue(row, header.accessor);
       context.onCellClick?.({
         accessor: header.accessor,

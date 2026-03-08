@@ -57,6 +57,9 @@ export interface RenderContext {
   setCurrentPage: (page: number) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
   setColumnEditorOpen: (open: boolean) => void;
+  getCollapsedRows: () => Map<string, number>;
+  getExpandedRows: () => Map<string, number>;
+  getRowStateMap: () => Map<string | number, RowState>;
 }
 
 export interface RenderState {
@@ -529,6 +532,9 @@ export class RenderOrchestrator {
       setCollapsedRows: context.setCollapsedRows,
       setExpandedRows: context.setExpandedRows,
       setRowStateMap: context.setRowStateMap,
+      getCollapsedRows: context.getCollapsedRows,
+      getExpandedRows: context.getExpandedRows,
+      getRowStateMap: context.getRowStateMap,
     };
   }
 

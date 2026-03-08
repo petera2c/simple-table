@@ -56,6 +56,9 @@ export interface TableRendererDeps {
   setCollapsedRows: (rows: Map<string, number>) => void;
   setExpandedRows: (rows: Map<string, number>) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
+  getCollapsedRows: () => Map<string, number>;
+  getExpandedRows: () => Map<string, number>;
+  getRowStateMap: () => Map<string | number, any>;
 }
 
 export class TableRenderer {
@@ -65,9 +68,25 @@ export class TableRenderer {
   private horizontalScrollbarRef: { current: HTMLElement | null } = { current: null };
   private scrollbarTimeoutId: number | null = null;
   private stickyParentsContainer: HTMLElement | null = null;
+  private renderScheduled: boolean = false;
+  private pendingRenderCallback: (() => void) | null = null;
 
   constructor() {
     this.sectionRenderer = new SectionRenderer();
+  }
+
+  private scheduleRender(callback: () => void): void {
+    if (!this.renderScheduled) {
+      this.renderScheduled = true;
+      this.pendingRenderCallback = callback;
+      queueMicrotask(() => {
+        this.renderScheduled = false;
+        if (this.pendingRenderCallback) {
+          this.pendingRenderCallback();
+          this.pendingRenderCallback = null;
+        }
+      });
+    }
   }
 
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
@@ -287,8 +306,8 @@ export class TableRenderer {
 
     const bodyContext: CellRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
-      collapsedRows: deps.collapsedRows,
-      expandedRows: deps.expandedRows,
+      collapsedRows: deps.getCollapsedRows(),
+      expandedRows: deps.getExpandedRows(),
       expandedDepths: Array.from(deps.expandedDepths),
       selectedColumns: new Set(),
       rowsWithSelectedCells: new Set(),
@@ -312,27 +331,30 @@ export class TableRenderer {
       cellRegistry: deps.cellRegistry,
       setCollapsedRows: (value: any) => {
         if (typeof value === "function") {
-          deps.setCollapsedRows(value(deps.collapsedRows));
+          deps.setCollapsedRows(value(deps.getCollapsedRows()));
         } else {
           deps.setCollapsedRows(value);
         }
-        deps.onRender();
+        // Batch multiple state updates together
+        this.scheduleRender(deps.onRender);
       },
       setExpandedRows: (value: any) => {
         if (typeof value === "function") {
-          deps.setExpandedRows(value(deps.expandedRows));
+          deps.setExpandedRows(value(deps.getExpandedRows()));
         } else {
           deps.setExpandedRows(value);
         }
-        deps.onRender();
+        // Batch multiple state updates together
+        this.scheduleRender(deps.onRender);
       },
       setRowStateMap: (value: any) => {
         if (typeof value === "function") {
-          deps.setRowStateMap(value(deps.rowStateMap));
+          deps.setRowStateMap(value(deps.getRowStateMap()));
         } else {
           deps.setRowStateMap(value);
         }
-        deps.onRender();
+        // Batch multiple state updates together
+        this.scheduleRender(deps.onRender);
       },
       icons: deps.resolvedIcons,
       theme: deps.config.theme ?? "modern-light",
