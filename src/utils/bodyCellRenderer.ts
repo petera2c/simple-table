@@ -4,7 +4,12 @@
 import { getCellId } from "./cellUtils";
 import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
 import { getRenderedCells } from "./bodyCell/eventTracking";
-import { createBodyCellElement, updateBodyCellElement, updateBodyCellPosition, untrackCellByRow } from "./bodyCell/styling";
+import {
+  createBodyCellElement,
+  updateBodyCellElement,
+  updateBodyCellPosition,
+  untrackCellByRow,
+} from "./bodyCell/styling";
 import { createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 
@@ -45,9 +50,7 @@ const templateColumnsCacheMap = new WeakMap<HTMLElement, TemplateColumnsCache>()
 
 // Helper to create a hash of headers for cache invalidation
 const createHeadersHash = (headers: any[]): string => {
-  return headers
-    .map((h) => `${h.accessor}:${h.width}:${h.pinned || ""}`)
-    .join("|");
+  return headers.map((h) => `${h.accessor}:${h.width}:${h.pinned || ""}`).join("|");
 };
 
 // Helper to filter visible cells based on horizontal scroll
@@ -75,7 +78,7 @@ const calculateTemplateColumns = (container: HTMLElement, context: CellRenderCon
   // Check cache
   const cached = templateColumnsCacheMap.get(container);
   const headersHash = createHeadersHash(context.headers);
-  
+
   if (
     cached &&
     cached.deps.headersHash === headersHash &&
@@ -84,16 +87,16 @@ const calculateTemplateColumns = (container: HTMLElement, context: CellRenderCon
   ) {
     return cached.templateColumns;
   }
-  
+
   // Get leaf headers (accounting for collapsed state)
   const leafHeaders: any[] = [];
-  
+
   const processHeader = (header: any): void => {
     if (header.hide || header.excludeFromRender) return;
-    
+
     const isCollapsed = context.collapsedHeaders.has(header.accessor);
     const hasChildren = header.children && header.children.length > 0;
-    
+
     if (hasChildren) {
       const visibleChildren = header.children.filter((child: any) => {
         const showWhen = child.showWhen || "parentExpanded";
@@ -103,11 +106,11 @@ const calculateTemplateColumns = (container: HTMLElement, context: CellRenderCon
           return showWhen === "parentExpanded" || showWhen === "always";
         }
       });
-      
+
       if (header.singleRowChildren) {
         leafHeaders.push(header);
       }
-      
+
       if (visibleChildren.length > 0) {
         visibleChildren.forEach((child: any) => processHeader(child));
       } else if (!header.singleRowChildren) {
@@ -117,19 +120,19 @@ const calculateTemplateColumns = (container: HTMLElement, context: CellRenderCon
       leafHeaders.push(header);
     }
   };
-  
+
   // Filter headers by pinned state if in a pinned section
   const filteredHeaders = context.pinned
     ? context.headers.filter((h) => h.pinned === context.pinned)
     : context.headers.filter((h) => !h.pinned);
-  
+
   filteredHeaders.forEach((header) => processHeader(header));
-  
+
   // Build template columns string
   const columns = leafHeaders
     .map((header) => `${typeof header.width === "number" ? header.width : 150}px`)
     .join(" ");
-  
+
   // Cache the result
   templateColumnsCacheMap.set(container, {
     templateColumns: columns,
@@ -139,7 +142,7 @@ const calculateTemplateColumns = (container: HTMLElement, context: CellRenderCon
       pinned: context.pinned,
     },
   });
-  
+
   return columns;
 };
 
@@ -176,7 +179,11 @@ const renderRowSeparators = (
 
   // Optimize: cells are already sorted by rowIndex from calculateAbsoluteBodyCells
   // Use single pass to identify row boundaries instead of grouping and sorting
-  const rowBoundaries: Array<{ rowIndex: number; firstCell: AbsoluteBodyCell; prevCell?: AbsoluteBodyCell }> = [];
+  const rowBoundaries: Array<{
+    rowIndex: number;
+    firstCell: AbsoluteBodyCell;
+    prevCell?: AbsoluteBodyCell;
+  }> = [];
   let currentRowIndex = -1;
   let firstCellInRow: AbsoluteBodyCell | null = null;
   let prevRowFirstCell: AbsoluteBodyCell | undefined = undefined;
@@ -231,7 +238,7 @@ const renderRowSeparators = (
 
       container.appendChild(separator);
       renderedSeparators.set(rowIndex, separator);
-      
+
       // Cache metadata
       separatorMetadata.set(rowIndex, {
         position,
@@ -241,7 +248,7 @@ const renderRowSeparators = (
     } else {
       // Update existing separator only if something changed
       const separator = renderedSeparators.get(rowIndex)!;
-      
+
       const needsUpdate =
         !cachedMetadata ||
         cachedMetadata.position !== position ||
@@ -268,7 +275,7 @@ const renderRowSeparators = (
           });
           separator.style.transform = `translate3d(0, ${topPosition}px, 0)`;
         }
-        
+
         // Update grid template columns only if it changed
         if (!cachedMetadata || cachedMetadata.templateColumns !== templateColumns) {
           separator.style.gridTemplateColumns = templateColumns;
@@ -293,7 +300,7 @@ export const renderBodyCells = (
   scrollLeft: number = 0,
 ): void => {
   const perfStart = performance.now();
-  
+
   // Get viewport width for horizontal virtual scrolling
   // Use containerWidth from context (provided by DimensionManager) if available
   const viewportWidth = context.containerWidth || container.clientWidth || 0;
@@ -343,7 +350,7 @@ export const renderBodyCells = (
   const cellsToCreate: Array<{ cell: AbsoluteBodyCell; cellId: string }> = [];
 
   let updatedCount = 0;
-  
+
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: cell.rowId });
@@ -352,19 +359,19 @@ export const renderBodyCells = (
       cellsToCreate.push({ cell, cellId });
     } else {
       const cellElement = renderedCells.get(cellId)!;
-      
+
       // Check if position actually changed
       const currentLeft = parseFloat(cellElement.style.left) || 0;
       const currentTop = parseFloat(cellElement.style.top) || 0;
       const currentWidth = parseFloat(cellElement.style.width) || 0;
       const currentHeight = parseFloat(cellElement.style.height) || 0;
-      
-      const positionChanged = 
+
+      const positionChanged =
         currentLeft !== cell.left ||
         currentTop !== cell.top ||
         currentWidth !== cell.width ||
         currentHeight !== cell.height;
-      
+
       // Only update if something actually changed
       // For horizontal scroll, only position might change
       if (positionChanged) {
@@ -391,8 +398,7 @@ export const renderBodyCells = (
   renderRowSeparators(container, cellsToRender, context, renderedSeparators);
 
   const totalTime = performance.now() - perfStart;
-  
+
   if (!context.pinned) {
-    console.log(`[PERF] RenderBody: visible=${cellsToRender.length} | updated=${updatedCount} | created=${cellsToCreate.length} | ${totalTime.toFixed(2)}ms`);
   }
 };

@@ -179,6 +179,7 @@ const clickExpandIcon = async (canvasElement: HTMLElement, rowIndex: number) => 
   const rowCells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
   if (rowCells.length === 0) throw new Error(`No cells found for row index ${rowIndex}`);
 
+  console.log("rowCells", rowCells);
   const expandIcon = findExpandIconInRow(Array.from(rowCells) as HTMLElement[]);
   if (!expandIcon) throw new Error(`Expand icon not found in row ${rowIndex}`);
 

@@ -45,36 +45,16 @@ export const createExpandIcon = (
       context.collapsedRows,
     );
 
-    console.log(
-      "handleToggle - current state:",
-      currentIsExpanded,
-      "rowId:",
-      rowId,
-      "type:",
-      typeof rowId,
-      "depth:",
-      depth,
-    );
-    console.log(
-      "Before update - expandedRows:",
-      context.expandedRows,
-      "collapsedRows:",
-      context.collapsedRows,
-    );
-
     if (currentIsExpanded) {
       // Collapse
-      console.log("Collapsing row:", rowId);
       context.setCollapsedRows((prev) => {
         const next = new Map(prev);
         next.set(rowId, depth);
-        console.log("After setCollapsedRows:", next);
         return next;
       });
       context.setExpandedRows((prev) => {
         const next = new Map(prev);
         next.delete(rowId);
-        console.log("After setExpandedRows (delete):", next);
         return next;
       });
       // Clear row state
@@ -85,17 +65,14 @@ export const createExpandIcon = (
       });
     } else {
       // Expand
-      console.log("Expanding row:", rowId);
       context.setExpandedRows((prev) => {
         const next = new Map(prev);
         next.set(rowId, depth);
-        console.log("After setExpandedRows:", next);
         return next;
       });
       context.setCollapsedRows((prev) => {
         const next = new Map(prev);
         next.delete(rowId);
-        console.log("After setCollapsedRows (delete):", next);
         return next;
       });
 
