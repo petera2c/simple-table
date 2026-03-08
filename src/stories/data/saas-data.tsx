@@ -1,3 +1,4 @@
+import React from "react";
 import Row from "../../types/Row";
 import HeaderObject from "../../types/HeaderObject";
 
@@ -17,11 +18,11 @@ export const generateSaaSData = (): Row[] => {
     const avgSessionTime = Math.floor(Math.random() * 60);
     const renewalDate = `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
     const signUpDate = `${year}-${String(Math.floor(Math.random() * 12) + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
     const lastLoginDay2 = Math.floor(Math.random() * 18) + 1;
     const lastLogin = `2025-03-${lastLoginDay2 < 10 ? `0${lastLoginDay2}` : lastLoginDay2}`;
