@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { HEADERS } from "./infrastructure-headers";
 import Theme from "../../../types/Theme";
-import { TableAPI } from "../../../types/TableAPI";
+import type { TableAPI } from "../../../types/TableAPI";
 import Row from "../../../types/Row";
 import { SimpleTable } from "../../..";
 

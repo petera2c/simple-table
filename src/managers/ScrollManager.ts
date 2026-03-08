@@ -80,7 +80,6 @@ export class ScrollManager {
         }
 
         const rafId = requestAnimationFrame(() => {
-          const perfStart = performance.now();
           const latestScrollLeft = this.pendingScrolls.get(sourceElement);
           if (latestScrollLeft === undefined) return;
 
@@ -119,8 +118,6 @@ export class ScrollManager {
           if (typeof bodyRenderFn === "function") {
             bodyRenderFn(latestScrollLeft);
           }
-
-          const totalTime = performance.now() - perfStart;
 
           this.rafIds.delete(sourceElement);
           this.pendingScrolls.delete(sourceElement);

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect } from "@storybook/test";
 import { HeaderObject, SimpleTable, TableAPI } from "../..";

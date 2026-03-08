@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { SimpleTable } from "../../..";
 import { HeaderObject, TableAPI } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
