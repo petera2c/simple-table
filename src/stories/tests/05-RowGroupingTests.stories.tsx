@@ -151,11 +151,11 @@ const waitForTable = async (timeout = 5000) => {
 const getVisibleRowCount = (canvasElement: HTMLElement): number => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
-  
+
   // Count unique row indices from virtualized cells
   const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
   const uniqueRowIndices = new Set(
-    Array.from(cells).map(cell => cell.getAttribute("data-row-index"))
+    Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
   );
   return uniqueRowIndices.size;
 };
@@ -309,7 +309,7 @@ export const MultiLevelGrouping: StoryObj = {
         rowMap.get(rowIndex)!.push(cell as HTMLElement);
       }
     });
-    
+
     const depths = Array.from(rowMap.values()).map((rowCells) => getRowDepth(rowCells));
     const uniqueDepthsSet = new Set(depths);
     const uniqueDepths = Array.from(uniqueDepthsSet).sort();

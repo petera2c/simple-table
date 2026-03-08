@@ -125,7 +125,6 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         groupingKey: currentGroupingKey,
       });
 
-      const isLastGroupRow = currentDepth === 0;
       const currentRowIndex = result.length;
 
       const mainRow = {
@@ -134,7 +133,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         displayPosition,
         groupingKey: currentGroupingKey,
         position,
-        isLastGroupRow,
+        isLastGroupRow: false,
         rowId,
         rowPath,
         rowIndexPath,
@@ -268,6 +267,16 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
   };
 
   processRows(rows, 0, [], [], []);
+
+  // Mark the last row of each depth 0 group with isLastGroupRow flag
+  // This should be the last visible descendant, not the depth 0 row itself
+  parentEndPositions.forEach((endPosition, groupIndex) => {
+    // The row just before endPosition is the last row of this group
+    const lastRowIndex = endPosition - 1;
+    if (lastRowIndex >= 0 && lastRowIndex < result.length) {
+      result[lastRowIndex].isLastGroupRow = true;
+    }
+  });
 
   return {
     flattenedRows: result,
