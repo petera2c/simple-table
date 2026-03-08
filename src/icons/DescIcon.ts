@@ -5,7 +5,7 @@ export const createDescIcon = (className?: string): SVGSVGElement => {
   svg.setAttribute("role", "img");
   svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   svg.setAttribute("viewBox", "0 0 320 512");
-  svg.style.height = "1em";
+  svg.setAttribute("height", "1em");
   
   if (className) {
     svg.setAttribute("class", className);

@@ -4,7 +4,7 @@ export const createCheckIcon = (className?: string): SVGSVGElement => {
   svg.setAttribute("role", "img");
   svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   svg.setAttribute("viewBox", "0 0 448 512");
-  svg.style.height = "10px";
+  svg.setAttribute("height", "10px");
   
   if (className) {
     svg.setAttribute("class", className);

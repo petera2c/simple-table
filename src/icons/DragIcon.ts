@@ -4,8 +4,8 @@ export const createDragIcon = (className?: string): SVGSVGElement => {
   svg.setAttribute("role", "img");
   svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   svg.setAttribute("viewBox", "0 0 16 10");
-  svg.style.height = "10px";
-  svg.style.width = "16px";
+  svg.setAttribute("width", "16px");
+  svg.setAttribute("height", "10px");
   
   if (className) {
     svg.setAttribute("class", className);

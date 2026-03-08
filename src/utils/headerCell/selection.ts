@@ -1,6 +1,6 @@
 import { HeaderRenderContext } from "./types";
-import { createSVGIcon } from "./icons";
 import { addTrackedEventListener } from "./eventTracking";
+import { createCheckIcon } from "../../icons";
 
 export const createSelectionCheckbox = (context: HeaderRenderContext): HTMLElement => {
   const label = document.createElement("label");
@@ -20,7 +20,7 @@ export const createSelectionCheckbox = (context: HeaderRenderContext): HTMLEleme
   customCheckbox.setAttribute("aria-hidden", "true");
   
   if (checked) {
-    const svg = createSVGIcon("check", "st-checkbox-checkmark");
+    const svg = createCheckIcon("st-checkbox-checkmark");
     customCheckbox.appendChild(svg);
   }
   

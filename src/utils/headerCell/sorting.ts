@@ -1,10 +1,9 @@
 import HeaderObject from "../../types/HeaderObject";
 import { HeaderRenderContext } from "./types";
-import { createSVGIcon } from "./icons";
 import { addTrackedEventListener } from "./eventTracking";
 
 export const createSortIcon = (header: HeaderObject, context: HeaderRenderContext): HTMLElement | null => {
-  const { sort } = context;
+  const { sort, icons } = context;
   
   if (!sort || sort.key.accessor !== header.accessor) return null;
   
@@ -17,8 +16,15 @@ export const createSortIcon = (header: HeaderObject, context: HeaderRenderContex
     `Sort ${header.label} ${sort.direction === "asc" ? "descending" : "ascending"}`
   );
   
-  const svg = createSVGIcon(sort.direction === "asc" ? "sortUp" : "sortDown");
-  iconContainer.appendChild(svg);
+  // Use resolved icon from context (matches React implementation)
+  const icon = sort.direction === "asc" ? icons.sortUp : icons.sortDown;
+  if (icon) {
+    if (typeof icon === "string") {
+      iconContainer.innerHTML = icon;
+    } else if (icon instanceof HTMLElement || icon instanceof SVGSVGElement) {
+      iconContainer.appendChild(icon.cloneNode(true) as HTMLElement);
+    }
+  }
   
   const handleClick = (event: Event) => {
     event.stopPropagation();
