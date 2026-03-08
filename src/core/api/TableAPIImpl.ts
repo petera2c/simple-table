@@ -10,6 +10,8 @@ import { CustomTheme } from "../../types/CustomTheme";
 import UpdateDataProps from "../../types/UpdateCellProps";
 import { SetHeaderRenameProps, ExportToCSVProps } from "../../types/TableAPI";
 import RowState from "../../types/RowState";
+import Cell from "../../types/Cell";
+import { SelectionManager } from "../../managers/SelectionManager";
 import { flattenRows } from "../../utils/rowFlattening";
 import { exportTableToCSV } from "../../utils/csvExportUtils";
 
@@ -27,6 +29,7 @@ export interface TableAPIContext {
   headerRegistry: Map<string, any>;
   columnEditorOpen: boolean;
   expandedDepthsManager: any;
+  selectionManager: SelectionManager | null;
   onRender: () => void;
   setHeaders: (headers: HeaderObject[]) => void;
   setCurrentPage: (page: number) => void;
@@ -217,6 +220,22 @@ export class TableAPIImpl {
         if (context.config.quickFilter?.onChange) {
           context.config.quickFilter.onChange(text);
         }
+      },
+
+      getSelectedCells: (): Set<string> => {
+        return context.selectionManager?.getSelectedCells() || new Set();
+      },
+
+      clearSelection: () => {
+        context.selectionManager?.clearSelection();
+      },
+
+      selectCell: (cell: Cell) => {
+        context.selectionManager?.selectSingleCell(cell);
+      },
+
+      selectCellRange: (startCell: Cell, endCell: Cell) => {
+        context.selectionManager?.selectCellRange(startCell, endCell);
       },
     };
   }

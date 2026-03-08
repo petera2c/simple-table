@@ -3,6 +3,7 @@ import HeaderObject, { Accessor } from "./HeaderObject";
 import TableRow from "./TableRow";
 import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
+import Cell from "./Cell";
 
 export interface SetHeaderRenameProps {
   accessor: Accessor;
@@ -40,4 +41,8 @@ export type TableAPI = {
   toggleColumnEditor: (open?: boolean) => void;
   applyColumnVisibility: (visibility: { [accessor: string]: boolean }) => Promise<void>;
   setQuickFilter: (text: string) => void;
+  getSelectedCells: () => Set<string>;
+  clearSelection: () => void;
+  selectCell: (cell: Cell) => void;
+  selectCellRange: (startCell: Cell, endCell: Cell) => void;
 };
