@@ -155,6 +155,7 @@ export const createBodyCellElement = (
   cellElement.setAttribute("data-row-index", String(rowIndex));
   cellElement.setAttribute("data-col-index", String(colIndex));
   cellElement.setAttribute("data-row-id", String(rowId));
+  cellElement.setAttribute("data-accessor", String(header.accessor));
 
   // Apply absolute positioning like headers
   cellElement.style.position = "absolute";
@@ -334,6 +335,7 @@ export const updateBodyCellElement = (
   cellElement.setAttribute("data-row-index", String(rowIndex));
   cellElement.setAttribute("data-col-index", String(colIndex));
   cellElement.setAttribute("data-row-id", String(rowId));
+  cellElement.setAttribute("data-accessor", String(cell.header.accessor));
   
   // Update cell content (important for sorting/filtering where row data changes)
   const contentSpan = cellElement.querySelector('.st-cell-content') as HTMLElement;

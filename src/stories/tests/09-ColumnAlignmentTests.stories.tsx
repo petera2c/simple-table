@@ -39,14 +39,30 @@ const getHeaderCells = (canvasElement: HTMLElement): HTMLElement[] => {
   return Array.from(canvasElement.querySelectorAll(".st-header-cell"));
 };
 
-const getBodyRows = (canvasElement: HTMLElement): HTMLElement[] => {
+const getBodyRows = (canvasElement: HTMLElement): HTMLElement[][] => {
+  // Return virtual rows - arrays of cells grouped by row index
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return [];
-  return Array.from(bodyContainer.querySelectorAll(".st-row"));
+
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+  const rowMap = new Map<string, HTMLElement[]>();
+
+  cells.forEach((cell) => {
+    const rowIndex = cell.getAttribute("data-row-index");
+    if (rowIndex) {
+      if (!rowMap.has(rowIndex)) {
+        rowMap.set(rowIndex, []);
+      }
+      rowMap.get(rowIndex)!.push(cell as HTMLElement);
+    }
+  });
+
+  return Array.from(rowMap.values());
 };
 
-const getCellsInRow = (row: HTMLElement): HTMLElement[] => {
-  return Array.from(row.querySelectorAll(".st-cell"));
+const getCellsInRow = (rowCells: HTMLElement[]): HTMLElement[] => {
+  // rowCells is already an array of cells for a row
+  return rowCells;
 };
 
 const getHeaderLabelText = (headerCell: HTMLElement): HTMLElement | null => {

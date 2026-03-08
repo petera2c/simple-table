@@ -382,8 +382,14 @@ export const CsvExportIncludesAllPages: StoryObj = {
 
     try {
       // Verify we're on page 1 (showing 10 rows)
-      const visibleRows = canvasElement.querySelectorAll(".st-row");
-      expect(visibleRows.length).toBeLessThanOrEqual(10);
+      const bodyContainer = canvasElement.querySelector(".st-body-container");
+      if (!bodyContainer) throw new Error("Body container not found");
+
+      const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+      const uniqueRowIndices = new Set(
+        Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
+      );
+      expect(uniqueRowIndices.size).toBeLessThanOrEqual(10);
 
       // Export CSV
       const exportButton = canvasElement.querySelector("#export-all-pages") as HTMLButtonElement;

@@ -166,19 +166,21 @@ export const TableStructureAriaAttributes: StoryObj = {
       expect(Number(ariaColIndex)).toBe(index + 1); // 1-based
     });
 
-    // Verify aria-rowindex on body rows
-    const rows = canvasElement.querySelectorAll(".st-body-container .st-row");
-    expect(rows.length).toBeGreaterThan(0);
+    // Verify aria-rowindex on body cells (virtualized - no row wrappers)
+    const bodyContainer = canvasElement.querySelector(".st-body-container");
+    if (!bodyContainer) throw new Error("Body container not found");
 
-    rows.forEach((row) => {
-      const ariaRowIndex = row.getAttribute("aria-rowindex");
+    const bodyCells = bodyContainer.querySelectorAll(".st-cell");
+    expect(bodyCells.length).toBeGreaterThan(0);
+
+    // Check that cells have aria-rowindex
+    bodyCells.forEach((cell) => {
+      const ariaRowIndex = cell.getAttribute("aria-rowindex");
       expect(ariaRowIndex).toBeTruthy();
       expect(Number(ariaRowIndex)).toBeGreaterThan(0);
     });
 
     // Verify aria-colindex on body cells
-    const firstRow = rows[0];
-    const bodyCells = firstRow.querySelectorAll(".st-cell");
     bodyCells.forEach((cell) => {
       const ariaColIndex = cell.getAttribute("aria-colindex");
       expect(ariaColIndex).toBeTruthy();
@@ -986,14 +988,7 @@ export const HeaderCellsMissingRole: StoryObj = {
       expect(cell.getAttribute("role")).toBe("columnheader");
     });
 
-    // Check body rows for role="row"
-    const bodyRows = canvasElement.querySelectorAll(".st-body-container .st-row");
-    expect(bodyRows.length).toBeGreaterThan(0);
-
-    bodyRows.forEach((row) => {
-      expect(row.getAttribute("role")).toBe("row");
-    });
-
+    // With virtualization, cells are direct children (no row wrappers)
     // Check body cells for role="gridcell"
     const bodyCells = canvasElement.querySelectorAll(".st-body-container .st-cell");
     expect(bodyCells.length).toBeGreaterThan(0);
