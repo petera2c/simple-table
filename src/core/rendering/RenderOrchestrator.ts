@@ -7,6 +7,7 @@ import { DimensionManager } from "../../managers/DimensionManager";
 import { ScrollManager } from "../../managers/ScrollManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
+import { SelectionManager } from "../../managers/SelectionManager";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows } from "../../utils/rowFlattening";
 import { processRows } from "../../utils/rowProcessing";
@@ -45,6 +46,7 @@ export interface RenderContext {
   scrollManager: ScrollManager | null;
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
+  selectionManager: SelectionManager | null;
   rowStateMap: Map<string | number, RowState>;
   onRender: () => void;
   setIsResizing: (value: boolean) => void;
@@ -514,6 +516,7 @@ export class RenderOrchestrator {
       dimensionManager: context.dimensionManager,
       sortManager: context.sortManager,
       filterManager: context.filterManager,
+      selectionManager: context.selectionManager,
       rowStateMap: context.rowStateMap,
       onRender: context.onRender,
       setIsResizing: context.setIsResizing,

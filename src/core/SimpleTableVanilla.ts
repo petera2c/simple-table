@@ -10,6 +10,7 @@ import { DimensionManager } from "../managers/DimensionManager";
 import { ScrollManager } from "../managers/ScrollManager";
 import { SortManager } from "../managers/SortManager";
 import { FilterManager } from "../managers/FilterManager";
+import { SelectionManager } from "../managers/SelectionManager";
 import WindowResizeManager from "../hooks/windowResize";
 import HandleOutsideClickManager from "../hooks/handleOutsideClick";
 import ScrollbarVisibilityManager from "../hooks/scrollbarVisibility";
@@ -71,6 +72,7 @@ export class SimpleTableVanilla {
   private scrollManager: ScrollManager | null = null;
   private sortManager: SortManager | null = null;
   private filterManager: FilterManager | null = null;
+  private selectionManager: SelectionManager | null = null;
   private windowResizeManager: WindowResizeManager | null = null;
   private handleOutsideClickManager: HandleOutsideClickManager | null = null;
   private scrollbarVisibilityManager: ScrollbarVisibilityManager | null = null;
@@ -173,6 +175,20 @@ export class SimpleTableVanilla {
         this.sortManager.updateConfig({ tableRows: filterState.filteredRows });
       }
       this.render();
+    });
+
+    // Initialize SelectionManager with empty tableRows (will be updated during render)
+    this.selectionManager = new SelectionManager({
+      selectableCells: this.config.selectableCells ?? true,
+      headers: this.headers,
+      tableRows: [],
+      onCellEdit: this.config.onCellEdit,
+      cellRegistry: this.cellRegistry,
+      collapsedHeaders: this.collapsedHeaders,
+      rowHeight: this.customTheme.rowHeight,
+      enableRowSelection: this.config.enableRowSelection,
+      copyHeadersToClipboard: this.config.copyHeadersToClipboard,
+      customTheme: this.customTheme,
     });
   }
 
@@ -384,6 +400,7 @@ export class SimpleTableVanilla {
       scrollManager: this.scrollManager,
       sortManager: this.sortManager,
       filterManager: this.filterManager,
+      selectionManager: this.selectionManager,
       rowStateMap: this.rowStateMap,
       onRender: () => this.render(),
       setIsResizing: (value: boolean) => {
@@ -451,6 +468,7 @@ export class SimpleTableVanilla {
       if (this.sortManager) {
         this.sortManager.updateConfig({ tableRows: this.localRows });
       }
+      // SelectionManager will be updated with processed rows during render
     }
 
     if (config.defaultHeaders !== undefined) {
@@ -462,6 +480,9 @@ export class SimpleTableVanilla {
       if (this.sortManager) {
         this.sortManager.updateConfig({ headers: this.headers });
       }
+      if (this.selectionManager) {
+        this.selectionManager.updateConfig({ headers: this.headers });
+      }
     }
 
     if (config.isLoading !== undefined) {
@@ -470,6 +491,9 @@ export class SimpleTableVanilla {
 
     if (config.customTheme !== undefined) {
       this.customTheme = TableInitializer.mergeCustomTheme(this.config);
+      if (this.selectionManager) {
+        this.selectionManager.updateConfig({ customTheme: this.customTheme });
+      }
     }
 
     this.render();
@@ -492,6 +516,7 @@ export class SimpleTableVanilla {
     this.scrollManager?.destroy();
     this.sortManager?.destroy();
     this.filterManager?.destroy();
+    this.selectionManager?.destroy();
     this.autoScaleManager?.destroy();
     this.windowResizeManager?.destroy();
     this.handleOutsideClickManager?.destroy();
@@ -524,6 +549,7 @@ export class SimpleTableVanilla {
       headerRegistry: this.headerRegistry,
       columnEditorOpen: this.columnEditorOpen,
       expandedDepthsManager: this.expandedDepthsManager,
+      selectionManager: this.selectionManager,
       onRender: () => this.render(),
       setHeaders: (headers: HeaderObject[]) => {
         this.headers = headers;

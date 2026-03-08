@@ -15,6 +15,7 @@ import {
 import { DimensionManager } from "../../managers/DimensionManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
+import { SelectionManager } from "../../managers/SelectionManager";
 
 export interface TableRendererDeps {
   config: SimpleTableConfig;
@@ -42,6 +43,7 @@ export interface TableRendererDeps {
   dimensionManager: DimensionManager | null;
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
+  selectionManager: SelectionManager | null;
   rowStateMap: Map<string | number, any>;
   onRender: () => void;
   setIsResizing: (value: boolean) => void;
@@ -240,6 +242,15 @@ export class TableRenderer {
     const shouldShowEmptyState =
       !deps.internalIsLoading && processedResult.currentTableRows.length === 0;
 
+    // Update SelectionManager with processed table rows
+    if (deps.selectionManager && processedResult.currentTableRows) {
+      deps.selectionManager.updateConfig({
+        tableRows: processedResult.currentTableRows,
+        headers: deps.effectiveHeaders,
+        collapsedHeaders: deps.collapsedHeaders,
+      });
+    }
+
     if (shouldShowEmptyState) {
       container.innerHTML = "";
       const emptyWrapper = document.createElement("div");
@@ -293,8 +304,6 @@ export class TableRenderer {
       onCellClick: deps.config.onCellClick,
       onRowGroupExpand: deps.config.onRowGroupExpand,
       handleRowSelect: (rowId: string, checked: boolean) => {},
-      handleMouseDown: (cell: any) => {},
-      handleMouseOver: (cell: any) => {},
       cellRegistry: deps.cellRegistry,
       setCollapsedRows: (value: any) => {
         if (typeof value === "function") {
@@ -323,11 +332,13 @@ export class TableRenderer {
       icons: deps.resolvedIcons,
       theme: deps.config.theme ?? "modern-light",
       rowButtons: deps.config.rowButtons,
-      getBorderClass: (cell: any) => "",
-      isSelected: (cell: any) => false,
-      isInitialFocusedCell: (cell: any) => false,
-      isCopyFlashing: (cell: any) => false,
-      isWarningFlashing: (cell: any) => false,
+      getBorderClass: (cell: any) => deps.selectionManager?.getBorderClass(cell) || "",
+      isSelected: (cell: any) => deps.selectionManager?.isSelected(cell) || false,
+      isInitialFocusedCell: (cell: any) => deps.selectionManager?.isInitialFocusedCell(cell) || false,
+      isCopyFlashing: (cell: any) => deps.selectionManager?.isCopyFlashing(cell) || false,
+      isWarningFlashing: (cell: any) => deps.selectionManager?.isWarningFlashing(cell) || false,
+      handleMouseDown: (cell: any) => deps.selectionManager?.handleMouseDown(cell),
+      handleMouseOver: (cell: any) => deps.selectionManager?.handleMouseOver(cell),
       isRowSelected: (rowId: string) => false,
       canExpandRowGroup: deps.config.canExpandRowGroup,
       isLoading: deps.internalIsLoading,
