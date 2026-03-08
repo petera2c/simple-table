@@ -294,7 +294,6 @@ const verifySortByData = async (
   await new Promise((resolve) => setTimeout(resolve, 200));
 
   const data = getColumnData(canvasElement, accessor);
-
   if (data.length === 0) {
     throw new Error(`No data found for accessor "${accessor}"`);
   }

@@ -550,6 +550,8 @@ export class SimpleTableVanilla {
       columnEditorOpen: this.columnEditorOpen,
       expandedDepthsManager: this.expandedDepthsManager,
       selectionManager: this.selectionManager,
+      sortManager: this.sortManager,
+      filterManager: this.filterManager,
       onRender: () => this.render(),
       setHeaders: (headers: HeaderObject[]) => {
         this.headers = headers;
