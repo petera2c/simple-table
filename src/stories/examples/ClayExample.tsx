@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
-import { CellClickProps, SimpleTable, TableRefType } from "../..";
+import { CellClickProps, SimpleTable, TableAPI } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import Row from "../../types/Row";
@@ -141,7 +141,7 @@ const ClayExampleComponent = (props: UniversalTableProps) => {
   const [lastAction, setLastAction] = useState<string>("");
   const [actionHistory, setActionHistory] = useState<string[]>([]);
   const [additionalColumns, setAdditionalColumns] = useState<HeaderObject[]>([]);
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   // Define headers
   const headers: HeaderObject[] = useMemo(

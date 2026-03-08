@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { SimpleTable } from "../../..";
-import { HeaderObject, TableRefType } from "../../..";
+import { HeaderObject, TableAPI } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
 // Default args specific to RowGrouping - exported for reuse in stories and tests
@@ -199,7 +199,7 @@ const rows = [
 ];
 
 const RowGroupingExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   return (
     <>
       <button onClick={() => tableRef.current?.exportToCSV()}>Export to CSV</button>

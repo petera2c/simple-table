@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 import { UniversalTableProps } from "./StoryWrapper";
 import { FilterCondition } from "../../types/FilterTypes";
 
@@ -155,7 +155,7 @@ export const programmaticFilterExampleDefaults = {
 };
 
 const ProgrammaticFilterExampleComponent: React.FC<UniversalTableProps> = (props) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [filterInfo, setFilterInfo] = useState<string>("{}");
 
   // Helper function to get filter state and update display

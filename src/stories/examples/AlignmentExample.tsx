@@ -3,7 +3,7 @@ import { SimpleTable } from "../..";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { generateRetailSalesData } from "../data/retail-data";
 import { UniversalTableProps } from "./StoryWrapper";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 import { useRef } from "react";
 
 const EXAMPLE_DATA = generateRetailSalesData();
@@ -20,7 +20,7 @@ export const alignmentExampleDefaults = {
 };
 
 const AlignmentExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   return (
     <>
       <button onClick={() => tableRef.current?.exportToCSV()}>Export to CSV</button>

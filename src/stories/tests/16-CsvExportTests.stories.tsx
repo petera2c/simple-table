@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect } from "@storybook/test";
-import { SimpleTable, TableRefType } from "../..";
+import { SimpleTable, TableAPI } from "../..";
 import { HeaderObject } from "../..";
 
 /**
@@ -211,7 +211,7 @@ const parseCsv = (csvContent: string): string[][] => {
  */
 export const BasicCsvExport: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -284,7 +284,7 @@ export const BasicCsvExport: StoryObj = {
  */
 export const CsvExportWithCustomFilename: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(3);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -345,7 +345,7 @@ export const CsvExportWithCustomFilename: StoryObj = {
  */
 export const CsvExportIncludesAllPages: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(25); // 25 rows with 10 per page = 3 pages
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -409,7 +409,7 @@ export const CsvExportIncludesAllPages: StoryObj = {
  */
 export const CsvExportWithoutHeaders: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -472,7 +472,7 @@ export const CsvExportWithoutHeaders: StoryObj = {
  */
 export const ExcludeColumnFromCsv: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -544,7 +544,7 @@ export const ExcludeColumnFromCsv: StoryObj = {
  */
 export const CsvExportWithValueFormatter: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -617,7 +617,7 @@ export const CsvExportWithValueFormatter: StoryObj = {
  */
 export const CsvExportWithExportValueGetter: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -689,7 +689,7 @@ export const CsvExportWithExportValueGetter: StoryObj = {
  */
 export const CsvExportWithFiltering: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(20);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -752,7 +752,7 @@ export const CsvExportWithFiltering: StoryObj = {
  */
 export const CsvExportWithSorting: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(10);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, isSortable: true },
@@ -811,7 +811,7 @@ export const CsvExportWithSorting: StoryObj = {
  */
 export const CsvExportWithNestedData: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createNestedData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -881,7 +881,7 @@ export const CsvExportWithNestedData: StoryObj = {
  */
 export const CsvExportWithArrayAccessors: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createArrayData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
@@ -949,7 +949,7 @@ export const CsvExportWithArrayAccessors: StoryObj = {
  */
 export const MultipleCsvExports: StoryObj = {
   render: () => {
-    const tableRef = useRef<TableRefType | null>(null);
+    const tableRef = React.useRef<TableAPI | null>(null);
     const data = createSalesData(5);
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },

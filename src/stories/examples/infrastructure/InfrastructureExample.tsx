@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { HEADERS } from "./infrastructure-headers";
 import Theme from "../../../types/Theme";
-import TableRefType from "../../../types/TableRefType";
+import { TableAPI } from "../../../types/TableAPI";
 import Row from "../../../types/Row";
 import { SimpleTable } from "../../..";
 
@@ -657,7 +657,7 @@ export default function InfrastructureExampleComponent({
   theme?: Theme;
   rowCount?: number;
 }) {
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [data, setData] = useState<Row[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

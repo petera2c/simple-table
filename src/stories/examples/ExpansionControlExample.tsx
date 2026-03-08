@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import React from "react";
 import { SimpleTable } from "../..";
-import { HeaderObject, TableRefType } from "../..";
+import { HeaderObject, TableAPI } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to ExpansionControl
@@ -269,7 +269,7 @@ const rows = [
 ];
 
 const ExpansionControlExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [expandedInfo, setExpandedInfo] = useState<string>("");
 
   const updateExpandedInfo = () => {

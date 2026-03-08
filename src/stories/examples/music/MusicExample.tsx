@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 
 import { HEADERS } from "./music-headers";
 import Theme from "../../../types/Theme";
-import TableRefType from "../../../types/TableRefType";
+import { TableAPI } from "../../../types/TableAPI";
 import { SimpleTable } from "../../..";
 
 import data from "./music-data.json";
@@ -21,7 +21,7 @@ export default function MusicExample({
   theme?: Theme;
   rowCount?: number;
 }) {
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   return (
     <SimpleTable

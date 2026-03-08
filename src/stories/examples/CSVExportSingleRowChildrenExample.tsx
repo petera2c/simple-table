@@ -3,7 +3,7 @@ import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { UniversalTableProps } from "./StoryWrapper";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 
 // Sample data with parent and child values
 const sampleData: Row[] = [
@@ -171,7 +171,7 @@ export const csvExportSingleRowChildrenExampleDefaults: Partial<UniversalTablePr
 };
 
 const CSVExportSingleRowChildrenExample: React.FC<UniversalTableProps> = (props) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   const handleExportCSV = () => {
     if (tableRef.current) {

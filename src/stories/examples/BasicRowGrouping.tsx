@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { SimpleTable } from "../..";
-import { HeaderObject, TableRefType } from "../..";
+import { HeaderObject, TableAPI } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 const headers: HeaderObject[] = [
@@ -412,7 +412,7 @@ const rows = [
 ];
 
 const RowGroupingDemo = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   const handleExpandAll = () => {
     tableRef.current?.expandAll();

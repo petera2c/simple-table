@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { SimpleTable, TableRefType } from "../../index";
+import { SimpleTable, TableAPI } from "../../index";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 
 /**
@@ -50,7 +50,7 @@ const fetchPageData = async (page: number, pageSize: number) => {
 };
 
 const ServerSidePaginationExample = () => {
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [rows, setRows] = useState(TOTAL_SERVER_DATA.slice(0, ROWS_PER_PAGE));
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(TOTAL_SERVER_DATA.length);
