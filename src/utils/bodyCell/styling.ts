@@ -312,6 +312,17 @@ export const createBodyCellElement = (
   return cellElement;
 };
 
+// Lightweight position-only update for scroll operations
+export const updateBodyCellPosition = (
+  cellElement: HTMLElement,
+  cell: AbsoluteBodyCell,
+): void => {
+  cellElement.style.left = `${cell.left}px`;
+  cellElement.style.top = `${cell.top}px`;
+  cellElement.style.width = `${cell.width}px`;
+  cellElement.style.height = `${cell.height}px`;
+};
+
 // Update an existing body cell element with current state
 export const updateBodyCellElement = (
   cellElement: HTMLElement,
