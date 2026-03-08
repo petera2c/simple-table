@@ -4,7 +4,7 @@
 import { getCellId } from "./cellUtils";
 import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
 import { getRenderedCells } from "./bodyCell/eventTracking";
-import { createBodyCellElement, updateBodyCellElement, untrackCellByRow } from "./bodyCell/styling";
+import { createBodyCellElement, updateBodyCellElement, updateBodyCellPosition, untrackCellByRow } from "./bodyCell/styling";
 import { createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 
@@ -55,7 +55,7 @@ const getVisibleBodyCells = (
   cells: AbsoluteBodyCell[],
   scrollLeft: number,
   viewportWidth: number,
-  overscan: number = 200,
+  overscan: number = 100, // Reduced from 200px to 100px
 ): AbsoluteBodyCell[] => {
   if (cells.length === 0) return [];
 
@@ -292,6 +292,8 @@ export const renderBodyCells = (
   context: CellRenderContext,
   scrollLeft: number = 0,
 ): void => {
+  const perfStart = performance.now();
+  
   // Get viewport width for horizontal virtual scrolling
   // Use containerWidth from context (provided by DimensionManager) if available
   const viewportWidth = context.containerWidth || container.clientWidth || 0;
@@ -340,6 +342,8 @@ export const renderBodyCells = (
   const fragment = document.createDocumentFragment();
   const cellsToCreate: Array<{ cell: AbsoluteBodyCell; cellId: string }> = [];
 
+  let updatedCount = 0;
+  
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: cell.rowId });
@@ -347,9 +351,27 @@ export const renderBodyCells = (
     if (!renderedCells.has(cellId)) {
       cellsToCreate.push({ cell, cellId });
     } else {
-      // Update existing cell to reflect current state
       const cellElement = renderedCells.get(cellId)!;
-      updateBodyCellElement(cellElement, cell, context);
+      
+      // Check if position actually changed
+      const currentLeft = parseFloat(cellElement.style.left) || 0;
+      const currentTop = parseFloat(cellElement.style.top) || 0;
+      const currentWidth = parseFloat(cellElement.style.width) || 0;
+      const currentHeight = parseFloat(cellElement.style.height) || 0;
+      
+      const positionChanged = 
+        currentLeft !== cell.left ||
+        currentTop !== cell.top ||
+        currentWidth !== cell.width ||
+        currentHeight !== cell.height;
+      
+      // Only update if something actually changed
+      // For horizontal scroll, only position might change
+      if (positionChanged) {
+        // Position changed - use lightweight position-only update
+        updateBodyCellPosition(cellElement, cell);
+        updatedCount++;
+      }
     }
   });
 
@@ -367,4 +389,10 @@ export const renderBodyCells = (
 
   // Render separators for visible rows
   renderRowSeparators(container, cellsToRender, context, renderedSeparators);
+
+  const totalTime = performance.now() - perfStart;
+  
+  if (!context.pinned) {
+    console.log(`[PERF] RenderBody: visible=${cellsToRender.length} | updated=${updatedCount} | created=${cellsToCreate.length} | ${totalTime.toFixed(2)}ms`);
+  }
 };

@@ -21,7 +21,7 @@ const getVisibleCells = (
   absoluteCells: AbsoluteCell[],
   scrollLeft: number,
   viewportWidth: number,
-  overscan: number = 200, // pixels to render beyond viewport
+  overscan: number = 100, // Reduced from 200px to 100px
 ): AbsoluteCell[] => {
   if (absoluteCells.length === 0) return [];
 
@@ -41,6 +41,8 @@ export const renderHeaderCells = (
   context: HeaderRenderContext,
   scrollLeft: number = 0,
 ): void => {
+  const perfStart = performance.now();
+  
   // Get container width for viewport calculation
   // Use containerWidth from context (provided by DimensionManager) if available
   const viewportWidth =
@@ -51,10 +53,6 @@ export const renderHeaderCells = (
   const cellsToRender = context.pinned
     ? absoluteCells
     : getVisibleCells(absoluteCells, scrollLeft, viewportWidth);
-
-  // Debug: Log virtualization info for main section
-  if (!context.pinned && absoluteCells.length > 0) {
-  }
 
   const lastHeaderIndex = getLastHeaderIndex(absoluteCells);
   const renderedCells = getRenderedCells(container);
@@ -76,6 +74,8 @@ export const renderHeaderCells = (
   const fragment = document.createDocumentFragment();
   const cellsToCreate: Array<{ cell: AbsoluteCell; cellId: string; isLastHeader: boolean }> = [];
 
+  let updatedCount = 0;
+  
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: "header" });
@@ -86,9 +86,31 @@ export const renderHeaderCells = (
     if (!renderedCells.has(cellId)) {
       cellsToCreate.push({ cell, cellId, isLastHeader });
     } else {
-      // Update existing cell to reflect current state
+      // Check if position actually changed
       const cellElement = renderedCells.get(cellId)!;
-      updateHeaderCellElement(cellElement, cell, context, isLastHeader);
+      const currentLeft = parseFloat(cellElement.style.left) || 0;
+      const currentTop = parseFloat(cellElement.style.top) || 0;
+      const currentWidth = parseFloat(cellElement.style.width) || 0;
+      const currentHeight = parseFloat(cellElement.style.height) || 0;
+      
+      const positionChanged = 
+        currentLeft !== cell.left ||
+        currentTop !== cell.top ||
+        currentWidth !== cell.width ||
+        currentHeight !== cell.height;
+      
+      // Only update if position actually changed
+      if (positionChanged) {
+        // Position changed - update only position styles
+        cellElement.style.left = `${cell.left}px`;
+        cellElement.style.top = `${cell.top}px`;
+        cellElement.style.width = `${cell.width}px`;
+        cellElement.style.height = `${cell.height}px`;
+        updatedCount++;
+      }
+      
+      // Skip full updateHeaderCellElement() for horizontal scroll
+      // Full updates only needed for resize/reorder/collapse operations
     }
   });
 
@@ -104,8 +126,11 @@ export const renderHeaderCells = (
     container.appendChild(fragment);
   }
 
+  const totalTime = performance.now() - perfStart;
+
   // Store scroll position for future reference
   if (!context.pinned) {
     container.dataset.lastScrollLeft = String(scrollLeft);
+    console.log(`[PERF] RenderHeader: visible=${cellsToRender.length} | updated=${updatedCount} | created=${cellsToCreate.length} | ${totalTime.toFixed(2)}ms`);
   }
 };

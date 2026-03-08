@@ -29,6 +29,9 @@ export class ScrollManager {
   private pendingScrolls: Map<HTMLElement, number> = new Map();
   private lastScrollTop: number = 0;
   private scrollTimeoutId: number | null = null;
+  
+  // Guard flag to prevent scroll event loop
+  private isSyncing: boolean = false;
 
   constructor(config: ScrollManagerConfig) {
     this.config = config;
@@ -64,12 +67,20 @@ export class ScrollManager {
       if (!sourceElement) return;
 
       const handleScroll = () => {
+        // Prevent recursive scroll syncing
+        if (this.isSyncing) {
+          return;
+        }
+        
         const scrollLeft = sourceElement.scrollLeft;
         this.pendingScrolls.set(sourceElement, scrollLeft);
 
-        if (this.rafIds.has(sourceElement)) return;
+        if (this.rafIds.has(sourceElement)) {
+          return;
+        }
 
         const rafId = requestAnimationFrame(() => {
+          const perfStart = performance.now();
           const latestScrollLeft = this.pendingScrolls.get(sourceElement);
           if (latestScrollLeft === undefined) return;
 
@@ -91,11 +102,16 @@ export class ScrollManager {
               // Also update the target's scrollLeft property to keep it in sync
               // The render function only updates cell positions, not the scroll position itself
               if (targetElement.scrollLeft !== latestScrollLeft) {
+                // Set syncing flag to prevent recursive scroll events
+                this.isSyncing = true;
                 targetElement.scrollLeft = latestScrollLeft;
+                this.isSyncing = false;
               }
             } else {
               // Fallback to direct scroll sync
+              this.isSyncing = true;
               syncScrollLeft(sourceElement, targetElement);
+              this.isSyncing = false;
             }
           }
 
@@ -103,6 +119,9 @@ export class ScrollManager {
           if (typeof bodyRenderFn === "function") {
             bodyRenderFn(latestScrollLeft);
           }
+
+          const totalTime = performance.now() - perfStart;
+          console.log(`[PERF] ScrollSync: ${totalTime.toFixed(2)}ms`);
 
           this.rafIds.delete(sourceElement);
           this.pendingScrolls.delete(sourceElement);
