@@ -481,6 +481,17 @@ export class SectionRenderer {
       hash += `|filters:none`;
     }
 
+    // Include expansion state in hash for body context
+    if (context.expandedRows) {
+      hash += `|expandedRows:${context.expandedRows.size}`;
+    }
+    if (context.collapsedRows) {
+      hash += `|collapsedRows:${context.collapsedRows.size}`;
+    }
+    if (context.expandedDepths) {
+      hash += `|expandedDepths:${Array.isArray(context.expandedDepths) ? context.expandedDepths.length : context.expandedDepths.size}`;
+    }
+
     return hash;
   }
 

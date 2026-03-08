@@ -422,6 +422,9 @@ export class SimpleTableVanilla {
       setRowStateMap: (map: Map<string | number, any>) => {
         this.rowStateMap = map;
       },
+      getCollapsedRows: () => this.collapsedRows,
+      getExpandedRows: () => this.expandedRows,
+      getRowStateMap: () => this.rowStateMap,
       setColumnEditorOpen: (open: boolean) => {
         this.columnEditorOpen = open;
       },
