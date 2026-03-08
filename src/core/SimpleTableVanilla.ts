@@ -83,6 +83,7 @@ export class SimpleTableVanilla {
   private scrollRafId: number | null = null;
   private scrollEndTimeoutId: number | null = null;
   private lastScrollTop: number = 0;
+  private isUpdating: boolean = false;
 
   constructor(container: HTMLElement, config: SimpleTableConfig) {
     this.container = container;
@@ -138,7 +139,7 @@ export class SimpleTableVanilla {
     );
     this.expandedDepthsManager.subscribe((depths) => {
       this.expandedDepths = depths;
-      this.render();
+      this.render("expandedDepthsManager");
     });
 
     const announce = (message: string) => {
@@ -159,7 +160,7 @@ export class SimpleTableVanilla {
     });
 
     this.sortManager.subscribe((state) => {
-      this.render();
+      this.render("sortManager");
     });
 
     this.filterManager = new FilterManager({
@@ -174,7 +175,7 @@ export class SimpleTableVanilla {
       if (this.sortManager) {
         this.sortManager.updateConfig({ tableRows: filterState.filteredRows });
       }
-      this.render();
+      this.render("filterManager");
     });
 
     // Initialize SelectionManager with empty tableRows (will be updated during render)
@@ -199,9 +200,9 @@ export class SimpleTableVanilla {
     }
 
     this.domManager.createDOMStructure(this.container, this.config);
-    this.setupManagers();
-    this.render();
     this.mounted = true;
+    this.setupManagers();
+    this.render("mount");
 
     if (this.config.onGridReady) {
       this.config.onGridReady();
@@ -237,7 +238,7 @@ export class SimpleTableVanilla {
     });
 
     this.dimensionManager.subscribe(() => {
-      this.render();
+      this.render("dimensionManager");
     });
 
     this.scrollManager = new ScrollManager({
@@ -246,7 +247,7 @@ export class SimpleTableVanilla {
     });
 
     this.scrollManager.subscribe(() => {
-      this.render();
+      this.render("scrollManager");
     });
 
     if (this.config.autoExpandColumns) {
@@ -260,7 +261,7 @@ export class SimpleTableVanilla {
           isResizing: this.isResizing,
         },
         () => {
-          this.render();
+          this.render("autoScaleManager");
         },
       );
     }
@@ -274,7 +275,7 @@ export class SimpleTableVanilla {
 
       this.scrollbarVisibilityManager.subscribe((isScrollable) => {
         this.isMainSectionScrollable = isScrollable;
-        this.render();
+        this.render("scrollbarVisibilityManager");
       });
     }
 
@@ -285,7 +286,7 @@ export class SimpleTableVanilla {
         this.scrollbarWidth = newScrollbarWidth;
         this.scrollbarVisibilityManager?.setScrollbarWidth(newScrollbarWidth);
       }
-      this.render();
+      this.render("scrollbarWidth-change");
     });
 
     this.setupEventListeners();
@@ -352,7 +353,7 @@ export class SimpleTableVanilla {
       }
 
       // Trigger re-render for virtualization
-      this.render();
+      this.render("scroll-raf");
 
       this.scrollRafId = null;
     });
@@ -402,7 +403,7 @@ export class SimpleTableVanilla {
       filterManager: this.filterManager,
       selectionManager: this.selectionManager,
       rowStateMap: this.rowStateMap,
-      onRender: () => this.render(),
+      onRender: () => this.render("resizeHandler-onRender"),
       setIsResizing: (value: boolean) => {
         this.isResizing = value;
       },
@@ -441,8 +442,14 @@ export class SimpleTableVanilla {
     };
   }
 
-  private render(): void {
+  private render(source?: string): void {
     if (!this.mounted) return;
+
+    // Skip renders triggered by manager updates during an update() call
+    // The update() method will call render at the end
+    if (this.isUpdating && source !== "update") {
+      return;
+    }
 
     const elements = this.domManager.getElements();
     const refs = this.domManager.getRefs();
@@ -459,6 +466,7 @@ export class SimpleTableVanilla {
   }
 
   update(config: Partial<SimpleTableConfig>): void {
+    this.isUpdating = true;
     this.config = { ...this.config, ...config };
 
     if (config.rows !== undefined) {
@@ -499,7 +507,8 @@ export class SimpleTableVanilla {
       }
     }
 
-    this.render();
+    this.isUpdating = false;
+    this.render("update");
   }
 
   destroy(): void {
@@ -555,7 +564,7 @@ export class SimpleTableVanilla {
       selectionManager: this.selectionManager,
       sortManager: this.sortManager,
       filterManager: this.filterManager,
-      onRender: () => this.render(),
+      onRender: () => this.render("columnEditor-onRender"),
       setHeaders: (headers: HeaderObject[]) => {
         this.headers = headers;
       },
@@ -565,7 +574,7 @@ export class SimpleTableVanilla {
       setColumnEditorOpen: (open: boolean) => {
         this.columnEditorOpen = open;
 
-        this.render();
+        this.render("columnEditor-toggle");
       },
     };
 

@@ -139,11 +139,6 @@ const calculateTreeTransitionOffset = (
   const pixelsScrolledOutOfView = Math.max(0, scrollTop - firstRowTopPosition);
   const parentsFromOldTree = newTreeStartIndex + 1;
 
-  console.log("\n");
-  console.log("parentsFromOldTree", parentsFromOldTree);
-  console.log("rowsLeftFromOldTree", rowsLeftFromOldTree);
-  console.log("pixelsScrolledOutOfView", pixelsScrolledOutOfView);
-  console.log("rowHeight", rowHeight);
   // Offset = freed sticky slots + pixels scrolled out
   const offset = (parentsFromOldTree - rowsLeftFromOldTree) * rowHeight + pixelsScrolledOutOfView;
 

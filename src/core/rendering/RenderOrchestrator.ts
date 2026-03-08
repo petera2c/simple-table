@@ -182,7 +182,7 @@ export class RenderOrchestrator {
       : "100%";
 
     let effectiveRows = context.localRows;
-    
+
     // Use sorted rows from SortManager (which already includes filtering)
     // The FilterManager updates the SortManager's input rows when filters change
     if (context.sortManager) {
@@ -191,7 +191,7 @@ export class RenderOrchestrator {
       // Fallback: if no sort manager but filter manager exists, use filtered rows
       effectiveRows = context.filterManager.getFilteredRows();
     }
-    
+
     if (context.internalIsLoading && effectiveRows.length === 0) {
       let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
       if (state.isMainSectionScrollable) {
@@ -203,11 +203,13 @@ export class RenderOrchestrator {
     // Check if we can use cached flattened rows
     const sortState = context.sortManager?.getState();
     const filterState = context.filterManager?.getState();
-    
+
     // Serialize sort and filter state for cache comparison
-    const sortKey = sortState?.sort ? `${sortState.sort.key.accessor}-${sortState.sort.direction}` : 'none';
+    const sortKey = sortState?.sort
+      ? `${sortState.sort.key.accessor}-${sortState.sort.direction}`
+      : "none";
     const filterKey = JSON.stringify(filterState?.filters || {});
-    
+
     const canUseCache =
       this.flattenedRowsCache &&
       this.flattenedRowsCache.deps.rowsRef === effectiveRows &&
