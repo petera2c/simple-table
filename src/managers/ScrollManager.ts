@@ -29,7 +29,7 @@ export class ScrollManager {
   private pendingScrolls: Map<HTMLElement, number> = new Map();
   private lastScrollTop: number = 0;
   private scrollTimeoutId: number | null = null;
-  
+
   // Guard flag to prevent scroll event loop
   private isSyncing: boolean = false;
 
@@ -71,7 +71,7 @@ export class ScrollManager {
         if (this.isSyncing) {
           return;
         }
-        
+
         const scrollLeft = sourceElement.scrollLeft;
         this.pendingScrolls.set(sourceElement, scrollLeft);
 
@@ -98,7 +98,7 @@ export class ScrollManager {
             if (typeof headerRenderFn === "function") {
               // Use the render function for column virtualization
               headerRenderFn(latestScrollLeft);
-              
+
               // Also update the target's scrollLeft property to keep it in sync
               // The render function only updates cell positions, not the scroll position itself
               if (targetElement.scrollLeft !== latestScrollLeft) {
@@ -121,7 +121,6 @@ export class ScrollManager {
           }
 
           const totalTime = performance.now() - perfStart;
-          console.log(`[PERF] ScrollSync: ${totalTime.toFixed(2)}ms`);
 
           this.rafIds.delete(sourceElement);
           this.pendingScrolls.delete(sourceElement);

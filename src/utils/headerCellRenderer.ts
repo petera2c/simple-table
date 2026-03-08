@@ -42,7 +42,7 @@ export const renderHeaderCells = (
   scrollLeft: number = 0,
 ): void => {
   const perfStart = performance.now();
-  
+
   // Get container width for viewport calculation
   // Use containerWidth from context (provided by DimensionManager) if available
   const viewportWidth =
@@ -75,7 +75,7 @@ export const renderHeaderCells = (
   const cellsToCreate: Array<{ cell: AbsoluteCell; cellId: string; isLastHeader: boolean }> = [];
 
   let updatedCount = 0;
-  
+
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: "header" });
@@ -92,13 +92,13 @@ export const renderHeaderCells = (
       const currentTop = parseFloat(cellElement.style.top) || 0;
       const currentWidth = parseFloat(cellElement.style.width) || 0;
       const currentHeight = parseFloat(cellElement.style.height) || 0;
-      
-      const positionChanged = 
+
+      const positionChanged =
         currentLeft !== cell.left ||
         currentTop !== cell.top ||
         currentWidth !== cell.width ||
         currentHeight !== cell.height;
-      
+
       // Only update if position actually changed
       if (positionChanged) {
         // Position changed - update only position styles
@@ -108,7 +108,7 @@ export const renderHeaderCells = (
         cellElement.style.height = `${cell.height}px`;
         updatedCount++;
       }
-      
+
       // Skip full updateHeaderCellElement() for horizontal scroll
       // Full updates only needed for resize/reorder/collapse operations
     }
@@ -131,6 +131,5 @@ export const renderHeaderCells = (
   // Store scroll position for future reference
   if (!context.pinned) {
     container.dataset.lastScrollLeft = String(scrollLeft);
-    console.log(`[PERF] RenderHeader: visible=${cellsToRender.length} | updated=${updatedCount} | created=${cellsToCreate.length} | ${totalTime.toFixed(2)}ms`);
   }
 };
