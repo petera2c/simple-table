@@ -158,9 +158,9 @@ const validateBasicTableStructure = async (canvasElement: HTMLElement) => {
   if (!bodyContainer) throw new Error("Body container not found");
   expect(bodyContainer).toBeTruthy();
 
-  // At least one row should exist
-  const rows = canvasElement.querySelectorAll(".st-row");
-  expect(rows.length).toBeGreaterThan(0);
+  // At least one cell should exist (virtualized structure - no row wrappers)
+  const cells = canvasElement.querySelectorAll(".st-cell");
+  expect(cells.length).toBeGreaterThan(0);
 
   // Header and body main sections
   const headerMain = headerContainer.querySelector(".st-header-main");
@@ -178,8 +178,16 @@ const validateColumnCount = (canvasElement: HTMLElement, expectedCount: number) 
 };
 
 const validateRowCount = (canvasElement: HTMLElement, expectedCount: number) => {
-  const rows = canvasElement.querySelectorAll(".st-row");
-  expect(rows.length).toBe(expectedCount);
+  // With column virtualization, we count unique row indices from cells
+  const bodyContainer = canvasElement.querySelector(".st-body-container");
+  if (!bodyContainer) throw new Error("Body container not found");
+
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+  const uniqueRowIndices = new Set(
+    Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
+  );
+
+  expect(uniqueRowIndices.size).toBe(expectedCount);
 };
 
 const validateCellContent = (
@@ -619,8 +627,10 @@ export const ViewportRelativeHeight: StoryObj = {
     if (!tableRoot) throw new Error("Table root not found");
     expect(tableRoot).toBeTruthy();
 
-    // Height should be set to 50vh
-    expect(tableRoot.style.height).toBe("50vh");
+    // Height should be set to 50vh (may be in inline style or cssText)
+    const hasHeightSet =
+      tableRoot.style.height === "50vh" || tableRoot.style.cssText.includes("height: 50vh");
+    expect(hasHeightSet).toBe(true);
   },
 };
 
@@ -683,15 +693,15 @@ export const ComprehensiveStructureValidation: StoryObj = {
     if (!bodyMain) throw new Error("Body main not found");
     expect(bodyMain).toBeTruthy();
 
-    // Validate rows
-    const rows = canvasElement.querySelectorAll(".st-row");
-    expect(rows.length).toBeGreaterThan(0);
+    // Validate cells exist (virtualized - no row wrappers)
+    const cells = bodyContainer.querySelectorAll(".st-cell");
+    expect(cells.length).toBeGreaterThan(0);
 
-    // Each row should have cells
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll(".st-cell");
-      expect(cells.length).toBeGreaterThan(0);
-    });
+    // Validate we have multiple rows worth of cells
+    const uniqueRowIndices = new Set(
+      Array.from(cells).map((cell) => (cell as HTMLElement).getAttribute("data-row-index")),
+    );
+    expect(uniqueRowIndices.size).toBeGreaterThan(0);
 
     // Validate data rendering
     validateCellContent(canvasElement, 0, "id", "1");

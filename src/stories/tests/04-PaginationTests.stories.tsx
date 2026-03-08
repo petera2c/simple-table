@@ -86,8 +86,12 @@ const waitForTable = async (timeout = 5000) => {
 const getVisibleRowCount = (canvasElement: HTMLElement): number => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  return rows.length;
+  // Count unique row indices from virtualized cells
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+  const uniqueRowIndices = new Set(
+    Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
+  );
+  return uniqueRowIndices.size;
 };
 
 const getPaginationFooter = (canvasElement: HTMLElement): HTMLElement | null => {

@@ -87,11 +87,10 @@ const getCellElement = (
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return null;
 
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  const row = rows[rowIndex];
-  if (!row) return null;
-
-  return row.querySelector(`[data-accessor="${accessor}"]`) as HTMLElement;
+  // Query directly for cell with both row index and accessor
+  return bodyContainer.querySelector(
+    `.st-cell[data-row-index="${rowIndex}"][data-accessor="${accessor}"]`
+  ) as HTMLElement;
 };
 
 const getCellContent = (cell: HTMLElement): string => {

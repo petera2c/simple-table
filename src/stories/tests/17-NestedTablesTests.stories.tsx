@@ -327,9 +327,15 @@ export const BasicNestedTable: StoryObj = {
     const nestedHeaders = firstNestedTable.querySelectorAll(".st-header-cell");
     expect(nestedHeaders.length).toBe(5); // 5 division columns
 
-    // Verify nested table has rows
-    const nestedRows = firstNestedTable.querySelectorAll(".st-row");
-    expect(nestedRows.length).toBeGreaterThan(0);
+    // Verify nested table has cells (virtualized - no row wrappers)
+    const nestedBodyContainer = firstNestedTable.querySelector(".st-body-container");
+    if (!nestedBodyContainer) throw new Error("Nested body container not found");
+
+    const nestedCells = nestedBodyContainer.querySelectorAll(".st-cell[data-row-index]");
+    const uniqueNestedRows = new Set(
+      Array.from(nestedCells).map((cell) => cell.getAttribute("data-row-index")),
+    );
+    expect(uniqueNestedRows.size).toBeGreaterThan(0);
   },
 };
 
@@ -1115,7 +1121,14 @@ export const NestedTableWithGetRowId: StoryObj = {
     const nestedTables = getNestedTables(canvasElement);
     expect(nestedTables.length).toBe(1);
 
-    const nestedRows = nestedTables[0].querySelectorAll(".st-row");
-    expect(nestedRows.length).toBeGreaterThan(0);
+    // Count unique rows in nested table (virtualized - no row wrappers)
+    const nestedBodyContainer = nestedTables[0].querySelector(".st-body-container");
+    if (!nestedBodyContainer) throw new Error("Nested body container not found");
+
+    const nestedCells = nestedBodyContainer.querySelectorAll(".st-cell[data-row-index]");
+    const uniqueNestedRows = new Set(
+      Array.from(nestedCells).map((cell) => cell.getAttribute("data-row-index")),
+    );
+    expect(uniqueNestedRows.size).toBeGreaterThan(0);
   },
 };
