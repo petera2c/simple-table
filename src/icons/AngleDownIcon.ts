@@ -11,6 +11,7 @@ export const createAngleDownIcon = (className?: string): SVGSVGElement => {
   
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("d", "M5.41 7.59L10 12.17l4.59-4.58L16 9l-6 6-6-6z");
+  path.setAttribute("fill", "inherit");
   svg.appendChild(path);
   
   return svg;

@@ -69,6 +69,7 @@ export const createCellContent = (
   contentSpan: HTMLElement,
 ): void => {
   const { header, row, rowIndex, colIndex, depth, rowId } = cell;
+
   const content = getNestedValue(row, header.accessor);
 
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
@@ -125,6 +126,7 @@ export const createCellContent = (
       context.expandedRows,
       context.collapsedRows,
     );
+
     const expandIcon = createExpandIcon(cell, context, isExpanded);
     contentSpan.appendChild(expandIcon);
   }

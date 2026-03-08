@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { SimpleTableVanilla } from "../core/SimpleTableVanilla";
 import { SimpleTableConfig } from "../types/SimpleTableConfig";
@@ -44,49 +44,54 @@ export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
   const { tableRef } = props;
 
   // Wrap headerRenderer functions to convert React elements to DOM elements
-  const wrapHeaderRenderers = (headers: HeaderObject[]): HeaderObject[] => {
-    return headers.map((header) => {
-      if (header.headerRenderer) {
-        const originalRenderer = header.headerRenderer;
-        const wrappedRenderer: HeaderRenderer = (props) => {
-          const reactElement = originalRenderer(props);
+  const wrapHeaderRenderers = useCallback(
+    (headers: HeaderObject[]): HeaderObject[] => {
+      return headers.map((header) => {
+        if (header.headerRenderer) {
+          const originalRenderer = header.headerRenderer;
+          const wrappedRenderer: HeaderRenderer = (props) => {
+            const reactElement = originalRenderer(props);
 
-          // Check if it's already a DOM element
-          if (reactElement instanceof HTMLElement) {
-            return reactElement;
-          }
+            // Check if it's already a DOM element
+            if (reactElement instanceof HTMLElement) {
+              return reactElement;
+            }
 
-          // Create a container and render the React element into it
-          const container = document.createElement("div");
-          container.className = "st-header-renderer-container";
+            // Create a container and render the React element into it
+            const container = document.createElement("div");
+            container.className = "st-header-renderer-container";
 
-          // Create a React root and render
-          const key = `${header.accessor}-${props.colIndex}`;
-          const root = createRoot(container);
-          root.render(reactElement);
+            // Create a React root and render
+            const key = `${header.accessor}-${props.colIndex}`;
+            const root = createRoot(container);
+            root.render(reactElement);
 
-          // Store the root for cleanup
-          reactRootsRef.current.set(key, root);
+            // Store the root for cleanup
+            reactRootsRef.current.set(key, root);
 
-          return container;
-        };
+            return container;
+          };
+
+          return {
+            ...header,
+            headerRenderer: wrappedRenderer,
+            children: header.children ? wrapHeaderRenderers(header.children) : undefined,
+          };
+        }
 
         return {
           ...header,
-          headerRenderer: wrappedRenderer,
           children: header.children ? wrapHeaderRenderers(header.children) : undefined,
         };
-      }
-
-      return {
-        ...header,
-        children: header.children ? wrapHeaderRenderers(header.children) : undefined,
-      };
-    });
-  };
+      });
+    },
+    [reactRootsRef],
+  );
 
   useEffect(() => {
     if (!containerRef.current) return;
+
+    const test = reactRootsRef.current;
 
     const { tableRef: _, defaultHeaders, ...restConfig } = props;
 
@@ -108,14 +113,14 @@ export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
 
     return () => {
       // Cleanup React roots
-      reactRootsRef.current.forEach((root) => {
+      test.forEach((root) => {
         try {
           root.unmount();
         } catch (e) {
           // Ignore errors during unmount
         }
       });
-      reactRootsRef.current.clear();
+      test.clear();
 
       table.destroy();
       tableInstanceRef.current = null;
@@ -123,7 +128,7 @@ export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
         tableRef.current = null;
       }
     };
-  }, [tableRef]);
+  }, [props, tableRef, wrapHeaderRenderers]);
 
   useEffect(() => {
     if (tableInstanceRef.current) {
@@ -139,7 +144,7 @@ export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
 
       tableInstanceRef.current.update(vanillaConfig as any);
     }
-  }, [props]);
+  }, [props, wrapHeaderRenderers]);
 
   return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 };

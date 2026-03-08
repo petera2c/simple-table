@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import React from "react";
 import { SimpleTable } from "../..";
 import { HeaderObject, TableAPI } from "../..";

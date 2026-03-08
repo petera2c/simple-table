@@ -5,7 +5,7 @@ import TableRow from "../types/TableRow";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
 import { createRowSeparator } from "./rowSeparatorRenderer";
-import { calculateColumnIndices } from "./columnIndicesUtils";
+// import { calculateColumnIndices } from "./columnIndicesUtils";
 import { CumulativeHeightMap, HeightOffsets } from "./infiniteScrollUtils";
 import { scrollSyncManager } from "./scrollSyncManager";
 import { CustomTheme } from "../types/CustomTheme";
@@ -350,12 +350,12 @@ export const createStickyParentsContainer = (
   );
 
   // Calculate column indices
-  const columnIndices = calculateColumnIndices({
-    headers: context.headers,
-    pinnedLeftColumns: props.pinnedLeftColumns,
-    pinnedRightColumns: props.pinnedRightColumns,
-    collapsedHeaders: context.collapsedHeaders,
-  });
+  // const columnIndices = calculateColumnIndices({
+  //   headers: context.headers,
+  //   pinnedLeftColumns: props.pinnedLeftColumns,
+  //   pinnedRightColumns: props.pinnedRightColumns,
+  //   collapsedHeaders: context.collapsedHeaders,
+  // });
 
   // Calculate total height
   const stickyHeight =

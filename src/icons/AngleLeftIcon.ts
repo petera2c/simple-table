@@ -11,6 +11,7 @@ export const createAngleLeftIcon = (className?: string): SVGSVGElement => {
   
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("d", "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z");
+  path.setAttribute("fill", "inherit");
   svg.appendChild(path);
   
   return svg;
