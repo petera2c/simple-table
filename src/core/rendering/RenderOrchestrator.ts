@@ -319,7 +319,7 @@ export class RenderOrchestrator {
 
     this.renderFooter(
       elements.footerContainer,
-      flattenResult.paginatableRows.length,
+      context.config.totalRowCount ?? flattenResult.paginatableRows.length,
       state.currentPage,
       effectiveHeaders,
       context,
