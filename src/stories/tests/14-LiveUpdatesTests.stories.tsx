@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect } from "@storybook/test";
-import { HeaderObject, SimpleTable, TableRefType } from "../..";
+import { HeaderObject, SimpleTable, TableAPI } from "../..";
 
 // ============================================================================
 // TEST UTILITIES
@@ -57,10 +57,10 @@ type Story = StoryObj<typeof SimpleTable>;
 // ============================================================================
 
 // Expose tableRef for testing
-let testTableRef: TableRefType | null = null;
+let testTableRef: TableAPI | null = null;
 
 const LiveUpdatesTestComponent = () => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   // Expose ref for tests
   useEffect(() => {

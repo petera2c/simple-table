@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 
 import { HEADERS } from "./finance-headers";
 import financeData from "./finance-data.json";
-import TableRefType from "../../../types/TableRefType";
+import { TableAPI } from "../../../types/TableAPI";
 import { SimpleTable } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
@@ -26,7 +26,7 @@ export const financeExampleDefaults = {
 };
 
 export const FinancialExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   useEffect(() => {
     // Keep a copy of the current data in memory for calculations
