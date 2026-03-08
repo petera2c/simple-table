@@ -1,6 +1,5 @@
 import HeaderObject from "../../types/HeaderObject";
 import { HeaderRenderContext } from "./types";
-import { createSVGIcon } from "./icons";
 import { addTrackedEventListener } from "./eventTracking";
 import { createFilterDropdown } from "../filters/createFilterDropdown";
 import { createDropdown } from "../filters/createDropdown";
@@ -10,7 +9,7 @@ export const createFilterIcon = (
   header: HeaderObject,
   context: HeaderRenderContext,
 ): HTMLElement | null => {
-  const { filters, handleApplyFilter, handleClearFilter } = context;
+  const { filters, handleApplyFilter, handleClearFilter, icons } = context;
 
   if (!header.filterable) return null;
 
@@ -23,12 +22,27 @@ export const createFilterIcon = (
   iconContainer.setAttribute("aria-expanded", "false");
   iconContainer.setAttribute("aria-haspopup", "dialog");
 
-  const svg = createSVGIcon("filter", undefined, {
-    fill: currentFilter
+  // Use resolved icon from context and apply dynamic styling
+  const icon = icons.filter;
+  let svgElement: SVGSVGElement | null = null;
+  
+  if (icon) {
+    if (typeof icon === "string") {
+      iconContainer.innerHTML = icon;
+      svgElement = iconContainer.querySelector("svg");
+    } else if (icon instanceof HTMLElement || icon instanceof SVGSVGElement) {
+      const clonedIcon = icon.cloneNode(true) as SVGSVGElement;
+      iconContainer.appendChild(clonedIcon);
+      svgElement = clonedIcon;
+    }
+  }
+  
+  // Apply fill color to the SVG
+  if (svgElement) {
+    svgElement.style.fill = currentFilter
       ? "var(--st-button-active-background-color)"
-      : "var(--st-header-icon-color)",
-  });
-  iconContainer.appendChild(svg);
+      : "var(--st-header-icon-color)";
+  }
 
   let isFilterDropdownOpen = false;
   let filterDropdownInstance: ReturnType<typeof createFilterDropdown> | null = null;
@@ -53,10 +67,10 @@ export const createFilterIcon = (
           filterDropdownInstance = null;
         }
         
-        const updatedSvg = createSVGIcon("filter", undefined, {
-          fill: "var(--st-button-active-background-color)",
-        });
-        svg.replaceWith(updatedSvg);
+        // Update icon color to show active state
+        if (svgElement) {
+          svgElement.style.fill = "var(--st-button-active-background-color)";
+        }
       };
 
       const onClearFilter = () => {
@@ -72,10 +86,10 @@ export const createFilterIcon = (
           filterDropdownInstance = null;
         }
         
-        const updatedSvg = createSVGIcon("filter", undefined, {
-          fill: "var(--st-header-icon-color)",
-        });
-        svg.replaceWith(updatedSvg);
+        // Update icon color to show inactive state
+        if (svgElement) {
+          svgElement.style.fill = "var(--st-header-icon-color)";
+        }
       };
 
       const containerElement = context.mainBodyRef.current || undefined;

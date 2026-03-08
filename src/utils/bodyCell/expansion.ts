@@ -1,8 +1,8 @@
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
-import { createSVGIcon } from "./icons";
 
-// Create expand/collapse icon for row grouping
+// Create expand/collapse icon container for row grouping
+// Uses the icon from context.icons.expand (configured by user or default)
 export const createExpandIcon = (
   cell: AbsoluteBodyCell,
   context: CellRenderContext,
@@ -17,13 +17,17 @@ export const createExpandIcon = (
   outerContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
   outerContainer.setAttribute("tabindex", "0");
 
-  // Create inner icon span
-  const iconSpan = document.createElement("span");
-  iconSpan.className = "st-expand-icon";
-  
-  const icon = createSVGIcon(isExpanded ? "chevronDown" : "chevronRight");
-  iconSpan.appendChild(icon);
-  outerContainer.appendChild(iconSpan);
+  // Use the icon from context (matches React implementation: {icons.expand})
+  const icon = context.icons.expand;
+  if (icon) {
+    if (typeof icon === "string") {
+      // If icon is a string (HTML), set as innerHTML
+      outerContainer.innerHTML = icon;
+    } else if (icon instanceof HTMLElement || icon instanceof SVGSVGElement) {
+      // If icon is a DOM element, clone and append it
+      outerContainer.appendChild(icon.cloneNode(true) as HTMLElement);
+    }
+  }
 
   const handleToggle = (event: Event) => {
     event.stopPropagation();

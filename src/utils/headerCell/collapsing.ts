@@ -1,11 +1,10 @@
 import HeaderObject from "../../types/HeaderObject";
 import { hasCollapsibleChildren } from "../collapseUtils";
 import { HeaderRenderContext } from "./types";
-import { createSVGIcon } from "./icons";
 import { addTrackedEventListener } from "./eventTracking";
 
 export const createCollapseIcon = (header: HeaderObject, context: HeaderRenderContext): HTMLElement | null => {
-  const { collapsedHeaders } = context;
+  const { collapsedHeaders, icons } = context;
   
   const isCollapsible = hasCollapsibleChildren(header);
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
@@ -23,8 +22,15 @@ export const createCollapseIcon = (header: HeaderObject, context: HeaderRenderCo
   );
   iconContainer.setAttribute("aria-expanded", String(!isCollapsed));
   
-  const svg = createSVGIcon(isCollapsed ? "angleRight" : "angleLeft");
-  iconContainer.appendChild(svg);
+  // Use resolved icon from context (matches React implementation)
+  const icon = isCollapsed ? icons.headerCollapse : icons.headerExpand;
+  if (icon) {
+    if (typeof icon === "string") {
+      iconContainer.innerHTML = icon;
+    } else if (icon instanceof HTMLElement || icon instanceof SVGSVGElement) {
+      iconContainer.appendChild(icon.cloneNode(true) as HTMLElement);
+    }
+  }
   
   const handleCollapseToggle = (event: Event) => {
     event.stopPropagation();
