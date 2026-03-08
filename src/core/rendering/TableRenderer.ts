@@ -198,6 +198,9 @@ export class TableRenderer {
     const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
     const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
 
+    // Calculate startColIndex for each section to ensure global uniqueness
+    let currentColIndex = 0;
+
     // Track which sections should exist (like React's component list)
     const sectionsToKeep: HTMLElement[] = [];
 
@@ -210,12 +213,15 @@ export class TableRenderer {
         headerHeight: deps.customTheme.headerHeight,
         context: headerContext,
         sectionWidth: leftWidth,
+        startColIndex: currentColIndex,
       });
       deps.pinnedLeftHeaderRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
       if (!container.contains(leftSection)) {
         container.appendChild(leftSection);
       }
+      // Update colIndex for next section
+      currentColIndex = this.sectionRenderer.getNextColIndex("left");
     }
 
     if (mainHeaders.length > 0) {
@@ -226,12 +232,15 @@ export class TableRenderer {
         headerHeight: deps.customTheme.headerHeight,
         context: headerContext,
         sectionWidth: mainWidth,
+        startColIndex: currentColIndex,
       });
       deps.mainHeaderRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
       if (!container.contains(mainSection)) {
         container.appendChild(mainSection);
       }
+      // Update colIndex for next section
+      currentColIndex = this.sectionRenderer.getNextColIndex("main");
     }
 
     if (pinnedRightHeaders.length > 0) {
@@ -243,6 +252,7 @@ export class TableRenderer {
         headerHeight: deps.customTheme.headerHeight,
         context: headerContext,
         sectionWidth: rightWidth,
+        startColIndex: currentColIndex,
       });
       deps.pinnedRightHeaderRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
@@ -376,6 +386,9 @@ export class TableRenderer {
     const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
     const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
 
+    // Calculate startColIndex for each section to ensure global uniqueness
+    let currentColIndex = 0;
+
     // Track which sections should exist (like React's component list)
     const sectionsToKeep: HTMLElement[] = [];
 
@@ -390,12 +403,15 @@ export class TableRenderer {
         rowHeight: deps.customTheme.rowHeight,
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
+        startColIndex: currentColIndex,
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
       if (!container.contains(leftSection)) {
         container.appendChild(leftSection);
       }
+      // Update colIndex for next section
+      currentColIndex = this.sectionRenderer.getNextColIndex("left");
     }
 
     if (mainHeaders.length > 0) {
@@ -408,12 +424,15 @@ export class TableRenderer {
         rowHeight: deps.customTheme.rowHeight,
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
+        startColIndex: currentColIndex,
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
       if (!container.contains(mainSection)) {
         container.appendChild(mainSection);
       }
+      // Update colIndex for next section
+      currentColIndex = this.sectionRenderer.getNextColIndex("main");
     }
 
     if (pinnedRightHeaders.length > 0) {
@@ -427,6 +446,7 @@ export class TableRenderer {
         rowHeight: deps.customTheme.rowHeight,
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
+        startColIndex: currentColIndex,
       });
       deps.pinnedRightRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);

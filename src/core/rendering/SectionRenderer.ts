@@ -18,6 +18,7 @@ export interface HeaderSectionParams {
   headerHeight: number;
   context: HeaderRenderContext;
   sectionWidth?: number;
+  startColIndex?: number;
 }
 
 export interface BodySectionParams {
@@ -30,6 +31,7 @@ export interface BodySectionParams {
   rowHeight: number;
   heightOffsets?: Array<[number, number]>;
   totalRowCount?: number;
+  startColIndex?: number;
 }
 
 interface BodyCellsCacheEntry {
@@ -69,6 +71,9 @@ export class SectionRenderer {
   private bodyCellsCache: Map<string, BodyCellsCacheEntry> = new Map();
   private headerCellsCache: Map<string, HeaderCellsCacheEntry> = new Map();
   private contextCache: Map<string, ContextCacheEntry> = new Map();
+  
+  // Track the next colIndex for each section after rendering
+  private nextColIndexMap: Map<string, number> = new Map();
 
   renderHeaderSection(params: HeaderSectionParams): HTMLElement {
     const {
@@ -79,6 +84,7 @@ export class SectionRenderer {
       headerHeight,
       context,
       sectionWidth,
+      startColIndex = 0,
     } = params;
 
     const sectionKey = pinned || "main";
@@ -121,7 +127,14 @@ export class SectionRenderer {
       collapsedHeaders,
       maxHeaderDepth,
       headerHeight,
+      startColIndex,
     );
+    
+    // Calculate and store the next colIndex for this section
+    const maxColIndex = absoluteCells.length > 0 
+      ? Math.max(...absoluteCells.map(c => c.colIndex)) + 1
+      : startColIndex;
+    this.nextColIndexMap.set(sectionKey, maxColIndex);
 
     const cachedContext = this.getCachedContext(`header-${sectionKey}`, context, pinned);
 
@@ -152,6 +165,7 @@ export class SectionRenderer {
       rowHeight,
       heightOffsets,
       totalRowCount,
+      startColIndex = 0,
     } = params;
 
     const sectionKey = pinned || "main";
@@ -208,7 +222,14 @@ export class SectionRenderer {
       rowHeight,
       heightOffsets,
       context.customTheme,
+      startColIndex,
     );
+    
+    // Calculate and store the next colIndex for this section
+    const maxColIndex = absoluteCells.length > 0 
+      ? Math.max(...absoluteCells.map(c => c.colIndex)) + 1
+      : startColIndex;
+    this.nextColIndexMap.set(sectionKey, maxColIndex);
 
     const cachedContext = this.getCachedContext(`body-${sectionKey}`, context, pinned);
 
@@ -240,9 +261,10 @@ export class SectionRenderer {
     collapsedHeaders: Set<Accessor>,
     maxDepth: number,
     headerHeight: number,
+    startColIndex: number = 0,
   ): AbsoluteCell[] {
     const cells: AbsoluteCell[] = [];
-    let colIndex = 0;
+    let colIndex = startColIndex;
     let currentLeft = 0;
 
     const processHeader = (
@@ -352,6 +374,7 @@ export class SectionRenderer {
     rowHeight: number,
     heightOffsets?: Array<[number, number]>,
     customTheme?: any,
+    startColIndex: number = 0,
   ): AbsoluteBodyCell[] {
     const cells: AbsoluteBodyCell[] = [];
 
@@ -377,8 +400,9 @@ export class SectionRenderer {
           })
         : rowIndex * rowHeight;
 
-      leafHeaders.forEach((header, colIndex) => {
+      leafHeaders.forEach((header, leafIndex) => {
         const position = headerPositions.get(header.accessor);
+        const colIndex = startColIndex + leafIndex;
         cells.push({
           header,
           row: tableRow.row,
@@ -503,6 +527,7 @@ export class SectionRenderer {
     rowHeight: number,
     heightOffsets?: Array<[number, number]>,
     customTheme?: any,
+    startColIndex: number = 0,
   ): AbsoluteBodyCell[] {
     const cached = this.bodyCellsCache.get(sectionKey);
 
@@ -527,6 +552,7 @@ export class SectionRenderer {
       rowHeight,
       heightOffsets,
       customTheme,
+      startColIndex,
     );
 
     this.bodyCellsCache.set(sectionKey, {
@@ -549,6 +575,7 @@ export class SectionRenderer {
     collapsedHeaders: Set<Accessor>,
     maxDepth: number,
     headerHeight: number,
+    startColIndex: number = 0,
   ): AbsoluteCell[] {
     const cached = this.headerCellsCache.get(sectionKey);
 
@@ -569,6 +596,7 @@ export class SectionRenderer {
       collapsedHeaders,
       maxDepth,
       headerHeight,
+      startColIndex,
     );
 
     this.headerCellsCache.set(sectionKey, {
@@ -619,6 +647,13 @@ export class SectionRenderer {
     }
   }
 
+  /**
+   * Get the next colIndex after rendering a section
+   */
+  getNextColIndex(sectionKey: string): number {
+    return this.nextColIndexMap.get(sectionKey) ?? 0;
+  }
+
   cleanup(): void {
     // Unregister all body sections from scrollSyncManager
     this.registeredBodySections.forEach(({ element, groups }) => {
@@ -631,5 +666,6 @@ export class SectionRenderer {
     this.bodyCellsCache.clear();
     this.headerCellsCache.clear();
     this.contextCache.clear();
+    this.nextColIndexMap.clear();
   }
 }
