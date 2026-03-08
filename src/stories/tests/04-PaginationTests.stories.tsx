@@ -284,6 +284,7 @@ export const PageNavigation: StoryObj = {
 
     // Click Previous button
     await clickPreviousPageButton(canvasElement);
+    console.log("rowCount", rowCount);
 
     // Verify back to page 2
     rowCount = getVisibleRowCount(canvasElement);

@@ -54,6 +54,7 @@ export interface RenderContext {
   setCollapsedHeaders: (headers: Set<Accessor>) => void;
   setCollapsedRows: (rows: Map<string, number>) => void;
   setExpandedRows: (rows: Map<string, number>) => void;
+  setCurrentPage: (page: number) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
   setColumnEditorOpen: (open: boolean) => void;
 }
@@ -379,6 +380,7 @@ export class RenderOrchestrator {
       totalRows,
       currentPage,
       (page: number) => {
+        context.setCurrentPage(page);
         context.onRender();
       },
       deps,

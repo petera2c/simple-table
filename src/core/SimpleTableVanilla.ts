@@ -424,6 +424,9 @@ export class SimpleTableVanilla {
       setColumnEditorOpen: (open: boolean) => {
         this.columnEditorOpen = open;
       },
+      setCurrentPage: (page: number) => {
+        this.currentPage = page;
+      },
     };
   }
 
