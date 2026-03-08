@@ -179,8 +179,6 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
                 partiallyVisibleRows: [],
               };
 
-          console.log("stickyResult", stickyResult);
-
           return {
             ...stickyResult,
             partiallyVisibleRows: viewportCalcs.partiallyVisible.rows,
