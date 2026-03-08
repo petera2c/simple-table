@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 
 import { HEADERS } from "./finance-headers";
 import financeData from "./finance-data.json";
-import { TableAPI } from "../../../types/TableAPI";
+import type { TableAPI } from "../../../types/TableAPI";
 import { SimpleTable } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 

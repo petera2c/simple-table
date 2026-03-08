@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 
 import { HEADERS } from "./music-headers";
 import Theme from "../../../types/Theme";

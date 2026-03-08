@@ -6,7 +6,6 @@ import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
 import { getRenderedCells } from "./bodyCell/eventTracking";
 import {
   createBodyCellElement,
-  updateBodyCellElement,
   updateBodyCellPosition,
   untrackCellByRow,
 } from "./bodyCell/styling";
@@ -299,8 +298,6 @@ export const renderBodyCells = (
   context: CellRenderContext,
   scrollLeft: number = 0,
 ): void => {
-  const perfStart = performance.now();
-
   // Get viewport width for horizontal virtual scrolling
   // Use containerWidth from context (provided by DimensionManager) if available
   const viewportWidth = context.containerWidth || container.clientWidth || 0;
@@ -349,8 +346,6 @@ export const renderBodyCells = (
   const fragment = document.createDocumentFragment();
   const cellsToCreate: Array<{ cell: AbsoluteBodyCell; cellId: string }> = [];
 
-  let updatedCount = 0;
-
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: cell.rowId });
@@ -377,7 +372,6 @@ export const renderBodyCells = (
       if (positionChanged) {
         // Position changed - use lightweight position-only update
         updateBodyCellPosition(cellElement, cell);
-        updatedCount++;
       }
     }
   });
@@ -396,9 +390,4 @@ export const renderBodyCells = (
 
   // Render separators for visible rows
   renderRowSeparators(container, cellsToRender, context, renderedSeparators);
-
-  const totalTime = performance.now() - perfStart;
-
-  if (!context.pinned) {
-  }
 };

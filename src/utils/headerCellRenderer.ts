@@ -6,7 +6,6 @@ import { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
 import { getRenderedCells } from "./headerCell/eventTracking";
 import {
   createHeaderCellElement,
-  updateHeaderCellElement,
   getLastHeaderIndex,
 } from "./headerCell/styling";
 
@@ -41,8 +40,6 @@ export const renderHeaderCells = (
   context: HeaderRenderContext,
   scrollLeft: number = 0,
 ): void => {
-  const perfStart = performance.now();
-
   // Get container width for viewport calculation
   // Use containerWidth from context (provided by DimensionManager) if available
   const viewportWidth =
@@ -74,8 +71,6 @@ export const renderHeaderCells = (
   const fragment = document.createDocumentFragment();
   const cellsToCreate: Array<{ cell: AbsoluteCell; cellId: string; isLastHeader: boolean }> = [];
 
-  let updatedCount = 0;
-
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: "header" });
@@ -106,7 +101,6 @@ export const renderHeaderCells = (
         cellElement.style.top = `${cell.top}px`;
         cellElement.style.width = `${cell.width}px`;
         cellElement.style.height = `${cell.height}px`;
-        updatedCount++;
       }
 
       // Skip full updateHeaderCellElement() for horizontal scroll
@@ -125,8 +119,6 @@ export const renderHeaderCells = (
   if (fragment.childNodes.length > 0) {
     container.appendChild(fragment);
   }
-
-  const totalTime = performance.now() - perfStart;
 
   // Store scroll position for future reference
   if (!context.pinned) {
