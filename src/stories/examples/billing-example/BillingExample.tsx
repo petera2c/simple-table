@@ -19,6 +19,7 @@ export const billingExampleDefaults = {
 const BillingExample = (props: UniversalTableProps) => {
   return (
     <SimpleTable
+      enableStickyParents
       defaultHeaders={HEADERS}
       height={"70dvh"}
       rowGrouping={["invoices", "charges"]}
