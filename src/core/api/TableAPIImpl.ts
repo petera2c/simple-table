@@ -12,6 +12,8 @@ import { SetHeaderRenameProps, ExportToCSVProps } from "../../types/TableAPI";
 import RowState from "../../types/RowState";
 import Cell from "../../types/Cell";
 import { SelectionManager } from "../../managers/SelectionManager";
+import { SortManager } from "../../managers/SortManager";
+import { FilterManager } from "../../managers/FilterManager";
 import { flattenRows } from "../../utils/rowFlattening";
 import { exportTableToCSV } from "../../utils/csvExportUtils";
 
@@ -30,6 +32,8 @@ export interface TableAPIContext {
   columnEditorOpen: boolean;
   expandedDepthsManager: any;
   selectionManager: SelectionManager | null;
+  sortManager: SortManager | null;
+  filterManager: FilterManager | null;
   onRender: () => void;
   setHeaders: (headers: HeaderObject[]) => void;
   setCurrentPage: (page: number) => void;
@@ -108,20 +112,36 @@ export class TableAPIImpl {
       },
 
       getSortState: (): SortColumn | null => {
-        return null;
+        return context.sortManager?.getSortColumn() ?? null;
       },
 
-      applySortState: async (props?: { accessor: Accessor; direction?: SortDirection }) => {},
+      applySortState: async (props?: { accessor: Accessor; direction?: SortDirection }) => {
+        if (context.sortManager) {
+          context.sortManager.updateSort(props);
+        }
+      },
 
       getFilterState: (): TableFilterState => {
-        return {};
+        return context.filterManager?.getFilters() ?? {};
       },
 
-      applyFilter: async (filter: FilterCondition) => {},
+      applyFilter: async (filter: FilterCondition) => {
+        if (context.filterManager) {
+          context.filterManager.updateFilter(filter);
+        }
+      },
 
-      clearFilter: async (accessor: Accessor) => {},
+      clearFilter: async (accessor: Accessor) => {
+        if (context.filterManager) {
+          context.filterManager.clearFilter(accessor);
+        }
+      },
 
-      clearAllFilters: async () => {},
+      clearAllFilters: async () => {
+        if (context.filterManager) {
+          context.filterManager.clearAllFilters();
+        }
+      },
 
       getCurrentPage: (): number => {
         return context.currentPage;
