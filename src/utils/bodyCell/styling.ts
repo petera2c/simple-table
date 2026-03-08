@@ -46,10 +46,7 @@ const setRowHoverState = (rowIndex: number, hovered: boolean): void => {
 };
 
 // Calculate cell class names based on current state
-export const calculateBodyCellClasses = (
-  cell: AbsoluteBodyCell,
-  context: CellRenderContext,
-): string => {
+const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderContext): string => {
   const { header, rowIndex, colIndex, rowId, depth, isOdd } = cell;
 
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
@@ -143,14 +140,13 @@ export const createBodyCellElement = (
 
   // Get class names
   const classNames = calculateBodyCellClasses(cell, context);
-
   // Create cell element
   const cellElement = document.createElement("div");
   cellElement.className = classNames;
   cellElement.id = getCellId({ accessor: header.accessor, rowId });
   cellElement.setAttribute("role", "gridcell");
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
-  
+
   // Set data attributes for selection manager to query
   cellElement.setAttribute("data-row-index", String(rowIndex));
   cellElement.setAttribute("data-col-index", String(colIndex));
@@ -330,15 +326,15 @@ export const updateBodyCellElement = (
   cellElement.style.top = `${cell.top}px`;
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
-  
+
   // Update data attributes
   cellElement.setAttribute("data-row-index", String(rowIndex));
   cellElement.setAttribute("data-col-index", String(colIndex));
   cellElement.setAttribute("data-row-id", String(rowId));
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
-  
+
   // Update cell content (important for sorting/filtering where row data changes)
-  const contentSpan = cellElement.querySelector('.st-cell-content') as HTMLElement;
+  const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
   if (contentSpan) {
     contentSpan.innerHTML = "";
     createCellContent(cell, context, contentSpan);

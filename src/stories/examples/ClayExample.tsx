@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { CellClickProps, SimpleTable, TableAPI } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";

@@ -4,7 +4,6 @@ import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 import { generateRetailSalesData } from "../data/retail-data";
 import { UniversalTableProps } from "./StoryWrapper";
 import { TableAPI } from "../../types/TableAPI";
-import { useRef } from "react";
 
 const EXAMPLE_DATA = generateRetailSalesData();
 const HEADERS = RETAIL_SALES_HEADERS;
