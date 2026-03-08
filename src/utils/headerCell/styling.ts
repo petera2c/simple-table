@@ -143,16 +143,16 @@ export const createHeaderCellElement = (
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
 
+  const sortIcon = createSortIcon(header, context);
+  const filterIcon = createFilterIcon(header, context);
+  const collapseIcon = createCollapseIcon(header, context);
+
   if (reverse) {
     const resizeHandle = createResizeHandle(header, context, isLastHeader);
     if (resizeHandle) {
       cellElement.appendChild(resizeHandle);
     }
   }
-
-  const sortIcon = createSortIcon(header, context);
-  const filterIcon = createFilterIcon(header, context);
-  const collapseIcon = createCollapseIcon(header, context);
 
   if (!header.headerRenderer && header.align === "right") {
     if (collapseIcon) cellElement.appendChild(collapseIcon);
@@ -165,7 +165,7 @@ export const createHeaderCellElement = (
 
   if (header.headerRenderer) {
     const labelContent = createLabelContent(header, context);
-    
+
     const renderedContent = header.headerRenderer({
       accessor: header.accessor,
       colIndex,
@@ -212,9 +212,9 @@ export const createHeaderCellElement = (
   cellElement.appendChild(labelElement);
 
   if (!header.headerRenderer && header.align !== "right") {
-    if (sortIcon) cellElement.appendChild(sortIcon);
-    if (filterIcon) cellElement.appendChild(filterIcon);
     if (collapseIcon) cellElement.appendChild(collapseIcon);
+    if (filterIcon) cellElement.appendChild(filterIcon);
+    if (sortIcon) cellElement.appendChild(sortIcon);
   }
 
   if (!reverse) {
@@ -257,7 +257,7 @@ export const updateHeaderCellElement = (
   isLastHeader: boolean,
 ): void => {
   const { header } = cell;
-  
+
   // Update classes to reflect current state
   cellElement.className = calculateHeaderCellClasses(cell, context, isLastHeader);
 
@@ -266,28 +266,30 @@ export const updateHeaderCellElement = (
   cellElement.style.top = `${cell.top}px`;
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
-  
+
   // Update icons (sort/filter/collapse) - remove old ones and create new ones
   const oldSortIcon = cellElement.querySelector('.st-icon-container[aria-label*="Sort"]');
   const oldFilterIcon = cellElement.querySelector('.st-icon-container[aria-label*="Filter"]');
-  const oldCollapseIcon = cellElement.querySelector('.st-icon-container[aria-label*="Collapse"], .st-icon-container[aria-label*="Expand"]');
-  
+  const oldCollapseIcon = cellElement.querySelector(
+    '.st-icon-container[aria-label*="Collapse"], .st-icon-container[aria-label*="Expand"]',
+  );
+
   oldSortIcon?.remove();
   oldFilterIcon?.remove();
   oldCollapseIcon?.remove();
-  
+
   // Recreate icons with current state
   const sortIcon = createSortIcon(header, context);
   const filterIcon = createFilterIcon(header, context);
   const collapseIcon = createCollapseIcon(header, context);
-  
+
   // Insert icons in the correct position based on alignment
   if (!header.headerRenderer && header.align === "right") {
     if (collapseIcon) cellElement.insertBefore(collapseIcon, cellElement.firstChild);
     if (filterIcon) cellElement.insertBefore(filterIcon, cellElement.firstChild);
     if (sortIcon) cellElement.insertBefore(sortIcon, cellElement.firstChild);
   } else if (!header.headerRenderer && header.align !== "right") {
-    const resizeHandle = cellElement.querySelector('.st-resize-handle');
+    const resizeHandle = cellElement.querySelector(".st-header-resize-handle-container");
     if (sortIcon) {
       if (resizeHandle) {
         cellElement.insertBefore(sortIcon, resizeHandle);
