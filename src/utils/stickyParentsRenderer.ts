@@ -85,11 +85,6 @@ const calculateTreeTransitionOffset = (
   // Find where a new sibling tree starts (same depth parents)
   let newTreeStartIndex = -1;
 
-  console.log(
-    "Sticky parents depths:",
-    stickyParents.map((p) => ({ position: p.position, depth: p.depth })),
-  );
-
   for (let i = 0; i < stickyParents.length; i++) {
     const currentParent = stickyParents[i];
     const nextParent = stickyParents[i + 1];
@@ -98,17 +93,14 @@ const calculateTreeTransitionOffset = (
 
     if (nextParent.depth === currentParent.depth) {
       newTreeStartIndex = i;
-      console.log("Found sibling at same depth, newTreeStartIndex:", i);
       break;
     } else if (nextParent.depth < currentParent.depth) {
       newTreeStartIndex = stickyParents.findIndex((parent) => parent.depth === currentParent.depth);
-      console.log("Found parent at lower depth, newTreeStartIndex:", newTreeStartIndex);
       break;
     }
   }
 
   if (newTreeStartIndex === -1) {
-    console.log("No tree transition detected (newTreeStartIndex = -1)");
     return { treeTransitionOffset: 0, offsetStartIndex: calculatedOffsetStartIndex };
   }
 
@@ -147,21 +139,13 @@ const calculateTreeTransitionOffset = (
   const pixelsScrolledOutOfView = Math.max(0, scrollTop - firstRowTopPosition);
   const parentsFromOldTree = newTreeStartIndex + 1;
 
+  console.log("\n");
+  console.log("parentsFromOldTree", parentsFromOldTree);
+  console.log("rowsLeftFromOldTree", rowsLeftFromOldTree);
+  console.log("pixelsScrolledOutOfView", pixelsScrolledOutOfView);
+  console.log("rowHeight", rowHeight);
   // Offset = freed sticky slots + pixels scrolled out
   const offset = (parentsFromOldTree - rowsLeftFromOldTree) * rowHeight + pixelsScrolledOutOfView;
-
-  console.log("offset", offset);
-
-  console.log("Tree transition calculation:", {
-    newTreeStartIndex,
-    oldTreeParentPosition,
-    rowsLeftFromOldTree,
-    parentsFromOldTree,
-    pixelsScrolledOutOfView,
-    offset,
-    scrollTop,
-    firstRowTopPosition,
-  });
 
   return { treeTransitionOffset: -offset, offsetStartIndex: calculatedOffsetStartIndex };
 };
@@ -282,7 +266,6 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     // as offset rows slide underneath them
     const zIndex = shouldApplyOffset ? stickyIndex : stickyParents.length - stickyIndex;
 
-    console.log("treeTransitionOffset", treeTransitionOffset);
     // Create row container
     const rowContainer = document.createElement("div");
     rowContainer.className = "st-row st-sticky-parent";

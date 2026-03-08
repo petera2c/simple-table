@@ -210,7 +210,6 @@ const useTableRowProcessing = ({
           rowGrouping,
         )
       : { stickyParents: [], regularRows: viewportCalcs.rendered.rows, partiallyVisibleRows: [] };
-    console.log("stickyResult", stickyResult);
 
     return {
       ...stickyResult,

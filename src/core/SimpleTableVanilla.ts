@@ -464,7 +464,7 @@ export class SimpleTableVanilla {
     if (config.rows !== undefined) {
       this.localRows = [...config.rows];
       this.rebuildRowIndexMap();
-      
+
       if (this.filterManager) {
         this.filterManager.updateConfig({ rows: this.localRows });
       }
@@ -476,7 +476,7 @@ export class SimpleTableVanilla {
 
     if (config.defaultHeaders !== undefined) {
       this.headers = [...config.defaultHeaders];
-      
+
       if (this.filterManager) {
         this.filterManager.updateConfig({ headers: this.headers });
       }
@@ -563,12 +563,8 @@ export class SimpleTableVanilla {
         this.currentPage = page;
       },
       setColumnEditorOpen: (open: boolean) => {
-        console.log("[SimpleTableVanilla] setColumnEditorOpen called", {
-          previousOpen: this.columnEditorOpen,
-          newOpen: open,
-        });
         this.columnEditorOpen = open;
-        console.log("[SimpleTableVanilla] Triggering render after column editor state change");
+
         this.render();
       },
     };
