@@ -67,7 +67,6 @@ export class TableRenderer {
   private stickyParentsContainer: HTMLElement | null = null;
 
   constructor() {
-    console.log("TableRenderer constructor");
     this.sectionRenderer = new SectionRenderer();
   }
 
