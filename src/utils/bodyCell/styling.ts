@@ -329,4 +329,16 @@ export const updateBodyCellElement = (
   cellElement.style.top = `${cell.top}px`;
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
+  
+  // Update data attributes
+  cellElement.setAttribute("data-row-index", String(rowIndex));
+  cellElement.setAttribute("data-col-index", String(colIndex));
+  cellElement.setAttribute("data-row-id", String(rowId));
+  
+  // Update cell content (important for sorting/filtering where row data changes)
+  const contentSpan = cellElement.querySelector('.st-cell-content') as HTMLElement;
+  if (contentSpan) {
+    contentSpan.innerHTML = "";
+    createCellContent(cell, context, contentSpan);
+  }
 };

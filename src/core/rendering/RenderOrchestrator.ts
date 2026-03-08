@@ -5,6 +5,8 @@ import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { DimensionManager } from "../../managers/DimensionManager";
 import { ScrollManager } from "../../managers/ScrollManager";
+import { SortManager } from "../../managers/SortManager";
+import { FilterManager } from "../../managers/FilterManager";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows } from "../../utils/rowFlattening";
 import { processRows } from "../../utils/rowProcessing";
@@ -41,6 +43,8 @@ export interface RenderContext {
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
   dimensionManager: DimensionManager | null;
   scrollManager: ScrollManager | null;
+  sortManager: SortManager | null;
+  filterManager: FilterManager | null;
   rowStateMap: Map<string | number, RowState>;
   onRender: () => void;
   setIsResizing: (value: boolean) => void;
@@ -71,6 +75,8 @@ interface FlattenedRowsCache {
     expandedRowsSize: number;
     collapsedRowsSize: number;
     expandedDepthsSize: number;
+    sortKey: string;
+    filterKey: string;
   };
 }
 
@@ -173,7 +179,17 @@ export class RenderOrchestrator {
       : "100%";
 
     let effectiveRows = context.localRows;
-    if (context.internalIsLoading && context.localRows.length === 0) {
+    
+    // Use sorted rows from SortManager (which already includes filtering)
+    // The FilterManager updates the SortManager's input rows when filters change
+    if (context.sortManager) {
+      effectiveRows = context.sortManager.getSortedRows();
+    } else if (context.filterManager) {
+      // Fallback: if no sort manager but filter manager exists, use filtered rows
+      effectiveRows = context.filterManager.getFilteredRows();
+    }
+    
+    if (context.internalIsLoading && effectiveRows.length === 0) {
       let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
       if (state.isMainSectionScrollable) {
         rowsToShow += 1;
@@ -182,13 +198,22 @@ export class RenderOrchestrator {
     }
 
     // Check if we can use cached flattened rows
+    const sortState = context.sortManager?.getState();
+    const filterState = context.filterManager?.getState();
+    
+    // Serialize sort and filter state for cache comparison
+    const sortKey = sortState?.sort ? `${sortState.sort.key.accessor}-${sortState.sort.direction}` : 'none';
+    const filterKey = JSON.stringify(filterState?.filters || {});
+    
     const canUseCache =
       this.flattenedRowsCache &&
-      this.flattenedRowsCache.deps.rowsRef === context.localRows &&
+      this.flattenedRowsCache.deps.rowsRef === effectiveRows &&
       this.flattenedRowsCache.deps.quickFilter === context.config.quickFilter &&
       this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
       this.flattenedRowsCache.deps.collapsedRowsSize === context.collapsedRows.size &&
-      this.flattenedRowsCache.deps.expandedDepthsSize === context.expandedDepths.size;
+      this.flattenedRowsCache.deps.expandedDepthsSize === context.expandedDepths.size &&
+      this.flattenedRowsCache.deps.sortKey === sortKey &&
+      this.flattenedRowsCache.deps.filterKey === filterKey;
 
     let aggregatedRows: Row[];
     let quickFilteredRows: Row[];
@@ -234,11 +259,13 @@ export class RenderOrchestrator {
         quickFilteredRows,
         flattenResult,
         deps: {
-          rowsRef: context.localRows,
+          rowsRef: effectiveRows,
           quickFilter: context.config.quickFilter,
           expandedRowsSize: context.expandedRows.size,
           collapsedRowsSize: context.collapsedRows.size,
           expandedDepthsSize: context.expandedDepths.size,
+          sortKey,
+          filterKey,
         },
       };
     }
@@ -485,6 +512,8 @@ export class RenderOrchestrator {
       pinnedLeftHeaderRef: context.pinnedLeftHeaderRef,
       pinnedRightHeaderRef: context.pinnedRightHeaderRef,
       dimensionManager: context.dimensionManager,
+      sortManager: context.sortManager,
+      filterManager: context.filterManager,
       rowStateMap: context.rowStateMap,
       onRender: context.onRender,
       setIsResizing: context.setIsResizing,
