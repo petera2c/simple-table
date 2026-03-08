@@ -45,6 +45,9 @@ export const createExpandIcon = (
       context.collapsedRows,
     );
 
+    // Determine the new state after toggle
+    const willBeExpanded = !currentIsExpanded;
+
     if (currentIsExpanded) {
       // Collapse
       context.setCollapsedRows((prev) => {
@@ -75,60 +78,60 @@ export const createExpandIcon = (
         next.delete(rowId);
         return next;
       });
+    }
 
-      // Call onRowGroupExpand callback if provided
-      if (context.onRowGroupExpand && cell.tableRow.rowIndexPath && context.rowGrouping) {
-        const triggerSection = cell.header.pinned;
+    // Call onRowGroupExpand callback if provided (for both expand and collapse)
+    if (context.onRowGroupExpand && cell.tableRow.rowIndexPath && context.rowGrouping) {
+      const triggerSection = cell.header.pinned;
 
-        const setLoading = (loading: boolean) => {
-          setTimeout(() => {
-            context.setRowStateMap((prev) => {
-              const newMap = new Map(prev);
-              const currentState = newMap.get(rowId) || {};
-              newMap.set(rowId, { ...currentState, loading, triggerSection });
-              return newMap;
-            });
-          }, 0);
-        };
-
-        const setError = (error: string | null) => {
+      const setLoading = (loading: boolean) => {
+        setTimeout(() => {
           context.setRowStateMap((prev) => {
             const newMap = new Map(prev);
             const currentState = newMap.get(rowId) || {};
-            newMap.set(rowId, { ...currentState, error, loading: false, triggerSection });
+            newMap.set(rowId, { ...currentState, loading, triggerSection });
             return newMap;
           });
-        };
+        }, 0);
+      };
 
-        const setEmpty = (isEmpty: boolean, message?: string) => {
-          context.setRowStateMap((prev) => {
-            const newMap = new Map(prev);
-            const currentState = newMap.get(rowId) || {};
-            newMap.set(rowId, { ...currentState, isEmpty, loading: false, triggerSection });
-            return newMap;
-          });
-        };
-
-        // Create a synthetic event object
-        const syntheticEvent = {
-          stopPropagation: () => {},
-          preventDefault: () => {},
-        } as any;
-
-        context.onRowGroupExpand({
-          row: cell.row,
-          depth,
-          event: syntheticEvent,
-          groupingKey: context.rowGrouping[depth],
-          isExpanded: false,
-          rowIndexPath: cell.tableRow.rowIndexPath,
-          rowIdPath: cell.tableRow.rowPath,
-          groupingKeys: context.rowGrouping,
-          setLoading,
-          setError,
-          setEmpty,
+      const setError = (error: string | null) => {
+        context.setRowStateMap((prev) => {
+          const newMap = new Map(prev);
+          const currentState = newMap.get(rowId) || {};
+          newMap.set(rowId, { ...currentState, error, loading: false, triggerSection });
+          return newMap;
         });
-      }
+      };
+
+      const setEmpty = (isEmpty: boolean, message?: string) => {
+        context.setRowStateMap((prev) => {
+          const newMap = new Map(prev);
+          const currentState = newMap.get(rowId) || {};
+          newMap.set(rowId, { ...currentState, isEmpty, loading: false, triggerSection });
+          return newMap;
+        });
+      };
+
+      // Create a synthetic event object
+      const syntheticEvent = {
+        stopPropagation: () => {},
+        preventDefault: () => {},
+      } as any;
+
+      context.onRowGroupExpand({
+        row: cell.row,
+        depth,
+        event: syntheticEvent,
+        groupingKey: context.rowGrouping[depth],
+        isExpanded: willBeExpanded,
+        rowIndexPath: cell.tableRow.rowIndexPath,
+        rowIdPath: cell.tableRow.rowPath,
+        groupingKeys: context.rowGrouping,
+        setLoading,
+        setError,
+        setEmpty,
+      });
     }
   };
 

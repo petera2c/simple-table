@@ -780,7 +780,6 @@ export const OnRowGroupExpandCallback: StoryObj = {
     // Expand first row
     await clickExpandIcon(canvasElement, 0);
 
-    console.log("eventList");
     // Verify callback was triggered
     const eventList = canvasElement.querySelector("ul");
     expect(eventList).toBeTruthy();
