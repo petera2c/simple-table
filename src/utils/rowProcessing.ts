@@ -44,7 +44,7 @@ function applyPagination(
   currentPage: number,
   rowsPerPage: number,
   shouldPaginate: boolean,
-  serverSidePagination: boolean
+  serverSidePagination: boolean,
 ): TableRow[] {
   if (!shouldPaginate || serverSidePagination) {
     return allRows.map((tableRow, index) => ({
@@ -69,8 +69,8 @@ function applyPagination(
     const absoluteRowIndex = tableRow.nestedTable
       ? tableRow.absoluteRowIndex
       : shouldPaginate && !serverSidePagination
-      ? startPosition + index
-      : index;
+        ? startPosition + index
+        : index;
 
     return {
       ...tableRow,
@@ -106,7 +106,7 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
     currentPage,
     rowsPerPage,
     shouldPaginate,
-    serverSidePagination
+    serverSidePagination,
   );
 
   const paginatedHeightOffsets =
@@ -124,7 +124,7 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
             .filter(([originalPos]) => positionMap.has(originalPos))
             .map(
               ([originalPos, extraHeight]) =>
-                [positionMap.get(originalPos)!, extraHeight] as [number, number]
+                [positionMap.get(originalPos)!, extraHeight] as [number, number],
             );
         })();
 
@@ -134,7 +134,7 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
           currentTableRows.length,
           rowHeight,
           paginatedHeightOffsets,
-          customTheme
+          customTheme,
         )
       : undefined;
 
@@ -171,13 +171,15 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
                 viewportCalcs.rendered.rows,
                 viewportCalcs.fullyVisible.rows,
                 viewportCalcs.partiallyVisible.rows,
-                rowGrouping
+                rowGrouping,
               )
             : {
                 stickyParents: [],
                 regularRows: viewportCalcs.rendered.rows,
                 partiallyVisibleRows: [],
               };
+
+          console.log("stickyResult", stickyResult);
 
           return {
             ...stickyResult,

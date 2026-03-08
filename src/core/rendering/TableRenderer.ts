@@ -12,6 +12,10 @@ import {
   createHorizontalScrollbar,
   cleanupHorizontalScrollbar,
 } from "../../utils/horizontalScrollbarRenderer";
+import {
+  createStickyParentsContainer,
+  cleanupStickyParentsContainer,
+} from "../../utils/stickyParentsRenderer";
 import { DimensionManager } from "../../managers/DimensionManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
@@ -60,6 +64,7 @@ export class TableRenderer {
   private columnEditorInstance: ReturnType<typeof createColumnEditor> | null = null;
   private horizontalScrollbarRef: { current: HTMLElement | null } = { current: null };
   private scrollbarTimeoutId: number | null = null;
+  private stickyParentsContainer: HTMLElement | null = null;
 
   constructor() {
     this.sectionRenderer = new SectionRenderer();
@@ -334,7 +339,8 @@ export class TableRenderer {
       rowButtons: deps.config.rowButtons,
       getBorderClass: (cell: any) => deps.selectionManager?.getBorderClass(cell) || "",
       isSelected: (cell: any) => deps.selectionManager?.isSelected(cell) || false,
-      isInitialFocusedCell: (cell: any) => deps.selectionManager?.isInitialFocusedCell(cell) || false,
+      isInitialFocusedCell: (cell: any) =>
+        deps.selectionManager?.isInitialFocusedCell(cell) || false,
       isCopyFlashing: (cell: any) => deps.selectionManager?.isCopyFlashing(cell) || false,
       isWarningFlashing: (cell: any) => deps.selectionManager?.isWarningFlashing(cell) || false,
       handleMouseDown: (cell: any) => deps.selectionManager?.handleMouseDown(cell),
@@ -404,6 +410,77 @@ export class TableRenderer {
       sectionsToKeep.push(rightSection);
       if (!container.contains(rightSection)) {
         container.appendChild(rightSection);
+      }
+    }
+
+    // Render sticky parents if enabled
+    if (
+      deps.config.enableStickyParents &&
+      processedResult.stickyParents &&
+      processedResult.stickyParents.length > 0
+    ) {
+      // Clean up old sticky parents container
+      if (this.stickyParentsContainer) {
+        cleanupStickyParentsContainer(this.stickyParentsContainer);
+        this.stickyParentsContainer = null;
+      }
+
+      // Get scroll state
+      const scrollTop = deps.mainBodyRef.current?.scrollTop ?? 0;
+      const scrollbarWidth = deps.mainBodyRef.current
+        ? deps.mainBodyRef.current.offsetWidth - deps.mainBodyRef.current.clientWidth
+        : 0;
+
+      // Calculate template columns for each section
+      const pinnedLeftTemplateColumns = pinnedLeftHeaders
+        .map((h) => `${typeof h.width === "number" ? h.width : 150}px`)
+        .join(" ");
+      const mainTemplateColumns = mainHeaders
+        .map((h) => `${typeof h.width === "number" ? h.width : 150}px`)
+        .join(" ");
+      const pinnedRightTemplateColumns = pinnedRightHeaders
+        .map((h) => `${typeof h.width === "number" ? h.width : 150}px`)
+        .join(" ");
+
+      // Create sticky parents container
+      this.stickyParentsContainer = createStickyParentsContainer(
+        {
+          calculatedHeaderHeight: dimensionState.calculatedHeaderHeight,
+          heightMap: processedResult.heightMap,
+          mainTemplateColumns,
+          partiallyVisibleRows: processedResult.partiallyVisibleRows || [],
+          pinnedLeftColumns: pinnedLeftHeaders,
+          pinnedLeftTemplateColumns,
+          pinnedLeftWidth: leftWidth,
+          pinnedRightColumns: pinnedRightHeaders,
+          pinnedRightTemplateColumns,
+          pinnedRightWidth: rightWidth,
+          scrollTop,
+          scrollbarWidth,
+          stickyParents: processedResult.stickyParents,
+        },
+        {
+          collapsedHeaders: deps.collapsedHeaders,
+          customTheme: deps.customTheme,
+          editColumns: deps.config.editColumns ?? false,
+          headers: deps.effectiveHeaders,
+          rowHeight: deps.customTheme.rowHeight,
+          heightOffsets: processedResult.heightOffsets,
+          cellRenderContext: bodyContext,
+        },
+      );
+
+      if (this.stickyParentsContainer) {
+        sectionsToKeep.push(this.stickyParentsContainer);
+        if (!container.contains(this.stickyParentsContainer)) {
+          container.appendChild(this.stickyParentsContainer);
+        }
+      }
+    } else {
+      // Clean up sticky parents if disabled or no sticky parents
+      if (this.stickyParentsContainer) {
+        cleanupStickyParentsContainer(this.stickyParentsContainer);
+        this.stickyParentsContainer = null;
       }
     }
 
@@ -622,6 +699,11 @@ export class TableRenderer {
     if (this.horizontalScrollbarRef.current) {
       cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
       this.horizontalScrollbarRef.current = null;
+    }
+
+    if (this.stickyParentsContainer) {
+      cleanupStickyParentsContainer(this.stickyParentsContainer);
+      this.stickyParentsContainer = null;
     }
   }
 }

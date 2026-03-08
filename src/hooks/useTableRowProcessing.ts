@@ -88,8 +88,8 @@ const useTableRowProcessing = ({
         const absoluteRowIndex = tableRow.nestedTable
           ? tableRow.absoluteRowIndex // Keep original position from flattenedRows
           : shouldPaginate && !serverSidePagination
-          ? startPosition + index
-          : index;
+            ? startPosition + index
+            : index;
 
         return {
           ...tableRow,
@@ -99,7 +99,7 @@ const useTableRowProcessing = ({
         };
       });
     },
-    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate]
+    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate],
   );
 
   // Current table rows (paginated for display)
@@ -133,7 +133,7 @@ const useTableRowProcessing = ({
       .filter(([originalPos]) => positionMap.has(originalPos))
       .map(
         ([originalPos, extraHeight]) =>
-          [positionMap.get(originalPos)!, extraHeight] as [number, number]
+          [positionMap.get(originalPos)!, extraHeight] as [number, number],
       );
   }, [heightOffsets, currentTableRows, shouldPaginate, serverSidePagination]);
 
@@ -148,7 +148,7 @@ const useTableRowProcessing = ({
       currentTableRows.length,
       rowHeight,
       paginatedHeightOffsets,
-      customTheme
+      customTheme,
     );
   }, [currentTableRows.length, rowHeight, paginatedHeightOffsets, customTheme]);
 
@@ -207,9 +207,10 @@ const useTableRowProcessing = ({
           viewportCalcs.rendered.rows,
           viewportCalcs.fullyVisible.rows,
           viewportCalcs.partiallyVisible.rows,
-          rowGrouping
+          rowGrouping,
         )
       : { stickyParents: [], regularRows: viewportCalcs.rendered.rows, partiallyVisibleRows: [] };
+    console.log("stickyResult", stickyResult);
 
     return {
       ...stickyResult,

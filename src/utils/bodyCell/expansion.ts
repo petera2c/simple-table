@@ -8,14 +8,22 @@ export const createExpandIcon = (
   context: CellRenderContext,
   isExpanded: boolean,
 ): HTMLElement => {
-  const iconContainer = document.createElement("span");
-  iconContainer.className = "st-expand-icon";
-  iconContainer.setAttribute("role", "button");
-  iconContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
-  iconContainer.setAttribute("tabindex", "0");
+  // Create outer container with proper classes matching old React implementation
+  const outerContainer = document.createElement("div");
+  outerContainer.className = `st-icon-container st-expand-icon-container ${
+    isExpanded ? "expanded" : "collapsed"
+  }`;
+  outerContainer.setAttribute("role", "button");
+  outerContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
+  outerContainer.setAttribute("tabindex", "0");
 
+  // Create inner icon span
+  const iconSpan = document.createElement("span");
+  iconSpan.className = "st-expand-icon";
+  
   const icon = createSVGIcon(isExpanded ? "chevronDown" : "chevronRight");
-  iconContainer.appendChild(icon);
+  iconSpan.appendChild(icon);
+  outerContainer.appendChild(iconSpan);
 
   const handleToggle = (event: Event) => {
     event.stopPropagation();
@@ -110,7 +118,7 @@ export const createExpandIcon = (
     }
   };
 
-  addTrackedEventListener(iconContainer, "click", handleToggle);
+  addTrackedEventListener(outerContainer, "click", handleToggle);
 
   const handleKeyDown = (event: Event) => {
     const keyEvent = event as KeyboardEvent;
@@ -120,7 +128,7 @@ export const createExpandIcon = (
     }
   };
 
-  addTrackedEventListener(iconContainer, "keydown", handleKeyDown);
+  addTrackedEventListener(outerContainer, "keydown", handleKeyDown);
 
-  return iconContainer;
+  return outerContainer;
 };
