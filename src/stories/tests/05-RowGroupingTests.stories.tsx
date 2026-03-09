@@ -152,12 +152,10 @@ const getVisibleRowCount = (canvasElement: HTMLElement): number => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
 
-  // Count unique row indices from virtualized cells
-  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
-  const uniqueRowIndices = new Set(
-    Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
-  );
-  return uniqueRowIndices.size;
+  // Count unique row IDs from virtualized cells
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-id]");
+  const uniqueRowIds = new Set(Array.from(cells).map((cell) => cell.getAttribute("data-row-id")));
+  return uniqueRowIds.size;
 };
 
 const findExpandIconInRow = (rowCells: HTMLElement[]): HTMLElement | null => {
@@ -401,6 +399,7 @@ export const StartCollapsed: StoryObj = {
 
     // Verify more rows are now visible
     const expandedRowCount = getVisibleRowCount(canvasElement);
+    console.log("expandedRowCount", expandedRowCount);
     expect(expandedRowCount).toBeGreaterThan(3);
   },
 };
