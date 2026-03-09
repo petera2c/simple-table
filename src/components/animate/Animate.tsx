@@ -142,11 +142,11 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         const calculateDynamicDistance = (
           elementY: number,
           viewportTop: number,
-          viewportBottom: number
+          viewportBottom: number,
         ) => {
           const distanceFromViewport = Math.min(
             Math.abs(elementY - viewportTop),
-            Math.abs(elementY - viewportBottom)
+            Math.abs(elementY - viewportBottom),
           );
 
           // Map distance to animation offset: closer elements = smaller offset, farther = larger offset
@@ -156,8 +156,8 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
             Math.max(
               MIN_DYNAMIC_DISTANCE,
               MIN_DYNAMIC_DISTANCE +
-                Math.log10(Math.max(1, distanceFromViewport)) * DISTANCE_SCALING_FACTOR
-            )
+                Math.log10(Math.max(1, distanceFromViewport)) * DISTANCE_SCALING_FACTOR,
+            ),
           );
           return baseDistance;
         };
@@ -167,7 +167,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           const dynamicDistance = calculateDynamicDistance(
             toBounds.y,
             parentScrollTop,
-            parentScrollTop + clientHeight
+            parentScrollTop + clientHeight,
           );
           // Use larger stagger for leaving elements and add position-based variance
           const leavingStagger =
@@ -199,7 +199,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           const dynamicDistance = calculateDynamicDistance(
             toBounds.y,
             parentScrollTop,
-            parentScrollTop + clientHeight
+            parentScrollTop + clientHeight,
           );
           // Use larger stagger for leaving elements and add position-based variance
           const leavingStagger =
@@ -235,7 +235,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           const dynamicDistance = calculateDynamicDistance(
             fromBounds.y,
             parentScrollTop,
-            parentScrollTop + clientHeight
+            parentScrollTop + clientHeight,
           );
           // Use smaller stagger for entering elements
           const enteringStagger =
@@ -262,7 +262,7 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           const dynamicDistance = calculateDynamicDistance(
             fromBounds.y,
             parentScrollTop,
-            parentScrollTop + clientHeight
+            parentScrollTop + clientHeight,
           );
           // Use smaller stagger for entering elements
           const enteringStagger =

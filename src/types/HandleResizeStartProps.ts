@@ -9,10 +9,10 @@ export type HandleResizeStartProps = {
   forceUpdate: () => void;
   header: HeaderObject;
   headers: HeaderObject[];
-  mainBodyRef: RefObject<HTMLDivElement | null>;
+  mainBodyRef: RefObject<HTMLDivElement>;
   onColumnWidthChange?: (headers: HeaderObject[]) => void;
-  pinnedLeftRef: RefObject<HTMLDivElement | null>;
-  pinnedRightRef: RefObject<HTMLDivElement | null>;
+  pinnedLeftRef: RefObject<HTMLDivElement>;
+  pinnedRightRef: RefObject<HTMLDivElement>;
   reverse: boolean;
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;

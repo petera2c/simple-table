@@ -16,7 +16,6 @@ import {
   insertHeaderAcrossSections,
   getHeaderSection,
   swapHeaders,
-  getHeaderIndexPath,
 } from "../../../hooks/useDragHandler";
 import { deepClone } from "../../../utils/generalUtils";
 

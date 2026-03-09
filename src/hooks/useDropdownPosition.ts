@@ -14,11 +14,6 @@ interface UseDropdownPositionOptions {
   margin?: number;
 }
 
-interface UseDropdownPositionReturn {
-  triggerRef: React.RefObject<HTMLDivElement | null>;
-  position: DropdownPosition;
-}
-
 /**
  * Custom hook for calculating dropdown position relative to a trigger element
  * Uses fixed positioning to work properly in overflow containers
@@ -28,7 +23,7 @@ export const useDropdownPosition = ({
   estimatedHeight = 200,
   estimatedWidth = 250,
   margin = 4,
-}: UseDropdownPositionOptions): UseDropdownPositionReturn => {
+}: UseDropdownPositionOptions) => {
   const triggerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<DropdownPosition>({});
 

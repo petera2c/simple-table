@@ -21,7 +21,7 @@ type TableRowProps = {
   row: Row;
   rowIndex: number;
   shouldPaginate: boolean;
-  tableRef: MutableRefObject<HTMLDivElement | null>;
+  tableRef: MutableRefObject<HTMLDivElement>;
 };
 
 export default TableRowProps;
