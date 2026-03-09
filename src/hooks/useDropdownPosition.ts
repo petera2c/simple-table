@@ -15,7 +15,7 @@ interface UseDropdownPositionOptions {
 }
 
 interface UseDropdownPositionReturn {
-  triggerRef: React.RefObject<HTMLDivElement>;
+  triggerRef: React.RefObject<HTMLDivElement | null>;
   position: DropdownPosition;
 }
 

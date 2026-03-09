@@ -82,7 +82,7 @@ interface TableContextType {
   handleRowSelect?: (rowId: string, isSelected: boolean) => void;
   handleSelectAll?: (isSelected: boolean) => void;
   handleToggleRow?: (rowId: string) => void;
-  headerContainerRef: RefObject<HTMLDivElement>;
+  headerContainerRef: RefObject<HTMLDivElement | null>;
   headerDropdown?: HeaderDropdown;
   headerRegistry?: Map<string, HeaderRegistryEntry>;
   headers: HeaderObject[];
@@ -98,7 +98,7 @@ interface TableContextType {
   isScrolling: boolean;
   isSelected: (cell: Cell) => boolean;
   isWarningFlashing: (cell: Cell) => boolean;
-  mainBodyRef: RefObject<HTMLDivElement>;
+  mainBodyRef: RefObject<HTMLDivElement | null>;
   onCellEdit?: (props: any) => void;
   onCellClick?: (props: CellClickProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
@@ -110,8 +110,8 @@ interface TableContextType {
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  pinnedLeftRef: RefObject<HTMLDivElement>;
-  pinnedRightRef: RefObject<HTMLDivElement>;
+  pinnedLeftRef: RefObject<HTMLDivElement | null>;
+  pinnedRightRef: RefObject<HTMLDivElement | null>;
   rowButtons?: RowButton[];
   rowGrouping?: Accessor[];
   rowHeight: number;
@@ -138,7 +138,7 @@ interface TableContextType {
   setExpandedRows: Dispatch<SetStateAction<Map<string, number>>>;
   setCollapsedRows: Dispatch<SetStateAction<Map<string, number>>>;
   shouldPaginate: boolean;
-  tableBodyContainerRef: RefObject<HTMLDivElement>;
+  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
   tableEmptyStateRenderer?: ReactNode;
   tableRows: TableRow[];
   theme: Theme;
