@@ -4,6 +4,7 @@ import SortColumn, { SortDirection } from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
 import { isRowArray } from "../utils/rowUtils";
 import { flattenAllHeaders } from "../utils/headerUtils";
+import { calculateAggregatedRows } from "../hooks/useAggregatedRows";
 
 export interface SortManagerConfig {
   headers: HeaderObject[];
@@ -106,15 +107,22 @@ export class SortManager {
     if (this.config.externalSortHandling) return tableRows;
     if (!sortColumn) return tableRows;
 
+    // Calculate aggregated values before sorting so parent rows have aggregated values
+    const aggregatedRows = calculateAggregatedRows({
+      rows: tableRows,
+      headers: this.config.headers,
+      rowGrouping: this.config.rowGrouping,
+    });
+
     if (this.config.rowGrouping && this.config.rowGrouping.length > 0) {
       return this.sortNestedRows({
         groupingKeys: this.config.rowGrouping,
         headers: this.config.headers,
-        rows: tableRows,
+        rows: aggregatedRows,
         sortColumn,
       });
     } else {
-      return handleSort({ headers: this.config.headers, rows: tableRows, sortColumn });
+      return handleSort({ headers: this.config.headers, rows: aggregatedRows, sortColumn });
     }
   }
 
