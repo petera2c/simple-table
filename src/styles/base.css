@@ -965,7 +965,7 @@ input {
   position: absolute;
   top: 0;
   right: calc(100% + 1px);
-  z-index: 1;
+  z-index: 10;
   height: 100%;
   background-color: var(--st-column-editor-popout-background-color);
   transition: width var(--st-transition-duration) var(--st-transition-ease);
