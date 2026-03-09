@@ -1,4 +1,5 @@
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";

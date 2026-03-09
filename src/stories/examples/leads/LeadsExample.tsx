@@ -1,11 +1,11 @@
+import React, { useState } from "react";
 import { LEADS_HEADERS } from "./leads-headers";
-import { useState } from "react";
 
 import "./CustomTheme.css";
 import Theme from "../../../types/Theme";
 import Row from "../../../types/Row";
 import CellChangeProps from "../../../types/CellChangeProps";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import { SimpleTable } from "../../..";
 import FooterRendererProps from "../../../types/FooterRendererProps";
 
 export const leadsExampleDefaults = {
@@ -429,7 +429,7 @@ const LeadsExampleComponent = ({
           };
         }
         return item;
-      })
+      }),
     );
   };
 

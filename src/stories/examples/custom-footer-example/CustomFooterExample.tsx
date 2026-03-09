@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { SimpleTable, FooterRendererProps } from "../../../index";
 import { generateSaaSData } from "../../data/saas-data";
 

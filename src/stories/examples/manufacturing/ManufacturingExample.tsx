@@ -1,6 +1,7 @@
+import React from "react";
 import { HEADERS } from "./manufacturing-headers";
 import MANUFACTURING_DATA from "./manufacturing-data.json";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import { SimpleTable } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
 export const manufacturingExampleDefaults = {
@@ -13,11 +14,6 @@ export const manufacturingExampleDefaults = {
 
 export default function ManufacturingExampleComponent(props: UniversalTableProps) {
   return (
-    <SimpleTable
-      defaultHeaders={HEADERS}
-      rows={MANUFACTURING_DATA}
-      {...props}
-      expandAll={false}
-    />
+    <SimpleTable defaultHeaders={HEADERS} rows={MANUFACTURING_DATA} {...props} expandAll={false} />
   );
 }

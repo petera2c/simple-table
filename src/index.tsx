@@ -1,6 +1,4 @@
-import SimpleTable from "./components/simple-table/SimpleTable";
-import LineAreaChart from "./components/charts/LineAreaChart";
-import BarChart from "./components/charts/BarChart";
+import { SimpleTableVanilla } from "./core/SimpleTableVanilla";
 import BoundingBox from "./types/BoundingBox";
 import Cell from "./types/Cell";
 import CellChangeProps from "./types/CellChangeProps";
@@ -28,9 +26,9 @@ import Row from "./types/Row";
 import RowState from "./types/RowState";
 import SharedTableProps from "./types/SharedTableProps";
 import SortColumn from "./types/SortColumn";
-import TableCellProps from "./types/TableCellProps";
 import TableHeaderProps from "./types/TableHeaderProps";
-import TableRefType, { SetHeaderRenameProps, ExportToCSVProps } from "./types/TableRefType";
+import { TableAPI, SetHeaderRenameProps, ExportToCSVProps } from "./types/TableAPI";
+import TableRefType from "./types/TableRefType";
 import TableRowProps from "./types/TableRowProps";
 import Theme from "./types/Theme";
 import UpdateDataProps from "./types/UpdateCellProps";
@@ -68,11 +66,10 @@ import { CustomTheme } from "./types/CustomTheme";
 import { ColumnEditorConfig, ColumnEditorSearchFunction } from "./types/ColumnEditorConfig";
 import { IconsConfig } from "./types/IconsConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
+import { SimpleTableConfig } from "./types/SimpleTableConfig";
 
-export { SimpleTable, LineAreaChart, BarChart };
-
-// Tree-shakeable icon exports (imported separately to reduce bundle size)
-export * from "./icons";
+export { SimpleTableVanilla };
+export { SimpleTableReact as SimpleTable } from "./adapters/SimpleTableReact";
 
 export type {
   Accessor,
@@ -131,8 +128,9 @@ export type {
   SetHeaderRenameProps,
   SharedTableProps,
   ShowWhen,
+  SimpleTableConfig,
   SortColumn,
-  TableCellProps,
+  TableAPI,
   TableFilterState,
   TableHeaderProps,
   TableRefType,

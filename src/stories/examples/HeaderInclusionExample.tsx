@@ -1,9 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { UniversalTableProps } from "./StoryWrapper";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 
 // Sample data
 const sampleData: Row[] = [
@@ -106,7 +106,7 @@ export const headerInclusionExampleDefaults: Partial<UniversalTableProps> = {
 };
 
 const HeaderInclusionExample: React.FC<UniversalTableProps> = (props) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [copyHeaders, setCopyHeaders] = useState(false);
   const [exportHeaders, setExportHeaders] = useState(true);
 

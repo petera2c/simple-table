@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import HeaderObject from "../../types/HeaderObject";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import Theme from "../../types/Theme";
 
 const HEADERS: HeaderObject[] = [

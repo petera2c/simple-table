@@ -1,7 +1,7 @@
-import { useRef } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Sample data for demonstration
@@ -113,7 +113,7 @@ export const customHeaderRenderingExampleDefaults = {
 };
 
 const CustomHeaderRenderingExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   return (
     <SimpleTable

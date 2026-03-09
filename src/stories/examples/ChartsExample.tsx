@@ -1,3 +1,4 @@
+import React from "react";
 import { SimpleTable } from "../..";
 import { HeaderObject } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -13,7 +14,7 @@ export const chartsExampleDefaults = {
 const generateTrendData = (
   baseValue: number,
   volatility: number,
-  length: number = 12
+  length: number = 12,
 ): number[] => {
   const data: number[] = [];
   let current = baseValue;

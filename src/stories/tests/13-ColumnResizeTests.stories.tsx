@@ -58,10 +58,7 @@ const getHeaderCells = (canvasElement: HTMLElement): HTMLElement[] => {
   return Array.from(canvasElement.querySelectorAll(".st-header-cell"));
 };
 
-const findHeaderCellByLabel = (
-  canvasElement: HTMLElement,
-  label: string
-): HTMLElement | null => {
+const findHeaderCellByLabel = (canvasElement: HTMLElement, label: string): HTMLElement | null => {
   const headers = getHeaderCells(canvasElement);
   for (const header of headers) {
     const labelElement = header.querySelector(".st-header-label");
@@ -74,12 +71,12 @@ const findHeaderCellByLabel = (
 
 const resizeColumn = async (
   headerCell: HTMLElement,
-  resizeAmount: number
+  resizeAmount: number,
 ): Promise<{ initialWidth: number; finalWidth: number }> => {
   const initialWidth = headerCell.getBoundingClientRect().width;
 
   const resizeHandle = headerCell.querySelector(
-    ".st-header-resize-handle-container"
+    ".st-header-resize-handle-container",
   ) as HTMLElement;
 
   if (!resizeHandle) {
@@ -222,7 +219,7 @@ export const ResizeMultipleColumns: Story = {
     expect(storeNameHeader).toBeTruthy();
     const { initialWidth: storeInitial, finalWidth: storeFinal } = await resizeColumn(
       storeNameHeader!,
-      30
+      30,
     );
     expect(storeFinal - storeInitial).toBeGreaterThan(25);
 
@@ -231,7 +228,7 @@ export const ResizeMultipleColumns: Story = {
     expect(cityHeader).toBeTruthy();
     const { initialWidth: cityInitial, finalWidth: cityFinal } = await resizeColumn(
       cityHeader!,
-      40
+      40,
     );
     expect(cityFinal - cityInitial).toBeGreaterThan(35);
   },

@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import { SAAS_HEADERS } from "../data/saas-data";
 import CellChangeProps from "../../types/CellChangeProps";
 import { UniversalTableProps } from "./StoryWrapper";
@@ -54,11 +55,11 @@ const generateSaaSDataWithParams = (count: number, startId: number = 0): Row[] =
     const avgSessionTime = Math.floor(Math.random() * 60);
     const renewalDate = `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
     const signUpDate = `${year}-${String(Math.floor(Math.random() * 12) + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
     const lastLoginDay2 = Math.floor(Math.random() * 18) + 1;
     const lastLogin = `2025-03-${lastLoginDay2 < 10 ? `0${lastLoginDay2}` : lastLoginDay2}`;

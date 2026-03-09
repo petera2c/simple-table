@@ -1,48 +1,9 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
-import { useCallback, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SortColumn, { SortDirection } from "../types/SortColumn";
-import { handleSort } from "../utils/sortUtils";
-import { isRowArray } from "../utils/rowUtils";
-import useHeaderLookup from "./useHeaderLookup";
+import { SortManager, SortManagerConfig } from "../managers/SortManager";
 
-// Helper function to compute sorted rows for a given sort column
-const computeSortedRows = ({
-  externalSortHandling,
-  tableRows,
-  sortColumn,
-  rowGrouping,
-  headers,
-  sortNestedRows,
-}: {
-  externalSortHandling: boolean;
-  tableRows: Row[];
-  sortColumn: SortColumn | null;
-  rowGrouping?: string[];
-  headers: HeaderObject[];
-  sortNestedRows: (params: {
-    groupingKeys: string[];
-    headers: HeaderObject[];
-    rows: Row[];
-    sortColumn: SortColumn;
-  }) => Row[];
-}): Row[] => {
-  if (externalSortHandling) return tableRows;
-  if (!sortColumn) return tableRows;
-
-  if (rowGrouping && rowGrouping.length > 0) {
-    return sortNestedRows({
-      groupingKeys: rowGrouping,
-      headers,
-      rows: tableRows,
-      sortColumn,
-    });
-  } else {
-    return handleSort({ headers, rows: tableRows, sortColumn });
-  }
-};
-
-// Extract sort logic to custom hook
 const useSortableData = ({
   headers,
   tableRows,
@@ -62,218 +23,65 @@ const useSortableData = ({
   initialSortDirection?: SortDirection;
   announce?: (message: string) => void;
 }) => {
-  // Create O(1) lookup map for headers
-  const headerLookup = useHeaderLookup(headers);
+  const managerRef = useRef<SortManager | null>(null);
+  const [state, setState] = useState<{
+    sort: SortColumn | null;
+    sortedRows: Row[];
+  }>({
+    sort: null,
+    sortedRows: [],
+  });
 
-  // Initialize sort state with initial values if provided
-  const getInitialSort = useCallback((): SortColumn | null => {
-    if (!initialSortColumn) return null;
-
-    const targetHeader = headerLookup.get(initialSortColumn);
-    if (!targetHeader) return null;
-
-    return {
-      key: targetHeader,
-      direction: initialSortDirection || "asc",
-    };
-  }, [headerLookup, initialSortColumn, initialSortDirection]);
-
-  // Single sort state instead of complex 3-state system
-  const [sort, setSort] = useState<SortColumn | null>(getInitialSort);
-
-  // Recursive sort function for nested data
-  const sortNestedRows = useCallback(
-    ({
-      groupingKeys,
+  useEffect(() => {
+    const config: SortManagerConfig = {
       headers,
-      rows,
-      sortColumn,
-    }: {
-      groupingKeys: string[];
-      headers: HeaderObject[];
-      rows: Row[];
-      sortColumn: SortColumn;
-    }): Row[] => {
-      // First sort the current level
-      const sortedData = handleSort({ headers, rows, sortColumn });
-
-      // If no grouping keys, just return the sorted data
-      if (!groupingKeys || groupingKeys.length === 0) {
-        return sortedData;
-      }
-
-      // For each row, recursively sort its nested data
-      return sortedData.map((row) => {
-        const currentGroupingKey = groupingKeys[0];
-        const nestedData = row[currentGroupingKey];
-
-        if (isRowArray(nestedData)) {
-          // Recursively sort the nested data with remaining grouping keys
-          const sortedNestedData = sortNestedRows({
-            rows: nestedData,
-            sortColumn,
-            headers,
-            groupingKeys: groupingKeys.slice(1),
-          });
-
-          // Return a new row object with sorted nested data
-          return {
-            ...row,
-            [currentGroupingKey]: sortedNestedData,
-          };
-        }
-
-        return row;
-      });
-    },
-    []
-  );
-
-  // Compute current sorted rows
-  const sortedRows = useMemo(() => {
-    return computeSortedRows({
-      externalSortHandling,
       tableRows,
-      sortColumn: sort,
+      externalSortHandling,
+      onSortChange,
       rowGrouping,
-      headers,
-      sortNestedRows,
-    });
-  }, [tableRows, sort, headers, externalSortHandling, rowGrouping, sortNestedRows]);
+      initialSortColumn,
+      initialSortDirection,
+      announce,
+    };
+    managerRef.current = new SortManager(config);
 
-  // Simple sort handler
-  const updateSort = useCallback(
-    (props?: { accessor: Accessor; direction?: SortDirection }) => {
-      // If accessor is null, clear the sort
-      if (!props) {
-        setSort(null);
-        onSortChange?.(null);
-        return;
-      }
-
-      const { accessor, direction } = props;
-
-      // Find the header using O(1) lookup
-      const targetHeader = headerLookup.get(accessor);
-
-      if (!targetHeader) {
-        return;
-      }
-
-      let newSortColumn: SortColumn | null = null;
-
-      // If direction is explicitly provided, use it
-      if (direction) {
-        newSortColumn = {
-          key: targetHeader,
-          direction: direction,
-        };
-      }
-      // Otherwise, cycle through the sorting order
-      else {
-        // Get custom sorting order or use default: ["asc", "desc", null]
-        const sortingOrder = targetHeader.sortingOrder || ["asc", "desc", null];
-
-        // Find current position in the cycle
-        let currentIndex = -1;
-        if (sort && sort.key.accessor === accessor) {
-          currentIndex = sortingOrder.indexOf(sort.direction);
-        }
-
-        // Move to next position in cycle
-        const nextIndex = (currentIndex + 1) % sortingOrder.length;
-        const nextDirection = sortingOrder[nextIndex];
-
-        if (nextDirection === null) {
-          newSortColumn = null;
-        } else {
-          newSortColumn = {
-            key: targetHeader,
-            direction: nextDirection,
-          };
-        }
-      }
-
-      setSort(newSortColumn);
-      onSortChange?.(newSortColumn);
-
-      // Announce sort change to screen readers
-      if (announce) {
-        if (newSortColumn) {
-          const directionText = newSortColumn.direction === "asc" ? "ascending" : "descending";
-          announce(`Sorted by ${targetHeader.label}, ${directionText}`);
-        } else {
-          announce(`Sort removed from ${targetHeader.label}`);
-        }
-      }
-    },
-    [sort, headerLookup, onSortChange, announce]
-  );
-
-  // Function to preview what rows would be after applying a sort
-  // This is used for pre-animation calculation
-  const computeSortedRowsPreview = useCallback(
-    (accessor: Accessor) => {
-      const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
-        for (const header of headers) {
-          if (header.accessor === accessor) {
-            return header;
-          }
-          if (header.children && header.children.length > 0) {
-            const found = findHeaderRecursively(header.children);
-            if (found) return found;
-          }
-        }
-        return undefined;
-      };
-
-      const targetHeader = findHeaderRecursively(headers);
-
-      if (!targetHeader) {
-        return tableRows;
-      }
-
-      let previewSortColumn: SortColumn | null = null;
-
-      // Get custom sorting order or use default: ["asc", "desc", null]
-      const sortingOrder = targetHeader.sortingOrder || ["asc", "desc", null];
-
-      // Find current position in the cycle
-      let currentIndex = -1;
-      if (sort && sort.key.accessor === accessor) {
-        currentIndex = sortingOrder.indexOf(sort.direction);
-      }
-
-      // Move to next position in cycle
-      const nextIndex = (currentIndex + 1) % sortingOrder.length;
-      const nextDirection = sortingOrder[nextIndex];
-
-      if (nextDirection === null) {
-        previewSortColumn = null;
-      } else {
-        previewSortColumn = {
-          key: targetHeader,
-          direction: nextDirection,
-        };
-      }
-
-      return computeSortedRows({
-        externalSortHandling,
-        tableRows,
-        sortColumn: previewSortColumn,
-        rowGrouping,
-        headers,
-        sortNestedRows,
+    const unsubscribe = managerRef.current.subscribe((newState) => {
+      setState({
+        sort: newState.sort,
+        sortedRows: newState.sortedRows,
       });
-    },
-    [sort, headers, tableRows, externalSortHandling, rowGrouping, sortNestedRows]
-  );
+    });
+
+    setState({
+      sort: managerRef.current.getSortColumn(),
+      sortedRows: managerRef.current.getSortedRows(),
+    });
+
+    return () => {
+      unsubscribe();
+      managerRef.current?.destroy();
+      managerRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    managerRef.current?.updateConfig({
+      headers,
+      tableRows,
+      externalSortHandling,
+      onSortChange,
+      rowGrouping,
+      announce,
+    });
+  }, [headers, tableRows, externalSortHandling, onSortChange, rowGrouping, announce]);
 
   return {
-    sort,
-    sortedRows,
-    updateSort,
-    computeSortedRowsPreview,
+    sort: state.sort,
+    sortedRows: state.sortedRows,
+    updateSort: (props?: { accessor: Accessor; direction?: SortDirection }) => 
+      managerRef.current?.updateSort(props),
+    computeSortedRowsPreview: (accessor: Accessor) => 
+      managerRef.current?.computeSortedRowsPreview(accessor) ?? [],
   };
 };
 

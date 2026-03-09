@@ -381,7 +381,7 @@ const QuickFilterExampleComponent: React.FC<UniversalTableProps> = (props) => {
           text: searchText,
           mode: filterMode,
           caseSensitive: caseSensitive,
-          onChange: (text) => console.log("Quick filter changed:", text),
+          onChange: (text) => {},
         }}
         columnResizing={props.columnResizing ?? true}
         columnReordering={props.columnReordering ?? true}

@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Sample data
@@ -123,7 +123,7 @@ export const programmaticSortExampleDefaults = {
 };
 
 const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [sortInfo, setSortInfo] = useState<string>("No sort applied");
 
   // Function to get and display current sort state
@@ -134,7 +134,7 @@ const ProgrammaticSortExampleComponent: React.FC<UniversalTableProps> = (props) 
         setSortInfo(
           `Sorted by: ${currentSort.key.label || currentSort.key.accessor} (${
             currentSort.direction
-          })`
+          })`,
         );
       } else {
         setSortInfo("No sort applied");

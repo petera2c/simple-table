@@ -1,7 +1,7 @@
-import SimpleTable from "../../../components/simple-table/SimpleTable";
-import { HeaderObject, TableRefType } from "../../..";
+import React from "react";
+import { SimpleTable } from "../../..";
+import { HeaderObject, TableAPI } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
-import { useRef } from "react";
 
 // Default args specific to RowGrouping - exported for reuse in stories and tests
 export const rowGroupingDefaults = {
@@ -199,7 +199,7 @@ const rows = [
 ];
 
 const RowGroupingExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   return (
     <>
       <button onClick={() => tableRef.current?.exportToCSV()}>Export to CSV</button>

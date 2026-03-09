@@ -46,26 +46,29 @@ const waitForTable = async (timeout = 5000) => {
   throw new Error("Table did not render within timeout");
 };
 
-const getRow = (canvasElement: HTMLElement, rowIndex: number): HTMLElement | null => {
+const getRow = (canvasElement: HTMLElement, rowIndex: number): HTMLElement[] => {
+  // With virtualization, return all cells for this row index
   const bodyContainer = canvasElement.querySelector(".st-body-container");
-  if (!bodyContainer) return null;
+  if (!bodyContainer) return [];
 
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  return rows[rowIndex] as HTMLElement;
+  const cells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+  return Array.from(cells) as HTMLElement[];
 };
 
 const getSelectionCell = (canvasElement: HTMLElement, rowIndex: number): HTMLElement | null => {
-  const row = getRow(canvasElement, rowIndex);
-  if (!row) return null;
+  const bodyContainer = canvasElement.querySelector(".st-body-container");
+  if (!bodyContainer) return null;
 
-  return row.querySelector(".st-selection-cell") as HTMLElement;
+  return bodyContainer.querySelector(
+    `.st-selection-cell[data-row-index="${rowIndex}"]`,
+  ) as HTMLElement;
 };
 
 const getRowCheckbox = (canvasElement: HTMLElement, rowIndex: number): HTMLInputElement | null => {
-  const row = getRow(canvasElement, rowIndex);
-  if (!row) return null;
+  const selectionCell = getSelectionCell(canvasElement, rowIndex);
+  if (!selectionCell) return null;
 
-  return row.querySelector('input[type="checkbox"]') as HTMLInputElement;
+  return selectionCell.querySelector('input[type="checkbox"]') as HTMLInputElement;
 };
 
 // Note: We need to click the actual input element, not the custom span
@@ -75,19 +78,19 @@ const getHeaderCheckbox = (canvasElement: HTMLElement): HTMLInputElement | null 
   // Try multiple selectors to find the header checkbox
   // First try in .st-header
   let checkbox = canvasElement.querySelector(
-    '.st-header input[type="checkbox"]'
+    '.st-header input[type="checkbox"]',
   ) as HTMLInputElement;
   if (checkbox) return checkbox;
 
   // Try in .st-header-label
   checkbox = canvasElement.querySelector(
-    '.st-header-label input[type="checkbox"]'
+    '.st-header-label input[type="checkbox"]',
   ) as HTMLInputElement;
   if (checkbox) return checkbox;
 
   // Try anywhere in the table root
   checkbox = canvasElement.querySelector(
-    '.simple-table-root input[type="checkbox"][aria-label*="Select all"]'
+    '.simple-table-root input[type="checkbox"][aria-label*="Select all"]',
   ) as HTMLInputElement;
   return checkbox;
 };
@@ -98,19 +101,27 @@ const getSelectedRowCount = async (canvasElement: HTMLElement): Promise<number> 
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
 
-  // Selected rows should show checkboxes even without hover
-  // We need to hover over each row to reveal its checkbox and check if it's selected
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  let count = 0;
+  // Get unique row indices from cells
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+  const uniqueRowIndicesArray = Array.from(cells)
+    .map((cell) => cell.getAttribute("data-row-index"))
+    .filter((idx): idx is string => idx !== null);
+  const uniqueRowIndices = Array.from(new Set(uniqueRowIndicesArray));
 
-  for (let i = 0; i < rows.length; i++) {
-    const selectionCell = rows[i].querySelector(".st-selection-cell") as HTMLElement;
+  let count = 0;
+  for (const rowIndexStr of uniqueRowIndices) {
+    const rowIndex = parseInt(rowIndexStr, 10);
+
+    const selectionCell = bodyContainer.querySelector(
+      `.st-selection-cell[data-row-index="${rowIndex}"]`,
+    ) as HTMLElement;
+
     if (selectionCell) {
       // Hover to reveal checkbox
       await userEvent.setup().hover(selectionCell);
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const checkbox = rows[i].querySelector('input[type="checkbox"]') as HTMLInputElement;
+      const checkbox = selectionCell.querySelector('input[type="checkbox"]') as HTMLInputElement;
       if (checkbox && checkbox.checked) {
         count++;
       }
@@ -584,9 +595,9 @@ export const NoSelectionWithoutProp: StoryObj = {
     expect(headerCheckbox).toBeNull();
 
     // Even after hovering, no checkbox should appear
-    const firstRow = getRow(canvasElement, 0);
-    if (firstRow) {
-      await userEvent.setup().hover(firstRow);
+    const firstRowCells = getRow(canvasElement, 0);
+    if (firstRowCells.length > 0) {
+      await userEvent.setup().hover(firstRowCells[0]);
       await new Promise((resolve) => setTimeout(resolve, 200));
     }
 

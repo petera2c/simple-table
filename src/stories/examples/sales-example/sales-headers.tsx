@@ -1,3 +1,4 @@
+import React from "react";
 import HeaderObject from "../../../types/HeaderObject";
 
 // Theme-dependent color helper function
@@ -376,7 +377,8 @@ export const SALES_HEADERS: HeaderObject[] = [
 
           // Enhanced color coding based on profit margin tiers
           let colorStyle: React.CSSProperties = { color: colors.gray };
-          if (value >= 0.7) colorStyle = colors.success.high; // Software-like margins
+          if (value >= 0.7)
+            colorStyle = colors.success.high; // Software-like margins
           else if (value >= 0.5) colorStyle = { color: colors.success.medium };
           else if (value >= 0.4) colorStyle = { color: colors.success.low };
           else if (value >= 0.3) colorStyle = { color: colors.info };
@@ -394,8 +396,8 @@ export const SALES_HEADERS: HeaderObject[] = [
                     value >= 0.5
                       ? colors.progressColors.high
                       : value >= 0.3
-                      ? colors.progressColors.medium
-                      : colors.progressColors.low
+                        ? colors.progressColors.medium
+                        : colors.progressColors.low
                   }
                 />
               </div>

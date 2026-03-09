@@ -28,7 +28,6 @@ export default {
   ],
   plugins: [
     del({ targets: "dist/*" }),
-    peerDepsExternal(),
     postcss({
       extract: "styles.css", // All-in-one file for backward compatibility
       inject: false,
@@ -95,5 +94,5 @@ export default {
       },
     }),
   ],
-  external: ["react", "react/jsx-runtime"],
+  external: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
 };

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import HeaderObject, { ValueFormatterProps } from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 

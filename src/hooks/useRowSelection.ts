@@ -1,16 +1,7 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import TableRow from "../types/TableRow";
-import {
-  areAllRowsSelected,
-  toggleRowSelection,
-  selectAllRows,
-  deselectAllRows,
-  getSelectedRows,
-  getSelectedRowCount,
-  isRowSelected as utilIsRowSelected,
-} from "../utils/rowSelectionUtils";
 import RowSelectionChangeProps from "../types/RowSelectionChangeProps";
-import { rowIdToString } from "../utils/rowUtils";
+import { RowSelectionManager } from "../managers/RowSelectionManager";
 
 interface UseRowSelectionProps {
   tableRows: TableRow[];
@@ -23,145 +14,86 @@ export const useRowSelection = ({
   onRowSelectionChange,
   enableRowSelection = false,
 }: UseRowSelectionProps) => {
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const managerRef = useRef<RowSelectionManager | null>(null);
+  const [state, setState] = useState({
+    selectedRows: new Set<string>(),
+    selectedRowCount: 0,
+    selectedRowsData: [] as any[],
+  });
 
-  // Check if a specific row is selected
-  const isRowSelected = useCallback(
-    (rowId: string): boolean => {
-      if (!enableRowSelection) return false;
-      return utilIsRowSelected(rowId, selectedRows);
-    },
-    [selectedRows, enableRowSelection]
-  );
+  useEffect(() => {
+    managerRef.current = new RowSelectionManager({
+      tableRows,
+      onRowSelectionChange,
+      enableRowSelection,
+    });
 
-  // Check if all rows are selected
-  const areAllSelected = useCallback((): boolean => {
-    if (!enableRowSelection) return false;
-    return areAllRowsSelected(tableRows, selectedRows);
-  }, [tableRows, selectedRows, enableRowSelection]);
-
-  // Get count of selected rows
-  const selectedRowCount = useMemo(() => {
-    if (!enableRowSelection) return 0;
-    return getSelectedRowCount(selectedRows);
-  }, [selectedRows, enableRowSelection]);
-
-  // Get the actual row data for selected rows
-  const selectedRowsData = useMemo(() => {
-    if (!enableRowSelection) return [];
-    return getSelectedRows(tableRows, selectedRows);
-  }, [tableRows, selectedRows, enableRowSelection]);
-
-  // Handle individual row selection
-  const handleRowSelect = useCallback(
-    (rowId: string, isSelected: boolean) => {
-      if (!enableRowSelection) return;
-
-      const newSelectedRows = toggleRowSelection(rowId, selectedRows);
-      setSelectedRows(newSelectedRows);
-
-      // Call the callback with the row data
-      if (onRowSelectionChange) {
-        const tableRow = tableRows.find(
-          (tr) => rowIdToString(tr.rowId) === rowId
-        );
-        if (tableRow) {
-          onRowSelectionChange({
-            row: tableRow.row,
-            isSelected,
-            selectedRows: newSelectedRows,
-          });
-        }
-      }
-    },
-    [selectedRows, tableRows, onRowSelectionChange, enableRowSelection]
-  );
-
-  // Handle select all/deselect all
-  const handleSelectAll = useCallback(
-    (isSelected: boolean) => {
-      if (!enableRowSelection) return;
-
-      let newSelectedRows: Set<string>;
-
-      if (isSelected) {
-        newSelectedRows = selectAllRows(tableRows);
-        // Call onRowSelectionChange for each row being selected
-        if (onRowSelectionChange) {
-          tableRows.forEach((tableRow) =>
-            onRowSelectionChange({
-              row: tableRow.row,
-              isSelected: true,
-              selectedRows: newSelectedRows,
-            })
-          );
-        }
-      } else {
-        newSelectedRows = deselectAllRows();
-        // Call onRowSelectionChange for each currently selected row being deselected
-        if (onRowSelectionChange) {
-          selectedRows.forEach((rowId) => {
-            const tableRow = tableRows.find(
-              (tr) => rowIdToString(tr.rowId) === rowId
-            );
-            if (tableRow) {
-              onRowSelectionChange({
-                row: tableRow.row,
-                isSelected: false,
-                selectedRows: newSelectedRows,
-              });
-            }
-          });
-        }
-      }
-
-      setSelectedRows(newSelectedRows);
-    },
-    [tableRows, onRowSelectionChange, selectedRows, enableRowSelection]
-  );
-
-  // Handle toggling a single row (convenience method)
-  const handleToggleRow = useCallback(
-    (rowId: string) => {
-      if (!enableRowSelection) return;
-
-      const wasSelected = isRowSelected(rowId);
-      handleRowSelect(rowId, !wasSelected);
-    },
-    [isRowSelected, handleRowSelect, enableRowSelection]
-  );
-
-  // Clear all selections
-  const clearSelection = useCallback(() => {
-    if (!enableRowSelection) return;
-
-    // Call onRowSelectionChange for each currently selected row being deselected
-    if (onRowSelectionChange) {
-      const newSelectedRows = new Set<string>();
-      selectedRows.forEach((rowId) => {
-        const tableRow = tableRows.find(
-          (tr) => rowIdToString(tr.rowId) === rowId
-        );
-        if (tableRow) {
-          onRowSelectionChange({
-            row: tableRow.row,
-            isSelected: false,
-            selectedRows: newSelectedRows,
-          });
-        }
+    const unsubscribe = managerRef.current.subscribe((newState) => {
+      setState({
+        selectedRows: newState.selectedRows,
+        selectedRowCount: newState.selectedRowCount,
+        selectedRowsData: newState.selectedRowsData,
       });
-    }
+    });
 
-    setSelectedRows(new Set());
-  }, [selectedRows, tableRows, onRowSelectionChange, enableRowSelection]);
+    return () => {
+      unsubscribe();
+      managerRef.current?.destroy();
+      managerRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    managerRef.current?.updateConfig({
+      tableRows,
+      onRowSelectionChange,
+      enableRowSelection,
+    });
+  }, [tableRows, onRowSelectionChange, enableRowSelection]);
+
+  const isRowSelected = (rowId: string): boolean => {
+    return managerRef.current?.isRowSelected(rowId) ?? false;
+  };
+
+  const areAllRowsSelected = (): boolean => {
+    return managerRef.current?.areAllRowsSelected() ?? false;
+  };
+
+  const handleRowSelect = (rowId: string, isSelected: boolean): void => {
+    managerRef.current?.handleRowSelect(rowId, isSelected);
+  };
+
+  const handleSelectAll = (isSelected: boolean): void => {
+    managerRef.current?.handleSelectAll(isSelected);
+  };
+
+  const handleToggleRow = (rowId: string): void => {
+    managerRef.current?.handleToggleRow(rowId);
+  };
+
+  const clearSelection = (): void => {
+    managerRef.current?.clearSelection();
+  };
+
+  const setSelectedRows = (
+    selectedRowsOrUpdater: Set<string> | ((prev: Set<string>) => Set<string>)
+  ): void => {
+    if (typeof selectedRowsOrUpdater === "function") {
+      const currentRows = managerRef.current?.getSelectedRows() ?? new Set<string>();
+      const newRows = selectedRowsOrUpdater(currentRows);
+      managerRef.current?.setSelectedRows(newRows);
+    } else {
+      managerRef.current?.setSelectedRows(selectedRowsOrUpdater);
+    }
+  };
 
   return {
-    selectedRows,
+    selectedRows: state.selectedRows,
     setSelectedRows,
     isRowSelected,
-    areAllRowsSelected: areAllSelected,
-    selectedRowCount,
-    selectedRowsData,
+    areAllRowsSelected,
+    selectedRowCount: state.selectedRowCount,
+    selectedRowsData: state.selectedRowsData,
     handleRowSelect,
     handleSelectAll,
     handleToggleRow,

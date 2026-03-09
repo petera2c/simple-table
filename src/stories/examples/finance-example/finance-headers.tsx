@@ -1,3 +1,4 @@
+import React from "react";
 import HeaderObject from "../../../types/HeaderObject";
 
 export const HEADERS: HeaderObject[] = [

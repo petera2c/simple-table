@@ -288,13 +288,12 @@ const verifySortByData = async (
   canvasElement: HTMLElement,
   accessor: string,
   expectedDirection: "asc" | "desc" | null,
-  dataType: "string" | "number" = "string"
+  dataType: "string" | "number" = "string",
 ) => {
   // Wait a bit for sort to complete and table to re-render
   await new Promise((resolve) => setTimeout(resolve, 200));
 
   const data = getColumnData(canvasElement, accessor);
-
   if (data.length === 0) {
     throw new Error(`No data found for accessor "${accessor}"`);
   }
@@ -333,7 +332,7 @@ const verifyAscendingOrder = (data: string[], dataType: "string" | "number" = "s
           throw new Error(
             `Ascending order violated at index ${i}: ${current} > ${next} (values: "${
               data[i]
-            }" > "${data[i + 1]}")`
+            }" > "${data[i + 1]}")`,
           );
         }
       }
@@ -344,7 +343,7 @@ const verifyAscendingOrder = (data: string[], dataType: "string" | "number" = "s
         throw new Error(
           `Ascending order violated at index ${i}: "${data[i]}" > "${
             data[i + 1]
-          }" (comparison: ${comparison})`
+          }" (comparison: ${comparison})`,
         );
       }
     }
@@ -363,7 +362,7 @@ const verifyDescendingOrder = (data: string[], dataType: "string" | "number" = "
           throw new Error(
             `Descending order violated at index ${i}: ${current} < ${next} (values: "${
               data[i]
-            }" < "${data[i + 1]}")`
+            }" < "${data[i + 1]}")`,
           );
         }
       }
@@ -374,7 +373,7 @@ const verifyDescendingOrder = (data: string[], dataType: "string" | "number" = "
         throw new Error(
           `Descending order violated at index ${i}: "${data[i]}" < "${
             data[i + 1]
-          }" (comparison: ${comparison})`
+          }" (comparison: ${comparison})`,
         );
       }
     }

@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { SimpleTable, TableRefType } from "../../index";
+import React, { useState } from "react";
+import { SimpleTable, TableAPI } from "../../index";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 
 /**
@@ -12,7 +12,7 @@ const EXAMPLE_DATA = generateSaaSData();
 const ROWS_PER_PAGE = 10;
 
 const PaginationAPIExample = () => {
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [currentPageInfo, setCurrentPageInfo] = useState({ current: 1 });
   const [customPageInput, setCustomPageInput] = useState("1");
 

@@ -194,8 +194,12 @@ const findHeaderByLabel = (canvasElement: HTMLElement, label: string): HTMLEleme
 const getVisibleRowCount = (canvasElement: HTMLElement): number => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  return rows.length;
+  // Count unique row indices from virtualized cells
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+  const uniqueRowIndices = new Set(
+    Array.from(cells).map(cell => cell.getAttribute("data-row-index"))
+  );
+  return uniqueRowIndices.size;
 };
 
 const getColumnData = (canvasElement: HTMLElement, accessor: string): string[] => {
@@ -613,7 +617,7 @@ export const OnFilterChangeCallback: StoryObj = {
             if (count > 0) {
               const lastFilterObj = Object.values(filters)[Object.values(filters).length - 1];
               setLastFilter(
-                `${lastFilterObj.accessor} ${lastFilterObj.operator} ${lastFilterObj.value}`
+                `${lastFilterObj.accessor} ${lastFilterObj.operator} ${lastFilterObj.value}`,
               );
             } else {
               setLastFilter("None");
@@ -676,7 +680,7 @@ export const ExternalFilterHandling: StoryObj = {
 
         if (operator === "contains") {
           filtered = filtered.filter((row) =>
-            String(row[accessor]).toLowerCase().includes(String(value).toLowerCase())
+            String(row[accessor]).toLowerCase().includes(String(value).toLowerCase()),
           );
           filterDesc = `${accessor} contains "${value}"`;
         } else if (operator === "equals") {

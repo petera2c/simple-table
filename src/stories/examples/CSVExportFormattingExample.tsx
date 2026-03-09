@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
+import React from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import { UniversalTableProps } from "./StoryWrapper";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 
 // Sample data
 const sampleData: Row[] = [
@@ -198,7 +198,7 @@ export const csvExportFormattingExampleDefaults: Partial<UniversalTableProps> = 
 };
 
 const CSVExportFormattingExample: React.FC<UniversalTableProps> = (props) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   const handleExportCSV = () => {
     if (tableRef.current) {

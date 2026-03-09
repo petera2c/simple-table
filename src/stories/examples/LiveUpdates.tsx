@@ -1,5 +1,5 @@
-import { useRef, useEffect } from "react";
-import { HeaderObject, SimpleTable, TableRefType } from "../..";
+import React, { useEffect } from "react";
+import { HeaderObject, SimpleTable, TableAPI } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to LiveUpdates - exported for reuse in stories and tests
@@ -119,7 +119,7 @@ const initialData = [
 
 const LiveUpdatesExample = (props: UniversalTableProps) => {
   // Keep a local copy of the data to update
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   // Set up intervals for automatic updates
   useEffect(() => {

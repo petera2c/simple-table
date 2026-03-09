@@ -151,28 +151,33 @@ const waitForTable = async (timeout = 5000) => {
 const getVisibleRowCount = (canvasElement: HTMLElement): number => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  return rows.length;
+
+  // Count unique row IDs from virtualized cells
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-id]");
+  const uniqueRowIds = new Set(Array.from(cells).map((cell) => cell.getAttribute("data-row-id")));
+  return uniqueRowIds.size;
 };
 
-const findExpandIconInRow = (row: HTMLElement): HTMLElement | null => {
-  const icon = row.querySelector(".st-expand-icon-container") as HTMLElement;
-  // Check if icon exists and is not hidden (aria-hidden="true" means it's hidden)
-  if (icon && icon.getAttribute("aria-hidden") === "true") {
-    return null;
+const findExpandIconInRow = (rowCells: HTMLElement[]): HTMLElement | null => {
+  // Find expand icon in any cell of this row
+  for (const cell of rowCells) {
+    const icon = cell.querySelector(".st-expand-icon-container") as HTMLElement;
+    if (icon && icon.getAttribute("aria-hidden") !== "true") {
+      return icon;
+    }
   }
-  return icon;
+  return null;
 };
 
 const clickExpandIcon = async (canvasElement: HTMLElement, rowIndex: number) => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) throw new Error("Body container not found");
 
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  const row = rows[rowIndex] as HTMLElement;
-  if (!row) throw new Error(`Row at index ${rowIndex} not found`);
+  // Get all cells for this row
+  const rowCells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+  if (rowCells.length === 0) throw new Error(`No cells found for row index ${rowIndex}`);
 
-  const expandIcon = findExpandIconInRow(row);
+  const expandIcon = findExpandIconInRow(Array.from(rowCells) as HTMLElement[]);
   if (!expandIcon) throw new Error(`Expand icon not found in row ${rowIndex}`);
 
   const user = userEvent.setup();
@@ -180,24 +185,24 @@ const clickExpandIcon = async (canvasElement: HTMLElement, rowIndex: number) => 
   await new Promise((resolve) => setTimeout(resolve, 500));
 };
 
-const getRowDepth = (row: HTMLElement): number => {
-  // Check for data-depth attribute first
-  const depthAttr = row.getAttribute("data-depth");
+const getRowDepth = (rowCells: HTMLElement[]): number => {
+  // Get depth from first cell
+  const firstCell = rowCells[0];
+  if (!firstCell) return 0;
+
+  // Check for data-depth attribute
+  const depthAttr = firstCell.getAttribute("data-depth");
   if (depthAttr) return parseInt(depthAttr);
 
   // Look for depth in cell classes (e.g., st-cell-depth-1, st-cell-depth-2)
-  const firstCell = row.querySelector(".st-cell");
-  if (firstCell) {
-    const classes = firstCell.className.split(" ");
-    for (const cls of classes) {
-      if (cls.startsWith("st-cell-depth-")) {
-        const depth = parseInt(cls.replace("st-cell-depth-", ""));
-        if (!isNaN(depth)) return depth;
-      }
+  const classes = firstCell.className.split(" ");
+  for (const cls of classes) {
+    if (cls.startsWith("st-cell-depth-")) {
+      const depth = parseInt(cls.replace("st-cell-depth-", ""));
+      if (!isNaN(depth)) return depth;
     }
   }
 
-  // If no depth class found, it's a depth 0 (top-level) row
   return 0;
 };
 
@@ -290,8 +295,20 @@ export const MultiLevelGrouping: StoryObj = {
     const bodyContainer = canvasElement.querySelector(".st-body-container");
     if (!bodyContainer) throw new Error("Body container not found");
 
-    const rows = bodyContainer.querySelectorAll(".st-row");
-    const depths = Array.from(rows).map((row) => getRowDepth(row as HTMLElement));
+    // Get all cells and group by row to calculate depths
+    const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+    const rowMap = new Map<string, HTMLElement[]>();
+    cells.forEach((cell) => {
+      const rowIndex = cell.getAttribute("data-row-index");
+      if (rowIndex) {
+        if (!rowMap.has(rowIndex)) {
+          rowMap.set(rowIndex, []);
+        }
+        rowMap.get(rowIndex)!.push(cell as HTMLElement);
+      }
+    });
+
+    const depths = Array.from(rowMap.values()).map((rowCells) => getRowDepth(rowCells));
     const uniqueDepthsSet = new Set(depths);
     const uniqueDepths = Array.from(uniqueDepthsSet).sort();
 
@@ -308,7 +325,7 @@ export const MultiLevelGrouping: StoryObj = {
     // Verify st-last-group-row logic: marks the end of depth 0 groups
     const allSeparators = bodyContainer.querySelectorAll(".st-row-separator");
     const lastGroupSeparators = bodyContainer.querySelectorAll(
-      ".st-row-separator.st-last-group-row"
+      ".st-row-separator.st-last-group-row",
     );
 
     // Should have some separators
@@ -324,12 +341,17 @@ export const MultiLevelGrouping: StoryObj = {
 
     // Verify that st-last-group-row separators appear after the last descendant of each group
     lastGroupSeparators.forEach((separator) => {
-      // Get the previous row (the separator comes after the row)
+      // Get the previous cell (the separator comes after cells)
       const previousElement = separator.previousElementSibling;
-      if (previousElement && previousElement.classList.contains("st-row")) {
-        const depth = getRowDepth(previousElement as HTMLElement);
-        // The separator should come after a descendant row (depth > 0), not the parent itself
-        expect(depth).toBeGreaterThan(0);
+      if (previousElement && previousElement.classList.contains("st-cell")) {
+        // Get all cells for this row to determine depth
+        const rowIndex = previousElement.getAttribute("data-row-index");
+        if (rowIndex) {
+          const rowCells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+          const depth = getRowDepth(Array.from(rowCells) as HTMLElement[]);
+          // The separator should come after a descendant row (depth > 0), not the parent itself
+          expect(depth).toBeGreaterThan(0);
+        }
       }
     });
   },
@@ -377,6 +399,7 @@ export const StartCollapsed: StoryObj = {
 
     // Verify more rows are now visible
     const expandedRowCount = getVisibleRowCount(canvasElement);
+    console.log("expandedRowCount", expandedRowCount);
     expect(expandedRowCount).toBeGreaterThan(3);
   },
 };
@@ -898,14 +921,17 @@ export const CanExpandRowGroupConditional: StoryObj = {
     const bodyContainer = canvasElement.querySelector(".st-body-container");
     if (!bodyContainer) throw new Error("Body container not found");
 
-    const rows = bodyContainer.querySelectorAll(".st-row");
+    // Get first row's cells
+    const firstRowCells = bodyContainer.querySelectorAll('.st-cell[data-row-index="0"]');
+    if (firstRowCells.length === 0) throw new Error("First row cells not found");
 
     // First row (Engineering, budget 500000) should have expand icon
-    const firstRowIcon = findExpandIconInRow(rows[0] as HTMLElement);
+    const firstRowIcon = findExpandIconInRow(Array.from(firstRowCells) as HTMLElement[]);
     expect(firstRowIcon).toBeTruthy();
 
     // Second row (Sales, budget 300000) should NOT have expand icon
-    const secondRowIcon = findExpandIconInRow(rows[1] as HTMLElement);
+    const secondRowCells = bodyContainer.querySelectorAll('.st-cell[data-row-index="1"]');
+    const secondRowIcon = findExpandIconInRow(Array.from(secondRowCells) as HTMLElement[]);
     expect(secondRowIcon).toBeFalsy();
   },
 };
@@ -1024,7 +1050,7 @@ export const GetGroupingPropertyAndDepth: StoryObj = {
         const depth1 = tableRef.current.getGroupingDepth("members");
 
         setGroupingInfo(
-          `Depth 0: ${prop0}, Depth 1: ${prop1} | "teams" is depth ${depth0}, "members" is depth ${depth1}`
+          `Depth 0: ${prop0}, Depth 1: ${prop1} | "teams" is depth ${depth0}, "members" is depth ${depth1}`,
         );
       }
     };
@@ -1125,17 +1151,29 @@ export const LastGroupRowSeparatorLogic: StoryObj = {
     // Get all separators
     const allSeparators = bodyContainer.querySelectorAll(".st-row-separator");
     const lastGroupSeparators = bodyContainer.querySelectorAll(
-      ".st-row-separator.st-last-group-row"
+      ".st-row-separator.st-last-group-row",
     );
 
     // Should have separators
     expect(allSeparators.length).toBeGreaterThan(0);
 
     // Get all rows and their depths
-    const rows = Array.from(bodyContainer.querySelectorAll(".st-row"));
+    // Get all cells and group by row
+    const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+    const rowMap = new Map<string, HTMLElement[]>();
+    cells.forEach((cell) => {
+      const rowIndex = cell.getAttribute("data-row-index");
+      if (rowIndex) {
+        if (!rowMap.has(rowIndex)) {
+          rowMap.set(rowIndex, []);
+        }
+        rowMap.get(rowIndex)!.push(cell as HTMLElement);
+      }
+    });
+    const rows = Array.from(rowMap.values());
 
     // Count depth 0 rows (top-level departments)
-    const depth0RowCount = rows.filter((row) => getRowDepth(row as HTMLElement) === 0).length;
+    const depth0RowCount = rows.filter((rowCells) => getRowDepth(rowCells) === 0).length;
 
     // Verify we have depth 0 rows
     expect(depth0RowCount).toBeGreaterThan(0);
@@ -1151,17 +1189,22 @@ export const LastGroupRowSeparatorLogic: StoryObj = {
     // They should appear after the last visible descendant of each depth 0 row
     lastGroupSeparators.forEach((separator) => {
       const previousElement = separator.previousElementSibling;
-      if (previousElement && previousElement.classList.contains("st-row")) {
-        const depth = getRowDepth(previousElement as HTMLElement);
-        // The row before st-last-group-row can be at any depth (it's the last visible child)
-        // But it should NOT be depth 0 (since depth 0 rows have children)
-        expect(depth).toBeGreaterThan(0);
+      if (previousElement && previousElement.classList.contains("st-cell")) {
+        // Get all cells for this row to determine depth
+        const rowIndex = previousElement.getAttribute("data-row-index");
+        if (rowIndex) {
+          const rowCells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+          const depth = getRowDepth(Array.from(rowCells) as HTMLElement[]);
+          // The row before st-last-group-row can be at any depth (it's the last visible child)
+          // But it should NOT be depth 0 (since depth 0 rows have children)
+          expect(depth).toBeGreaterThan(0);
+        }
       }
     });
 
     // Verify that regular separators (not st-last-group-row) appear between rows within groups
     const regularSeparators = Array.from(allSeparators).filter(
-      (sep) => !sep.classList.contains("st-last-group-row")
+      (sep) => !sep.classList.contains("st-last-group-row"),
     );
     expect(regularSeparators.length).toBeGreaterThan(0);
   },

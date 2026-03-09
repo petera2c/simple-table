@@ -183,6 +183,8 @@ input {
 .st-header-container {
   display: flex;
   background-color: var(--st-header-background-color);
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .st-header-container.st-header-scroll-padding::after {
@@ -197,8 +199,12 @@ input {
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
-  display: grid;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-header-grid {
+  position: relative;
+  min-width: 100%;
 }
 
 .st-horizontal-scrollbar-middle,
@@ -237,9 +243,11 @@ input {
 .st-body-pinned-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
+
 .st-header-main {
   flex-grow: 1;
 }
+
 .st-header-main::-webkit-scrollbar {
   display: none;
 }
@@ -400,9 +408,34 @@ input {
   color: var(--st-cell-color);
 }
 
+/* Cell-level row background classes (for absolute positioned cells) */
+.st-cell.st-cell-even-row {
+  background-color: var(--st-even-row-background-color);
+}
+.st-cell.st-cell-odd-row {
+  background-color: var(--st-odd-row-background-color);
+}
+.st-cell.st-cell-even-row .st-cell-content {
+  color: var(--st-cell-color);
+}
+.st-cell.st-cell-odd-row .st-cell-content {
+  color: var(--st-cell-odd-row-color);
+}
+
+/* Selected row styling for cells */
+.st-cell.st-cell-selected-row {
+  background-color: var(--st-selected-row-background-color);
+}
+
+/* Row hover styling for cells */
+.st-cell.st-row-hovered:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
+  background-color: var(--st-hover-row-background-color);
+}
+
 /* Styles for table header cells */
 .st-header-cell {
-  position: sticky;
   top: 0;
   background-color: var(--st-header-background-color);
   font-weight: var(--st-font-weight-bold);
@@ -946,6 +979,7 @@ input {
   border-left: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-column-editor-text-color);
   flex-shrink: 0;
+  height: 100%;
 }
 
 .st-column-editor-text {
@@ -1236,38 +1270,6 @@ input {
 
 .st-cell-updating {
   animation: cell-flash 0.6s ease-in-out;
-}
-
-/* Animation z-index handling */
-.st-animating {
-  z-index: 10 !important;
-  position: relative;
-  /* Performance optimizations for buttery smooth animations */
-  contain: style layout paint; /* Isolate this element's rendering */
-  transform-style: preserve-3d; /* Enable 3D rendering context */
-  isolation: isolate; /* Create new stacking context */
-}
-
-/* Respect user's motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .st-animating {
-    /* For users who prefer reduced motion, keep animations short and simple */
-    transition-duration: 0.15s !important;
-    animation-duration: 0.15s !important;
-  }
-
-  /* Disable FLIP animations entirely for users who prefer no motion */
-  .st-animating {
-    transform: none !important;
-    transition: none !important;
-  }
-}
-
-/* Enhanced animation easing for modern browsers */
-@supports (transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1)) {
-  .st-animating {
-    transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
-  }
 }
 
 @keyframes copy-flash {

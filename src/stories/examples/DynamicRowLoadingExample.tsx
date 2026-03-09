@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
 import Row from "../../types/Row";

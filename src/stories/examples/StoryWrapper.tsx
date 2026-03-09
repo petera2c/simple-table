@@ -9,7 +9,6 @@ export interface UniversalTableProps {
   useOddColumnBackground?: boolean;
   useHoverRowBackground?: boolean;
   useOddEvenRowBackground?: boolean;
-  allowAnimations?: boolean;
   cellUpdateFlash?: boolean;
   height?: string;
   customTheme?: CustomThemeProps;
@@ -55,7 +54,7 @@ export default StoryWrapper;
 
 // Default args for universal props
 export const defaultUniversalArgs: UniversalTableProps = {
-  theme: "modern-light",
+  theme: "light",
   useOddColumnBackground: false,
   useHoverRowBackground: true,
   useOddEvenRowBackground: false,
@@ -95,10 +94,6 @@ export const universalArgTypes = {
   useOddEvenRowBackground: {
     control: { type: "boolean" as const },
     description: "Enable alternating row background colors",
-  },
-  allowAnimations: {
-    control: { type: "boolean" as const },
-    description: "Enable table animations",
   },
   cellUpdateFlash: {
     control: { type: "boolean" as const },

@@ -1,4 +1,5 @@
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import { UniversalTableProps } from "./StoryWrapper";
 
@@ -21,8 +22,8 @@ const headers: HeaderObject[] = [
         return value >= 1000000
           ? `${(value / 1000000).toFixed(1)}M`
           : value >= 1000
-          ? `${(value / 1000).toFixed(0)}K`
-          : value.toString();
+            ? `${(value / 1000).toFixed(0)}K`
+            : value.toString();
       }
       return "";
     },

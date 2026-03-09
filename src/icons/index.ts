@@ -1,18 +1,15 @@
 /**
- * Tree-shakeable icon exports
- * Import only the icons you need to reduce bundle size:
- *
- * @example
- * import { AngleLeftIcon, AngleRightIcon } from 'simple-table-core/icons';
+ * Internal icon factory functions
+ * These create vanilla JS SVG elements for use within the table component
  */
 
-export { default as AngleDownIcon } from "./AngleDownIcon";
-export { default as AngleLeftIcon } from "./AngleLeftIcon";
-export { default as AngleRightIcon } from "./AngleRightIcon";
-export { default as AngleUpIcon } from "./AngleUpIcon";
-export { default as AscIcon } from "./AscIcon";
-export { default as CheckIcon } from "./CheckIcon";
-export { default as DescIcon } from "./DescIcon";
-export { default as DragIcon } from "./DragIcon";
-export { default as FilterIcon } from "./FilterIcon";
-export { default as SelectIcon } from "./SelectIcon";
+export { createAngleDownIcon } from "./AngleDownIcon";
+export { createAngleLeftIcon } from "./AngleLeftIcon";
+export { createAngleRightIcon } from "./AngleRightIcon";
+export { createAngleUpIcon } from "./AngleUpIcon";
+export { createAscIcon } from "./AscIcon";
+export { createCheckIcon } from "./CheckIcon";
+export { createDescIcon } from "./DescIcon";
+export { createDragIcon } from "./DragIcon";
+export { createFilterIcon } from "./FilterIcon";
+export { createSelectIcon } from "./SelectIcon";

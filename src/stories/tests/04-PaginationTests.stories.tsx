@@ -86,8 +86,12 @@ const waitForTable = async (timeout = 5000) => {
 const getVisibleRowCount = (canvasElement: HTMLElement): number => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  return rows.length;
+  // Count unique row indices from virtualized cells
+  const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
+  const uniqueRowIndices = new Set(
+    Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
+  );
+  return uniqueRowIndices.size;
 };
 
 const getPaginationFooter = (canvasElement: HTMLElement): HTMLElement | null => {
@@ -98,7 +102,7 @@ const getPaginationFooter = (canvasElement: HTMLElement): HTMLElement | null => 
 // const getCurrentPageFromFooter = (canvasElement: HTMLElement): number | null => {
 //   const footer = getPaginationFooter(canvasElement);
 //   if (!footer) return null;
-//   
+//
 //   // Look for current page indicator in footer
 //   const pageText = footer.textContent;
 //   const match = pageText?.match(/Page (\d+)/);
@@ -130,7 +134,7 @@ const clickPreviousPageButton = async (canvasElement: HTMLElement) => {
 
   // Find previous button using aria-label
   const prevButton = footer.querySelector(
-    'button[aria-label="Go to previous page"]'
+    'button[aria-label="Go to previous page"]',
   ) as HTMLElement;
 
   if (!prevButton) throw new Error("Previous page button not found");
@@ -504,7 +508,7 @@ export const ProgrammaticPageControl: StoryObj = {
 export const ServerSidePagination: StoryObj = {
   render: () => {
     const [currentPageData, setCurrentPageData] = React.useState(
-      createPaginatedData(10).slice(0, 10)
+      createPaginatedData(10).slice(0, 10),
     );
     const [currentPage, setCurrentPage] = React.useState(1);
     const [isLoading, setIsLoading] = React.useState(false);

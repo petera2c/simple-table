@@ -148,7 +148,7 @@ const isCellSelected = (
 
 const getSelectedCellCount = (canvasElement: HTMLElement): number => {
   const selectedCells = canvasElement.querySelectorAll(
-    ".st-cell-selected, .st-cell-selected-first, .st-cell-column-selected, .st-cell-column-selected-first"
+    ".st-cell-selected, .st-cell-selected-first, .st-cell-column-selected, .st-cell-column-selected-first",
   );
   return selectedCells.length;
 };

@@ -1,5 +1,6 @@
+import React from "react";
 import { HEADERS } from "./billing-headers";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import { SimpleTable } from "../../..";
 import billingData from "./billing-data.json";
 import { UniversalTableProps } from "../StoryWrapper";
 import Row from "../../../types/Row";

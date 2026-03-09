@@ -1,5 +1,6 @@
 import { useState } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import { generateSaaSData, SAAS_HEADERS } from "../data/saas-data";
 import { UniversalTableProps } from "./StoryWrapper";
 

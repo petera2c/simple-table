@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { SimpleTable } from "../..";
 import HeaderObject from "../../types/HeaderObject";
 import Row from "../../types/Row";
-import TableRefType from "../../types/TableRefType";
+import { TableAPI } from "../../types/TableAPI";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Sample data
@@ -165,7 +165,7 @@ export const columnVisibilityAPIExampleDefaults = {
 };
 
 const ColumnVisibilityAPIExampleComponent: React.FC<UniversalTableProps> = (props) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
 
   // Show a status message temporarily

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
+import React from "react";
+import { SimpleTable } from "../..";
 import CellChangeProps from "../../types/CellChangeProps";
 import Theme from "../../types/Theme";
 import { generateSpaceData, SPACE_HEADERS } from "../data/space-data";

@@ -82,16 +82,15 @@ const waitForTable = async (timeout = 5000) => {
 const getCellElement = (
   canvasElement: HTMLElement,
   rowIndex: number,
-  accessor: string
+  accessor: string,
 ): HTMLElement | null => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return null;
 
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  const row = rows[rowIndex];
-  if (!row) return null;
-
-  return row.querySelector(`[data-accessor="${accessor}"]`) as HTMLElement;
+  // Query directly for cell with both row index and accessor
+  return bodyContainer.querySelector(
+    `.st-cell[data-row-index="${rowIndex}"][data-accessor="${accessor}"]`,
+  ) as HTMLElement;
 };
 
 const getCellContent = (cell: HTMLElement): string => {
@@ -173,8 +172,8 @@ export const BasicStringEditing: StoryObj = {
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
             setLastEdit(`${props.accessor} = ${props.newValue}`);
           }}
@@ -254,8 +253,10 @@ export const NumberEditing: StoryObj = {
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: Number(props.newValue) } : row
-              )
+                row.id === props.row.id
+                  ? { ...row, [props.accessor]: Number(props.newValue) }
+                  : row,
+              ),
             );
           }}
         />
@@ -280,6 +281,7 @@ export const NumberEditing: StoryObj = {
 
     // Find the input field
     const input = findInputInCell(canvasElement);
+
     if (!input) throw new Error("Input field not found");
 
     // Clear and type new value
@@ -288,6 +290,7 @@ export const NumberEditing: StoryObj = {
 
     // Press Enter to save
     await user.keyboard("{Enter}");
+
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Get the cell again after edit to ensure we have the updated element
@@ -332,8 +335,8 @@ export const BooleanEditing: StoryObj = {
                       ...row,
                       [props.accessor]: props.newValue === "true" || props.newValue === true,
                     }
-                  : row
-              )
+                  : row,
+              ),
             );
           }}
         />
@@ -358,7 +361,7 @@ export const BooleanEditing: StoryObj = {
 
     // Find the dropdown and click "True" option
     const trueOption = Array.from(document.querySelectorAll(".st-dropdown-item")).find(
-      (item) => item.textContent === "True"
+      (item) => item.textContent === "True",
     ) as HTMLElement;
     if (!trueOption) throw new Error("True option not found in dropdown");
 
@@ -413,8 +416,8 @@ export const EnumEditing: StoryObj = {
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -439,7 +442,7 @@ export const EnumEditing: StoryObj = {
 
     // Find the dropdown and click "Manager" option
     const managerOption = Array.from(document.querySelectorAll(".st-dropdown-item")).find(
-      (item) => item.textContent === "Manager"
+      (item) => item.textContent === "Manager",
     ) as HTMLElement;
     if (!managerOption) throw new Error("Manager option not found in dropdown");
 
@@ -482,8 +485,8 @@ export const DateEditing: StoryObj = {
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -545,8 +548,8 @@ export const NonEditableColumns: StoryObj = {
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -617,8 +620,8 @@ export const EscapeKeyCancelsEdit: StoryObj = {
           onCellEdit={(props) => {
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />
@@ -707,8 +710,8 @@ export const OnCellEditCallback: StoryObj = {
             });
             setData((prev) =>
               prev.map((row) =>
-                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row
-              )
+                row.id === props.row.id ? { ...row, [props.accessor]: props.newValue } : row,
+              ),
             );
           }}
         />

@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 
 import { HEADERS } from "./finance-headers";
 import financeData from "./finance-data.json";
-import TableRefType from "../../../types/TableRefType";
-import SimpleTable from "../../../components/simple-table/SimpleTable";
+import type { TableAPI } from "../../../types/TableAPI";
+import { SimpleTable } from "../../..";
 import { UniversalTableProps } from "../StoryWrapper";
 
 // Configuration for stock price updates
@@ -26,7 +26,7 @@ export const financeExampleDefaults = {
 };
 
 export const FinancialExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType | null>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
 
   useEffect(() => {
     // Keep a copy of the current data in memory for calculations

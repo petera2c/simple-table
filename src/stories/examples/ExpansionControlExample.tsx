@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
-import SimpleTable from "../../components/simple-table/SimpleTable";
-import { HeaderObject, TableRefType } from "../..";
+import { useState } from "react";
+import React from "react";
+import { SimpleTable } from "../..";
+import { HeaderObject, TableAPI } from "../..";
 import { UniversalTableProps } from "./StoryWrapper";
 
 // Default args specific to ExpansionControl
@@ -268,7 +269,7 @@ const rows = [
 ];
 
 const ExpansionControlExample = (props: UniversalTableProps) => {
-  const tableRef = useRef<TableRefType>(null);
+  const tableRef = React.useRef<TableAPI | null>(null);
   const [expandedInfo, setExpandedInfo] = useState<string>("");
 
   const updateExpandedInfo = () => {
@@ -333,7 +334,7 @@ const ExpansionControlExample = (props: UniversalTableProps) => {
         `"divisions" is at depth: ${divisionsDepth}\n` +
         `"teams" is at depth: ${teamsDepth}\n\n` +
         `Depth 0 property: ${depth0Prop}\n` +
-        `Depth 1 property: ${depth1Prop}`
+        `Depth 1 property: ${depth1Prop}`,
     );
   };
 
