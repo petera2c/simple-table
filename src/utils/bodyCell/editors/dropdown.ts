@@ -104,48 +104,19 @@ export const createDropdown = (
     dropdown.style.maxHeight = `${options.maxHeight}px`;
   }
 
-  // Copy CSS variables and font from table root to dropdown (since it's appended to body)
-  const tableRoot = triggerElement.closest(".simple-table-root") as HTMLElement;
-  if (tableRoot) {
-    const computedStyle = getComputedStyle(tableRoot);
-    
-    // Copy CSS variables
-    const cssVars = [
-      "--st-odd-row-background-color",
-      "--st-border-color",
-      "--st-border-radius",
-      "--st-edit-cell-shadow",
-      "--st-cell-color",
-      "--st-spacing-small",
-      "--st-spacing-medium",
-      "--st-button-hover-background-color",
-      "--st-selected-cell-background-color",
-      "--st-selected-cell-color",
-      "--st-transition-duration",
-      "--st-transition-ease",
-      "--st-border-width",
-    ];
-    
-    cssVars.forEach((varName) => {
-      const value = computedStyle.getPropertyValue(varName);
-      if (value) {
-        dropdown.style.setProperty(varName, value);
-      }
-    });
-    
-    // Copy font-family so dropdown inherits table's font
-    const fontFamily = computedStyle.fontFamily;
-    if (fontFamily) {
-      dropdown.style.fontFamily = fontFamily;
-    }
-  }
-
   // Append content
   dropdown.appendChild(content);
 
-  // Add to body for fixed positioning, or to trigger parent for absolute
+  // Add to table root for fixed positioning (inherits CSS variables), or to trigger parent for absolute
+  const tableRoot = triggerElement.closest(".simple-table-root") as HTMLElement;
   if (options.positioning === "fixed") {
-    document.body.appendChild(dropdown);
+    // Append to table root instead of body so dropdown inherits CSS variables
+    if (tableRoot) {
+      tableRoot.appendChild(dropdown);
+    } else {
+      // Fallback to body if table root not found
+      document.body.appendChild(dropdown);
+    }
   } else {
     triggerElement.appendChild(dropdown);
   }
