@@ -15,9 +15,8 @@ export const createEnumDropdown = (
   const { header, row, rowIndex } = cell;
   const options = header.enumOptions || [];
 
-  // Create dropdown content
-  const content = document.createElement("div");
-  content.className = "st-dropdown-items st-enum-dropdown-content";
+  // Declare dropdown variable that will be set after creation
+  let dropdown: HTMLElement;
 
   const handleSelect = (newValue: string) => {
     // Update the row data
@@ -33,6 +32,8 @@ export const createEnumDropdown = (
       });
     }
 
+    // Remove dropdown from DOM manually, then call onComplete
+    dropdown.remove();
     onComplete();
   };
 
@@ -47,12 +48,12 @@ export const createEnumDropdown = (
     optionElement.textContent = option.label;
     optionElement.setAttribute("role", "option");
     optionElement.setAttribute("aria-selected", String(currentValue === option.value));
+    optionElement.setAttribute("aria-disabled", "false");
     optionElement.setAttribute("tabindex", "0");
     optionElement.dataset.value = option.value;
 
     addTrackedEventListener(optionElement, "click", () => handleSelect(option.value));
 
-    content.appendChild(optionElement);
     optionElements.push(optionElement);
   });
 
@@ -83,13 +84,16 @@ export const createEnumDropdown = (
     addTrackedEventListener(el, "keydown", handleKeyDown);
   });
 
-  // Get the cell element as trigger
-  const cellElement = document.getElementById(
-    `cell-${header.accessor}-${cell.rowId}`,
-  ) as HTMLElement;
+  // Use DocumentFragment so items become direct children of st-dropdown-content
+  const content = document.createDocumentFragment();
+  optionElements.forEach((el) => content.appendChild(el));
+
+  // Get the cell element as trigger - use correct ID format
+  const cellId = `${cell.rowId}-${header.accessor}`;
+  const cellElement = document.getElementById(cellId) as HTMLElement;
 
   // Create and show dropdown
-  const dropdown = createDropdown(cellElement || document.body, content, {
+  dropdown = createDropdown(cellElement || document.body, content, {
     width: 150,
     maxHeight: 300,
     positioning: "fixed",

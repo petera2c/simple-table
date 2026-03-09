@@ -89,7 +89,7 @@ const getCellElement = (
 
   // Query directly for cell with both row index and accessor
   return bodyContainer.querySelector(
-    `.st-cell[data-row-index="${rowIndex}"][data-accessor="${accessor}"]`
+    `.st-cell[data-row-index="${rowIndex}"][data-accessor="${accessor}"]`,
   ) as HTMLElement;
 };
 
@@ -281,6 +281,7 @@ export const NumberEditing: StoryObj = {
 
     // Find the input field
     const input = findInputInCell(canvasElement);
+
     if (!input) throw new Error("Input field not found");
 
     // Clear and type new value
@@ -289,6 +290,7 @@ export const NumberEditing: StoryObj = {
 
     // Press Enter to save
     await user.keyboard("{Enter}");
+
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Get the cell again after edit to ensure we have the updated element

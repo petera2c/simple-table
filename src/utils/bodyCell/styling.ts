@@ -160,42 +160,62 @@ export const createBodyCellElement = (
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
 
-  // Create content span
-  const contentSpan = document.createElement("span");
-  contentSpan.className = `st-cell-content ${
-    header.align === "right"
-      ? "right-aligned"
-      : header.align === "center"
-        ? "center-aligned"
-        : "left-aligned"
-  }`;
-
   // Track editing state
   let isEditing = false;
+  
+  // Determine if this column type uses dropdown editing
+  const isEditInDropdown = header.type === "boolean" || header.type === "date" || header.type === "enum";
 
   const renderCellContent = () => {
-    contentSpan.innerHTML = "";
-    if (isEditing) {
+    // For dropdown editors, keep the normal cell content visible
+    // For inline editors, replace the cell content
+    if (isEditing && !isEditInDropdown) {
+      cellElement.innerHTML = "";
+      // Remove tabindex from cell when editing to prevent focus conflicts
+      cellElement.setAttribute("tabindex", "-1");
       const editor = createEditor(cell, context, () => {
         isEditing = false;
+        // Restore tabindex when done editing
+        cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
         renderCellContent();
         // Re-register cell in registry after editing
         registerCellInRegistry();
       });
       if (editor) {
-        // For dropdown editors, they're added to body/cell, not contentSpan
-        // For inline editors, add to contentSpan
-        if (editor.classList.contains("editable-cell-input")) {
-          contentSpan.appendChild(editor);
-        }
+        // Wrap inline editor in st-cell-editing div
+        const editingDiv = document.createElement("div");
+        editingDiv.className = "st-cell-editing";
+        editingDiv.appendChild(editor);
+        cellElement.appendChild(editingDiv);
+      }
+    } else if (isEditing && isEditInDropdown) {
+      // For dropdown editing, create the dropdown but keep normal cell content
+      const editor = createEditor(cell, context, () => {
+        isEditing = false;
+        // Re-render to show updated value
+        renderCellContent();
+        registerCellInRegistry();
+      });
+      if (editor) {
+        // Dropdown positions itself absolutely, no need to add to cell
       }
     } else {
+      // Not editing - create normal content span
+      cellElement.innerHTML = "";
+      const contentSpan = document.createElement("span");
+      contentSpan.className = `st-cell-content ${
+        header.align === "right"
+          ? "right-aligned"
+          : header.align === "center"
+            ? "center-aligned"
+            : "left-aligned"
+      }`;
       createCellContent(cell, context, contentSpan);
+      cellElement.appendChild(contentSpan);
     }
   };
 
   renderCellContent();
-  cellElement.appendChild(contentSpan);
 
   // Register cell in registry for direct updates
   const registerCellInRegistry = () => {
@@ -251,6 +271,9 @@ export const createBodyCellElement = (
 
     // Start editing on F2 or Enter
     if ((keyEvent.key === "F2" || keyEvent.key === "Enter") && header.isEditable && !isEditing) {
+      // #region agent log
+      fetch('http://127.0.0.1:7670/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'288b83'},body:JSON.stringify({sessionId:'288b83',location:'styling.ts:283',message:'Keyboard edit triggered',data:{key:keyEvent.key,accessor:header.accessor,isEditable:header.isEditable},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
       keyEvent.preventDefault();
       isEditing = true;
       renderCellContent();
@@ -258,6 +281,17 @@ export const createBodyCellElement = (
   };
 
   addTrackedEventListener(cellElement, "keydown", handleKeyDown);
+
+
+  // Double-click handler for editing
+  const handleDoubleClick = (event: Event) => {
+    if (header.isEditable && !isSelectionColumn && !isEditing) {
+      isEditing = true;
+      renderCellContent();
+    }
+  };
+
+  addTrackedEventListener(cellElement, "dblclick", handleDoubleClick);
 
   // Cell click callback
   if (context.onCellClick && !isSelectionColumn) {
@@ -308,6 +342,7 @@ export const createBodyCellElement = (
     addTrackedEventListener(cellElement, "mouseenter", handleMouseEnter);
     addTrackedEventListener(cellElement, "mouseleave", handleMouseLeave);
   }
+
 
   return cellElement;
 };
