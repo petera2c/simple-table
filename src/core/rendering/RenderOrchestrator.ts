@@ -142,10 +142,6 @@ export class RenderOrchestrator {
       this.invalidateCache("context");
       this.lastHeadersRef = context.headers;
     }
-    if (this.lastRowsRef !== context.localRows) {
-      this.invalidateCache("body");
-      this.lastRowsRef = context.localRows;
-    }
 
     const effectiveHeaders = this.computeEffectiveHeaders(
       context.headers,
@@ -195,6 +191,13 @@ export class RenderOrchestrator {
       effectiveRows = context.filterManager.getFilteredRows();
     }
 
+    // Invalidate body and context cache when effective rows change (includes sorting/filtering)
+    if (this.lastRowsRef !== effectiveRows) {
+      this.invalidateCache("body");
+      this.invalidateCache("context"); // Also invalidate context to update sort indicators
+      this.lastRowsRef = effectiveRows;
+    }
+
     if (context.internalIsLoading && effectiveRows.length === 0) {
       let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
       if (state.isMainSectionScrollable) {
@@ -232,11 +235,14 @@ export class RenderOrchestrator {
       quickFilteredRows = this.flattenedRowsCache.quickFilteredRows;
       flattenResult = this.flattenedRowsCache.flattenResult;
     } else {
-      aggregatedRows = calculateAggregatedRows({
-        rows: effectiveRows,
-        headers: context.headers,
-        rowGrouping: context.config.rowGrouping,
-      });
+      // SortManager already returns aggregated rows, so only aggregate if no SortManager
+      aggregatedRows = context.sortManager
+        ? effectiveRows
+        : calculateAggregatedRows({
+            rows: effectiveRows,
+            headers: context.headers,
+            rowGrouping: context.config.rowGrouping,
+          });
 
       quickFilteredRows = filterRowsWithQuickFilter({
         rows: aggregatedRows,

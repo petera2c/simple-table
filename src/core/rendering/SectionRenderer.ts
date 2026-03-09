@@ -3,8 +3,9 @@ import {
   renderHeaderCells,
   AbsoluteCell,
   HeaderRenderContext,
+  cleanupHeaderCellRendering,
 } from "../../utils/headerCellRenderer";
-import { renderBodyCells, AbsoluteBodyCell, CellRenderContext } from "../../utils/bodyCellRenderer";
+import { renderBodyCells, AbsoluteBodyCell, CellRenderContext, cleanupBodyCellRendering } from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
 import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
@@ -638,12 +639,36 @@ export class SectionRenderer {
       this.bodyCellsCache.clear();
       this.headerCellsCache.clear();
       this.contextCache.clear();
+      // Clear rendered cell elements from all body sections
+      this.bodySections.forEach((section) => {
+        cleanupBodyCellRendering(section);
+      });
+      // Clear rendered cell elements from all header sections
+      this.headerSections.forEach((section) => {
+        cleanupHeaderCellRendering(section);
+      });
     } else if (type === "body") {
       this.bodyCellsCache.clear();
+      // Clear rendered cell elements from all body sections
+      this.bodySections.forEach((section) => {
+        cleanupBodyCellRendering(section);
+      });
     } else if (type === "header") {
       this.headerCellsCache.clear();
+      // Clear rendered cell elements from all header sections
+      this.headerSections.forEach((section) => {
+        cleanupHeaderCellRendering(section);
+      });
     } else if (type === "context") {
       this.contextCache.clear();
+      // Context cache affects both headers (sort indicators) and body (selection state)
+      // Clear rendered elements from both to force re-render with new context
+      this.headerSections.forEach((section) => {
+        cleanupHeaderCellRendering(section);
+      });
+      this.bodySections.forEach((section) => {
+        cleanupBodyCellRendering(section);
+      });
     }
   }
 
