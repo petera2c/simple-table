@@ -43,6 +43,9 @@ export const createDatePicker = (
 ): HTMLElement => {
   const { header, row, rowIndex } = cell;
 
+  // Declare dropdown variable that will be set after creation
+  let dropdown: HTMLElement;
+
   // Parse current date
   let selectedDate: Date;
   try {
@@ -120,6 +123,8 @@ export const createDatePicker = (
       });
     }
 
+    // Remove dropdown from DOM manually, then call onComplete
+    dropdown.remove();
     onComplete();
   };
 
@@ -205,13 +210,12 @@ export const createDatePicker = (
   // Initial render
   renderCalendar();
 
-  // Get the cell element as trigger
-  const cellElement = document.getElementById(
-    `cell-${header.accessor}-${cell.rowId}`,
-  ) as HTMLElement;
+  // Get the cell element as trigger - use correct ID format
+  const cellId = `${cell.rowId}-${header.accessor}`;
+  const cellElement = document.getElementById(cellId) as HTMLElement;
 
   // Create and show dropdown
-  const dropdown = createDropdown(cellElement || document.body, container, {
+  dropdown = createDropdown(cellElement || document.body, container, {
     width: 280,
     positioning: "fixed",
     onClose: onComplete,

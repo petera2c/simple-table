@@ -832,8 +832,13 @@ export class SelectionManager {
         cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
 
         // Focus the initial focused cell if needed
+        // Don't steal focus if active element is already inside this cell (e.g., editing input)
         if (isInitialFocused && document.activeElement !== cellElement) {
-          cellElement.focus();
+          const activeElement = document.activeElement;
+          const isActiveInsideCell = activeElement && cellElement.contains(activeElement);
+          if (!isActiveInsideCell) {
+            cellElement.focus();
+          }
         }
       });
     });

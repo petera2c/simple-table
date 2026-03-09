@@ -86,7 +86,7 @@ export const calculateDropdownPosition = (
 // Create dropdown container element
 export const createDropdown = (
   triggerElement: HTMLElement,
-  content: HTMLElement,
+  content: HTMLElement | DocumentFragment,
   options: DropdownOptions,
 ): HTMLElement => {
   const dropdown = document.createElement("div");
@@ -94,6 +94,7 @@ export const createDropdown = (
   dropdown.style.position = options.positioning || "fixed";
   dropdown.style.zIndex = "1000";
   dropdown.style.visibility = "hidden"; // Hidden until positioned
+  dropdown.style.overflow = "auto"; // Default overflow behavior
 
   if (options.width) {
     dropdown.style.width = `${options.width}px`;
@@ -101,7 +102,42 @@ export const createDropdown = (
 
   if (options.maxHeight) {
     dropdown.style.maxHeight = `${options.maxHeight}px`;
-    dropdown.style.overflowY = "auto";
+  }
+
+  // Copy CSS variables and font from table root to dropdown (since it's appended to body)
+  const tableRoot = triggerElement.closest(".simple-table-root") as HTMLElement;
+  if (tableRoot) {
+    const computedStyle = getComputedStyle(tableRoot);
+    
+    // Copy CSS variables
+    const cssVars = [
+      "--st-odd-row-background-color",
+      "--st-border-color",
+      "--st-border-radius",
+      "--st-edit-cell-shadow",
+      "--st-cell-color",
+      "--st-spacing-small",
+      "--st-spacing-medium",
+      "--st-button-hover-background-color",
+      "--st-selected-cell-background-color",
+      "--st-selected-cell-color",
+      "--st-transition-duration",
+      "--st-transition-ease",
+      "--st-border-width",
+    ];
+    
+    cssVars.forEach((varName) => {
+      const value = computedStyle.getPropertyValue(varName);
+      if (value) {
+        dropdown.style.setProperty(varName, value);
+      }
+    });
+    
+    // Copy font-family so dropdown inherits table's font
+    const fontFamily = computedStyle.fontFamily;
+    if (fontFamily) {
+      dropdown.style.fontFamily = fontFamily;
+    }
   }
 
   // Append content

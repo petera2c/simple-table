@@ -29,13 +29,25 @@ export const createEditableInput = (
   input.value = currentValue !== null && currentValue !== undefined ? String(currentValue) : "";
   input.setAttribute("autofocus", "true");
 
+
   // Focus the input
   setTimeout(() => {
     input.focus();
     input.select(); // Select all text for easy replacement
   }, 0);
 
-  const handleBlur = () => {
+  // Track if we should save or cancel
+  let shouldSave = true;
+
+  const handleBlur = (event: Event) => {
+    const focusEvent = event as FocusEvent;
+
+    if (!shouldSave) {
+      // Escape was pressed - cancel edit without saving
+      onComplete();
+      return;
+    }
+
     let newValue: CellValue = input.value;
 
     // Convert to appropriate type
@@ -64,7 +76,11 @@ export const createEditableInput = (
     const keyEvent = event as KeyboardEvent;
     keyEvent.stopPropagation(); // Prevent table navigation
 
-    if (keyEvent.key === "Enter" || keyEvent.key === "Escape") {
+    if (keyEvent.key === "Enter") {
+      shouldSave = true;
+      input.blur();
+    } else if (keyEvent.key === "Escape") {
+      shouldSave = false;
       input.blur();
     }
   };

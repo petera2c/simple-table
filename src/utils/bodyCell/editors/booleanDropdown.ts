@@ -13,9 +13,8 @@ export const createBooleanDropdown = (
 ): HTMLElement => {
   const { header, row, rowIndex } = cell;
 
-  // Create dropdown content
-  const content = document.createElement("div");
-  content.className = "st-dropdown-items";
+  // Declare dropdown variable that will be set after creation
+  let dropdown: HTMLElement;
 
   // Create True option
   const trueOption = document.createElement("div");
@@ -23,6 +22,7 @@ export const createBooleanDropdown = (
   trueOption.textContent = "True";
   trueOption.setAttribute("role", "option");
   trueOption.setAttribute("aria-selected", String(currentValue === true));
+  trueOption.setAttribute("aria-disabled", "false");
 
   // Create False option
   const falseOption = document.createElement("div");
@@ -30,6 +30,7 @@ export const createBooleanDropdown = (
   falseOption.textContent = "False";
   falseOption.setAttribute("role", "option");
   falseOption.setAttribute("aria-selected", String(currentValue === false));
+  falseOption.setAttribute("aria-disabled", "false");
 
   const handleSelect = (newValue: boolean) => {
     // Update the row data
@@ -45,6 +46,8 @@ export const createBooleanDropdown = (
       });
     }
 
+    // Remove dropdown from DOM manually, then call onComplete
+    dropdown.remove();
     onComplete();
   };
 
@@ -77,29 +80,21 @@ export const createBooleanDropdown = (
   addTrackedEventListener(trueOption, "keydown", handleKeyDown);
   addTrackedEventListener(falseOption, "keydown", handleKeyDown);
 
+  // Use DocumentFragment so items become direct children of st-dropdown-content
+  const content = document.createDocumentFragment();
   content.appendChild(trueOption);
   content.appendChild(falseOption);
 
-  // Get the cell element as trigger
-  const cellElement = document.getElementById(
-    `cell-${header.accessor}-${cell.rowId}`,
-  ) as HTMLElement;
+  // Get the cell element as trigger - use correct ID format
+  const cellId = `${cell.rowId}-${header.accessor}`;
+  const cellElement = document.getElementById(cellId) as HTMLElement;
 
   // Create and show dropdown
-  const dropdown = createDropdown(cellElement || document.body, content, {
+  dropdown = createDropdown(cellElement || document.body, content, {
     width: 120,
     positioning: "fixed",
     onClose: onComplete,
   });
-
-  // Focus first option
-  setTimeout(() => {
-    if (currentValue === true) {
-      trueOption.focus();
-    } else {
-      falseOption.focus();
-    }
-  }, 0);
 
   return dropdown;
 };
