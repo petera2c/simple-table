@@ -41,7 +41,7 @@ export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const tableInstanceRef = useRef<SimpleTableVanilla | null>(null);
   const reactRootsRef = useRef<Map<string, any>>(new Map());
-  const isFirstUpdateEffectRef = useRef<boolean>(true);
+  const isFirstMountRef = useRef<boolean>(true);
   const { tableRef } = props;
 
   // Wrap headerRenderer functions to convert React elements to DOM elements
@@ -122,22 +122,24 @@ export const SimpleTableReact: React.FC<SimpleTableReactProps> = (props) => {
 
       table.destroy();
       tableInstanceRef.current = null;
-      isFirstUpdateEffectRef.current = true;
+      isFirstMountRef.current = true;
       if (tableRef) {
         tableRef.current = null;
       }
     };
-  }, [props, tableRef, wrapHeaderRenderers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    if (isFirstUpdateEffectRef.current) {
-      isFirstUpdateEffectRef.current = false;
+    // Skip the first run since the mount effect already initialized the table
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
       return;
     }
 
     if (!tableInstanceRef.current) return;
 
-    const { tableRef, defaultHeaders, ...restConfig } = props;
+    const { tableRef: _, defaultHeaders, ...restConfig } = props;
 
     // Wrap header renderers for updates too
     const wrappedHeaders = defaultHeaders ? wrapHeaderRenderers(defaultHeaders) : undefined;
