@@ -113,9 +113,16 @@ export const createCellContent = (
   const canExpandFurther = context.rowGrouping && depth < context.rowGrouping.length;
   const isRowExpandable = context.canExpandRowGroup ? context.canExpandRowGroup(row) : true;
   const hasNestedTableConfig = !!header.nestedTable;
+  
+  // Support dynamic row loading: show expand icon if onRowGroupExpand is provided
+  // even when row has no children yet (they'll be loaded on expand)
+  const hasDynamicLoading = !!context.onRowGroupExpand;
+  
   const shouldShowExpandIcon =
     header.expandable &&
-    ((cellHasChildren && canExpandFurther && isRowExpandable) || hasNestedTableConfig);
+    ((cellHasChildren && canExpandFurther && isRowExpandable) || 
+     hasNestedTableConfig ||
+     (hasDynamicLoading && canExpandFurther && isRowExpandable));
 
   if (shouldShowExpandIcon) {
     const expandedDepthsSet = new Set(context.expandedDepths);
