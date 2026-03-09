@@ -8,7 +8,7 @@ interface AutoScaleOptions {
   containerWidth: number;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
-  mainBodyRef: RefObject<HTMLDivElement | null>;
+  mainBodyRef: RefObject<HTMLDivElement>;
   isResizing?: boolean;
 }
 
@@ -213,7 +213,7 @@ interface UseAutoScaleMainSectionProps {
   containerWidth: number;
   pinnedLeftWidth: number;
   pinnedRightWidth: number;
-  mainBodyRef: RefObject<HTMLDivElement | null>;
+  mainBodyRef: RefObject<HTMLDivElement>;
   isResizing: boolean;
   setHeaders: React.Dispatch<React.SetStateAction<HeaderObject[]>>;
 }

@@ -6,7 +6,7 @@ interface UseTableDimensionsProps {
   effectiveHeaders: HeaderObject[];
   headerHeight?: number;
   rowHeight: number;
-  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
+  tableBodyContainerRef: RefObject<HTMLDivElement>;
 }
 
 interface UseTableDimensionsReturn {

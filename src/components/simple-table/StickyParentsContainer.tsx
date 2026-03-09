@@ -175,7 +175,7 @@ const StickyParentsContainer = ({
     pinned?: "left" | "right",
     width?: number,
     columnIndexStart: number = 0,
-    ref?: React.RefObject<HTMLDivElement | null>,
+    ref?: React.RefObject<HTMLDivElement>,
   ) => {
     return (
       <div

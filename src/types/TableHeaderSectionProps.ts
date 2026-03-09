@@ -11,7 +11,7 @@ interface TableHeaderSectionProps {
   headers: HeaderObject[];
   maxDepth: number;
   pinned?: Pinned;
-  sectionRef: RefObject<HTMLDivElement | null>;
+  sectionRef: RefObject<HTMLDivElement>;
   sort: SortColumn | null;
   width?: number;
 }
