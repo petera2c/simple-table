@@ -965,7 +965,7 @@ input {
   position: absolute;
   top: 0;
   right: calc(100% + 1px);
-  z-index: 1;
+  z-index: 10;
   height: 100%;
   background-color: var(--st-column-editor-popout-background-color);
   transition: width var(--st-transition-duration) var(--st-transition-ease);
@@ -975,7 +975,6 @@ input {
 .st-column-editor-popout-content {
   display: flex;
   flex-direction: column;
-  overflow: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: auto;
   border-left: var(--st-border-width) solid var(--st-border-color);
@@ -1002,6 +1001,8 @@ input {
   padding-right: var(--st-spacing-medium);
   padding-left: var(--st-spacing-medium);
   padding-bottom: var(--st-spacing-medium);
+  overflow: auto;
+  flex-grow: 1;
 }
 
 /* Column Editor Header Checkbox Styles */

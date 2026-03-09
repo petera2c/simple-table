@@ -1,29 +1,30 @@
 import TableColumnEditorPopout from "./TableColumnEditorPopout";
 import HeaderObject from "../../../types/HeaderObject";
 import { COLUMN_EDIT_WIDTH } from "../../../consts/general-consts";
-import { ColumnEditorSearchFunction } from "../../../types/ColumnEditorConfig";
+import { MergedColumnEditorConfig } from "../../../types/ColumnEditorConfig";
 
 type TableColumnEditorProps = {
-  columnEditorText: string;
+  columnEditorConfig: MergedColumnEditorConfig;
   editColumns: boolean;
   headers: HeaderObject[];
   open: boolean;
-  searchEnabled: boolean;
-  searchPlaceholder: string;
-  searchFunction?: ColumnEditorSearchFunction;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const TableColumnEditor = ({
-  columnEditorText,
+  columnEditorConfig,
   editColumns,
   headers,
   open,
-  searchEnabled,
-  searchPlaceholder,
-  searchFunction,
   setOpen,
 }: TableColumnEditorProps) => {
+  const {
+    text: columnEditorText,
+    searchEnabled,
+    searchPlaceholder,
+    searchFunction,
+    customRenderer,
+  } = columnEditorConfig;
   const handleClick = () => {
     setOpen(!open);
   };
@@ -43,6 +44,7 @@ const TableColumnEditor = ({
         searchEnabled={searchEnabled}
         searchPlaceholder={searchPlaceholder}
         searchFunction={searchFunction}
+        customRenderer={customRenderer}
       />
     </div>
   );

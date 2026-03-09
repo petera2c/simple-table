@@ -14,6 +14,9 @@ import {
   getSiblingArray,
   setSiblingArray,
   insertHeaderAcrossSections,
+  getHeaderSection,
+  swapHeaders,
+  getHeaderIndexPath,
 } from "../../../hooks/useDragHandler";
 import { deepClone } from "../../../utils/generalUtils";
 
@@ -149,18 +152,71 @@ const ColumnEditorCheckbox = ({
       return;
     }
 
-    const { newHeaders, emergencyBreak } = insertHeaderAcrossSections({
-      headers: getSiblingArray(headers, draggingRow.indexPath),
-      draggedHeader: draggingRow.header,
-      hoveredHeader: hoveredHeader.header,
-    });
+    // Check if both headers share the same parent
+    const haveSameParent =
+      draggingRow.indexPath.length === hoveredHeader.indexPath.length &&
+      (draggingRow.indexPath.length === 1 ||
+        draggingRow.indexPath.slice(0, -1).every((idx, i) => idx === hoveredHeader.indexPath[i]));
 
-    if (emergencyBreak) {
+    if (!haveSameParent) {
+      // Different parents - cancel the drag
       cancelDrag();
       return;
     }
 
-    const updatedHeaders = setSiblingArray(deepClone(headers), draggingRow.indexPath, newHeaders);
+    let updatedHeaders: HeaderObject[];
+
+    // For root-level headers, check if this is a cross-section drag
+    if (draggingRow.indexPath.length === 1) {
+      const draggedSection = getHeaderSection(draggingRow.header);
+      const hoveredSection = getHeaderSection(hoveredHeader.header);
+      const isCrossSectionDrag = draggedSection !== hoveredSection;
+
+      if (isCrossSectionDrag) {
+        // Cross-section drag - use insertHeaderAcrossSections with full headers array
+        const { newHeaders, emergencyBreak } = insertHeaderAcrossSections({
+          headers: headers,
+          draggedHeader: draggingRow.header,
+          hoveredHeader: hoveredHeader.header,
+        });
+
+        if (emergencyBreak) {
+          cancelDrag();
+          return;
+        }
+
+        updatedHeaders = newHeaders;
+      } else {
+        // Same-section drag - use swapHeaders
+        const { newHeaders, emergencyBreak } = swapHeaders(
+          headers,
+          draggingRow.indexPath,
+          hoveredHeader.indexPath,
+        );
+
+        if (emergencyBreak) {
+          cancelDrag();
+          return;
+        }
+
+        updatedHeaders = newHeaders;
+      }
+    } else {
+      // Nested headers - reorder within the sibling array
+      const siblingArray = getSiblingArray(headers, draggingRow.indexPath);
+      const { newHeaders, emergencyBreak } = swapHeaders(
+        siblingArray,
+        [draggingRow.indexPath[draggingRow.indexPath.length - 1]],
+        [hoveredHeader.indexPath[hoveredHeader.indexPath.length - 1]],
+      );
+
+      if (emergencyBreak) {
+        cancelDrag();
+        return;
+      }
+
+      updatedHeaders = setSiblingArray(deepClone(headers), draggingRow.indexPath, newHeaders);
+    }
 
     onColumnOrderChange?.(updatedHeaders);
     setHeaders(updatedHeaders);

@@ -1,8 +1,12 @@
 import { useMemo, useState } from "react";
 import HeaderObject from "../../../types/HeaderObject";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
-import { ColumnEditorSearchFunction } from "../../../types/ColumnEditorConfig";
+import {
+  ColumnEditorCustomRenderer,
+  ColumnEditorSearchFunction,
+} from "../../../types/ColumnEditorConfig";
 import { FlattenedHeader } from "./columnEditorUtils";
+import { useTableContext } from "../../../context/TableContext";
 
 type TableColumnEditorPopoutProps = {
   headers: HeaderObject[];
@@ -10,6 +14,7 @@ type TableColumnEditorPopoutProps = {
   searchEnabled: boolean;
   searchPlaceholder: string;
   searchFunction?: ColumnEditorSearchFunction;
+  customRenderer?: ColumnEditorCustomRenderer;
 };
 
 // Default search function - checks if a header or any of its children match the search term
@@ -55,7 +60,9 @@ const TableColumnEditorPopout = ({
   searchEnabled,
   searchPlaceholder,
   searchFunction,
+  customRenderer,
 }: TableColumnEditorPopoutProps) => {
+  const { resetColumns } = useTableContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [draggingRow, setDraggingRow] = useState<FlattenedHeader | null>(null);
   const [hoveredSeparatorIndex, setHoveredSeparatorIndex] = useState<number | null>(null);
@@ -130,47 +137,69 @@ const TableColumnEditorPopout = ({
     return result;
   }, [filteredHeaders, expandedHeaders, searchEnabled, searchTerm]);
 
+  const searchSection = searchEnabled ? (
+    <div className="st-column-editor-search-wrapper">
+      <div className="st-column-editor-search">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={searchPlaceholder}
+          className="st-filter-input"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+    </div>
+  ) : null;
+
+  const listSection = (
+    <div className="st-column-editor-list">
+      {flattenedHeaders.map((flatItem) => (
+        <ColumnEditorCheckbox
+          doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
+          key={`${flatItem.header.accessor}-${flatItem.visualIndex}`}
+          header={flatItem.header}
+          allHeaders={headers}
+          depth={flatItem.depth}
+          forceExpanded={searchEnabled && searchTerm.trim().length > 0}
+          rowIndex={flatItem.visualIndex}
+          draggingRow={draggingRow}
+          setDraggingRow={setDraggingRow}
+          hoveredSeparatorIndex={hoveredSeparatorIndex}
+          setHoveredSeparatorIndex={setHoveredSeparatorIndex}
+          expandedHeaders={expandedHeaders}
+          setExpandedHeaders={setExpandedHeaders}
+          flattenedHeaders={flattenedHeaders}
+        />
+      ))}
+    </div>
+  );
+
+  const content = customRenderer ? (
+    customRenderer({
+      searchSection,
+      listSection,
+      flattenedHeaders,
+      searchTerm,
+      setSearchTerm,
+      searchEnabled,
+      searchPlaceholder,
+      headers,
+      resetColumns,
+    })
+  ) : (
+    <>
+      {searchSection}
+      {listSection}
+    </>
+  );
+
   return (
     <div
       className={`st-column-editor-popout ${open ? "open" : ""}`}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="st-column-editor-popout-content">
-        {searchEnabled && (
-          <div className="st-column-editor-search-wrapper">
-            <div className="st-column-editor-search">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={searchPlaceholder}
-                className="st-filter-input"
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-          </div>
-        )}
-        <div className="st-column-editor-list">
-          {flattenedHeaders.map((flatItem) => (
-            <ColumnEditorCheckbox
-              doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
-              key={`${flatItem.header.accessor}-${flatItem.visualIndex}`}
-              header={flatItem.header}
-              allHeaders={headers}
-              depth={flatItem.depth}
-              forceExpanded={searchEnabled && searchTerm.trim().length > 0}
-              rowIndex={flatItem.visualIndex}
-              draggingRow={draggingRow}
-              setDraggingRow={setDraggingRow}
-              hoveredSeparatorIndex={hoveredSeparatorIndex}
-              setHoveredSeparatorIndex={setHoveredSeparatorIndex}
-              expandedHeaders={expandedHeaders}
-              setExpandedHeaders={setExpandedHeaders}
-              flattenedHeaders={flattenedHeaders}
-            />
-          ))}
-        </div>
-      </div>
+      <div className="st-column-editor-popout-content">{content}</div>
     </div>
   );
 };

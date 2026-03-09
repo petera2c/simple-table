@@ -15,6 +15,9 @@ import CollapsibleColumnsExample, {
 import ColumnVisibilityAPIExampleComponent, {
   columnVisibilityAPIExampleDefaults,
 } from "./examples/ColumnVisibilityAPIExample";
+import ColumnEditorCustomRendererExampleComponent, {
+  columnEditorCustomRendererExampleDefaults,
+} from "./examples/ColumnEditorCustomRendererExample";
 import DynamicHeadersExample from "./examples/DynamicHeadersExample";
 import DynamicRowLoadingExample, {
   dynamicRowLoadingDefaults,
@@ -346,6 +349,27 @@ export const ColumnVisibilityAPI: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates programmatic control of column visibility and the column editor menu via the tableRef API. Use toggleColumnEditor() to open/close the column editor menu, and applyColumnVisibility() to show/hide specific columns. Perfect for creating custom column visibility presets (e.g., 'Basic View', 'Contact Info', 'Financial View'), saved view states, or automated workflows. The example shows how to control individual columns or apply multiple visibility changes at once.",
+      },
+    },
+  },
+};
+
+export const ColumnEditorCustomRenderer: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...columnEditorCustomRendererExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: ColumnEditorCustomRendererExampleComponent,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the column editor customRenderer prop for fully customizing the column editor popout layout. The custom renderer receives searchSection, listSection, resetColumns, and other props. This example adds a Reset columns button at the top that restores column order and visibility to defaults. Reorder or hide columns, then click Reset to restore. The resetColumns function is also available on the tableRef API.",
       },
     },
   },

@@ -33,6 +33,7 @@ const useTableAPI = ({
   clearAllFilters,
   clearFilter,
   currentPage,
+  resetColumns,
   editColumns,
   expandedDepths,
   filters,
@@ -68,6 +69,7 @@ const useTableAPI = ({
   clearAllFilters: () => void;
   clearFilter: (accessor: Accessor) => void;
   currentPage: number;
+  resetColumns: () => void;
   editColumns: boolean;
   expandedDepths: Set<number>;
   filters: TableFilterState;
@@ -328,6 +330,7 @@ const useTableAPI = ({
             onColumnVisibilityChange(visibility);
           }
         }),
+        resetColumns,
         setQuickFilter: (text: string) => {
           // Trigger the onChange callback if provided in quickFilter config
           if (quickFilter?.onChange) {
@@ -341,6 +344,7 @@ const useTableAPI = ({
     clearAllFilters,
     clearFilter,
     currentPage,
+    resetColumns,
     editColumns,
     expandedDepths,
     filters,
