@@ -45,6 +45,7 @@ import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { checkDeprecatedProps } from "../../utils/deprecatedPropsWarnings";
 import { useAutoScaleMainSection } from "../../hooks/useAutoScaleMainSection";
+import { deepClone } from "../../utils/generalUtils";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
@@ -200,6 +201,7 @@ const SimpleTableComp = ({
         columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
       searchFunction: columnEditorConfig?.searchFunction,
       rowRenderer: columnEditorConfig?.rowRenderer,
+      customRenderer: columnEditorConfig?.customRenderer,
     }),
     [columnEditorConfig, columnEditorText],
   );
@@ -303,8 +305,11 @@ const SimpleTableComp = ({
     return localRows;
   }, [internalIsLoading, localRows, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
 
+  // Clone defaultHeaders immediately - never mutate the consumer's reference
+  const defaultHeadersClone = useMemo(() => deepClone(defaultHeaders), [defaultHeaders]);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [headers, setHeadersInternal] = useState(defaultHeaders);
+  const [headers, setHeadersInternal] = useState(defaultHeadersClone);
   const [isResizing, setIsResizing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
@@ -323,9 +328,9 @@ const SimpleTableComp = ({
         }
       });
     };
-    processHeaders(defaultHeaders);
+    processHeaders(defaultHeadersClone);
     return collapsed;
-  }, [defaultHeaders]);
+  }, [defaultHeadersClone]);
 
   const [collapsedHeaders, setCollapsedHeaders] = useState<Set<Accessor>>(
     getInitialCollapsedHeaders,
@@ -333,8 +338,8 @@ const SimpleTableComp = ({
 
   // Update headers when defaultHeaders prop changes
   useEffect(() => {
-    setHeadersInternal(defaultHeaders);
-  }, [defaultHeaders]);
+    setHeadersInternal(defaultHeadersClone);
+  }, [defaultHeadersClone]);
 
   // Row selection hook - placeholder, will be defined after flattenedRows
   let selectedRows: Set<string> | undefined;
@@ -718,6 +723,10 @@ const SimpleTableComp = ({
     [setHeaders],
   );
 
+  const resetColumns = useCallback(() => {
+    setHeaders(defaultHeaders);
+  }, [defaultHeaders, setHeaders]);
+
   // Handle outside click
   useHandleOutsideClick({
     selectableColumns,
@@ -740,6 +749,7 @@ const SimpleTableComp = ({
     clearAllFilters,
     clearFilter,
     currentPage,
+    resetColumns,
     editColumns,
     expandedDepths,
     filters,
@@ -861,6 +871,7 @@ const SimpleTableComp = ({
         onRowGroupExpand,
         onSort,
         onTableHeaderDragEnd,
+        resetColumns,
         pinnedLeftRef,
         pinnedRightRef,
         rowButtons,
@@ -935,13 +946,10 @@ const SimpleTableComp = ({
                 heightMap={heightMap}
               />
               <TableColumnEditor
-                columnEditorText={mergedColumnEditorConfig.text}
+                columnEditorConfig={mergedColumnEditorConfig}
                 editColumns={editColumns}
                 headers={headers}
                 open={columnEditorOpen}
-                searchEnabled={mergedColumnEditorConfig.searchEnabled}
-                searchPlaceholder={mergedColumnEditorConfig.searchPlaceholder}
-                searchFunction={mergedColumnEditorConfig.searchFunction}
                 setOpen={setColumnEditorOpen}
               />
             </div>

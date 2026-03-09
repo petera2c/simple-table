@@ -110,6 +110,7 @@ interface TableContextType {
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
   onSort: OnSortProps;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  resetColumns: () => void;
   pinnedLeftRef: RefObject<HTMLDivElement | null>;
   pinnedRightRef: RefObject<HTMLDivElement | null>;
   rowButtons?: RowButton[];
