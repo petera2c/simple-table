@@ -339,6 +339,8 @@ export class TableRenderer {
       onRowGroupExpand: deps.config.onRowGroupExpand,
       handleRowSelect: (rowId: string, checked: boolean) => {},
       cellRegistry: deps.cellRegistry,
+      getCollapsedRows: () => deps.getCollapsedRows(),
+      getExpandedRows: () => deps.getExpandedRows(),
       setCollapsedRows: (value: any) => {
         if (typeof value === "function") {
           deps.setCollapsedRows(value(deps.getCollapsedRows()));

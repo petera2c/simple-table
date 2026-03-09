@@ -90,6 +90,8 @@ export interface CellRenderContext {
   setCollapsedRows: Dispatch<SetStateAction<Map<string, number>>>;
   setExpandedRows: Dispatch<SetStateAction<Map<string, number>>>;
   setRowStateMap: Dispatch<SetStateAction<Map<string | number, any>>>;
+  getCollapsedRows?: () => Map<string, number>;
+  getExpandedRows?: () => Map<string, number>;
 
   // UI state
   icons: IconsConfig;

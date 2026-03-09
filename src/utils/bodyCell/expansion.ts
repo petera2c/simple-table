@@ -37,12 +37,14 @@ export const createExpandIcon = (
 
     // Recalculate current expanded state dynamically to avoid stale closure
     const expandedDepthsSet = new Set(context.expandedDepths);
+    const currentExpandedRows = context.getExpandedRows ? context.getExpandedRows() : context.expandedRows;
+    const currentCollapsedRows = context.getCollapsedRows ? context.getCollapsedRows() : context.collapsedRows;
     const currentIsExpanded = isRowExpanded(
       rowId,
       depth,
       expandedDepthsSet,
-      context.expandedRows,
-      context.collapsedRows,
+      currentExpandedRows,
+      currentCollapsedRows,
     );
 
     // Determine the new state after toggle
