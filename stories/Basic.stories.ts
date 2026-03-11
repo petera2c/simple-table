@@ -1,7 +1,7 @@
 import { SimpleTableVanilla } from "../dist/index.es.js";
+import type { Meta, StoryObj } from "@storybook/html";
 
-/** @type { import('@storybook/html').Meta } */
-const meta = {
+const meta: Meta = {
   title: "Vanilla/Basic",
   parameters: {
     layout: "fullscreen",
@@ -10,8 +10,7 @@ const meta = {
 
 export default meta;
 
-/** @type { import('@storybook/html').StoryObj } */
-export const Default = {
+export const Default: StoryObj = {
   render: () => {
     const container = document.createElement("div");
     container.style.width = "100%";

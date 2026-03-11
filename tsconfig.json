@@ -7,17 +7,16 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
-    "declaration": true,
-    "declarationDir": "dist",
-    "jsx": "react"
+    "noEmit": true,
+    "declaration": false
   },
-  "include": ["src"],
+  "include": ["src", "stories", ".storybook"],
   "exclude": ["node_modules", "dist", "rollup.config.js"]
 }
