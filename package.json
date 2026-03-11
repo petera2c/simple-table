@@ -5,13 +5,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c",
+    "preview": "rollup -c -w",
     "start": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "preview": "rollup -c -w",
-    "test-storybook": "test-storybook",
-    "test-storybook:watch": "test-storybook --watch",
-    "test-storybook:coverage": "test-storybook --coverage",
-    "test-storybook:ci": "test-storybook --url http://localhost:6006",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"
@@ -39,36 +35,19 @@
     "README.md"
   ],
   "devDependencies": {
-    "@babel/preset-react": "^7.25.7",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@size-limit/preset-small-lib": "^11.2.0",
-    "@storybook/addon-a11y": "^8.4.1",
-    "@storybook/addon-controls": "^8.4.1",
-    "@storybook/addon-docs": "^8.4.1",
     "@storybook/addon-essentials": "^8.4.1",
-    "@storybook/addon-interactions": "^8.4.1",
     "@storybook/addon-links": "^8.4.1",
-    "@storybook/addon-onboarding": "^8.4.1",
-    "@storybook/blocks": "^8.4.1",
-    "@storybook/preset-create-react-app": "^8.4.1",
-    "@storybook/react": "^8.4.1",
-    "@storybook/react-webpack5": "^8.4.1",
-    "@storybook/test": "^8.4.1",
-    "@storybook/test-runner": "^0.23.0",
+    "@storybook/html": "^8.4.1",
+    "@storybook/html-webpack5": "^8.6.14",
     "@types/node": "^16.18.111",
-    "@types/react-dom": "^19.2.3",
-    "chromatic": "^13.0.1",
     "cssnano": "^7.0.6",
-    "eslint-plugin-storybook": "^0.9.0",
     "postcss-calc": "^10.1.1",
     "postcss-custom-properties": "^14.0.4",
     "postcss-import": "^16.1.0",
     "postcss-preset-env": "^10.1.5",
-    "prop-types": "^15.8.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
     "rollup": "^2.79.2",
-    "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-delete": "^2.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
@@ -76,15 +55,7 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "size-limit": "^11.2.0",
     "storybook": "^8.4.1",
-    "typescript": "^4.9.5",
-    "webpack": "^5.95.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "plugin:storybook/recommended"
-    ]
+    "typescript": "^4.9.5"
   },
   "browserslist": {
     "production": [
