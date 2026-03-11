@@ -1,16 +1,17 @@
 /**
  * ExternalFilter Example – vanilla port of React ExternalFilterExample.
  */
+import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 150 },
   { accessor: "department", label: "Department", width: 140 },
   { accessor: "salary", label: "Salary", width: 100 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, name: "John", department: "Engineering", salary: 75000 },
   { id: 2, name: "Jane", department: "Marketing", salary: 65000 },
   { id: 3, name: "Bob", department: "Engineering", salary: 85000 },

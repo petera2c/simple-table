@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject, Row,  } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -51,7 +51,7 @@ const hasBorder = (element: Element | null, side: "left" | "right") => {
 };
 
 function renderPinned(width = "600px") {
-  return (headers: Record<string, unknown>[], data: Record<string, unknown>[], options: Record<string, unknown> = {}) => {
+  return (headers: HeaderObject[], data: Row[], options: Record<string, unknown> = {}) => {
     const { wrapper } = renderVanillaTable(headers, data, { getRowId: (params) => String(params.row?.id), ...options });
     wrapper.style.width = width;
     return wrapper;
@@ -60,7 +60,7 @@ function renderPinned(width = "600px") {
 
 export const LeftPinnedColumn = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -84,7 +84,7 @@ export const LeftPinnedColumn = {
 
 export const RightPinnedColumn = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -108,7 +108,7 @@ export const RightPinnedColumn = {
 
 export const BothLeftAndRightPinned = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -135,7 +135,7 @@ export const BothLeftAndRightPinned = {
 
 export const MultipleLeftPinnedColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 150, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -157,7 +157,7 @@ export const MultipleLeftPinnedColumns = {
 
 export const MultipleRightPinnedColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -179,7 +179,7 @@ export const MultipleRightPinnedColumns = {
 
 export const PinnedColumnsWithBodySections = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -206,7 +206,7 @@ export const PinnedColumnsWithBodySections = {
 
 export const PinnedColumnsWithSorting = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, pinned: "left", isSortable: true, type: "string" },
       { accessor: "email", label: "Email", width: 200, isSortable: true, type: "string" },
       { accessor: "salary", label: "Salary", width: 120, pinned: "right", isSortable: true, type: "number" },
@@ -227,7 +227,7 @@ export const PinnedColumnsWithSorting = {
 
 export const PinnedColumnsWithFiltering = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, pinned: "left", filterable: true, type: "string" },
       { accessor: "email", label: "Email", width: 200, filterable: true, type: "string" },
       { accessor: "projects", label: "Projects", width: 100, pinned: "right", filterable: true, type: "number" },
@@ -250,7 +250,7 @@ export const PinnedColumnsWithFiltering = {
 
 export const NoPinnedColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -269,7 +269,7 @@ export const NoPinnedColumns = {
 
 export const PinnedColumnsWithAlignment = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, pinned: "left", align: "center", type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "salary", label: "Salary", width: 120, pinned: "right", align: "right", type: "number" },

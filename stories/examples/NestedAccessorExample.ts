@@ -1,9 +1,11 @@
 /**
  * Nested Accessor Example – vanilla port of React NestedAccessorExample.
+ * Same headers, data, and props as React version.
  */
+import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 
-export const nestedAccessorHeaders: Record<string, unknown>[] = [
+const nestedAccessorHeaders: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Player Name", width: 200, type: "string", isSortable: true },
   { accessor: "team", label: "Team", width: 150, type: "string", isSortable: true, filterable: true },
@@ -56,6 +58,23 @@ export const nestedAccessorHeaders: Record<string, unknown>[] = [
     valueFormatter: ({ value }: { value?: unknown }) => `${Number(value).toFixed(1)}%`,
   },
   {
+    accessor: "recentGames[0].score",
+    label: "Last Game Score",
+    width: 140,
+    type: "number",
+    isSortable: true,
+    align: "right",
+    valueFormatter: ({ value }: { value?: unknown }) => `${value} pts`,
+  },
+  {
+    accessor: "awards[0]",
+    label: "Top Award",
+    width: 180,
+    type: "string",
+    isSortable: true,
+    filterable: true,
+  },
+  {
     accessor: "contract.salary",
     label: "Salary",
     width: 150,
@@ -70,9 +89,19 @@ export const nestedAccessorHeaders: Record<string, unknown>[] = [
         maximumFractionDigits: 0,
       }).format(Number(value)),
   },
+  {
+    accessor: "contract.yearsRemaining",
+    label: "Years Left",
+    width: 120,
+    type: "number",
+    isSortable: true,
+    align: "center",
+    valueFormatter: ({ value }: { value?: unknown }) =>
+      `${value} ${Number(value) === 1 ? "year" : "years"}`,
+  },
 ];
 
-export const nestedAccessorRows: Record<string, unknown>[] = [
+const initialRows: Row[] = [
   {
     id: 1,
     name: "LeBron James",
@@ -138,12 +167,51 @@ export const nestedAccessorRows: Record<string, unknown>[] = [
     awards: ["NBA Rookie of the Year", "5× NBA All-Star", "5× All-NBA First Team"],
     contract: { salary: 40064220, yearsRemaining: 5 },
   },
+  {
+    id: 6,
+    name: "Joel Embiid",
+    team: "76ers",
+    stats: { points: 30.6, assists: 4.2, rebounds: 10.2 },
+    latest: { rank: 6, performance: { rating: 93.8, trend: "stable" } },
+    recentGames: [
+      { score: 34, opponent: "Bucks" },
+      { score: 31, opponent: "Knicks" },
+    ],
+    awards: ["NBA MVP (2023)", "7× NBA All-Star", "5× All-NBA"],
+    contract: { salary: 47607350, yearsRemaining: 4 },
+  },
+  {
+    id: 7,
+    name: "Jayson Tatum",
+    team: "Celtics",
+    stats: { points: 27.0, assists: 4.4, rebounds: 8.4 },
+    latest: { rank: 8, performance: { rating: 91.2, trend: "up" } },
+    recentGames: [
+      { score: 30, opponent: "Lakers" },
+      { score: 28, opponent: "Heat" },
+    ],
+    awards: ["NBA Champion (2024)", "5× NBA All-Star", "4× All-NBA"],
+    contract: { salary: 32600060, yearsRemaining: 3 },
+  },
+  {
+    id: 8,
+    name: "Damian Lillard",
+    team: "Bucks",
+    stats: { points: 26.3, assists: 7.0, rebounds: 4.1 },
+    latest: { rank: 10, performance: { rating: 90.1, trend: "stable" } },
+    recentGames: [
+      { score: 27, opponent: "Celtics" },
+      { score: 25, opponent: "Nets" },
+    ],
+    awards: ["NBA Rookie of the Year", "8× NBA All-Star", "7× All-NBA"],
+    contract: { salary: 45640084, yearsRemaining: 3 },
+  },
 ];
 
 export function renderNestedAccessorExample(): HTMLElement {
-  const { wrapper, h2 } = renderVanillaTable(nestedAccessorHeaders, nestedAccessorRows, {
+  const { wrapper, h2 } = renderVanillaTable(nestedAccessorHeaders, initialRows, {
     height: "500px",
-    initialSortColumn: "latest.rank",
+    initialSortColumn: "awards[0]",
     initialSortDirection: "asc",
     selectableCells: true,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
@@ -153,7 +221,7 @@ export function renderNestedAccessorExample(): HTMLElement {
   p.style.marginBottom = "1rem";
   p.style.color = "#666";
   p.innerHTML =
-    'Uses dot notation (e.g. <code>stats.points</code>, <code>latest.performance.rating</code>) and valueFormatter for currency and decimals.';
+    'Uses dot notation (e.g. <code>stats.points</code>, <code>latest.performance.rating</code>), array accessors (<code>recentGames[0].score</code>, <code>awards[0]</code>), and valueFormatter for currency and decimals.';
   wrapper.insertBefore(p, wrapper.querySelector("div:last-child")!);
   return wrapper;
 }

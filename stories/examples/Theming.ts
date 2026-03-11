@@ -1,7 +1,7 @@
 /**
  * Theming Example – vanilla port of React Theming.
  */
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { SimpleTableVanilla } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { generateSpaceData } from "../data/space-data";
 import { SPACE_HEADERS } from "../data/space-data";
@@ -19,8 +19,8 @@ const THEME_OPTIONS = [
 export function renderThemingExample(): HTMLElement {
   const data = generateSpaceData();
   const { wrapper, table } = renderVanillaTable(
-    SPACE_HEADERS as Record<string, unknown>[],
-    data as Record<string, unknown>[],
+    SPACE_HEADERS,
+    data,
     {
       columnResizing: true,
       columnReordering: true,

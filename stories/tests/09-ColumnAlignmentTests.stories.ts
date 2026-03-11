@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -49,7 +49,7 @@ const hasAlignmentClass = (element: Element | null, alignment: string) => {
 const getTextAlign = (element: Element | null) => (element ? window.getComputedStyle(element as HTMLElement).textAlign : "");
 const getJustifyContent = (element: Element | null) => (element ? window.getComputedStyle(element as HTMLElement).justifyContent : "");
 
-function renderAlignment(headers: Record<string, unknown>[], options: Record<string, unknown> = {}) {
+function renderAlignment(headers: HeaderObject[], options: Record<string, unknown> = {}) {
   const data = createProductData();
   const wrapper = document.createElement("div");
   wrapper.style.padding = "20px";
@@ -68,7 +68,7 @@ function renderAlignment(headers: Record<string, unknown>[], options: Record<str
 
 export const LeftAlignment = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
       { accessor: "name", label: "Product Name", width: "1fr", align: "left", type: "string" },
       { accessor: "status", label: "Status", width: 150, align: "left", type: "string" },
@@ -100,7 +100,7 @@ export const LeftAlignment = {
 
 export const CenterAlignment = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "center", type: "number" },
       { accessor: "name", label: "Product Name", width: "1fr", align: "center", type: "string" },
       { accessor: "status", label: "Status", width: 150, align: "center", type: "string" },
@@ -132,7 +132,7 @@ export const CenterAlignment = {
 
 export const RightAlignment = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "right", type: "number" },
       { accessor: "price", label: "Price", width: 120, align: "right", type: "number" },
       { accessor: "quantity", label: "Quantity", width: 120, align: "right", type: "number" },
@@ -164,7 +164,7 @@ export const RightAlignment = {
 
 export const MixedAlignment = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
       { accessor: "name", label: "Product Name", width: "1fr", align: "left", type: "string" },
       { accessor: "status", label: "Status", width: 150, align: "center", type: "string" },
@@ -196,7 +196,7 @@ export const MixedAlignment = {
 
 export const DefaultAlignment = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: "1fr", type: "string" },
       { accessor: "price", label: "Price", width: 120, type: "number" },
@@ -225,7 +225,7 @@ export const DefaultAlignment = {
 
 export const AlignmentWithSorting = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "left", isSortable: true, type: "number" },
       { accessor: "name", label: "Product Name", width: "1fr", align: "left", isSortable: true, type: "string" },
       { accessor: "price", label: "Price", width: 120, align: "right", isSortable: true, type: "number" },
@@ -247,7 +247,7 @@ export const AlignmentWithSorting = {
 
 export const AlignmentWithFiltering = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "left", filterable: true, type: "number" },
       { accessor: "name", label: "Product Name", width: "1fr", align: "center", filterable: true, type: "string" },
       { accessor: "price", label: "Price", width: 120, align: "right", filterable: true, type: "number" },
@@ -266,7 +266,7 @@ export const AlignmentWithFiltering = {
 
 export const AlignmentConsistencyAcrossRows = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "center", type: "number" },
       { accessor: "name", label: "Product Name", width: "1fr", align: "left", type: "string" },
       { accessor: "price", label: "Price", width: 120, align: "right", type: "number" },
@@ -291,7 +291,7 @@ export const AlignmentConsistencyAcrossRows = {
 
 export const AlignmentWithNumberTypes = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
       { accessor: "quantity", label: "Qty (Center)", width: 120, align: "center", type: "number" },
       { accessor: "price", label: "Price (Right)", width: 120, align: "right", type: "number" },

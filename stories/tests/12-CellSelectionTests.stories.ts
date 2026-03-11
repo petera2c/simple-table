@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable, getCellsForRow } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -117,7 +117,7 @@ const isColumnSelected = (canvasElement: HTMLElement, colIndex: number) => {
 
 export const SingleCellSelection = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -137,7 +137,7 @@ export const SingleCellSelection = {
 
 export const RangeSelection = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -160,7 +160,7 @@ export const RangeSelection = {
 
 export const SelectionReplacement = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -182,7 +182,7 @@ export const SelectionReplacement = {
 
 export const ColumnHeaderSelection = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -206,7 +206,7 @@ export const ColumnHeaderSelection = {
 
 export const ClearSelection = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -225,7 +225,7 @@ export const ClearSelection = {
 
 export const LargeRangeSelection = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -250,7 +250,7 @@ export const LargeRangeSelection = {
 
 export const MultipleColumnHeaderSelections = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },

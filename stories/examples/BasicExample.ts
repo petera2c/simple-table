@@ -2,11 +2,12 @@
  * Basic Example – vanilla port of React BasicExample.
  */
 import { renderVanillaTable } from "../utils";
+import type { HeaderObject, Row } from "../../src/index";
 
 const roles = ["Developer", "Designer", "Manager", "Intern", "DevOps", "Engineer"];
 const departments = ["Engineering", "Design", "Management", "Internship"];
 
-export function createBasicData(rowLength: number): Record<string, unknown>[] {
+export function createBasicData(rowLength: number): Row[] {
   return Array.from({ length: rowLength }, (_, index) => ({
     id: index + 1,
     name: `Name ${index + 1}`,
@@ -17,7 +18,7 @@ export function createBasicData(rowLength: number): Record<string, unknown>[] {
 }
 
 export function renderBasicExample(): HTMLElement {
-  const headers: Record<string, unknown>[] = [
+  const headers: HeaderObject[] = [
     { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true },
     { accessor: "name", label: "Name", minWidth: 80, width: "1fr", isSortable: true, filterable: true },
     { accessor: "age", label: "Age", width: 100, isSortable: true, filterable: true },

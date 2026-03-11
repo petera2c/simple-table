@@ -7,8 +7,8 @@ import { SPACE_HEADERS } from "../data/space-data";
 
 export function renderHiddenColumnsExample(): HTMLElement {
   const { wrapper, h2 } = renderVanillaTable(
-    SPACE_HEADERS as Record<string, unknown>[],
-    generateSpaceData() as Record<string, unknown>[],
+    SPACE_HEADERS,
+    generateSpaceData(),
     {
       columnResizing: true,
       columnReordering: true,

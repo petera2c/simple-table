@@ -1,15 +1,16 @@
 /**
  * ServerSidePagination Example – vanilla port of React ServerSidePaginationExample.
  */
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { SimpleTableVanilla } from "../../src/index";
+import type { Row } from "../../src/index";
 import { generateSaaSData } from "../data/saas-data";
 import { SAAS_HEADERS } from "../data/saas-data";
 
 const ROWS_PER_PAGE = 10;
 
-function generateLargeDataset(): Record<string, unknown>[] {
-  const base = generateSaaSData() as Record<string, unknown>[];
-  const out: Record<string, unknown>[] = [];
+function generateLargeDataset(): Row[] {
+  const base = generateSaaSData();
+  const out: Row[] = [];
   for (let i = 0; i < 3; i++) {
     base.forEach((row, index) => {
       out.push({ ...row, id: i * base.length + index });
@@ -20,7 +21,7 @@ function generateLargeDataset(): Record<string, unknown>[] {
 
 const TOTAL_DATA = generateLargeDataset();
 
-function fetchPage(page: number, pageSize: number): Promise<{ rows: Record<string, unknown>[]; totalCount: number }> {
+function fetchPage(page: number, pageSize: number): Promise<{ rows: Row[]; totalCount: number }> {
   return new Promise((resolve) => {
     setTimeout(() => {
       const offset = (page - 1) * pageSize;
@@ -48,7 +49,7 @@ export function renderServerSidePaginationExample(): HTMLElement {
   wrapper.appendChild(tableContainer);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: SAAS_HEADERS as Record<string, unknown>[],
+    defaultHeaders: SAAS_HEADERS,
     rows: TOTAL_DATA.slice(0, ROWS_PER_PAGE),
     shouldPaginate: true,
     rowsPerPage: ROWS_PER_PAGE,

@@ -1,16 +1,17 @@
 /**
  * FilterExample – vanilla port of React filter-example/FilterExample.
  */
+import type { HeaderObject, Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "product", label: "Product", width: 200 },
   { accessor: "category", label: "Category", width: 150 },
   { accessor: "price", label: "Price", width: 100 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, product: "Laptop", category: "Electronics", price: 999 },
   { id: 2, product: "Mouse", category: "Accessories", price: 29 },
   { id: 3, product: "Keyboard", category: "Electronics", price: 79 },

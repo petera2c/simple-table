@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
@@ -82,7 +82,7 @@ const clickPreviousPageButton = async (canvasElement: HTMLElement) => {
 
 export const BasicPagination = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -110,7 +110,7 @@ export const BasicPagination = {
 
 export const CustomRowsPerPage = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -140,7 +140,7 @@ export const CustomRowsPerPage = {
 
 export const PageNavigation = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -199,7 +199,7 @@ export const OnPageChangeCallback = {
     let pageChangeCount = 0;
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -284,7 +284,7 @@ export const ProgrammaticPageControl = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -368,7 +368,7 @@ export const ServerSidePagination = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -448,7 +448,7 @@ export const PaginationWithFiltering = {
     wrapper.appendChild(btnContainer);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
@@ -499,7 +499,7 @@ export const PaginationWithFiltering = {
 
 export const PaginationWithSorting = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", isSortable: true },
       { accessor: "name", label: "Name", width: 200, isSortable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", isSortable: true },
@@ -534,7 +534,7 @@ export const PaginationWithSorting = {
 
 export const PaginationWithoutHeight = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },

@@ -10,8 +10,8 @@ const ROWS_PER_PAGE = 10;
 export function renderPaginationExample(): HTMLElement {
   const data = generateSaaSData();
   const { wrapper, h2 } = renderVanillaTable(
-    SAAS_HEADERS as Record<string, unknown>[],
-    data as Record<string, unknown>[],
+    SAAS_HEADERS,
+    data,
     {
       shouldPaginate: true,
       rowsPerPage: ROWS_PER_PAGE,

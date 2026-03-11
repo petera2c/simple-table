@@ -1,15 +1,14 @@
 /**
  * CSVExportSingleRowChildren Example – vanilla port of React CSVExportSingleRowChildrenExample.
  */
-import { SimpleTableVanilla } from "../../dist/index.es.js";
 import { renderVanillaTable } from "../utils";
 import { generateRetailSalesData } from "../data/retail-data";
 import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 
 export function renderCSVExportSingleRowChildrenExample(): HTMLElement {
   const { wrapper, h2, table } = renderVanillaTable(
-    RETAIL_SALES_HEADERS as Record<string, unknown>[],
-    generateRetailSalesData() as Record<string, unknown>[],
+    RETAIL_SALES_HEADERS,
+    generateRetailSalesData(),
     {
       rowGrouping: ["stores"],
       height: "400px",

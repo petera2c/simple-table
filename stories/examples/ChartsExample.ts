@@ -1,16 +1,17 @@
 /**
  * Charts Example – vanilla port of React ChartsExample.
  */
+import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "metric", label: "Metric", width: 200 },
   { accessor: "value", label: "Value", width: 120 },
   { accessor: "trend", label: "Trend", width: 100 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, metric: "Revenue", value: 125000, trend: "up" },
   { id: 2, metric: "Users", value: 5400, trend: "up" },
   { id: 3, metric: "Churn", value: 2.1, trend: "down" },

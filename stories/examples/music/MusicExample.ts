@@ -1,16 +1,17 @@
 /**
  * MusicExample – vanilla port of React music/MusicExample.
  */
+import type { HeaderObject, Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "title", label: "Title", width: 200 },
   { accessor: "artist", label: "Artist", width: 150 },
   { accessor: "duration", label: "Duration", width: 100 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, title: "Track One", artist: "Artist A", duration: "3:45" },
   { id: 2, title: "Track Two", artist: "Artist B", duration: "4:12" },
   { id: 3, title: "Track Three", artist: "Artist A", duration: "3:20" },

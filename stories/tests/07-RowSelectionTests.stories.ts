@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent, fireEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph } from "../utils";
@@ -91,7 +91,7 @@ const getSelectedRowCount = async (canvasElement: HTMLElement) => {
 
 export const BasicRowSelection = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -139,7 +139,7 @@ export const BasicRowSelection = {
 
 export const SelectAllFunctionality = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -176,7 +176,7 @@ export const SelectAllFunctionality = {
 
 export const PartialSelectionState = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -231,7 +231,7 @@ export const OnRowSelectionChangeCallback = {
     wrapper.appendChild(infoDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -283,7 +283,7 @@ export const SelectionWithPagination = {
       { id: 7, name: "Grace Lee", department: "Engineering", salary: 115000 },
       { id: 8, name: "Henry Wilson", department: "Design", salary: 92000 },
     ];
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -340,7 +340,7 @@ export const SelectionWithPagination = {
 
 export const NoSelectionWithoutProp = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },

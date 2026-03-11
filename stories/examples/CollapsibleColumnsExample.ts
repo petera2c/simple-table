@@ -7,8 +7,8 @@ import { generateSpaceData } from "../data/space-data";
 
 export function renderCollapsibleColumnsExample(): HTMLElement {
   const { wrapper, h2 } = renderVanillaTable(
-    SPACE_HEADERS as Record<string, unknown>[],
-    generateSpaceData() as Record<string, unknown>[],
+    SPACE_HEADERS,
+    generateSpaceData(),
     {
       height: "400px",
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),

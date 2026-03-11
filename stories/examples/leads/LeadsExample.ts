@@ -1,16 +1,17 @@
 /**
  * LeadsExample – vanilla port of React leads/LeadsExample.
  */
+import type { HeaderObject, Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 180 },
   { accessor: "email", label: "Email", width: 200 },
   { accessor: "stage", label: "Stage", width: 120 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, name: "Lead One", email: "lead1@example.com", stage: "New" },
   { id: 2, name: "Lead Two", email: "lead2@example.com", stage: "Qualified" },
   { id: 3, name: "Lead Three", email: "lead3@example.com", stage: "Proposal" },

@@ -3,6 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
+import { HeaderObject, Row } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -34,8 +35,8 @@ const getTableRoot = (canvasElement: HTMLElement) =>
   canvasElement.querySelector(".st-table-root") || canvasElement.querySelector(".simple-table-root") || canvasElement.querySelector(".st-body-container");
 
 function renderWithWidth(
-  headers: Record<string, unknown>[],
-  data: Record<string, unknown>[],
+  headers: HeaderObject[],
+  data: Row[],
   options: Record<string, unknown> = {},
   wrapperWidth: string | null = null
 ) {
@@ -50,7 +51,7 @@ function renderWithWidth(
 
 export const FixedPixelWidths = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -79,7 +80,7 @@ export const FixedPixelWidths = {
 
 export const AutoSizingWithOneFr = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: "1fr", type: "string" },
       { accessor: "email", label: "Email", width: "1fr", type: "string" },
@@ -103,7 +104,7 @@ export const AutoSizingWithOneFr = {
 
 export const MinWidthConstraint = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: "1fr", minWidth: 200, type: "string" },
       { accessor: "email", label: "Email", width: "1fr", minWidth: 250, type: "string" },
@@ -126,7 +127,7 @@ export const MinWidthConstraint = {
 
 export const MaxWidthConstraint = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: "1fr", maxWidth: 200, type: "string" },
       { accessor: "email", label: "Email", width: "1fr", type: "string" },
@@ -147,7 +148,7 @@ export const MaxWidthConstraint = {
 
 export const AutoExpandColumnsBasic = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -173,7 +174,7 @@ export const AutoExpandColumnsBasic = {
 
 export const AutoExpandColumnsIgnoresMinWidth = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 100, minWidth: 300, type: "string" },
       { accessor: "department", label: "Department", width: 100, minWidth: 300, type: "string" },
@@ -199,7 +200,7 @@ export const AutoExpandColumnsIgnoresMinWidth = {
 
 export const AutoExpandColumnsIgnoresMaxWidth = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 200, maxWidth: 100, type: "number" },
       { accessor: "name", label: "Name", width: 200, maxWidth: 100, type: "string" },
       { accessor: "department", label: "Department", width: 200, maxWidth: 100, type: "string" },
@@ -224,7 +225,7 @@ export const AutoExpandColumnsIgnoresMaxWidth = {
 
 export const MixedWidthStrategies = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: "1fr", minWidth: 150, type: "string" },
       { accessor: "email", label: "Email", width: "1fr", minWidth: 200, type: "string" },
@@ -257,7 +258,7 @@ export const MixedWidthStrategies = {
 
 export const GridTemplateColumnsFormat = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: "1fr", minWidth: 120, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -276,7 +277,7 @@ export const GridTemplateColumnsFormat = {
 
 export const NarrowContainerBehavior = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: "1fr", minWidth: 150, type: "string" },
       { accessor: "department", label: "Department", width: "1fr", minWidth: 150, type: "string" },
@@ -300,7 +301,7 @@ export const NarrowContainerBehavior = {
 
 export const WideContainerBehavior = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: "1fr", type: "number" },
       { accessor: "name", label: "Name", width: "1fr", type: "string" },
       { accessor: "department", label: "Department", width: "1fr", type: "string" },

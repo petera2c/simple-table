@@ -1,16 +1,17 @@
 /**
  * BillingExample – vanilla port of React billing-example/BillingExample.
  */
+import type { HeaderObject, Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "invoice", label: "Invoice", width: 150 },
   { accessor: "amount", label: "Amount", width: 120 },
   { accessor: "date", label: "Date", width: 120 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, invoice: "INV-001", amount: 1500, date: "2024-01-15" },
   { id: 2, invoice: "INV-002", amount: 2300, date: "2024-01-20" },
   { id: 3, invoice: "INV-003", amount: 800, date: "2024-02-01" },

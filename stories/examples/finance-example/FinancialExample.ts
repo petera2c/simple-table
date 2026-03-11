@@ -1,16 +1,17 @@
 /**
  * FinancialExample – vanilla port of React finance-example/FinancialExample.
  */
+import type { HeaderObject, Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "symbol", label: "Symbol", width: 100 },
   { accessor: "price", label: "Price", width: 120 },
   { accessor: "change", label: "Change", width: 100 },
   { accessor: "volume", label: "Volume", width: 120 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, symbol: "AAPL", price: 185.5, change: 1.2, volume: 52000000 },
   { id: 2, symbol: "GOOGL", price: 142.3, change: -0.5, volume: 28000000 },
   { id: 3, symbol: "MSFT", price: 378.9, change: 2.1, volume: 21000000 },

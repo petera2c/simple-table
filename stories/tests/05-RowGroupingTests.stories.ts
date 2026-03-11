@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
@@ -139,7 +139,7 @@ const getRowDepth = (rowCells: Element[]) => {
 
 export const BasicSingleLevelGrouping = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -166,7 +166,7 @@ export const BasicSingleLevelGrouping = {
 
 export const MultiLevelGrouping = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -214,7 +214,7 @@ export const MultiLevelGrouping = {
 
 export const StartCollapsed = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -240,7 +240,7 @@ export const StartCollapsed = {
 
 export const ExpandCollapseInteraction = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -300,7 +300,7 @@ export const ProgrammaticExpandCollapseAll = {
     wrapper.appendChild(btnContainer);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -393,7 +393,7 @@ export const ProgrammaticDepthControl = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -473,7 +473,7 @@ export const OnRowGroupExpandCallback = {
     wrapper.appendChild(eventsDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -522,7 +522,7 @@ export const DynamicRowLoading = {
     addParagraph(wrapper, "Child rows loaded on-demand when parent is expanded");
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -578,7 +578,7 @@ export const DynamicRowLoading = {
 
 export const CanExpandRowGroupConditional = {
   render: () => {
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -611,7 +611,7 @@ export const CanExpandRowGroupConditional = {
 
 export const RowGroupingWithGetRowId = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -638,7 +638,7 @@ export const RowGroupingWithGetRowId = {
 
 export const EnableStickyParents = {
   render: () => {
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -690,7 +690,7 @@ export const GetGroupingPropertyAndDepth = {
     wrapper.appendChild(infoDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -727,7 +727,7 @@ export const GetGroupingPropertyAndDepth = {
 
 export const LastGroupRowSeparatorLogic = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },

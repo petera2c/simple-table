@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -80,7 +80,7 @@ const performDragAndDrop = async (sourceElement: Element, targetElement: Element
 
 export const ColumnReorderingEnabled = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -101,7 +101,7 @@ export const ColumnReorderingEnabled = {
 
 export const ColumnReorderingDisabled = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -122,7 +122,7 @@ export const ColumnReorderingDisabled = {
 
 export const DisableReorderOnSpecificColumn = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, disableReorder: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, disableReorder: true, type: "string" },
@@ -156,7 +156,7 @@ export const OnColumnOrderChangeCallback = {
     wrapper.appendChild(tableContainer);
     wrapper.appendChild(countEl);
     wrapper.appendChild(orderEl);
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -190,7 +190,7 @@ export const OnColumnOrderChangeCallback = {
 
 export const ColumnReorderingWithSorting = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, isSortable: true, type: "string" },
       { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
@@ -212,7 +212,7 @@ export const ColumnReorderingWithSorting = {
 
 export const ColumnReorderingWithFiltering = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, filterable: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true, type: "string" },
       { accessor: "department", label: "Department", width: 150, filterable: true, type: "string" },
@@ -233,7 +233,7 @@ export const ColumnReorderingWithFiltering = {
 
 export const ColumnReorderingWithPinnedColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 200, pinned: "left", type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -261,7 +261,7 @@ export const ColumnReorderingWithPinnedColumns = {
 
 export const DraggableAttributeOnHeaderLabels = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -281,7 +281,7 @@ export const DraggableAttributeOnHeaderLabels = {
 
 export const MixedDraggableAndNonDraggable = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, disableReorder: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -304,7 +304,7 @@ export const MixedDraggableAndNonDraggable = {
 
 export const InitialColumnOrder = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "salary", label: "Salary", width: 120, type: "number" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
@@ -322,7 +322,7 @@ export const InitialColumnOrder = {
 
 export const ActualDragAndDropReordering = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -357,7 +357,7 @@ export const ActualDragAndDropReordering = {
 
 export const DragAndDropWithPinnedColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 150, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -406,7 +406,7 @@ export const DragAndDropWithPinnedColumns = {
 
 export const ColumnReorderingWithResizing = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },

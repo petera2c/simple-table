@@ -1,7 +1,6 @@
 /**
  * PaginationAPI Example – vanilla port of React PaginationAPIExample.
  */
-import { SimpleTableVanilla } from "../../dist/index.es.js";
 import { renderVanillaTable } from "../utils";
 import { generateSaaSData } from "../data/saas-data";
 import { SAAS_HEADERS } from "../data/saas-data";
@@ -9,8 +8,8 @@ import { SAAS_HEADERS } from "../data/saas-data";
 export function renderPaginationAPIExample(): HTMLElement {
   const data = generateSaaSData();
   const { wrapper, h2, table } = renderVanillaTable(
-    SAAS_HEADERS as Record<string, unknown>[],
-    data as Record<string, unknown>[],
+    SAAS_HEADERS,
+    data,
     {
       shouldPaginate: true,
       rowsPerPage: 10,

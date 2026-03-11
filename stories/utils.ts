@@ -1,7 +1,8 @@
 /**
  * Shared helpers for vanilla stories (examples and tests).
  */
-import { SimpleTableVanilla } from "../dist/index.es.js";
+import { SimpleTableVanilla } from "../src/index";
+import type { HeaderObject, Row } from "../src/index";
 
 /** Instance type of the table (class is a value; use InstanceType<typeof C> for the type of instances). */
 type TableInstance = InstanceType<typeof SimpleTableVanilla>;
@@ -14,8 +15,8 @@ export interface RenderVanillaTableResult {
 }
 
 export function renderVanillaTable(
-  headers: Record<string, unknown>[],
-  data: Record<string, unknown>[],
+  headers: HeaderObject[],
+  data: Row[],
   options: Record<string, unknown> = {}
 ): RenderVanillaTableResult {
   const wrapper = document.createElement("div") as HTMLDivElement & {

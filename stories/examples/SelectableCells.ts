@@ -7,8 +7,8 @@ import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 
 export function renderSelectableCellsExample(): HTMLElement {
   const { wrapper, h2 } = renderVanillaTable(
-    RETAIL_SALES_HEADERS as Record<string, unknown>[],
-    generateRetailSalesData() as Record<string, unknown>[],
+    RETAIL_SALES_HEADERS,
+    generateRetailSalesData(),
     {
       rowGrouping: ["stores"],
       selectableCells: true,

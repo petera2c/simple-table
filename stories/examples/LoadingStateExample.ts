@@ -1,9 +1,10 @@
 /**
  * LoadingState Example – vanilla port of React LoadingStateExample.
  */
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import type { HeaderObject } from "../../src/index";
+import { SimpleTableVanilla } from "../../src/index";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "Project ID", width: 80, type: "number" },
   { accessor: "projectName", label: "Project Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "client", label: "Client", width: 180, type: "string" },

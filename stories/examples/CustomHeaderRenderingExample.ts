@@ -1,9 +1,10 @@
 /**
  * CustomHeaderRendering Example – vanilla port of React CustomHeaderRenderingExample.
  */
+import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   {
     accessor: "id",
     label: "ID",
@@ -19,7 +20,7 @@ const HEADERS: Record<string, unknown>[] = [
   { accessor: "role", label: "Role", width: 120 },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, name: "Alice", role: "Dev" },
   { id: 2, name: "Bob", role: "Design" },
 ];

@@ -1,4 +1,4 @@
-import "../dist/styles.css";
+import "../src/styles/all-themes.css";
 import type { Preview } from "@storybook/html";
 
 const preview: Preview = {

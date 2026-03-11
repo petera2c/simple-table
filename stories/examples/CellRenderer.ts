@@ -1,9 +1,10 @@
 /**
  * CellRenderer Example – vanilla port of React CellRenderer.
  */
+import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 
-const CELL_RENDERER_DATA: Record<string, unknown>[] = [
+const CELL_RENDERER_DATA: Row[] = [
   { id: 1, name: "John Doe", age: 28, role: "Developer", department: "Engineering", startDate: "2020-01-01" },
   { id: 2, name: "Jane Smith", age: 32, role: "Designer", department: "Design", startDate: "2020-01-01" },
   { id: 3, name: "Bob Johnson", age: 45, role: "Manager", department: "Management", startDate: "2020-01-01" },
@@ -25,7 +26,7 @@ const headerStyles: Record<string, Record<string, string>> = {
   role: { backgroundColor: "rgb(255, 165, 0)", color: "rgb(255, 255, 255)", padding: "4px 8px", borderRadius: "4px", border: "2px solid rgb(255, 140, 0)" },
 };
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   {
     accessor: "id",
     label: "ID",

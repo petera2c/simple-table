@@ -1,6 +1,7 @@
 /**
  * RowButtons Example – vanilla port of React RowButtonsExample.
  */
+import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 
 const ROWS = [
@@ -11,7 +12,7 @@ const ROWS = [
   { id: 5, name: "Charlie Brown", age: 37, role: "DevOps", department: "Engineering" },
 ];
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 60 },
   { accessor: "name", label: "Name", width: 150 },
   { accessor: "age", label: "Age", width: 80 },

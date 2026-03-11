@@ -1,4 +1,4 @@
-import { SimpleTableVanilla } from "../dist/index.es.js";
+import { HeaderObject, SimpleTableVanilla } from "../src/index";
 import type { Meta, StoryObj } from "@storybook/html";
 
 const meta: Meta = {
@@ -17,7 +17,7 @@ export const Default: StoryObj = {
     container.style.padding = "1rem";
     container.style.boxSizing = "border-box";
 
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", minWidth: 80, width: "1fr" },
       { accessor: "role", label: "Role", width: 120 },

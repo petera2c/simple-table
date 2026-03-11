@@ -7,8 +7,8 @@ import { SPACE_HEADERS } from "../data/space-data";
 
 export function renderClayExample(): HTMLElement {
   const { wrapper, h2 } = renderVanillaTable(
-    SPACE_HEADERS as Record<string, unknown>[],
-    generateSpaceData() as Record<string, unknown>[],
+    SPACE_HEADERS,
+    generateSpaceData(),
     {
       theme: "neutral",
       height: "400px",

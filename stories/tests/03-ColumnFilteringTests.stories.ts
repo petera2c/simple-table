@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
@@ -81,7 +81,7 @@ const getColumnData = (canvasElement: HTMLElement, accessor: string) => {
 
 export const BasicFilterableColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
@@ -168,7 +168,7 @@ export const ProgrammaticApplyFilter = {
     wrapper.appendChild(filterStatusDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
@@ -283,7 +283,7 @@ export const ProgrammaticClearFilter = {
     wrapper.appendChild(filterStatusDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
@@ -301,6 +301,9 @@ export const ProgrammaticClearFilter = {
       const count = Object.keys(filters).length;
       filterStatusDiv.textContent = count > 0 ? `${count} filter(s) active` : "No filters";
     };
+
+
+
     applyBtn.onclick = async () => {
       await table.getAPI().applyFilter({ accessor: "department", operator: "equals", value: "Engineering" });
       await table.getAPI().applyFilter({ accessor: "isActive", operator: "equals", value: true });
@@ -365,7 +368,7 @@ export const OnFilterChangeCallback = {
     wrapper.appendChild(callbackDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
@@ -422,7 +425,7 @@ export const ExternalFilterHandling = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
@@ -485,7 +488,7 @@ export const ExternalFilterHandling = {
 
 export const FilterDifferentDataTypes = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
       { accessor: "name", label: "Name (String)", width: 200, type: "string", filterable: true },
       { accessor: "age", label: "Age (Number)", width: 120, type: "number", filterable: true },
@@ -550,7 +553,7 @@ export const GetFilterState = {
     wrapper.appendChild(preEl);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers = [
+    const headers:HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },

@@ -1,10 +1,11 @@
 /**
  * ExternalSort Example – vanilla port of React ExternalSortExample.
  */
+import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { createBasicData } from "./BasicExample";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 150 },
   { accessor: "age", label: "Age", width: 100 },

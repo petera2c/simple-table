@@ -1,6 +1,7 @@
 /**
  * RowHeight Example – vanilla port of React RowHeightExample.
  */
+import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 
 const ROWS = [
@@ -9,7 +10,7 @@ const ROWS = [
   { id: 3, name: "Bob Johnson", age: 45, role: "Manager" },
 ];
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 150 },
   { accessor: "age", label: "Age", width: 100 },

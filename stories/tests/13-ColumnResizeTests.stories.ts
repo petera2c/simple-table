@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { SimpleTableVanilla } from "../../dist/index.es.js";
+import { HeaderObject } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -67,7 +67,7 @@ const resizeColumn = async (headerCell: Element, resizeAmount: number) => {
 
 export const BasicColumnResize = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -89,7 +89,7 @@ export const BasicColumnResize = {
 
 export const ResizeMultipleColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -117,7 +117,7 @@ export const ResizeMultipleColumns = {
 
 export const ResizeToSmallerWidth = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 150, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 300, type: "string" },
       { accessor: "city", label: "City", width: 200, type: "string" },
@@ -139,7 +139,7 @@ export const ResizeToSmallerWidth = {
 
 export const ResizeWithMinWidth = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 150, minWidth: 100, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 300, minWidth: 200, type: "string" },
       { accessor: "city", label: "City", width: 200, minWidth: 150, type: "string" },
@@ -158,7 +158,7 @@ export const ResizeWithMinWidth = {
 
 export const ResizeAllColumns = {
   render: () => {
-    const headers = [
+    const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },

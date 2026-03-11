@@ -1,9 +1,10 @@
 /**
  * CustomTheme Demo – vanilla port of React custom-theme/CustomThemeDemo.
  */
+import type { HeaderObject, Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", minWidth: 100, width: "1fr", type: "string" },
@@ -11,7 +12,7 @@ const HEADERS: Record<string, unknown>[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-const ROWS: Record<string, unknown>[] = [
+const ROWS: Row[] = [
   { id: 1, name: "Chef Antoine", email: "antoine@example.com", department: "Kitchen", status: "Active" },
   { id: 2, name: "Sofia Guerrero", email: "sofia@example.com", department: "Front", status: "Active" },
   { id: 3, name: "Marco Benedetti", email: "marco@example.com", department: "Wine", status: "Active" },

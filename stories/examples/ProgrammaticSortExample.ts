@@ -1,10 +1,11 @@
 /**
  * ProgrammaticSort Example – vanilla port of React ProgrammaticSortExample.
  */
+import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { createBasicData } from "./BasicExample";
 
-const HEADERS: Record<string, unknown>[] = [
+const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true },
   { accessor: "name", label: "Name", width: 150, isSortable: true },
   { accessor: "age", label: "Age", width: 100, isSortable: true },
@@ -25,7 +26,7 @@ export function renderProgrammaticSortExample(): HTMLElement {
   wrapper.insertBefore(btn, wrapper.querySelector("div:last-child"));
   btn.addEventListener("click", () => {
     const api = table.getAPI();
-    if (api.applySortState) api.applySortState({ column: "age", direction: "desc" });
+   api.applySortState({ accessor: "age", direction: "desc" });
   });
   return wrapper;
 }
