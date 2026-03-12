@@ -146,6 +146,10 @@ export const createBodyCellElement = (
   cellElement.id = getCellId({ accessor: header.accessor, rowId });
   cellElement.setAttribute("role", "gridcell");
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
+  // ARIA: 1-based row index in the full grid (matches main: position + maxHeaderDepth + 1)
+  const maxHeaderDepth = context.maxHeaderDepth ?? 1;
+  cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
+  cellElement.setAttribute("aria-colindex", String(colIndex + 1));
 
   // Set data attributes for selection manager to query
   cellElement.setAttribute("data-row-index", String(rowIndex));
@@ -377,9 +381,12 @@ export const updateBodyCellElement = (
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
 
-  // Update data attributes
+  // Update data attributes and ARIA (matches main: position + maxHeaderDepth + 1)
   cellElement.setAttribute("data-row-index", String(rowIndex));
   cellElement.setAttribute("data-col-index", String(colIndex));
+  const maxHeaderDepth = context.maxHeaderDepth ?? 1;
+  cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
+  cellElement.setAttribute("aria-colindex", String(colIndex + 1));
   cellElement.setAttribute("data-row-id", String(rowId));
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
 

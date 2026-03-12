@@ -85,6 +85,8 @@ export interface CellRenderContext {
   rowGrouping?: string[];
   headers: HeaderObject[];
   rowHeight: number;
+  /** Number of header rows (for aria-rowindex: position + maxHeaderDepth + 1) */
+  maxHeaderDepth?: number;
   templateColumns: string;
   heightOffsets?: HeightOffsets;
   customTheme?: CustomTheme;

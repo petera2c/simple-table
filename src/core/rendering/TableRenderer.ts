@@ -104,6 +104,8 @@ export class TableRenderer {
     if (!container || deps.config.hideHeader) return;
 
     container.style.height = `${calculatedHeaderHeight}px`;
+    container.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
+    container.setAttribute("aria-colcount", String(deps.effectiveHeaders.length));
 
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,
@@ -339,6 +341,7 @@ export class TableRenderer {
     });
 
     const selectedRowCount = deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
+    const maxHeaderDepth = dimensionState.maxHeaderDepth ?? 1;
     const bodyContext: CellRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       collapsedRows: deps.getCollapsedRows(),
@@ -356,6 +359,7 @@ export class TableRenderer {
       rowGrouping: deps.config.rowGrouping,
       headers: deps.effectiveHeaders,
       rowHeight: deps.customTheme.rowHeight,
+      maxHeaderDepth,
       templateColumns: "",
       heightOffsets: processedResult.heightOffsets,
       customTheme: deps.customTheme,
