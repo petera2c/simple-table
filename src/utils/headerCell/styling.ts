@@ -111,6 +111,7 @@ export const createHeaderCellElement = (
   const cellElement = document.createElement("div");
   cellElement.className = classNames;
   cellElement.id = getCellId({ accessor: header.accessor, rowId: "header" });
+  cellElement.setAttribute("data-accessor", String(header.accessor));
   cellElement.setAttribute("role", "columnheader");
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
 

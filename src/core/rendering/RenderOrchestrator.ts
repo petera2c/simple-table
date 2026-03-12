@@ -16,6 +16,7 @@ import { calculateContentHeight } from "../../hooks/contentHeight";
 import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
+import { normalizeHeaderWidths } from "../../utils/headerWidthUtils";
 import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/TableInitializer";
 
@@ -107,6 +108,7 @@ export class RenderOrchestrator {
     headers: HeaderObject[],
     config: SimpleTableConfig,
     customTheme: CustomTheme,
+    containerWidth?: number,
   ): HeaderObject[] {
     let processedHeaders = [...headers];
 
@@ -115,7 +117,10 @@ export class RenderOrchestrator {
       processedHeaders = [selectionHeader, ...processedHeaders];
     }
 
-    return processedHeaders;
+    if (containerWidth != null && containerWidth > 0) {
+      return normalizeHeaderWidths(processedHeaders, { containerWidth });
+    }
+    return normalizeHeaderWidths(processedHeaders);
   }
 
   render(
@@ -143,12 +148,6 @@ export class RenderOrchestrator {
       this.lastHeadersRef = context.headers;
     }
 
-    const effectiveHeaders = this.computeEffectiveHeaders(
-      context.headers,
-      context.config,
-      context.customTheme,
-    );
-
     const dimensionState = context.dimensionManager?.getState() ?? {
       containerWidth: 0,
       calculatedHeaderHeight: context.customTheme.headerHeight,
@@ -156,6 +155,13 @@ export class RenderOrchestrator {
     };
 
     const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = dimensionState;
+
+    const effectiveHeaders = this.computeEffectiveHeaders(
+      context.headers,
+      context.config,
+      context.customTheme,
+      containerWidth,
+    );
 
     const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
       recalculateAllSectionWidths({

@@ -384,14 +384,22 @@ export const ColumnWidthConfigurations = {
   play: async ({ canvasElement }) => {
     await validateBasicTableStructure(canvasElement);
     validateColumnCount(canvasElement, 5);
-    const headerMain = canvasElement.querySelector(".st-header-main");
-    if (!headerMain) throw new Error("Header main not found");
-    expect(headerMain).toBeTruthy();
-    const gridTemplateColumns = headerMain.style.gridTemplateColumns;
-    expect(gridTemplateColumns).toBeTruthy();
-    expect(gridTemplateColumns).toContain("80px");
-    expect(gridTemplateColumns).toContain("200px");
-    expect(gridTemplateColumns).toContain("1fr");
+    // Column widths are normalized to px (fr/% converted at init). Assert header cell widths.
+    const getHeaderWidth = (accessor: string): number => {
+      const cell = canvasElement.querySelector(
+        `.st-header-cell[data-accessor="${accessor}"]`
+      ) as HTMLElement;
+      if (!cell) throw new Error(`Header cell not found: ${accessor}`);
+      const w = cell.style.width;
+      return w ? parseFloat(w) : (cell.offsetWidth ?? 0);
+    };
+    expect(getHeaderWidth("id")).toBe(80);
+    expect(getHeaderWidth("name")).toBe(200);
+    expect(getHeaderWidth("age")).toBe(100);
+    expect(getHeaderWidth("isActive")).toBe(120);
+    // email was "1fr" → fills remaining space (container width minus fixed columns)
+    const emailWidth = getHeaderWidth("email");
+    expect(emailWidth).toBeGreaterThanOrEqual(100);
   },
 };
 

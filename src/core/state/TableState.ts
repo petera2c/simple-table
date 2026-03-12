@@ -3,6 +3,7 @@ import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { generateRowId, rowIdToString } from "../../utils/rowUtils";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
+import { normalizeHeaderWidths } from "../../utils/headerWidthUtils";
 import { GetRowId } from "../../types/GetRowId";
 
 export interface TableStateConfig {
@@ -64,7 +65,7 @@ export class TableState {
       processedHeaders = [selectionHeader, ...processedHeaders];
     }
 
-    return processedHeaders;
+    return normalizeHeaderWidths(processedHeaders);
   }
 
   updateEffectiveHeaders(): void {

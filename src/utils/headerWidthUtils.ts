@@ -5,8 +5,10 @@ import {
 } from "../consts/general-consts";
 import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
+import type { Pinned } from "../types/Pinned";
 import { getCellId } from "./cellUtils";
 import { getNestedValue } from "./rowUtils";
+import { findParentHeader } from "./collapseUtils";
 
 /**
  * Find all leaf headers (headers without children) in a header tree
@@ -44,6 +46,215 @@ export const findLeafHeaders = (
     })
     .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
 };
+
+/** Default pixel width for 1fr when converting before container width is known */
+export const DEFAULT_FR_PX = 150;
+
+/** Default total table width used when normalizing fr/% if container width unknown */
+export const DEFAULT_TABLE_WIDTH = 800;
+
+type WidthSpec = { type: "px"; value: number } | { type: "fr"; value: number } | { type: "pct"; value: number };
+
+function parseWidthSpec(header: HeaderObject): WidthSpec | null {
+  if (header.hide) return null;
+  if (typeof header.width === "number") return { type: "px", value: header.width };
+  if (typeof header.width !== "string") return null;
+  const s = header.width.trim();
+  if (s.endsWith("px")) return { type: "px", value: parseFloat(s) || 0 };
+  if (s.endsWith("fr")) return { type: "fr", value: parseFloat(s) || 1 };
+  if (s.endsWith("%")) return { type: "pct", value: parseFloat(s) || 0 };
+  return null;
+}
+
+/**
+ * Recursively collect leaf headers (no children) in expanded state.
+ * Used for width normalization when collapsed state is not yet relevant.
+ */
+function getLeafHeadersForNormalization(headers: HeaderObject[]): HeaderObject[] {
+  const leaves: HeaderObject[] = [];
+  const visit = (h: HeaderObject): void => {
+    if (h.hide) return;
+    if (!h.children || h.children.length === 0) {
+      leaves.push(h);
+      return;
+    }
+    h.children.forEach(visit);
+  };
+  headers.forEach(visit);
+  return leaves;
+}
+
+/** Get the pinned value from the root header (for nested headers, children inherit from parent). */
+function getRootPinned(header: HeaderObject, headers: HeaderObject[]): Pinned | undefined {
+  if (header.pinned) return header.pinned;
+  const parent = findParentHeader(headers, header.accessor);
+  return parent ? getRootPinned(parent, headers) : undefined;
+}
+
+/** Split headers into left, main, right by root pinned. */
+function splitHeadersBySection(headers: HeaderObject[]): {
+  left: HeaderObject[];
+  main: HeaderObject[];
+  right: HeaderObject[];
+} {
+  const left: HeaderObject[] = [];
+  const main: HeaderObject[] = [];
+  const right: HeaderObject[] = [];
+  headers.forEach((h) => {
+    if (h.hide) return;
+    const pinned = getRootPinned(h, headers);
+    if (pinned === "left") left.push(h);
+    else if (pinned === "right") right.push(h);
+    else main.push(h);
+  });
+  return { left, main, right };
+}
+
+/**
+ * Build a width map for a section's leaves given a total width.
+ * Used so we can normalize main section to container width after left/right are sized.
+ */
+function buildSectionWidthMap(
+  leaves: HeaderObject[],
+  total: number,
+): Map<string, number> {
+  const specs = leaves.map((h) => parseWidthSpec(h));
+  const fixedSum = specs.reduce(
+    (sum, s) => (s?.type === "px" ? sum + s.value : sum),
+    0,
+  );
+  const pctSum = specs.reduce(
+    (sum, s) => (s?.type === "pct" ? sum + s.value : sum),
+    0,
+  );
+  const pctPx = total * (pctSum / 100);
+  const frTotal = specs.reduce(
+    (sum, s) => (s?.type === "fr" ? sum + s.value : sum),
+    0,
+  );
+  const remainingForFr = Math.max(0, total - fixedSum - pctPx);
+  const pxPerFr = frTotal > 0 ? remainingForFr / frTotal : DEFAULT_FR_PX;
+
+  const widthMap = new Map<string, number>();
+  leaves.forEach((h, i) => {
+    const spec = specs[i];
+    if (!spec) {
+      widthMap.set(h.accessor as string, TABLE_HEADER_CELL_WIDTH_DEFAULT);
+      return;
+    }
+    if (spec.type === "px") widthMap.set(h.accessor as string, spec.value);
+    else if (spec.type === "fr")
+      widthMap.set(h.accessor as string, spec.value * pxPerFr);
+    else if (spec.type === "pct")
+      widthMap.set(h.accessor as string, (total * spec.value) / 100);
+    else
+      widthMap.set(h.accessor as string, TABLE_HEADER_CELL_WIDTH_DEFAULT);
+  });
+  return widthMap;
+}
+
+function sumWidthMap(map: Map<string, number>): number {
+  let sum = 0;
+  map.forEach((w) => (sum += w));
+  return sum;
+}
+
+/**
+ * Normalize header widths so that fr and % are converted to pixels.
+ * Call this as soon as headers are received so the rest of the code can assume numeric widths.
+ * If totalWidth is not provided, a reasonable total is computed from fixed widths + default for fr columns.
+ * If options.containerWidth is provided, the main section's fr columns are given the remaining space
+ * (container width minus pinned left/right), so the flexible column fills available space.
+ */
+export function normalizeHeaderWidths(
+  headers: HeaderObject[],
+  totalWidthOrOptions?: number | { containerWidth: number },
+): HeaderObject[] {
+  const containerWidth =
+    typeof totalWidthOrOptions === "object" && totalWidthOrOptions != null
+      ? totalWidthOrOptions.containerWidth
+      : undefined;
+  let totalWidth =
+    typeof totalWidthOrOptions === "number" ? totalWidthOrOptions : undefined;
+
+  let widthMap: Map<string, number>;
+
+  if (containerWidth != null && containerWidth > 0) {
+    const { left, main, right } = splitHeadersBySection(headers);
+    const leftLeaves = getLeafHeadersForNormalization(left);
+    const rightLeaves = getLeafHeadersForNormalization(right);
+    const mainLeaves = getLeafHeadersForNormalization(main);
+
+    const leftSpecs = leftLeaves.map((h) => parseWidthSpec(h));
+    const rightSpecs = rightLeaves.map((h) => parseWidthSpec(h));
+    const mainSpecs = mainLeaves.map((h) => parseWidthSpec(h));
+
+    const defaultTotalForSection = (specs: (WidthSpec | null)[]): number => {
+      const fixedSum = specs.reduce(
+        (sum, s) => (s?.type === "px" ? sum + s.value : sum),
+        0,
+      );
+      const frCount = specs.filter((s) => s?.type === "fr").length;
+      const pctCount = specs.filter((s) => s?.type === "pct").length;
+      let t =
+        fixedSum +
+        (frCount > 0 ? frCount * DEFAULT_FR_PX : 0) +
+        (pctCount > 0 ? DEFAULT_TABLE_WIDTH * 0.2 : 0);
+      return Math.max(t, DEFAULT_TABLE_WIDTH);
+    };
+
+    const leftTotal = defaultTotalForSection(leftSpecs);
+    const rightTotal = defaultTotalForSection(rightSpecs);
+    const leftMap = buildSectionWidthMap(leftLeaves, leftTotal);
+    const rightMap = buildSectionWidthMap(rightLeaves, rightTotal);
+    const leftWidth = sumWidthMap(leftMap);
+    const rightWidth = sumWidthMap(rightMap);
+    const mainSectionWidth = Math.max(0, containerWidth - leftWidth - rightWidth);
+    const mainTotal =
+      mainLeaves.length > 0 ? mainSectionWidth : 0;
+    const mainMap =
+      mainLeaves.length > 0
+        ? buildSectionWidthMap(mainLeaves, mainTotal)
+        : new Map<string, number>();
+
+    widthMap = new Map<string, number>();
+    leftMap.forEach((w, k) => widthMap.set(k, w));
+    rightMap.forEach((w, k) => widthMap.set(k, w));
+    mainMap.forEach((w, k) => widthMap.set(k, w));
+  } else {
+    const leaves = getLeafHeadersForNormalization(headers);
+    const specs = leaves.map((h) => parseWidthSpec(h));
+
+    let total = totalWidth;
+    if (total == null || total <= 0) {
+      const fixedSum = specs.reduce(
+        (sum, s) => (s?.type === "px" ? sum + s.value : sum),
+        0,
+      );
+      const frCount = specs.filter((s) => s?.type === "fr").length;
+      const pctCount = specs.filter((s) => s?.type === "pct").length;
+      total =
+        fixedSum +
+        (frCount > 0 ? frCount * DEFAULT_FR_PX : 0) +
+        (pctCount > 0 ? DEFAULT_TABLE_WIDTH * 0.2 : 0);
+      total = Math.max(total, DEFAULT_TABLE_WIDTH);
+    }
+
+    widthMap = buildSectionWidthMap(leaves, total);
+  }
+
+  function process(h: HeaderObject): HeaderObject {
+    const next = { ...h };
+    if (h.children && h.children.length > 0) {
+      next.children = h.children.map(process);
+      return next;
+    }
+    const px = widthMap.get(h.accessor as string);
+    if (px != null) next.width = px;
+    return next;
+  }
+  return headers.map(process);
+}
 
 /**
  * Get actual width of a header in pixels
