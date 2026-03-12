@@ -6,18 +6,6 @@ To reproduce: install dependencies, install Playwright browsers (`PLAYWRIGHT_BRO
 
 ---
 
-## 01 - Basic Structure & Rendering
-
-_No failing tests (ColumnWidthConfigurations fixed: fr/px normalization + container-width fill)._
-
----
-
-## 08 - Column Width
-
-_No failing tests (minWidth for fr columns, auto-expand in render path, gridTemplateColumns on header, container-width fallback)._
-
----
-
 ## 12 - Cell Selection
 
 | Story | Functionality |

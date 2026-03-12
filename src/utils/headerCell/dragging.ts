@@ -33,6 +33,21 @@ export const handleColumnHeaderClick = (
   if (context.selectableColumns) {
     const columnsToSelect = getHeaderLeafIndices(header, colIndex);
 
+    // #region agent log
+    fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "b99c63" },
+      body: JSON.stringify({
+        sessionId: "b99c63",
+        location: "dragging.ts:handleColumnHeaderClick",
+        message: "selectableColumns path: columnsToSelect and selectColumns presence",
+        data: { columnsToSelect, hasSelectColumns: Boolean(context.selectColumns), selectedColumnsSize: context.selectedColumns?.size ?? 0 },
+        timestamp: Date.now(),
+        hypothesisId: "H2",
+      }),
+    }).catch(() => {});
+    // #endregion
+
     const isHeaderAlreadySelected = columnsToSelect.some((columnIndex) =>
       context.selectedColumns.has(columnIndex),
     );
@@ -90,6 +105,20 @@ export const handleColumnHeaderClick = (
         return new Set([...Array.from(prevSelected), ...allColumnsToSelect]);
       });
     } else if (context.selectColumns) {
+      // #region agent log
+      fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "b99c63" },
+        body: JSON.stringify({
+          sessionId: "b99c63",
+          location: "dragging.ts:selectColumns-call",
+          message: "calling context.selectColumns",
+          data: { columnsToSelect },
+          timestamp: Date.now(),
+          hypothesisId: "H2",
+        }),
+      }).catch(() => {});
+      // #endregion
       context.selectColumns(columnsToSelect);
     }
 

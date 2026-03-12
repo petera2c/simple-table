@@ -132,8 +132,40 @@ export class TableRenderer {
       selectedRowCount: headerSelectedRowCount,
       filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
-      selectedColumns: new Set(),
-      columnsWithSelectedCells: new Set(),
+      // #region agent log
+      ...(deps.config.selectableColumns
+        ? (() => {
+            const sm = deps.selectionManager;
+            const fromSm = sm
+              ? {
+                  selectedColumns: sm.getSelectedColumns(),
+                  columnsWithSelectedCells: sm.getColumnsWithSelectedCells(),
+                }
+              : null;
+            fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "b99c63" },
+              body: JSON.stringify({
+                sessionId: "b99c63",
+                location: "TableRenderer.ts:headerContext",
+                message: "header context selection: using empty vs selectionManager",
+                data: {
+                  selectableColumns: true,
+                  selectionManagerPresent: Boolean(sm),
+                  fromSelectionManager: fromSm
+                    ? { selectedSize: fromSm.selectedColumns.size, columnsWithCellsSize: fromSm.columnsWithSelectedCells.size }
+                    : null,
+                },
+                timestamp: Date.now(),
+                hypothesisId: "H1",
+              }),
+            }).catch(() => {});
+            return sm
+              ? { selectedColumns: sm.getSelectedColumns(), columnsWithSelectedCells: sm.getColumnsWithSelectedCells() }
+              : { selectedColumns: new Set<number>(), columnsWithSelectedCells: new Set<number>() };
+          })()
+        : { selectedColumns: new Set<number>(), columnsWithSelectedCells: new Set<number>() }),
+      // #endregion
       sort: sortState?.sort ?? null,
       autoExpandColumns: deps.config.autoExpandColumns,
       selectableColumns: deps.config.selectableColumns,
@@ -186,8 +218,22 @@ export class TableRenderer {
       },
       onHeaderEdit: deps.config.onHeaderEdit,
       onColumnSelect: deps.config.onColumnSelect,
-      selectColumns: (columnIndices: number[]) => {},
-      setSelectedColumns: (value: any) => {},
+      selectColumns:
+        deps.selectionManager && deps.config.selectableColumns
+          ? (columnIndices: number[], isShiftKey?: boolean) => {
+              deps.selectionManager!.selectColumns(columnIndices, isShiftKey);
+              deps.onRender();
+            }
+          : (columnIndices: number[]) => {},
+      setSelectedColumns:
+        deps.selectionManager && deps.config.selectableColumns
+          ? (value: Set<number> | ((prev: Set<number>) => Set<number>)) => {
+              const prev = deps.selectionManager!.getSelectedColumns();
+              const next = typeof value === "function" ? value(prev) : value;
+              deps.selectionManager!.setSelectedColumns(next);
+              deps.onRender();
+            }
+          : (value: any) => {},
       setSelectedCells: (value: any) => {},
       setInitialFocusedCell: (cell: any) => {},
       areAllRowsSelected: () => deps.rowSelectionManager?.areAllRowsSelected() ?? false,
@@ -326,8 +372,8 @@ export class TableRenderer {
       collapsedRows: deps.getCollapsedRows(),
       expandedRows: deps.getExpandedRows(),
       expandedDepths: Array.from(deps.expandedDepths),
-      selectedColumns: new Set(),
-      rowsWithSelectedCells: new Set(),
+      selectedColumns: deps.selectionManager?.getSelectedColumns() ?? new Set(),
+      rowsWithSelectedCells: deps.selectionManager?.getRowsWithSelectedCells() ?? new Set(),
       columnBorders: deps.config.columnBorders ?? false,
       enableRowSelection: deps.config.enableRowSelection,
       selectedRowCount,
