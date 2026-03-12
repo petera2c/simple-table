@@ -1,49 +1,31 @@
 import { HeaderRenderContext } from "./types";
-import { addTrackedEventListener } from "./eventTracking";
-import { createCheckIcon } from "../../icons";
+import {
+  createCheckbox,
+  updateCheckboxElement,
+} from "../columnEditor/createCheckbox";
 
+/**
+ * Updates an existing header select-all checkbox to match the current checked state.
+ * Use when selection changes but the header cell DOM is reused (e.g. from cache).
+ */
+export const updateHeaderSelectionCheckbox = (
+  cellElement: HTMLElement,
+  checked: boolean,
+): void => {
+  updateCheckboxElement(cellElement, checked);
+};
+
+/**
+ * Creates the header select-all checkbox using the shared createCheckbox (same as column editor popout).
+ */
 export const createSelectionCheckbox = (context: HeaderRenderContext): HTMLElement => {
-  const label = document.createElement("label");
-  label.className = "st-checkbox-label";
-  
-  const input = document.createElement("input");
-  input.type = "checkbox";
-  input.className = "st-checkbox-input";
-  input.setAttribute("aria-label", "Select all rows");
-  
   const checked = context.areAllRowsSelected ? context.areAllRowsSelected() : false;
-  input.checked = checked;
-  input.setAttribute("aria-checked", String(checked));
-  
-  const customCheckbox = document.createElement("span");
-  customCheckbox.className = `st-checkbox-custom ${checked ? "st-checked" : ""}`;
-  customCheckbox.setAttribute("aria-hidden", "true");
-  
-  if (checked) {
-    const svg = createCheckIcon("st-checkbox-checkmark");
-    customCheckbox.appendChild(svg);
-  }
-  
-  const handleChange = () => {
-    const newChecked = !input.checked;
-    if (context.handleSelectAll) {
-      context.handleSelectAll(newChecked);
-    }
-  };
-  
-  addTrackedEventListener(input, "change", handleChange as EventListener);
-  
-  const handleKeyDown = (event: Event) => {
-    const keyEvent = event as KeyboardEvent;
-    if (keyEvent.key === " ") {
-      keyEvent.stopPropagation();
-    }
-  };
-  
-  addTrackedEventListener(input, "keydown", handleKeyDown);
-  
-  label.appendChild(input);
-  label.appendChild(customCheckbox);
-  
-  return label;
+  const checkbox = createCheckbox({
+    checked,
+    onChange: (newChecked) => {
+      context.handleSelectAll?.(newChecked);
+    },
+    ariaLabel: "Select all rows",
+  });
+  return checkbox.element;
 };

@@ -27,6 +27,8 @@ export interface HeaderRenderContext {
   containerWidth: number;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
+  /** Used for context cache invalidation when row selection changes */
+  selectedRowCount?: number;
   filters: TableFilterState;
   icons: IconsConfig;
   selectedColumns: Set<number>;

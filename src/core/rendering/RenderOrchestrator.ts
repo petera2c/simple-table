@@ -8,6 +8,7 @@ import { ScrollManager, ScrollSyncConfig } from "../../managers/ScrollManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
+import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows } from "../../utils/rowFlattening";
 import { processRows } from "../../utils/rowProcessing";
@@ -48,6 +49,7 @@ export interface RenderContext {
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
   selectionManager: SelectionManager | null;
+  rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, RowState>;
   onRender: () => void;
   setIsResizing: (value: boolean) => void;
@@ -322,6 +324,10 @@ export class RenderOrchestrator {
       rowGrouping: context.config.rowGrouping,
     });
 
+    context.rowSelectionManager?.updateConfig({
+      tableRows: processedResult.currentTableRows,
+    });
+
     this.renderHeader(
       elements.headerContainer,
       calculatedHeaderHeight,
@@ -536,6 +542,7 @@ export class RenderOrchestrator {
       sortManager: context.sortManager,
       filterManager: context.filterManager,
       selectionManager: context.selectionManager,
+      rowSelectionManager: context.rowSelectionManager,
       rowStateMap: context.rowStateMap,
       onRender: context.onRender,
       setIsResizing: context.setIsResizing,

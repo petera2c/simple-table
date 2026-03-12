@@ -1123,6 +1123,7 @@ input {
 .st-checkbox-label {
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
   min-width: 0;

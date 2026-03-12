@@ -11,6 +11,7 @@ import { ScrollManager } from "../managers/ScrollManager";
 import { SortManager } from "../managers/SortManager";
 import { FilterManager } from "../managers/FilterManager";
 import { SelectionManager } from "../managers/SelectionManager";
+import { RowSelectionManager } from "../managers/RowSelectionManager";
 import WindowResizeManager from "../hooks/windowResize";
 import HandleOutsideClickManager from "../hooks/handleOutsideClick";
 import ScrollbarVisibilityManager from "../hooks/scrollbarVisibility";
@@ -73,6 +74,7 @@ export class SimpleTableVanilla {
   private sortManager: SortManager | null = null;
   private filterManager: FilterManager | null = null;
   private selectionManager: SelectionManager | null = null;
+  private rowSelectionManager: RowSelectionManager | null = null;
   private windowResizeManager: WindowResizeManager | null = null;
   private handleOutsideClickManager: HandleOutsideClickManager | null = null;
   private scrollbarVisibilityManager: ScrollbarVisibilityManager | null = null;
@@ -289,6 +291,17 @@ export class SimpleTableVanilla {
       this.render("scrollbarWidth-change");
     });
 
+    if (this.config.enableRowSelection) {
+      this.rowSelectionManager = new RowSelectionManager({
+        tableRows: [],
+        onRowSelectionChange: this.config.onRowSelectionChange,
+        enableRowSelection: true,
+      });
+      this.rowSelectionManager.subscribe(() => {
+        this.render("rowSelectionManager");
+      });
+    }
+
     this.setupEventListeners();
   }
 
@@ -402,6 +415,7 @@ export class SimpleTableVanilla {
       sortManager: this.sortManager,
       filterManager: this.filterManager,
       selectionManager: this.selectionManager,
+      rowSelectionManager: this.rowSelectionManager,
       rowStateMap: this.rowStateMap,
       onRender: () => this.render("resizeHandler-onRender"),
       setIsResizing: (value: boolean) => {
@@ -531,6 +545,7 @@ export class SimpleTableVanilla {
     this.scrollManager?.destroy();
     this.sortManager?.destroy();
     this.filterManager?.destroy();
+    this.rowSelectionManager?.destroy();
     this.selectionManager?.destroy();
     this.autoScaleManager?.destroy();
     this.windowResizeManager?.destroy();

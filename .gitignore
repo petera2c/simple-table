@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 /.playwright-browsers
+/.cursor
 .pnp.js
 
 # testing

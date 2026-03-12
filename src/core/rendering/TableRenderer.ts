@@ -20,6 +20,7 @@ import { DimensionManager } from "../../managers/DimensionManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
+import { RowSelectionManager } from "../../managers/RowSelectionManager";
 
 export interface TableRendererDeps {
   config: SimpleTableConfig;
@@ -48,6 +49,7 @@ export interface TableRendererDeps {
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
   selectionManager: SelectionManager | null;
+  rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, any>;
   onRender: () => void;
   setIsResizing: (value: boolean) => void;
@@ -118,6 +120,7 @@ export class TableRenderer {
     const sortState = deps.sortManager?.getState();
     const filterState = deps.filterManager?.getState();
 
+    const headerSelectedRowCount = deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
     const headerContext: HeaderRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       columnBorders: deps.config.columnBorders ?? false,
@@ -126,6 +129,7 @@ export class TableRenderer {
       containerWidth: dimensionState.containerWidth,
       enableHeaderEditing: deps.config.enableHeaderEditing,
       enableRowSelection: deps.config.enableRowSelection,
+      selectedRowCount: headerSelectedRowCount,
       filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
       selectedColumns: new Set(),
@@ -152,7 +156,9 @@ export class TableRenderer {
           deps.filterManager.clearFilter(accessor);
         }
       },
-      handleSelectAll: (checked: boolean) => {},
+      handleSelectAll: (checked: boolean) => {
+        deps.rowSelectionManager?.handleSelectAll(checked);
+      },
       setCollapsedHeaders: (value: any) => {
         if (typeof value === "function") {
           deps.setCollapsedHeaders(value(deps.collapsedHeaders));
@@ -184,7 +190,7 @@ export class TableRenderer {
       setSelectedColumns: (value: any) => {},
       setSelectedCells: (value: any) => {},
       setInitialFocusedCell: (cell: any) => {},
-      areAllRowsSelected: () => false,
+      areAllRowsSelected: () => deps.rowSelectionManager?.areAllRowsSelected() ?? false,
       draggedHeaderRef: deps.draggedHeaderRef,
       hoveredHeaderRef: deps.hoveredHeaderRef,
       headerRegistry: deps.headerRegistry,
@@ -314,6 +320,7 @@ export class TableRenderer {
       collapsedHeaders: deps.collapsedHeaders,
     });
 
+    const selectedRowCount = deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
     const bodyContext: CellRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       collapsedRows: deps.getCollapsedRows(),
@@ -323,6 +330,7 @@ export class TableRenderer {
       rowsWithSelectedCells: new Set(),
       columnBorders: deps.config.columnBorders ?? false,
       enableRowSelection: deps.config.enableRowSelection,
+      selectedRowCount,
       cellUpdateFlash: deps.config.cellUpdateFlash,
       useOddColumnBackground: deps.config.useOddColumnBackground,
       useHoverRowBackground: deps.config.useHoverRowBackground,
@@ -337,7 +345,9 @@ export class TableRenderer {
       onCellEdit: deps.config.onCellEdit,
       onCellClick: deps.config.onCellClick,
       onRowGroupExpand: deps.config.onRowGroupExpand,
-      handleRowSelect: (rowId: string, checked: boolean) => {},
+      handleRowSelect: (rowId: string, checked: boolean) => {
+        deps.rowSelectionManager?.handleRowSelect(rowId, checked);
+      },
       cellRegistry: deps.cellRegistry,
       getCollapsedRows: () => deps.getCollapsedRows(),
       getExpandedRows: () => deps.getExpandedRows(),
@@ -379,7 +389,7 @@ export class TableRenderer {
       isWarningFlashing: (cell: any) => deps.selectionManager?.isWarningFlashing(cell) || false,
       handleMouseDown: (cell: any) => deps.selectionManager?.handleMouseDown(cell),
       handleMouseOver: (cell: any) => deps.selectionManager?.handleMouseOver(cell),
-      isRowSelected: (rowId: string) => false,
+      isRowSelected: (rowId: string) => deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
       canExpandRowGroup: deps.config.canExpandRowGroup,
       isLoading: deps.internalIsLoading,
     };

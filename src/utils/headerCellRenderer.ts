@@ -8,6 +8,7 @@ import {
   createHeaderCellElement,
   getLastHeaderIndex,
 } from "./headerCell/styling";
+import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 
 // Re-export types for backward compatibility
 export type { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
@@ -103,8 +104,14 @@ export const renderHeaderCells = (
         cellElement.style.height = `${cell.height}px`;
       }
 
-      // Skip full updateHeaderCellElement() for horizontal scroll
-      // Full updates only needed for resize/reorder/collapse operations
+      // Sync header select-all checkbox when row selection changes (e.g. select-all / deselect-all)
+      if (
+        cell.header.isSelectionColumn &&
+        context.enableRowSelection &&
+        typeof context.areAllRowsSelected === "function"
+      ) {
+        updateHeaderSelectionCheckbox(cellElement, context.areAllRowsSelected());
+      }
     }
   });
 

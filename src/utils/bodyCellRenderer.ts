@@ -9,6 +9,7 @@ import {
   updateBodyCellPosition,
   untrackCellByRow,
 } from "./bodyCell/styling";
+import { updateCheckboxElement } from "./columnEditor/createCheckbox";
 import { createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 
@@ -372,6 +373,16 @@ export const renderBodyCells = (
       if (positionChanged) {
         // Position changed - use lightweight position-only update
         updateBodyCellPosition(cellElement, cell);
+      }
+
+      // Sync row selection checkbox when context changes (e.g. select-all)
+      if (
+        cell.header.isSelectionColumn &&
+        context.enableRowSelection &&
+        context.isRowSelected
+      ) {
+        const checked = context.isRowSelected(cell.rowId);
+        updateCheckboxElement(cellElement, checked);
       }
     }
   });

@@ -1,39 +1,22 @@
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
-import { addTrackedEventListener } from "./eventTracking";
+import { createCheckbox } from "../columnEditor/createCheckbox";
 
-// Create selection checkbox
+/**
+ * Creates the row selection checkbox using the shared createCheckbox (same as popout and header).
+ */
 export const createSelectionCheckbox = (
   cell: AbsoluteBodyCell,
   context: CellRenderContext,
   isChecked: boolean,
 ): HTMLElement => {
-  const checkboxContainer = document.createElement("label");
-  checkboxContainer.className = "st-checkbox-container";
-
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.className = "st-checkbox";
-  checkbox.checked = isChecked;
-  checkbox.setAttribute("aria-label", `Select row ${cell.displayRowNumber + 1}`);
-
-  const handleChange = () => {
-    if (context.handleRowSelect) {
-      context.handleRowSelect(String(cell.rowId), checkbox.checked);
-    }
-  };
-
-  addTrackedEventListener(checkbox, "change", handleChange);
-
-  // Prevent checkbox click from triggering cell selection
-  const handleMouseDown = (event: Event) => {
-    event.stopPropagation();
-  };
-
-  addTrackedEventListener(checkbox, "mousedown", handleMouseDown);
-
-  checkboxContainer.appendChild(checkbox);
-
-  return checkboxContainer;
+  const checkbox = createCheckbox({
+    checked: isChecked,
+    onChange: (checked) => {
+      context.handleRowSelect?.(String(cell.rowId), checked);
+    },
+    ariaLabel: `Select row ${cell.displayRowNumber + 1}`,
+  });
+  return checkbox.element;
 };
 
 // Create row number display

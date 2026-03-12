@@ -516,6 +516,10 @@ export class SectionRenderer {
     if (context.expandedDepths) {
       hash += `|expandedDepths:${Array.isArray(context.expandedDepths) ? context.expandedDepths.length : context.expandedDepths.size}`;
     }
+    // Include row selection so body re-renders with updated isRowSelected when selection changes
+    if (context.selectedRowCount !== undefined) {
+      hash += `|selectedRowCount:${context.selectedRowCount}`;
+    }
 
     return hash;
   }

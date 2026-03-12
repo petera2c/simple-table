@@ -65,6 +65,8 @@ export interface CellRenderContext {
   // Configuration
   columnBorders: boolean;
   enableRowSelection?: boolean;
+  /** Used for context cache invalidation when row selection changes */
+  selectedRowCount?: number;
   cellUpdateFlash?: boolean;
   useOddColumnBackground?: boolean;
   useHoverRowBackground?: boolean;

@@ -8,7 +8,8 @@ export interface CreateCheckboxOptions {
   ariaLabel?: string;
 }
 
-const createCheckmarkSVG = (): SVGSVGElement => {
+/** Shared checkmark SVG for checkbox custom visual (used by createCheckbox and update helpers). */
+export const createCheckmarkSVG = (): SVGSVGElement => {
   const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svgElement.setAttribute("aria-hidden", "true");
   svgElement.setAttribute("role", "img");
@@ -16,12 +17,35 @@ const createCheckmarkSVG = (): SVGSVGElement => {
   svgElement.setAttribute("viewBox", "0 0 448 512");
   svgElement.setAttribute("class", "st-checkbox-checkmark");
   svgElement.style.height = "10px";
-  
+
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("d", "M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z");
   svgElement.appendChild(path);
-  
+
   return svgElement;
+};
+
+/**
+ * Updates an existing checkbox DOM (created by createCheckbox) to match the given checked state.
+ * Use when the checkbox element is reused (e.g. from cache) and selection state changed.
+ * @param container - Element that contains .st-checkbox-input and .st-checkbox-custom (the label or a parent)
+ */
+export const updateCheckboxElement = (
+  container: HTMLElement,
+  checked: boolean,
+): void => {
+  const input = container.querySelector<HTMLInputElement>(".st-checkbox-input");
+  const customCheckbox = container.querySelector<HTMLSpanElement>(".st-checkbox-custom");
+  if (!input || !customCheckbox) return;
+  if (input.checked === checked) return;
+  input.checked = checked;
+  input.setAttribute("aria-checked", String(checked));
+  customCheckbox.className = `st-checkbox-custom ${checked ? "st-checked" : ""}`;
+  customCheckbox.setAttribute("aria-hidden", "true");
+  customCheckbox.innerHTML = "";
+  if (checked) {
+    customCheckbox.appendChild(createCheckmarkSVG());
+  }
 };
 
 export const createCheckbox = ({ checked, onChange, ariaLabel }: CreateCheckboxOptions) => {
