@@ -8,6 +8,7 @@ import {
 import { renderBodyCells, AbsoluteBodyCell, CellRenderContext, cleanupBodyCellRendering } from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
+import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import { scrollSyncManager } from "../../utils/scrollSyncManager";
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
@@ -220,7 +221,7 @@ export class SectionRenderer {
       rowCount,
       rowHeight,
       heightOffsets,
-      context.customTheme,
+      context.customTheme ?? DEFAULT_CUSTOM_THEME,
     );
 
     section.style.cssText = `
@@ -237,7 +238,7 @@ export class SectionRenderer {
       collapsedHeaders,
       rowHeight,
       heightOffsets,
-      context.customTheme,
+      context.customTheme ?? DEFAULT_CUSTOM_THEME,
       startColIndex,
     );
     

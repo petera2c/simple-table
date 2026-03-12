@@ -304,15 +304,15 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     const separatorTop =
       (stickyIndex + 1) * (rowHeight + ROW_SEPARATOR_WIDTH) - ROW_SEPARATOR_WIDTH + rowOffset;
 
-    const separator = createRowSeparator(
-      separatorTop,
+    const separator = createRowSeparator({
+      position: separatorTop,
       rowHeight,
       templateColumns,
-      false,
+      displayStrongBorder: false,
       heightOffsets,
       customTheme,
-      true,
-    );
+      isSticky: true,
+    });
 
     section.appendChild(separator);
   });

@@ -6,7 +6,7 @@ import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
 import { getRenderedCells } from "./bodyCell/eventTracking";
 import {
   createBodyCellElement,
-  updateBodyCellPosition,
+  updateBodyCellElement,
   untrackCellByRow,
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
@@ -14,6 +14,7 @@ import { updateCheckboxElement } from "./columnEditor/createCheckbox";
 import { isRowExpanded } from "./rowUtils";
 import { createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
+import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
 
 // Re-export types for backward compatibility
@@ -244,15 +245,15 @@ const renderRowSeparators = (
     // Check if separator needs to be created or updated
     if (!renderedSeparators.has(rowIndex)) {
       // Create new separator
-      const separator = createRowSeparator(
+      const separator = createRowSeparator({
         position,
-        context.rowHeight,
+        rowHeight: context.rowHeight,
         templateColumns,
         displayStrongBorder,
-        context.heightOffsets,
-        context.customTheme,
-        false,
-      );
+        heightOffsets: context.heightOffsets,
+        customTheme: context.customTheme,
+        isSticky: false,
+      });
 
       container.appendChild(separator);
       renderedSeparators.set(rowIndex, separator);
@@ -289,7 +290,7 @@ const renderRowSeparators = (
             position,
             rowHeight: context.rowHeight,
             heightOffsets: context.heightOffsets,
-            customTheme: context.customTheme,
+            customTheme: context.customTheme ?? DEFAULT_CUSTOM_THEME,
           });
           separator.style.transform = `translate3d(0, ${topPosition}px, 0)`;
         }
@@ -377,24 +378,10 @@ export const renderBodyCells = (
     } else {
       const cellElement = renderedCells.get(cellId)!;
 
-      // Check if position actually changed
-      const currentLeft = parseFloat(cellElement.style.left) || 0;
-      const currentTop = parseFloat(cellElement.style.top) || 0;
-      const currentWidth = parseFloat(cellElement.style.width) || 0;
-      const currentHeight = parseFloat(cellElement.style.height) || 0;
-
-      const positionChanged =
-        currentLeft !== cell.left ||
-        currentTop !== cell.top ||
-        currentWidth !== cell.width ||
-        currentHeight !== cell.height;
-
-      // Only update if something actually changed
-      // For horizontal scroll, only position might change
-      if (positionChanged) {
-        // Position changed - use lightweight position-only update
-        updateBodyCellPosition(cellElement, cell);
-      }
+      // When row data can change (e.g. quick filter), same cellId can refer to different row
+      // content (rowId is position-based when no getRowId). Always update content and position
+      // so filtering/sorting shows correct data.
+      updateBodyCellElement(cellElement, cell, context);
 
       // Sync row selection checkbox when context changes (e.g. select-all)
       if (

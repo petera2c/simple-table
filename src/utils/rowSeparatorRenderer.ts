@@ -6,18 +6,30 @@ import {
   calculateSeparatorTopPosition,
   HeightOffsets,
 } from "./infiniteScrollUtils";
-import { CustomTheme } from "../types/CustomTheme";
+import { CustomTheme, DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
+
+export interface CreateRowSeparatorOptions {
+  position: number;
+  rowHeight: number;
+  templateColumns: string;
+  displayStrongBorder: boolean;
+  heightOffsets?: HeightOffsets;
+  customTheme?: CustomTheme;
+  isSticky?: boolean;
+}
 
 // Create a row separator element
-export const createRowSeparator = (
-  position: number,
-  rowHeight: number,
-  templateColumns: string,
-  displayStrongBorder: boolean,
-  heightOffsets: HeightOffsets | undefined,
-  customTheme: CustomTheme,
-  isSticky: boolean = false,
-): HTMLElement => {
+export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElement => {
+  const {
+    position,
+    rowHeight,
+    templateColumns,
+    displayStrongBorder,
+    heightOffsets,
+    customTheme = DEFAULT_CUSTOM_THEME,
+    isSticky = false,
+  } = options;
+
   const separator = document.createElement("div");
   separator.className = `st-row-separator ${displayStrongBorder ? "st-last-group-row" : ""}`;
 

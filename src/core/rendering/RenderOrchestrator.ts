@@ -81,7 +81,8 @@ interface FlattenedRowsCache {
   flattenResult: any;
   deps: {
     rowsRef: Row[];
-    quickFilter: any;
+    /** Value-based key so cache only hits when quickFilter text/mode actually match (avoids stale 8-row cache when typing). */
+    quickFilterKey: string;
     expandedRowsSize: number;
     collapsedRowsSize: number;
     expandedDepthsSize: number;
@@ -242,10 +243,13 @@ export class RenderOrchestrator {
       : "none";
     const filterKey = JSON.stringify(filterState?.filters || {});
 
+    const q = context.config.quickFilter;
+    const quickFilterKey = q ? `${q.text ?? ""}|${q.mode ?? "simple"}` : "";
+
     const canUseCache =
       this.flattenedRowsCache &&
       this.flattenedRowsCache.deps.rowsRef === effectiveRows &&
-      this.flattenedRowsCache.deps.quickFilter === context.config.quickFilter &&
+      this.flattenedRowsCache.deps.quickFilterKey === quickFilterKey &&
       this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
       this.flattenedRowsCache.deps.collapsedRowsSize === context.collapsedRows.size &&
       this.flattenedRowsCache.deps.expandedDepthsSize === context.expandedDepths.size &&
@@ -300,7 +304,7 @@ export class RenderOrchestrator {
         flattenResult,
         deps: {
           rowsRef: effectiveRows,
-          quickFilter: context.config.quickFilter,
+          quickFilterKey,
           expandedRowsSize: context.expandedRows.size,
           collapsedRowsSize: context.collapsedRows.size,
           expandedDepthsSize: context.expandedDepths.size,
