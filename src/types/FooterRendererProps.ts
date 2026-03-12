@@ -1,13 +1,15 @@
+import type { IconElement } from "./IconsConfig";
+
 interface FooterRendererProps {
   currentPage: number;
   endRow: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
-  nextIcon?: any;
+  nextIcon?: IconElement;
   onNextPage: () => Promise<void>;
   onPageChange: (page: number) => void;
   onPrevPage: () => void;
-  prevIcon?: any;
+  prevIcon?: IconElement;
   rowsPerPage: number;
   startRow: number;
   totalPages: number;

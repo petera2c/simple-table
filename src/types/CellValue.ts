@@ -6,6 +6,6 @@ type CellValue =
   | null
   | string[]
   | number[]
-  | Record<string, any>[];
+  | Record<string, unknown>[];
 
 export default CellValue;

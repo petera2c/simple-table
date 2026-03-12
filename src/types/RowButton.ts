@@ -14,4 +14,4 @@ export interface RowButtonProps {
 //     button.onclick = () => handleEdit(props.row);
 //     return button;
 //   }]}
-export type RowButton = (props: RowButtonProps) => HTMLElement | any;
+export type RowButton = (props: RowButtonProps) => HTMLElement | null;

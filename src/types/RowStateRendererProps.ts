@@ -1,15 +1,17 @@
+import type Row from "./Row";
+
 export interface LoadingStateRendererProps {
-  parentRow?: any;
+  parentRow?: Row;
 }
 
 export interface ErrorStateRendererProps {
   error: string;
-  parentRow?: any;
+  parentRow?: Row;
 }
 
 export interface EmptyStateRendererProps {
   message?: string;
-  parentRow?: any;
+  parentRow?: Row;
 }
 
 export type VanillaLoadingStateRenderer = string | HTMLElement | ((props: LoadingStateRendererProps) => HTMLElement | string);
@@ -18,6 +20,6 @@ export type VanillaErrorStateRenderer = string | HTMLElement | ((props: ErrorSta
 
 export type VanillaEmptyStateRenderer = string | HTMLElement | ((props: EmptyStateRendererProps) => HTMLElement | string);
 
-export type LoadingStateRenderer = any;
-export type ErrorStateRenderer = any;
-export type EmptyStateRenderer = any;
+export type LoadingStateRenderer = VanillaLoadingStateRenderer;
+export type ErrorStateRenderer = VanillaErrorStateRenderer;
+export type EmptyStateRenderer = VanillaEmptyStateRenderer;

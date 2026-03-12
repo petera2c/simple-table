@@ -1,13 +1,16 @@
+/** Single icon value used across header, footer, and column editor props */
+export type IconElement = SVGSVGElement | HTMLElement | string;
+
 export interface VanillaIconsConfig {
-  drag?: SVGSVGElement | HTMLElement | string;
-  expand?: SVGSVGElement | HTMLElement | string;
-  filter?: SVGSVGElement | HTMLElement | string;
-  headerCollapse?: SVGSVGElement | HTMLElement | string;
-  headerExpand?: SVGSVGElement | HTMLElement | string;
-  next?: SVGSVGElement | HTMLElement | string;
-  prev?: SVGSVGElement | HTMLElement | string;
-  sortDown?: SVGSVGElement | HTMLElement | string;
-  sortUp?: SVGSVGElement | HTMLElement | string;
+  drag?: IconElement;
+  expand?: IconElement;
+  filter?: IconElement;
+  headerCollapse?: IconElement;
+  headerExpand?: IconElement;
+  next?: IconElement;
+  prev?: IconElement;
+  sortDown?: IconElement;
+  sortUp?: IconElement;
 }
 
 export interface IconsConfig extends VanillaIconsConfig {}

@@ -4,7 +4,7 @@ import Row from "./Row";
 import Cell from "./Cell";
 
 type TableRowProps = {
-  currentRows: { [key: string]: any }[];
+  currentRows: Row[];
   draggedHeaderRef: { current: HeaderObject | null };
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (props: Cell) => void;

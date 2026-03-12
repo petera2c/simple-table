@@ -10,8 +10,9 @@
     "build-storybook": "storybook build",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
-    "version:major": "npm version major && git push && git push --tags"
-  },
+    "version:major": "npm version major && git push && git push --tags",
+    "test-storybook:ci": "test-storybook --url http://localhost:6006"
+    },
   "sideEffects": [
     "*.css",
     "**/*.css"

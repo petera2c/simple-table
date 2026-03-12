@@ -2,6 +2,12 @@ import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import CellValue from "../../types/CellValue";
 import { IconsConfig } from "../../types/IconsConfig";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
+import type Row from "../../types/Row";
+import type TableRow from "../../types/TableRow";
+import type RowState from "../../types/RowState";
+import type { RowButton } from "../../types/RowButton";
+import type { CustomTheme } from "../../types/CustomTheme";
+import type { HeightOffsets } from "../infiniteScrollUtils";
 import type {
   VanillaEmptyStateRenderer,
   VanillaErrorStateRenderer,
@@ -14,14 +20,14 @@ type Dispatch<A> = (value: A) => void;
 // Types for cell data
 export interface AbsoluteBodyCell {
   header: HeaderObject;
-  row: any;
+  row: Row;
   rowIndex: number;
   colIndex: number;
   rowId: string;
   displayRowNumber: number;
   depth: number;
   isOdd: boolean;
-  tableRow: any; // Full table row object
+  tableRow: TableRow;
   left: number; // Horizontal position
   top: number; // Vertical position
   width: number; // Cell width
@@ -39,7 +45,7 @@ export interface CellData {
 export interface CellEditParams {
   accessor: Accessor;
   newValue: CellValue;
-  row: any;
+  row: Row;
   rowIndex: number;
 }
 
@@ -47,7 +53,7 @@ export interface CellEditParams {
 export interface CellClickParams {
   accessor: Accessor;
   colIndex: number;
-  row: any;
+  row: Row;
   rowIndex: number;
   value: CellValue;
 }
@@ -80,8 +86,8 @@ export interface CellRenderContext {
   headers: HeaderObject[];
   rowHeight: number;
   templateColumns: string;
-  heightOffsets?: any;
-  customTheme?: any;
+  heightOffsets?: HeightOffsets;
+  customTheme?: CustomTheme;
   containerWidth?: number;
 
   // Callbacks
@@ -96,14 +102,14 @@ export interface CellRenderContext {
   cellRegistry?: Map<string, CellRegistryEntry>;
   setCollapsedRows: Dispatch<SetStateAction<Map<string, number>>>;
   setExpandedRows: Dispatch<SetStateAction<Map<string, number>>>;
-  setRowStateMap: Dispatch<SetStateAction<Map<string | number, any>>>;
+  setRowStateMap: Dispatch<SetStateAction<Map<string | number, RowState>>>;
   getCollapsedRows?: () => Map<string, number>;
   getExpandedRows?: () => Map<string, number>;
 
   // UI state
   icons: IconsConfig;
   theme: string;
-  rowButtons?: any[]; // Row button components
+  rowButtons?: RowButton[];
 
   // Inherited by nested tables (state row renderers)
   loadingStateRenderer?: VanillaLoadingStateRenderer;
@@ -117,7 +123,7 @@ export interface CellRenderContext {
   isCopyFlashing: (cell: CellData) => boolean;
   isWarningFlashing: (cell: CellData) => boolean;
   isRowSelected?: (rowId: string) => boolean;
-  canExpandRowGroup?: (row: any) => boolean;
+  canExpandRowGroup?: (row: Row) => boolean;
   isLoading?: boolean;
 
   // Pinned section

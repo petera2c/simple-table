@@ -13,6 +13,6 @@ interface HeaderDropdownProps extends HeaderRendererProps {
 
 export type VanillaHeaderDropdown = (props: HeaderDropdownProps) => HTMLElement | string | null;
 
-export type HeaderDropdown = (props: HeaderDropdownProps) => any;
+export type HeaderDropdown = (props: HeaderDropdownProps) => HTMLElement | string | null;
 
 export default HeaderDropdownProps;
