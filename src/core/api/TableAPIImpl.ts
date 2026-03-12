@@ -63,8 +63,12 @@ export class TableAPIImpl {
               ]
             : [rowIndex];
           const key = `${rowIdArray.join("-")}-${accessor}`;
-          context.cellRegistry?.get(key)?.updateContent(newValue);
-          context.onRender();
+          const entry = context.cellRegistry?.get(key);
+          if (entry) {
+            entry.updateContent(newValue);
+          } else {
+            context.onRender();
+          }
         }
       },
 

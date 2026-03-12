@@ -131,7 +131,9 @@ export const BasicRowSelection = {
     expect(await getSelectedRowCount(canvasElement)).toBe(2);
     await user.hover(firstSelectionCell);
     await new Promise((r) => setTimeout(r, 300));
-    fireEvent.click(firstCheckbox);
+    const firstCheckboxToDeselect = getRowCheckbox(canvasElement, 0);
+    if (!firstCheckboxToDeselect) throw new Error("First row checkbox not found for deselect");
+    fireEvent.click(firstCheckboxToDeselect);
     await new Promise((r) => setTimeout(r, 300));
     expect(await getSelectedRowCount(canvasElement)).toBe(1);
   },
@@ -268,7 +270,9 @@ export const OnRowSelectionChangeCallback = {
     expect(selectionInfo.textContent).toContain("Total selected: 1");
     await user.hover(firstSelectionCell);
     await new Promise((r) => setTimeout(r, 300));
-    fireEvent.click(firstCheckbox);
+    const firstCheckboxToDeselect = getRowCheckbox(canvasElement, 0);
+    if (!firstCheckboxToDeselect) throw new Error("First row checkbox not found for deselect");
+    fireEvent.click(firstCheckboxToDeselect);
     await new Promise((r) => setTimeout(r, 300));
     expect(selectionInfo.textContent).toContain("Deselected: Alice Johnson");
     expect(selectionInfo.textContent).toContain("Total selected: 0");
