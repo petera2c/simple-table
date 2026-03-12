@@ -1,34 +1,29 @@
 /**
  * BillingExample – vanilla port of React billing-example/BillingExample.
+ * Uses same headers and data as React, with row grouping by invoices and charges.
  */
-import type { HeaderObject, Row } from "../../../src/index";
+import type { Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
-
-const HEADERS: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80 },
-  { accessor: "invoice", label: "Invoice", width: 150 },
-  { accessor: "amount", label: "Amount", width: 120 },
-  { accessor: "date", label: "Date", width: 120 },
-];
-
-const ROWS: Row[] = [
-  { id: 1, invoice: "INV-001", amount: 1500, date: "2024-01-15" },
-  { id: 2, invoice: "INV-002", amount: 2300, date: "2024-01-20" },
-  { id: 3, invoice: "INV-003", amount: 800, date: "2024-02-01" },
-];
+import { BILLING_HEADERS } from "./billing-headers";
+import billingData from "./billing-data.json";
 
 export function renderBillingExample(): HTMLElement {
-  const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    columnReordering: true,
-    columnResizing: true,
-    editColumns: true,
-    selectableCells: true,
-    height: "70dvh",
-    initialSortColumn: "amount",
-    initialSortDirection: "desc",
-    useOddColumnBackground: true,
-    getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
-  });
+  const { wrapper, h2 } = renderVanillaTable(
+    BILLING_HEADERS,
+    billingData as Row[],
+    {
+      columnReordering: true,
+      columnResizing: true,
+      editColumns: true,
+      selectableCells: true,
+      height: "70dvh",
+      initialSortColumn: "amount",
+      initialSortDirection: "desc",
+      useOddColumnBackground: true,
+      rowGrouping: ["invoices", "charges"],
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    }
+  );
   h2.textContent = "Billing Example";
   return wrapper;
 }

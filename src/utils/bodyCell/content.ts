@@ -185,12 +185,15 @@ export const createCellContent = (
         }),
       });
 
-      // If renderer returns a string, use it
-      if (typeof rendered === "string") {
-        const textNode = document.createTextNode(rendered);
+      // If renderer returns a string or number, use it as text
+      if (typeof rendered === "string" || typeof rendered === "number") {
+        const textNode = document.createTextNode(String(rendered));
         contentSpan.appendChild(textNode);
-      } else if (rendered && typeof rendered === "object") {
-        // If it returns a React element, we can't render it - show formatted content instead
+      } else if (rendered instanceof Node) {
+        // Full control: consumer returns an HTMLElement, DocumentFragment, or other Node
+        contentSpan.appendChild(rendered);
+      } else if (rendered !== null && rendered !== undefined && typeof rendered === "object") {
+        // Unknown object (e.g. React element) – fall back to formatted content
         const formatted = formatCellContent(content, header, colIndex, row, rowIndex);
         if (formatted !== null) {
           const textNode = document.createTextNode(formatted);

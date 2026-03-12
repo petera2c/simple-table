@@ -1,3 +1,4 @@
+import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
 import HeaderObject from "../../types/HeaderObject";
 import { getCellId } from "../cellUtils";
 import { calculateHeaderContentWidth } from "../headerWidthUtils";
@@ -30,7 +31,7 @@ export const createResizeHandle = (
     const startWidth = document.getElementById(
       getCellId({ accessor: header.accessor, rowId: "header" })
     )?.offsetWidth;
-    
+
     throttle(() => {
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns || false,
@@ -47,11 +48,11 @@ export const createResizeHandle = (
         reverse: reverse || false,
         setHeaders: context.setHeaders,
         setIsResizing: context.setIsResizing,
-        startWidth: startWidth || 150,
+        startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
       });
     }, 10);
   };
-  
+
   addTrackedEventListener(resizeContainer, "mousedown", handleMouseDown as EventListener);
   
   const handleTouchStart = (event: Event) => {
@@ -76,7 +77,7 @@ export const createResizeHandle = (
         reverse: reverse || false,
         setHeaders: context.setHeaders,
         setIsResizing: context.setIsResizing,
-        startWidth: startWidth || 150,
+        startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
       });
     }, 10);
   };

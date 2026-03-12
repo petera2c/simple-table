@@ -33,7 +33,18 @@ const findHeaderCellByLabel = (canvasElement: HTMLElement, label: string): Eleme
   return null;
 };
 
-const resizeColumn = async (headerCell: Element, resizeAmount: number) => {
+/**
+ * Resize a column by simulating drag on its header resize handle.
+ * @param headerCell - The header cell element
+ * @param resizeAmount - Pixels to drag (positive = wider, negative = narrower)
+ * @param getElementForFinalWidth - Optional: return the header element to measure after resize (use to avoid stale reference if DOM is updated)
+ */
+const resizeColumn = async (
+  headerCell: Element,
+  resizeAmount: number,
+  getElementForFinalWidth?: () => Element | null,
+) => {
+  const doc = headerCell.ownerDocument;
   const initialWidth = headerCell.getBoundingClientRect().width;
   const resizeHandle = headerCell.querySelector(".st-header-resize-handle-container");
   if (!resizeHandle) throw new Error("Resize handle not found");
@@ -58,10 +69,11 @@ const resizeColumn = async (headerCell: Element, resizeAmount: number) => {
     cancelable: true,
   });
   resizeHandle.dispatchEvent(mouseDownEvent);
-  document.dispatchEvent(mouseMoveEvent);
-  document.dispatchEvent(mouseUpEvent);
+  doc.dispatchEvent(mouseMoveEvent);
+  doc.dispatchEvent(mouseUpEvent);
   await new Promise((r) => setTimeout(r, 100));
-  const finalWidth = headerCell.getBoundingClientRect().width;
+  const elementForFinal = getElementForFinalWidth ? getElementForFinalWidth() : headerCell;
+  const finalWidth = elementForFinal ? elementForFinal.getBoundingClientRect().width : 0;
   return { initialWidth, finalWidth };
 };
 
@@ -81,7 +93,11 @@ export const BasicColumnResize = {
     const storeNameHeader = findHeaderCellByLabel(canvasElement, "Store Name");
     expect(storeNameHeader).toBeTruthy();
     const resizeAmount = 50;
-    const { initialWidth, finalWidth } = await resizeColumn(storeNameHeader!, resizeAmount);
+    const { initialWidth, finalWidth } = await resizeColumn(
+      storeNameHeader!,
+      resizeAmount,
+      () => findHeaderCellByLabel(canvasElement, "Store Name"),
+    );
     const widthChange = finalWidth - initialWidth;
     expect(Math.abs(widthChange - resizeAmount)).toBeLessThan(5);
   },
@@ -102,15 +118,27 @@ export const ResizeMultipleColumns = {
     await waitForTable();
     const idHeader = findHeaderCellByLabel(canvasElement, "ID");
     expect(idHeader).toBeTruthy();
-    const { initialWidth: idInitial, finalWidth: idFinal } = await resizeColumn(idHeader!, 20);
+    const { initialWidth: idInitial, finalWidth: idFinal } = await resizeColumn(
+      idHeader!,
+      20,
+      () => findHeaderCellByLabel(canvasElement, "ID"),
+    );
     expect(idFinal - idInitial).toBeGreaterThan(15);
     const storeNameHeader = findHeaderCellByLabel(canvasElement, "Store Name");
     expect(storeNameHeader).toBeTruthy();
-    const { initialWidth: storeInitial, finalWidth: storeFinal } = await resizeColumn(storeNameHeader!, 30);
+    const { initialWidth: storeInitial, finalWidth: storeFinal } = await resizeColumn(
+      storeNameHeader!,
+      30,
+      () => findHeaderCellByLabel(canvasElement, "Store Name"),
+    );
     expect(storeFinal - storeInitial).toBeGreaterThan(25);
     const cityHeader = findHeaderCellByLabel(canvasElement, "City");
     expect(cityHeader).toBeTruthy();
-    const { initialWidth: cityInitial, finalWidth: cityFinal } = await resizeColumn(cityHeader!, 40);
+    const { initialWidth: cityInitial, finalWidth: cityFinal } = await resizeColumn(
+      cityHeader!,
+      40,
+      () => findHeaderCellByLabel(canvasElement, "City"),
+    );
     expect(cityFinal - cityInitial).toBeGreaterThan(35);
   },
 };
@@ -130,7 +158,11 @@ export const ResizeToSmallerWidth = {
     const storeNameHeader = findHeaderCellByLabel(canvasElement, "Store Name");
     expect(storeNameHeader).toBeTruthy();
     const resizeAmount = -50;
-    const { initialWidth, finalWidth } = await resizeColumn(storeNameHeader!, resizeAmount);
+    const { initialWidth, finalWidth } = await resizeColumn(
+      storeNameHeader!,
+      resizeAmount,
+      () => findHeaderCellByLabel(canvasElement, "Store Name"),
+    );
     expect(finalWidth).toBeLessThan(initialWidth);
     const widthChange = finalWidth - initialWidth;
     expect(Math.abs(widthChange - resizeAmount)).toBeLessThan(5);
@@ -151,7 +183,11 @@ export const ResizeWithMinWidth = {
     await waitForTable();
     const storeNameHeader = findHeaderCellByLabel(canvasElement, "Store Name");
     expect(storeNameHeader).toBeTruthy();
-    const { finalWidth } = await resizeColumn(storeNameHeader!, -150);
+    const { finalWidth } = await resizeColumn(
+      storeNameHeader!,
+      -150,
+      () => findHeaderCellByLabel(canvasElement, "Store Name"),
+    );
     expect(finalWidth).toBeGreaterThanOrEqual(195);
   },
 };
@@ -175,7 +211,11 @@ export const ResizeAllColumns = {
     for (const label of columnLabels) {
       const header = findHeaderCellByLabel(canvasElement, label);
       expect(header).toBeTruthy();
-      const { initialWidth, finalWidth } = await resizeColumn(header!, 20);
+      const { initialWidth, finalWidth } = await resizeColumn(
+        header!,
+        20,
+        () => findHeaderCellByLabel(canvasElement, label),
+      );
       const widthChange = finalWidth - initialWidth;
       expect(Math.abs(widthChange - 20)).toBeLessThan(5);
     }

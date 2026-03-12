@@ -330,9 +330,11 @@ export const handleResizeStart = ({
     }
 
     if (finalUpdate) {
-      // Final update: sync React state
+      // Final update: sync React state and ensure DOM is updated (e.g. when mouseup
+      // runs before the mousemove RAF, as in tests that fire events in one tick)
       const newHeaders = [...headers];
       setHeaders(newHeaders);
+      updateColumnWidthsInDOM(headers, collapsedHeaders);
     } else {
       // During drag: update DOM only for better performance
       updateColumnWidthsInDOM(headers, collapsedHeaders);

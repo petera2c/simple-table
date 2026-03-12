@@ -14,11 +14,22 @@ interface CellRendererProps {
   formattedValue?: string | number | string[] | number[] | null | undefined | boolean; // The formatted cell value (from valueFormatter if present)
 }
 
-// BREAKING CHANGE: CellRenderer now returns string | number | null instead of ReactNode
-// React components are no longer supported in cell renderers
-// Users should use valueFormatter for formatting, or return simple strings/numbers
-// Example:
-//   cellRenderer: ({ value, row }) => `${value} (${row.status})`
-export type CellRenderer = (props: CellRendererProps) => string | number | null | any;
+/**
+ * CellRenderer return type:
+ * - string | number | null: rendered as text in the cell
+ * - Node (HTMLElement, DocumentFragment, etc.): appended directly into the cell for full DOM control
+ *
+ * Example (text):
+ *   cellRenderer: ({ value, row }) => `${value} (${row.status})`
+ *
+ * Example (custom HTML):
+ *   cellRenderer: ({ row }) => {
+ *     const span = document.createElement('span');
+ *     span.className = 'badge';
+ *     span.textContent = String(row.status);
+ *     return span;
+ *   }
+ */
+export type CellRenderer = (props: CellRendererProps) => string | number | null | Node;
 
 export default CellRendererProps;
