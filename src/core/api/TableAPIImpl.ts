@@ -29,6 +29,7 @@ export interface TableAPIContext {
   expandedDepths: Set<number>;
   rowStateMap: Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
+  cellRegistry?: Map<string, { updateContent: (value: any) => void }>;
   columnEditorOpen: boolean;
   expandedDepthsManager: any;
   selectionManager: SelectionManager | null;
@@ -46,7 +47,23 @@ export class TableAPIImpl {
       updateData: (props: UpdateDataProps) => {
         const { rowIndex, accessor, newValue } = props;
         if (rowIndex >= 0 && rowIndex < context.localRows.length) {
-          (context.localRows[rowIndex] as any)[accessor] = newValue;
+          const row = context.localRows[rowIndex] as any;
+          row[accessor] = newValue;
+          const rowPath = [rowIndex];
+          const rowIdArray: (string | number)[] = context.config.getRowId
+            ? [
+                rowIndex,
+                context.config.getRowId({
+                  row: context.localRows[rowIndex],
+                  depth: 0,
+                  index: rowIndex,
+                  rowPath,
+                  rowIndexPath: rowPath,
+                }),
+              ]
+            : [rowIndex];
+          const key = `${rowIdArray.join("-")}-${accessor}`;
+          context.cellRegistry?.get(key)?.updateContent(newValue);
           context.onRender();
         }
       },

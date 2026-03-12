@@ -577,6 +577,7 @@ export class SimpleTableVanilla {
       expandedDepths: this.expandedDepths,
       rowStateMap: this.rowStateMap,
       headerRegistry: this.headerRegistry,
+      cellRegistry: this.cellRegistry,
       columnEditorOpen: this.columnEditorOpen,
       expandedDepthsManager: this.expandedDepthsManager,
       selectionManager: this.selectionManager,
