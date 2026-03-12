@@ -527,6 +527,16 @@ export class SectionRenderer {
     if (context.selectedRowCount !== undefined) {
       hash += `|selectedRowCount:${context.selectedRowCount}`;
     }
+    // Include column selection so header/body re-render with st-header-selected and st-cell-column-selected
+    if (context.selectedColumns && context.selectedColumns.size !== undefined) {
+      hash += `|selectedColumns:${Array.from(context.selectedColumns as Set<number>).sort((a, b) => a - b).join(",")}`;
+    }
+    if (context.columnsWithSelectedCells && context.columnsWithSelectedCells.size !== undefined) {
+      hash += `|columnsWithSelectedCells:${Array.from(context.columnsWithSelectedCells as Set<number>).sort((a, b) => a - b).join(",")}`;
+    }
+    if (context.rowsWithSelectedCells && context.rowsWithSelectedCells.size !== undefined) {
+      hash += `|rowsWithSelectedCells:${Array.from(context.rowsWithSelectedCells as Set<string>).sort().join(",")}`;
+    }
 
     return hash;
   }

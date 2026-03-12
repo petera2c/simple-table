@@ -6,6 +6,7 @@ import { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
 import { getRenderedCells } from "./headerCell/eventTracking";
 import {
   createHeaderCellElement,
+  calculateHeaderCellClasses,
   getLastHeaderIndex,
 } from "./headerCell/styling";
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
@@ -111,6 +112,12 @@ export const renderHeaderCells = (
         typeof context.areAllRowsSelected === "function"
       ) {
         updateHeaderSelectionCheckbox(cellElement, context.areAllRowsSelected());
+      }
+
+      // Update classes when context changes (e.g. column selection → st-header-selected)
+      const newClassNames = calculateHeaderCellClasses(cell, context, isLastHeader);
+      if (cellElement.className !== newClassNames) {
+        cellElement.className = newClassNames;
       }
     }
   });
