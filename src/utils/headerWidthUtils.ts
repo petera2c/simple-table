@@ -143,9 +143,17 @@ function buildSectionWidthMap(
       return;
     }
     if (spec.type === "px") widthMap.set(h.accessor as string, spec.value);
-    else if (spec.type === "fr")
-      widthMap.set(h.accessor as string, spec.value * pxPerFr);
-    else if (spec.type === "pct")
+    else if (spec.type === "fr") {
+      const frAssigned = spec.value * pxPerFr;
+      const minW =
+        typeof h.minWidth === "number"
+          ? h.minWidth
+          : typeof h.minWidth === "string"
+            ? parseFloat(String(h.minWidth)) || 0
+            : 0;
+      const width = minW > 0 ? Math.max(frAssigned, minW) : frAssigned;
+      widthMap.set(h.accessor as string, width);
+    } else if (spec.type === "pct")
       widthMap.set(h.accessor as string, (total * spec.value) / 100);
     else
       widthMap.set(h.accessor as string, TABLE_HEADER_CELL_WIDTH_DEFAULT);

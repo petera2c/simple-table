@@ -18,6 +18,7 @@ import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import { normalizeHeaderWidths } from "../../utils/headerWidthUtils";
+import { applyAutoScaleToHeaders } from "../../managers/AutoScaleManager";
 import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/TableInitializer";
 
@@ -150,20 +151,37 @@ export class RenderOrchestrator {
       this.lastHeadersRef = context.headers;
     }
 
-    const dimensionState = context.dimensionManager?.getState() ?? {
-      containerWidth: 0,
-      calculatedHeaderHeight: context.customTheme.headerHeight,
-      maxHeaderDepth: 1,
-    };
+    if (!context.dimensionManager) return;
+
+    let dimensionState = context.dimensionManager.getState();
+
+    const fallbackContainerWidth =
+      dimensionState.containerWidth ||
+      context.mainBodyRef?.current?.clientWidth ||
+      (context.mainBodyRef?.current?.parentElement?.clientWidth ?? 0);
+    if (fallbackContainerWidth > 0 && dimensionState.containerWidth === 0) {
+      dimensionState = { ...dimensionState, containerWidth: fallbackContainerWidth };
+    }
 
     const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = dimensionState;
 
-    const effectiveHeaders = this.computeEffectiveHeaders(
+    let effectiveHeaders = this.computeEffectiveHeaders(
       context.headers,
       context.config,
       context.customTheme,
       containerWidth,
     );
+
+    if (context.config.autoExpandColumns && containerWidth > 0) {
+      effectiveHeaders = applyAutoScaleToHeaders(effectiveHeaders, {
+        autoExpandColumns: true,
+        containerWidth,
+        pinnedLeftWidth: 0,
+        pinnedRightWidth: 0,
+        mainBodyRef: context.mainBodyRef ?? { current: null },
+        isResizing: context.isResizing ?? false,
+      });
+    }
 
     const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
       recalculateAllSectionWidths({

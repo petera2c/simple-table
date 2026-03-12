@@ -10,6 +10,7 @@ import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
 import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import { scrollSyncManager } from "../../utils/scrollSyncManager";
+import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
 
 export interface HeaderSectionParams {
   headers: HeaderObject[];
@@ -121,6 +122,12 @@ export class SectionRenderer {
       ${sectionWidth !== undefined ? `width: ${sectionWidth}px;` : ""}
       height: ${maxHeaderDepth * headerHeight}px;
     `;
+
+    const leafHeaders = this.getLeafHeaders(filteredHeaders, collapsedHeaders);
+    const gridTemplateColumns = leafHeaders
+      .map((h) => `${typeof h.width === "number" ? h.width : TABLE_HEADER_CELL_WIDTH_DEFAULT}px`)
+      .join(" ");
+    section.style.gridTemplateColumns = gridTemplateColumns;
 
     const absoluteCells = this.getCachedHeaderCells(
       sectionKey,
