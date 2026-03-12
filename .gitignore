@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /.pnp
+/.playwright-browsers
 .pnp.js
 
 # testing

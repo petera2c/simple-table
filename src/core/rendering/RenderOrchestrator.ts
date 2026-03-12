@@ -4,7 +4,7 @@ import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { DimensionManager } from "../../managers/DimensionManager";
-import { ScrollManager } from "../../managers/ScrollManager";
+import { ScrollManager, ScrollSyncConfig } from "../../managers/ScrollManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
@@ -447,7 +447,7 @@ export class RenderOrchestrator {
   private setupScrollSync(context: RenderContext): void {
     if (!context.scrollManager) return;
 
-    const configs = [];
+    const configs: ScrollSyncConfig[] = [];
 
     // Body → Header sync for pinned left section
     if (context.pinnedLeftRef.current) {
