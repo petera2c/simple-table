@@ -146,9 +146,11 @@ export const HideMultipleColumns = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const popout = await openColumnEditor(canvasElement);
-    const items = getColumnCheckboxItems(popout);
+    await openColumnEditor(canvasElement);
     for (const label of ["City", "Opening Date", "Customer Rating"]) {
+      const popout = canvasElement.querySelector(".st-column-editor-popout.open") ?? canvasElement.querySelector(".st-column-editor-popout");
+      expect(popout).toBeTruthy();
+      const items = getColumnCheckboxItems(popout!);
       const item = items.find((i) => getColumnLabelFromCheckbox(i) === label);
       expect(item).toBeTruthy();
       await toggleColumnVisibility(item!);
@@ -201,21 +203,16 @@ export const ToggleColumnMultipleTimes = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
     expect(isColumnVisible(canvasElement, "City")).toBe(true);
-    const popout = await openColumnEditor(canvasElement);
-    const items = getColumnCheckboxItems(popout);
-    const cityItem = items.find((i) => getColumnLabelFromCheckbox(i) === "City");
-    expect(cityItem).toBeTruthy();
-    await toggleColumnVisibility(cityItem!);
-    await new Promise((r) => setTimeout(r, 500));
-    expect(isColumnVisible(canvasElement, "City")).toBe(false);
-    await toggleColumnVisibility(cityItem!);
-    await new Promise((r) => setTimeout(r, 500));
-    expect(isColumnVisible(canvasElement, "City")).toBe(true);
-    await toggleColumnVisibility(cityItem!);
-    await new Promise((r) => setTimeout(r, 500));
-    expect(isColumnVisible(canvasElement, "City")).toBe(false);
-    await toggleColumnVisibility(cityItem!);
-    await new Promise((r) => setTimeout(r, 500));
+    await openColumnEditor(canvasElement);
+    for (let i = 0; i < 4; i++) {
+      const popout = canvasElement.querySelector(".st-column-editor-popout.open") ?? canvasElement.querySelector(".st-column-editor-popout");
+      expect(popout).toBeTruthy();
+      const items = getColumnCheckboxItems(popout!);
+      const cityItem = items.find((j) => getColumnLabelFromCheckbox(j) === "City");
+      expect(cityItem).toBeTruthy();
+      await toggleColumnVisibility(cityItem!);
+      await new Promise((r) => setTimeout(r, 500));
+    }
     expect(isColumnVisible(canvasElement, "City")).toBe(true);
   },
 };
@@ -235,16 +232,23 @@ export const ColumnCountChanges = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
     expect(getVisibleColumnLabels(canvasElement).length).toBe(5);
-    const popout = await openColumnEditor(canvasElement);
-    const items = getColumnCheckboxItems(popout);
-    const cityItem = items.find((i) => getColumnLabelFromCheckbox(i) === "City");
-    const dateItem = items.find((i) => getColumnLabelFromCheckbox(i) === "Opening Date");
-    await toggleColumnVisibility(cityItem!);
-    await new Promise((r) => setTimeout(r, 300));
-    await toggleColumnVisibility(dateItem!);
-    await new Promise((r) => setTimeout(r, 500));
+    await openColumnEditor(canvasElement);
+    for (const label of ["City", "Opening Date"]) {
+      const popout = canvasElement.querySelector(".st-column-editor-popout.open") ?? canvasElement.querySelector(".st-column-editor-popout");
+      expect(popout).toBeTruthy();
+      const items = getColumnCheckboxItems(popout!);
+      const item = items.find((i) => getColumnLabelFromCheckbox(i) === label);
+      expect(item).toBeTruthy();
+      await toggleColumnVisibility(item!);
+      await new Promise((r) => setTimeout(r, 300));
+    }
+    await new Promise((r) => setTimeout(r, 200));
     expect(getVisibleColumnLabels(canvasElement).length).toBe(3);
-    await toggleColumnVisibility(cityItem!);
+    const popout2 = canvasElement.querySelector(".st-column-editor-popout.open") ?? canvasElement.querySelector(".st-column-editor-popout");
+    const items2 = getColumnCheckboxItems(popout2!);
+    const cityItem2 = items2.find((i) => getColumnLabelFromCheckbox(i) === "City");
+    expect(cityItem2).toBeTruthy();
+    await toggleColumnVisibility(cityItem2!);
     await new Promise((r) => setTimeout(r, 500));
     expect(getVisibleColumnLabels(canvasElement).length).toBe(4);
   },

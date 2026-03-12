@@ -21,6 +21,7 @@ import AriaAnnouncementManager from "../hooks/ariaAnnouncements";
 import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
 import { checkDeprecatedProps } from "../utils/deprecatedPropsWarnings";
+import { deepClone } from "../utils/generalUtils";
 
 import {
   TableInitializer,
@@ -422,7 +423,8 @@ export class SimpleTableVanilla {
         this.isResizing = value;
       },
       setHeaders: (headers: HeaderObject[]) => {
-        this.headers = headers;
+        this.headers = deepClone(headers);
+        this.renderOrchestrator.invalidateCache("header");
       },
       setCollapsedHeaders: (headers: Set<Accessor>) => {
         this.collapsedHeaders = headers;
@@ -585,7 +587,8 @@ export class SimpleTableVanilla {
       filterManager: this.filterManager,
       onRender: () => this.render("columnEditor-onRender"),
       setHeaders: (headers: HeaderObject[]) => {
-        this.headers = headers;
+        this.headers = deepClone(headers);
+        this.renderOrchestrator.invalidateCache("header");
       },
       setCurrentPage: (page: number) => {
         this.currentPage = page;

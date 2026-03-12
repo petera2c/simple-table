@@ -130,7 +130,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     }
 
     const updatedHeaders = [...headers];
-    setHeaders(updatedHeaders);
+    setHeaders(deepClone(updatedHeaders));
 
     if (onColumnVisibilityChange) {
       const visibilityState = buildColumnVisibilityState(updatedHeaders);

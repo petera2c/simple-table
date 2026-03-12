@@ -271,9 +271,6 @@ export const createBodyCellElement = (
 
     // Start editing on F2 or Enter
     if ((keyEvent.key === "F2" || keyEvent.key === "Enter") && header.isEditable && !isEditing) {
-      // #region agent log
-      fetch('http://127.0.0.1:7670/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'288b83'},body:JSON.stringify({sessionId:'288b83',location:'styling.ts:283',message:'Keyboard edit triggered',data:{key:keyEvent.key,accessor:header.accessor,isEditable:header.isEditable},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
       keyEvent.preventDefault();
       isEditing = true;
       renderCellContent();

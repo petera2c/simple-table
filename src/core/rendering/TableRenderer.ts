@@ -132,40 +132,12 @@ export class TableRenderer {
       selectedRowCount: headerSelectedRowCount,
       filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
-      // #region agent log
-      ...(deps.config.selectableColumns
-        ? (() => {
-            const sm = deps.selectionManager;
-            const fromSm = sm
-              ? {
-                  selectedColumns: sm.getSelectedColumns(),
-                  columnsWithSelectedCells: sm.getColumnsWithSelectedCells(),
-                }
-              : null;
-            fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "b99c63" },
-              body: JSON.stringify({
-                sessionId: "b99c63",
-                location: "TableRenderer.ts:headerContext",
-                message: "header context selection: using empty vs selectionManager",
-                data: {
-                  selectableColumns: true,
-                  selectionManagerPresent: Boolean(sm),
-                  fromSelectionManager: fromSm
-                    ? { selectedSize: fromSm.selectedColumns.size, columnsWithCellsSize: fromSm.columnsWithSelectedCells.size }
-                    : null,
-                },
-                timestamp: Date.now(),
-                hypothesisId: "H1",
-              }),
-            }).catch(() => {});
-            return sm
-              ? { selectedColumns: sm.getSelectedColumns(), columnsWithSelectedCells: sm.getColumnsWithSelectedCells() }
-              : { selectedColumns: new Set<number>(), columnsWithSelectedCells: new Set<number>() };
-          })()
+      ...(deps.config.selectableColumns && deps.selectionManager
+        ? {
+            selectedColumns: deps.selectionManager.getSelectedColumns(),
+            columnsWithSelectedCells: deps.selectionManager.getColumnsWithSelectedCells(),
+          }
         : { selectedColumns: new Set<number>(), columnsWithSelectedCells: new Set<number>() }),
-      // #endregion
       sort: sortState?.sort ?? null,
       autoExpandColumns: deps.config.autoExpandColumns,
       selectableColumns: deps.config.selectableColumns,
@@ -668,6 +640,9 @@ export class TableRenderer {
         contextHeaders: deps.headers,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
+          if (this.columnEditorInstance) {
+            this.columnEditorInstance.update({ headers: newHeaders, contextHeaders: newHeaders });
+          }
           deps.onRender();
         },
         onColumnVisibilityChange: deps.config.onColumnVisibilityChange,
@@ -687,6 +662,9 @@ export class TableRenderer {
         contextHeaders: deps.headers,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
+          if (this.columnEditorInstance) {
+            this.columnEditorInstance.update({ headers: newHeaders, contextHeaders: newHeaders });
+          }
           deps.onRender();
         },
         onColumnVisibilityChange: deps.config.onColumnVisibilityChange,
