@@ -305,7 +305,7 @@ input {
   padding: 48px 24px;
   color: var(--st-header-text-color);
   opacity: 0.6;
-  font-size: 14px;
+  font-size: 0.9em;
 }
 
 .st-body-main,
@@ -879,7 +879,7 @@ input {
 
 .st-footer-results-text {
   color: var(--st-cell-color);
-  font-size: 0.875rem;
+  font-size: 0.9em;
   white-space: nowrap;
 }
 
@@ -1369,6 +1369,7 @@ input {
   white-space: nowrap;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   color: var(--st-cell-color);
+  font-size: 0.9em;
 }
 
 .st-dropdown-item:hover {
@@ -1559,7 +1560,7 @@ input {
   padding: var(--st-spacing-small);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  font-size: 14px;
+  font-size: 0.9em;
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
@@ -1582,7 +1583,7 @@ input {
   padding: var(--st-spacing-medium) var(--st-spacing-medium);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  font-size: 14px;
+  font-size: 0.9em;
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
@@ -1609,7 +1610,7 @@ input {
   border: none;
   border-radius: var(--st-border-radius);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9em;
   font-weight: 500;
   font-family: inherit;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
@@ -1661,7 +1662,7 @@ input {
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 0.9em;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1721,7 +1722,7 @@ input {
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--st-cell-color);
-  font-size: 14px;
+  font-size: 0.9em;
 }
 
 .st-custom-select-option:hover,
@@ -1784,7 +1785,7 @@ input {
 
 /* Enum option label */
 .st-enum-option-label {
-  font-size: 14px;
+  font-size: 0.9em;
   color: var(--st-cell-color);
   user-select: none;
 }
@@ -1793,14 +1794,14 @@ input {
 .st-enum-no-results {
   padding: var(--st-spacing-medium);
   text-align: center;
-  font-size: 14px;
+  font-size: 0.9em;
   color: var(--st-slate-400);
   font-style: italic;
 }
 
 /* Row number styling */
 .st-row-number {
-  font-size: 12px;
+    font-size: 0.8em;
   opacity: 0.6;
   user-select: none;
   font-weight: 500;
@@ -1872,7 +1873,7 @@ input {
   color: var(--st-tooltip-text-color);
   padding: var(--st-tooltip-padding);
   border-radius: var(--st-tooltip-border-radius);
-  font-size: var(--st-tooltip-font-size);
+  font-size: 0.8em;
   line-height: 1.4;
   max-width: 300px;
   word-wrap: break-word;

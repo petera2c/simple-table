@@ -18,6 +18,7 @@ export function renderFilterExample(): HTMLElement {
       filterable: true,
       maxHeight: "600px",
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+      theme: "modern-dark",
     }
   );
   h2.textContent = "Filter Example";

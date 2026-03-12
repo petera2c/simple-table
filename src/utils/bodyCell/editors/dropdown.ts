@@ -108,13 +108,13 @@ export const createDropdown = (
   // Append content
   dropdown.appendChild(content);
 
-  // Add to table root for fixed positioning (inherits CSS variables), or to trigger parent for absolute
+  // For fixed positioning: append to simple-table-root so dropdown inherits theme; fallback to body if no table.
+  // For absolute: append to trigger so it positions relative to the cell.
   const tableRootFromTrigger = triggerElement.closest(".simple-table-root") as HTMLElement | null;
   const tableRoot =
     tableRootFromTrigger ||
     (document.querySelector(".simple-table-root") as HTMLElement | null);
   if (options.positioning === "fixed") {
-    // Append to table root so dropdown inherits theme CSS variables; fallback to body only if no table on page
     if (tableRoot) {
       tableRoot.appendChild(dropdown);
     } else {
