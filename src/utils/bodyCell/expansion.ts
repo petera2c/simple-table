@@ -151,3 +151,12 @@ export const createExpandIcon = (
 
   return outerContainer;
 };
+
+/** Update expand/collapse icon direction on an existing cell (e.g. after expand state changes for nested grids). */
+export const updateExpandIconState = (cellElement: HTMLElement, isExpanded: boolean): void => {
+  const iconContainer = cellElement.querySelector(".st-expand-icon-container");
+  if (!iconContainer || !(iconContainer instanceof HTMLElement)) return;
+  iconContainer.classList.toggle("expanded", isExpanded);
+  iconContainer.classList.toggle("collapsed", !isExpanded);
+  iconContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
+};

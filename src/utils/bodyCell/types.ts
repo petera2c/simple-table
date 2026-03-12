@@ -2,6 +2,11 @@ import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import CellValue from "../../types/CellValue";
 import { IconsConfig } from "../../types/IconsConfig";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
+import type {
+  VanillaEmptyStateRenderer,
+  VanillaErrorStateRenderer,
+  VanillaLoadingStateRenderer,
+} from "../../types/RowStateRendererProps";
 
 type SetStateAction<T> = T | ((prevState: T) => T);
 type Dispatch<A> = (value: A) => void;
@@ -99,6 +104,11 @@ export interface CellRenderContext {
   icons: IconsConfig;
   theme: string;
   rowButtons?: any[]; // Row button components
+
+  // Inherited by nested tables (state row renderers)
+  loadingStateRenderer?: VanillaLoadingStateRenderer;
+  errorStateRenderer?: VanillaErrorStateRenderer;
+  emptyStateRenderer?: VanillaEmptyStateRenderer;
 
   // Helper functions from context
   getBorderClass: (cell: CellData) => string;

@@ -11,6 +11,11 @@ import { rowIdToString } from "../../utils/rowUtils";
 import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
 import { scrollSyncManager } from "../../utils/scrollSyncManager";
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
+import {
+  createNestedGridRow,
+  createNestedGridSpacer,
+  type NestedGridRowRenderContext,
+} from "../../utils/nestedGridRowRenderer";
 
 export interface HeaderSectionParams {
   headers: HeaderObject[];
@@ -76,6 +81,9 @@ export class SectionRenderer {
   
   // Track the next colIndex for each section after rendering
   private nextColIndexMap: Map<string, number> = new Map();
+
+  // Nested grid row elements per section (key: sectionKey, value: Map<position, { element, cleanup? }>)
+  private nestedGridRowsMap: Map<string, Map<number, { element: HTMLElement; cleanup?: () => void }>> = new Map();
 
   renderHeaderSection(params: HeaderSectionParams): HTMLElement {
     const {
@@ -241,15 +249,19 @@ export class SectionRenderer {
 
     const cachedContext = this.getCachedContext(`body-${sectionKey}`, context, pinned);
 
-    // Render with current scrollLeft to preserve scroll position during re-renders
+    // Render with current scrollLeft to preserve scroll position during re-renders.
+    // Pass full rows so separators and nested grid rows account for every row.
     const currentScrollLeft = section.scrollLeft;
-    renderBodyCells(section, absoluteCells, cachedContext, currentScrollLeft);
+    renderBodyCells(section, absoluteCells, cachedContext, currentScrollLeft, rows);
+
+    // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
+    this.renderNestedGridRows(section, sectionKey, rows, pinned, cachedContext);
 
     // For main section (not pinned), attach render function for scroll updates
     if (!pinned && section) {
       (section as any).__renderBodyCells = (scrollLeft: number) => {
         if (section) {
-          renderBodyCells(section, absoluteCells, cachedContext, scrollLeft);
+          renderBodyCells(section, absoluteCells, cachedContext, scrollLeft, rows);
         }
       };
     }
@@ -262,6 +274,70 @@ export class SectionRenderer {
     }
 
     return section;
+  }
+
+  private renderNestedGridRows(
+    section: HTMLElement,
+    sectionKey: string,
+    rows: TableRow[],
+    pinned: "left" | "right" | undefined,
+    context: CellRenderContext,
+  ): void {
+    const nestedRows = rows.filter((r) => r.nestedTable);
+    const currentPositions = new Set(nestedRows.map((r) => r.position));
+
+    let map = this.nestedGridRowsMap.get(sectionKey);
+    if (!map) {
+      map = new Map();
+      this.nestedGridRowsMap.set(sectionKey, map);
+    }
+
+    // Remove nested row elements that are no longer in the list
+    map.forEach((entry, position) => {
+      if (!currentPositions.has(position)) {
+        entry.cleanup?.();
+        entry.element.remove();
+        map!.delete(position);
+      }
+    });
+
+    const nestedContext: NestedGridRowRenderContext = {
+      rowHeight: context.rowHeight,
+      heightOffsets: context.heightOffsets,
+      customTheme: context.customTheme ?? ({} as any),
+      theme: context.theme,
+      rowGrouping: context.rowGrouping,
+      depth: 0,
+      loadingStateRenderer: context.loadingStateRenderer,
+      errorStateRenderer: context.errorStateRenderer,
+      emptyStateRenderer: context.emptyStateRenderer,
+      icons: context.icons,
+    };
+
+    nestedRows.forEach((tableRow) => {
+      const position = tableRow.position;
+      const existing = map!.get(position);
+
+      if (existing) {
+        // Already rendered for this position; could update if needed (e.g. height/position changed)
+        return;
+      }
+
+      if (pinned) {
+        const spacer = createNestedGridSpacer(tableRow, {
+          rowHeight: context.rowHeight,
+          heightOffsets: context.heightOffsets,
+          customTheme: context.customTheme ?? ({} as any),
+        });
+        section.appendChild(spacer);
+        map!.set(position, { element: spacer });
+      } else {
+        nestedContext.depth = tableRow.depth > 0 ? tableRow.depth - 1 : 0;
+        const { element, cleanup } = createNestedGridRow(tableRow, nestedContext);
+        section.appendChild(element);
+        map!.set(position, { element, cleanup });
+      }
+    });
   }
 
   private calculateAbsoluteHeaderCells(
@@ -386,6 +462,9 @@ export class SectionRenderer {
   ): AbsoluteBodyCell[] {
     const cells: AbsoluteBodyCell[] = [];
 
+    // Exclude nested table rows – they are rendered as full-width nested grid rows, not per-column cells
+    const rowsForCells = rows.filter((r) => !r.nestedTable);
+
     const leafHeaders = this.getLeafHeaders(headers, collapsedHeaders);
 
     // Build header positions map with accumulated widths
@@ -397,7 +476,7 @@ export class SectionRenderer {
       currentLeft += width;
     });
 
-    rows.forEach((tableRow, rowIndex) => {
+    rowsForCells.forEach((tableRow, rowIndex) => {
       // Calculate proper top position using calculateRowTopPosition
       const topPosition = customTheme
         ? calculateRowTopPosition({

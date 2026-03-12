@@ -399,6 +399,9 @@ export class TableRenderer {
       icons: deps.resolvedIcons,
       theme: deps.config.theme ?? "modern-light",
       rowButtons: deps.config.rowButtons,
+      loadingStateRenderer: deps.config.loadingStateRenderer,
+      errorStateRenderer: deps.config.errorStateRenderer,
+      emptyStateRenderer: deps.config.emptyStateRenderer,
       getBorderClass: (cell: any) => deps.selectionManager?.getBorderClass(cell) || "",
       isSelected: (cell: any) => deps.selectionManager?.isSelected(cell) || false,
       isInitialFocusedCell: (cell: any) =>

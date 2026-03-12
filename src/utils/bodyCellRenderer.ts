@@ -9,9 +9,12 @@ import {
   updateBodyCellPosition,
   untrackCellByRow,
 } from "./bodyCell/styling";
+import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
+import { isRowExpanded } from "./rowUtils";
 import { createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
+import type TableRow from "../types/TableRow";
 
 // Re-export types for backward compatibility
 export type {
@@ -162,66 +165,81 @@ const getSeparatorMetadata = (container: HTMLElement): Map<number, SeparatorMeta
   return separatorMetadataMap.get(container)!;
 };
 
-// Render row separators between rows
+// Row boundary when using full row list (e.g. including nested grid rows)
+interface RowBoundaryFromRows {
+  rowIndex: number; // used as separator key (position)
+  position: number;
+  displayStrongBorder: boolean;
+}
+
+// Render row separators between rows. When allRows is provided, boundaries include every row (e.g. nested grid rows).
 const renderRowSeparators = (
   container: HTMLElement,
   cells: AbsoluteBodyCell[],
   context: CellRenderContext,
   renderedSeparators: Map<number, HTMLElement>,
+  allRows?: TableRow[],
 ): void => {
-  if (cells.length === 0) return;
-
   // Calculate template columns once (with caching)
   const templateColumns = calculateTemplateColumns(container, context);
 
   // Get separator metadata cache
   const separatorMetadata = getSeparatorMetadata(container);
 
-  // Optimize: cells are already sorted by rowIndex from calculateAbsoluteBodyCells
-  // Use single pass to identify row boundaries instead of grouping and sorting
-  const rowBoundaries: Array<{
-    rowIndex: number;
-    firstCell: AbsoluteBodyCell;
-    prevCell?: AbsoluteBodyCell;
-  }> = [];
-  let currentRowIndex = -1;
-  let firstCellInRow: AbsoluteBodyCell | null = null;
-  let prevRowFirstCell: AbsoluteBodyCell | undefined = undefined;
+  let boundariesFromRows: RowBoundaryFromRows[] = [];
 
-  cells.forEach((cell) => {
-    if (cell.rowIndex !== currentRowIndex) {
-      // New row boundary found
-      if (firstCellInRow && currentRowIndex > 0) {
-        // Save the previous row boundary (skip first row)
-        rowBoundaries.push({
-          rowIndex: currentRowIndex,
-          firstCell: firstCellInRow,
-          prevCell: prevRowFirstCell,
-        });
+  if (allRows && allRows.length > 0) {
+    // Build boundaries from full row list so separators appear above/below nested grid rows too
+    boundariesFromRows = allRows.map((row, i) => ({
+      rowIndex: row.position,
+      position: row.position,
+      displayStrongBorder: i > 0 ? allRows[i - 1].isLastGroupRow : false,
+    }));
+  } else if (cells.length > 0) {
+    // Fallback: derive boundaries from cells (original behavior)
+    const rowBoundaries: Array<{
+      rowIndex: number;
+      firstCell: AbsoluteBodyCell;
+      prevCell?: AbsoluteBodyCell;
+    }> = [];
+    let currentRowIndex = -1;
+    let firstCellInRow: AbsoluteBodyCell | null = null;
+    let prevRowFirstCell: AbsoluteBodyCell | undefined = undefined;
+
+    cells.forEach((cell) => {
+      if (cell.rowIndex !== currentRowIndex) {
+        if (firstCellInRow && currentRowIndex > 0) {
+          rowBoundaries.push({
+            rowIndex: currentRowIndex,
+            firstCell: firstCellInRow,
+            prevCell: prevRowFirstCell,
+          });
+        }
+        prevRowFirstCell = firstCellInRow || undefined;
+        currentRowIndex = cell.rowIndex;
+        firstCellInRow = cell;
       }
-      prevRowFirstCell = firstCellInRow || undefined;
-      currentRowIndex = cell.rowIndex;
-      firstCellInRow = cell;
-    }
-  });
-
-  // Don't forget the last row
-  if (firstCellInRow && currentRowIndex > 0) {
-    rowBoundaries.push({
-      rowIndex: currentRowIndex,
-      firstCell: firstCellInRow,
-      prevCell: prevRowFirstCell,
     });
+    if (firstCellInRow && currentRowIndex > 0) {
+      rowBoundaries.push({
+        rowIndex: currentRowIndex,
+        firstCell: firstCellInRow,
+        prevCell: prevRowFirstCell,
+      });
+    }
+    boundariesFromRows = rowBoundaries.map(({ rowIndex, firstCell, prevCell }) => ({
+      rowIndex,
+      position: firstCell.tableRow.position,
+      displayStrongBorder: prevCell?.tableRow?.isLastGroupRow ?? false,
+    }));
   }
 
-  // Render separators for each row boundary
-  rowBoundaries.forEach(({ rowIndex, firstCell, prevCell }) => {
-    // Determine if this should be a strong border
-    const displayStrongBorder = prevCell?.tableRow?.isLastGroupRow || false;
+  if (boundariesFromRows.length === 0) return;
 
+  // Render separators for each row boundary
+  boundariesFromRows.forEach(({ rowIndex, position, displayStrongBorder }) => {
     // Get cached metadata
     const cachedMetadata = separatorMetadata.get(rowIndex);
-    const position = firstCell.tableRow.position;
 
     // Check if separator needs to be created or updated
     if (!renderedSeparators.has(rowIndex)) {
@@ -292,12 +310,13 @@ const renderRowSeparators = (
   });
 };
 
-// Main render function
+// Main render function. When allRows is provided, separators are built from the full row list (including nested grid rows).
 export const renderBodyCells = (
   container: HTMLElement,
   cells: AbsoluteBodyCell[],
   context: CellRenderContext,
   scrollLeft: number = 0,
+  allRows?: TableRow[],
 ): void => {
   // Get viewport width for horizontal virtual scrolling
   // Use containerWidth from context (provided by DimensionManager) if available
@@ -317,8 +336,10 @@ export const renderBodyCells = (
     cellsToRender.map((cell) => getCellId({ accessor: cell.header.accessor, rowId: cell.rowId })),
   );
 
-  // Get unique row indices from cells to render
-  const visibleRowIndices = new Set(cellsToRender.map((cell) => cell.rowIndex));
+  // Get unique row indices for separator visibility (use full row list when provided so nested rows get separators)
+  const visibleRowIndices = allRows?.length
+    ? new Set(allRows.map((r) => r.position))
+    : new Set(cellsToRender.map((cell) => cell.rowIndex));
 
   // Remove cells that are no longer visible
   renderedCells.forEach((element, cellId) => {
@@ -384,6 +405,21 @@ export const renderBodyCells = (
         const checked = context.isRowSelected(cell.rowId);
         updateCheckboxElement(cellElement, checked);
       }
+
+      // Sync expand/collapse icon direction when expanded state changes (e.g. nested grids)
+      if (cell.header.expandable) {
+        const expandedDepthsSet = new Set(context.expandedDepths);
+        const currentExpandedRows = context.getExpandedRows?.() ?? context.expandedRows;
+        const currentCollapsedRows = context.getCollapsedRows?.() ?? context.collapsedRows;
+        const currentIsExpanded = isRowExpanded(
+          cell.rowId,
+          cell.depth,
+          expandedDepthsSet,
+          currentExpandedRows,
+          currentCollapsedRows,
+        );
+        updateExpandIconState(cellElement, currentIsExpanded);
+      }
     }
   });
 
@@ -399,6 +435,6 @@ export const renderBodyCells = (
     container.appendChild(fragment);
   }
 
-  // Render separators for visible rows
-  renderRowSeparators(container, cellsToRender, context, renderedSeparators);
+  // Render separators for visible rows (use allRows when provided so nested grid rows get separators)
+  renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
 };
