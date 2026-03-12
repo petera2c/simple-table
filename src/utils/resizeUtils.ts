@@ -1,5 +1,6 @@
 import { HeaderObject } from "..";
 import { Pinned } from "../types/Pinned";
+import { DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { HandleResizeStartProps } from "../types/HandleResizeStartProps";
 import {
   findLeafHeaders,
@@ -22,8 +23,14 @@ import { getCellId } from "./cellUtils";
  * This is used during resize drag for better performance
  *
  * IMPORTANT: Positions are calculated per pinned section (left/main/right each start at 0)
+ * @param collapsedHeaders - Set of collapsed header accessors; only visible children are laid out (matches findLeafHeaders / SectionRenderer).
+ * @param overrideWidths - Optional map of accessor -> width to use for position calculation (e.g. after resize so DOM reflects just-set value)
  */
-const updateColumnWidthsInDOM = (headers: HeaderObject[], collapsedHeaders?: Set<string>): void => {
+const updateColumnWidthsInDOM = (
+  headers: HeaderObject[],
+  collapsedHeaders?: Set<string>,
+  overrideWidths?: Map<string, number>,
+): void => {
   // Group headers by pinned section
   const pinnedLeftHeaders: HeaderObject[] = [];
   const mainHeaders: HeaderObject[] = [];
@@ -41,7 +48,7 @@ const updateColumnWidthsInDOM = (headers: HeaderObject[], collapsedHeaders?: Set
     }
   });
 
-  // Helper to recursively calculate positions for all headers (parents and children)
+  // Helper to recursively calculate positions; only visible children (by collapsed state) are included
   const calculateHeaderPositions = (
     header: HeaderObject,
     currentLeft: number,
@@ -50,9 +57,14 @@ const updateColumnWidthsInDOM = (headers: HeaderObject[], collapsedHeaders?: Set
     const startLeft = currentLeft;
 
     if (header.children && header.children.length > 0) {
-      // This is a parent header - recursively process children
-      header.children.forEach((child) => {
-        if (child.hide) return;
+      const isCollapsed = collapsedHeaders?.has(header.accessor as string);
+      const visibleChildren = header.children.filter((child) => {
+        if (child.hide) return false;
+        const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+        if (isCollapsed) return showWhen === "parentCollapsed" || showWhen === "always";
+        return showWhen === "parentExpanded" || showWhen === "always";
+      });
+      visibleChildren.forEach((child) => {
         currentLeft = calculateHeaderPositions(child, currentLeft, positions);
       });
 
@@ -60,8 +72,10 @@ const updateColumnWidthsInDOM = (headers: HeaderObject[], collapsedHeaders?: Set
       const parentWidth = currentLeft - startLeft;
       positions.set(header.accessor, { left: startLeft, width: parentWidth });
     } else {
-      // This is a leaf header
-      const width = getHeaderWidthInPixels(header);
+      // Leaf: prefer override (e.g. just-set resize), then numeric header.width, else getHeaderWidthInPixels (DOM can be stale)
+      const width =
+        overrideWidths?.get(header.accessor as string) ??
+        (typeof header.width === "number" ? header.width : getHeaderWidthInPixels(header));
       positions.set(header.accessor, { left: currentLeft, width });
       currentLeft += width;
     }
@@ -100,7 +114,8 @@ const updateColumnWidthsInDOM = (headers: HeaderObject[], collapsedHeaders?: Set
     const { left, width } = position;
 
     // Update header cell
-    const headerCell = document.getElementById(getCellId({ accessor, rowId: "header" }));
+    const cellId = getCellId({ accessor, rowId: "header" });
+    const headerCell = document.getElementById(cellId);
     if (headerCell) {
       headerCell.style.left = `${left}px`;
       headerCell.style.width = `${width}px`;
@@ -334,7 +349,12 @@ export const handleResizeStart = ({
       // runs before the mousemove RAF, as in tests that fire events in one tick)
       const newHeaders = [...headers];
       setHeaders(newHeaders);
-      updateColumnWidthsInDOM(headers, collapsedHeaders);
+      // Pass just-set width(s) so updateColumnWidthsInDOM uses them (header model may not be same ref / can read stale from DOM)
+      const overrideWidths = new Map<string, number>();
+      childrenToResize.forEach((h) => {
+        if (typeof h.width === "number") overrideWidths.set(h.accessor as string, h.width);
+      });
+      updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths);
     } else {
       // During drag: update DOM only for better performance
       updateColumnWidthsInDOM(headers, collapsedHeaders);
