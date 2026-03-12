@@ -6,6 +6,7 @@ import { addTrackedEventListener } from "../eventTracking";
 export interface DropdownOptions {
   width?: number;
   maxHeight?: number;
+  overflow?: "auto" | "hidden" | "visible";
   positioning?: "fixed" | "absolute";
   onClose: () => void;
 }
@@ -94,7 +95,7 @@ export const createDropdown = (
   dropdown.style.position = options.positioning || "fixed";
   dropdown.style.zIndex = "1000";
   dropdown.style.visibility = "hidden"; // Hidden until positioned
-  dropdown.style.overflow = "auto"; // Default overflow behavior
+  dropdown.style.overflow = options.overflow ?? "auto";
 
   if (options.width) {
     dropdown.style.width = `${options.width}px`;
@@ -108,13 +109,15 @@ export const createDropdown = (
   dropdown.appendChild(content);
 
   // Add to table root for fixed positioning (inherits CSS variables), or to trigger parent for absolute
-  const tableRoot = triggerElement.closest(".simple-table-root") as HTMLElement;
+  const tableRootFromTrigger = triggerElement.closest(".simple-table-root") as HTMLElement | null;
+  const tableRoot =
+    tableRootFromTrigger ||
+    (document.querySelector(".simple-table-root") as HTMLElement | null);
   if (options.positioning === "fixed") {
-    // Append to table root instead of body so dropdown inherits CSS variables
+    // Append to table root so dropdown inherits theme CSS variables; fallback to body only if no table on page
     if (tableRoot) {
       tableRoot.appendChild(dropdown);
     } else {
-      // Fallback to body if table root not found
       document.body.appendChild(dropdown);
     }
   } else {

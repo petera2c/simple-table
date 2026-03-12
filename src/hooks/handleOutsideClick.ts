@@ -45,7 +45,9 @@ export class HandleOutsideClickManager {
 
     // Close header dropdown if clicking outside of it
     if (this.config.activeHeaderDropdown && this.config.setActiveHeaderDropdown) {
-      if (!target.closest(".st-header-cell") && !target.closest(".dropdown-content")) {
+      const insideDropdown =
+        target.closest(".st-dropdown-content") || target.closest(".dropdown-content");
+      if (!target.closest(".st-header-cell") && !insideDropdown) {
         this.config.setActiveHeaderDropdown(null);
       }
     }

@@ -5,6 +5,8 @@ import { setNestedValue } from "../../rowUtils";
 import { createDropdown } from "./dropdown";
 import { addTrackedEventListener } from "../eventTracking";
 import { parseDateString } from "../../dateUtils";
+import { getCellId } from "../../cellUtils";
+import { createAngleLeftIcon, createAngleRightIcon } from "../../../icons";
 
 // Helper to get days in month
 const getDaysInMonth = (year: number, month: number): number => {
@@ -32,8 +34,8 @@ const MONTH_NAMES = [
   "December",
 ];
 
-// Day names
-const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+// Day names (short to match CSS layout)
+const DAY_NAMES = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 export const createDatePicker = (
   cell: AbsoluteBodyCell,
@@ -57,54 +59,80 @@ export const createDatePicker = (
   let viewYear = selectedDate.getFullYear();
   let viewMonth = selectedDate.getMonth();
 
-  // Create date picker container
+  // Create date picker container (match CSS: .st-datepicker)
   const container = document.createElement("div");
-  container.className = "st-date-picker";
+  container.className = "st-datepicker";
 
-  // Create header with month/year navigation
-  const header_el = document.createElement("div");
-  header_el.className = "st-date-picker-header";
+  // Create header with month/year navigation (match CSS: .st-datepicker-header)
+  const headerEl = document.createElement("div");
+  headerEl.className = "st-datepicker-header";
 
   const prevButton = document.createElement("button");
-  prevButton.className = "st-date-picker-nav";
-  prevButton.innerHTML = "‹";
+  prevButton.className = "st-datepicker-nav-btn";
   prevButton.setAttribute("aria-label", "Previous month");
+  const prevIcon = context.icons.prev ?? createAngleLeftIcon("st-next-prev-icon");
+  if (typeof prevIcon === "string") {
+    prevButton.innerHTML = prevIcon;
+  } else {
+    prevButton.appendChild(prevIcon.cloneNode(true) as HTMLElement);
+  }
 
   const monthYearLabel = document.createElement("div");
-  monthYearLabel.className = "st-date-picker-month-year";
+  monthYearLabel.className = "st-datepicker-header-label";
+  monthYearLabel.setAttribute("aria-hidden", "true");
 
   const nextButton = document.createElement("button");
-  nextButton.className = "st-date-picker-nav";
-  nextButton.innerHTML = "›";
+  nextButton.className = "st-datepicker-nav-btn";
   nextButton.setAttribute("aria-label", "Next month");
+  const nextIcon = context.icons.next ?? createAngleRightIcon("st-next-prev-icon");
+  if (typeof nextIcon === "string") {
+    nextButton.innerHTML = nextIcon;
+  } else {
+    nextButton.appendChild(nextIcon.cloneNode(true) as HTMLElement);
+  }
 
-  header_el.appendChild(prevButton);
-  header_el.appendChild(monthYearLabel);
-  header_el.appendChild(nextButton);
+  headerEl.appendChild(prevButton);
+  headerEl.appendChild(monthYearLabel);
+  headerEl.appendChild(nextButton);
 
-  // Create calendar grid
-  const calendarGrid = document.createElement("div");
-  calendarGrid.className = "st-date-picker-grid";
+  // Single grid for days view (match CSS: .st-datepicker-grid.st-datepicker-days-grid)
+  // Direct children: 7 weekdays then day cells (empty + filled)
+  const grid = document.createElement("div");
+  grid.className = "st-datepicker-grid st-datepicker-days-grid";
 
-  // Create day headers
-  const dayHeadersRow = document.createElement("div");
-  dayHeadersRow.className = "st-date-picker-day-headers";
   DAY_NAMES.forEach((day) => {
     const dayHeader = document.createElement("div");
-    dayHeader.className = "st-date-picker-day-header";
+    dayHeader.className = "st-datepicker-weekday";
     dayHeader.textContent = day;
-    dayHeadersRow.appendChild(dayHeader);
+    grid.appendChild(dayHeader);
   });
 
-  calendarGrid.appendChild(dayHeadersRow);
+  // Footer with Today button (match CSS: .st-datepicker-footer, .st-datepicker-today-btn)
+  const footer = document.createElement("div");
+  footer.className = "st-datepicker-footer";
 
-  // Days container
-  const daysContainer = document.createElement("div");
-  daysContainer.className = "st-date-picker-days";
-  calendarGrid.appendChild(daysContainer);
+  const todayBtn = document.createElement("button");
+  todayBtn.className = "st-datepicker-today-btn";
+  todayBtn.textContent = "Today";
 
-  container.appendChild(header_el);
-  container.appendChild(calendarGrid);
+  addTrackedEventListener(todayBtn, "click", () => {
+    const today = new Date();
+    const noon = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      12,
+      0,
+      0,
+    );
+    handleDateSelect(noon);
+  });
+
+  footer.appendChild(todayBtn);
+
+  container.appendChild(headerEl);
+  container.appendChild(grid);
+  container.appendChild(footer);
 
   const handleDateSelect = (date: Date) => {
     // Format as yyyy-mm-dd
@@ -132,50 +160,33 @@ export const createDatePicker = (
     // Update month/year label
     monthYearLabel.textContent = `${MONTH_NAMES[viewMonth]} ${viewYear}`;
 
-    // Clear days
-    daysContainer.innerHTML = "";
+    // Remove only day cells (keep the 7 weekday headers)
+    const weekdayCount = 7;
+    while (grid.children.length > weekdayCount) {
+      grid.lastElementChild?.remove();
+    }
 
     const daysInMonth = getDaysInMonth(viewYear, viewMonth);
     const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
+    const daysInPrevMonth = getDaysInMonth(viewYear, viewMonth - 1);
 
-    // Add empty cells for days before month starts
-    for (let i = 0; i < firstDay; i++) {
-      const emptyCell = document.createElement("div");
-      emptyCell.className = "st-date-picker-day empty";
-      daysContainer.appendChild(emptyCell);
-    }
-
-    // Add day cells
     const today = new Date();
-    const isSelectedMonth =
-      selectedDate.getFullYear() === viewYear && selectedDate.getMonth() === viewMonth;
 
-    for (let day = 1; day <= daysInMonth; day++) {
+    // Previous month days (leading cells)
+    for (let i = 0; i < firstDay; i++) {
+      const prevMonthDay = daysInPrevMonth - firstDay + i + 1;
+      const date = new Date(viewYear, viewMonth - 1, prevMonthDay);
       const dayCell = document.createElement("div");
-      dayCell.className = "st-date-picker-day";
-      dayCell.textContent = String(day);
+      dayCell.className = "st-datepicker-day other-month";
+      dayCell.textContent = String(prevMonthDay);
       dayCell.setAttribute("tabindex", "0");
       dayCell.setAttribute("role", "button");
-      dayCell.setAttribute("aria-label", `${MONTH_NAMES[viewMonth]} ${day}, ${viewYear}`);
-
-      // Check if this is today
-      if (
-        today.getFullYear() === viewYear &&
-        today.getMonth() === viewMonth &&
-        today.getDate() === day
-      ) {
-        dayCell.classList.add("today");
-      }
-
-      // Check if this is the selected date
-      if (isSelectedMonth && selectedDate.getDate() === day) {
-        dayCell.classList.add("selected");
-      }
-
-      const date = new Date(viewYear, viewMonth, day);
+      dayCell.setAttribute(
+        "aria-label",
+        `${MONTH_NAMES[viewMonth - 1] ?? MONTH_NAMES[11]} ${prevMonthDay}, ${date.getFullYear()}`,
+      );
 
       addTrackedEventListener(dayCell, "click", () => handleDateSelect(date));
-
       addTrackedEventListener(dayCell, "keydown", (event: Event) => {
         const e = event as KeyboardEvent;
         if (e.key === "Enter" || e.key === " ") {
@@ -183,8 +194,70 @@ export const createDatePicker = (
           handleDateSelect(date);
         }
       });
+      grid.appendChild(dayCell);
+    }
 
-      daysContainer.appendChild(dayCell);
+    // Current month days
+    const isSelectedMonth =
+      selectedDate.getFullYear() === viewYear && selectedDate.getMonth() === viewMonth;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayCell = document.createElement("div");
+      dayCell.className = "st-datepicker-day";
+      dayCell.textContent = String(day);
+      dayCell.setAttribute("tabindex", "0");
+      dayCell.setAttribute("role", "button");
+      dayCell.setAttribute("aria-label", `${MONTH_NAMES[viewMonth]} ${day}, ${viewYear}`);
+
+      if (
+        today.getFullYear() === viewYear &&
+        today.getMonth() === viewMonth &&
+        today.getDate() === day
+      ) {
+        dayCell.classList.add("today");
+      }
+      if (isSelectedMonth && selectedDate.getDate() === day) {
+        dayCell.classList.add("selected");
+      }
+
+      const date = new Date(viewYear, viewMonth, day);
+      addTrackedEventListener(dayCell, "click", () => handleDateSelect(date));
+      addTrackedEventListener(dayCell, "keydown", (event: Event) => {
+        const e = event as KeyboardEvent;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleDateSelect(date);
+        }
+      });
+      grid.appendChild(dayCell);
+    }
+
+    // Next month days (trailing cells): fill so grid has complete rows (multiple of 7), min 5 rows (35)
+    const minDayCells = 35;
+    const filledSoFar = firstDay + daysInMonth;
+    const totalDayCells = Math.max(minDayCells, Math.ceil(filledSoFar / 7) * 7);
+    const remainingCells = totalDayCells - filledSoFar;
+    for (let day = 1; day <= remainingCells; day++) {
+      const date = new Date(viewYear, viewMonth + 1, day);
+      const dayCell = document.createElement("div");
+      dayCell.className = "st-datepicker-day other-month";
+      dayCell.textContent = String(day);
+      dayCell.setAttribute("tabindex", "0");
+      dayCell.setAttribute("role", "button");
+      dayCell.setAttribute(
+        "aria-label",
+        `${MONTH_NAMES[viewMonth + 1] ?? MONTH_NAMES[0]} ${day}, ${date.getFullYear()}`,
+      );
+
+      addTrackedEventListener(dayCell, "click", () => handleDateSelect(date));
+      addTrackedEventListener(dayCell, "keydown", (event: Event) => {
+        const e = event as KeyboardEvent;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleDateSelect(date);
+        }
+      });
+      grid.appendChild(dayCell);
     }
   };
 
@@ -210,13 +283,14 @@ export const createDatePicker = (
   // Initial render
   renderCalendar();
 
-  // Get the cell element as trigger - use correct ID format
-  const cellId = `${cell.rowId}-${header.accessor}`;
+  // Get the cell element as trigger - use getCellId for consistency with body cell IDs
+  const cellId = getCellId({ accessor: header.accessor, rowId: cell.rowId });
   const cellElement = document.getElementById(cellId) as HTMLElement;
 
   // Create and show dropdown
   dropdown = createDropdown(cellElement || document.body, container, {
-    width: 280,
+    width: 240,
+    overflow: "hidden",
     positioning: "fixed",
     onClose: onComplete,
   });
