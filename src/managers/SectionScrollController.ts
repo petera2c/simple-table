@@ -10,6 +10,9 @@ export interface SectionScrollControllerConfig {
   onMainSectionScrollLeft?: (scrollLeft: number) => void;
 }
 
+/** Run column virtualization only when scroll has moved by at least this many px (reduces lag; scroll position still syncs every scroll). */
+const VIRTUALIZATION_THRESHOLD_PX = 20;
+
 /**
  * Single controller for horizontal scroll sync across all four panes per section:
  * sticky parent, horizontal scrollbar segment, header, and body.
@@ -31,6 +34,8 @@ export class SectionScrollController {
   private config: SectionScrollControllerConfig;
   /** Guard to avoid re-entrancy when we programmatically set scrollLeft on other panes */
   private isSyncing = false;
+  /** Last scrollLeft at which we ran main-section virtualization; used to run heavy ops only every N px. */
+  private lastMainVirtualizationScrollLeft: number | null = null;
 
   constructor(config: SectionScrollControllerConfig = {}) {
     this.config = config;
@@ -106,6 +111,7 @@ export class SectionScrollController {
     });
 
     if (sectionId === "main" && this.config.onMainSectionScrollLeft) {
+      this.lastMainVirtualizationScrollLeft = value;
       this.config.onMainSectionScrollLeft(value);
     }
   }
@@ -142,7 +148,14 @@ export class SectionScrollController {
           }
         });
       }
-      if (sectionId === "main" && this.config.onMainSectionScrollLeft) {
+      // Virtualization (main section only): run only every N px so scroll position sync paints without being blocked
+      if (
+        sectionId === "main" &&
+        this.config.onMainSectionScrollLeft &&
+        (this.lastMainVirtualizationScrollLeft === null ||
+          Math.abs(value - this.lastMainVirtualizationScrollLeft) >= VIRTUALIZATION_THRESHOLD_PX)
+      ) {
+        this.lastMainVirtualizationScrollLeft = value;
         this.config.onMainSectionScrollLeft(value);
       }
 
