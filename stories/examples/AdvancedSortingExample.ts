@@ -28,7 +28,7 @@ const HEADERS: HeaderObject[] = [
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `$${value.toLocaleString()}`;
-      return String(value ?? "—");
+      return String(value);
     },
   },
   { accessor: "experience", label: "Years Experience", width: 140, isSortable: true, type: "number" },
@@ -40,7 +40,7 @@ const HEADERS: HeaderObject[] = [
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `⭐ ${value.toFixed(1)}`;
-      return String(value ?? "—");
+      return String(value);
     },
   },
   {
@@ -57,7 +57,7 @@ const HEADERS: HeaderObject[] = [
           day: "numeric",
         });
       }
-      return String(value ?? "—");
+      return String(value);
     },
   },
   {
@@ -67,8 +67,8 @@ const HEADERS: HeaderObject[] = [
     isSortable: true,
     type: "string",
     valueFormatter: ({ value }: { value?: unknown }) => {
-      const s = String(value ?? "");
-      return s ? s.charAt(0).toUpperCase() + s.slice(1) : "—";
+      const status = String(value);
+      return status.charAt(0).toUpperCase() + status.slice(1);
     },
   },
   {
@@ -86,14 +86,14 @@ const HEADERS: HeaderObject[] = [
       }
       const metadataA = (rowA as Record<string, unknown>).metadata as Record<string, unknown> | undefined;
       const metadataB = (rowB as Record<string, unknown>).metadata as Record<string, unknown> | undefined;
-      const scoreA = (metadataA?.performanceScore as number) ?? 0;
-      const scoreB = (metadataB?.performanceScore as number) ?? 0;
+      const scoreA = (metadataA?.performanceScore as number) || 0;
+      const scoreB = (metadataB?.performanceScore as number) || 0;
       const result = scoreB - scoreA;
       return direction === "asc" ? result : -result;
     },
     valueFormatter: ({ value, row }: { value?: unknown; row?: Row }) => {
       const metadata = (row as Record<string, unknown>)?.metadata as Record<string, unknown> | undefined;
-      const score = (metadata?.performanceScore as number) ?? 0;
+      const score = (metadata?.performanceScore as number) || 0;
       return `P${value} (Score: ${score})`;
     },
   },
@@ -105,11 +105,11 @@ const HEADERS: HeaderObject[] = [
     type: "number",
     valueGetter: ({ row }: { row: Row }) => {
       const metadata = (row as Record<string, unknown>).metadata as Record<string, unknown> | undefined;
-      return (metadata?.seniorityLevel as number) ?? 0;
+      return (metadata?.seniorityLevel as number) || 0;
     },
     valueFormatter: ({ row }: { row?: Row }) => {
       const metadata = (row as Record<string, unknown>)?.metadata as Record<string, unknown> | undefined;
-      const level = (metadata?.seniorityLevel as number) ?? 0;
+      const level = (metadata?.seniorityLevel as number) || 0;
       const labels = ["Intern", "Junior", "Mid", "Senior", "Lead"];
       return labels[level] ?? "Unknown";
     },

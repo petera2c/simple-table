@@ -2,7 +2,7 @@
  * RowGrouping Example – vanilla port of React row-grouping/RowGrouping.
  * Same headers, data (generateTeams/generateDivisions), and props as React version.
  */
-import type { Accessor, HeaderObject, Row } from "../../../src/index";
+import type { Accessor, CellValue, HeaderObject, Row } from "../../../src/index";
 import { SimpleTableVanilla } from "../../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 
@@ -16,8 +16,8 @@ const HEADERS: HeaderObject[] = [
     type: "string",
     aggregation: {
       type: "sum",
-      parseValue: (value: string) => {
-        const n = parseFloat(String(value).replace(/[$M]/g, ""));
+      parseValue: (value: CellValue) => {
+        const n = parseFloat(String(value ?? "").replace(/[$M]/g, ""));
         return isNaN(n) ? 0 : n;
       },
     },
