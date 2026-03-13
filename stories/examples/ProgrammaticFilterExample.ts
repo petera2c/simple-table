@@ -3,6 +3,7 @@
  */
 import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { createBasicData } from "./BasicExample";
 
 const HEADERS: HeaderObject[] = [
@@ -12,10 +13,12 @@ const HEADERS: HeaderObject[] = [
   { accessor: "role", label: "Role", width: 150 },
 ];
 
-export function renderProgrammaticFilterExample(): HTMLElement {
+export const programmaticFilterExampleDefaults = { height: "400px" };
+
+export function renderProgrammaticFilterExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...programmaticFilterExampleDefaults, ...args };
   const { wrapper, h2, table } = renderVanillaTable(HEADERS, createBasicData(30), {
-    filterable: true,
-    height: "400px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Programmatic Filter";

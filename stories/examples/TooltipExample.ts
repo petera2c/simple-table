@@ -4,6 +4,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const EXAMPLE_DATA: Row[] = [
   { id: 1, productName: "Laptop Pro", category: "Electronics", price: 1299.99, stock: 45, rating: 4.5, lastUpdated: "2024-01-15" },
@@ -38,12 +39,17 @@ const HEADERS: HeaderObject[] = [
   { accessor: "lastUpdated", label: "Last Updated", width: 150, isSortable: true, tooltip: "Date of last inventory update" },
 ];
 
-export function renderTooltipExample(): HTMLElement {
+export const tooltipExampleDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  height: "calc(100dvh - 112px)",
+};
+
+export function renderTooltipExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...tooltipExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, EXAMPLE_DATA, {
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    height: "calc(100dvh - 112px)",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Tooltip";

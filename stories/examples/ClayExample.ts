@@ -4,6 +4,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const CLAY_ROWS: Row[] = [
   { id: 1, name: "John Doe", age: 28, role: "Developer", department: "Engineering", email: "john.doe@company.com", startDate: "2020-01-01", status: "Active", salary: 75000 },
@@ -47,24 +48,27 @@ function createRowButton(label: string, title: string): (props: { row: Row }) =>
   };
 }
 
-export function renderClayExample(): HTMLElement {
+export const clayExampleDefaults = {
+  columnResizing: true,
+  editColumns: true,
+  selectableCells: true,
+  columnReordering: true,
+  enableRowSelection: true,
+  columnBorders: true,
+  customTheme: { selectionColumnWidth: 160 },
+  height: "400px",
+};
+
+export function renderClayExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const rowButtons = [
     createRowButton("View", "View Details"),
     createRowButton("Edit", "Edit Employee"),
     createRowButton("Email", "Send Email"),
   ];
 
+  const options = { ...defaultVanillaArgs, ...clayExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(CLAY_HEADERS, CLAY_ROWS, {
-    columnResizing: true,
-    editColumns: true,
-    selectableCells: true,
-    columnReordering: true,
-    enableRowSelection: true,
-    columnBorders: true,
-    customTheme: {
-      selectionColumnWidth: 160,
-    },
-    height: "400px",
+    ...options,
     rowButtons,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });

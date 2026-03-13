@@ -4,6 +4,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const ROWS: Row[] = [
   { id: 1, name: "Alice Johnson", department: "Engineering", salary: 95000, experience: 8, rating: 4.8, hireDate: "2016-03-15", status: "active", priority: 1, metadata: { seniorityLevel: 3, performanceScore: 92 } },
@@ -115,10 +116,15 @@ const HEADERS: HeaderObject[] = [
   },
 ];
 
-export function renderAdvancedSortingExample(): HTMLElement {
+export const advancedSortingExampleDefaults = {
+  height: "600px",
+  maxHeight: "600px",
+};
+
+export function renderAdvancedSortingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...advancedSortingExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    height: "600px",
-    maxHeight: "600px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Advanced Sorting";

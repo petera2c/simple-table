@@ -248,6 +248,14 @@ input {
   flex-grow: 1;
 }
 
+/* Header must only scroll horizontally; prevent vertical scroll (vanilla refactor removed display:grid from header sections) */
+.st-header-main,
+.st-header-pinned-left,
+.st-header-pinned-right {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .st-header-main::-webkit-scrollbar {
   display: none;
 }

@@ -3,6 +3,7 @@
  */
 import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { createBasicData } from "./BasicExample";
 
 const HEADERS: HeaderObject[] = [
@@ -12,10 +13,15 @@ const HEADERS: HeaderObject[] = [
   { accessor: "role", label: "Role", width: 150 },
 ];
 
-export function renderDynamicRowLoadingWithExternalSortExample(): HTMLElement {
+export const dynamicRowLoadingWithExternalSortExampleDefaults = {
+  externalSortHandling: true,
+  height: "400px",
+};
+
+export function renderDynamicRowLoadingWithExternalSortExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...dynamicRowLoadingWithExternalSortExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, createBasicData(30), {
-    externalSortHandling: true,
-    height: "400px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Dynamic Row Loading With External Sort";

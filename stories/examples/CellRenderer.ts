@@ -3,6 +3,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const CELL_RENDERER_DATA: Row[] = [
   { id: 1, name: "John Doe", age: 28, role: "Developer", department: "Engineering", startDate: "2020-01-01" },
@@ -101,11 +102,16 @@ const HEADERS: HeaderObject[] = [
   },
 ];
 
-export function renderCellRendererExample(): HTMLElement {
+export const cellRendererExampleDefaults = {
+  columnReordering: true,
+  columnResizing: true,
+  selectableCells: true,
+};
+
+export function renderCellRendererExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...cellRendererExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, CELL_RENDERER_DATA, {
-    columnReordering: true,
-    columnResizing: true,
-    selectableCells: true,
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Cell Renderer";

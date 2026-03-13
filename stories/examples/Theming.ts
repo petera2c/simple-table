@@ -1,10 +1,21 @@
 /**
  * Theming Example – vanilla port of React Theming.
  */
-import { SimpleTableVanilla } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { generateSpaceData } from "../data/space-data";
 import { SPACE_HEADERS } from "../data/space-data";
+
+export const themingExampleDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  editColumns: true,
+  selectableCells: true,
+  selectableColumns: true,
+  shouldPaginate: true,
+  rowsPerPage: 10,
+  height: "400px",
+};
 
 const THEME_OPTIONS = [
   "sky",
@@ -16,23 +27,13 @@ const THEME_OPTIONS = [
   "modern-dark",
 ] as const;
 
-export function renderThemingExample(): HTMLElement {
+export function renderThemingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const data = generateSpaceData();
-  const { wrapper, table } = renderVanillaTable(
-    SPACE_HEADERS,
-    data,
-    {
-      columnResizing: true,
-      columnReordering: true,
-      editColumns: true,
-      selectableCells: true,
-      selectableColumns: true,
-      shouldPaginate: true,
-      rowsPerPage: 10,
-      height: "400px",
-      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
-    }
-  );
+  const options = { ...defaultVanillaArgs, ...themingExampleDefaults, ...args };
+  const { wrapper, table } = renderVanillaTable(SPACE_HEADERS, data, {
+    ...options,
+    getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+  });
   const title = wrapper.querySelector("h2");
   if (title) title.textContent = "Theming";
   const btnContainer = document.createElement("div");

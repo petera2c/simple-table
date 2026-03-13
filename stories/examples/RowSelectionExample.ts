@@ -4,6 +4,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const ROWS: Row[] = [
   { id: 1, name: "John Doe", age: 28, role: "Developer", department: "Engineering", startDate: "2020-01-01", status: "Active" },
@@ -40,14 +41,19 @@ const HEADERS: HeaderObject[] = [
   },
 ];
 
-export function renderRowSelectionExample(): HTMLElement {
+export const rowSelectionExampleDefaults = {
+  columnResizing: true,
+  editColumns: true,
+  selectableCells: true,
+  columnReordering: true,
+  enableRowSelection: true,
+  height: "400px",
+};
+
+export function renderRowSelectionExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...rowSelectionExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    columnResizing: true,
-    editColumns: true,
-    selectableCells: true,
-    columnReordering: true,
-    enableRowSelection: true,
-    height: "400px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Row Selection";

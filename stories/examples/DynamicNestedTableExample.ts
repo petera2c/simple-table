@@ -3,6 +3,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
@@ -16,10 +17,12 @@ const ROWS: Row[] = [
   { id: 3, name: "Group C", count: 15 },
 ];
 
-export function renderDynamicNestedTableExample(): HTMLElement {
+export const dynamicNestedTableExampleDefaults = { height: "300px" };
+
+export function renderDynamicNestedTableExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...dynamicNestedTableExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    expandable: true,
-    height: "300px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Dynamic Nested Table";

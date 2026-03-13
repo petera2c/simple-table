@@ -3,6 +3,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
@@ -17,9 +18,12 @@ const ROWS: Row[] = [
   { id: 3, metric: "Churn", value: 2.1, trend: "down" },
 ];
 
-export function renderChartsExample(): HTMLElement {
+export const chartsExampleDefaults = { height: "300px" };
+
+export function renderChartsExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...chartsExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    height: "300px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Charts";

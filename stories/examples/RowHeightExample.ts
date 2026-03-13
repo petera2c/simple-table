@@ -3,6 +3,7 @@
  */
 import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const ROWS = [
   { id: 1, name: "John Doe", age: 28, role: "Developer" },
@@ -17,9 +18,14 @@ const HEADERS: HeaderObject[] = [
   { accessor: "role", label: "Role", width: 150 },
 ];
 
-export function renderRowHeightExample(): HTMLElement {
+export const rowHeightExampleDefaults = {
+  customTheme: { rowHeight: 24, headerHeight: 24 },
+};
+
+export function renderRowHeightExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...rowHeightExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    customTheme: { rowHeight: 24, headerHeight: 24 },
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Row Height";

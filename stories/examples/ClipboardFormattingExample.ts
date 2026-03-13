@@ -3,6 +3,7 @@
  */
 import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { createBasicData } from "./BasicExample";
 
 const HEADERS: HeaderObject[] = [
@@ -12,9 +13,12 @@ const HEADERS: HeaderObject[] = [
   { accessor: "role", label: "Role", width: 150 },
 ];
 
-export function renderClipboardFormattingExample(): HTMLElement {
+export const clipboardFormattingExampleDefaults = { height: "400px" };
+
+export function renderClipboardFormattingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...clipboardFormattingExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, createBasicData(20), {
-    height: "400px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Clipboard Formatting";

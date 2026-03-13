@@ -4,6 +4,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const nestedAccessorHeaders: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -208,12 +209,17 @@ const initialRows: Row[] = [
   },
 ];
 
-export function renderNestedAccessorExample(): HTMLElement {
+export const nestedAccessorExampleDefaults = {
+  height: "500px",
+  initialSortColumn: "awards[0]" as const,
+  initialSortDirection: "asc" as const,
+  selectableCells: true,
+};
+
+export function renderNestedAccessorExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...nestedAccessorExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(nestedAccessorHeaders, initialRows, {
-    height: "500px",
-    initialSortColumn: "awards[0]",
-    initialSortDirection: "asc",
-    selectableCells: true,
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Nested Accessor Example";

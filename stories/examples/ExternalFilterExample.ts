@@ -3,6 +3,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
@@ -18,10 +19,12 @@ const ROWS: Row[] = [
   { id: 4, name: "Alice", department: "Sales", salary: 70000 },
 ];
 
-export function renderExternalFilterExample(): HTMLElement {
+export const externalFilterExampleDefaults = { height: "400px" };
+
+export function renderExternalFilterExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...externalFilterExampleDefaults, ...args };
   const { wrapper, h2, table } = renderVanillaTable(HEADERS, ROWS, {
-    filterable: true,
-    height: "400px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "External Filter";

@@ -3,6 +3,7 @@
  */
 import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const ROWS = [
   { id: 1, name: "John Doe", age: 28, role: "Developer", department: "Engineering" },
@@ -20,16 +21,21 @@ const HEADERS: HeaderObject[] = [
   { accessor: "department", label: "Department", width: 140 },
 ];
 
-export function renderRowButtonsExample(): HTMLElement {
+export const rowButtonsExampleDefaults = {
+  columnResizing: true,
+  editColumns: true,
+  selectableCells: true,
+  columnReordering: true,
+  enableRowSelection: true,
+  height: "400px",
+  customTheme: { selectionColumnWidth: 160 },
+  columnBorders: true,
+};
+
+export function renderRowButtonsExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...rowButtonsExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    columnResizing: true,
-    editColumns: true,
-    selectableCells: true,
-    columnReordering: true,
-    enableRowSelection: true,
-    height: "400px",
-    customTheme: { selectionColumnWidth: 160 },
-    columnBorders: true,
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Row Buttons";

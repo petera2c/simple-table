@@ -3,6 +3,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80 },
@@ -16,10 +17,12 @@ const ROWS: Row[] = [
   { id: 3, name: "Parent 3", children: 1 },
 ];
 
-export function renderNestedGridExample(): HTMLElement {
+export const nestedGridExampleDefaults = { height: "300px" };
+
+export function renderNestedGridExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...nestedGridExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    expandable: true,
-    height: "300px",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Nested Grid";

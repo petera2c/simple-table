@@ -4,6 +4,7 @@
  */
 import type { HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { AGGREGATE_ROWS } from "../data/aggregate-data";
 
 const HEADERS: HeaderObject[] = [
@@ -66,11 +67,16 @@ const HEADERS: HeaderObject[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export function renderAggregateExample(): HTMLElement {
+export const aggregateExampleDefaults = {
+  columnResizing: true,
+  height: "400px",
+  rowGrouping: ["categories", "creators"] as const,
+};
+
+export function renderAggregateExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...aggregateExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, AGGREGATE_ROWS, {
-    columnResizing: true,
-    height: "400px",
-    rowGrouping: ["categories", "creators"],
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Aggregate";

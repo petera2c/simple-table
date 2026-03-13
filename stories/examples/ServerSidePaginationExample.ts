@@ -3,6 +3,7 @@
  */
 import { SimpleTableVanilla } from "../../src/index";
 import type { Row } from "../../src/index";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { generateSaaSData } from "../data/saas-data";
 import { SAAS_HEADERS } from "../data/saas-data";
 
@@ -33,7 +34,7 @@ function fetchPage(page: number, pageSize: number): Promise<{ rows: Row[]; total
   });
 }
 
-export function renderServerSidePaginationExample(): HTMLElement {
+export function renderServerSidePaginationExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const wrapper = document.createElement("div");
   wrapper.style.padding = "2rem";
   const h2 = document.createElement("h2");
@@ -48,6 +49,7 @@ export function renderServerSidePaginationExample(): HTMLElement {
   const tableContainer = document.createElement("div");
   wrapper.appendChild(tableContainer);
 
+  const options = { ...defaultVanillaArgs, ...args };
   const table = new SimpleTableVanilla(tableContainer, {
     defaultHeaders: SAAS_HEADERS,
     rows: TOTAL_DATA.slice(0, ROWS_PER_PAGE),
@@ -61,6 +63,7 @@ export function renderServerSidePaginationExample(): HTMLElement {
         table.update({ rows, totalRowCount: totalCount });
       });
     },
+    ...options,
   });
   table.mount();
   return wrapper;

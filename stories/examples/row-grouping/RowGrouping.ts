@@ -2,8 +2,9 @@
  * RowGrouping Example – vanilla port of React row-grouping/RowGrouping.
  * Same headers, data (generateTeams/generateDivisions), and props as React version.
  */
-import type { HeaderObject, Row } from "../../../src/index";
+import type { Accessor, HeaderObject, Row } from "../../../src/index";
 import { SimpleTableVanilla } from "../../../src/index";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
@@ -133,7 +134,14 @@ const ROWS: Row[] = [
   },
 ];
 
-export function renderRowGroupingExample(): HTMLElement {
+export const rowGroupingExampleDefaults = {
+  rowGrouping: ["divisions", "teams"] as Accessor[],
+  columnResizing: true,
+  height: "calc(100dvh - 112px)",
+  enableStickyParents: true,
+};
+
+export function renderRowGroupingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const wrapper = document.createElement("div");
   wrapper.style.padding = "2rem";
   const btn = document.createElement("button");
@@ -143,14 +151,12 @@ export function renderRowGroupingExample(): HTMLElement {
   wrapper.appendChild(btn);
   const tableContainer = document.createElement("div");
   wrapper.appendChild(tableContainer);
+  const options = { ...defaultVanillaArgs, ...rowGroupingExampleDefaults, ...args };
   const table = new SimpleTableVanilla(tableContainer, {
     defaultHeaders: HEADERS as never,
     rows: ROWS as never,
-    rowGrouping: ["divisions", "teams"],
-    columnResizing: true,
-    height: "calc(100dvh - 112px)",
-    enableStickyParents: true,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    ...options,
   });
   table.mount();
   btn.addEventListener("click", () => table.getAPI().exportToCSV());

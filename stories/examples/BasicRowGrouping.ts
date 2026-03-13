@@ -3,6 +3,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const headers: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 100, type: "string" },
@@ -412,12 +413,17 @@ const rows: Row[] = [
   },
 ];
 
-export function renderBasicRowGroupingExample(): HTMLElement {
+export const basicRowGroupingExampleDefaults = {
+  rowGrouping: ["divisions", "departments"] as const,
+  enableStickyParents: true,
+  height: "400px",
+};
+
+export function renderBasicRowGroupingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...basicRowGroupingExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(headers, rows, {
-    rowGrouping: ["divisions", "departments"],
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id ?? ""),
-    enableStickyParents: true,
-    height: "400px",
   });
   h2.textContent = "Basic Row Grouping";
   return wrapper;

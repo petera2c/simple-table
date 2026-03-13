@@ -4,6 +4,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
   {
@@ -52,13 +53,17 @@ const ROWS: Row[] = [
   { id: 5, status: "New", firstName: "Charlie", lastName: "Brown", email: "charlie@example.com", role: "Marketing", hireDate: "2021-08-17", isActive: true, salary: 76000, reviewDate: "2023-03-17" },
 ];
 
-export function renderEditableCellsExample(): HTMLElement {
+export const editableCellsExampleDefaults = {
+  columnResizing: true,
+  columnReordering: true,
+  selectableCells: true,
+  height: "80vh",
+};
+
+export function renderEditableCellsExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
+  const options = { ...defaultVanillaArgs, ...editableCellsExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(HEADERS, ROWS, {
-    columnResizing: true,
-    columnReordering: true,
-    selectableCells: true,
-    isEditable: true,
-    height: "80vh",
+    ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
   h2.textContent = "Editable Cells";

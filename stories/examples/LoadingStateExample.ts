@@ -3,6 +3,7 @@
  */
 import type { HeaderObject } from "../../src/index";
 import { SimpleTableVanilla } from "../../src/index";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
   { accessor: "id", label: "Project ID", width: 80, type: "number" },
@@ -27,7 +28,7 @@ const ROWS = [
   { id: 1012, projectName: "AutoScale Cloud Migration", client: "InfraCore Systems", status: "In Progress", budget: "$460K" },
 ];
 
-export function renderLoadingStateExample(): HTMLElement {
+export function renderLoadingStateExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const wrapper = document.createElement("div");
   wrapper.style.padding = "2rem";
   const btn = document.createElement("button");
@@ -37,12 +38,14 @@ export function renderLoadingStateExample(): HTMLElement {
   wrapper.appendChild(btn);
   const tableContainer = document.createElement("div");
   wrapper.appendChild(tableContainer);
+  const options = { ...defaultVanillaArgs, ...args };
   const table = new SimpleTableVanilla(tableContainer, {
     defaultHeaders: HEADERS,
     height: "380px",
     isLoading: true,
     rows: [],
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    ...options,
   });
   table.mount();
   const reload = () => {
