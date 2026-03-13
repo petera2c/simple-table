@@ -3,7 +3,7 @@
 
 import { getCellId } from "./cellUtils";
 import { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
-import { getRenderedCells } from "./headerCell/eventTracking";
+import { getRenderedCells, getHeaderPositionCache } from "./headerCell/eventTracking";
 import {
   createHeaderCellElement,
   calculateHeaderCellClasses,
@@ -42,10 +42,13 @@ export const renderHeaderCells = (
   context: HeaderRenderContext,
   scrollLeft: number = 0,
 ): void => {
-  // Get container width for viewport calculation
-  // Use containerWidth from context (provided by DimensionManager) if available
-  const viewportWidth =
-    context.containerWidth || container.parentElement?.clientWidth || container.clientWidth || 0;
+  // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
+  const viewportWidth = context.pinned
+    ? context.containerWidth
+    : (context.mainSectionContainerWidth ?? (context.containerWidth ||
+        container.parentElement?.clientWidth ||
+        container.clientWidth ||
+        0));
 
   // For pinned sections, always render all cells (they don't scroll)
   // For main section, only render visible cells based on scroll position
@@ -61,9 +64,12 @@ export const renderHeaderCells = (
     cellsToRender.map((cell) => getCellId({ accessor: cell.header.accessor, rowId: "header" })),
   );
 
-  // Remove cells that are no longer visible
+  const positionCache = getHeaderPositionCache(container);
+
+  // Remove cells that are no longer visible (and from position cache)
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
+      positionCache.delete(cellId);
       element.remove();
       renderedCells.delete(cellId);
     }
@@ -83,26 +89,27 @@ export const renderHeaderCells = (
     if (!renderedCells.has(cellId)) {
       cellsToCreate.push({ cell, cellId, isLastHeader });
     } else {
-      // Check if position actually changed
+      // Use cached position to detect change (avoid DOM reads / layout thrash)
       const cellElement = renderedCells.get(cellId)!;
-      const currentLeft = parseFloat(cellElement.style.left) || 0;
-      const currentTop = parseFloat(cellElement.style.top) || 0;
-      const currentWidth = parseFloat(cellElement.style.width) || 0;
-      const currentHeight = parseFloat(cellElement.style.height) || 0;
-
+      const cached = positionCache.get(cellId);
       const positionChanged =
-        currentLeft !== cell.left ||
-        currentTop !== cell.top ||
-        currentWidth !== cell.width ||
-        currentHeight !== cell.height;
+        !cached ||
+        cached.left !== cell.left ||
+        cached.top !== cell.top ||
+        cached.width !== cell.width ||
+        cached.height !== cell.height;
 
-      // Only update if position actually changed
       if (positionChanged) {
-        // Position changed - update only position styles
         cellElement.style.left = `${cell.left}px`;
         cellElement.style.top = `${cell.top}px`;
         cellElement.style.width = `${cell.width}px`;
         cellElement.style.height = `${cell.height}px`;
+        positionCache.set(cellId, {
+          left: cell.left,
+          top: cell.top,
+          width: cell.width,
+          height: cell.height,
+        });
       }
 
       // Sync header select-all checkbox when row selection changes (e.g. select-all / deselect-all)
@@ -122,11 +129,17 @@ export const renderHeaderCells = (
     }
   });
 
-  // Second pass: batch create new cells
+  // Second pass: batch create new cells (seed position cache so next update doesn't read DOM)
   cellsToCreate.forEach(({ cell, cellId, isLastHeader }) => {
     const cellElement = createHeaderCellElement(cell, context, isLastHeader);
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
+    positionCache.set(cellId, {
+      left: cell.left,
+      top: cell.top,
+      width: cell.width,
+      height: cell.height,
+    });
   });
 
   // Single DOM operation to add all new cells

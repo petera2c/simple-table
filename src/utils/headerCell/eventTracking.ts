@@ -21,7 +21,10 @@ export const setPrevUpdateTime = (time: number) => {
   prevUpdateTime = time;
 };
 
-export const setPrevDraggingPosition = (position: { screenX: number; screenY: number }) => {
+export const setPrevDraggingPosition = (position: {
+  screenX: number;
+  screenY: number;
+}) => {
   prevDraggingPosition = position;
 };
 
@@ -32,11 +35,34 @@ export const setPrevHeaders = (headers: HeaderObject[] | null) => {
 // Track rendered cells for incremental updates (per container)
 const renderedCellsMap = new WeakMap<HTMLElement, Map<string, HTMLElement>>();
 
-export const getRenderedCells = (container: HTMLElement): Map<string, HTMLElement> => {
+export const getRenderedCells = (
+  container: HTMLElement,
+): Map<string, HTMLElement> => {
   if (!renderedCellsMap.has(container)) {
     renderedCellsMap.set(container, new Map());
   }
   return renderedCellsMap.get(container)!;
+};
+
+// Cache last applied header position per cell (avoids DOM reads / layout thrash on scroll)
+export interface CachedHeaderPosition {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+const headerPositionCacheMap = new WeakMap<
+  HTMLElement,
+  Map<string, CachedHeaderPosition>
+>();
+
+export const getHeaderPositionCache = (
+  container: HTMLElement,
+): Map<string, CachedHeaderPosition> => {
+  if (!headerPositionCacheMap.has(container)) {
+    headerPositionCacheMap.set(container, new Map());
+  }
+  return headerPositionCacheMap.get(container)!;
 };
 
 export const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
@@ -78,5 +104,6 @@ export const cleanupHeaderCellRendering = (container?: HTMLElement) => {
       element.remove();
     });
     renderedCells.clear();
+    getHeaderPositionCache(container).clear();
   }
 };

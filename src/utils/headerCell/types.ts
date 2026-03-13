@@ -25,6 +25,8 @@ export interface HeaderRenderContext {
   columnReordering: boolean;
   columnResizing: boolean;
   containerWidth: number;
+  /** Main section viewport width (avoids clientWidth read when set); use for getVisibleCells when !pinned */
+  mainSectionContainerWidth?: number;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   /** Used for context cache invalidation when row selection changes */

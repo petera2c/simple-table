@@ -7,6 +7,7 @@ import { getRenderedCells } from "./bodyCell/eventTracking";
 import {
   createBodyCellElement,
   updateBodyCellElement,
+  updateBodyCellPosition,
   untrackCellByRow,
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
@@ -31,9 +32,14 @@ export type {
 export { cleanupBodyCellRendering } from "./bodyCell/eventTracking";
 
 // Track rendered separators per container
-const renderedSeparatorsMap = new WeakMap<HTMLElement, Map<number, HTMLElement>>();
+const renderedSeparatorsMap = new WeakMap<
+  HTMLElement,
+  Map<number, HTMLElement>
+>();
 
-const getRenderedSeparators = (container: HTMLElement): Map<number, HTMLElement> => {
+const getRenderedSeparators = (
+  container: HTMLElement,
+): Map<number, HTMLElement> => {
   if (!renderedSeparatorsMap.has(container)) {
     renderedSeparatorsMap.set(container, new Map());
   }
@@ -66,9 +72,14 @@ interface SeparatorMetadata {
   displayStrongBorder: boolean;
 }
 
-const separatorMetadataMap = new WeakMap<HTMLElement, Map<number, SeparatorMetadata>>();
+const separatorMetadataMap = new WeakMap<
+  HTMLElement,
+  Map<number, SeparatorMetadata>
+>();
 
-const getSeparatorMetadata = (container: HTMLElement): Map<number, SeparatorMetadata> => {
+const getSeparatorMetadata = (
+  container: HTMLElement,
+): Map<number, SeparatorMetadata> => {
   if (!separatorMetadataMap.has(container)) {
     separatorMetadataMap.set(container, new Map());
   }
@@ -134,11 +145,13 @@ const renderRowSeparators = (
         prevCell: prevRowFirstCell,
       });
     }
-    boundariesFromRows = rowBoundaries.map(({ rowIndex, firstCell, prevCell }) => ({
-      rowIndex,
-      position: firstCell.tableRow.position,
-      displayStrongBorder: prevCell?.tableRow?.isLastGroupRow ?? false,
-    }));
+    boundariesFromRows = rowBoundaries.map(
+      ({ rowIndex, firstCell, prevCell }) => ({
+        rowIndex,
+        position: firstCell.tableRow.position,
+        displayStrongBorder: prevCell?.tableRow?.isLastGroupRow ?? false,
+      }),
+    );
   }
 
   if (boundariesFromRows.length === 0) return;
@@ -209,16 +222,22 @@ const renderRowSeparators = (
 };
 
 // Main render function. When allRows is provided, separators are built from the full row list (including nested grid rows).
+// When positionOnly is true (e.g. scroll-driven), only positions are updated; content and separators are skipped for performance.
 export const renderBodyCells = (
   container: HTMLElement,
   cells: AbsoluteBodyCell[],
   context: CellRenderContext,
   scrollLeft: number = 0,
   allRows?: TableRow[],
+  positionOnly?: boolean,
 ): void => {
-  // Get viewport width for horizontal virtual scrolling
-  // Use containerWidth from context (provided by DimensionManager) if available
-  const viewportWidth = context.containerWidth || container.clientWidth || 0;
+  // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
+  const viewportWidth = context.pinned
+    ? (context.containerWidth ?? container.clientWidth ?? 0)
+    : (context.mainSectionContainerWidth ??
+      context.containerWidth ??
+      container.clientWidth ??
+      0);
 
   // For pinned sections, always render all cells (they don't scroll horizontally)
   // For main section, only render visible cells based on scroll position
@@ -231,7 +250,9 @@ export const renderBodyCells = (
 
   // Build set of cell IDs that should be visible
   const visibleCellIds = new Set(
-    cellsToRender.map((cell) => getCellId({ accessor: cell.header.accessor, rowId: cell.rowId })),
+    cellsToRender.map((cell) =>
+      getCellId({ accessor: cell.header.accessor, rowId: cell.rowId }),
+    ),
   );
 
   // Get unique row indices for separator visibility (use full row list when provided so nested rows get separators)
@@ -243,7 +264,10 @@ export const renderBodyCells = (
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
       // Untrack from row hover map before removing
-      const rowIndex = parseInt(element.getAttribute("data-row-index") || "-1", 10);
+      const rowIndex = parseInt(
+        element.getAttribute("data-row-index") || "-1",
+        10,
+      );
       if (rowIndex >= 0) {
         untrackCellByRow(rowIndex, element);
       }
@@ -252,15 +276,17 @@ export const renderBodyCells = (
     }
   });
 
-  // Remove separators that are no longer visible
-  const separatorMetadata = getSeparatorMetadata(container);
-  renderedSeparators.forEach((element, rowIndex) => {
-    if (!visibleRowIndices.has(rowIndex)) {
-      element.remove();
-      renderedSeparators.delete(rowIndex);
-      separatorMetadata.delete(rowIndex);
-    }
-  });
+  if (!positionOnly) {
+    // Remove separators that are no longer visible (only when doing full render)
+    const separatorMetadata = getSeparatorMetadata(container);
+    renderedSeparators.forEach((element, rowIndex) => {
+      if (!visibleRowIndices.has(rowIndex)) {
+        element.remove();
+        renderedSeparators.delete(rowIndex);
+        separatorMetadata.delete(rowIndex);
+      }
+    });
+  }
 
   // Batch create new cells using DocumentFragment
   const fragment = document.createDocumentFragment();
@@ -268,41 +294,49 @@ export const renderBodyCells = (
 
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
-    const cellId = getCellId({ accessor: cell.header.accessor, rowId: cell.rowId });
+    const cellId = getCellId({
+      accessor: cell.header.accessor,
+      rowId: cell.rowId,
+    });
 
     if (!renderedCells.has(cellId)) {
       cellsToCreate.push({ cell, cellId });
     } else {
       const cellElement = renderedCells.get(cellId)!;
 
-      // When row data can change (e.g. quick filter), same cellId can refer to different row
-      // content (rowId is position-based when no getRowId). Always update content and position
-      // so filtering/sorting shows correct data.
-      updateBodyCellElement(cellElement, cell, context);
+      if (positionOnly) {
+        // Scroll-driven update: only update position; skip content and checkbox/expand sync
+        updateBodyCellPosition(cellElement, cell);
+      } else {
+        // Full update when row data or context may have changed (e.g. quick filter, sort, selection)
+        updateBodyCellElement(cellElement, cell, context);
 
-      // Sync row selection checkbox when context changes (e.g. select-all)
-      if (
-        cell.header.isSelectionColumn &&
-        context.enableRowSelection &&
-        context.isRowSelected
-      ) {
-        const checked = context.isRowSelected(cell.rowId);
-        updateCheckboxElement(cellElement, checked);
-      }
+        // Sync row selection checkbox when context changes (e.g. select-all)
+        if (
+          cell.header.isSelectionColumn &&
+          context.enableRowSelection &&
+          context.isRowSelected
+        ) {
+          const checked = context.isRowSelected(cell.rowId);
+          updateCheckboxElement(cellElement, checked);
+        }
 
-      // Sync expand/collapse icon direction when expanded state changes (e.g. nested grids)
-      if (cell.header.expandable) {
-        const expandedDepthsSet = new Set(context.expandedDepths);
-        const currentExpandedRows = context.getExpandedRows?.() ?? context.expandedRows;
-        const currentCollapsedRows = context.getCollapsedRows?.() ?? context.collapsedRows;
-        const currentIsExpanded = isRowExpanded(
-          cell.rowId,
-          cell.depth,
-          expandedDepthsSet,
-          currentExpandedRows,
-          currentCollapsedRows,
-        );
-        updateExpandIconState(cellElement, currentIsExpanded);
+        // Sync expand/collapse icon direction when expanded state changes (e.g. nested grids)
+        if (cell.header.expandable) {
+          const expandedDepthsSet = new Set(context.expandedDepths);
+          const currentExpandedRows =
+            context.getExpandedRows?.() ?? context.expandedRows;
+          const currentCollapsedRows =
+            context.getCollapsedRows?.() ?? context.collapsedRows;
+          const currentIsExpanded = isRowExpanded(
+            cell.rowId,
+            cell.depth,
+            expandedDepthsSet,
+            currentExpandedRows,
+            currentCollapsedRows,
+          );
+          updateExpandIconState(cellElement, currentIsExpanded);
+        }
       }
     }
   });
@@ -319,6 +353,14 @@ export const renderBodyCells = (
     container.appendChild(fragment);
   }
 
-  // Render separators for visible rows (use allRows when provided so nested grid rows get separators)
-  renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
+  // Render separators for visible rows (skip when positionOnly; row boundaries unchanged on horizontal scroll)
+  if (!positionOnly) {
+    renderRowSeparators(
+      container,
+      cellsToRender,
+      context,
+      renderedSeparators,
+      allRows,
+    );
+  }
 };

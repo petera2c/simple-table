@@ -68,8 +68,11 @@ export interface TableRendererDeps {
 export class TableRenderer {
   private sectionRenderer: SectionRenderer;
   private footerInstance: ReturnType<typeof createTableFooter> | null = null;
-  private columnEditorInstance: ReturnType<typeof createColumnEditor> | null = null;
-  private horizontalScrollbarRef: { current: HTMLElement | null } = { current: null };
+  private columnEditorInstance: ReturnType<typeof createColumnEditor> | null =
+    null;
+  private horizontalScrollbarRef: { current: HTMLElement | null } = {
+    current: null,
+  };
   private scrollbarTimeoutId: number | null = null;
   private stickyParentsContainer: HTMLElement | null = null;
   private sectionScrollController: SectionScrollController | null = null;
@@ -108,7 +111,10 @@ export class TableRenderer {
 
     container.style.height = `${calculatedHeaderHeight}px`;
     container.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
-    container.setAttribute("aria-colcount", String(deps.effectiveHeaders.length));
+    container.setAttribute(
+      "aria-colcount",
+      String(deps.effectiveHeaders.length),
+    );
 
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,
@@ -125,13 +131,15 @@ export class TableRenderer {
     const sortState = deps.sortManager?.getState();
     const filterState = deps.filterManager?.getState();
 
-    const headerSelectedRowCount = deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
+    const headerSelectedRowCount =
+      deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
     const headerContext: HeaderRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       columnBorders: deps.config.columnBorders ?? false,
       columnReordering: deps.config.columnReordering ?? false,
       columnResizing: deps.config.columnResizing ?? false,
       containerWidth: dimensionState.containerWidth,
+      mainSectionContainerWidth: mainWidth,
       enableHeaderEditing: deps.config.enableHeaderEditing,
       enableRowSelection: deps.config.enableRowSelection,
       selectedRowCount: headerSelectedRowCount,
@@ -140,9 +148,13 @@ export class TableRenderer {
       ...(deps.config.selectableColumns && deps.selectionManager
         ? {
             selectedColumns: deps.selectionManager.getSelectedColumns(),
-            columnsWithSelectedCells: deps.selectionManager.getColumnsWithSelectedCells(),
+            columnsWithSelectedCells:
+              deps.selectionManager.getColumnsWithSelectedCells(),
           }
-        : { selectedColumns: new Set<number>(), columnsWithSelectedCells: new Set<number>() }),
+        : {
+            selectedColumns: new Set<number>(),
+            columnsWithSelectedCells: new Set<number>(),
+          }),
       sort: sortState?.sort ?? null,
       autoExpandColumns: deps.config.autoExpandColumns,
       selectableColumns: deps.config.selectableColumns,
@@ -185,7 +197,9 @@ export class TableRenderer {
         deps.onRender();
       },
       setIsResizing: (value: any) => {
-        deps.setIsResizing(typeof value === "function" ? value(deps.isResizing) : value);
+        deps.setIsResizing(
+          typeof value === "function" ? value(deps.isResizing) : value,
+        );
       },
       onColumnWidthChange: deps.config.onColumnWidthChange,
       onColumnOrderChange: deps.config.onColumnOrderChange,
@@ -213,7 +227,8 @@ export class TableRenderer {
           : (value: any) => {},
       setSelectedCells: (value: any) => {},
       setInitialFocusedCell: (cell: any) => {},
-      areAllRowsSelected: () => deps.rowSelectionManager?.areAllRowsSelected() ?? false,
+      areAllRowsSelected: () =>
+        deps.rowSelectionManager?.areAllRowsSelected() ?? false,
       draggedHeaderRef: deps.draggedHeaderRef,
       hoveredHeaderRef: deps.hoveredHeaderRef,
       headerRegistry: deps.headerRegistry,
@@ -223,9 +238,13 @@ export class TableRenderer {
       pinnedRightRef: deps.pinnedRightRef,
     };
 
-    const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");
+    const pinnedLeftHeaders = deps.effectiveHeaders.filter(
+      (h) => h.pinned === "left",
+    );
     const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
-    const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
+    const pinnedRightHeaders = deps.effectiveHeaders.filter(
+      (h) => h.pinned === "right",
+    );
 
     // Calculate startColIndex for each section to ensure global uniqueness
     let currentColIndex = 0;
@@ -298,10 +317,15 @@ export class TableRenderer {
     });
   }
 
-  renderBody(container: HTMLElement, processedResult: any, deps: TableRendererDeps): void {
+  renderBody(
+    container: HTMLElement,
+    processedResult: any,
+    deps: TableRendererDeps,
+  ): void {
     if (!container) return;
 
-    const rowsToRender = processedResult.rowsToRender || processedResult.currentTableRows;
+    const rowsToRender =
+      processedResult.rowsToRender || processedResult.currentTableRows;
     const shouldShowEmptyState =
       !deps.internalIsLoading && processedResult.currentTableRows.length === 0;
 
@@ -322,9 +346,12 @@ export class TableRenderer {
       if (typeof deps.config.tableEmptyStateRenderer === "string") {
         emptyWrapper.textContent = deps.config.tableEmptyStateRenderer;
       } else if (deps.config.tableEmptyStateRenderer instanceof HTMLElement) {
-        emptyWrapper.appendChild(deps.config.tableEmptyStateRenderer.cloneNode(true));
+        emptyWrapper.appendChild(
+          deps.config.tableEmptyStateRenderer.cloneNode(true),
+        );
       } else {
-        emptyWrapper.innerHTML = "<div class='st-empty-state'>No rows to display</div>";
+        emptyWrapper.innerHTML =
+          "<div class='st-empty-state'>No rows to display</div>";
       }
 
       container.appendChild(emptyWrapper);
@@ -343,7 +370,8 @@ export class TableRenderer {
       collapsedHeaders: deps.collapsedHeaders,
     });
 
-    const selectedRowCount = deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
+    const selectedRowCount =
+      deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
     const maxHeaderDepth = dimensionState.maxHeaderDepth ?? 1;
     const bodyContext: CellRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
@@ -351,7 +379,8 @@ export class TableRenderer {
       expandedRows: deps.getExpandedRows(),
       expandedDepths: Array.from(deps.expandedDepths),
       selectedColumns: deps.selectionManager?.getSelectedColumns() ?? new Set(),
-      rowsWithSelectedCells: deps.selectionManager?.getRowsWithSelectedCells() ?? new Set(),
+      rowsWithSelectedCells:
+        deps.selectionManager?.getRowsWithSelectedCells() ?? new Set(),
       columnBorders: deps.config.columnBorders ?? false,
       enableRowSelection: deps.config.enableRowSelection,
       selectedRowCount,
@@ -366,6 +395,7 @@ export class TableRenderer {
       heightOffsets: processedResult.heightOffsets,
       customTheme: deps.customTheme,
       containerWidth: dimensionState.containerWidth,
+      mainSectionContainerWidth: mainWidth,
       onCellEdit: deps.config.onCellEdit,
       onCellClick: deps.config.onCellClick,
       onRowGroupExpand: deps.config.onRowGroupExpand,
@@ -408,22 +438,33 @@ export class TableRenderer {
       loadingStateRenderer: deps.config.loadingStateRenderer,
       errorStateRenderer: deps.config.errorStateRenderer,
       emptyStateRenderer: deps.config.emptyStateRenderer,
-      getBorderClass: (cell: any) => deps.selectionManager?.getBorderClass(cell) || "",
-      isSelected: (cell: any) => deps.selectionManager?.isSelected(cell) || false,
+      getBorderClass: (cell: any) =>
+        deps.selectionManager?.getBorderClass(cell) || "",
+      isSelected: (cell: any) =>
+        deps.selectionManager?.isSelected(cell) || false,
       isInitialFocusedCell: (cell: any) =>
         deps.selectionManager?.isInitialFocusedCell(cell) || false,
-      isCopyFlashing: (cell: any) => deps.selectionManager?.isCopyFlashing(cell) || false,
-      isWarningFlashing: (cell: any) => deps.selectionManager?.isWarningFlashing(cell) || false,
-      handleMouseDown: (cell: any) => deps.selectionManager?.handleMouseDown(cell),
-      handleMouseOver: (cell: any) => deps.selectionManager?.handleMouseOver(cell),
-      isRowSelected: (rowId: string) => deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
+      isCopyFlashing: (cell: any) =>
+        deps.selectionManager?.isCopyFlashing(cell) || false,
+      isWarningFlashing: (cell: any) =>
+        deps.selectionManager?.isWarningFlashing(cell) || false,
+      handleMouseDown: (cell: any) =>
+        deps.selectionManager?.handleMouseDown(cell),
+      handleMouseOver: (cell: any) =>
+        deps.selectionManager?.handleMouseOver(cell),
+      isRowSelected: (rowId: string) =>
+        deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
       canExpandRowGroup: deps.config.canExpandRowGroup,
       isLoading: deps.internalIsLoading,
     };
 
-    const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");
+    const pinnedLeftHeaders = deps.effectiveHeaders.filter(
+      (h) => h.pinned === "left",
+    );
     const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
-    const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
+    const pinnedRightHeaders = deps.effectiveHeaders.filter(
+      (h) => h.pinned === "right",
+    );
 
     // Calculate startColIndex for each section to ensure global uniqueness
     let currentColIndex = 0;
@@ -502,14 +543,18 @@ export class TableRenderer {
     ) {
       // Clean up old sticky parents container
       if (this.stickyParentsContainer) {
-        cleanupStickyParentsContainer(this.stickyParentsContainer, deps.sectionScrollController ?? null);
+        cleanupStickyParentsContainer(
+          this.stickyParentsContainer,
+          deps.sectionScrollController ?? null,
+        );
         this.stickyParentsContainer = null;
       }
 
       // Get scroll state
       const scrollTop = deps.mainBodyRef.current?.scrollTop ?? 0;
       const scrollbarWidth = deps.mainBodyRef.current
-        ? deps.mainBodyRef.current.offsetWidth - deps.mainBodyRef.current.clientWidth
+        ? deps.mainBodyRef.current.offsetWidth -
+          deps.mainBodyRef.current.clientWidth
         : 0;
 
       // Create sticky parents container
@@ -547,7 +592,10 @@ export class TableRenderer {
     } else {
       // Clean up sticky parents if disabled or no sticky parents
       if (this.stickyParentsContainer) {
-        cleanupStickyParentsContainer(this.stickyParentsContainer, deps.sectionScrollController ?? null);
+        cleanupStickyParentsContainer(
+          this.stickyParentsContainer,
+          deps.sectionScrollController ?? null,
+        );
         this.stickyParentsContainer = null;
       }
     }
@@ -637,7 +685,10 @@ export class TableRenderer {
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
-            this.columnEditorInstance.update({ headers: newHeaders, contextHeaders: newHeaders });
+            this.columnEditorInstance.update({
+              headers: newHeaders,
+              contextHeaders: newHeaders,
+            });
           }
           deps.onRender();
         },
@@ -659,7 +710,10 @@ export class TableRenderer {
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
-            this.columnEditorInstance.update({ headers: newHeaders, contextHeaders: newHeaders });
+            this.columnEditorInstance.update({
+              headers: newHeaders,
+              contextHeaders: newHeaders,
+            });
           }
           deps.onRender();
         },
@@ -682,7 +736,11 @@ export class TableRenderer {
     tableBodyContainerRef: HTMLDivElement,
     deps: TableRendererDeps,
   ): void {
-    if (!wrapperContainer || !deps.mainBodyRef.current || !tableBodyContainerRef) {
+    if (
+      !wrapperContainer ||
+      !deps.mainBodyRef.current ||
+      !tableBodyContainerRef
+    ) {
       return;
     }
 
@@ -721,7 +779,11 @@ export class TableRenderer {
 
     // Create scrollbar only if it doesn't exist
     this.scrollbarTimeoutId = window.setTimeout(() => {
-      if (!deps.mainBodyRef.current || !tableBodyContainerRef || !wrapperContainer) {
+      if (
+        !deps.mainBodyRef.current ||
+        !tableBodyContainerRef ||
+        !wrapperContainer
+      ) {
         return;
       }
 
@@ -748,7 +810,9 @@ export class TableRenderer {
       });
 
       if (scrollbar) {
-        const contentWrapper = wrapperContainer.querySelector(".st-content-wrapper");
+        const contentWrapper = wrapperContainer.querySelector(
+          ".st-content-wrapper",
+        );
         if (contentWrapper && contentWrapper.nextSibling) {
           wrapperContainer.insertBefore(scrollbar, contentWrapper.nextSibling);
         } else {
@@ -773,12 +837,18 @@ export class TableRenderer {
     }
 
     if (this.horizontalScrollbarRef.current) {
-      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current, this.sectionScrollController);
+      cleanupHorizontalScrollbar(
+        this.horizontalScrollbarRef.current,
+        this.sectionScrollController,
+      );
       this.horizontalScrollbarRef.current = null;
     }
 
     if (this.stickyParentsContainer) {
-      cleanupStickyParentsContainer(this.stickyParentsContainer, this.sectionScrollController);
+      cleanupStickyParentsContainer(
+        this.stickyParentsContainer,
+        this.sectionScrollController,
+      );
       this.stickyParentsContainer = null;
     }
     this.sectionScrollController = null;

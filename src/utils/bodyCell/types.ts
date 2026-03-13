@@ -90,6 +90,8 @@ export interface CellRenderContext {
   heightOffsets?: HeightOffsets;
   customTheme?: CustomTheme;
   containerWidth?: number;
+  /** Main section viewport width (avoids clientWidth read when set); use for getVisibleBodyCells when !pinned */
+  mainSectionContainerWidth?: number;
 
   // Callbacks
   onCellEdit?: (params: CellEditParams) => void;

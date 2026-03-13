@@ -5,11 +5,19 @@ import {
   HeaderRenderContext,
   cleanupHeaderCellRendering,
 } from "../../utils/headerCellRenderer";
-import { renderBodyCells, AbsoluteBodyCell, CellRenderContext, cleanupBodyCellRendering } from "../../utils/bodyCellRenderer";
+import {
+  renderBodyCells,
+  AbsoluteBodyCell,
+  CellRenderContext,
+  cleanupBodyCellRendering,
+} from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
 import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
-import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
+import {
+  calculateTotalHeight,
+  calculateRowTopPosition,
+} from "../../utils/infiniteScrollUtils";
 import {
   createNestedGridRow,
   createNestedGridSpacer,
@@ -75,12 +83,15 @@ export class SectionRenderer {
   private bodyCellsCache: Map<string, BodyCellsCacheEntry> = new Map();
   private headerCellsCache: Map<string, HeaderCellsCacheEntry> = new Map();
   private contextCache: Map<string, ContextCacheEntry> = new Map();
-  
+
   // Track the next colIndex for each section after rendering
   private nextColIndexMap: Map<string, number> = new Map();
 
   // Nested grid row elements per section (key: sectionKey, value: Map<position, { element, cleanup? }>)
-  private nestedGridRowsMap: Map<string, Map<number, { element: HTMLElement; cleanup?: () => void }>> = new Map();
+  private nestedGridRowsMap: Map<
+    string,
+    Map<number, { element: HTMLElement; cleanup?: () => void }>
+  > = new Map();
 
   renderHeaderSection(params: HeaderSectionParams): HTMLElement {
     const {
@@ -136,14 +147,19 @@ export class SectionRenderer {
       headerHeight,
       startColIndex,
     );
-    
+
     // Calculate and store the next colIndex for this section
-    const maxColIndex = absoluteCells.length > 0 
-      ? Math.max(...absoluteCells.map(c => c.colIndex)) + 1
-      : startColIndex;
+    const maxColIndex =
+      absoluteCells.length > 0
+        ? Math.max(...absoluteCells.map((c) => c.colIndex)) + 1
+        : startColIndex;
     this.nextColIndexMap.set(sectionKey, maxColIndex);
 
-    const cachedContext = this.getCachedContext(`header-${sectionKey}`, context, pinned);
+    const cachedContext = this.getCachedContext(
+      `header-${sectionKey}`,
+      context,
+      pinned,
+    );
 
     // Render with current scrollLeft to preserve scroll position during re-renders
     const currentScrollLeft = section.scrollLeft;
@@ -235,19 +251,30 @@ export class SectionRenderer {
       context.customTheme ?? DEFAULT_CUSTOM_THEME,
       startColIndex,
     );
-    
+
     // Calculate and store the next colIndex for this section
-    const maxColIndex = absoluteCells.length > 0 
-      ? Math.max(...absoluteCells.map(c => c.colIndex)) + 1
-      : startColIndex;
+    const maxColIndex =
+      absoluteCells.length > 0
+        ? Math.max(...absoluteCells.map((c) => c.colIndex)) + 1
+        : startColIndex;
     this.nextColIndexMap.set(sectionKey, maxColIndex);
 
-    const cachedContext = this.getCachedContext(`body-${sectionKey}`, context, pinned);
+    const cachedContext = this.getCachedContext(
+      `body-${sectionKey}`,
+      context,
+      pinned,
+    );
 
     // Render with current scrollLeft to preserve scroll position during re-renders.
     // Pass full rows so separators and nested grid rows account for every row.
     const currentScrollLeft = section.scrollLeft;
-    renderBodyCells(section, absoluteCells, cachedContext, currentScrollLeft, rows);
+    renderBodyCells(
+      section,
+      absoluteCells,
+      cachedContext,
+      currentScrollLeft,
+      rows,
+    );
 
     // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
     this.renderNestedGridRows(section, sectionKey, rows, pinned, cachedContext);
@@ -256,7 +283,14 @@ export class SectionRenderer {
     if (!pinned && section) {
       (section as any).__renderBodyCells = (scrollLeft: number) => {
         if (section) {
-          renderBodyCells(section, absoluteCells, cachedContext, scrollLeft, rows);
+          renderBodyCells(
+            section,
+            absoluteCells,
+            cachedContext,
+            scrollLeft,
+            rows,
+            true,
+          );
         }
       };
     }
@@ -321,7 +355,10 @@ export class SectionRenderer {
         map!.set(position, { element: spacer });
       } else {
         nestedContext.depth = tableRow.depth > 0 ? tableRow.depth - 1 : 0;
-        const { element, cleanup } = createNestedGridRow(tableRow, nestedContext);
+        const { element, cleanup } = createNestedGridRow(
+          tableRow,
+          nestedContext,
+        );
         section.appendChild(element);
         map!.set(position, { element, cleanup });
       }
@@ -499,7 +536,10 @@ export class SectionRenderer {
     return cells;
   }
 
-  private getLeafHeaders(headers: HeaderObject[], collapsedHeaders: Set<Accessor>): HeaderObject[] {
+  private getLeafHeaders(
+    headers: HeaderObject[],
+    collapsedHeaders: Set<Accessor>,
+  ): HeaderObject[] {
     const leaves: HeaderObject[] = [];
 
     const processHeader = (header: HeaderObject): void => {
@@ -548,7 +588,9 @@ export class SectionRenderer {
     return headers.map(hashHeader).join("|");
   }
 
-  private createHeightOffsetsHash(heightOffsets?: Array<[number, number]>): string {
+  private createHeightOffsetsHash(
+    heightOffsets?: Array<[number, number]>,
+  ): string {
     if (!heightOffsets || heightOffsets.length === 0) return "";
     return heightOffsets.map(([pos, height]) => `${pos}:${height}`).join("|");
   }
@@ -596,13 +638,31 @@ export class SectionRenderer {
     }
     // Include column selection so header/body re-render with st-header-selected and st-cell-column-selected
     if (context.selectedColumns && context.selectedColumns.size !== undefined) {
-      hash += `|selectedColumns:${Array.from(context.selectedColumns as Set<number>).sort((a, b) => a - b).join(",")}`;
+      hash += `|selectedColumns:${Array.from(
+        context.selectedColumns as Set<number>,
+      )
+        .sort((a, b) => a - b)
+        .join(",")}`;
     }
-    if (context.columnsWithSelectedCells && context.columnsWithSelectedCells.size !== undefined) {
-      hash += `|columnsWithSelectedCells:${Array.from(context.columnsWithSelectedCells as Set<number>).sort((a, b) => a - b).join(",")}`;
+    if (
+      context.columnsWithSelectedCells &&
+      context.columnsWithSelectedCells.size !== undefined
+    ) {
+      hash += `|columnsWithSelectedCells:${Array.from(
+        context.columnsWithSelectedCells as Set<number>,
+      )
+        .sort((a, b) => a - b)
+        .join(",")}`;
     }
-    if (context.rowsWithSelectedCells && context.rowsWithSelectedCells.size !== undefined) {
-      hash += `|rowsWithSelectedCells:${Array.from(context.rowsWithSelectedCells as Set<string>).sort().join(",")}`;
+    if (
+      context.rowsWithSelectedCells &&
+      context.rowsWithSelectedCells.size !== undefined
+    ) {
+      hash += `|rowsWithSelectedCells:${Array.from(
+        context.rowsWithSelectedCells as Set<string>,
+      )
+        .sort()
+        .join(",")}`;
     }
 
     return hash;
