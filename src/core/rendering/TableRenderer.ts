@@ -17,6 +17,7 @@ import {
   cleanupStickyParentsContainer,
 } from "../../utils/stickyParentsRenderer";
 import { DimensionManager } from "../../managers/DimensionManager";
+import type { SectionScrollController } from "../../managers/SectionScrollController";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
@@ -46,6 +47,7 @@ export interface TableRendererDeps {
   pinnedLeftHeaderRef: { current: HTMLDivElement | null };
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
   dimensionManager: DimensionManager | null;
+  sectionScrollController: SectionScrollController | null;
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
   selectionManager: SelectionManager | null;
@@ -70,6 +72,7 @@ export class TableRenderer {
   private horizontalScrollbarRef: { current: HTMLElement | null } = { current: null };
   private scrollbarTimeoutId: number | null = null;
   private stickyParentsContainer: HTMLElement | null = null;
+  private sectionScrollController: SectionScrollController | null = null;
   private renderScheduled: boolean = false;
   private pendingRenderCallback: (() => void) | null = null;
 
@@ -499,7 +502,7 @@ export class TableRenderer {
     ) {
       // Clean up old sticky parents container
       if (this.stickyParentsContainer) {
-        cleanupStickyParentsContainer(this.stickyParentsContainer);
+        cleanupStickyParentsContainer(this.stickyParentsContainer, deps.sectionScrollController ?? null);
         this.stickyParentsContainer = null;
       }
 
@@ -531,6 +534,7 @@ export class TableRenderer {
           rowHeight: deps.customTheme.rowHeight,
           heightOffsets: processedResult.heightOffsets,
           cellRenderContext: bodyContext,
+          sectionScrollController: deps.sectionScrollController ?? null,
         },
       );
 
@@ -543,7 +547,7 @@ export class TableRenderer {
     } else {
       // Clean up sticky parents if disabled or no sticky parents
       if (this.stickyParentsContainer) {
-        cleanupStickyParentsContainer(this.stickyParentsContainer);
+        cleanupStickyParentsContainer(this.stickyParentsContainer, deps.sectionScrollController ?? null);
         this.stickyParentsContainer = null;
       }
     }
@@ -730,6 +734,7 @@ export class TableRenderer {
         return;
       }
 
+      this.sectionScrollController = deps.sectionScrollController ?? null;
       const scrollbar = createHorizontalScrollbar({
         mainBodyRef: deps.mainBodyRef.current,
         mainBodyWidth,
@@ -739,6 +744,7 @@ export class TableRenderer {
         pinnedRightContentWidth,
         tableBodyContainerRef,
         editColumns: deps.config.editColumns ?? false,
+        sectionScrollController: this.sectionScrollController,
       });
 
       if (scrollbar) {
@@ -767,13 +773,14 @@ export class TableRenderer {
     }
 
     if (this.horizontalScrollbarRef.current) {
-      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
+      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current, this.sectionScrollController);
       this.horizontalScrollbarRef.current = null;
     }
 
     if (this.stickyParentsContainer) {
-      cleanupStickyParentsContainer(this.stickyParentsContainer);
+      cleanupStickyParentsContainer(this.stickyParentsContainer, this.sectionScrollController);
       this.stickyParentsContainer = null;
     }
+    this.sectionScrollController = null;
   }
 }

@@ -61,7 +61,8 @@ const updateColumnWidthsInDOM = (
       const visibleChildren = header.children.filter((child) => {
         if (child.hide) return false;
         const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
-        if (isCollapsed) return showWhen === "parentCollapsed" || showWhen === "always";
+        if (isCollapsed)
+          return showWhen === "parentCollapsed" || showWhen === "always";
         return showWhen === "parentExpanded" || showWhen === "always";
       });
       visibleChildren.forEach((child) => {
@@ -75,7 +76,9 @@ const updateColumnWidthsInDOM = (
       // Leaf: prefer override (e.g. just-set resize), then numeric header.width, else getHeaderWidthInPixels (DOM can be stale)
       const width =
         overrideWidths?.get(header.accessor as string) ??
-        (typeof header.width === "number" ? header.width : getHeaderWidthInPixels(header));
+        (typeof header.width === "number"
+          ? header.width
+          : getHeaderWidthInPixels(header));
       positions.set(header.accessor, { left: currentLeft, width });
       currentLeft += width;
     }
@@ -121,28 +124,39 @@ const updateColumnWidthsInDOM = (
     const isPinned = isPinnedLeft || isPinnedRight;
     // #region agent log
     if (isPinned) {
-      const section = headerCell?.closest(".st-header-pinned-left, .st-header-pinned-right");
+      const section = headerCell?.closest(
+        ".st-header-pinned-left, .st-header-pinned-right",
+      );
       const sectionEl = section as HTMLElement | undefined;
-      fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "88e0e6" },
-        body: JSON.stringify({
-          sessionId: "88e0e6",
-          location: "resizeUtils.ts:updateColumnWidthsInDOM",
-          message: "pinned resize DOM update",
-          data: {
-            accessor,
-            isPinnedLeft,
-            isPinnedRight,
-            setWidth: width,
-            headerCellFound: !!headerCell,
-            sectionWidthBefore: sectionEl?.style?.width ?? sectionEl?.offsetWidth,
-            overrideWidths: overrideWidths ? Object.fromEntries(overrideWidths) : undefined,
+      fetch(
+        "http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Debug-Session-Id": "88e0e6",
           },
-          timestamp: Date.now(),
-          hypothesisId: "H1_H2_H3",
-        }),
-      }).catch(() => {});
+          body: JSON.stringify({
+            sessionId: "88e0e6",
+            location: "resizeUtils.ts:updateColumnWidthsInDOM",
+            message: "pinned resize DOM update",
+            data: {
+              accessor,
+              isPinnedLeft,
+              isPinnedRight,
+              setWidth: width,
+              headerCellFound: !!headerCell,
+              sectionWidthBefore:
+                sectionEl?.style?.width ?? sectionEl?.offsetWidth,
+              overrideWidths: overrideWidths
+                ? Object.fromEntries(overrideWidths)
+                : undefined,
+            },
+            timestamp: Date.now(),
+            hypothesisId: "H1_H2_H3",
+          }),
+        },
+      ).catch(() => {});
     }
     // #endregion
     if (headerCell) {
@@ -163,7 +177,9 @@ const updateColumnWidthsInDOM = (
   // During resize drag, pinned section width is only set on full render. Reuse the same logic as
   // TableRenderer: recalculateAllSectionWidths then apply to section DOM (header + body).
   // Header sections do not use display:grid (see base.css), so we only need to update width.
-  const tableContainer = document.querySelector(".st-body-container") as HTMLElement | null;
+  const tableContainer = document.querySelector(
+    ".st-body-container",
+  ) as HTMLElement | null;
   const containerWidth = tableContainer?.clientWidth ?? 0;
   const { leftWidth, rightWidth } = recalculateAllSectionWidths({
     headers,
@@ -172,8 +188,12 @@ const updateColumnWidthsInDOM = (
   });
 
   if (leftWidth > 0) {
-    const leftHeaderSection = document.querySelector(".st-header-pinned-left") as HTMLElement | null;
-    const leftBodySection = document.querySelector(".st-body-pinned-left") as HTMLElement | null;
+    const leftHeaderSection = document.querySelector(
+      ".st-header-pinned-left",
+    ) as HTMLElement | null;
+    const leftBodySection = document.querySelector(
+      ".st-body-pinned-left",
+    ) as HTMLElement | null;
     if (leftHeaderSection) leftHeaderSection.style.width = `${leftWidth}px`;
     if (leftBodySection) leftBodySection.style.width = `${leftWidth}px`;
   }
@@ -181,18 +201,27 @@ const updateColumnWidthsInDOM = (
     const rightHeaderSection = document.querySelector(
       ".st-header-pinned-right",
     ) as HTMLElement | null;
-    const rightBodySection = document.querySelector(".st-body-pinned-right") as HTMLElement | null;
+    const rightBodySection = document.querySelector(
+      ".st-body-pinned-right",
+    ) as HTMLElement | null;
     if (rightHeaderSection) rightHeaderSection.style.width = `${rightWidth}px`;
     if (rightBodySection) rightBodySection.style.width = `${rightWidth}px`;
   }
 
   // #region agent log
   if (leftWidth > 0 || rightWidth > 0) {
-    const leftHeaderSection = document.querySelector(".st-header-pinned-left") as HTMLElement;
-    const rightHeaderSection = document.querySelector(".st-header-pinned-right") as HTMLElement;
+    const leftHeaderSection = document.querySelector(
+      ".st-header-pinned-left",
+    ) as HTMLElement;
+    const rightHeaderSection = document.querySelector(
+      ".st-header-pinned-right",
+    ) as HTMLElement;
     fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "88e0e6" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Debug-Session-Id": "88e0e6",
+      },
       body: JSON.stringify({
         sessionId: "88e0e6",
         location: "resizeUtils.ts:updateColumnWidthsInDOM:sectionWidths",
@@ -214,7 +243,10 @@ const updateColumnWidthsInDOM = (
 /**
  * Get the pinned value from the root header (for nested headers, children inherit from parent)
  */
-const getRootPinned = (header: HeaderObject, headers: HeaderObject[]): Pinned | undefined => {
+const getRootPinned = (
+  header: HeaderObject,
+  headers: HeaderObject[],
+): Pinned | undefined => {
   if (header.pinned) return header.pinned;
   const parent = findParentHeader(headers, header.accessor);
   return parent ? getRootPinned(parent, headers) : undefined;
@@ -233,7 +265,9 @@ const calculateMaxHeaderWidth = ({
   collapsedHeaders?: Set<string>;
 }): number => {
   // Get the table container element
-  const tableContainer = document.querySelector(".st-body-container") as HTMLElement;
+  const tableContainer = document.querySelector(
+    ".st-body-container",
+  ) as HTMLElement;
   if (!tableContainer || tableContainer.clientWidth === 0) {
     // If no container found or invalid width, return a reasonable default value
     return 1000;
@@ -283,7 +317,9 @@ const calculateMaxHeaderWidth = ({
 
   // If available width is less than minimum, allow the minimum but log the constraint violation
   if (availableWidth < minWidth) {
-    console.warn(`Header ${header.accessor} exceeds pinned section width limit`);
+    console.warn(
+      `Header ${header.accessor} exceeds pinned section width limit`,
+    );
     return minWidth;
   }
 
@@ -341,7 +377,10 @@ export const handleResizeStart = ({
 
   if (autoExpandColumns) {
     const sectionHeaders = headers.filter((h) => h.pinned === rootPinned);
-    const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
+    const leafHeaders = getAllVisibleLeafHeaders(
+      sectionHeaders,
+      collapsedHeaders,
+    );
     leafHeaders.forEach((h) => {
       const width = getHeaderWidthInPixels(h);
       initialWidthsMap.set(h.accessor as string, width);
@@ -379,7 +418,9 @@ export const handleResizeStart = ({
 
       // If this is a parent header with children, we need to resize the children, not the parent
       const headerToResize =
-        childrenToResize.length > 0 ? childrenToResize[childrenToResize.length - 1] : header;
+        childrenToResize.length > 0
+          ? childrenToResize[childrenToResize.length - 1]
+          : header;
 
       handleResizeWithAutoExpand({
         delta,
@@ -399,7 +440,11 @@ export const handleResizeStart = ({
     } else {
       // Normal resize mode
       // Calculate maximum allowable width based on container constraints
-      const maxWidth = calculateMaxHeaderWidth({ header, headers, collapsedHeaders });
+      const maxWidth = calculateMaxHeaderWidth({
+        header,
+        headers,
+        collapsedHeaders,
+      });
 
       // Simplified logic: always resize the leaf children (single source of truth)
       if (childrenToResize.length > 1) {
@@ -413,7 +458,10 @@ export const handleResizeStart = ({
         });
       } else {
         // Single child (or leaf header): direct resize
-        const newWidth = Math.max(Math.min(startWidth + delta, maxWidth), minWidth);
+        const newWidth = Math.max(
+          Math.min(startWidth + delta, maxWidth),
+          minWidth,
+        );
         childrenToResize[0].width = newWidth;
       }
 
@@ -426,23 +474,29 @@ export const handleResizeStart = ({
     // #region agent log
     if (rootPinned && childrenToResize.length > 0) {
       const w = childrenToResize[0].width;
-      fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "88e0e6" },
-        body: JSON.stringify({
-          sessionId: "88e0e6",
-          location: "resizeUtils.ts:handleMove",
-          message: "resize move",
-          data: {
-            rootPinned,
-            finalUpdate,
-            firstChildWidth: typeof w === "number" ? w : null,
-            accessor: childrenToResize[0].accessor,
+      fetch(
+        "http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Debug-Session-Id": "88e0e6",
           },
-          timestamp: Date.now(),
-          hypothesisId: "H4",
-        }),
-      }).catch(() => {});
+          body: JSON.stringify({
+            sessionId: "88e0e6",
+            location: "resizeUtils.ts:handleMove",
+            message: "resize move",
+            data: {
+              rootPinned,
+              finalUpdate,
+              firstChildWidth: typeof w === "number" ? w : null,
+              accessor: childrenToResize[0].accessor,
+            },
+            timestamp: Date.now(),
+            hypothesisId: "H4",
+          }),
+        },
+      ).catch(() => {});
     }
     // #endregion
     if (finalUpdate) {
@@ -453,7 +507,8 @@ export const handleResizeStart = ({
       // Pass just-set width(s) so updateColumnWidthsInDOM uses them (header model may not be same ref / can read stale from DOM)
       const overrideWidths = new Map<string, number>();
       childrenToResize.forEach((h) => {
-        if (typeof h.width === "number") overrideWidths.set(h.accessor as string, h.width);
+        if (typeof h.width === "number")
+          overrideWidths.set(h.accessor as string, h.width);
       });
       updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths);
     } else {
@@ -570,7 +625,10 @@ const handleParentHeaderResize = ({
   }, 0);
 
   // Calculate new total width with minimum and maximum constraints
-  const newTotalWidth = Math.max(Math.min(startWidth + delta, maxWidth), totalMinWidth);
+  const newTotalWidth = Math.max(
+    Math.min(startWidth + delta, maxWidth),
+    totalMinWidth,
+  );
 
   // Calculate the total width to distribute
   const totalWidthToDistribute = newTotalWidth - totalOriginalWidth;
@@ -634,7 +692,11 @@ export const recalculateAllSectionWidths = ({
 
     // Get the appropriate max percent based on number of pinned sections
     // Use containerWidth (st-body-container width) for responsive breakpoints
-    const maxPercent = getMaxPinnedSectionPercent(containerWidth, hasPinnedLeft, hasPinnedRight);
+    const maxPercent = getMaxPinnedSectionPercent(
+      containerWidth,
+      hasPinnedLeft,
+      hasPinnedRight,
+    );
     const maxPinnedWidth = containerWidth * maxPercent;
 
     // Limit each pinned section to the calculated percentage of container width
@@ -688,11 +750,13 @@ const distributeCompensationProportionally = ({
 
       // Last column takes any remaining to avoid rounding errors
       if (index === columnsToShrink.length - 1) {
-        const alreadyDistributed = columnsToShrink.slice(0, index).reduce((sum, c) => {
-          const initW = initialWidthsMap.get(c.accessor as string) || 100;
-          const currentW = typeof c.width === "number" ? c.width : 100;
-          return sum + (currentW - initW);
-        }, 0);
+        const alreadyDistributed = columnsToShrink
+          .slice(0, index)
+          .reduce((sum, c) => {
+            const initW = initialWidthsMap.get(c.accessor as string) || 100;
+            const currentW = typeof c.width === "number" ? c.width : 100;
+            return sum + (currentW - initW);
+          }, 0);
         growth = totalGrowth - alreadyDistributed;
       }
 
@@ -727,7 +791,10 @@ const distributeCompensationProportionally = ({
     if (columnsWithHeadroom.length > 0) {
       // CASE 1: Some columns still have headroom above their minWidth
       // Distribute proportionally based on available headroom
-      const totalHeadroom = columnsWithHeadroom.reduce((sum, h) => sum + h.headroom, 0);
+      const totalHeadroom = columnsWithHeadroom.reduce(
+        (sum, h) => sum + h.headroom,
+        0,
+      );
 
       let compensationDistributed = 0;
       // Store remainingCompensation in a const to avoid no-loop-func warning
@@ -756,13 +823,16 @@ const distributeCompensationProportionally = ({
     } else {
       // CASE 2: All columns at minWidth
       // Start shrinking minWidths equally, but not below MIN_COLUMN_WIDTH
-      const columnsAboveAbsoluteMin = headrooms.filter((h) => h.minWidth > MIN_COLUMN_WIDTH);
+      const columnsAboveAbsoluteMin = headrooms.filter(
+        (h) => h.minWidth > MIN_COLUMN_WIDTH,
+      );
 
       if (columnsAboveAbsoluteMin.length > 0) {
         // Distribute equally among columns that can still shrink
         // Store remainingCompensation in a const to avoid no-loop-func warning
         const compensationToDistribute = remainingCompensation;
-        const compensationPerColumn = compensationToDistribute / columnsAboveAbsoluteMin.length;
+        const compensationPerColumn =
+          compensationToDistribute / columnsAboveAbsoluteMin.length;
 
         let compensationDistributed = 0;
         columnsAboveAbsoluteMin.forEach((item, index) => {
@@ -771,7 +841,10 @@ const distributeCompensationProportionally = ({
 
           // Last column takes remaining
           if (index === columnsAboveAbsoluteMin.length - 1) {
-            compensation = Math.min(compensationToDistribute - compensationDistributed, maxShrink);
+            compensation = Math.min(
+              compensationToDistribute - compensationDistributed,
+              maxShrink,
+            );
           }
 
           const newWidth = item.initialWidth - compensation;
@@ -831,9 +904,16 @@ export const handleResizeWithAutoExpand = ({
     const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
 
     // Calculate the max allowed width for this pinned section
-    const maxSectionWidth = getMaxPinnedSectionWidth(containerWidth, hasPinnedLeft, hasPinnedRight);
+    const maxSectionWidth = getMaxPinnedSectionWidth(
+      containerWidth,
+      hasPinnedLeft,
+      hasPinnedRight,
+    );
 
-    const currentSectionWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+    const currentSectionWidth = Array.from(initialWidthsMap.values()).reduce(
+      (a, b) => a + b,
+      0,
+    );
     const newSectionWidth = currentSectionWidth + delta;
 
     // If growing beyond max section width, clamp the delta
@@ -847,14 +927,18 @@ export const handleResizeWithAutoExpand = ({
 
   // Special handling for parent header resize (multiple children)
   if (isParentResize && childrenToResize.length > 1) {
-    const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
+    const leafHeaders = getAllVisibleLeafHeaders(
+      sectionHeaders,
+      collapsedHeaders,
+    );
 
     // Find the index range of the children being resized
     const firstChildIndex = leafHeaders.findIndex(
       (h) => h.accessor === childrenToResize[0].accessor,
     );
     const lastChildIndex = leafHeaders.findIndex(
-      (h) => h.accessor === childrenToResize[childrenToResize.length - 1].accessor,
+      (h) =>
+        h.accessor === childrenToResize[childrenToResize.length - 1].accessor,
     );
 
     if (firstChildIndex === -1 || lastChildIndex === -1) return;
@@ -887,7 +971,10 @@ export const handleResizeWithAutoExpand = ({
         : leafHeaders.slice(lastChildIndex + 1);
     }
 
-    const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+    const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce(
+      (a, b) => a + b,
+      0,
+    );
 
     if (delta > 0) {
       // GROWING parent: Check if we need to shrink other columns
@@ -904,7 +991,8 @@ export const handleResizeWithAutoExpand = ({
 
           // Calculate max possible shrinkage
           const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
-            const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+            const initialWidth =
+              initialWidthsMap.get(col.accessor as string) || 100;
             const canShrink = Math.max(0, initialWidth - MIN_COLUMN_WIDTH);
             return total + canShrink;
           }, 0);
@@ -922,7 +1010,8 @@ export const handleResizeWithAutoExpand = ({
       const scaleFactor = newTotalWidth / totalOriginalWidth;
 
       childrenToResize.forEach((child) => {
-        const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
+        const originalWidth =
+          initialWidthsMap.get(child.accessor as string) || 100;
         // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
         const minWidth = MIN_COLUMN_WIDTH;
         const newWidth = Math.max(originalWidth * scaleFactor, minWidth);
@@ -950,7 +1039,8 @@ export const handleResizeWithAutoExpand = ({
       const scaleFactor = newTotalWidth / totalOriginalWidth;
 
       childrenToResize.forEach((child) => {
-        const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
+        const originalWidth =
+          initialWidthsMap.get(child.accessor as string) || 100;
         // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
         const minWidth = MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
@@ -970,8 +1060,13 @@ export const handleResizeWithAutoExpand = ({
     return;
   }
 
-  const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
-  const resizedIndex = leafHeaders.findIndex((h) => h.accessor === resizedHeader.accessor);
+  const leafHeaders = getAllVisibleLeafHeaders(
+    sectionHeaders,
+    collapsedHeaders,
+  );
+  const resizedIndex = leafHeaders.findIndex(
+    (h) => h.accessor === resizedHeader.accessor,
+  );
 
   if (resizedIndex === -1) return;
 
@@ -1018,7 +1113,10 @@ export const handleResizeWithAutoExpand = ({
   const minWidth = MIN_COLUMN_WIDTH;
 
   // Calculate current total width and what it would be after resize
-  const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+  const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce(
+    (a, b) => a + b,
+    0,
+  );
 
   if (delta > 0) {
     // GROWING: Check if we need to shrink other columns

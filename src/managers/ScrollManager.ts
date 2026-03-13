@@ -1,10 +1,3 @@
-import { syncScrollLeft } from "../utils/scrollSyncUtils";
-
-export interface ScrollSyncConfig {
-  sourceElement: HTMLElement;
-  targetSelector: string;
-}
-
 export interface ScrollManagerConfig {
   onLoadMore?: () => void;
   infiniteScrollThreshold?: number;
@@ -19,19 +12,16 @@ export interface ScrollManagerState {
 
 type StateChangeCallback = (state: ScrollManagerState) => void;
 
+/**
+ * Manages vertical scroll state (scrollTop, direction, isScrolling) and infinite scroll.
+ * Horizontal header/body/scrollbar sync is handled by SectionScrollController.
+ */
 export class ScrollManager {
   private config: ScrollManagerConfig;
   private state: ScrollManagerState;
   private subscribers: Set<StateChangeCallback> = new Set();
-  private scrollSyncConfigs: ScrollSyncConfig[] = [];
-  private scrollHandlers: Map<HTMLElement, () => void> = new Map();
-  private rafIds: Map<HTMLElement, number> = new Map();
-  private pendingScrolls: Map<HTMLElement, number> = new Map();
   private lastScrollTop: number = 0;
   private scrollTimeoutId: number | null = null;
-
-  // Guard flag to prevent scroll event loop
-  private isSyncing: boolean = false;
 
   constructor(config: ScrollManagerConfig) {
     this.config = config;
@@ -57,90 +47,6 @@ export class ScrollManager {
 
   private notifySubscribers(): void {
     this.subscribers.forEach((cb) => cb(this.state));
-  }
-
-  setupScrollSync(configs: ScrollSyncConfig[]): void {
-    this.cleanupScrollSync();
-    this.scrollSyncConfigs = configs;
-
-    configs.forEach(({ sourceElement, targetSelector }) => {
-      if (!sourceElement) return;
-
-      const handleScroll = () => {
-        // Prevent recursive scroll syncing
-        if (this.isSyncing) {
-          return;
-        }
-
-        const scrollLeft = sourceElement.scrollLeft;
-        this.pendingScrolls.set(sourceElement, scrollLeft);
-
-        if (this.rafIds.has(sourceElement)) {
-          return;
-        }
-
-        const rafId = requestAnimationFrame(() => {
-          const latestScrollLeft = this.pendingScrolls.get(sourceElement);
-          if (latestScrollLeft === undefined) return;
-
-          const bodyRenderFn = (sourceElement as any).__renderBodyCells;
-
-          // Find the target element (header section)
-          const targetElement = sourceElement.parentElement?.parentElement?.querySelector(
-            targetSelector,
-          ) as HTMLElement | null;
-
-          if (targetElement) {
-            // Check if target has a render function
-            const headerRenderFn = (targetElement as any).__renderHeaderCells;
-
-            if (typeof headerRenderFn === "function") {
-              // Use the render function for column virtualization
-              headerRenderFn(latestScrollLeft);
-
-              // Also update the target's scrollLeft property to keep it in sync
-              if (targetElement.scrollLeft !== latestScrollLeft) {
-                this.isSyncing = true;
-                targetElement.scrollLeft = latestScrollLeft;
-                this.isSyncing = false;
-              }
-            } else {
-              // Fallback to direct scroll sync (e.g. header → body). Do not push 0 from header to body when body has a non-zero position: the header was likely reset by a re-render (e.g. sort), not user scroll.
-              const shouldSkipZeroSync = latestScrollLeft === 0 && targetElement.scrollLeft > 0;
-              if (!shouldSkipZeroSync) {
-                this.isSyncing = true;
-                syncScrollLeft(sourceElement, targetElement);
-                this.isSyncing = false;
-              }
-            }
-          }
-
-          // Update the source element's own cells if it has a render function
-          if (typeof bodyRenderFn === "function") {
-            bodyRenderFn(latestScrollLeft);
-          }
-
-          this.rafIds.delete(sourceElement);
-          this.pendingScrolls.delete(sourceElement);
-        });
-
-        this.rafIds.set(sourceElement, rafId);
-      };
-
-      sourceElement.addEventListener("scroll", handleScroll, { passive: true });
-      this.scrollHandlers.set(sourceElement, handleScroll);
-    });
-  }
-
-  private cleanupScrollSync(): void {
-    this.rafIds.forEach((rafId) => cancelAnimationFrame(rafId));
-    this.rafIds.clear();
-    this.pendingScrolls.clear();
-
-    this.scrollHandlers.forEach((handler, element) => {
-      element.removeEventListener("scroll", handler);
-    });
-    this.scrollHandlers.clear();
   }
 
   handleScroll(
@@ -211,7 +117,6 @@ export class ScrollManager {
   }
 
   destroy(): void {
-    this.cleanupScrollSync();
     if (this.scrollTimeoutId !== null) {
       clearTimeout(this.scrollTimeoutId);
       this.scrollTimeoutId = null;

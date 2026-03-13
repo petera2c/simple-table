@@ -7,7 +7,7 @@ import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../consts/general-consts
 import { createRowSeparator } from "./rowSeparatorRenderer";
 // import { calculateColumnIndices } from "./columnIndicesUtils";
 import { CumulativeHeightMap, HeightOffsets } from "./infiniteScrollUtils";
-import { scrollSyncManager } from "./scrollSyncManager";
+import type { SectionId, SectionScrollController } from "../managers/SectionScrollController";
 import { CustomTheme } from "../types/CustomTheme";
 import { createBodyCellElement } from "./bodyCell/styling";
 import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
@@ -34,6 +34,7 @@ export interface StickyParentsRenderContext {
   rowHeight: number;
   heightOffsets: HeightOffsets | undefined;
   cellRenderContext: CellRenderContext;
+  sectionScrollController?: SectionScrollController | null;
 }
 
 // Calculate tree transition offset
@@ -197,6 +198,7 @@ interface StickySectionParams {
   pinned?: "left" | "right";
   width?: number;
   scrollSyncGroup?: string;
+  sectionScrollController?: SectionScrollController | null;
 }
 
 // Create a sticky section (cells use absolute positioning like main body)
@@ -215,6 +217,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     pinned,
     width,
     scrollSyncGroup,
+    sectionScrollController,
   } = params;
   const section = document.createElement("div");
   section.className = pinned ? `st-sticky-section-${pinned}` : "st-sticky-section-main";
@@ -309,9 +312,15 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     section.appendChild(separator);
   });
 
-  // Register with scroll sync manager
-  if (scrollSyncGroup) {
-    scrollSyncManager.registerPane(section, [scrollSyncGroup]);
+  // Register with section scroll controller
+  if (sectionScrollController && scrollSyncGroup) {
+    const sectionId: SectionId =
+      scrollSyncGroup === "pinned-left"
+        ? "pinned-left"
+        : scrollSyncGroup === "pinned-right"
+          ? "pinned-right"
+          : "main";
+    sectionScrollController.registerPane(sectionId, section, "sticky");
   }
 
   return section;
@@ -365,6 +374,8 @@ export const createStickyParentsContainer = (
   // Get current headers (non-pinned)
   const currentHeaders = context.headers.filter((header) => !header.pinned);
 
+  const sectionScrollController = context.sectionScrollController;
+
   // Create left pinned section
   if (props.pinnedLeftColumns.length > 0) {
     const leftSection = createStickySection({
@@ -381,6 +392,7 @@ export const createStickyParentsContainer = (
       pinned: "left",
       width: props.pinnedLeftWidth,
       scrollSyncGroup: "pinned-left",
+      sectionScrollController,
     });
     container.appendChild(leftSection);
   }
@@ -398,6 +410,7 @@ export const createStickyParentsContainer = (
     stickyHeight,
     stickyParents,
     treeTransitionOffset,
+    sectionScrollController,
   });
   container.appendChild(centerSection);
 
@@ -417,6 +430,7 @@ export const createStickyParentsContainer = (
       pinned: "right",
       width: props.pinnedRightWidth,
       scrollSyncGroup: "pinned-right",
+      sectionScrollController,
     });
     container.appendChild(rightSection);
   }
@@ -425,20 +439,25 @@ export const createStickyParentsContainer = (
 };
 
 // Cleanup sticky parents container
-export const cleanupStickyParentsContainer = (container: HTMLElement): void => {
-  // Unregister all sections from scroll sync
-  const sections = container.querySelectorAll(
-    ".st-sticky-section-left, .st-sticky-section-main, .st-sticky-section-right",
-  );
+export const cleanupStickyParentsContainer = (
+  container: HTMLElement,
+  sectionScrollController?: SectionScrollController | null,
+): void => {
+  if (sectionScrollController) {
+    const leftSection = container.querySelector(".st-sticky-section-left");
+    const mainSection = container.querySelector(".st-sticky-section-main");
+    const rightSection = container.querySelector(".st-sticky-section-right");
 
-  sections.forEach((section) => {
-    if (section instanceof HTMLElement) {
-      const groups = scrollSyncManager["getGroupsForPane"]?.(section) || [];
-      if (groups.length > 0) {
-        scrollSyncManager.unregisterPane(section, groups);
-      }
+    if (leftSection instanceof HTMLElement) {
+      sectionScrollController.unregisterPane("pinned-left", leftSection);
     }
-  });
+    if (mainSection instanceof HTMLElement) {
+      sectionScrollController.unregisterPane("main", mainSection);
+    }
+    if (rightSection instanceof HTMLElement) {
+      sectionScrollController.unregisterPane("pinned-right", rightSection);
+    }
+  }
 
   container.remove();
 };

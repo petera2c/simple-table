@@ -1,7 +1,7 @@
 // Vanilla JS horizontal scrollbar renderer
 // Replaces TableHorizontalScrollbar.tsx React component
 
-import { scrollSyncManager } from "./scrollSyncManager";
+import type { SectionScrollController } from "../managers/SectionScrollController";
 import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../consts/general-consts";
 
 export interface HorizontalScrollbarProps {
@@ -13,6 +13,7 @@ export interface HorizontalScrollbarProps {
   pinnedRightContentWidth: number;
   tableBodyContainerRef: HTMLDivElement;
   editColumns: boolean;
+  sectionScrollController?: SectionScrollController | null;
 }
 
 export const createHorizontalScrollbar = (
@@ -27,6 +28,7 @@ export const createHorizontalScrollbar = (
     pinnedRightContentWidth,
     tableBodyContainerRef,
     editColumns,
+    sectionScrollController,
   } = props;
 
   // Check if horizontal scrolling is needed
@@ -64,7 +66,7 @@ export const createHorizontalScrollbar = (
     leftSection.appendChild(leftInner);
 
     container.appendChild(leftSection);
-    scrollSyncManager.registerPane(leftSection, ["pinned-left"]);
+    sectionScrollController?.registerPane("pinned-left", leftSection, "scrollbar");
   }
 
   // Create main section
@@ -77,7 +79,7 @@ export const createHorizontalScrollbar = (
     mainSection.appendChild(mainInner);
 
     container.appendChild(mainSection);
-    scrollSyncManager.registerPane(mainSection, ["default"]);
+    sectionScrollController?.registerPane("main", mainSection, "scrollbar");
   }
 
   // Create right section
@@ -91,7 +93,7 @@ export const createHorizontalScrollbar = (
     rightSection.appendChild(rightInner);
 
     container.appendChild(rightSection);
-    scrollSyncManager.registerPane(rightSection, ["pinned-right"]);
+    sectionScrollController?.registerPane("pinned-right", rightSection, "scrollbar");
   }
 
   // Create editor spacer
@@ -106,20 +108,24 @@ export const createHorizontalScrollbar = (
   return container;
 };
 
-export const cleanupHorizontalScrollbar = (container: HTMLElement): void => {
-  // Unregister all sections from scroll sync
-  const leftSection = container.querySelector(".st-horizontal-scrollbar-left");
-  const mainSection = container.querySelector(".st-horizontal-scrollbar-middle");
-  const rightSection = container.querySelector(".st-horizontal-scrollbar-right");
+export const cleanupHorizontalScrollbar = (
+  container: HTMLElement,
+  sectionScrollController?: SectionScrollController | null,
+): void => {
+  if (sectionScrollController) {
+    const leftSection = container.querySelector(".st-horizontal-scrollbar-left");
+    const mainSection = container.querySelector(".st-horizontal-scrollbar-middle");
+    const rightSection = container.querySelector(".st-horizontal-scrollbar-right");
 
-  if (leftSection instanceof HTMLElement) {
-    scrollSyncManager.unregisterPane(leftSection, ["pinned-left"]);
-  }
-  if (mainSection instanceof HTMLElement) {
-    scrollSyncManager.unregisterPane(mainSection, ["default"]);
-  }
-  if (rightSection instanceof HTMLElement) {
-    scrollSyncManager.unregisterPane(rightSection, ["pinned-right"]);
+    if (leftSection instanceof HTMLElement) {
+      sectionScrollController.unregisterPane("pinned-left", leftSection);
+    }
+    if (mainSection instanceof HTMLElement) {
+      sectionScrollController.unregisterPane("main", mainSection);
+    }
+    if (rightSection instanceof HTMLElement) {
+      sectionScrollController.unregisterPane("pinned-right", rightSection);
+    }
   }
 
   container.remove();

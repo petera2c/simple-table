@@ -14,7 +14,14 @@ export { DimensionManager } from "./DimensionManager";
 export type { DimensionManagerConfig, DimensionManagerState } from "./DimensionManager";
 
 export { ScrollManager } from "./ScrollManager";
-export type { ScrollManagerConfig, ScrollManagerState, ScrollSyncConfig } from "./ScrollManager";
+export type { ScrollManagerConfig, ScrollManagerState } from "./ScrollManager";
+
+export { SectionScrollController } from "./SectionScrollController";
+export type {
+  SectionScrollControllerConfig,
+  SectionId,
+  SectionPaneRole,
+} from "./SectionScrollController";
 
 export { SelectionManager } from "./SelectionManager";
 export type { SelectionManagerConfig } from "./SelectionManager";

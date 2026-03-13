@@ -10,7 +10,6 @@ import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
 import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import { calculateTotalHeight, calculateRowTopPosition } from "../../utils/infiniteScrollUtils";
-import { scrollSyncManager } from "../../utils/scrollSyncManager";
 import {
   createNestedGridRow,
   createNestedGridSpacer,
@@ -72,8 +71,6 @@ interface ContextCacheEntry {
 export class SectionRenderer {
   private headerSections: Map<string, HTMLElement> = new Map();
   private bodySections: Map<string, HTMLElement> = new Map();
-  private registeredBodySections: Map<string, { element: HTMLElement; groups: string[] }> =
-    new Map();
 
   private bodyCellsCache: Map<string, BodyCellsCacheEntry> = new Map();
   private headerCellsCache: Map<string, HeaderCellsCacheEntry> = new Map();
@@ -255,20 +252,13 @@ export class SectionRenderer {
     // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
     this.renderNestedGridRows(section, sectionKey, rows, pinned, cachedContext);
 
-    // For main section (not pinned), attach render function for scroll updates
+    // For main section (not pinned), attach render function for scroll updates (used by SectionScrollController.onMainSectionScrollLeft)
     if (!pinned && section) {
       (section as any).__renderBodyCells = (scrollLeft: number) => {
         if (section) {
           renderBodyCells(section, absoluteCells, cachedContext, scrollLeft, rows);
         }
       };
-    }
-
-    // Register section with scrollSyncManager for horizontal scrollbar sync
-    if (isNewSection) {
-      const group = pinned ? `pinned-${pinned}` : "default";
-      scrollSyncManager.registerPane(section, [group]);
-      this.registeredBodySections.set(sectionKey, { element: section, groups: [group] });
     }
 
     return section;
@@ -778,12 +768,6 @@ export class SectionRenderer {
   }
 
   cleanup(): void {
-    // Unregister all body sections from scrollSyncManager
-    this.registeredBodySections.forEach(({ element, groups }) => {
-      scrollSyncManager.unregisterPane(element, groups);
-    });
-    this.registeredBodySections.clear();
-
     this.headerSections.clear();
     this.bodySections.clear();
     this.bodyCellsCache.clear();

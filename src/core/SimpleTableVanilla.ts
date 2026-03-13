@@ -8,6 +8,7 @@ import RowState from "../types/RowState";
 import { AutoScaleManager } from "../managers/AutoScaleManager";
 import { DimensionManager } from "../managers/DimensionManager";
 import { ScrollManager } from "../managers/ScrollManager";
+import { SectionScrollController } from "../managers/SectionScrollController";
 import { SortManager } from "../managers/SortManager";
 import { FilterManager } from "../managers/FilterManager";
 import { SelectionManager } from "../managers/SelectionManager";
@@ -72,6 +73,7 @@ export class SimpleTableVanilla {
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
   private scrollManager: ScrollManager | null = null;
+  private sectionScrollController: SectionScrollController | null = null;
   private sortManager: SortManager | null = null;
   private filterManager: FilterManager | null = null;
   private selectionManager: SelectionManager | null = null;
@@ -253,6 +255,16 @@ export class SimpleTableVanilla {
       this.render("scrollManager");
     });
 
+    this.sectionScrollController = new SectionScrollController({
+      onMainSectionScrollLeft: (scrollLeft) => {
+        const refs = this.domManager.getRefs();
+        const header = refs.mainHeaderRef.current;
+        const body = refs.mainBodyRef.current;
+        (header as any)?.__renderHeaderCells?.(scrollLeft);
+        (body as any)?.__renderBodyCells?.(scrollLeft);
+      },
+    });
+
     if (this.config.autoExpandColumns) {
       this.autoScaleManager = new AutoScaleManager(
         {
@@ -413,6 +425,7 @@ export class SimpleTableVanilla {
       pinnedRightHeaderRef: refs.pinnedRightHeaderRef,
       dimensionManager: this.dimensionManager,
       scrollManager: this.scrollManager,
+      sectionScrollController: this.sectionScrollController,
       sortManager: this.sortManager,
       filterManager: this.filterManager,
       selectionManager: this.selectionManager,
@@ -545,6 +558,7 @@ export class SimpleTableVanilla {
 
     this.dimensionManager?.destroy();
     this.scrollManager?.destroy();
+    this.sectionScrollController?.destroy();
     this.sortManager?.destroy();
     this.filterManager?.destroy();
     this.rowSelectionManager?.destroy();

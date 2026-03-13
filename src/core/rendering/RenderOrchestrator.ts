@@ -4,7 +4,8 @@ import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { DimensionManager } from "../../managers/DimensionManager";
-import { ScrollManager, ScrollSyncConfig } from "../../managers/ScrollManager";
+import { ScrollManager } from "../../managers/ScrollManager";
+import type { SectionScrollController } from "../../managers/SectionScrollController";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
@@ -54,6 +55,7 @@ export interface RenderContext {
   rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, RowState>;
   scrollManager: ScrollManager | null;
+  sectionScrollController: SectionScrollController | null;
   selectionManager: SelectionManager | null;
   setCollapsedHeaders: (headers: Set<Accessor>) => void;
   setCollapsedRows: (rows: Map<string, number>) => void;
@@ -379,19 +381,18 @@ export class RenderOrchestrator {
     );
     this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context);
 
-    // Set up scroll synchronization after body is rendered
-    this.setupScrollSync(context);
-
-    // Reapply horizontal scroll after all rendering (header/body DOM updates can reset scroll; body scroll can trigger sync that zeros header)
-    const mainHeader = context.mainHeaderRef?.current;
-    const mainBody = context.mainBodyRef?.current;
-    if (
-      mainHeader &&
-      mainBody &&
-      (mainBody.scrollLeft !== savedScrollLeft || mainHeader.scrollLeft !== savedScrollLeft)
-    ) {
-      mainBody.scrollLeft = savedScrollLeft;
-      mainHeader.scrollLeft = savedScrollLeft;
+    // Register header and body panes with section scroll controller, seed state from current scroll, then restore
+    this.registerSectionPanes(context);
+    const controller = context.sectionScrollController;
+    if (controller) {
+      controller.setSectionScrollLeft("main", savedScrollLeft);
+      if (context.pinnedLeftRef.current != null) {
+        controller.setSectionScrollLeft("pinned-left", context.pinnedLeftRef.current.scrollLeft);
+      }
+      if (context.pinnedRightRef.current != null) {
+        controller.setSectionScrollLeft("pinned-right", context.pinnedRightRef.current.scrollLeft);
+      }
+      controller.restoreAll();
     }
 
     this.renderFooter(
@@ -510,61 +511,27 @@ export class RenderOrchestrator {
     );
   }
 
-  private setupScrollSync(context: RenderContext): void {
-    if (!context.scrollManager) return;
+  private registerSectionPanes(context: RenderContext): void {
+    const controller = context.sectionScrollController;
+    if (!controller) return;
 
-    const configs: ScrollSyncConfig[] = [];
-
-    // Body → Header sync for pinned left section
-    if (context.pinnedLeftRef.current) {
-      configs.push({
-        sourceElement: context.pinnedLeftRef.current,
-        targetSelector: ".st-header-pinned-left",
-      });
-    }
-
-    // Header → Body sync for pinned left section
     if (context.pinnedLeftHeaderRef.current) {
-      configs.push({
-        sourceElement: context.pinnedLeftHeaderRef.current,
-        targetSelector: ".st-body-pinned-left",
-      });
+      controller.registerPane("pinned-left", context.pinnedLeftHeaderRef.current, "header");
     }
-
-    // Body → Header sync for main section
-    if (context.mainBodyRef.current) {
-      configs.push({
-        sourceElement: context.mainBodyRef.current,
-        targetSelector: ".st-header-main",
-      });
+    if (context.pinnedLeftRef.current) {
+      controller.registerPane("pinned-left", context.pinnedLeftRef.current, "body");
     }
-
-    // Header → Body sync for main section
     if (context.mainHeaderRef.current) {
-      configs.push({
-        sourceElement: context.mainHeaderRef.current,
-        targetSelector: ".st-body-main",
-      });
+      controller.registerPane("main", context.mainHeaderRef.current, "header");
     }
-
-    // Body → Header sync for pinned right section
-    if (context.pinnedRightRef.current) {
-      configs.push({
-        sourceElement: context.pinnedRightRef.current,
-        targetSelector: ".st-header-pinned-right",
-      });
+    if (context.mainBodyRef.current) {
+      controller.registerPane("main", context.mainBodyRef.current, "body");
     }
-
-    // Header → Body sync for pinned right section
     if (context.pinnedRightHeaderRef.current) {
-      configs.push({
-        sourceElement: context.pinnedRightHeaderRef.current,
-        targetSelector: ".st-body-pinned-right",
-      });
+      controller.registerPane("pinned-right", context.pinnedRightHeaderRef.current, "header");
     }
-
-    if (configs.length > 0) {
-      context.scrollManager.setupScrollSync(configs);
+    if (context.pinnedRightRef.current) {
+      controller.registerPane("pinned-right", context.pinnedRightRef.current, "body");
     }
   }
 
@@ -593,6 +560,7 @@ export class RenderOrchestrator {
       pinnedLeftHeaderRef: context.pinnedLeftHeaderRef,
       pinnedRightHeaderRef: context.pinnedRightHeaderRef,
       dimensionManager: context.dimensionManager,
+      sectionScrollController: context.sectionScrollController,
       sortManager: context.sortManager,
       filterManager: context.filterManager,
       selectionManager: context.selectionManager,
