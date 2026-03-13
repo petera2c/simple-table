@@ -360,7 +360,6 @@ export class TableRenderer {
       headers: deps.effectiveHeaders,
       rowHeight: deps.customTheme.rowHeight,
       maxHeaderDepth,
-      templateColumns: "",
       heightOffsets: processedResult.heightOffsets,
       customTheme: deps.customTheme,
       containerWidth: dimensionState.containerWidth,
@@ -510,29 +509,15 @@ export class TableRenderer {
         ? deps.mainBodyRef.current.offsetWidth - deps.mainBodyRef.current.clientWidth
         : 0;
 
-      // Calculate template columns for each section
-      const pinnedLeftTemplateColumns = pinnedLeftHeaders
-        .map((h) => `${typeof h.width === "number" ? h.width : 150}px`)
-        .join(" ");
-      const mainTemplateColumns = mainHeaders
-        .map((h) => `${typeof h.width === "number" ? h.width : 150}px`)
-        .join(" ");
-      const pinnedRightTemplateColumns = pinnedRightHeaders
-        .map((h) => `${typeof h.width === "number" ? h.width : 150}px`)
-        .join(" ");
-
       // Create sticky parents container
       this.stickyParentsContainer = createStickyParentsContainer(
         {
           calculatedHeaderHeight: dimensionState.calculatedHeaderHeight,
           heightMap: processedResult.heightMap,
-          mainTemplateColumns,
           partiallyVisibleRows: processedResult.partiallyVisibleRows || [],
           pinnedLeftColumns: pinnedLeftHeaders,
-          pinnedLeftTemplateColumns,
           pinnedLeftWidth: leftWidth,
           pinnedRightColumns: pinnedRightHeaders,
-          pinnedRightTemplateColumns,
           pinnedRightWidth: rightWidth,
           scrollTop,
           scrollbarWidth,

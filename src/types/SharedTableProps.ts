@@ -11,14 +11,11 @@ interface SharedTableProps {
   headers: HeaderObject[];
   hoveredHeaderRef: { current: HeaderObject | null };
   mainBodyRef: RefObject<HTMLDivElement>;
-  mainTemplateColumns: string;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftColumns: HeaderObject[];
   pinnedLeftHeaderRef: RefObject<HTMLDivElement>;
-  pinnedLeftTemplateColumns: string;
   pinnedRightColumns: HeaderObject[];
   pinnedRightHeaderRef: RefObject<HTMLDivElement>;
-  pinnedRightTemplateColumns: string;
   rowHeight: number;
   tableBodyContainerRef: RefObject<HTMLDivElement>;
 }

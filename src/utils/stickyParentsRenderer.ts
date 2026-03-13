@@ -16,13 +16,10 @@ import { rowIdToString } from "./rowUtils";
 export interface StickyParentsContainerProps {
   calculatedHeaderHeight: number;
   heightMap?: CumulativeHeightMap;
-  mainTemplateColumns: string;
   partiallyVisibleRows: TableRow[];
   pinnedLeftColumns: HeaderObject[];
-  pinnedLeftTemplateColumns: string;
   pinnedLeftWidth: number;
   pinnedRightColumns: HeaderObject[];
-  pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
   scrollTop: number;
   scrollbarWidth: number;
@@ -187,7 +184,6 @@ const getLeafHeaders = (
 };
 
 interface StickySectionParams {
-  templateColumns: string;
   sectionHeaders: HeaderObject[];
   stickyParents: TableRow[];
   stickyHeight: number;
@@ -203,10 +199,9 @@ interface StickySectionParams {
   scrollSyncGroup?: string;
 }
 
-// Create a sticky section
+// Create a sticky section (cells use absolute positioning like main body)
 const createStickySection = (params: StickySectionParams): HTMLElement => {
   const {
-    templateColumns,
     sectionHeaders,
     stickyParents,
     stickyHeight,
@@ -261,7 +256,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     // as offset rows slide underneath them
     const zIndex = shouldApplyOffset ? stickyIndex : stickyParents.length - stickyIndex;
 
-    // Create row container
+    // Create row container (position: absolute; cells inside use absolute positioning)
     const rowContainer = document.createElement("div");
     rowContainer.className = "st-row st-sticky-parent";
     rowContainer.style.position = "absolute";
@@ -270,12 +265,10 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     rowContainer.style.right = "0";
     rowContainer.style.height = `${rowHeight}px`;
     rowContainer.style.transform = `translateY(${translateY}px)`;
-    rowContainer.style.display = "grid";
-    rowContainer.style.gridTemplateColumns = templateColumns;
     rowContainer.style.zIndex = String(zIndex);
     rowContainer.setAttribute("data-index", String(tableRow.position));
 
-    // Create cells for this row
+    // Create cells for this row (absolute positioning, same as main body)
     leafHeaders.forEach((header, colIndex) => {
       const position = headerPositions.get(header.accessor);
       const cell: AbsoluteBodyCell = {
@@ -289,7 +282,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
         isOdd: tableRow.position % 2 === 1,
         tableRow,
         left: position?.left ?? 0,
-        top: 0, // Cells are positioned relative to their row container
+        top: 0,
         width: position?.width ?? 150,
         height: rowHeight,
       };
@@ -307,7 +300,6 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     const separator = createRowSeparator({
       position: separatorTop,
       rowHeight,
-      templateColumns,
       displayStrongBorder: false,
       heightOffsets,
       customTheme,
@@ -376,7 +368,6 @@ export const createStickyParentsContainer = (
   // Create left pinned section
   if (props.pinnedLeftColumns.length > 0) {
     const leftSection = createStickySection({
-      templateColumns: props.pinnedLeftTemplateColumns,
       sectionHeaders: props.pinnedLeftColumns,
       stickyParents,
       stickyHeight,
@@ -406,7 +397,6 @@ export const createStickyParentsContainer = (
     sectionHeaders: currentHeaders,
     stickyHeight,
     stickyParents,
-    templateColumns: props.mainTemplateColumns,
     treeTransitionOffset,
   });
   container.appendChild(centerSection);
@@ -414,7 +404,6 @@ export const createStickyParentsContainer = (
   // Create right pinned section
   if (props.pinnedRightColumns.length > 0) {
     const rightSection = createStickySection({
-      templateColumns: props.pinnedRightTemplateColumns,
       sectionHeaders: props.pinnedRightColumns,
       stickyParents,
       stickyHeight,

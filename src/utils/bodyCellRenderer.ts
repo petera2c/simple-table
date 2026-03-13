@@ -40,23 +40,6 @@ const getRenderedSeparators = (container: HTMLElement): Map<number, HTMLElement>
   return renderedSeparatorsMap.get(container)!;
 };
 
-// Cache template columns per container with dependencies
-interface TemplateColumnsCache {
-  templateColumns: string;
-  deps: {
-    headersHash: string;
-    collapsedHeadersSize: number;
-    pinned?: "left" | "right";
-  };
-}
-
-const templateColumnsCacheMap = new WeakMap<HTMLElement, TemplateColumnsCache>();
-
-// Helper to create a hash of headers for cache invalidation
-const createHeadersHash = (headers: any[]): string => {
-  return headers.map((h) => `${h.accessor}:${h.width}:${h.pinned || ""}`).join("|");
-};
-
 // Helper to filter visible cells based on horizontal scroll
 const getVisibleBodyCells = (
   cells: AbsoluteBodyCell[],
@@ -77,84 +60,10 @@ const getVisibleBodyCells = (
   return visibleCells;
 };
 
-// Helper to calculate template columns from context headers with caching
-const calculateTemplateColumns = (container: HTMLElement, context: CellRenderContext): string => {
-  // Check cache
-  const cached = templateColumnsCacheMap.get(container);
-  const headersHash = createHeadersHash(context.headers);
-
-  if (
-    cached &&
-    cached.deps.headersHash === headersHash &&
-    cached.deps.collapsedHeadersSize === context.collapsedHeaders.size &&
-    cached.deps.pinned === context.pinned
-  ) {
-    return cached.templateColumns;
-  }
-
-  // Get leaf headers (accounting for collapsed state)
-  const leafHeaders: any[] = [];
-
-  const processHeader = (header: any): void => {
-    if (header.hide || header.excludeFromRender) return;
-
-    const isCollapsed = context.collapsedHeaders.has(header.accessor);
-    const hasChildren = header.children && header.children.length > 0;
-
-    if (hasChildren) {
-      const visibleChildren = header.children.filter((child: any) => {
-        const showWhen = child.showWhen || "parentExpanded";
-        if (isCollapsed) {
-          return showWhen === "parentCollapsed" || showWhen === "always";
-        } else {
-          return showWhen === "parentExpanded" || showWhen === "always";
-        }
-      });
-
-      if (header.singleRowChildren) {
-        leafHeaders.push(header);
-      }
-
-      if (visibleChildren.length > 0) {
-        visibleChildren.forEach((child: any) => processHeader(child));
-      } else if (!header.singleRowChildren) {
-        leafHeaders.push(header);
-      }
-    } else {
-      leafHeaders.push(header);
-    }
-  };
-
-  // Filter headers by pinned state if in a pinned section
-  const filteredHeaders = context.pinned
-    ? context.headers.filter((h) => h.pinned === context.pinned)
-    : context.headers.filter((h) => !h.pinned);
-
-  filteredHeaders.forEach((header) => processHeader(header));
-
-  // Build template columns string
-  const columns = leafHeaders
-    .map((header) => `${typeof header.width === "number" ? header.width : 150}px`)
-    .join(" ");
-
-  // Cache the result
-  templateColumnsCacheMap.set(container, {
-    templateColumns: columns,
-    deps: {
-      headersHash,
-      collapsedHeadersSize: context.collapsedHeaders.size,
-      pinned: context.pinned,
-    },
-  });
-
-  return columns;
-};
-
 // Track separator metadata to avoid unnecessary updates
 interface SeparatorMetadata {
   position: number;
   displayStrongBorder: boolean;
-  templateColumns: string;
 }
 
 const separatorMetadataMap = new WeakMap<HTMLElement, Map<number, SeparatorMetadata>>();
@@ -181,9 +90,6 @@ const renderRowSeparators = (
   renderedSeparators: Map<number, HTMLElement>,
   allRows?: TableRow[],
 ): void => {
-  // Calculate template columns once (with caching)
-  const templateColumns = calculateTemplateColumns(container, context);
-
   // Get separator metadata cache
   const separatorMetadata = getSeparatorMetadata(container);
 
@@ -248,7 +154,6 @@ const renderRowSeparators = (
       const separator = createRowSeparator({
         position,
         rowHeight: context.rowHeight,
-        templateColumns,
         displayStrongBorder,
         heightOffsets: context.heightOffsets,
         customTheme: context.customTheme,
@@ -262,7 +167,6 @@ const renderRowSeparators = (
       separatorMetadata.set(rowIndex, {
         position,
         displayStrongBorder,
-        templateColumns,
       });
     } else {
       // Update existing separator only if something changed
@@ -271,8 +175,7 @@ const renderRowSeparators = (
       const needsUpdate =
         !cachedMetadata ||
         cachedMetadata.position !== position ||
-        cachedMetadata.displayStrongBorder !== displayStrongBorder ||
-        cachedMetadata.templateColumns !== templateColumns;
+        cachedMetadata.displayStrongBorder !== displayStrongBorder;
 
       if (needsUpdate) {
         // Update class if strong border state changed
@@ -295,16 +198,10 @@ const renderRowSeparators = (
           separator.style.transform = `translate3d(0, ${topPosition}px, 0)`;
         }
 
-        // Update grid template columns only if it changed
-        if (!cachedMetadata || cachedMetadata.templateColumns !== templateColumns) {
-          separator.style.gridTemplateColumns = templateColumns;
-        }
-
         // Update cached metadata
         separatorMetadata.set(rowIndex, {
           position,
           displayStrongBorder,
-          templateColumns,
         });
       }
     }

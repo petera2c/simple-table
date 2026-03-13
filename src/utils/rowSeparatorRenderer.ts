@@ -11,7 +11,6 @@ import { CustomTheme, DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 export interface CreateRowSeparatorOptions {
   position: number;
   rowHeight: number;
-  templateColumns: string;
   displayStrongBorder: boolean;
   heightOffsets?: HeightOffsets;
   customTheme?: CustomTheme;
@@ -23,7 +22,6 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
   const {
     position,
     rowHeight,
-    templateColumns,
     displayStrongBorder,
     heightOffsets,
     customTheme = DEFAULT_CUSTOM_THEME,
@@ -38,8 +36,8 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
     ? position
     : calculateSeparatorTopPosition({ position, rowHeight, heightOffsets, customTheme });
 
-  // Apply styles
-  separator.style.gridTemplateColumns = templateColumns;
+  // Full-width line; parent section has fixed width
+  separator.style.width = "100%";
 
   if (isSticky) {
     separator.style.position = "absolute";
@@ -50,9 +48,9 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
     separator.style.transform = `translate3d(0, ${topPosition}px, 0)`;
   }
 
-  // Create inner div that spans all columns
+  // Create inner div that spans full width
   const inner = document.createElement("div");
-  inner.style.gridColumn = "1 / -1";
+  inner.style.width = "100%";
   separator.appendChild(inner);
 
   // Handle mouse events to pass through to cells below
@@ -125,7 +123,6 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
 export const createSpacerRow = (
   position: number,
   rowHeight: number,
-  gridTemplateColumns: string,
   heightOffsets: HeightOffsets | undefined,
   customTheme: CustomTheme,
   className: string,
@@ -135,7 +132,7 @@ export const createSpacerRow = (
   spacer.className = `st-row ${className}`;
   spacer.dataset.index = String(position);
 
-  spacer.style.gridTemplateColumns = gridTemplateColumns;
+  spacer.style.width = "100%";
   spacer.style.transform = `translate3d(0, ${calculateRowTopPosition({
     position,
     rowHeight,

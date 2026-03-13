@@ -35,10 +35,6 @@ const createEmployeeData = () => [
 const getHeaderCells = (canvasElement: HTMLElement) => Array.from(canvasElement.querySelectorAll(".st-header-cell"));
 const getColumnWidth = (headerCell: Element) => window.getComputedStyle(headerCell).width;
 const parsePixelWidth = (widthString: string) => parseFloat(String(widthString).replace("px", ""));
-const getGridTemplateColumns = (canvasElement: HTMLElement) => {
-  const headerMain = canvasElement.querySelector(".st-header-main");
-  return headerMain ? (headerMain as HTMLElement).style.gridTemplateColumns : "";
-};
 const getTableRoot = (canvasElement: HTMLElement) =>
   canvasElement.querySelector(".st-table-root") || canvasElement.querySelector(".simple-table-root") || canvasElement.querySelector(".st-body-container");
 
@@ -275,11 +271,16 @@ export const GridTemplateColumnsFormat = {
   },
   play: async ({ canvasElement }) => {
     await waitForTable();
-    const gridTemplate = getGridTemplateColumns(canvasElement);
-    expect(gridTemplate).toBeTruthy();
-    expect(gridTemplate.length).toBeGreaterThan(0);
-    const columnParts = gridTemplate.split(" ");
-    expect(columnParts.length).toBeGreaterThanOrEqual(3);
+    const headerCells = getHeaderCells(canvasElement);
+    expect(headerCells.length).toBeGreaterThanOrEqual(3);
+    const idWidth = parsePixelWidth(getColumnWidth(headerCells[0]));
+    const nameWidth = parsePixelWidth(getColumnWidth(headerCells[1]));
+    const deptWidth = parsePixelWidth(getColumnWidth(headerCells[2]));
+    expect(idWidth).toBeGreaterThanOrEqual(55);
+    expect(idWidth).toBeLessThanOrEqual(65);
+    expect(nameWidth).toBeGreaterThanOrEqual(115);
+    expect(deptWidth).toBeGreaterThanOrEqual(145);
+    expect(deptWidth).toBeLessThanOrEqual(155);
   },
 };
 

@@ -713,12 +713,11 @@ input {
 
 .st-row-separator {
   position: absolute;
+  width: 100%;
   min-width: 100%;
-  display: grid;
   cursor: pointer;
   height: 1px;
   background-color: var(--st-border-color);
-  grid-column: 1 / -1;
 }
 .st-row-separator.st-last-group-row {
   background-color: var(--st-last-group-row-separator-border-color);

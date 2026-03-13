@@ -12,7 +12,6 @@ import {
 
 export interface StateRowRenderContext {
   index: number;
-  gridTemplateColumns: string;
   rowHeight: number;
   heightOffsets: HeightOffsets | undefined;
   customTheme: CustomTheme;
@@ -56,7 +55,7 @@ export const createStateRow = (
   rowElement.className = "st-row st-state-row";
   rowElement.dataset.index = String(context.index);
 
-  rowElement.style.gridTemplateColumns = context.gridTemplateColumns;
+  rowElement.style.width = "100%";
   rowElement.style.transform = `translate3d(0, ${calculateRowTopPosition({
     position,
     rowHeight: context.rowHeight,
@@ -67,7 +66,7 @@ export const createStateRow = (
 
   const cellElement = document.createElement("div");
   cellElement.className = "st-cell st-state-row-cell";
-  cellElement.style.gridColumn = "1 / -1";
+  cellElement.style.width = "100%";
   cellElement.style.padding = "0";
 
   let content: HTMLElement | string | null = null;

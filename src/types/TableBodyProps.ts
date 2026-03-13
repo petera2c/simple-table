@@ -5,13 +5,10 @@ import { CumulativeHeightMap } from "../utils/infiniteScrollUtils";
 interface TableBodyProps {
   calculatedHeaderHeight: number;
   heightMap?: CumulativeHeightMap;
-  mainTemplateColumns: string;
   partiallyVisibleRows: TableRow[];
   pinnedLeftColumns: HeaderObject[];
-  pinnedLeftTemplateColumns: string;
   pinnedLeftWidth: number;
   pinnedRightColumns: HeaderObject[];
-  pinnedRightTemplateColumns: string;
   pinnedRightWidth: number;
   regularRows: TableRow[];
   rowsToRender: TableRow[];
