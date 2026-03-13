@@ -116,6 +116,35 @@ const updateColumnWidthsInDOM = (
     // Update header cell
     const cellId = getCellId({ accessor, rowId: "header" });
     const headerCell = document.getElementById(cellId);
+    const isPinnedLeft = pinnedLeftPositions.has(accessor);
+    const isPinnedRight = pinnedRightPositions.has(accessor);
+    const isPinned = isPinnedLeft || isPinnedRight;
+    // #region agent log
+    if (isPinned) {
+      const section = headerCell?.closest(".st-header-pinned-left, .st-header-pinned-right");
+      const sectionEl = section as HTMLElement | undefined;
+      fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "88e0e6" },
+        body: JSON.stringify({
+          sessionId: "88e0e6",
+          location: "resizeUtils.ts:updateColumnWidthsInDOM",
+          message: "pinned resize DOM update",
+          data: {
+            accessor,
+            isPinnedLeft,
+            isPinnedRight,
+            setWidth: width,
+            headerCellFound: !!headerCell,
+            sectionWidthBefore: sectionEl?.style?.width ?? sectionEl?.offsetWidth,
+            overrideWidths: overrideWidths ? Object.fromEntries(overrideWidths) : undefined,
+          },
+          timestamp: Date.now(),
+          hypothesisId: "H1_H2_H3",
+        }),
+      }).catch(() => {});
+    }
+    // #endregion
     if (headerCell) {
       headerCell.style.left = `${left}px`;
       headerCell.style.width = `${width}px`;
@@ -130,6 +159,56 @@ const updateColumnWidthsInDOM = (
       }
     });
   });
+
+  // During resize drag, pinned section width is only set on full render. Reuse the same logic as
+  // TableRenderer: recalculateAllSectionWidths then apply to section DOM (header + body).
+  // Header sections do not use display:grid (see base.css), so we only need to update width.
+  const tableContainer = document.querySelector(".st-body-container") as HTMLElement | null;
+  const containerWidth = tableContainer?.clientWidth ?? 0;
+  const { leftWidth, rightWidth } = recalculateAllSectionWidths({
+    headers,
+    containerWidth: containerWidth > 0 ? containerWidth : undefined,
+    collapsedHeaders: collapsedHeaders as Set<string> | undefined,
+  });
+
+  if (leftWidth > 0) {
+    const leftHeaderSection = document.querySelector(".st-header-pinned-left") as HTMLElement | null;
+    const leftBodySection = document.querySelector(".st-body-pinned-left") as HTMLElement | null;
+    if (leftHeaderSection) leftHeaderSection.style.width = `${leftWidth}px`;
+    if (leftBodySection) leftBodySection.style.width = `${leftWidth}px`;
+  }
+  if (rightWidth > 0) {
+    const rightHeaderSection = document.querySelector(
+      ".st-header-pinned-right",
+    ) as HTMLElement | null;
+    const rightBodySection = document.querySelector(".st-body-pinned-right") as HTMLElement | null;
+    if (rightHeaderSection) rightHeaderSection.style.width = `${rightWidth}px`;
+    if (rightBodySection) rightBodySection.style.width = `${rightWidth}px`;
+  }
+
+  // #region agent log
+  if (leftWidth > 0 || rightWidth > 0) {
+    const leftHeaderSection = document.querySelector(".st-header-pinned-left") as HTMLElement;
+    const rightHeaderSection = document.querySelector(".st-header-pinned-right") as HTMLElement;
+    fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "88e0e6" },
+      body: JSON.stringify({
+        sessionId: "88e0e6",
+        location: "resizeUtils.ts:updateColumnWidthsInDOM:sectionWidths",
+        message: "pinned section widths",
+        data: {
+          leftWidth,
+          rightWidth,
+          leftSectionDOMWidth: leftHeaderSection?.style?.width,
+          rightSectionDOMWidth: rightHeaderSection?.style?.width,
+        },
+        timestamp: Date.now(),
+        hypothesisId: "H1",
+      }),
+    }).catch(() => {});
+  }
+  // #endregion
 };
 
 /**
@@ -344,6 +423,28 @@ export const handleResizeStart = ({
       });
     }
 
+    // #region agent log
+    if (rootPinned && childrenToResize.length > 0) {
+      const w = childrenToResize[0].width;
+      fetch("http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "88e0e6" },
+        body: JSON.stringify({
+          sessionId: "88e0e6",
+          location: "resizeUtils.ts:handleMove",
+          message: "resize move",
+          data: {
+            rootPinned,
+            finalUpdate,
+            firstChildWidth: typeof w === "number" ? w : null,
+            accessor: childrenToResize[0].accessor,
+          },
+          timestamp: Date.now(),
+          hypothesisId: "H4",
+        }),
+      }).catch(() => {});
+    }
+    // #endregion
     if (finalUpdate) {
       // Final update: sync React state and ensure DOM is updated (e.g. when mouseup
       // runs before the mousemove RAF, as in tests that fire events in one tick)
