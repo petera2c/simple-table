@@ -1,3 +1,4 @@
+import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { SimpleTableProps } from "../types/SimpleTableProps";
 
 /**
@@ -68,7 +69,7 @@ const DEPRECATED_PROPS: DeprecatedProp[] = [
  * Checks for deprecated props and logs console errors with helpful migration messages
  * @param props - The SimpleTable props to check
  */
-export const checkDeprecatedProps = (props: Record<string, unknown>): void => {
+export const checkDeprecatedProps = (props: SimpleTableConfig): void => {
   // Only run in development mode
   if (process.env.NODE_ENV === "production") {
     return;

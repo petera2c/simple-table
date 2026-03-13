@@ -127,12 +127,22 @@ export function renderAdvancedSortingExample(args?: Partial<UniversalVanillaArgs
     ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
-  h2.textContent = "Advanced Sorting";
-  const p = document.createElement("p");
-  p.style.marginBottom = "1rem";
-  p.style.color = "#666";
-  p.innerHTML =
-    "Custom comparator on Priority (sorts by priority then performance score). Seniority Level uses valueGetter for sort and valueFormatter for display.";
-  wrapper.insertBefore(p, wrapper.querySelector("div:last-child"));
+  h2.textContent = "Advanced Sorting Features";
+  const desc = document.createElement("div");
+  desc.style.marginTop = "10px";
+  desc.style.fontSize = "14px";
+  desc.style.lineHeight = "1.6";
+  desc.style.marginBottom = "1rem";
+  desc.style.color = "#333";
+  desc.innerHTML = `
+    <p><strong>This example demonstrates:</strong></p>
+    <ul>
+      <li><strong>Custom Comparator:</strong> The "Priority" column uses a custom sorting function that sorts first by priority, then by performance score from row metadata.</li>
+      <li><strong>ValueGetter:</strong> The "Seniority Level" column uses valueGetter to extract nested metadata for sorting, while displaying formatted text.</li>
+      <li><strong>ValueFormatter:</strong> Multiple columns show formatted values (salary with $, rating with stars, etc.) while sorting on raw data.</li>
+    </ul>
+    <p style="margin-top: 10px;"><em>Click column headers to sort and observe how custom sorting logic works!</em></p>
+  `;
+  wrapper.insertBefore(desc, wrapper.querySelector("div:last-child"));
   return wrapper;
 }

@@ -99,18 +99,19 @@ export class ScrollManager {
               headerRenderFn(latestScrollLeft);
 
               // Also update the target's scrollLeft property to keep it in sync
-              // The render function only updates cell positions, not the scroll position itself
               if (targetElement.scrollLeft !== latestScrollLeft) {
-                // Set syncing flag to prevent recursive scroll events
                 this.isSyncing = true;
                 targetElement.scrollLeft = latestScrollLeft;
                 this.isSyncing = false;
               }
             } else {
-              // Fallback to direct scroll sync
-              this.isSyncing = true;
-              syncScrollLeft(sourceElement, targetElement);
-              this.isSyncing = false;
+              // Fallback to direct scroll sync (e.g. header → body). Do not push 0 from header to body when body has a non-zero position: the header was likely reset by a re-render (e.g. sort), not user scroll.
+              const shouldSkipZeroSync = latestScrollLeft === 0 && targetElement.scrollLeft > 0;
+              if (!shouldSkipZeroSync) {
+                this.isSyncing = true;
+                syncScrollLeft(sourceElement, targetElement);
+                this.isSyncing = false;
+              }
             }
           }
 

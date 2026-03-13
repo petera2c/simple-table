@@ -158,6 +158,10 @@ export class SectionRenderer {
     // Render with current scrollLeft to preserve scroll position during re-renders
     const currentScrollLeft = section.scrollLeft;
     renderHeaderCells(section, absoluteCells, cachedContext, currentScrollLeft);
+    // Restore header scroll after render so the browser doesn't reset it (which would trigger header→body sync and reset body scroll)
+    if (!pinned && currentScrollLeft !== section.scrollLeft) {
+      section.scrollLeft = currentScrollLeft;
+    }
 
     // For main section (not pinned), attach render function for scroll updates
     if (!pinned && section) {

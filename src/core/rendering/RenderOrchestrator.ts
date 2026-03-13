@@ -23,47 +23,47 @@ import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/TableInitializer";
 
 export interface RenderContext {
-  config: SimpleTableConfig;
-  customTheme: CustomTheme;
-  resolvedIcons: ResolvedIcons;
-  effectiveHeaders: HeaderObject[];
-  headers: HeaderObject[];
-  localRows: Row[];
+  cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
   collapsedRows: Map<string, number>;
-  expandedRows: Map<string, number>;
-  expandedDepths: Set<number>;
-  isResizing: boolean;
-  internalIsLoading: boolean;
-  cellRegistry: Map<string, any>;
-  headerRegistry: Map<string, any>;
-  draggedHeaderRef: { current: HeaderObject | null };
-  hoveredHeaderRef: { current: HeaderObject | null };
-  mainBodyRef: { current: HTMLDivElement | null };
-  pinnedLeftRef: { current: HTMLDivElement | null };
-  pinnedRightRef: { current: HTMLDivElement | null };
-  mainHeaderRef: { current: HTMLDivElement | null };
-  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
-  pinnedRightHeaderRef: { current: HTMLDivElement | null };
+  config: SimpleTableConfig;
+  customTheme: CustomTheme;
   dimensionManager: DimensionManager | null;
-  scrollManager: ScrollManager | null;
-  sortManager: SortManager | null;
+  draggedHeaderRef: { current: HeaderObject | null };
+  effectiveHeaders: HeaderObject[];
+  expandedDepths: Set<number>;
+  expandedRows: Map<string, number>;
   filterManager: FilterManager | null;
-  selectionManager: SelectionManager | null;
-  rowSelectionManager: RowSelectionManager | null;
-  rowStateMap: Map<string | number, RowState>;
-  onRender: () => void;
-  setIsResizing: (value: boolean) => void;
-  setHeaders: (headers: HeaderObject[]) => void;
-  setCollapsedHeaders: (headers: Set<Accessor>) => void;
-  setCollapsedRows: (rows: Map<string, number>) => void;
-  setExpandedRows: (rows: Map<string, number>) => void;
-  setCurrentPage: (page: number) => void;
-  setRowStateMap: (map: Map<string | number, any>) => void;
-  setColumnEditorOpen: (open: boolean) => void;
   getCollapsedRows: () => Map<string, number>;
   getExpandedRows: () => Map<string, number>;
   getRowStateMap: () => Map<string | number, RowState>;
+  headerRegistry: Map<string, any>;
+  headers: HeaderObject[];
+  hoveredHeaderRef: { current: HeaderObject | null };
+  internalIsLoading: boolean;
+  isResizing: boolean;
+  localRows: Row[];
+  mainBodyRef: { current: HTMLDivElement | null };
+  mainHeaderRef: { current: HTMLDivElement | null };
+  onRender: () => void;
+  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
+  pinnedLeftRef: { current: HTMLDivElement | null };
+  pinnedRightHeaderRef: { current: HTMLDivElement | null };
+  pinnedRightRef: { current: HTMLDivElement | null };
+  resolvedIcons: ResolvedIcons;
+  rowSelectionManager: RowSelectionManager | null;
+  rowStateMap: Map<string | number, RowState>;
+  scrollManager: ScrollManager | null;
+  selectionManager: SelectionManager | null;
+  setCollapsedHeaders: (headers: Set<Accessor>) => void;
+  setCollapsedRows: (rows: Map<string, number>) => void;
+  setColumnEditorOpen: (open: boolean) => void;
+  setCurrentPage: (page: number) => void;
+  setExpandedRows: (rows: Map<string, number>) => void;
+  setHeaders: (headers: HeaderObject[]) => void;
+  setIsResizing: (value: boolean) => void;
+  setRowStateMap: (map: Map<string | number, any>) => void;
+  sortManager: SortManager | null;
 }
 
 export interface RenderState {
@@ -129,12 +129,12 @@ export class RenderOrchestrator {
 
   render(
     elements: {
-      rootElement: HTMLElement;
+      bodyContainer: HTMLElement;
       content: HTMLElement;
       contentWrapper: HTMLElement;
-      headerContainer: HTMLElement;
-      bodyContainer: HTMLElement;
       footerContainer: HTMLElement;
+      headerContainer: HTMLElement;
+      rootElement: HTMLElement;
       wrapperContainer: HTMLElement;
     },
     refs: {
@@ -153,6 +153,10 @@ export class RenderOrchestrator {
     }
 
     if (!context.dimensionManager) return;
+
+    // Capture horizontal scroll at start so we can reapply after header/body render (DOM updates can reset it)
+    const savedScrollLeft =
+      context.mainBodyRef?.current?.scrollLeft ?? context.mainHeaderRef?.current?.scrollLeft ?? 0;
 
     let dimensionState = context.dimensionManager.getState();
 
@@ -193,9 +197,25 @@ export class RenderOrchestrator {
 
     const mainSectionContainerWidth = containerWidth - leftWidth - rightWidth;
 
+    // Match main: maxHeight overrides height for the container; when maxHeight is set, height prop is ignored
+    const normalizeHeight = (v: string | number) =>
+      typeof v === "number" ? `${v}px` : v;
+    let maxHeightStyle = "";
+    let heightStyle = "";
+    if (context.config.maxHeight) {
+      const normalizedMax = normalizeHeight(context.config.maxHeight);
+      maxHeightStyle = `max-height: ${normalizedMax};`;
+      heightStyle =
+        dimensionState.contentHeight === undefined
+          ? "height: auto;"
+          : `height: ${normalizedMax};`;
+    } else if (context.config.height) {
+      heightStyle = `height: ${normalizeHeight(context.config.height)};`;
+    }
+
     elements.rootElement.style.cssText = `
-      ${context.config.maxHeight ? `max-height: ${typeof context.config.maxHeight === "number" ? context.config.maxHeight + "px" : context.config.maxHeight};` : ""}
-      ${context.config.height ? `height: ${typeof context.config.height === "number" ? context.config.height + "px" : context.config.height};` : ""}
+      ${maxHeightStyle}
+      ${heightStyle}
       --st-main-section-width: ${mainSectionContainerWidth}px;
       --st-scrollbar-width: ${state.scrollbarWidth}px;
       --st-editor-width: ${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px;
@@ -361,6 +381,18 @@ export class RenderOrchestrator {
 
     // Set up scroll synchronization after body is rendered
     this.setupScrollSync(context);
+
+    // Reapply horizontal scroll after all rendering (header/body DOM updates can reset scroll; body scroll can trigger sync that zeros header)
+    const mainHeader = context.mainHeaderRef?.current;
+    const mainBody = context.mainBodyRef?.current;
+    if (
+      mainHeader &&
+      mainBody &&
+      (mainBody.scrollLeft !== savedScrollLeft || mainHeader.scrollLeft !== savedScrollLeft)
+    ) {
+      mainBody.scrollLeft = savedScrollLeft;
+      mainHeader.scrollLeft = savedScrollLeft;
+    }
 
     this.renderFooter(
       elements.footerContainer,
