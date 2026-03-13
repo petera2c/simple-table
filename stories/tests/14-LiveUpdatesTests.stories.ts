@@ -11,7 +11,15 @@ import { waitForTable } from "./testUtils";
 
 const meta: Meta = {
   title: "Tests/14 - Live Updates",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for live data updates including row add/remove and cell updates.",
+      },
+    },
+  },
 };
 
 export default meta;

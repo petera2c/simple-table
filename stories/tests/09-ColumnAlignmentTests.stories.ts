@@ -11,7 +11,15 @@ import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
   title: "Tests/09-ColumnAlignmentTests",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for column alignment (left, center, right) and alignment with formatting.",
+      },
+    },
+  },
 };
 
 export default meta;

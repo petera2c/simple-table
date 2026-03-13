@@ -55,3 +55,55 @@ export function addParagraph(
   wrapper.insertBefore(p, target);
   return p;
 }
+
+export interface ControlPanelSection {
+  heading: string;
+  buttons: { label: string; onClick: () => void }[];
+}
+
+/**
+ * Adds a gray control panel with section headings and buttons above a given element (e.g. table container).
+ */
+export function addControlPanel(
+  wrapper: HTMLElement,
+  sections: ControlPanelSection[],
+  insertBefore: Element
+): HTMLDivElement {
+  const panel = document.createElement("div");
+  panel.style.marginBottom = "1.25rem";
+  panel.style.padding = "1rem";
+  panel.style.backgroundColor = "#f5f5f5";
+  panel.style.borderRadius = "8px";
+
+  for (const section of sections) {
+    const h4 = document.createElement("h4");
+    h4.style.marginTop = "0";
+    h4.style.marginBottom = "0.5rem";
+    h4.style.fontSize = "1rem";
+    h4.textContent = section.heading;
+    panel.appendChild(h4);
+
+    const btnRow = document.createElement("div");
+    btnRow.style.display = "flex";
+    btnRow.style.gap = "0.5rem";
+    btnRow.style.flexWrap = "wrap";
+    btnRow.style.marginBottom = "1rem";
+    for (const { label, onClick } of section.buttons) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      btn.style.padding = "8px 16px";
+      btn.style.backgroundColor = "#007bff";
+      btn.style.color = "white";
+      btn.style.border = "none";
+      btn.style.borderRadius = "4px";
+      btn.style.cursor = "pointer";
+      btn.addEventListener("click", onClick);
+      btnRow.appendChild(btn);
+    }
+    panel.appendChild(btnRow);
+  }
+
+  wrapper.insertBefore(panel, insertBefore);
+  return panel;
+}

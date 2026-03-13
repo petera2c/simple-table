@@ -38,7 +38,7 @@ export function renderServerSidePaginationExample(args?: Partial<UniversalVanill
   const wrapper = document.createElement("div");
   wrapper.style.padding = "2rem";
   const h2 = document.createElement("h2");
-  h2.textContent = "Server-Side Pagination";
+  h2.textContent = "Server-Side Pagination Example";
   h2.style.marginBottom = "0.5rem";
   wrapper.appendChild(h2);
   const p = document.createElement("p");

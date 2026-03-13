@@ -11,7 +11,15 @@ import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
   title: "Tests/12 - Cell Selection",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for cell selection including range selection and selection API.",
+      },
+    },
+  },
 };
 
 export default meta;

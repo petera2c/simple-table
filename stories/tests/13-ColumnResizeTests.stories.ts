@@ -11,7 +11,15 @@ import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
   title: "Tests/13 - Column Resize",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for column resizing including drag resize and min/max width.",
+      },
+    },
+  },
 };
 
 export default meta;

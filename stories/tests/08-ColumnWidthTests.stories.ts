@@ -11,7 +11,15 @@ import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
   title: "Tests/08-ColumnWidthTests",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for column width including fixed width, flexible width, and resize behavior.",
+      },
+    },
+  },
 };
 
 export default meta;

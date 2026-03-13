@@ -11,7 +11,15 @@ import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
   title: "Tests/15 - Column Visibility",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for column visibility including show/hide and visibility API.",
+      },
+    },
+  },
 };
 
 export default meta;

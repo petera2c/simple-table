@@ -14,6 +14,12 @@ const meta: Meta = {
   parameters: {
     layout: "fullscreen",
     chromatic: { disableSnapshot: true },
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for quick filter (global search) and filter behavior.",
+      },
+    },
   },
 };
 

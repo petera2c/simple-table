@@ -11,7 +11,15 @@ import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
   title: "Tests/10-ColumnPinningTests",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for pinned columns including left/right pinning and pinning with scroll.",
+      },
+    },
+  },
 };
 
 export default meta;

@@ -15,6 +15,12 @@ const meta: Meta = {
     layout: "fullscreen",
     options: { showPanel: false },
     tags: ["test"],
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for cell editing including inline edit, validation, and programmatic updates.",
+      },
+    },
   },
 };
 

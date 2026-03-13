@@ -11,7 +11,15 @@ import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
   title: "Tests/11-ColumnReorderingTests",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for column reordering via drag-and-drop and reorder state.",
+      },
+    },
+  },
 };
 
 export default meta;

@@ -15,6 +15,12 @@ const meta: Meta = {
     layout: "fullscreen",
     options: { showPanel: false },
     tags: ["test"],
+    docs: {
+      description: {
+        component:
+          "Comprehensive tests for row selection including single/multi select, select all, and selection state.",
+      },
+    },
   },
 };
 
