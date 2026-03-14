@@ -1,31 +1,25 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
-import type TableRowType from "../types/TableRow";
-import Cell from "../types/Cell";
-import { CustomTheme } from "../types/CustomTheme";
-import { findLeafHeaders } from "../utils/headerWidthUtils";
-import { rowIdToString } from "../utils/rowUtils";
-import { scrollCellIntoView } from "../utils/cellScrollUtils";
+import type Cell from "../../types/Cell";
+import type HeaderObject from "../../types/HeaderObject";
+import type TableRowType from "../../types/TableRow";
+import { findLeafHeaders } from "../../utils/headerWidthUtils";
+import { rowIdToString } from "../../utils/rowUtils";
+import { scrollCellIntoView } from "../../utils/cellScrollUtils";
 import {
   copySelectedCellsToClipboard,
   pasteClipboardDataToCells,
   deleteSelectedCellsContent,
-} from "../utils/cellClipboardUtils";
+} from "../../utils/cellClipboardUtils";
+import { createSetString, type SelectionManagerConfig } from "./types";
+import { findEdgeInDirection as findEdgeInDirectionUtil } from "./keyboardUtils";
+import { computeSelectionRange } from "./selectionRangeUtils";
+import {
+  getCellFromMousePosition as getCellFromMousePositionUtil,
+  handleAutoScroll as handleAutoScrollUtil,
+  calculateNearestCell as calculateNearestCellUtil,
+} from "./mouseUtils";
 
-export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
-  `${rowIndex}-${colIndex}-${rowId}`;
-
-export interface SelectionManagerConfig {
-  selectableCells: boolean;
-  headers: HeaderObject[];
-  tableRows: TableRowType[];
-  onCellEdit?: (props: any) => void;
-  cellRegistry?: Map<string, any>;
-  collapsedHeaders?: Set<Accessor>;
-  rowHeight: number;
-  enableRowSelection?: boolean;
-  copyHeadersToClipboard?: boolean;
-  customTheme: CustomTheme;
-}
+export type { SelectionManagerConfig } from "./types";
+export { createSetString } from "./types";
 
 export class SelectionManager {
   // Configuration
@@ -230,7 +224,10 @@ export class SelectionManager {
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       this.handleArrowDown(event, rowIndex, colIndex);
-    } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
+    } else if (
+      event.key === "ArrowLeft" ||
+      (event.key === "Tab" && event.shiftKey)
+    ) {
       event.preventDefault();
       this.handleArrowLeft(event, rowIndex, colIndex);
     } else if (event.key === "ArrowRight" || event.key === "Tab") {
@@ -259,28 +256,24 @@ export class SelectionManager {
     startCol: number,
     direction: "up" | "down" | "left" | "right",
   ): { rowIndex: number; colIndex: number } {
-    let targetRow = startRow;
-    let targetCol = startCol;
-
-    if (direction === "up") {
-      targetRow = 0;
-    } else if (direction === "down") {
-      targetRow = this.config.tableRows.length - 1;
-    } else if (direction === "left") {
-      targetCol = this.config.enableRowSelection ? 1 : 0;
-    } else if (direction === "right") {
-      targetCol = this.config.enableRowSelection
-        ? this.leafHeaders.length
-        : this.leafHeaders.length - 1;
-    }
-
-    return { rowIndex: targetRow, colIndex: targetCol };
+    return findEdgeInDirectionUtil(
+      this.config.tableRows.length,
+      this.leafHeaders.length,
+      !!this.config.enableRowSelection,
+      startRow,
+      startCol,
+      direction,
+    );
   }
 
   /**
    * Handle arrow up key
    */
-  private handleArrowUp(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handleArrowUp(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -320,7 +313,11 @@ export class SelectionManager {
   /**
    * Handle arrow down key
    */
-  private handleArrowDown(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handleArrowDown(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -360,7 +357,11 @@ export class SelectionManager {
   /**
    * Handle arrow left key
    */
-  private handleArrowLeft(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handleArrowLeft(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     if (event.shiftKey && event.key === "ArrowLeft") {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -410,7 +411,11 @@ export class SelectionManager {
   /**
    * Handle arrow right key
    */
-  private handleArrowRight(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handleArrowRight(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     const maxColIndex = this.config.enableRowSelection
       ? this.leafHeaders.length
       : this.leafHeaders.length - 1;
@@ -456,7 +461,11 @@ export class SelectionManager {
   /**
    * Handle home key
    */
-  private handleHome(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handleHome(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -471,7 +480,11 @@ export class SelectionManager {
 
       const targetTableRow = this.config.tableRows[targetRow];
       const newRowId = rowIdToString(targetTableRow.rowId);
-      const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+      const endCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
       this.selectCellRange(this.startCell, endCell);
     } else {
       let targetRow = rowIndex;
@@ -483,7 +496,11 @@ export class SelectionManager {
 
       const targetTableRow = this.config.tableRows[targetRow];
       const newRowId = rowIdToString(targetTableRow.rowId);
-      const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+      const newCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
       this.selectSingleCell(newCell);
       this.startCell = null;
     }
@@ -492,7 +509,11 @@ export class SelectionManager {
   /**
    * Handle end key
    */
-  private handleEnd(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handleEnd(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -509,7 +530,11 @@ export class SelectionManager {
 
       const targetTableRow = this.config.tableRows[targetRow];
       const newRowId = rowIdToString(targetTableRow.rowId);
-      const endCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+      const endCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
       this.selectCellRange(this.startCell, endCell);
     } else {
       let targetRow = rowIndex;
@@ -523,7 +548,11 @@ export class SelectionManager {
 
       const targetTableRow = this.config.tableRows[targetRow];
       const newRowId = rowIdToString(targetTableRow.rowId);
-      const newCell = { rowIndex: targetRow, colIndex: targetCol, rowId: newRowId };
+      const newCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
       this.selectSingleCell(newCell);
       this.startCell = null;
     }
@@ -532,7 +561,11 @@ export class SelectionManager {
   /**
    * Handle page up key
    */
-  private handlePageUp(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handlePageUp(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     const pageSize = 10;
     let targetRow = Math.max(0, rowIndex - pageSize);
 
@@ -557,9 +590,16 @@ export class SelectionManager {
   /**
    * Handle page down key
    */
-  private handlePageDown(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
+  private handlePageDown(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
     const pageSize = 10;
-    let targetRow = Math.min(this.config.tableRows.length - 1, rowIndex + pageSize);
+    let targetRow = Math.min(
+      this.config.tableRows.length - 1,
+      rowIndex + pageSize,
+    );
 
     if (event.shiftKey) {
       if (!this.startCell) {
@@ -739,31 +779,51 @@ export class SelectionManager {
       allCells.forEach((cellElement) => {
         if (!(cellElement instanceof HTMLElement)) return;
 
-        const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
-        const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
+        const rowIndex = parseInt(
+          cellElement.getAttribute("data-row-index") || "-1",
+          10,
+        );
+        const colIndex = parseInt(
+          cellElement.getAttribute("data-col-index") || "-1",
+          10,
+        );
         const rowId = cellElement.getAttribute("data-row-id");
 
         if (rowIndex < 0 || colIndex < 0 || !rowId) return;
 
         const cellId = createSetString({ rowIndex, colIndex, rowId });
-        const isInitialFocused = this.isInitialFocusedCell({ rowIndex, colIndex, rowId });
+        const isInitialFocused = this.isInitialFocusedCell({
+          rowIndex,
+          colIndex,
+          rowId,
+        });
 
         // Update copy flash classes
         if (this.copyFlashCells.has(cellId)) {
           cellElement.classList.add(
-            isInitialFocused ? "st-cell-copy-flash-first" : "st-cell-copy-flash",
+            isInitialFocused
+              ? "st-cell-copy-flash-first"
+              : "st-cell-copy-flash",
           );
         } else {
-          cellElement.classList.remove("st-cell-copy-flash-first", "st-cell-copy-flash");
+          cellElement.classList.remove(
+            "st-cell-copy-flash-first",
+            "st-cell-copy-flash",
+          );
         }
 
         // Update warning flash classes
         if (this.warningFlashCells.has(cellId)) {
           cellElement.classList.add(
-            isInitialFocused ? "st-cell-warning-flash-first" : "st-cell-warning-flash",
+            isInitialFocused
+              ? "st-cell-warning-flash-first"
+              : "st-cell-warning-flash",
           );
         } else {
-          cellElement.classList.remove("st-cell-warning-flash-first", "st-cell-warning-flash");
+          cellElement.classList.remove(
+            "st-cell-warning-flash-first",
+            "st-cell-warning-flash",
+          );
         }
       });
     });
@@ -782,8 +842,14 @@ export class SelectionManager {
       allCells.forEach((cellElement) => {
         if (!(cellElement instanceof HTMLElement)) return;
 
-        const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
-        const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
+        const rowIndex = parseInt(
+          cellElement.getAttribute("data-row-index") || "-1",
+          10,
+        );
+        const colIndex = parseInt(
+          cellElement.getAttribute("data-col-index") || "-1",
+          10,
+        );
         const rowId = cellElement.getAttribute("data-row-id");
 
         if (rowIndex < 0 || colIndex < 0 || !rowId) return;
@@ -835,7 +901,8 @@ export class SelectionManager {
         // Don't steal focus if active element is already inside this cell (e.g., editing input)
         if (isInitialFocused && document.activeElement !== cellElement) {
           const activeElement = document.activeElement;
-          const isActiveInsideCell = activeElement && cellElement.contains(activeElement);
+          const isActiveInsideCell =
+            activeElement && cellElement.contains(activeElement);
           if (!isActiveInsideCell) {
             cellElement.focus();
           }
@@ -862,16 +929,20 @@ export class SelectionManager {
       return "";
     }
 
-    const classes = [];
+    const classes: string[] = [];
     const topRow = this.config.tableRows[rowIndex - 1];
     const topRowId = topRow ? rowIdToString(topRow.rowId) : null;
     const bottomRow = this.config.tableRows[rowIndex + 1];
     const bottomRowId = bottomRow ? rowIdToString(bottomRow.rowId) : null;
 
     const topCell =
-      topRowId !== null ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId } : null;
+      topRowId !== null
+        ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId }
+        : null;
     const bottomCell =
-      bottomRowId !== null ? { colIndex, rowIndex: rowIndex + 1, rowId: bottomRowId } : null;
+      bottomRowId !== null
+        ? { colIndex, rowIndex: rowIndex + 1, rowId: bottomRowId }
+        : null;
     const leftCell = { colIndex: colIndex - 1, rowIndex, rowId };
     const rightCell = { colIndex: colIndex + 1, rowIndex, rowId };
 
@@ -884,7 +955,8 @@ export class SelectionManager {
     if (
       !bottomCell ||
       !this.isSelected(bottomCell) ||
-      (this.selectedColumns.has(colIndex) && rowIndex === this.config.tableRows.length - 1)
+      (this.selectedColumns.has(colIndex) &&
+        rowIndex === this.config.tableRows.length - 1)
     )
       classes.push("st-selected-bottom-border");
     if (!this.isSelected(leftCell)) classes.push("st-selected-left-border");
@@ -988,7 +1060,15 @@ export class SelectionManager {
       this.updateAllCellClasses();
 
       // Scroll the cell into view
-      setTimeout(() => scrollCellIntoView(cell, this.config.rowHeight, this.config.customTheme), 0);
+      setTimeout(
+        () =>
+          scrollCellIntoView(
+            cell,
+            this.config.rowHeight,
+            this.config.customTheme,
+          ),
+        0,
+      );
     }
   }
 
@@ -996,25 +1076,12 @@ export class SelectionManager {
    * Select a range of cells from startCell to endCell
    */
   selectCellRange(startCell: Cell, endCell: Cell): void {
-    const newSelectedCells = new Set<string>();
-    const minRow = Math.min(startCell.rowIndex, endCell.rowIndex);
-    const maxRow = Math.max(startCell.rowIndex, endCell.rowIndex);
-    const minCol = Math.min(startCell.colIndex, endCell.colIndex);
-    const maxCol = Math.max(startCell.colIndex, endCell.colIndex);
-
-    for (let row = minRow; row <= maxRow; row++) {
-      for (let col = minCol; col <= maxCol; col++) {
-        if (row >= 0 && row < this.config.tableRows.length) {
-          // Skip selection column (always at index 0 when enabled)
-          if (this.config.enableRowSelection && col === 0) {
-            continue;
-          }
-          const tableRow = this.config.tableRows[row];
-          const rowId = rowIdToString(tableRow.rowId);
-          newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
-        }
-      }
-    }
+    const newSelectedCells = computeSelectionRange(
+      startCell,
+      endCell,
+      this.config.tableRows,
+      !!this.config.enableRowSelection,
+    );
 
     this.selectedColumns = new Set();
     this.lastSelectedColumnIndex = null;
@@ -1026,7 +1093,12 @@ export class SelectionManager {
 
     // Scroll the end cell into view
     setTimeout(
-      () => scrollCellIntoView(endCell, this.config.rowHeight, this.config.customTheme),
+      () =>
+        scrollCellIntoView(
+          endCell,
+          this.config.rowHeight,
+          this.config.customTheme,
+        ),
       0,
     );
   }
@@ -1054,39 +1126,12 @@ export class SelectionManager {
    * Update selection range during mouse drag
    */
   private updateSelectionRange(startCell: Cell, endCell: Cell): void {
-    const newSelectedCells = new Set<string>();
-
-    const rowIdToIndexMap = new Map<string, number>();
-    this.config.tableRows.forEach((tableRow, index) => {
-      const rowId = rowIdToString(tableRow.rowId);
-      rowIdToIndexMap.set(rowId, index);
-    });
-
-    const startRowCurrentIndex = rowIdToIndexMap.get(String(startCell.rowId));
-    const endRowCurrentIndex = rowIdToIndexMap.get(String(endCell.rowId));
-
-    const startRow = startRowCurrentIndex !== undefined ? startRowCurrentIndex : startCell.rowIndex;
-    const endRow = endRowCurrentIndex !== undefined ? endRowCurrentIndex : endCell.rowIndex;
-
-    const minRow = Math.min(startRow, endRow);
-    const maxRow = Math.max(startRow, endRow);
-    const minCol = Math.min(startCell.colIndex, endCell.colIndex);
-    const maxCol = Math.max(startCell.colIndex, endCell.colIndex);
-
-    for (let row = minRow; row <= maxRow; row++) {
-      for (let col = minCol; col <= maxCol; col++) {
-        if (row >= 0 && row < this.config.tableRows.length) {
-          // Skip selection column (always at index 0 when enabled)
-          if (this.config.enableRowSelection && col === 0) {
-            continue;
-          }
-          const tableRow = this.config.tableRows[row];
-          const rowId = rowIdToString(tableRow.rowId);
-          newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
-        }
-      }
-    }
-
+    const newSelectedCells = computeSelectionRange(
+      startCell,
+      endCell,
+      this.config.tableRows,
+      !!this.config.enableRowSelection,
+    );
     this.selectedCells = newSelectedCells;
     this.updateDerivedState();
     this.updateAllCellClasses();
@@ -1096,109 +1141,24 @@ export class SelectionManager {
    * Calculate the nearest cell to a given mouse position
    */
   private calculateNearestCell(clientX: number, clientY: number): Cell | null {
-    const tableContainer = document.querySelector(".st-body-container");
-    if (!tableContainer) return null;
-
-    const rect = tableContainer.getBoundingClientRect();
-    const cells = Array.from(
-      document.querySelectorAll(".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)"),
-    );
-
-    if (cells.length === 0) return null;
-
-    const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
-    const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
-
-    let closestCell: HTMLElement | null = null;
-    let minDistance = Infinity;
-
-    cells.forEach((cell) => {
-      if (!(cell instanceof HTMLElement)) return;
-      const htmlCell = cell as HTMLElement;
-
-      const cellRect = htmlCell.getBoundingClientRect();
-      const cellCenterX = cellRect.left + cellRect.width / 2;
-      const cellCenterY = cellRect.top + cellRect.height / 2;
-
-      const distance = Math.sqrt(
-        Math.pow(cellCenterX - clampedX, 2) + Math.pow(cellCenterY - clampedY, 2),
-      );
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestCell = htmlCell;
-      }
-    });
-
-    if (closestCell !== null) {
-      const cellElement: HTMLElement = closestCell;
-      const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
-      const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
-      const rowId = cellElement.getAttribute("data-row-id");
-
-      if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
-        return { rowIndex, colIndex, rowId };
-      }
-    }
-
-    return null;
+    return calculateNearestCellUtil(clientX, clientY);
   }
 
   /**
    * Get cell from mouse position
    */
-  private getCellFromMousePosition(clientX: number, clientY: number): Cell | null {
-    const element = document.elementFromPoint(clientX, clientY);
-    if (!element) return null;
-
-    const cellElement = element.closest(".st-cell");
-
-    if (cellElement instanceof HTMLElement) {
-      const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
-      const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
-      const rowId = cellElement.getAttribute("data-row-id");
-
-      if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
-        return { rowIndex, colIndex, rowId };
-      }
-    }
-
-    return this.calculateNearestCell(clientX, clientY);
+  private getCellFromMousePosition(
+    clientX: number,
+    clientY: number,
+  ): Cell | null {
+    return getCellFromMousePositionUtil(clientX, clientY);
   }
 
   /**
    * Handle auto-scrolling when dragging near edges
    */
   private handleAutoScroll(clientX: number, clientY: number): void {
-    const tableContainer = document.querySelector(".st-body-container");
-    if (!tableContainer) return;
-
-    const rect = tableContainer.getBoundingClientRect();
-    const scrollMargin = 50;
-    const scrollSpeed = 10;
-
-    if (clientY < rect.top + scrollMargin) {
-      const distance = Math.max(0, rect.top - clientY);
-      const speedMultiplier = Math.min(3, 1 + distance / 100);
-      tableContainer.scrollTop -= scrollSpeed * speedMultiplier;
-    } else if (clientY > rect.bottom - scrollMargin) {
-      const distance = Math.max(0, clientY - rect.bottom);
-      const speedMultiplier = Math.min(3, 1 + distance / 100);
-      tableContainer.scrollTop += scrollSpeed * speedMultiplier;
-    }
-
-    const mainBody = document.querySelector(".st-body-main");
-    if (mainBody) {
-      if (clientX < rect.left + scrollMargin) {
-        const distance = Math.max(0, rect.left - clientX);
-        const speedMultiplier = Math.min(3, 1 + distance / 100);
-        mainBody.scrollLeft -= scrollSpeed * speedMultiplier;
-      } else if (clientX > rect.right - scrollMargin) {
-        const distance = Math.max(0, clientX - rect.right);
-        const speedMultiplier = Math.min(3, 1 + distance / 100);
-        mainBody.scrollLeft += scrollSpeed * speedMultiplier;
-      }
-    }
+    handleAutoScrollUtil(clientX, clientY);
   }
 
   /**
@@ -1230,7 +1190,9 @@ export class SelectionManager {
       }
     }
 
-    this.scrollAnimationFrame = requestAnimationFrame(() => this.continuousScroll());
+    this.scrollAnimationFrame = requestAnimationFrame(() =>
+      this.continuousScroll(),
+    );
   }
 
   /**
@@ -1283,7 +1245,9 @@ export class SelectionManager {
     document.addEventListener("mousemove", this.globalMouseMoveHandler);
     document.addEventListener("mouseup", this.globalMouseUpHandler);
 
-    this.scrollAnimationFrame = requestAnimationFrame(() => this.continuousScroll());
+    this.scrollAnimationFrame = requestAnimationFrame(() =>
+      this.continuousScroll(),
+    );
   }
 
   /**
