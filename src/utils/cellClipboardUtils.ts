@@ -133,8 +133,12 @@ export const pasteClipboardDataToCells = (
     (header) => !header.hide && !header.excludeFromRender
   );
 
-  // Starting position
-  const startRowIndex = initialFocusedCell.rowIndex;
+  // Resolve table row index from rowId so paste works when initialFocusedCell has virtualized rowIndex
+  const resolvedRowIndex = tableRows.findIndex(
+    (r) => rowIdToString(r.rowId) === String(initialFocusedCell.rowId),
+  );
+  const startRowIndex =
+    resolvedRowIndex >= 0 ? resolvedRowIndex : initialFocusedCell.rowIndex;
   const startColIndex = initialFocusedCell.colIndex;
 
   rows.forEach((rowText, rowOffset) => {

@@ -1106,6 +1106,7 @@ export class SelectionManager {
             cell,
             this.config.rowHeight,
             this.config.customTheme,
+            this.config.tableRows,
           ),
         0,
       );
@@ -1138,6 +1139,7 @@ export class SelectionManager {
           endCell,
           this.config.rowHeight,
           this.config.customTheme,
+          this.config.tableRows,
         ),
       0,
     );

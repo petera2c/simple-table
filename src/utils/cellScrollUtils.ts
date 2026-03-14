@@ -2,6 +2,7 @@ import Cell from "../types/Cell";
 import { getViewportCalculations } from "./infiniteScrollUtils";
 import TableRow from "../types/TableRow";
 import { CustomTheme } from "../types/CustomTheme";
+import { rowIdToString } from "./rowUtils";
 
 /**
  * Fine-tunes the scroll position when a cell is already in the DOM
@@ -80,49 +81,54 @@ export const scrollCellIntoView = (
 
   if (!tableContainer) return;
 
-  // Calculate the actual row height including separator
+  // Resolve table row index from rowId so scroll position is correct when cell.rowIndex is virtualized
+  const resolvedTableRow = tableRows
+    ? tableRows.findIndex(
+        (r) => rowIdToString(r.rowId) === String(cell.rowId),
+      )
+    : -1;
+  const tableRowIndex =
+    resolvedTableRow >= 0 ? resolvedTableRow : cell.rowIndex;
+
   const rowHeightWithSeparator = rowHeight + customTheme.rowSeparatorWidth;
 
-  // Try to find the cell element using data attributes
-  const cellElement = document.querySelector(
-    `.st-cell[data-row-index="${cell.rowIndex}"][data-col-index="${cell.colIndex}"][data-row-id="${cell.rowId}"]`
+  // Find cell by rowId and colIndex only (DOM data-row-index is virtualized and changes after scroll)
+  const cellElement = tableContainer.querySelector(
+    `.st-cell[data-row-id="${cell.rowId}"][data-col-index="${cell.colIndex}"]`,
   );
 
-  // Check if row is already fully visible using our new viewport calculations
   if (cellElement && tableRows) {
-    const isFullyVisible = isRowFullyVisible(cell.rowIndex, tableContainer, rowHeight, tableRows);
+    const isFullyVisible = isRowFullyVisible(
+      tableRowIndex,
+      tableContainer,
+      rowHeight,
+      tableRows,
+    );
 
     if (isFullyVisible) {
-      // Row is already fully visible, just fine-tune for horizontal scroll if needed
       fineTuneScroll(cellElement, tableContainer, mainBody);
       return;
     }
   }
 
-  // If cell is not in DOM (due to virtualization), scroll to calculated position
   if (!cellElement) {
-    // Calculate target scroll position based on row index
-    // Position the cell roughly in the middle of the viewport for better visibility
     const containerHeight = tableContainer.clientHeight;
-    const targetScrollTop = cell.rowIndex * rowHeightWithSeparator - containerHeight / 3;
+    const targetScrollTop =
+      tableRowIndex * rowHeightWithSeparator - containerHeight / 3;
 
-    // Scroll to calculated position (clamped to valid range)
     tableContainer.scrollTop = Math.max(0, targetScrollTop);
 
-    // Wait for virtualization to render the cell, then fine-tune
     setTimeout(() => {
-      const newCellElement = document.querySelector(
-        `.st-cell[data-row-index="${cell.rowIndex}"][data-col-index="${cell.colIndex}"][data-row-id="${cell.rowId}"]`
+      const newCellElement = tableContainer.querySelector(
+        `.st-cell[data-row-id="${cell.rowId}"][data-col-index="${cell.colIndex}"]`,
       );
 
       if (newCellElement) {
-        // Fine-tune the scroll position
         fineTuneScroll(newCellElement, tableContainer, mainBody);
       }
     }, 100);
     return;
   }
 
-  // Cell is already in DOM but not fully visible, fine-tune scroll position
   fineTuneScroll(cellElement, tableContainer, mainBody);
 };
