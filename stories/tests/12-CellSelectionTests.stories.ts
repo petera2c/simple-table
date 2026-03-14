@@ -137,6 +137,11 @@ const getSelectedCellCount = (canvasElement: HTMLElement) => {
   return selected.length;
 };
 
+/** Number of cells that have the anchor/first-cell selection class. Should be 1 when a range is selected. */
+const getSelectedFirstCellCount = (canvasElement: HTMLElement) => {
+  return canvasElement.querySelectorAll(".st-cell-selected-first").length;
+};
+
 const clearCellSelection = async (canvasElement: HTMLElement) => {
   document.body.dispatchEvent(
     new MouseEvent("mousedown", {
@@ -527,5 +532,67 @@ export const SelectionDragScroll = {
     );
     expect(bodyContainer.scrollTop).toBeGreaterThan(initialScrollTop);
     expect(getSelectedCellCount(canvasElement)).toBeGreaterThan(1);
+  },
+};
+
+/**
+ * After selecting a range at the bottom, scroll slightly and verify the anchor cell
+ * (st-cell-selected-first) is still present. Regression test for first-cell class
+ * being lost after scroll.
+ */
+export const SelectionFirstCellAfterScroll = {
+  tags: ["selection-first-cell-after-scroll"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Product Name", width: 200, type: "string" },
+      { accessor: "category", label: "Category", width: 150, type: "string" },
+      { accessor: "price", label: "Price", width: 120, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "280px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    await clearCellSelection(canvasElement);
+
+    const bodyContainer = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLDivElement;
+    expect(bodyContainer).toBeTruthy();
+
+    // Scroll to bottom
+    bodyContainer.scrollTop =
+      bodyContainer.scrollHeight - bodyContainer.clientHeight;
+    await new Promise((r) => setTimeout(r, 150));
+
+    // Drag-select 4 cells (2x2) in the visible area at the bottom
+    await selectCellRange(canvasElement, 0, 0, 1, 1);
+    await new Promise((r) => setTimeout(r, 100));
+
+    expect(getSelectedCellCount(canvasElement)).toBe(4);
+    expect(getSelectedFirstCellCount(canvasElement)).toBe(1);
+
+    // Scroll slightly down
+    bodyContainer.scrollTop += 30;
+    await new Promise((r) => setTimeout(r, 150));
+
+    // Scroll slightly up
+    bodyContainer.scrollTop -= 20;
+    await new Promise((r) => setTimeout(r, 150));
+
+    // First cell (anchor) should still have st-cell-selected-first after scroll up
+    expect(getSelectedFirstCellCount(canvasElement)).toBe(1);
+
+    // Scroll down slightly again
+    bodyContainer.scrollTop += 25;
+    await new Promise((r) => setTimeout(r, 150));
+
+    // st-cell-selected-first should still be present after scroll down
+    expect(getSelectedFirstCellCount(canvasElement)).toBe(1);
   },
 };
