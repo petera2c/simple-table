@@ -28,6 +28,10 @@ export function calculateNearestCell(
   cells.forEach((cell) => {
     if (!(cell instanceof HTMLElement)) return;
     const htmlCell = cell as HTMLElement;
+    const rowIndex = parseInt(htmlCell.getAttribute("data-row-index") ?? "-1", 10);
+    const colIndex = parseInt(htmlCell.getAttribute("data-col-index") ?? "-1", 10);
+    const rowId = htmlCell.getAttribute("data-row-id");
+    if (rowIndex < 0 || colIndex < 0 || rowId == null || rowId === "") return;
 
     const cellRect = htmlCell.getBoundingClientRect();
     const cellCenterX = cellRect.left + cellRect.width / 2;
@@ -55,12 +59,10 @@ export function calculateNearestCell(
       10,
     );
     const rowId = cellElement.getAttribute("data-row-id");
-
     if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
       return { rowIndex, colIndex, rowId };
     }
   }
-
   return null;
 }
 

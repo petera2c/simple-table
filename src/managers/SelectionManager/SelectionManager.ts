@@ -830,85 +830,87 @@ export class SelectionManager {
   }
 
   /**
+   * Apply selection classes to all currently rendered cells. Used after drag ends
+   * so that the DOM (which may have been replaced during scroll) reflects selection.
+   */
+  private syncAllCellClasses(): void {
+    const root = this.config.tableRoot ?? document;
+    const allCells = root.querySelectorAll(
+      ".st-cell[data-row-index][data-col-index][data-row-id]",
+    );
+    allCells.forEach((cellElement) => {
+      if (!(cellElement instanceof HTMLElement)) return;
+
+      const rowIndex = parseInt(
+        cellElement.getAttribute("data-row-index") || "-1",
+        10,
+      );
+      const colIndex = parseInt(
+        cellElement.getAttribute("data-col-index") || "-1",
+        10,
+      );
+      const rowId = cellElement.getAttribute("data-row-id");
+
+      if (rowIndex < 0 || colIndex < 0 || !rowId) return;
+
+      const cell: Cell = { rowIndex, colIndex, rowId };
+      const isSelected = this.isSelected(cell);
+      const isColumnSelected = this.selectedColumns.has(colIndex);
+      const isIndividuallySelected = isSelected && !isColumnSelected;
+      const isInitialFocused = this.isInitialFocusedCell(cell);
+      const borderClass = this.getBorderClass(cell);
+
+      cellElement.classList.remove(
+        "st-cell-selected",
+        "st-cell-selected-first",
+        "st-cell-column-selected",
+        "st-cell-column-selected-first",
+        "st-selected-top-border",
+        "st-selected-bottom-border",
+        "st-selected-left-border",
+        "st-selected-right-border",
+      );
+
+      if (isIndividuallySelected) {
+        if (isInitialFocused) {
+          cellElement.classList.add("st-cell-selected-first");
+        } else {
+          cellElement.classList.add("st-cell-selected");
+        }
+        const borderClasses = borderClass.split(" ").filter(Boolean);
+        borderClasses.forEach((cls) => cellElement.classList.add(cls));
+      }
+      if (isColumnSelected) {
+        if (isInitialFocused) {
+          cellElement.classList.add("st-cell-column-selected-first");
+        } else {
+          cellElement.classList.add("st-cell-column-selected");
+        }
+      }
+      cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
+      if (isInitialFocused && document.activeElement !== cellElement) {
+        const activeElement = document.activeElement;
+        const isActiveInsideCell =
+          activeElement && cellElement.contains(activeElement);
+        if (!isActiveInsideCell) {
+          cellElement.focus();
+        }
+      }
+    });
+  }
+
+  /**
    * Update all cell classes based on current selection state
-   * Directly manipulates the DOM without triggering React re-renders
+   * Directly manipulates the DOM without triggering React re-renders.
+   * When isSelecting (drag), run synchronously so classes are applied before
+   * any scroll-triggered render replaces the DOM in the next frame.
    */
   private updateAllCellClasses(): void {
-    // Use requestAnimationFrame to ensure DOM is ready and batch updates
-    requestAnimationFrame(() => {
-      const allCells = document.querySelectorAll(
-        ".st-cell[data-row-index][data-col-index][data-row-id]",
-      );
-      allCells.forEach((cellElement) => {
-        if (!(cellElement instanceof HTMLElement)) return;
-
-        const rowIndex = parseInt(
-          cellElement.getAttribute("data-row-index") || "-1",
-          10,
-        );
-        const colIndex = parseInt(
-          cellElement.getAttribute("data-col-index") || "-1",
-          10,
-        );
-        const rowId = cellElement.getAttribute("data-row-id");
-
-        if (rowIndex < 0 || colIndex < 0 || !rowId) return;
-
-        const cell: Cell = { rowIndex, colIndex, rowId };
-        const isSelected = this.isSelected(cell);
-        const isColumnSelected = this.selectedColumns.has(colIndex);
-        const isIndividuallySelected = isSelected && !isColumnSelected;
-        const isInitialFocused = this.isInitialFocusedCell(cell);
-        const borderClass = this.getBorderClass(cell);
-
-        // Remove all selection-related classes first
-        cellElement.classList.remove(
-          "st-cell-selected",
-          "st-cell-selected-first",
-          "st-cell-column-selected",
-          "st-cell-column-selected-first",
-          "st-selected-top-border",
-          "st-selected-bottom-border",
-          "st-selected-left-border",
-          "st-selected-right-border",
-        );
-
-        // Add selection classes
-        if (isIndividuallySelected) {
-          if (isInitialFocused) {
-            cellElement.classList.add("st-cell-selected-first");
-          } else {
-            cellElement.classList.add("st-cell-selected");
-          }
-
-          // Add border classes
-          const borderClasses = borderClass.split(" ").filter(Boolean);
-          borderClasses.forEach((cls) => cellElement.classList.add(cls));
-        }
-
-        if (isColumnSelected) {
-          if (isInitialFocused) {
-            cellElement.classList.add("st-cell-column-selected-first");
-          } else {
-            cellElement.classList.add("st-cell-column-selected");
-          }
-        }
-
-        // Update tabindex for focus management
-        cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
-
-        // Focus the initial focused cell if needed
-        // Don't steal focus if active element is already inside this cell (e.g., editing input)
-        if (isInitialFocused && document.activeElement !== cellElement) {
-          const activeElement = document.activeElement;
-          const isActiveInsideCell =
-            activeElement && cellElement.contains(activeElement);
-          if (!isActiveInsideCell) {
-            cellElement.focus();
-          }
-        }
-      });
-    });
+    if (this.isSelecting) {
+      this.syncAllCellClasses();
+    } else {
+      requestAnimationFrame(() => this.syncAllCellClasses());
+    }
   }
 
   /**
@@ -916,9 +918,31 @@ export class SelectionManager {
    */
   isSelected({ colIndex, rowIndex, rowId }: Cell): boolean {
     const cellId = createSetString({ colIndex, rowIndex, rowId });
-    const isCellSelected = this.selectedCells.has(cellId);
-    const isColumnSelected = this.selectedColumns.has(colIndex);
-    return isCellSelected || isColumnSelected;
+    if (this.selectedCells.has(cellId)) return true;
+    const rowIdStr = String(rowId);
+    // selectedCells keys use table row index; resolve it from rowId so we match after scroll/re-render.
+    const tableRowIndex = this.config.tableRows.findIndex(
+      (r) => rowIdToString(r.rowId) === rowIdStr,
+    );
+    if (
+      tableRowIndex >= 0 &&
+      this.selectedCells.has(
+        createSetString({
+          rowIndex: tableRowIndex,
+          colIndex,
+          rowId: rowIdStr,
+        }),
+      )
+    ) {
+      return true;
+    }
+    // Fallback: match by rowId and colIndex by parsing keys (rowIndex-colIndex-rowId).
+    for (const key of Array.from(this.selectedCells)) {
+      const parts = key.split("-");
+      if (parts.length < 3) continue;
+      if (Number(parts[1]) === colIndex && parts.slice(2).join("-") === rowIdStr) return true;
+    }
+    return this.selectedColumns.has(colIndex);
   }
 
   /**
@@ -929,34 +953,40 @@ export class SelectionManager {
       return "";
     }
 
+    const rowIdStr = String(rowId);
+    const tableRowIndex = this.config.tableRows.findIndex(
+      (r) => rowIdToString(r.rowId) === rowIdStr,
+    );
+    const tableIndex = tableRowIndex >= 0 ? tableRowIndex : rowIndex;
+
     const classes: string[] = [];
-    const topRow = this.config.tableRows[rowIndex - 1];
+    const topRow = this.config.tableRows[tableIndex - 1];
     const topRowId = topRow ? rowIdToString(topRow.rowId) : null;
-    const bottomRow = this.config.tableRows[rowIndex + 1];
+    const bottomRow = this.config.tableRows[tableIndex + 1];
     const bottomRowId = bottomRow ? rowIdToString(bottomRow.rowId) : null;
 
     const topCell =
       topRowId !== null
-        ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId }
+        ? { colIndex, rowIndex: tableIndex - 1, rowId: topRowId }
         : null;
     const bottomCell =
       bottomRowId !== null
-        ? { colIndex, rowIndex: rowIndex + 1, rowId: bottomRowId }
+        ? { colIndex, rowIndex: tableIndex + 1, rowId: bottomRowId }
         : null;
-    const leftCell = { colIndex: colIndex - 1, rowIndex, rowId };
-    const rightCell = { colIndex: colIndex + 1, rowIndex, rowId };
+    const leftCell = { colIndex: colIndex - 1, rowIndex: tableIndex, rowId };
+    const rightCell = { colIndex: colIndex + 1, rowIndex: tableIndex, rowId };
 
     if (
       !topCell ||
       !this.isSelected(topCell) ||
-      (this.selectedColumns.has(colIndex) && rowIndex === 0)
+      (this.selectedColumns.has(colIndex) && tableIndex === 0)
     )
       classes.push("st-selected-top-border");
     if (
       !bottomCell ||
       !this.isSelected(bottomCell) ||
       (this.selectedColumns.has(colIndex) &&
-        rowIndex === this.config.tableRows.length - 1)
+        tableIndex === this.config.tableRows.length - 1)
     )
       classes.push("st-selected-bottom-border");
     if (!this.isSelected(leftCell)) classes.push("st-selected-left-border");
@@ -1194,8 +1224,8 @@ export class SelectionManager {
         );
         if (cellAtPosition) {
           this.updateSelectionRange(this.startCell, cellAtPosition);
+          this.lastSelectionUpdate = now;
         }
-        this.lastSelectionUpdate = now;
       }
     }
 
@@ -1249,6 +1279,12 @@ export class SelectionManager {
         document.removeEventListener("mouseup", this.globalMouseUpHandler);
         this.globalMouseUpHandler = null;
       }
+
+      // Re-render table so body DOM is rebuilt; then apply selection classes to the new DOM
+      // in the same tick (so test/UI see them without waiting for rAF).
+      this.config.onSelectionDragEnd?.();
+      this.syncAllCellClasses();
+      requestAnimationFrame(() => this.syncAllCellClasses());
     };
 
     document.addEventListener("mousemove", this.globalMouseMoveHandler);

@@ -24,8 +24,22 @@ const meta: Meta = {
 
 export default meta;
 
-const createProductData = (): { id: number; name: string; category: string; price: number; stock: number; rating: string }[] => {
-  const products: { id: number; name: string; category: string; price: number; stock: number; rating: string }[] = [];
+const createProductData = (): {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  rating: string;
+}[] => {
+  const products: {
+    id: number;
+    name: string;
+    category: string;
+    price: number;
+    stock: number;
+    rating: string;
+  }[] = [];
   for (let i = 1; i <= 20; i++) {
     products.push({
       id: i,
@@ -39,24 +53,45 @@ const createProductData = (): { id: number; name: string; category: string; pric
   return products;
 };
 
-const getCellElement = (canvasElement: HTMLElement, rowIndex: number, colIndex: number): HTMLElement | null => {
+const getCellElement = (
+  canvasElement: HTMLElement,
+  rowIndex: number,
+  colIndex: number,
+): HTMLElement | null => {
   const cells = getCellsForRow(canvasElement, String(rowIndex));
   return cells[colIndex] || null;
 };
 
-const clickCell = async (canvasElement: HTMLElement, rowIndex: number, colIndex: number) => {
+const clickCell = async (
+  canvasElement: HTMLElement,
+  rowIndex: number,
+  colIndex: number,
+) => {
   const cell = getCellElement(canvasElement, rowIndex, colIndex);
-  if (!cell) throw new Error(`Cell not found at row ${rowIndex}, col ${colIndex}`);
-  cell.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
-  cell.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true }));
+  if (!cell)
+    throw new Error(`Cell not found at row ${rowIndex}, col ${colIndex}`);
+  cell.dispatchEvent(
+    new MouseEvent("mousedown", { bubbles: true, cancelable: true }),
+  );
+  cell.dispatchEvent(
+    new MouseEvent("mouseup", { bubbles: true, cancelable: true }),
+  );
   await new Promise((r) => setTimeout(r, 150));
 };
 
-const selectCellRange = async (canvasElement: HTMLElement, startRow: number, startCol: number, endRow: number, endCol: number) => {
+const selectCellRange = async (
+  canvasElement: HTMLElement,
+  startRow: number,
+  startCol: number,
+  endRow: number,
+  endCol: number,
+) => {
   const startCell = getCellElement(canvasElement, startRow, startCol);
   const endCell = getCellElement(canvasElement, endRow, endCol);
   if (!startCell || !endCell) return;
-  startCell.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+  startCell.dispatchEvent(
+    new MouseEvent("mousedown", { bubbles: true, cancelable: true }),
+  );
   await new Promise((r) => setTimeout(r, 10));
   const minRow = Math.min(startRow, endRow);
   const maxRow = Math.max(startRow, endRow);
@@ -66,16 +101,24 @@ const selectCellRange = async (canvasElement: HTMLElement, startRow: number, sta
     for (let col = minCol; col <= maxCol; col++) {
       const cell = getCellElement(canvasElement, row, col);
       if (cell) {
-        cell.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, cancelable: true }));
+        cell.dispatchEvent(
+          new MouseEvent("mouseover", { bubbles: true, cancelable: true }),
+        );
         await new Promise((r) => setTimeout(r, 5));
       }
     }
   }
-  endCell.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true }));
+  endCell.dispatchEvent(
+    new MouseEvent("mouseup", { bubbles: true, cancelable: true }),
+  );
   await new Promise((r) => setTimeout(r, 200));
 };
 
-const isCellSelected = (canvasElement: HTMLElement, rowIndex: number, colIndex: number) => {
+const isCellSelected = (
+  canvasElement: HTMLElement,
+  rowIndex: number,
+  colIndex: number,
+) => {
   const cell = getCellElement(canvasElement, rowIndex, colIndex);
   if (!cell) return false;
   return (
@@ -89,40 +132,68 @@ const isCellSelected = (canvasElement: HTMLElement, rowIndex: number, colIndex: 
 
 const getSelectedCellCount = (canvasElement: HTMLElement) => {
   const selected = canvasElement.querySelectorAll(
-    ".st-cell-selected, .st-cell-selected-first, .st-cell-column-selected, .st-cell-column-selected-first"
+    ".st-cell-selected, .st-cell-selected-first, .st-cell-column-selected, .st-cell-column-selected-first",
   );
   return selected.length;
 };
 
 const clearCellSelection = async (canvasElement: HTMLElement) => {
-  document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
-  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+  document.body.dispatchEvent(
+    new MouseEvent("mousedown", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }),
+  );
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key: "Escape",
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
   await new Promise((r) => setTimeout(r, 100));
 };
 
 /** True if the cell has individual cell selection (not only column selection). */
-const isCellIndividuallySelected = (canvasElement: HTMLElement, rowIndex: number, colIndex: number) => {
+const isCellIndividuallySelected = (
+  canvasElement: HTMLElement,
+  rowIndex: number,
+  colIndex: number,
+) => {
   const cell = getCellElement(canvasElement, rowIndex, colIndex);
   if (!cell) return false;
   return (
-    cell.classList.contains("st-cell-selected") || cell.classList.contains("st-cell-selected-first") || false
+    cell.classList.contains("st-cell-selected") ||
+    cell.classList.contains("st-cell-selected-first") ||
+    false
   );
 };
 
 /** Dispatch mousedown outside the table (e.g. on body) to test outside-click-clears-selection. */
 const clickOutsideTable = async (canvasElement: HTMLElement) => {
-  document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
+  document.body.dispatchEvent(
+    new MouseEvent("mousedown", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }),
+  );
   await new Promise((r) => setTimeout(r, 100));
 };
 
-
-const clickColumnHeader = async (canvasElement: HTMLElement, colIndex: number) => {
+const clickColumnHeader = async (
+  canvasElement: HTMLElement,
+  colIndex: number,
+) => {
   const headers = canvasElement.querySelectorAll(".st-header-cell");
   const header = headers[colIndex];
   expect(header).toBeTruthy();
   const headerLabel = header?.querySelector(".st-header-label");
   expect(headerLabel).toBeTruthy();
-  headerLabel?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+  headerLabel?.dispatchEvent(
+    new MouseEvent("click", { bubbles: true, cancelable: true }),
+  );
   await new Promise((r) => setTimeout(r, 150));
 };
 
@@ -130,7 +201,9 @@ const isColumnSelected = (canvasElement: HTMLElement, colIndex: number) => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return false;
   const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
-  const rowIndices = Array.from(new Set(Array.from(cells).map((c) => c.getAttribute("data-row-index")))).filter((x): x is string => x != null);
+  const rowIndices = Array.from(
+    new Set(Array.from(cells).map((c) => c.getAttribute("data-row-index"))),
+  ).filter((x): x is string => x != null);
   for (const rowIndex of rowIndices) {
     const rowCells = getCellsForRow(canvasElement, rowIndex);
     const cell = rowCells[colIndex];
@@ -147,7 +220,11 @@ export const SingleCellSelection = {
       { accessor: "category", label: "Category", width: 150, type: "string" },
       { accessor: "price", label: "Price", width: 120, type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createProductData(), { getRowId: (params) => String(params.row.id), height: "400px", selectableCells: true });
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+    });
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -167,7 +244,11 @@ export const RangeSelection = {
       { accessor: "category", label: "Category", width: 150, type: "string" },
       { accessor: "price", label: "Price", width: 120, type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createProductData(), { getRowId: (params) => String(params.row.id), height: "400px", selectableCells: true });
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+    });
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -189,7 +270,11 @@ export const SelectionReplacement = {
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createProductData(), { getRowId: (params) => String(params.row.id), height: "400px", selectableCells: true });
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+    });
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -235,7 +320,11 @@ export const ClearSelection = {
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createProductData(), { getRowId: (params) => String(params.row.id), height: "400px", selectableCells: true });
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+    });
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -256,7 +345,11 @@ export const LargeRangeSelection = {
       { accessor: "price", label: "Price", width: 120, type: "number" },
       { accessor: "stock", label: "Stock", width: 100, type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createProductData(), { getRowId: (params) => String(params.row.id), height: "400px", selectableCells: true });
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+    });
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -365,6 +458,7 @@ export const ColumnHeaderClickClearsCellSelection = {
  * The table should auto-scroll down and extend the selection as new rows come into view.
  */
 export const SelectionDragScroll = {
+  tags: ["selection-drag-scroll-only"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -383,13 +477,21 @@ export const SelectionDragScroll = {
     await waitForTable();
     await clearCellSelection(canvasElement);
 
-    const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLDivElement;
+    const bodyContainer = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLDivElement;
     expect(bodyContainer).toBeTruthy();
     const initialScrollTop = bodyContainer.scrollTop;
 
     const startCell = getCellElement(canvasElement, 0, 0);
     expect(startCell).toBeTruthy();
-    startCell!.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
+    startCell!.dispatchEvent(
+      new MouseEvent("mousedown", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      }),
+    );
     await new Promise((r) => setTimeout(r, 20));
 
     const rect = bodyContainer.getBoundingClientRect();
@@ -403,7 +505,7 @@ export const SelectionDragScroll = {
         view: window,
         clientX: centerX,
         clientY: belowTableY,
-      })
+      }),
     );
     await new Promise((r) => setTimeout(r, 120));
     document.dispatchEvent(
@@ -413,12 +515,16 @@ export const SelectionDragScroll = {
         view: window,
         clientX: centerX,
         clientY: belowTableY + 40,
-      })
+      }),
     );
     await new Promise((r) => setTimeout(r, 120));
-    document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window }));
-    await new Promise((r) => setTimeout(r, 50));
-
+    document.dispatchEvent(
+      new MouseEvent("mouseup", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      }),
+    );
     expect(bodyContainer.scrollTop).toBeGreaterThan(initialScrollTop);
     expect(getSelectedCellCount(canvasElement)).toBeGreaterThan(1);
   },

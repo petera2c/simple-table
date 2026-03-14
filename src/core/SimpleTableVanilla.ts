@@ -195,6 +195,12 @@ export class SimpleTableVanilla {
       enableRowSelection: this.config.enableRowSelection,
       copyHeadersToClipboard: this.config.copyHeadersToClipboard,
       customTheme: this.customTheme,
+      tableRoot: this.container,
+      onSelectionDragEnd: () => {
+        this.renderOrchestrator.invalidateCache("context");
+        this.renderOrchestrator.invalidateCache("body");
+        this.render("selectionDragEnd");
+      },
     });
   }
 

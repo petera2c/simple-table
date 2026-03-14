@@ -18,4 +18,8 @@ export interface SelectionManagerConfig {
   enableRowSelection?: boolean;
   copyHeadersToClipboard?: boolean;
   customTheme: CustomTheme;
+  /** Called when a selection drag ends so the table can re-render and apply selection classes. */
+  onSelectionDragEnd?: () => void;
+  /** Root element of the table; sync scopes cell queries to this so only this table's cells are updated. */
+  tableRoot?: HTMLElement;
 }
