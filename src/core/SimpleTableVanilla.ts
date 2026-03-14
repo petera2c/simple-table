@@ -315,6 +315,20 @@ export class SimpleTableVanilla {
       });
     }
 
+    if (this.selectionManager) {
+      this.handleOutsideClickManager = new HandleOutsideClickManager({
+        selectableColumns: this.config.selectableColumns ?? false,
+        selectedCells: new Set(),
+        selectedColumns: new Set(),
+        setSelectedCells: (cells) => this.selectionManager!.setSelectedCells(cells),
+        setSelectedColumns: (columns) => this.selectionManager!.setSelectedColumns(columns),
+        getSelectedCells: () => this.selectionManager!.getSelectedCells(),
+        getSelectedColumns: () => this.selectionManager!.getSelectedColumns(),
+        onClearSelection: () => this.selectionManager!.clearSelection(),
+      });
+      this.handleOutsideClickManager.startListening();
+    }
+
     this.setupEventListeners();
   }
 

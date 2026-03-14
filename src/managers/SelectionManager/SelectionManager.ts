@@ -1036,6 +1036,15 @@ export class SelectionManager {
   }
 
   /**
+   * Set the initial focused cell (e.g. when clearing selection from header drag).
+   */
+  setInitialFocusedCell(cell: Cell | null): void {
+    this.initialFocusedCell = cell;
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
    * Select a single cell
    */
   selectSingleCell(cell: Cell): void {

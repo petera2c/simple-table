@@ -225,8 +225,22 @@ export class TableRenderer {
               deps.onRender();
             }
           : (value: any) => {},
-      setSelectedCells: (value: any) => {},
-      setInitialFocusedCell: (cell: any) => {},
+      setSelectedCells:
+        deps.selectionManager
+          ? (value: Set<string> | ((prev: Set<string>) => Set<string>)) => {
+              const prev = deps.selectionManager!.getSelectedCells();
+              const next = typeof value === "function" ? value(prev) : value;
+              deps.selectionManager!.setSelectedCells(next instanceof Set ? next : new Set());
+              deps.onRender?.();
+            }
+          : (value: any) => {},
+      setInitialFocusedCell:
+        deps.selectionManager
+          ? (cell: { rowIndex: number; colIndex: number; rowId: string } | null) => {
+              deps.selectionManager!.setInitialFocusedCell(cell ?? null);
+              deps.onRender?.();
+            }
+          : (cell: any) => {},
       areAllRowsSelected: () =>
         deps.rowSelectionManager?.areAllRowsSelected() ?? false,
       draggedHeaderRef: deps.draggedHeaderRef,

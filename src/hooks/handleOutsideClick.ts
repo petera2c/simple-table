@@ -10,6 +10,11 @@ export interface HandleOutsideClickConfig {
   activeHeaderDropdown?: HeaderObject | null;
   setActiveHeaderDropdown?: (header: HeaderObject | null) => void;
   startCell?: { current: Cell | null };
+  /** When provided, used to read current selection (avoids stale refs). */
+  getSelectedCells?: () => Set<string>;
+  getSelectedColumns?: () => Set<number>;
+  /** When provided, called to clear both cell/column selection and startCell in one go. */
+  onClearSelection?: () => void;
 }
 
 /**
@@ -60,16 +65,20 @@ export class HandleOutsideClickManager {
           !target.classList.contains("st-header-label-text")
         : true)
     ) {
-      // Check if there actually are any selected cells
-      if (this.config.selectedCells.size > 0) {
-        this.config.setSelectedCells(new Set());
-      }
-      if (this.config.selectedColumns.size > 0) {
-        this.config.setSelectedColumns(new Set());
-      }
-      // Clear the start cell for range selection
-      if (this.config.startCell) {
-        this.config.startCell.current = null;
+      const selectedCells = this.config.getSelectedCells?.() ?? this.config.selectedCells;
+      const selectedColumns = this.config.getSelectedColumns?.() ?? this.config.selectedColumns;
+      const hasSelection = selectedCells.size > 0 || selectedColumns.size > 0;
+
+      if (hasSelection) {
+        if (this.config.onClearSelection) {
+          this.config.onClearSelection();
+        } else {
+          this.config.setSelectedCells(new Set());
+          this.config.setSelectedColumns(new Set());
+          if (this.config.startCell) {
+            this.config.startCell.current = null;
+          }
+        }
       }
     }
   };

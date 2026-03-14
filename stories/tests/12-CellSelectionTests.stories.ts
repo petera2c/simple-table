@@ -100,6 +100,22 @@ const clearCellSelection = async (canvasElement: HTMLElement) => {
   await new Promise((r) => setTimeout(r, 100));
 };
 
+/** True if the cell has individual cell selection (not only column selection). */
+const isCellIndividuallySelected = (canvasElement: HTMLElement, rowIndex: number, colIndex: number) => {
+  const cell = getCellElement(canvasElement, rowIndex, colIndex);
+  if (!cell) return false;
+  return (
+    cell.classList.contains("st-cell-selected") || cell.classList.contains("st-cell-selected-first") || false
+  );
+};
+
+/** Dispatch mousedown outside the table (e.g. on body) to test outside-click-clears-selection. */
+const clickOutsideTable = async (canvasElement: HTMLElement) => {
+  document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
+  await new Promise((r) => setTimeout(r, 100));
+};
+
+
 const clickColumnHeader = async (canvasElement: HTMLElement, colIndex: number) => {
   const headers = canvasElement.querySelectorAll(".st-header-cell");
   const header = headers[colIndex];
@@ -280,5 +296,130 @@ export const MultipleColumnHeaderSelections = {
     expect(isColumnSelected(canvasElement, 1)).toBe(true);
     await clickColumnHeader(canvasElement, 2);
     expect(isColumnSelected(canvasElement, 2)).toBe(true);
+  },
+};
+
+/**
+ * Edge case: clicking outside the table (e.g. on document.body) should clear cell selection
+ * and startCell, without needing to press Escape.
+ */
+export const OutsideClickClearsSelection = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Product Name", width: 200, type: "string" },
+      { accessor: "category", label: "Category", width: 150, type: "string" },
+      { accessor: "price", label: "Price", width: 120, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    await clearCellSelection(canvasElement);
+    await clickCell(canvasElement, 0, 1);
+    expect(getSelectedCellCount(canvasElement)).toBe(1);
+    expect(isCellSelected(canvasElement, 0, 1)).toBe(true);
+    await clickOutsideTable(canvasElement);
+    expect(getSelectedCellCount(canvasElement)).toBe(0);
+    expect(isCellSelected(canvasElement, 0, 1)).toBe(false);
+  },
+};
+
+/**
+ * Edge case: when selectableColumns is true, clicking a column header should clear
+ * any existing cell selection (and initial focused cell) so that column selection takes over.
+ */
+export const ColumnHeaderClickClearsCellSelection = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Product Name", width: 200, type: "string" },
+      { accessor: "category", label: "Category", width: 150, type: "string" },
+      { accessor: "price", label: "Price", width: 120, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+      selectableColumns: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    await clearCellSelection(canvasElement);
+    await clickCell(canvasElement, 0, 1);
+    expect(isCellIndividuallySelected(canvasElement, 0, 1)).toBe(true);
+    await clickColumnHeader(canvasElement, 1);
+    expect(isCellIndividuallySelected(canvasElement, 0, 1)).toBe(false);
+  },
+};
+
+/**
+ * Drag scroll: select a cell, then drag the cursor below the table.
+ * The table should auto-scroll down and extend the selection as new rows come into view.
+ */
+export const SelectionDragScroll = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Product Name", width: 200, type: "string" },
+      { accessor: "category", label: "Category", width: 150, type: "string" },
+      { accessor: "price", label: "Price", width: 120, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "280px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    await clearCellSelection(canvasElement);
+
+    const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLDivElement;
+    expect(bodyContainer).toBeTruthy();
+    const initialScrollTop = bodyContainer.scrollTop;
+
+    const startCell = getCellElement(canvasElement, 0, 0);
+    expect(startCell).toBeTruthy();
+    startCell!.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
+    await new Promise((r) => setTimeout(r, 20));
+
+    const rect = bodyContainer.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const belowTableY = rect.bottom + 60;
+
+    document.dispatchEvent(
+      new MouseEvent("mousemove", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: centerX,
+        clientY: belowTableY,
+      })
+    );
+    await new Promise((r) => setTimeout(r, 120));
+    document.dispatchEvent(
+      new MouseEvent("mousemove", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: centerX,
+        clientY: belowTableY + 40,
+      })
+    );
+    await new Promise((r) => setTimeout(r, 120));
+    document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window }));
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(bodyContainer.scrollTop).toBeGreaterThan(initialScrollTop);
+    expect(getSelectedCellCount(canvasElement)).toBeGreaterThan(1);
   },
 };
