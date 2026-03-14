@@ -1000,10 +1000,11 @@ export class SelectionManager {
    */
   isInitialFocusedCell({ rowIndex, colIndex, rowId }: Cell): boolean {
     if (!this.initialFocusedCell) return false;
+    // Match by rowId and colIndex so we recognize the anchor cell after scroll/re-render
+    // (DOM cells use virtualized rowIndex; initialFocusedCell may store table or visible index).
     return (
-      rowIndex === this.initialFocusedCell.rowIndex &&
       colIndex === this.initialFocusedCell.colIndex &&
-      rowId === this.initialFocusedCell.rowId
+      String(rowId) === String(this.initialFocusedCell.rowId)
     );
   }
 
