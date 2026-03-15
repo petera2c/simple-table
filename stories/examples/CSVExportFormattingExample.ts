@@ -121,7 +121,7 @@ export const csvExportFormattingExampleDefaults = {
 
 export function renderCSVExportFormattingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const options = { ...defaultVanillaArgs, ...csvExportFormattingExampleDefaults, ...args };
-  const { wrapper, h2, table } = renderVanillaTable(HEADERS, ROWS, {
+  const { wrapper, h2, tableContainer, table } = renderVanillaTable(HEADERS, ROWS, {
     ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });
@@ -150,7 +150,7 @@ export function renderCSVExportFormattingExample(args?: Partial<UniversalVanilla
       </ul>
     </div>
   `;
-  wrapper.insertBefore(desc, wrapper.querySelector("div:last-child"));
+  wrapper.insertBefore(desc, tableContainer);
   const btn = document.createElement("button");
   btn.textContent = "Export to CSV";
   btn.type = "button";
@@ -163,7 +163,7 @@ export function renderCSVExportFormattingExample(args?: Partial<UniversalVanilla
   btn.style.cursor = "pointer";
   btn.style.fontSize = "14px";
   btn.style.fontWeight = "600";
-  wrapper.insertBefore(btn, wrapper.querySelector("div:last-child"));
+  wrapper.insertBefore(btn, tableContainer);
   btn.addEventListener("click", () => table.getAPI().exportToCSV({ filename: "employee-data.csv" }));
   return wrapper;
 }

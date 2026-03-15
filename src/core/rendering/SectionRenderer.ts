@@ -708,7 +708,8 @@ export class SectionRenderer {
 
     const cached = this.bodyCellsCache.get(sectionKey);
 
-    const cacheHit = cached &&
+    const cacheHit =
+      cached &&
       cached.deps.headersHash === headersHash &&
       cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
       cached.deps.rowHeight === rowHeight &&
