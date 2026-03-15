@@ -8,6 +8,8 @@ export interface ChartOptions {
   showPoints?: boolean;
   barColor?: string;
   barSpacing?: number;
+  min?: number; // Custom minimum for scaling (matches HeaderObject chartOptions)
+  max?: number; // Custom maximum for scaling (matches HeaderObject chartOptions)
 }
 
 // Render a line/area chart on a canvas
@@ -30,9 +32,9 @@ export const renderLineAreaChart = (
   // Clear canvas
   ctx.clearRect(0, 0, width, height);
   
-  // Find min and max values
-  const minValue = Math.min(...data);
-  const maxValue = Math.max(...data);
+  // Find min and max values (use custom min/max from options if provided)
+  const minValue = options?.min !== undefined ? options.min : Math.min(...data);
+  const maxValue = options?.max !== undefined ? options.max : Math.max(...data);
   const valueRange = maxValue - minValue || 1; // Avoid division by zero
   
   // Calculate points
@@ -112,9 +114,9 @@ export const renderBarChart = (
   // Clear canvas
   ctx.clearRect(0, 0, width, height);
   
-  // Find min and max values
-  const minValue = Math.min(0, ...data); // Include 0 as baseline
-  const maxValue = Math.max(...data);
+  // Find min and max values (use custom min/max from options if provided)
+  const minValue = options?.min !== undefined ? options.min : Math.min(0, ...data);
+  const maxValue = options?.max !== undefined ? options.max : Math.max(...data);
   const valueRange = maxValue - minValue || 1;
   
   // Calculate bar properties

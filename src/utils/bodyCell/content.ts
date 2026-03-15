@@ -2,7 +2,8 @@ import HeaderObject from "../../types/HeaderObject";
 import CellValue from "../../types/CellValue";
 import { formatDate } from "../formatters";
 import { getNestedValue, hasNestedRows, isRowExpanded as getIsRowExpanded } from "../rowUtils";
-import { renderLineAreaChart, renderBarChart } from "../chartRenderer";
+import { createLineAreaChart } from "../charts/createLineAreaChart";
+import { createBarChart } from "../charts/createBarChart";
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
 import { createSelectionCheckbox, createRowButtons } from "./selection";
 import { createExpandIcon } from "./expansion";
@@ -138,17 +139,21 @@ export const createCellContent = (
     contentSpan.appendChild(expandIcon);
   }
 
-  // Handle chart rendering
+  // Handle chart rendering (SVG for pixel-perfect scaling, matching main branch)
   if (header.type === "lineAreaChart" && Array.isArray(content)) {
     const numericData = (content as any[]).filter(
       (item: any) => typeof item === "number",
     ) as number[];
     if (numericData.length > 0) {
-      const canvas = document.createElement("canvas");
-      canvas.width = 100; // Will be adjusted by chart renderer
-      canvas.height = 30;
-      renderLineAreaChart(canvas, numericData, header.chartOptions);
-      contentSpan.appendChild(canvas);
+      const result = createLineAreaChart({
+        data: numericData,
+        width: "100%",
+        height: 30,
+        ...header.chartOptions,
+      });
+      if (result?.element) {
+        contentSpan.appendChild(result.element);
+      }
       return;
     }
   } else if (header.type === "barChart" && Array.isArray(content)) {
@@ -156,11 +161,15 @@ export const createCellContent = (
       (item: any) => typeof item === "number",
     ) as number[];
     if (numericData.length > 0) {
-      const canvas = document.createElement("canvas");
-      canvas.width = 100;
-      canvas.height = 30;
-      renderBarChart(canvas, numericData, header.chartOptions);
-      contentSpan.appendChild(canvas);
+      const result = createBarChart({
+        data: numericData,
+        width: "100%",
+        height: 30,
+        ...header.chartOptions,
+      });
+      if (result?.element) {
+        contentSpan.appendChild(result.element);
+      }
       return;
     }
   }
