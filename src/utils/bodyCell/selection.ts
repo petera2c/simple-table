@@ -39,7 +39,10 @@ export const createRowButtons = (
   const buttonsContainer = document.createElement("div");
   buttonsContainer.className = "st-row-buttons";
   buttonsContainer.setAttribute("role", "group");
-  buttonsContainer.setAttribute("aria-label", `Actions for row ${cell.displayRowNumber + 1}`);
+  buttonsContainer.setAttribute(
+    "aria-label",
+    `Actions for row ${cell.displayRowNumber + 1}`,
+  );
 
   // Create button props
   const buttonProps = {
@@ -51,12 +54,13 @@ export const createRowButtons = (
   context.rowButtons.forEach((buttonFn, index) => {
     try {
       const buttonElement = buttonFn(buttonProps);
-      
+      if (!buttonElement) return;
+
       // Wrap in span for consistent styling
       const buttonWrapper = document.createElement("span");
       buttonWrapper.className = "st-row-button";
       buttonWrapper.appendChild(buttonElement);
-      
+
       buttonsContainer.appendChild(buttonWrapper);
     } catch (error) {
       console.error("Error rendering row button:", error);

@@ -66,6 +66,8 @@ export interface RenderContext {
   setIsResizing: (value: boolean) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
   sortManager: SortManager | null;
+  /** When true, body cells that stay visible get only position updates (no content/selection recalc). Used during vertical scroll for performance. */
+  positionOnlyBody?: boolean;
 }
 
 export interface RenderState {
@@ -576,6 +578,7 @@ export class RenderOrchestrator {
       getCollapsedRows: context.getCollapsedRows,
       getExpandedRows: context.getExpandedRows,
       getRowStateMap: context.getRowStateMap,
+      positionOnlyBody: context.positionOnlyBody,
     };
   }
 

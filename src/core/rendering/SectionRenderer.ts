@@ -46,6 +46,12 @@ export interface BodySectionParams {
   heightOffsets?: Array<[number, number]>;
   totalRowCount?: number;
   startColIndex?: number;
+  /** When true, only update cell positions for existing cells (scroll performance). */
+  positionOnly?: boolean;
+  /** Full table rows ref + range for range-based body cell cache (avoids cache miss on every scroll). */
+  fullTableRows?: TableRow[];
+  renderedStartIndex?: number;
+  renderedEndIndex?: number;
 }
 
 interface BodyCellsCacheEntry {
@@ -56,6 +62,10 @@ interface BodyCellsCacheEntry {
     collapsedHeadersSize: number;
     rowHeight: number;
     heightOffsetsHash: string;
+    /** Range-based cache: when set, cache key includes these instead of rowsRef for stable key on scroll. */
+    renderedStartIndex?: number;
+    renderedEndIndex?: number;
+    fullTableRowsRef?: TableRow[];
   };
 }
 
@@ -193,6 +203,10 @@ export class SectionRenderer {
       heightOffsets,
       totalRowCount,
       startColIndex = 0,
+      positionOnly = false,
+      fullTableRows,
+      renderedStartIndex,
+      renderedEndIndex,
     } = params;
 
     const sectionKey = pinned || "main";
@@ -250,6 +264,9 @@ export class SectionRenderer {
       heightOffsets,
       context.customTheme ?? DEFAULT_CUSTOM_THEME,
       startColIndex,
+      fullTableRows,
+      renderedStartIndex,
+      renderedEndIndex,
     );
 
     // Calculate and store the next colIndex for this section
@@ -274,6 +291,7 @@ export class SectionRenderer {
       cachedContext,
       currentScrollLeft,
       rows,
+      positionOnly,
     );
 
     // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
@@ -677,26 +695,41 @@ export class SectionRenderer {
     heightOffsets?: Array<[number, number]>,
     customTheme?: any,
     startColIndex: number = 0,
+    fullTableRows?: TableRow[],
+    renderedStartIndex?: number,
+    renderedEndIndex?: number,
   ): AbsoluteBodyCell[] {
-    const cached = this.bodyCellsCache.get(sectionKey);
-
     const headersHash = this.createHeadersHash(headers);
     const heightOffsetsHash = this.createHeightOffsetsHash(heightOffsets);
+    const useRangeCache =
+      fullTableRows != null &&
+      renderedStartIndex != null &&
+      renderedEndIndex != null;
 
-    const cacheHit =
-      cached &&
+    const cached = this.bodyCellsCache.get(sectionKey);
+
+    const cacheHit = cached &&
       cached.deps.headersHash === headersHash &&
-      cached.deps.rowsRef === rows &&
       cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
       cached.deps.rowHeight === rowHeight &&
-      cached.deps.heightOffsetsHash === heightOffsetsHash;
+      cached.deps.heightOffsetsHash === heightOffsetsHash &&
+      (useRangeCache
+        ? cached.deps.fullTableRowsRef === fullTableRows &&
+          cached.deps.renderedStartIndex === renderedStartIndex &&
+          cached.deps.renderedEndIndex === renderedEndIndex
+        : cached.deps.rowsRef === rows);
 
     if (cacheHit) {
       return cached.cells;
     }
+
+    const rowsToCompute = useRangeCache
+      ? fullTableRows!.slice(renderedStartIndex!, renderedEndIndex!)
+      : rows;
+
     const cells = this.calculateAbsoluteBodyCells(
       headers,
-      rows,
+      rowsToCompute,
       collapsedHeaders,
       rowHeight,
       heightOffsets,
@@ -708,10 +741,15 @@ export class SectionRenderer {
       cells,
       deps: {
         headersHash,
-        rowsRef: rows,
+        rowsRef: rowsToCompute,
         collapsedHeadersSize: collapsedHeaders.size,
         rowHeight,
         heightOffsetsHash,
+        ...(useRangeCache && {
+          fullTableRowsRef: fullTableRows,
+          renderedStartIndex,
+          renderedEndIndex,
+        }),
       },
     });
 

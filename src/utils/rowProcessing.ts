@@ -31,6 +31,10 @@ export interface ProcessRowsConfig {
 export interface ProcessRowsResult {
   currentTableRows: TableRow[];
   rowsToRender: TableRow[];
+  /** Visible range start index into currentTableRows (when virtualized). */
+  renderedStartIndex: number;
+  /** Visible range end index into currentTableRows (when virtualized). */
+  renderedEndIndex: number;
   stickyParents: TableRow[];
   regularRows: TableRow[];
   partiallyVisibleRows: TableRow[];
@@ -138,18 +142,26 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
         )
       : undefined;
 
-  const targetVisibleRows =
-    contentHeight === undefined
-      ? currentTableRows
-      : getViewportCalculations({
-          bufferRowCount,
-          contentHeight,
-          tableRows: currentTableRows,
-          rowHeight,
-          scrollTop,
-          scrollDirection,
-          heightMap,
-        }).rendered.rows;
+  let renderedStartIndex = 0;
+  let renderedEndIndex = currentTableRows.length;
+  let targetVisibleRows: TableRow[];
+
+  if (contentHeight === undefined) {
+    targetVisibleRows = currentTableRows;
+  } else {
+    const viewportCalcs = getViewportCalculations({
+      bufferRowCount,
+      contentHeight,
+      tableRows: currentTableRows,
+      rowHeight,
+      scrollTop,
+      scrollDirection,
+      heightMap,
+    });
+    targetVisibleRows = viewportCalcs.rendered.rows;
+    renderedStartIndex = viewportCalcs.rendered.startIndex;
+    renderedEndIndex = viewportCalcs.rendered.endIndex;
+  }
 
   const { stickyParents, regularRows, partiallyVisibleRows } =
     !enableStickyParents || contentHeight === undefined
@@ -188,6 +200,8 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
   return {
     currentTableRows,
     rowsToRender: targetVisibleRows,
+    renderedStartIndex,
+    renderedEndIndex,
     stickyParents,
     regularRows,
     partiallyVisibleRows,

@@ -55,6 +55,8 @@ export class SimpleTableVanilla {
   private scrollDirection: "up" | "down" | "none" = "none";
   private isResizing: boolean = false;
   private isScrolling: boolean = false;
+  /** True when this render is scroll-driven so body can use position-only updates for existing cells. */
+  private _positionOnlyBody: boolean = false;
   private internalIsLoading: boolean = false;
   private scrollbarWidth: number = 0;
   private isMainSectionScrollable: boolean = false;
@@ -360,10 +362,11 @@ export class SimpleTableVanilla {
       clearTimeout(this.scrollEndTimeoutId);
     }
 
-    // Set up timeout to detect when scrolling ends
+    // Set up timeout to detect when scrolling ends; run one full render so selection/content are correct
     this.scrollEndTimeoutId = window.setTimeout(() => {
       this.isScrolling = false;
       this.scrollEndTimeoutId = null;
+      this.render("scroll-end");
     }, 150);
 
     // Cancel any pending RAF
@@ -451,6 +454,7 @@ export class SimpleTableVanilla {
       selectionManager: this.selectionManager,
       rowSelectionManager: this.rowSelectionManager,
       rowStateMap: this.rowStateMap,
+      positionOnlyBody: this._positionOnlyBody,
       onRender: () => this.render("resizeHandler-onRender"),
       setIsResizing: (value: boolean) => {
         this.isResizing = value;
@@ -502,6 +506,10 @@ export class SimpleTableVanilla {
     if (this.isUpdating && source !== "update") {
       return;
     }
+
+    // During scroll use position-only body updates; full update on scroll-end or other triggers
+    this._positionOnlyBody =
+      source === "scroll-raf" && this.isScrolling === true;
 
     const elements = this.domManager.getElements();
     const refs = this.domManager.getRefs();

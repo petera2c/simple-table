@@ -63,6 +63,8 @@ export interface TableRendererDeps {
   getCollapsedRows: () => Map<string, number>;
   getExpandedRows: () => Map<string, number>;
   getRowStateMap: () => Map<string | number, any>;
+  /** When true, body sections use position-only updates for existing cells (scroll performance). */
+  positionOnlyBody?: boolean;
 }
 
 export class TableRenderer {
@@ -343,13 +345,16 @@ export class TableRenderer {
     const shouldShowEmptyState =
       !deps.internalIsLoading && processedResult.currentTableRows.length === 0;
 
-    // Update SelectionManager with processed table rows
+    // Update SelectionManager with processed table rows; use minimal update when scroll-only for performance
     if (deps.selectionManager && processedResult.currentTableRows) {
-      deps.selectionManager.updateConfig({
-        tableRows: processedResult.currentTableRows,
-        headers: deps.effectiveHeaders,
-        collapsedHeaders: deps.collapsedHeaders,
-      });
+      deps.selectionManager.updateConfig(
+        {
+          tableRows: processedResult.currentTableRows,
+          headers: deps.effectiveHeaders,
+          collapsedHeaders: deps.collapsedHeaders,
+        },
+        { positionOnlyBody: deps.positionOnlyBody },
+      );
     }
 
     if (shouldShowEmptyState) {
@@ -498,6 +503,10 @@ export class TableRenderer {
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
         startColIndex: currentColIndex,
+        positionOnly: deps.positionOnlyBody,
+        fullTableRows: processedResult.currentTableRows,
+        renderedStartIndex: processedResult.renderedStartIndex,
+        renderedEndIndex: processedResult.renderedEndIndex,
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
@@ -519,6 +528,10 @@ export class TableRenderer {
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
         startColIndex: currentColIndex,
+        positionOnly: deps.positionOnlyBody,
+        fullTableRows: processedResult.currentTableRows,
+        renderedStartIndex: processedResult.renderedStartIndex,
+        renderedEndIndex: processedResult.renderedEndIndex,
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
@@ -541,6 +554,10 @@ export class TableRenderer {
         heightOffsets: processedResult.heightOffsets,
         totalRowCount: processedResult.currentTableRows.length,
         startColIndex: currentColIndex,
+        positionOnly: deps.positionOnlyBody,
+        fullTableRows: processedResult.currentTableRows,
+        renderedStartIndex: processedResult.renderedStartIndex,
+        renderedEndIndex: processedResult.renderedEndIndex,
       });
       deps.pinnedRightRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);

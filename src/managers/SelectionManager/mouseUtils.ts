@@ -2,6 +2,8 @@ import type Cell from "../../types/Cell";
 
 /**
  * Calculate the nearest cell to a given mouse position.
+ * Uses row buckets: one getBoundingClientRect per row to find the row, then only
+ * measures cells in that row (O(rows + cols) instead of O(rows * cols)).
  */
 export function calculateNearestCell(
   clientX: number,
@@ -11,54 +13,92 @@ export function calculateNearestCell(
   if (!tableContainer) return null;
 
   const rect = tableContainer.getBoundingClientRect();
-  const cells = Array.from(
-    document.querySelectorAll(
-      ".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)",
-    ),
-  );
-
-  if (cells.length === 0) return null;
-
   const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
   const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
 
+  const cellElements = document.querySelectorAll<HTMLElement>(
+    ".st-cell[data-row-index][data-col-index][data-row-id]:not(.st-selection-cell)",
+  );
+  if (cellElements.length === 0) return null;
+
+  // Group cells by row (use rowId so we merge same row across sections if needed)
+  const byRow = new Map<string, HTMLElement[]>();
+  for (let i = 0; i < cellElements.length; i++) {
+    const el = cellElements[i];
+    const rowId = el.getAttribute("data-row-id");
+    const key = rowId ?? el.getAttribute("data-row-index") ?? "";
+    if (!key) continue;
+    let list = byRow.get(key);
+    if (!list) {
+      list = [];
+      byRow.set(key, list);
+    }
+    list.push(el);
+  }
+
+  // One getBoundingClientRect per row to get Y bounds
+  const rowBounds: { key: string; top: number; bottom: number }[] = [];
+  byRow.forEach((cells, key) => {
+    const r = cells[0].getBoundingClientRect();
+    rowBounds.push({ key, top: r.top, bottom: r.bottom });
+  });
+  rowBounds.sort((a, b) => a.top - b.top);
+
+  // Find row that contains clampedY (or closest)
+  let bestRowKey: string | null = null;
+  let bestRowDistance = Infinity;
+  for (let i = 0; i < rowBounds.length; i++) {
+    const { key, top, bottom } = rowBounds[i];
+    if (clampedY >= top && clampedY <= bottom) {
+      bestRowKey = key;
+      bestRowDistance = 0;
+      break;
+    }
+    const mid = (top + bottom) / 2;
+    const d = Math.abs(clampedY - mid);
+    if (d < bestRowDistance) {
+      bestRowDistance = d;
+      bestRowKey = key;
+    }
+  }
+
+  if (bestRowKey === null) return null;
+  const rowCells = byRow.get(bestRowKey);
+  if (!rowCells || rowCells.length === 0) return null;
+
+  // Only measure cells in the chosen row
   let closestCell: HTMLElement | null = null;
   let minDistance = Infinity;
-
-  cells.forEach((cell) => {
-    if (!(cell instanceof HTMLElement)) return;
-    const htmlCell = cell as HTMLElement;
+  for (let i = 0; i < rowCells.length; i++) {
+    const htmlCell = rowCells[i];
     const rowIndex = parseInt(htmlCell.getAttribute("data-row-index") ?? "-1", 10);
     const colIndex = parseInt(htmlCell.getAttribute("data-col-index") ?? "-1", 10);
     const rowId = htmlCell.getAttribute("data-row-id");
-    if (rowIndex < 0 || colIndex < 0 || rowId == null || rowId === "") return;
+    if (rowIndex < 0 || colIndex < 0 || rowId == null || rowId === "") continue;
 
     const cellRect = htmlCell.getBoundingClientRect();
     const cellCenterX = cellRect.left + cellRect.width / 2;
     const cellCenterY = cellRect.top + cellRect.height / 2;
 
     const distance = Math.sqrt(
-      Math.pow(cellCenterX - clampedX, 2) +
-        Math.pow(cellCenterY - clampedY, 2),
+      (cellCenterX - clampedX) ** 2 + (cellCenterY - clampedY) ** 2,
     );
-
     if (distance < minDistance) {
       minDistance = distance;
       closestCell = htmlCell;
     }
-  });
+  }
 
   if (closestCell !== null) {
-    const cellElement: HTMLElement = closestCell;
     const rowIndex = parseInt(
-      cellElement.getAttribute("data-row-index") || "-1",
+      closestCell.getAttribute("data-row-index") || "-1",
       10,
     );
     const colIndex = parseInt(
-      cellElement.getAttribute("data-col-index") || "-1",
+      closestCell.getAttribute("data-col-index") || "-1",
       10,
     );
-    const rowId = cellElement.getAttribute("data-row-id");
+    const rowId = closestCell.getAttribute("data-row-id");
     if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
       return { rowIndex, colIndex, rowId };
     }
