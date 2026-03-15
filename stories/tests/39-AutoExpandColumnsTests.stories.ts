@@ -347,7 +347,9 @@ async function waitForResizeSettle(
   const start = Date.now();
   while (Date.now() - start < maxMs) {
     await new Promise((r) => requestAnimationFrame(r));
-    const container = canvasElement.querySelector(".st-body-container") as HTMLElement | null;
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement | null;
     const cw = container?.clientWidth ?? containerWidthFallback;
     const totalW = getHeaderCells(canvasElement).reduce(
       (s, c) => s + parsePixelWidth(getColumnWidth(c)),
@@ -1115,7 +1117,9 @@ export const AutoExpandResizeOneColumnProportional = {
     expect(Math.abs(totalAfter - containerWidth)).toBeLessThanOrEqual(
       WIDTH_TOLERANCE_AFTER_RESIZE,
     );
-    expect(totalAfter).toBeLessThanOrEqual(containerWidth + WIDTH_TOLERANCE_AFTER_RESIZE);
+    expect(totalAfter).toBeLessThanOrEqual(
+      containerWidth + WIDTH_TOLERANCE_AFTER_RESIZE,
+    );
   },
 };
 
@@ -1150,11 +1154,7 @@ export const AutoExpandResizeThenReexpandOnEnd = {
     await resizeColumn(storeNameHeader!, 30, () =>
       findHeaderCellByLabel(canvasElement, "Store Name"),
     );
-    await waitForResizeSettle(
-      canvasElement,
-      WIDTH_TOLERANCE_AFTER_RESIZE,
-      800,
-    );
+    await waitForResizeSettle(canvasElement, WIDTH_TOLERANCE_AFTER_RESIZE, 800);
     const headerCells = getHeaderCells(canvasElement);
     const totalW = headerCells.reduce(
       (s, c) => s + parsePixelWidth(getColumnWidth(c)),

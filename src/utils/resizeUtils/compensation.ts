@@ -55,16 +55,16 @@ export const distributeCompensationProportionally = ({
   // Keep iterating until all compensation is distributed (shrinking columns)
   while (remainingCompensation > 0.5) {
     // 0.5px threshold to avoid floating point issues
-    // Calculate headroom for each column (initial width - minWidth)
-    // In autoExpandColumns mode, we use MIN_COLUMN_WIDTH instead of header minWidth
+    // Use current width so we accumulate shrinkage across iterations (don't overwrite previous iteration)
+    const minWidth = MIN_COLUMN_WIDTH;
     const headrooms = columnsToShrink.map((col) => {
-      // Use initial width from the map (captured at drag start)
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-      const minWidth = MIN_COLUMN_WIDTH;
+      const currentWidth = typeof col.width === "number" ? col.width : initialWidth;
+      const headroom = Math.max(0, currentWidth - minWidth);
       return {
         column: col,
-        headroom: Math.max(0, initialWidth - minWidth),
-        initialWidth,
+        headroom,
+        currentWidth,
         minWidth,
       };
     });
@@ -98,32 +98,29 @@ export const distributeCompensationProportionally = ({
           );
         }
 
-        // Calculate new width from initial width minus compensation
-        item.column.width = item.initialWidth - compensation;
+        // Accumulate: subtract from current width so we don't overwrite previous iteration
+        item.column.width = item.currentWidth - compensation;
         compensationDistributed += compensation;
       });
 
       remainingCompensation -= compensationDistributed;
     } else {
-      // CASE 2: All columns at minWidth
-      // Start shrinking minWidths equally, but not below MIN_COLUMN_WIDTH
+      // CASE 2: All columns at minWidth (use currentWidth for consistency)
       const columnsAboveAbsoluteMin = headrooms.filter(
-        (h) => h.minWidth > MIN_COLUMN_WIDTH,
+        (h) => h.currentWidth > MIN_COLUMN_WIDTH,
       );
 
       if (columnsAboveAbsoluteMin.length > 0) {
         // Distribute equally among columns that can still shrink
-        // Store remainingCompensation in a const to avoid no-loop-func warning
         const compensationToDistribute = remainingCompensation;
         const compensationPerColumn =
           compensationToDistribute / columnsAboveAbsoluteMin.length;
 
         let compensationDistributed = 0;
         columnsAboveAbsoluteMin.forEach((item, index) => {
-          const maxShrink = item.minWidth - MIN_COLUMN_WIDTH;
+          const maxShrink = item.currentWidth - MIN_COLUMN_WIDTH;
           let compensation = Math.min(compensationPerColumn, maxShrink);
 
-          // Last column takes remaining
           if (index === columnsAboveAbsoluteMin.length - 1) {
             compensation = Math.min(
               compensationToDistribute - compensationDistributed,
@@ -131,9 +128,8 @@ export const distributeCompensationProportionally = ({
             );
           }
 
-          const newWidth = item.initialWidth - compensation;
+          const newWidth = item.currentWidth - compensation;
           item.column.width = newWidth;
-          item.column.minWidth = Math.max(newWidth, MIN_COLUMN_WIDTH);
           compensationDistributed += compensation;
         });
 

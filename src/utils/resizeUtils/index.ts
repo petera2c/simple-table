@@ -160,34 +160,6 @@ export const handleResizeStart = ({
       });
     }
 
-    // #region agent log
-    if (rootPinned && childrenToResize.length > 0) {
-      const w = childrenToResize[0].width;
-      fetch(
-        "http://127.0.0.1:7804/ingest/f02fadf8-371e-4d39-8781-dc371552f5fd",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Debug-Session-Id": "88e0e6",
-          },
-          body: JSON.stringify({
-            sessionId: "88e0e6",
-            location: "resizeUtils/index.ts:handleMove",
-            message: "resize move",
-            data: {
-              rootPinned,
-              finalUpdate,
-              firstChildWidth: typeof w === "number" ? w : null,
-              accessor: childrenToResize[0].accessor,
-            },
-            timestamp: Date.now(),
-            hypothesisId: "H4",
-          }),
-        },
-      ).catch(() => {});
-    }
-    // #endregion
     if (finalUpdate) {
       // Final update: sync React state and ensure DOM is updated (e.g. when mouseup
       // runs before the mousemove RAF, as in tests that fire events in one tick)
