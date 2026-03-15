@@ -218,12 +218,15 @@ export class RenderOrchestrator {
       heightStyle = `height: ${normalizeHeight(context.config.height)};`;
     }
 
+    const { customTheme } = context;
     elements.rootElement.style.cssText = `
       ${maxHeightStyle}
       ${heightStyle}
       --st-main-section-width: ${mainSectionContainerWidth}px;
       --st-scrollbar-width: ${state.scrollbarWidth}px;
       --st-editor-width: ${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px;
+      --st-border-width: ${customTheme.borderWidth}px;
+      --st-footer-height: ${customTheme.footerHeight}px;
     `;
 
     const columnResizing = context.config.columnResizing ?? false;

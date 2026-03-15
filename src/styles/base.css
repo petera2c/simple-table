@@ -16,6 +16,7 @@
   --st-resize-handle-width: 2px;
   --st-resize-handle-container-width: 10px;
   --st-border-width: 1px;
+  --st-footer-height: 49px;
 
   /* Animation variables */
   --st-transition-duration: 0.2s;
@@ -880,6 +881,7 @@ input {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: var(--st-footer-height, 49px);
   background-color: var(--st-footer-background-color);
   padding: var(--st-spacing-medium);
   border-top: var(--st-border-width) solid var(--st-border-color);
