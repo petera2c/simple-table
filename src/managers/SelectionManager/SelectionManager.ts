@@ -55,6 +55,8 @@ export class SelectionManager {
   private rowIdToTableIndex: Map<string, number> = new Map();
   /** Set of "rowId\tcolIndex" for O(1) selected membership in syncAllCellClasses */
   private selectedByRowIdColIndex: Set<string> = new Set();
+  /** When true, all cells are selected without storing R×C cell IDs (fast path for Cmd+A). */
+  private fullTableSelected: boolean = false;
 
   constructor(config: SelectionManagerConfig) {
     this.config = config;
@@ -80,7 +82,9 @@ export class SelectionManager {
   }
 
   /**
-   * Update derived state based on current selections
+   * Update derived state based on current selections.
+   * When fullTableSelected, derives columns/rows from table shape (O(R+C)) instead of iterating selectedCells (O(R×C)).
+   * Otherwise, single pass over selectedCells to build selectedByRowIdColIndex, columnsWithSelectedCells, rowsWithSelectedCells.
    */
   private updateDerivedState(): void {
     // Update leaf headers
@@ -94,66 +98,63 @@ export class SelectionManager {
       this.rowIdToTableIndex.set(rowIdToString(r.rowId), i);
     });
 
-    // Build selected (rowId, colIndex) set for O(1) membership in isSelected/syncAllCellClasses
+    if (this.fullTableSelected) {
+      // Fast path: derive from table shape without iterating R×C cell IDs
+      this.selectedByRowIdColIndex.clear();
+      this.columnsWithSelectedCells = new Set<number>();
+      const numCols = this.leafHeaders.length;
+      const offset = this.config.enableRowSelection ? 1 : 0;
+      for (let col = 0; col < numCols; col++) {
+        this.columnsWithSelectedCells.add(col + offset);
+      }
+      this.rowsWithSelectedCells = new Set<string>();
+      this.config.tableRows.forEach((r) => {
+        this.rowsWithSelectedCells.add(rowIdToString(r.rowId));
+      });
+      return;
+    }
+
+    // Single pass over selectedCells: build selectedByRowIdColIndex, columnsWithSelectedCells, rowsWithSelectedCells
     this.selectedByRowIdColIndex.clear();
+    this.columnsWithSelectedCells = new Set<number>();
+    this.rowsWithSelectedCells = new Set<string>();
+
     this.selectedCells.forEach((key) => {
       const parts = key.split("-");
       if (parts.length >= 3) {
         const colIndex = parseInt(parts[1], 10);
         const rowId = parts.slice(2).join("-");
-        if (!isNaN(colIndex))
+        if (!isNaN(colIndex)) {
           this.selectedByRowIdColIndex.add(`${rowId}\t${colIndex}`);
+          this.columnsWithSelectedCells.add(colIndex);
+          this.rowsWithSelectedCells.add(rowId);
+        }
       }
     });
+
     this.selectedColumns.forEach((colIndex) => {
+      this.columnsWithSelectedCells.add(colIndex);
       this.config.tableRows.forEach((r) => {
         this.selectedByRowIdColIndex.add(
           `${rowIdToString(r.rowId)}\t${colIndex}`,
         );
+        this.rowsWithSelectedCells.add(rowIdToString(r.rowId));
       });
     });
-
-    // Update columns with selected cells
-    this.columnsWithSelectedCells = new Set<number>();
-    this.selectedCells.forEach((cellId) => {
-      const parts = cellId.split("-");
-      if (parts.length >= 2) {
-        const colIndex = parseInt(parts[1], 10);
-        if (!isNaN(colIndex)) {
-          this.columnsWithSelectedCells.add(colIndex);
-        }
-      }
-    });
-    this.selectedColumns.forEach((colIndex) => {
-      this.columnsWithSelectedCells.add(colIndex);
-    });
-
-    // Update rows with selected cells
-    this.rowsWithSelectedCells = new Set<string>();
-    this.selectedCells.forEach((cellId) => {
-      const parts = cellId.split("-");
-      if (parts.length >= 3) {
-        const rowId = parts.slice(2).join("-");
-        this.rowsWithSelectedCells.add(rowId);
-      }
-    });
-    if (this.selectedColumns.size > 0) {
-      this.config.tableRows.forEach((tableRow) => {
-        const rowId = rowIdToString(tableRow.rowId);
-        this.rowsWithSelectedCells.add(rowId);
-      });
-    }
   }
 
   /**
    * Minimal update for scroll-only renders: only rowIdToTableIndex and selectedByRowIdColIndex
    * so isSelected/getBorderClass work for new cells; skips columnsWithSelectedCells and rowsWithSelectedCells.
+   * When fullTableSelected, selectedByRowIdColIndex is left empty (isSelected uses the flag).
    */
   private updateRowIdAndSelectionLookupOnly(): void {
     this.rowIdToTableIndex.clear();
     this.config.tableRows.forEach((r, i) => {
       this.rowIdToTableIndex.set(rowIdToString(r.rowId), i);
     });
+
+    if (this.fullTableSelected) return;
 
     this.selectedByRowIdColIndex.clear();
     this.selectedCells.forEach((key) => {
@@ -214,7 +215,6 @@ export class SelectionManager {
   private handleKeyDown(event: KeyboardEvent): void {
     if (!this.config.selectableCells) return;
     if (!this.initialFocusedCell) return;
-    if (this.selectedCells.size === 0) return;
 
     // Don't intercept if user is typing in a form element
     const activeElement = document.activeElement;
@@ -227,6 +227,15 @@ export class SelectionManager {
       return;
     }
 
+    // Select All: allow even when no selection yet (only requires focus)
+    if ((event.ctrlKey || event.metaKey) && event.key === "a") {
+      event.preventDefault();
+      this.selectAll();
+      return;
+    }
+
+    if (this.selectedCells.size === 0 && !this.fullTableSelected) return;
+
     // Copy functionality
     if ((event.ctrlKey || event.metaKey) && event.key === "c") {
       this.copyToClipboard();
@@ -237,13 +246,6 @@ export class SelectionManager {
     if ((event.ctrlKey || event.metaKey) && event.key === "v") {
       event.preventDefault();
       this.pasteFromClipboard();
-      return;
-    }
-
-    // Select All functionality
-    if ((event.ctrlKey || event.metaKey) && event.key === "a") {
-      event.preventDefault();
-      this.selectAll();
       return;
     }
 
@@ -690,10 +692,13 @@ export class SelectionManager {
    * Copy selected cells to clipboard
    */
   private copyToClipboard(): void {
-    if (this.selectedCells.size === 0) return;
+    const cellsToCopy = this.fullTableSelected
+      ? this.buildFullTableSelectedSet()
+      : this.selectedCells;
+    if (cellsToCopy.size === 0) return;
 
     const text = copySelectedCellsToClipboard(
-      this.selectedCells,
+      cellsToCopy,
       this.leafHeaders,
       this.config.tableRows,
       this.config.copyHeadersToClipboard,
@@ -701,7 +706,7 @@ export class SelectionManager {
     navigator.clipboard.writeText(text);
 
     // Trigger copy flash effect
-    this.copyFlashCells = new Set(this.selectedCells);
+    this.copyFlashCells = new Set(cellsToCopy);
     this.updateCellFlashClasses();
     setTimeout(() => {
       this.copyFlashCells = new Set();
@@ -754,10 +759,13 @@ export class SelectionManager {
    * Delete content from selected cells
    */
   private deleteSelectedCells(): void {
-    if (this.selectedCells.size === 0) return;
+    const cellsToDelete = this.fullTableSelected
+      ? this.buildFullTableSelectedSet()
+      : this.selectedCells;
+    if (cellsToDelete.size === 0) return;
 
     const { deletedCells, warningCells } = deleteSelectedCellsContent(
-      this.selectedCells,
+      cellsToDelete,
       this.leafHeaders,
       this.config.tableRows,
       this.config.onCellEdit,
@@ -784,19 +792,11 @@ export class SelectionManager {
   }
 
   /**
-   * Select all cells in the table
+   * Select all cells in the table. Uses fullTableSelected flag instead of storing R×C cell IDs for O(1) update.
    */
   private selectAll(): void {
-    const newSelectedCells = new Set<string>();
-    for (let row = 0; row < this.config.tableRows.length; row++) {
-      for (let col = 0; col < this.leafHeaders.length; col++) {
-        const colIndex = this.config.enableRowSelection ? col + 1 : col;
-        const tableRow = this.config.tableRows[row];
-        const rowId = rowIdToString(tableRow.rowId);
-        newSelectedCells.add(`${row}-${colIndex}-${rowId}`);
-      }
-    }
-    this.selectedCells = newSelectedCells;
+    this.fullTableSelected = true;
+    this.selectedCells = new Set();
     this.selectedColumns = new Set();
     this.lastSelectedColumnIndex = null;
     this.updateDerivedState();
@@ -804,9 +804,26 @@ export class SelectionManager {
   }
 
   /**
+   * Build the full set of cell IDs when fullTableSelected. Used for copy/delete/getSelectedCells.
+   */
+  private buildFullTableSelectedSet(): Set<string> {
+    const set = new Set<string>();
+    for (let row = 0; row < this.config.tableRows.length; row++) {
+      for (let col = 0; col < this.leafHeaders.length; col++) {
+        const colIndex = this.config.enableRowSelection ? col + 1 : col;
+        const tableRow = this.config.tableRows[row];
+        const rowId = rowIdToString(tableRow.rowId);
+        set.add(`${row}-${colIndex}-${rowId}`);
+      }
+    }
+    return set;
+  }
+
+  /**
    * Clear all selections
    */
   clearSelection(): void {
+    this.fullTableSelected = false;
     this.selectedCells = new Set();
     this.selectedColumns = new Set();
     this.lastSelectedColumnIndex = null;
@@ -819,6 +836,7 @@ export class SelectionManager {
    * Set selected cells (for external control)
    */
   setSelectedCells(cells: Set<string>): void {
+    this.fullTableSelected = false;
     this.selectedCells = cells;
     this.updateDerivedState();
     this.updateAllCellClasses();
@@ -828,6 +846,7 @@ export class SelectionManager {
    * Set selected columns (for external control)
    */
   setSelectedColumns(columns: Set<number>): void {
+    this.fullTableSelected = false;
     this.selectedColumns = columns;
     this.updateDerivedState();
     this.updateAllCellClasses();
@@ -919,7 +938,9 @@ export class SelectionManager {
       ".st-cell[data-row-index][data-col-index][data-row-id]",
     );
     const noSelection =
-      this.selectedCells.size === 0 && this.selectedColumns.size === 0;
+      !this.fullTableSelected &&
+      this.selectedCells.size === 0 &&
+      this.selectedColumns.size === 0;
 
     if (noSelection) {
       for (let i = 0; i < allCells.length; i++) {
@@ -1004,11 +1025,11 @@ export class SelectionManager {
   /**
    * Update all cell classes based on current selection state
    * Directly manipulates the DOM without triggering React re-renders.
-   * When isSelecting (drag), run synchronously so classes are applied before
-   * any scroll-triggered render replaces the DOM in the next frame.
+   * When isSelecting (drag) or fullTableSelected (Cmd+A), run synchronously so classes are applied
+   * before any scroll-triggered render or next frame.
    */
   private updateAllCellClasses(): void {
-    if (this.isSelecting) {
+    if (this.isSelecting || this.fullTableSelected) {
       this.syncAllCellClasses();
     } else {
       requestAnimationFrame(() => this.syncAllCellClasses());
@@ -1017,8 +1038,10 @@ export class SelectionManager {
 
   /**
    * Check if a cell is selected. Uses selectedByRowIdColIndex for O(1) membership.
+   * When fullTableSelected, returns true for any cell without lookup.
    */
   isSelected({ colIndex, rowIndex, rowId }: Cell): boolean {
+    if (this.fullTableSelected) return true;
     const rowIdStr = String(rowId);
     if (this.selectedByRowIdColIndex.has(`${rowIdStr}\t${colIndex}`))
       return true;
@@ -1038,6 +1061,7 @@ export class SelectionManager {
 
   /**
    * Get border class for a cell based on its selection state. Uses rowIdToTableIndex for O(1) lookups.
+   * When fullTableSelected, short-circuits with border classes for the full grid (no neighbor lookups).
    */
   getBorderClass({ colIndex, rowIndex, rowId }: Cell): string {
     if (this.isSelecting) {
@@ -1046,6 +1070,20 @@ export class SelectionManager {
 
     const rowIdStr = String(rowId);
     const tableIndex = this.rowIdToTableIndex.get(rowIdStr) ?? rowIndex;
+
+    if (this.fullTableSelected) {
+      const firstCol = this.config.enableRowSelection ? 1 : 0;
+      const lastCol = this.config.enableRowSelection
+        ? this.leafHeaders.length
+        : this.leafHeaders.length - 1;
+      const classes: string[] = [];
+      if (tableIndex === 0) classes.push("st-selected-top-border");
+      if (tableIndex === this.config.tableRows.length - 1)
+        classes.push("st-selected-bottom-border");
+      if (colIndex === firstCol) classes.push("st-selected-left-border");
+      if (colIndex === lastCol) classes.push("st-selected-right-border");
+      return classes.join(" ");
+    }
 
     const classes: string[] = [];
     const topRow = this.config.tableRows[tableIndex - 1];
@@ -1137,9 +1175,10 @@ export class SelectionManager {
   }
 
   /**
-   * Get selected cells
+   * Get selected cells. When fullTableSelected, builds and returns the full set on demand.
    */
   getSelectedCells(): Set<string> {
+    if (this.fullTableSelected) return this.buildFullTableSelectedSet();
     return this.selectedCells;
   }
 
@@ -1187,6 +1226,7 @@ export class SelectionManager {
       cell.colIndex >= 0 &&
       cell.colIndex <= maxColIndex
     ) {
+      this.fullTableSelected = false;
       const cellId = createSetString(cell);
 
       this.selectedColumns = new Set();
@@ -1215,6 +1255,7 @@ export class SelectionManager {
    * Select a range of cells from startCell to endCell
    */
   selectCellRange(startCell: Cell, endCell: Cell): void {
+    this.fullTableSelected = false;
     const newSelectedCells = computeSelectionRange(
       startCell,
       endCell,
@@ -1247,6 +1288,7 @@ export class SelectionManager {
    * Select one or more columns
    */
   selectColumns(columnIndices: number[], isShiftKey = false): void {
+    this.fullTableSelected = false;
     this.selectedCells = new Set();
     this.initialFocusedCell = null;
 
@@ -1266,6 +1308,7 @@ export class SelectionManager {
    * Update selection range during mouse drag. Skips derived state and class sync when selection unchanged.
    */
   private updateSelectionRange(startCell: Cell, endCell: Cell): void {
+    this.fullTableSelected = false;
     const newSelectedCells = computeSelectionRange(
       startCell,
       endCell,
@@ -1347,6 +1390,7 @@ export class SelectionManager {
   handleMouseDown({ colIndex, rowIndex, rowId }: Cell): void {
     if (!this.config.selectableCells) return;
 
+    this.fullTableSelected = false;
     this.isSelecting = true;
     this.startCell = { rowIndex, colIndex, rowId };
 
