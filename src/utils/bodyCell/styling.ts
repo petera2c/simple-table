@@ -21,7 +21,10 @@ const trackCellByRow = (rowIndex: number, cellElement: HTMLElement): void => {
 };
 
 // Helper to remove cell from row tracking
-export const untrackCellByRow = (rowIndex: number, cellElement: HTMLElement): void => {
+export const untrackCellByRow = (
+  rowIndex: number,
+  cellElement: HTMLElement,
+): void => {
   const cellSet = rowCellsMap.get(rowIndex);
   if (cellSet) {
     cellSet.delete(cellElement);
@@ -46,10 +49,14 @@ const setRowHoverState = (rowIndex: number, hovered: boolean): void => {
 };
 
 // Calculate cell class names based on current state
-const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderContext): string => {
+const calculateBodyCellClasses = (
+  cell: AbsoluteBodyCell,
+  context: CellRenderContext,
+): string => {
   const { header, rowIndex, colIndex, rowId, depth, isOdd } = cell;
 
-  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
+  const isSelectionColumn =
+    header.isSelectionColumn && context.enableRowSelection;
   const clickable = Boolean(header?.isEditable);
 
   // Calculate selection states
@@ -72,14 +79,24 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
   const isLastColumnInSection = (() => {
     if (!context.columnBorders) return false;
 
-    const pinnedLeftColumns = context.headers.filter((h) => h.pinned === "left");
+    const pinnedLeftColumns = context.headers.filter(
+      (h) => h.pinned === "left",
+    );
     const mainColumns = context.headers.filter((h) => !h.pinned);
-    const pinnedRightColumns = context.headers.filter((h) => h.pinned === "right");
+    const pinnedRightColumns = context.headers.filter(
+      (h) => h.pinned === "right",
+    );
 
     if (header.pinned === "left") {
-      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
+      return (
+        pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor ===
+        header.accessor
+      );
     } else if (header.pinned === "right") {
-      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
+      return (
+        pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor ===
+        header.accessor
+      );
     } else {
       return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
     }
@@ -113,12 +130,20 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
         ? "st-cell-warning-flash-first"
         : "st-cell-warning-flash"
       : "",
-    context.useOddColumnBackground ? (colIndex % 2 === 0 ? "even-column" : "odd-column") : "",
+    context.useOddColumnBackground
+      ? colIndex % 2 === 0
+        ? "even-column"
+        : "odd-column"
+      : "",
     isSelectionColumn ? "st-selection-cell" : "",
     hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : "",
     isLastColumnInSection ? "st-last-column" : "",
     isSubCell ? "st-sub-cell" : "",
-    context.useOddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
+    context.useOddEvenRowBackground
+      ? isOdd
+        ? "st-cell-even-row"
+        : "st-cell-odd-row"
+      : "",
     context.isRowSelected?.(rowId) ? "st-cell-selected-row" : "",
   ]
     .filter(Boolean)
@@ -132,7 +157,8 @@ export const createBodyCellElement = (
 ): HTMLElement => {
   const { header, row, rowIndex, colIndex, rowId } = cell;
 
-  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
+  const isSelectionColumn =
+    header.isSelectionColumn && context.enableRowSelection;
 
   // Calculate cell data for state checks
   const cellData: CellData = { rowIndex, colIndex, rowId };
@@ -148,7 +174,10 @@ export const createBodyCellElement = (
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
   // ARIA: 1-based row index in the full grid (matches main: position + maxHeaderDepth + 1)
   const maxHeaderDepth = context.maxHeaderDepth ?? 1;
-  cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
+  cellElement.setAttribute(
+    "aria-rowindex",
+    String(cell.tableRow.position + maxHeaderDepth + 1),
+  );
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
 
   // Set data attributes for selection manager to query
@@ -166,9 +195,12 @@ export const createBodyCellElement = (
 
   // Track editing state
   let isEditing = false;
-  
+
   // Determine if this column type uses dropdown editing
-  const isEditInDropdown = header.type === "boolean" || header.type === "date" || header.type === "enum";
+  const isEditInDropdown =
+    header.type === "boolean" ||
+    header.type === "date" ||
+    header.type === "enum";
 
   const renderCellContent = () => {
     // For dropdown editors, keep the normal cell content visible
@@ -237,10 +269,15 @@ export const createBodyCellElement = (
             // Add update flash animation
             if (context.cellUpdateFlash) {
               cellElement.classList.add(
-                isInitialFocused ? "st-cell-updating-first" : "st-cell-updating",
+                isInitialFocused
+                  ? "st-cell-updating-first"
+                  : "st-cell-updating",
               );
               setTimeout(() => {
-                cellElement.classList.remove("st-cell-updating-first", "st-cell-updating");
+                cellElement.classList.remove(
+                  "st-cell-updating-first",
+                  "st-cell-updating",
+                );
               }, 800);
             }
           }
@@ -253,7 +290,9 @@ export const createBodyCellElement = (
 
   // Event handlers for cell selection
   if (!isEditing && !isSelectionColumn) {
-    const handleMouseDown = () => {
+    const handleMouseDown = (event: Event) => {
+      const target = event.target as HTMLElement;
+      if (target.closest(".st-expand-icon-container")) return;
       context.handleMouseDown(cellData);
     };
 
@@ -274,7 +313,11 @@ export const createBodyCellElement = (
     }
 
     // Start editing on F2 or Enter
-    if ((keyEvent.key === "F2" || keyEvent.key === "Enter") && header.isEditable && !isEditing) {
+    if (
+      (keyEvent.key === "F2" || keyEvent.key === "Enter") &&
+      header.isEditable &&
+      !isEditing
+    ) {
       keyEvent.preventDefault();
       isEditing = true;
       renderCellContent();
@@ -282,7 +325,6 @@ export const createBodyCellElement = (
   };
 
   addTrackedEventListener(cellElement, "keydown", handleKeyDown);
-
 
   // Double-click handler for editing
   const handleDoubleClick = (event: Event) => {
@@ -298,12 +340,12 @@ export const createBodyCellElement = (
   if (context.onCellClick && !isSelectionColumn) {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      
+
       // Don't trigger cell click if the click originated from an expand icon
-      if (target.closest('.st-expand-icon-container')) {
+      if (target.closest(".st-expand-icon-container")) {
         return;
       }
-      
+
       const currentValue = getNestedValue(row, header.accessor);
       context.onCellClick?.({
         accessor: header.accessor,
@@ -343,7 +385,6 @@ export const createBodyCellElement = (
     addTrackedEventListener(cellElement, "mouseenter", handleMouseEnter);
     addTrackedEventListener(cellElement, "mouseleave", handleMouseLeave);
   }
-
 
   return cellElement;
 };
@@ -385,15 +426,24 @@ export const updateBodyCellElement = (
   cellElement.setAttribute("data-row-index", String(rowIndex));
   cellElement.setAttribute("data-col-index", String(colIndex));
   const maxHeaderDepth = context.maxHeaderDepth ?? 1;
-  cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
+  cellElement.setAttribute(
+    "aria-rowindex",
+    String(cell.tableRow.position + maxHeaderDepth + 1),
+  );
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
   cellElement.setAttribute("data-row-id", String(rowId));
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
 
-  // Update cell content (important for sorting/filtering where row data changes)
-  const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
-  if (contentSpan) {
-    contentSpan.innerHTML = "";
-    createCellContent(cell, context, contentSpan);
+  // Update cell content (important for sorting/filtering where row data changes).
+  // Skip full content replace for expandable cells so the expand icon DOM node is preserved;
+  // then updateExpandIconState can toggle its class and the CSS transition will run.
+  if (!cell.header.expandable) {
+    const contentSpan = cellElement.querySelector(
+      ".st-cell-content",
+    ) as HTMLElement;
+    if (contentSpan) {
+      contentSpan.innerHTML = "";
+      createCellContent(cell, context, contentSpan);
+    }
   }
 };

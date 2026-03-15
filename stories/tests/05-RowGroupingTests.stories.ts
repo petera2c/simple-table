@@ -6,7 +6,11 @@
 import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
-import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
+import {
+  renderVanillaTable,
+  addParagraph,
+  type RenderVanillaTableResult,
+} from "../utils";
 import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
@@ -40,7 +44,12 @@ const createGroupedData = () => [
         name: "Frontend Team",
         size: 5,
         members: [
-          { id: "emp-1", name: "Alice Johnson", role: "Senior Engineer", salary: 120000 },
+          {
+            id: "emp-1",
+            name: "Alice Johnson",
+            role: "Senior Engineer",
+            salary: 120000,
+          },
           { id: "emp-2", name: "Bob Smith", role: "Engineer", salary: 95000 },
         ],
       },
@@ -49,8 +58,18 @@ const createGroupedData = () => [
         name: "Backend Team",
         size: 6,
         members: [
-          { id: "emp-3", name: "Charlie Brown", role: "Tech Lead", salary: 140000 },
-          { id: "emp-4", name: "Diana Prince", role: "Engineer", salary: 100000 },
+          {
+            id: "emp-3",
+            name: "Charlie Brown",
+            role: "Tech Lead",
+            salary: 140000,
+          },
+          {
+            id: "emp-4",
+            name: "Diana Prince",
+            role: "Engineer",
+            salary: 100000,
+          },
         ],
       },
     ],
@@ -65,8 +84,18 @@ const createGroupedData = () => [
         name: "Enterprise Sales",
         size: 4,
         members: [
-          { id: "emp-5", name: "Eve Adams", role: "Sales Manager", salary: 110000 },
-          { id: "emp-6", name: "Frank Miller", role: "Sales Rep", salary: 85000 },
+          {
+            id: "emp-5",
+            name: "Eve Adams",
+            role: "Sales Manager",
+            salary: 110000,
+          },
+          {
+            id: "emp-6",
+            name: "Frank Miller",
+            role: "Sales Rep",
+            salary: 85000,
+          },
         ],
       },
     ],
@@ -80,7 +109,14 @@ const createGroupedData = () => [
         id: "team-4",
         name: "Digital Marketing",
         size: 3,
-        members: [{ id: "emp-7", name: "Grace Lee", role: "Marketing Manager", salary: 105000 }],
+        members: [
+          {
+            id: "emp-7",
+            name: "Grace Lee",
+            role: "Marketing Manager",
+            salary: 105000,
+          },
+        ],
       },
     ],
   },
@@ -94,7 +130,9 @@ const getVisibleRowCount = (canvasElement: HTMLElement) => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return 0;
   const cells = bodyContainer.querySelectorAll(".st-cell[data-row-id]");
-  const uniqueRowIds = new Set(Array.from(cells).map((c) => c.getAttribute("data-row-id")));
+  const uniqueRowIds = new Set(
+    Array.from(cells).map((c) => c.getAttribute("data-row-id")),
+  );
   return uniqueRowIds.size;
 };
 
@@ -106,11 +144,17 @@ const findExpandIconInRow = (rowCells: Element[]) => {
   return null;
 };
 
-const clickExpandIcon = async (canvasElement: HTMLElement, rowIndex: number) => {
+const clickExpandIcon = async (
+  canvasElement: HTMLElement,
+  rowIndex: number,
+) => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) throw new Error("Body container not found");
-  const rowCells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
-  if (rowCells.length === 0) throw new Error(`No cells found for row index ${rowIndex}`);
+  const rowCells = bodyContainer.querySelectorAll(
+    `.st-cell[data-row-index="${rowIndex}"]`,
+  );
+  if (rowCells.length === 0)
+    throw new Error(`No cells found for row index ${rowIndex}`);
   const expandIcon = findExpandIconInRow(Array.from(rowCells));
   if (!expandIcon) throw new Error(`Expand icon not found in row ${rowIndex}`);
   const user = userEvent.setup();
@@ -159,7 +203,9 @@ export const BasicSingleLevelGrouping = {
     expect(initialRowCount).toBeGreaterThan(3);
     const bodyContainer = canvasElement.querySelector(".st-body-container");
     if (!bodyContainer) throw new Error("Body container not found");
-    const expandIcons = bodyContainer.querySelectorAll(".st-expand-icon-container");
+    const expandIcons = bodyContainer.querySelectorAll(
+      ".st-expand-icon-container",
+    );
     expect(expandIcons.length).toBeGreaterThan(0);
   },
 };
@@ -197,14 +243,18 @@ export const MultiLevelGrouping = {
         rowMap.get(rowIndex)!.push(cell);
       }
     });
-    const depths = Array.from(rowMap.values()).map((rowCells) => getRowDepth(rowCells));
+    const depths = Array.from(rowMap.values()).map((rowCells) =>
+      getRowDepth(rowCells),
+    );
     const uniqueDepths = Array.from(new Set(depths)).sort((a, b) => a - b);
     expect(uniqueDepths.length).toBeGreaterThanOrEqual(2);
     expect(uniqueDepths.includes(0)).toBe(true);
     const maxDepth = Math.max(...depths);
     expect(maxDepth).toBeGreaterThan(0);
     const allSeparators = bodyContainer.querySelectorAll(".st-row-separator");
-    const lastGroupSeparators = bodyContainer.querySelectorAll(".st-row-separator.st-last-group-row");
+    const lastGroupSeparators = bodyContainer.querySelectorAll(
+      ".st-row-separator.st-last-group-row",
+    );
     expect(allSeparators.length).toBeGreaterThan(0);
     const depth0Count = depths.filter((d) => d === 0).length;
     expect(lastGroupSeparators.length).toBeGreaterThanOrEqual(depth0Count - 1);
@@ -300,7 +350,7 @@ export const ProgrammaticExpandCollapseAll = {
     wrapper.appendChild(btnContainer);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -393,7 +443,7 @@ export const ProgrammaticDepthControl = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -473,7 +523,7 @@ export const OnRowGroupExpandCallback = {
     wrapper.appendChild(eventsDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -519,10 +569,13 @@ export const DynamicRowLoading = {
     h2.style.marginBottom = "1rem";
     h2.textContent = "Dynamic Row Loading";
     wrapper.appendChild(h2);
-    addParagraph(wrapper, "Child rows loaded on-demand when parent is expanded");
+    addParagraph(
+      wrapper,
+      "Child rows loaded on-demand when parent is expanded",
+    );
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -534,7 +587,13 @@ export const DynamicRowLoading = {
       rowGrouping: ["teams"],
       expandAll: false,
       getRowId: ({ row }) => String(row.id),
-      onRowGroupExpand: async ({ row, groupingKey, isExpanded, setLoading, rowIndexPath }) => {
+      onRowGroupExpand: async ({
+        row,
+        groupingKey,
+        isExpanded,
+        setLoading,
+        rowIndexPath,
+      }) => {
         if (!isExpanded) return;
         setLoading(true);
         await new Promise((r) => setTimeout(r, 500));
@@ -578,7 +637,7 @@ export const DynamicRowLoading = {
 
 export const CanExpandRowGroupConditional = {
   render: () => {
-    const headers:HeaderObject[] = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -590,7 +649,10 @@ export const CanExpandRowGroupConditional = {
       canExpandRowGroup: (row) => row.budget > 300000,
     });
     h2.textContent = "Conditional Row Expansion";
-    addParagraph(wrapper, "Only departments with budget > 300000 can be expanded");
+    addParagraph(
+      wrapper,
+      "Only departments with budget > 300000 can be expanded",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -599,11 +661,16 @@ export const CanExpandRowGroupConditional = {
     expect(rowCount).toBe(3);
     const bodyContainer = canvasElement.querySelector(".st-body-container");
     if (!bodyContainer) throw new Error("Body container not found");
-    const firstRowCells = bodyContainer.querySelectorAll('.st-cell[data-row-index="0"]');
-    if (firstRowCells.length === 0) throw new Error("First row cells not found");
+    const firstRowCells = bodyContainer.querySelectorAll(
+      '.st-cell[data-row-index="0"]',
+    );
+    if (firstRowCells.length === 0)
+      throw new Error("First row cells not found");
     const firstRowIcon = findExpandIconInRow(Array.from(firstRowCells));
     expect(firstRowIcon).toBeTruthy();
-    const secondRowCells = bodyContainer.querySelectorAll('.st-cell[data-row-index="1"]');
+    const secondRowCells = bodyContainer.querySelectorAll(
+      '.st-cell[data-row-index="1"]',
+    );
     const secondRowIcon = findExpandIconInRow(Array.from(secondRowCells));
     expect(secondRowIcon).toBeFalsy();
   },
@@ -638,7 +705,7 @@ export const RowGroupingWithGetRowId = {
 
 export const EnableStickyParents = {
   render: () => {
-    const headers:HeaderObject[] = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -651,7 +718,10 @@ export const EnableStickyParents = {
       enableStickyParents: true,
     });
     h2.textContent = "Sticky Parent Rows (Beta)";
-    addParagraph(wrapper, "Parent rows stick to top while scrolling through children");
+    addParagraph(
+      wrapper,
+      "Parent rows stick to top while scrolling through children",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -690,7 +760,7 @@ export const GetGroupingPropertyAndDepth = {
     wrapper.appendChild(infoDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -725,6 +795,76 @@ export const GetGroupingPropertyAndDepth = {
   },
 };
 
+/**
+ * Get the expand icon container for the first row that has one.
+ */
+const getFirstExpandIcon = (canvasElement: HTMLElement): HTMLElement | null => {
+  const bodyContainer = canvasElement.querySelector(".st-body-container");
+  if (!bodyContainer) return null;
+  const rowIndices = Array.from(
+    new Set(
+      Array.from(bodyContainer.querySelectorAll(".st-cell[data-row-index]"))
+        .map((c) => c.getAttribute("data-row-index"))
+        .filter((id): id is string => id != null),
+    ),
+  ).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+  for (const rowIndex of rowIndices) {
+    const rowCells = bodyContainer.querySelectorAll(
+      `.st-cell[data-row-index="${rowIndex}"]`,
+    );
+    const icon = findExpandIconInRow(Array.from(rowCells));
+    if (icon) return icon as HTMLElement;
+  }
+  return null;
+};
+
+export const ExpandIconPositionAndAnimation = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Team Size", width: 120, type: "number" },
+    ];
+    const { wrapper, h2 } = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams"],
+      expandAll: true,
+    });
+    h2.textContent = "Expand icon position and animation";
+    addParagraph(
+      wrapper,
+      "Expand icon must point down when expanded, right when collapsed, and animate between states.",
+    );
+    return wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    let icon = getFirstExpandIcon(canvasElement);
+    expect(icon).toBeTruthy();
+    expect(icon!.classList.contains("expanded")).toBe(true);
+    expect(icon!.classList.contains("collapsed")).toBe(false);
+    const transition = getComputedStyle(icon!).transition;
+    expect(transition).toMatch(/transform/);
+
+    // Animation requires the same DOM node to have its class toggled (not replaced)
+    const iconBeforeCollapse = icon!;
+    await clickExpandIcon(canvasElement, 0);
+    icon = getFirstExpandIcon(canvasElement);
+    expect(icon).toBeTruthy();
+    expect(icon!.classList.contains("collapsed")).toBe(true);
+    expect(icon!.classList.contains("expanded")).toBe(false);
+    expect(icon).toBe(iconBeforeCollapse);
+
+    const iconBeforeExpand = icon!;
+    await clickExpandIcon(canvasElement, 0);
+    icon = getFirstExpandIcon(canvasElement);
+    expect(icon).toBeTruthy();
+    expect(icon!.classList.contains("expanded")).toBe(true);
+    expect(icon!.classList.contains("collapsed")).toBe(false);
+    expect(icon).toBe(iconBeforeExpand);
+  },
+};
+
 export const LastGroupRowSeparatorLogic = {
   render: () => {
     const headers: HeaderObject[] = [
@@ -738,7 +878,10 @@ export const LastGroupRowSeparatorLogic = {
       expandAll: true,
     });
     h2.textContent = "Last Group Row Separator Logic";
-    addParagraph(wrapper, "Verifies that st-last-group-row class is only applied to separators after depth 0 rows");
+    addParagraph(
+      wrapper,
+      "Verifies that st-last-group-row class is only applied to separators after depth 0 rows",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -746,7 +889,9 @@ export const LastGroupRowSeparatorLogic = {
     const bodyContainer = canvasElement.querySelector(".st-body-container");
     if (!bodyContainer) throw new Error("Body container not found");
     const allSeparators = bodyContainer.querySelectorAll(".st-row-separator");
-    const lastGroupSeparators = bodyContainer.querySelectorAll(".st-row-separator.st-last-group-row");
+    const lastGroupSeparators = bodyContainer.querySelectorAll(
+      ".st-row-separator.st-last-group-row",
+    );
     expect(allSeparators.length).toBeGreaterThan(0);
     const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
     const rowMap = new Map<string, Element[]>();
@@ -758,22 +903,30 @@ export const LastGroupRowSeparatorLogic = {
       }
     });
     const rows = Array.from(rowMap.values());
-    const depth0RowCount = rows.filter((rowCells) => getRowDepth(rowCells) === 0).length;
+    const depth0RowCount = rows.filter(
+      (rowCells) => getRowDepth(rowCells) === 0,
+    ).length;
     expect(depth0RowCount).toBeGreaterThan(0);
-    expect(lastGroupSeparators.length).toBeGreaterThanOrEqual(depth0RowCount - 1);
+    expect(lastGroupSeparators.length).toBeGreaterThanOrEqual(
+      depth0RowCount - 1,
+    );
     expect(lastGroupSeparators.length).toBeLessThanOrEqual(depth0RowCount);
     lastGroupSeparators.forEach((separator) => {
       const previousElement = separator.previousElementSibling;
       if (previousElement && previousElement.classList.contains("st-cell")) {
         const rowIndex = previousElement.getAttribute("data-row-index");
         if (rowIndex) {
-          const rowCells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+          const rowCells = bodyContainer.querySelectorAll(
+            `.st-cell[data-row-index="${rowIndex}"]`,
+          );
           const depth = getRowDepth(Array.from(rowCells));
           expect(depth).toBeGreaterThan(0);
         }
       }
     });
-    const regularSeparators = (Array.from(allSeparators) as Element[]).filter((sep) => !sep.classList.contains("st-last-group-row"));
+    const regularSeparators = (Array.from(allSeparators) as Element[]).filter(
+      (sep) => !sep.classList.contains("st-last-group-row"),
+    );
     expect(regularSeparators.length).toBeGreaterThan(0);
   },
 };

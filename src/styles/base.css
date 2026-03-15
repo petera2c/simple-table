@@ -366,9 +366,9 @@ input {
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered
-  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
-    .st-cell-column-selected-first
-  ) {
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   background-color: var(--st-hover-row-background-color);
 }
 /* Separate hover background for sub-cells */
@@ -393,9 +393,9 @@ input {
 /* Selected row hover state - should override selected background when hovering */
 .st-row.selected.hovered .st-cell-editing,
 .st-row.selected.hovered
-  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
-    .st-cell-column-selected-first
-  ) {
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   background-color: var(--st-hover-row-background-color);
 }
 
@@ -596,7 +596,8 @@ input {
 .st-resizeable .st-body-pinned-right .st-cell-content,
 .st-resizeable .st-sticky-section-right .st-cell-content {
   padding-left: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
+    var(--st-cell-padding) + var(--st-spacing-small) +
+      var(--st-resize-handle-container-width)
   );
   padding-right: var(--st-cell-padding);
 }
@@ -608,7 +609,8 @@ input {
 .st-resizeable .st-sticky-section-main .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
+    var(--st-cell-padding) + var(--st-spacing-small) +
+      var(--st-resize-handle-container-width)
   );
 }
 
@@ -905,7 +907,8 @@ input {
   background-color: transparent;
   border: none;
   border-radius: var(--st-border-radius);
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 .st-next-prev-btn {
   fill: var(--st-next-prev-btn-color);
@@ -932,7 +935,8 @@ input {
   color: var(--st-page-btn-color);
   border: none;
   border-radius: var(--st-border-radius);
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -976,7 +980,8 @@ input {
   font-size: 0.875rem;
 }
 .editable-cell-input:focus {
-  border: var(--st-border-width) solid var(--st-editable-cell-focus-border-color);
+  border: var(--st-border-width) solid
+    var(--st-editable-cell-focus-border-color);
 }
 .st-column-editor {
   display: flex;
@@ -1206,7 +1211,8 @@ input {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-cell-color);
   font-weight: var(--st-font-weight-bold);
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-group-header:hover {
@@ -1374,7 +1380,8 @@ input {
   padding: var(--st-spacing-small) var(--st-spacing-medium);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   color: var(--st-cell-color);
   font-size: 0.9em;
 }
@@ -1475,7 +1482,8 @@ input {
   width: 24px;
   border-radius: 50%;
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   font-size: 0.9em;
 }
 
@@ -1509,7 +1517,8 @@ input {
   padding: 12px 8px;
   border-radius: var(--st-border-radius);
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-datepicker-month:hover,
@@ -1536,7 +1545,8 @@ input {
   border-radius: var(--st-border-radius);
   padding: 6px 12px;
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   color: var(--st-cell-color);
 }
 
@@ -1572,7 +1582,8 @@ input {
   color: var(--st-cell-color);
   font-family: inherit;
   outline: none;
-  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-filter-input:focus {
@@ -1596,7 +1607,8 @@ input {
   font-family: inherit;
   cursor: pointer;
   outline: none;
-  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-filter-select:focus {
@@ -1620,7 +1632,8 @@ input {
   font-size: 0.9em;
   font-weight: 500;
   font-family: inherit;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 .st-filter-button:focus {
   outline: 2px solid var(--st-focus-ring-color);
@@ -1676,7 +1689,8 @@ input {
   justify-content: space-between;
   gap: var(--st-spacing-medium);
   outline: none;
-  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-custom-select-trigger:focus {
@@ -1724,7 +1738,8 @@ input {
   flex-shrink: 0;
   padding: var(--st-spacing-small);
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1808,7 +1823,7 @@ input {
 
 /* Row number styling */
 .st-row-number {
-    font-size: 0.8em;
+  font-size: 0.8em;
   opacity: 0.6;
   user-select: none;
   font-weight: 500;
@@ -1856,18 +1871,18 @@ input {
 /* Maintain column borders on hover */
 .st-column-borders
   .st-row.hovered
-  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
-    .st-cell-column-selected
-  ):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(
+    .st-cell-selected-first
+  ):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 
 /* Maintain column borders on selected row hover */
 .st-column-borders
   .st-row.selected.hovered
-  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
-    .st-cell-column-selected
-  ):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(
+    .st-cell-selected-first
+  ):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 

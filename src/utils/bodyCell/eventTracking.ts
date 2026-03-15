@@ -36,7 +36,7 @@ export const cleanupBodyCellRendering = (container?: HTMLElement) => {
   // No longer need to clean up all listeners globally
   // Event listeners are now tracked per element via WeakMap
   // and will be garbage collected when elements are removed
-  
+
   if (container) {
     const renderedCells = getRenderedCells(container);
     // Remove all rendered cell elements from the DOM

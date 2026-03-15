@@ -156,7 +156,16 @@ export const createExpandIcon = (
 export const updateExpandIconState = (cellElement: HTMLElement, isExpanded: boolean): void => {
   const iconContainer = cellElement.querySelector(".st-expand-icon-container");
   if (!iconContainer || !(iconContainer instanceof HTMLElement)) return;
-  iconContainer.classList.toggle("expanded", isExpanded);
-  iconContainer.classList.toggle("collapsed", !isExpanded);
-  iconContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
+  const currentlyExpanded = iconContainer.classList.contains("expanded");
+  if (currentlyExpanded === isExpanded) return;
+
+  // Defer class toggle so the browser paints the current state first, then we apply the new state
+  // and the CSS transition runs. Use double rAF so the first paint has committed.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      iconContainer.classList.toggle("expanded", isExpanded);
+      iconContainer.classList.toggle("collapsed", !isExpanded);
+      iconContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
+    });
+  });
 };

@@ -796,11 +796,10 @@ export class SectionRenderer {
         cleanupHeaderCellRendering(section);
       });
     } else if (type === "body") {
+      // Only clear the calculated cells cache so we recompute the cell list (e.g. after expand/collapse).
+      // Do NOT clear rendered cell elements: renderBodyCells will update existing cells in place
+      // (so expand icon can animate) and remove only cells no longer visible.
       this.bodyCellsCache.clear();
-      // Clear rendered cell elements from all body sections
-      this.bodySections.forEach((section) => {
-        cleanupBodyCellRendering(section);
-      });
     } else if (type === "header") {
       this.headerCellsCache.clear();
       // Clear rendered cell elements from all header sections
@@ -809,13 +808,11 @@ export class SectionRenderer {
       });
     } else if (type === "context") {
       this.contextCache.clear();
-      // Context cache affects both headers (sort indicators) and body (selection state)
-      // Clear rendered elements from both to force re-render with new context
+      // Clear header rendered elements so sort indicators etc. update.
+      // Do NOT clear body rendered elements: renderBodyCells will update existing cells
+      // in place (e.g. selection classes, expand icon state) so expand icon can animate.
       this.headerSections.forEach((section) => {
         cleanupHeaderCellRendering(section);
-      });
-      this.bodySections.forEach((section) => {
-        cleanupBodyCellRendering(section);
       });
     }
   }
