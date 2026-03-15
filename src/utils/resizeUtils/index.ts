@@ -13,8 +13,6 @@ import { calculateMaxHeaderWidth } from "./maxWidth";
 import { handleParentHeaderResize } from "./parentHeaderResize";
 import { handleResizeWithAutoExpand } from "./autoExpandResize";
 
-export { recalculateAllSectionWidths, handleResizeWithAutoExpand };
-
 /**
  * Handler for when resize dragging starts
  */

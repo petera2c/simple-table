@@ -2,7 +2,6 @@ import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 import { CustomTheme } from "../../types/CustomTheme";
 import { FilterCondition } from "../../types/FilterTypes";
-import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { SectionRenderer } from "./SectionRenderer";
 import { HeaderRenderContext } from "../../utils/headerCellRenderer";
 import { CellRenderContext } from "../../utils/bodyCellRenderer";
@@ -22,6 +21,7 @@ import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
+import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 
 export interface TableRendererDeps {
   config: SimpleTableConfig;
@@ -229,22 +229,24 @@ export class TableRenderer {
               deps.onRender();
             }
           : (value: any) => {},
-      setSelectedCells:
-        deps.selectionManager
-          ? (value: Set<string> | ((prev: Set<string>) => Set<string>)) => {
-              const prev = deps.selectionManager!.getSelectedCells();
-              const next = typeof value === "function" ? value(prev) : value;
-              deps.selectionManager!.setSelectedCells(next instanceof Set ? next : new Set());
-              deps.onRender?.();
-            }
-          : (value: any) => {},
-      setInitialFocusedCell:
-        deps.selectionManager
-          ? (cell: { rowIndex: number; colIndex: number; rowId: string } | null) => {
-              deps.selectionManager!.setInitialFocusedCell(cell ?? null);
-              deps.onRender?.();
-            }
-          : (cell: any) => {},
+      setSelectedCells: deps.selectionManager
+        ? (value: Set<string> | ((prev: Set<string>) => Set<string>)) => {
+            const prev = deps.selectionManager!.getSelectedCells();
+            const next = typeof value === "function" ? value(prev) : value;
+            deps.selectionManager!.setSelectedCells(
+              next instanceof Set ? next : new Set(),
+            );
+            deps.onRender?.();
+          }
+        : (value: any) => {},
+      setInitialFocusedCell: deps.selectionManager
+        ? (
+            cell: { rowIndex: number; colIndex: number; rowId: string } | null,
+          ) => {
+            deps.selectionManager!.setInitialFocusedCell(cell ?? null);
+            deps.onRender?.();
+          }
+        : (cell: any) => {},
       areAllRowsSelected: () =>
         deps.rowSelectionManager?.areAllRowsSelected() ?? false,
       draggedHeaderRef: deps.draggedHeaderRef,

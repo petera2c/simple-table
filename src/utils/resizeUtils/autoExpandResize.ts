@@ -1,7 +1,10 @@
 import type HeaderObject from "../../types/HeaderObject";
 import type { Pinned } from "../../types/Pinned";
 import { getAllVisibleLeafHeaders } from "../headerWidthUtils";
-import { MIN_COLUMN_WIDTH, getMaxPinnedSectionWidth } from "../../consts/column-constraints";
+import {
+  MIN_COLUMN_WIDTH,
+  getMaxPinnedSectionWidth,
+} from "../../consts/column-constraints";
 import { distributeCompensationProportionally } from "./compensation";
 
 /**
@@ -11,7 +14,9 @@ import { distributeCompensationProportionally } from "./compensation";
 export const handleResizeWithAutoExpand = ({
   childrenToResize = [],
   collapsedHeaders,
+  containerWidth,
   delta,
+  headers,
   initialWidthsMap,
   isParentResize = false,
   resizedHeader,
@@ -20,12 +25,12 @@ export const handleResizeWithAutoExpand = ({
   sectionHeaders,
   sectionWidth,
   startWidth,
-  headers,
-  containerWidth,
 }: {
   childrenToResize?: HeaderObject[];
   collapsedHeaders?: Set<string>;
+  containerWidth: number;
   delta: number;
+  headers: HeaderObject[];
   initialWidthsMap: Map<string, number>;
   isParentResize?: boolean;
   resizedHeader: HeaderObject;
@@ -34,9 +39,18 @@ export const handleResizeWithAutoExpand = ({
   sectionHeaders: HeaderObject[];
   sectionWidth: number;
   startWidth: number;
-  headers: HeaderObject[];
-  containerWidth: number;
 }): void => {
+  console.log("\n");
+  console.log("containerWidth", containerWidth);
+  console.log("delta", delta);
+  console.log("sectionWidth", sectionWidth);
+  console.log("startWidth", startWidth);
+  console.log("initialWidthsMap", JSON.stringify(initialWidthsMap));
+  console.log("headers", JSON.stringify(headers));
+  console.log("childrenToResize", JSON.stringify(childrenToResize));
+  console.log("collapsedHeaders", JSON.stringify(collapsedHeaders));
+  console.log("rootPinned", rootPinned);
+  console.log("sectionHeaders", JSON.stringify(sectionHeaders));
   // For pinned sections, clamp delta to prevent exceeding max section width
   // This prevents the drag from causing unwanted auto-scaling of other columns
   let clampedDelta = delta;
@@ -119,7 +133,9 @@ export const handleResizeWithAutoExpand = ({
     );
 
     const effectiveSectionWidth =
-      sectionWidth > 0 ? Math.max(sectionWidth, currentTotalWidth) : currentTotalWidth + Math.abs(delta) + 1;
+      sectionWidth > 0
+        ? Math.max(sectionWidth, currentTotalWidth)
+        : currentTotalWidth + Math.abs(delta) + 1;
 
     if (delta > 0) {
       // GROWING parent: Check if we need to shrink other columns
@@ -134,7 +150,10 @@ export const handleResizeWithAutoExpand = ({
           // We would exceed effective section width
           needsCompensation = true;
 
-          const maxGrowthToFit = Math.max(0, effectiveSectionWidth - currentTotalWidth);
+          const maxGrowthToFit = Math.max(
+            0,
+            effectiveSectionWidth - currentTotalWidth,
+          );
           // Calculate max possible shrinkage
           const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
             const initialWidth =
@@ -266,7 +285,9 @@ export const handleResizeWithAutoExpand = ({
 
   // Use effective section width: never compress below current total; when unknown (0) allow growth without shrinking others
   const effectiveSectionWidth =
-    sectionWidth > 0 ? Math.max(sectionWidth, currentTotalWidth) : currentTotalWidth + Math.abs(delta) + 1;
+    sectionWidth > 0
+      ? Math.max(sectionWidth, currentTotalWidth)
+      : currentTotalWidth + Math.abs(delta) + 1;
 
   if (delta > 0) {
     // GROWING: Check if we need to shrink other columns
@@ -280,7 +301,10 @@ export const handleResizeWithAutoExpand = ({
 
     // We would exceed effective section width, so we need to shrink others
     // Limit growth to what keeps total at or below effectiveSectionWidth
-    const maxGrowthToFit = Math.max(0, effectiveSectionWidth - currentTotalWidth);
+    const maxGrowthToFit = Math.max(
+      0,
+      effectiveSectionWidth - currentTotalWidth,
+    );
     // Calculate how much others can shrink
     const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;

@@ -13,7 +13,6 @@ import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows } from "../../utils/rowFlattening";
 import { processRows } from "../../utils/rowProcessing";
-import { recalculateAllSectionWidths } from "../../utils/resizeUtils";
 import { calculateContentHeight } from "../../hooks/contentHeight";
 import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
@@ -21,7 +20,11 @@ import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import { normalizeHeaderWidths } from "../../utils/headerWidthUtils";
 import { applyAutoScaleToHeaders } from "../../managers/AutoScaleManager";
 import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
-import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/TableInitializer";
+import {
+  MergedColumnEditorConfig,
+  ResolvedIcons,
+} from "../initialization/TableInitializer";
+import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 
 export interface RenderContext {
   cellRegistry: Map<string, any>;
@@ -122,7 +125,9 @@ export class RenderOrchestrator {
     let processedHeaders = [...headers];
 
     if (config.enableRowSelection && !headers?.[0]?.isSelectionColumn) {
-      const selectionHeader = createSelectionHeader(customTheme.selectionColumnWidth);
+      const selectionHeader = createSelectionHeader(
+        customTheme.selectionColumnWidth,
+      );
       processedHeaders = [selectionHeader, ...processedHeaders];
     }
 
@@ -161,7 +166,9 @@ export class RenderOrchestrator {
 
     // Capture horizontal scroll at start so we can reapply after header/body render (DOM updates can reset it)
     const savedScrollLeft =
-      context.mainBodyRef?.current?.scrollLeft ?? context.mainHeaderRef?.current?.scrollLeft ?? 0;
+      context.mainBodyRef?.current?.scrollLeft ??
+      context.mainHeaderRef?.current?.scrollLeft ??
+      0;
 
     let dimensionState = context.dimensionManager.getState();
 
@@ -170,10 +177,14 @@ export class RenderOrchestrator {
       context.mainBodyRef?.current?.clientWidth ||
       (context.mainBodyRef?.current?.parentElement?.clientWidth ?? 0);
     if (fallbackContainerWidth > 0 && dimensionState.containerWidth === 0) {
-      dimensionState = { ...dimensionState, containerWidth: fallbackContainerWidth };
+      dimensionState = {
+        ...dimensionState,
+        containerWidth: fallbackContainerWidth,
+      };
     }
 
-    const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = dimensionState;
+    const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } =
+      dimensionState;
 
     let effectiveHeaders = this.computeEffectiveHeaders(
       context.headers,
@@ -193,12 +204,17 @@ export class RenderOrchestrator {
       });
     }
 
-    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
-      recalculateAllSectionWidths({
-        headers: effectiveHeaders,
-        containerWidth,
-        collapsedHeaders: context.collapsedHeaders,
-      });
+    const {
+      mainWidth,
+      leftWidth,
+      rightWidth,
+      leftContentWidth,
+      rightContentWidth,
+    } = recalculateAllSectionWidths({
+      headers: effectiveHeaders,
+      containerWidth,
+      collapsedHeaders: context.collapsedHeaders,
+    });
 
     const mainSectionContainerWidth = containerWidth - leftWidth - rightWidth;
 
@@ -254,7 +270,9 @@ export class RenderOrchestrator {
     }
 
     if (context.internalIsLoading && effectiveRows.length === 0) {
-      let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
+      let rowsToShow = context.config.shouldPaginate
+        ? (context.config.rowsPerPage ?? 10)
+        : 10;
       if (state.isMainSectionScrollable) {
         rowsToShow += 1;
       }
@@ -278,9 +296,12 @@ export class RenderOrchestrator {
       this.flattenedRowsCache &&
       this.flattenedRowsCache.deps.rowsRef === effectiveRows &&
       this.flattenedRowsCache.deps.quickFilterKey === quickFilterKey &&
-      this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
-      this.flattenedRowsCache.deps.collapsedRowsSize === context.collapsedRows.size &&
-      this.flattenedRowsCache.deps.expandedDepthsSize === context.expandedDepths.size &&
+      this.flattenedRowsCache.deps.expandedRowsSize ===
+        context.expandedRows.size &&
+      this.flattenedRowsCache.deps.collapsedRowsSize ===
+        context.collapsedRows.size &&
+      this.flattenedRowsCache.deps.expandedDepthsSize ===
+        context.expandedDepths.size &&
       this.flattenedRowsCache.deps.sortKey === sortKey &&
       this.flattenedRowsCache.deps.filterKey === filterKey;
 
@@ -348,7 +369,8 @@ export class RenderOrchestrator {
       rowHeight: context.customTheme.rowHeight,
       shouldPaginate: context.config.shouldPaginate ?? false,
       rowsPerPage: context.config.rowsPerPage ?? 10,
-      totalRowCount: context.config.totalRowCount ?? flattenResult.paginatableRows.length,
+      totalRowCount:
+        context.config.totalRowCount ?? flattenResult.paginatableRows.length,
       headerHeight: calculatedHeaderHeight,
       footerHeight:
         context.config.shouldPaginate && !context.config.hideFooter
@@ -385,7 +407,12 @@ export class RenderOrchestrator {
       effectiveHeaders,
       context,
     );
-    this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context);
+    this.renderBody(
+      elements.bodyContainer,
+      processedResult,
+      effectiveHeaders,
+      context,
+    );
 
     // Register header and body panes with section scroll controller, seed state from current scroll, then restore
     this.registerSectionPanes(context);
@@ -393,10 +420,16 @@ export class RenderOrchestrator {
     if (controller) {
       controller.setSectionScrollLeft("main", savedScrollLeft);
       if (context.pinnedLeftRef.current != null) {
-        controller.setSectionScrollLeft("pinned-left", context.pinnedLeftRef.current.scrollLeft);
+        controller.setSectionScrollLeft(
+          "pinned-left",
+          context.pinnedLeftRef.current.scrollLeft,
+        );
       }
       if (context.pinnedRightRef.current != null) {
-        controller.setSectionScrollLeft("pinned-right", context.pinnedRightRef.current.scrollLeft);
+        controller.setSectionScrollLeft(
+          "pinned-right",
+          context.pinnedRightRef.current.scrollLeft,
+        );
       }
       controller.restoreAll();
     }
@@ -438,7 +471,12 @@ export class RenderOrchestrator {
     if (context.config.hideHeader) return;
 
     const deps = this.buildRendererDeps(effectiveHeaders, context);
-    this.tableRenderer.renderHeader(headerContainer, calculatedHeaderHeight, maxHeaderDepth, deps);
+    this.tableRenderer.renderHeader(
+      headerContainer,
+      calculatedHeaderHeight,
+      maxHeaderDepth,
+      deps,
+    );
   }
 
   private renderBody(
@@ -522,10 +560,18 @@ export class RenderOrchestrator {
     if (!controller) return;
 
     if (context.pinnedLeftHeaderRef.current) {
-      controller.registerPane("pinned-left", context.pinnedLeftHeaderRef.current, "header");
+      controller.registerPane(
+        "pinned-left",
+        context.pinnedLeftHeaderRef.current,
+        "header",
+      );
     }
     if (context.pinnedLeftRef.current) {
-      controller.registerPane("pinned-left", context.pinnedLeftRef.current, "body");
+      controller.registerPane(
+        "pinned-left",
+        context.pinnedLeftRef.current,
+        "body",
+      );
     }
     if (context.mainHeaderRef.current) {
       controller.registerPane("main", context.mainHeaderRef.current, "header");
@@ -534,14 +580,25 @@ export class RenderOrchestrator {
       controller.registerPane("main", context.mainBodyRef.current, "body");
     }
     if (context.pinnedRightHeaderRef.current) {
-      controller.registerPane("pinned-right", context.pinnedRightHeaderRef.current, "header");
+      controller.registerPane(
+        "pinned-right",
+        context.pinnedRightHeaderRef.current,
+        "header",
+      );
     }
     if (context.pinnedRightRef.current) {
-      controller.registerPane("pinned-right", context.pinnedRightRef.current, "body");
+      controller.registerPane(
+        "pinned-right",
+        context.pinnedRightRef.current,
+        "body",
+      );
     }
   }
 
-  private buildRendererDeps(effectiveHeaders: HeaderObject[], context: RenderContext) {
+  private buildRendererDeps(
+    effectiveHeaders: HeaderObject[],
+    context: RenderContext,
+  ) {
     return {
       config: context.config,
       customTheme: context.customTheme,
