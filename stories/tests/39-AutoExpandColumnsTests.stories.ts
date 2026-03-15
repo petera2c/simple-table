@@ -236,6 +236,65 @@ const resizeColumn = async (
   return { initialWidth, finalWidth };
 };
 
+/** Resize in small steps with delays to simulate slow user drag. */
+const resizeColumnSlow = async (
+  headerCell: Element,
+  resizeAmount: number,
+  steps = 8,
+  stepDelayMs = 35,
+): Promise<void> => {
+  const doc = headerCell.ownerDocument;
+  const resizeHandle = headerCell.querySelector(
+    ".st-header-resize-handle-container",
+  );
+  if (!resizeHandle) throw new Error("Resize handle not found");
+  const rect = resizeHandle.getBoundingClientRect();
+  const startX = rect.left + 5;
+  const endX = startX + resizeAmount;
+  const y = rect.top + 5;
+  resizeHandle.dispatchEvent(
+    new MouseEvent("mousedown", { clientX: startX, clientY: y, bubbles: true, cancelable: true }),
+  );
+  for (let i = 1; i <= steps; i++) {
+    const x = startX + (resizeAmount * i) / steps;
+    doc.dispatchEvent(
+      new MouseEvent("mousemove", { clientX: x, clientY: y, bubbles: true, cancelable: true }),
+    );
+    await new Promise((r) => setTimeout(r, stepDelayMs));
+  }
+  doc.dispatchEvent(
+    new MouseEvent("mouseup", { clientX: endX, clientY: y, bubbles: true, cancelable: true }),
+  );
+  await new Promise((r) => setTimeout(r, 80));
+};
+
+/** Assert total header width matches container and each column is at least min width. */
+function assertColumnWidthsSane(
+  canvasElement: HTMLElement,
+  containerWidthFallback: number,
+  tolerance: number,
+): void {
+  const container = canvasElement.querySelector(".st-body-container") as HTMLElement | null;
+  const cw = container?.clientWidth ?? containerWidthFallback;
+  const headerCells = getHeaderCells(canvasElement);
+  const totalW = headerCells.reduce(
+    (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+    0,
+  );
+  expect(
+    Math.abs(totalW - cw),
+    `Total header width ${totalW} should be within ${tolerance} of container ${cw}`,
+  ).toBeLessThanOrEqual(tolerance);
+  headerCells.forEach((c, i) => {
+    const w = parsePixelWidth(getColumnWidth(c));
+    expect(
+      w,
+      `Column ${i} width ${w} should be >= ${MIN_COLUMN_WIDTH - 2}`,
+    ).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+    expect(Number.isNaN(w), `Column ${i} width should not be NaN`).toBe(false);
+  });
+}
+
 const openColumnEditor = async (
   canvasElement: HTMLElement,
 ): Promise<Element> => {
@@ -1298,6 +1357,90 @@ export const AutoExpandResizeMultipleColumns = {
     expect(Math.abs(totalW - containerWidth)).toBeLessThanOrEqual(
       WIDTH_TOLERANCE_AFTER_RESIZE,
     );
+  },
+};
+
+/** Stress test: extreme resizes – shrink every column to min, then one as wide as possible, then mix. */
+export const AutoExpandResizeMultipleColumnsStress = {
+  parameters: { tags: ["auto-expand-resize-multiple-columns-stress"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "storeName",
+        label: "Store Name",
+        width: 200,
+        type: "string",
+      },
+      { accessor: "city", label: "City", width: 150, type: "string" },
+      { accessor: "squareFootage", label: "Sq Ft", width: 150, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "700px";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 700;
+
+    // Only resize columns that have a handle (not the last column: Sq Ft)
+    // Phase 1: Make every column as small as possible (big negative drags)
+    // Phase 2: Make one column as wide as possible (big positive)
+    // Phase 3: Resize others – mix of extreme movements
+    const steps: { label: string; delta: number }[] = [
+      // Phase 1 – shrink each to minimum
+      { label: "ID", delta: -90 },
+      { label: "ID", delta: -80 },
+      { label: "Store Name", delta: -120 },
+      { label: "Store Name", delta: -100 },
+      { label: "City", delta: -100 },
+      { label: "City", delta: -80 },
+      // Phase 2 – make one column as wide as possible
+      { label: "Store Name", delta: 280 },
+      // Phase 3 – extreme mix: shrink the wide one, grow others, then vary
+      { label: "Store Name", delta: -150 },
+      { label: "ID", delta: 100 },
+      { label: "City", delta: 80 },
+      { label: "ID", delta: -60 },
+      { label: "Store Name", delta: 120 },
+      { label: "City", delta: -70 },
+      { label: "ID", delta: 90 },
+      { label: "Store Name", delta: -100 },
+      { label: "City", delta: 100 },
+      { label: "ID", delta: -80 },
+      { label: "Store Name", delta: 80 },
+      { label: "City", delta: -50 },
+      // Final step: make City as wide as it can
+      { label: "City", delta: 300 },
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      const { label, delta } = steps[i];
+      const header = findHeaderCellByLabel(canvasElement, label);
+      expect(header, `Step ${i + 1}: header "${label}" not found`).toBeTruthy();
+      await resizeColumnSlow(header!, delta, 8, 35);
+      await new Promise((r) => setTimeout(r, 120));
+      await waitForResizeSettle(
+        canvasElement,
+        WIDTH_TOLERANCE_AFTER_RESIZE,
+        containerWidth,
+        800,
+      );
+      assertColumnWidthsSane(
+        canvasElement,
+        containerWidth,
+        WIDTH_TOLERANCE_AFTER_RESIZE,
+      );
+    }
   },
 };
 

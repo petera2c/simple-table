@@ -2,7 +2,7 @@
  * AggregateExample – vanilla port of React AggregateExample.
  * Same headers, data, and props as React version.
  */
-import type { HeaderObject } from "../../src/index";
+import type { CellValue, HeaderObject } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { AGGREGATE_ROWS } from "../data/aggregate-data";
@@ -33,7 +33,7 @@ const HEADERS: HeaderObject[] = [
     type: "string",
     aggregation: {
       type: "sum",
-      parseValue: (value: string) => {
+      parseValue: (value: CellValue) => {
         const n = parseFloat(String(value).replace(/[$K]/g, ""));
         return isNaN(n) ? 0 : n;
       },

@@ -12,7 +12,7 @@ import { HeightOffsets } from "../utils/infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
 
 interface UseTableRowProcessingProps {
-  /** Already flattened rows from useFlattenedRows */
+  /** Flattened rows for viewport calculation */
   flattenedRows: TableRow[];
   /** Rows that should count towards pagination (excludes nested grids, state indicators) */
   paginatableRows: TableRow[];
