@@ -458,6 +458,18 @@ export class SimpleTableVanilla {
       onRender: () => this.render("resizeHandler-onRender"),
       setIsResizing: (value: boolean) => {
         this.isResizing = value;
+        if (this.autoScaleManager && value === false) {
+          const refs = this.domManager.getRefs();
+          const containerWidth =
+            refs.tableBodyContainerRef?.current?.clientWidth ??
+            refs.mainBodyRef?.current?.clientWidth ??
+            this.dimensionManager?.getState().containerWidth ??
+            0;
+          this.autoScaleManager.updateConfig({
+            isResizing: false,
+            containerWidth,
+          });
+        }
       },
       setHeaders: (headers: HeaderObject[]) => {
         this.headers = deepClone(headers);
