@@ -29,20 +29,13 @@ export const createEditableInput = (
     if (newLabel !== header.label) {
       updateHeaderLabel(newLabel);
     }
-    
-    const textSpan = document.createElement("span");
-    textSpan.className = `st-header-label-text ${
-      header.align === "right"
-        ? "right-aligned"
-        : header.align === "center"
-          ? "center-aligned"
-          : "left-aligned"
-    }`;
-    textSpan.textContent = newLabel || header.label;
-    
-    labelContainer.innerHTML = "";
-    labelContainer.appendChild(textSpan);
-    
+
+    const parent = labelContainer.parentElement;
+    if (parent) {
+      const newLabelContent = createLabelContent(header, context, newLabel);
+      parent.replaceChild(newLabelContent, labelContainer);
+    }
+
     if (context.headerRegistry && !header.isSelectionColumn) {
       const key = String(header.accessor);
       const entry = context.headerRegistry.get(key);
@@ -74,10 +67,12 @@ export const createEditableInput = (
 
 export const createLabelContent = (
   header: HeaderObject,
-  context: HeaderRenderContext
+  context: HeaderRenderContext,
+  labelOverride?: string
 ): HTMLElement => {
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
-  
+  const displayLabel = labelOverride !== undefined ? labelOverride : (header.label || "");
+
   const labelTextSpan = document.createElement("span");
   labelTextSpan.className = `st-header-label-text ${
     header.align === "right"
@@ -86,17 +81,17 @@ export const createLabelContent = (
         ? "center-aligned"
         : "left-aligned"
   }`;
-  
+
   if (isSelectionColumn) {
     const checkbox = createSelectionCheckbox(context);
     labelTextSpan.appendChild(checkbox);
   } else {
-    labelTextSpan.textContent = header.label || "";
+    labelTextSpan.textContent = displayLabel;
   }
   
   if (header.tooltip && !isSelectionColumn) {
-    labelTextSpan.setAttribute("title", header.tooltip);
-    
+    // Do not set native title - we show a custom .st-tooltip div instead.
+    // Setting both would show two tooltips (browser default + our styled one).
     let tooltipElement: HTMLElement | null = null;
     let tooltipTimeout: NodeJS.Timeout | null = null;
     
@@ -129,7 +124,8 @@ export const createLabelContent = (
           tooltipElement.style.top = `${top}px`;
           tooltipElement.style.left = `${left}px`;
           
-          document.body.appendChild(tooltipElement);
+          const tableRoot = labelTextSpan.closest(".simple-table-root") as HTMLElement | null;
+          (tableRoot || document.body).appendChild(tooltipElement);
         }
       }, 500);
     };
@@ -140,7 +136,7 @@ export const createLabelContent = (
         tooltipTimeout = null;
       }
       if (tooltipElement) {
-        document.body.removeChild(tooltipElement);
+        tooltipElement.parentElement?.removeChild(tooltipElement);
         tooltipElement = null;
       }
     };

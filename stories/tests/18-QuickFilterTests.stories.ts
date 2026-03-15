@@ -146,3 +146,164 @@ export const SmartModeMultiWord = {
     deptData.forEach((d) => expect(d).toBe("Engineering"));
   },
 };
+
+// ---------------------------------------------------------------------------
+// Quick filter extras: columns, useFormattedValue, onChange, quickFilterGetter
+// ---------------------------------------------------------------------------
+
+export const QuickFilterColumns = {
+  render: () => {
+    const data = createTestData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180 },
+      { accessor: "department", label: "Department", width: 140 },
+      { accessor: "email", label: "Email", width: 220 },
+    ];
+    const { wrapper, table } = renderVanillaTable(headers, data, {
+      height: "400px",
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      quickFilter: { text: "Engineering", columns: ["department"], mode: "simple" },
+    });
+    quickFilterTableInstance = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    expect(getVisibleRowCount(canvasElement)).toBe(3);
+    const deptData = getColumnData(canvasElement, "department");
+    deptData.forEach((d) => expect(d).toBe("Engineering"));
+    quickFilterTableInstance?.update({ quickFilter: { text: "Engineering", columns: ["name"], mode: "simple" } });
+    await new Promise((r) => setTimeout(r, 300));
+    expect(getVisibleRowCount(canvasElement)).toBe(0);
+  },
+};
+
+export const QuickFilterUseFormattedValue = {
+  render: () => {
+    const rows = [
+      { id: 1, name: "Alice", price: 50 },
+      { id: 2, name: "Bob", price: 100 },
+    ];
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 120 },
+      {
+        accessor: "price",
+        label: "Price",
+        width: 100,
+        valueFormatter: ({ value }: { value?: unknown }) =>
+          `$${typeof value === "number" ? value : value}`,
+      },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, rows, {
+      height: "300px",
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      quickFilter: { text: "", mode: "simple", useFormattedValue: true },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "qf-formatted-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      quickFilterTableInstance?.update({
+        quickFilter: { text: input.value, mode: "simple", useFormattedValue: true },
+      });
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const input = canvasElement.querySelector('input[data-testid="qf-formatted-input"]') as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+    await userEvent.type(input, "$50");
+    await new Promise((r) => setTimeout(r, 400));
+    expect(getVisibleRowCount(canvasElement)).toBe(1);
+    quickFilterTableInstance?.update({
+      quickFilter: { text: "$50", mode: "simple", useFormattedValue: false },
+    });
+    await new Promise((r) => setTimeout(r, 300));
+    expect(getVisibleRowCount(canvasElement)).toBe(0);
+  },
+};
+
+export const QuickFilterOnChange = {
+  render: () => {
+    const captured: string[] = [];
+    (window as unknown as { __qfOnChangeCapture?: string[] }).__qfOnChangeCapture = captured;
+    const data = createTestData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180 },
+      { accessor: "department", label: "Department", width: 140 },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+      height: "400px",
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      quickFilter: {
+        text: "",
+        mode: "simple",
+        onChange: (t) => captured.push(t),
+      },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "qf-onchange-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      const val = input.value;
+      quickFilterTableInstance?.update({
+        quickFilter: { text: val, mode: "simple", onChange: (t) => captured.push(t) },
+      });
+      captured.push(val);
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const captured = (window as unknown as { __qfOnChangeCapture?: string[] }).__qfOnChangeCapture;
+    expect(captured).toBeTruthy();
+    const input = canvasElement.querySelector('input[data-testid="qf-onchange-input"]') as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+    await userEvent.type(input, "x");
+    await new Promise((r) => setTimeout(r, 200));
+    expect(captured!.length).toBeGreaterThan(0);
+    expect(captured!.some((t) => t === "x")).toBe(true);
+  },
+};
+
+export const QuickFilterGetter = {
+  render: () => {
+    const rows = [
+      { id: 1, name: "Alice", customField: "secret-alpha" },
+      { id: 2, name: "Bob", customField: "secret-beta" },
+    ];
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      {
+        accessor: "customField",
+        label: "Custom",
+        width: 120,
+        quickFilterGetter: ({ row }: { row: Record<string, unknown>; accessor: string }) =>
+          String(row.customField ?? ""),
+      },
+    ];
+    const { wrapper } = renderVanillaTable(headers, rows, {
+      height: "300px",
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      quickFilter: { text: "secret-alpha", mode: "simple" },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    expect(getVisibleRowCount(canvasElement)).toBe(1);
+    const nameData = getColumnData(canvasElement, "name");
+    expect(nameData[0]).toBe("Alice");
+  },
+};

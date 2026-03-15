@@ -647,3 +647,75 @@ export const MultipleCsvExports = {
     }
   },
 };
+
+// ---------------------------------------------------------------------------
+// excludeFromRender: column not in DOM, not in column editor, but in CSV
+// ---------------------------------------------------------------------------
+
+const excludeFromRenderData = () => [
+  { id: 1, name: "Alice", secret: "s1" },
+  { id: 2, name: "Bob", secret: "s2" },
+];
+
+export const ExcludeFromRenderNotInDOM = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "secret", label: "Secret", width: 100, type: "string", excludeFromRender: true },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, excludeFromRenderData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const secretCells = canvasElement.querySelectorAll('.st-cell[data-accessor="secret"]');
+    const secretHeaders = canvasElement.querySelectorAll('.st-header-cell[data-accessor="secret"]');
+    expect(secretCells.length).toBe(0);
+    expect(secretHeaders.length).toBe(0);
+    expect(canvasElement.querySelector('.st-cell[data-accessor="id"]')).toBeTruthy();
+    expect(canvasElement.querySelector('.st-cell[data-accessor="name"]')).toBeTruthy();
+  },
+};
+
+export const ExcludeFromRenderIncludedInCSV = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "secret", label: "Secret", width: 100, type: "string", excludeFromRender: true },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, excludeFromRenderData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+    });
+    exportTableApi = table.getAPI();
+    const btn = document.createElement("button");
+    btn.id = "export-exclude-render";
+    btn.textContent = "Export CSV";
+    btn.style.marginBottom = "10px";
+    btn.style.padding = "8px 16px";
+    btn.addEventListener("click", () => exportTableApi?.exportToCSV());
+    wrapper.insertBefore(btn, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const mock = mockCsvDownload();
+    try {
+      const btn = canvasElement.querySelector("#export-exclude-render") as HTMLButtonElement;
+      expect(btn).toBeTruthy();
+      btn.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const csvContent = mock.getLastCsvContent();
+      expect(csvContent).toBeTruthy();
+      expect(csvContent).toContain("Secret");
+      expect(csvContent).toContain("s1");
+    } finally {
+      mock.reset();
+    }
+  },
+};

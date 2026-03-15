@@ -10,7 +10,7 @@ import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
-  title: "Tests/35 - Hide Header / Footer",
+  title: "Tests/35 - Hide Header and Footer",
   parameters: {
     layout: "padded",
     docs: {

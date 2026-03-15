@@ -426,3 +426,32 @@ export const ColumnEditorOpenClose = {
     expect(canvasElement.querySelector(".st-column-editor-popout.open")).toBeFalsy();
   },
 };
+
+// ---------------------------------------------------------------------------
+// excludeFromRender: column not in column editor list
+// ---------------------------------------------------------------------------
+
+export const ExcludeFromRenderNotInColumnEditor = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "secret", label: "Secret", width: 100, type: "string", excludeFromRender: true },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const popout = await openColumnEditor(canvasElement);
+    const items = getColumnCheckboxItems(popout);
+    const labels = items.map((item) => getColumnLabelFromCheckbox(item));
+    expect(labels).not.toContain("Secret");
+    expect(labels).toContain("ID");
+    expect(labels).toContain("Name");
+  },
+};

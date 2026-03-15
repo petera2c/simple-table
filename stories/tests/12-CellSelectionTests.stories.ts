@@ -596,3 +596,105 @@ export const SelectionFirstCellAfterScroll = {
     expect(getSelectedFirstCellCount(canvasElement)).toBe(1);
   },
 };
+
+// ---------------------------------------------------------------------------
+// copyHeadersToClipboard
+// ---------------------------------------------------------------------------
+
+const simpleData = () => [
+  { id: 1, name: "Alice", score: 90 },
+  { id: 2, name: "Bob", score: 85 },
+];
+
+export const CopySelectionWithHeaders = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      { accessor: "score", label: "Score", width: 80, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, simpleData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      selectableCells: true,
+      copyHeadersToClipboard: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    let copiedText = "";
+    const originalWrite = navigator.clipboard?.writeText;
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      (navigator.clipboard as { writeText: (t: string) => Promise<void> }).writeText = (t: string) => {
+        copiedText = t;
+        return Promise.resolve();
+      };
+    }
+    await clickCell(canvasElement, 0, 0);
+    expect(isCellSelected(canvasElement, 0, 0)).toBe(true);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "c",
+        code: "KeyC",
+        metaKey: true,
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+    await new Promise((r) => setTimeout(r, 100));
+    if (navigator.clipboard && originalWrite) {
+      (navigator.clipboard as { writeText: (t: string) => Promise<void> }).writeText = originalWrite;
+    }
+    expect(copiedText).toBeTruthy();
+    const firstLine = copiedText.split("\n")[0];
+    expect(firstLine).toContain("ID");
+    expect(firstLine).toContain("Name");
+    expect(copiedText.split("\n").length).toBeGreaterThanOrEqual(2);
+  },
+};
+
+export const CopySelectionWithoutHeaders = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, simpleData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      selectableCells: true,
+      copyHeadersToClipboard: false,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    let copiedText = "";
+    const originalWrite = navigator.clipboard?.writeText;
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      (navigator.clipboard as { writeText: (t: string) => Promise<void> }).writeText = (t: string) => {
+        copiedText = t;
+        return Promise.resolve();
+      };
+    }
+    await clickCell(canvasElement, 0, 1);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "c",
+        code: "KeyC",
+        metaKey: true,
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+    await new Promise((r) => setTimeout(r, 100));
+    if (navigator.clipboard && originalWrite) {
+      (navigator.clipboard as { writeText: (t: string) => Promise<void> }).writeText = originalWrite;
+    }
+    expect(copiedText).toBeTruthy();
+    const firstLine = copiedText.split("\n")[0];
+    expect(firstLine).not.toContain("ID");
+    expect(firstLine).not.toContain("Name");
+  },
+};
