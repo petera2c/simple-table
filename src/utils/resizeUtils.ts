@@ -65,6 +65,22 @@ const updateColumnWidthsInDOM = (
           return showWhen === "parentCollapsed" || showWhen === "always";
         return showWhen === "parentExpanded" || showWhen === "always";
       });
+
+      // singleRowChildren: parent gets its own column, then each child (matches main columnUtils / RenderCells)
+      if (header.singleRowChildren) {
+        const parentWidth =
+          overrideWidths?.get(header.accessor as string) ??
+          (typeof header.width === "number"
+            ? header.width
+            : getHeaderWidthInPixels(header));
+        positions.set(header.accessor, { left: startLeft, width: parentWidth });
+        currentLeft = startLeft + parentWidth;
+        visibleChildren.forEach((child) => {
+          currentLeft = calculateHeaderPositions(child, currentLeft, positions);
+        });
+        return currentLeft;
+      }
+
       visibleChildren.forEach((child) => {
         currentLeft = calculateHeaderPositions(child, currentLeft, positions);
       });

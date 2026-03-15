@@ -12,6 +12,7 @@ import { renderVanillaTable, addParagraph } from "../utils";
 
 const meta: Meta = {
   title: "Tests/20 - Collapsible Columns",
+  tags: ["test", "collapsible-columns"],
   parameters: {
     layout: "padded",
     chromatic: { disableSnapshot: true },
@@ -31,7 +32,9 @@ export default meta;
 // ============================================================================
 
 const getHeaderCells = (canvasElement: HTMLElement): HTMLElement[] => {
-  const container = canvasElement.querySelector(".st-header-main, .st-header-container");
+  const container = canvasElement.querySelector(
+    ".st-header-main, .st-header-container",
+  );
   if (!container) return [];
   return Array.from(container.querySelectorAll(".st-header-cell"));
 };
@@ -40,7 +43,11 @@ const getHeaderCells = (canvasElement: HTMLElement): HTMLElement[] => {
 const getHeaderRowCount = (canvasElement: HTMLElement): number => {
   const cells = getHeaderCells(canvasElement);
   const tops = new Set(
-    cells.map((c) => c.style.top || (c.getAttribute("style")?.match(/top:\s*([\d.]+px?)/)?.[1] ?? "0"))
+    cells.map(
+      (c) =>
+        c.style.top ||
+        (c.getAttribute("style")?.match(/top:\s*([\d.]+px?)/)?.[1] ?? "0"),
+    ),
   );
   return tops.size;
 };
@@ -49,17 +56,17 @@ const getHeaderRowCount = (canvasElement: HTMLElement): number => {
 const getVisibleLeafColumnCount = (canvasElement: HTMLElement): number => {
   const body = canvasElement.querySelector(".st-body-main, .st-body-container");
   if (!body) return 0;
-  const firstRowCells = body.querySelectorAll(".st-cell[data-row-index=\"0\"]");
+  const firstRowCells = body.querySelectorAll('.st-cell[data-row-index="0"]');
   return firstRowCells.length;
 };
 
 /** Find header collapse/expand icon by parent header accessor. */
 const getHeaderCollapseIcon = (
   canvasElement: HTMLElement,
-  parentAccessor: string
+  parentAccessor: string,
 ): HTMLElement | null => {
   const headerCell = canvasElement.querySelector(
-    `.st-header-cell[data-accessor="${parentAccessor}"]`
+    `.st-header-cell[data-accessor="${parentAccessor}"]`,
   );
   if (!headerCell) return null;
   const icon = headerCell.querySelector(".st-expand-icon-container");
@@ -68,7 +75,7 @@ const getHeaderCollapseIcon = (
 
 const clickHeaderCollapseIcon = async (
   canvasElement: HTMLElement,
-  parentAccessor: string
+  parentAccessor: string,
 ): Promise<void> => {
   const icon = getHeaderCollapseIcon(canvasElement, parentAccessor);
   expect(icon).toBeTruthy();
@@ -78,7 +85,12 @@ const clickHeaderCollapseIcon = async (
 
 const getHeaderLabelsInOrder = (canvasElement: HTMLElement): string[] => {
   const cells = getHeaderCells(canvasElement);
-  return cells.map((c) => c.querySelector(".st-header-label-text")?.textContent?.trim() ?? "").filter(Boolean);
+  return cells
+    .map(
+      (c) =>
+        c.querySelector(".st-header-label-text")?.textContent?.trim() ?? "",
+    )
+    .filter(Boolean);
 };
 
 // ============================================================================
@@ -86,8 +98,26 @@ const getHeaderLabelsInOrder = (canvasElement: HTMLElement): string[] => {
 // ============================================================================
 
 const SALES_DATA: Row[] = [
-  { id: 1, name: "Alice", region: "North", q1Sales: 100, q2Sales: 110, q3Sales: 120, q4Sales: 130, totalSales: 460 },
-  { id: 2, name: "Bob", region: "South", q1Sales: 90, q2Sales: 95, q3Sales: 100, q4Sales: 105, totalSales: 390 },
+  {
+    id: 1,
+    name: "Alice",
+    region: "North",
+    q1Sales: 100,
+    q2Sales: 110,
+    q3Sales: 120,
+    q4Sales: 130,
+    totalSales: 460,
+  },
+  {
+    id: 2,
+    name: "Bob",
+    region: "South",
+    q1Sales: 90,
+    q2Sales: 95,
+    q3Sales: 100,
+    q4Sales: 105,
+    totalSales: 390,
+  },
 ];
 
 const currency = ({ value }: { value?: unknown }) =>
@@ -98,6 +128,7 @@ const currency = ({ value }: { value?: unknown }) =>
 // ============================================================================
 
 export const SingleRowChildren_HeaderIsOneRow = {
+  tags: ["single-row-children", "header-layout"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -108,10 +139,34 @@ export const SingleRowChildren_HeaderIsOneRow = {
         collapsible: true,
         singleRowChildren: true,
         children: [
-          { showWhen: "parentExpanded", accessor: "q1Sales", label: "Q1", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q2Sales", label: "Q2", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q3Sales", label: "Q3", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q4Sales", label: "Q4", width: 80, valueFormatter: currency },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q3Sales",
+            label: "Q3",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q4Sales",
+            label: "Q4",
+            width: 80,
+            valueFormatter: currency,
+          },
         ],
       },
     ];
@@ -120,7 +175,10 @@ export const SingleRowChildren_HeaderIsOneRow = {
       height: "300px",
     });
     h2.textContent = "singleRowChildren: header is one row";
-    addParagraph(wrapper, "Quarterly Sales + Q1–Q4 should be on a single header row (not two).");
+    addParagraph(
+      wrapper,
+      "Quarterly Sales + Q1–Q4 should be on a single header row (not two).",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -133,6 +191,7 @@ export const SingleRowChildren_HeaderIsOneRow = {
 };
 
 export const SingleRowChildren_CollapseHidesChildren = {
+  tags: ["single-row-children", "collapse-expand"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -143,10 +202,34 @@ export const SingleRowChildren_CollapseHidesChildren = {
         collapsible: true,
         singleRowChildren: true,
         children: [
-          { showWhen: "parentExpanded", accessor: "q1Sales", label: "Q1", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q2Sales", label: "Q2", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q3Sales", label: "Q3", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q4Sales", label: "Q4", width: 80, valueFormatter: currency },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q3Sales",
+            label: "Q3",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q4Sales",
+            label: "Q4",
+            width: 80,
+            valueFormatter: currency,
+          },
         ],
       },
     ];
@@ -155,7 +238,10 @@ export const SingleRowChildren_CollapseHidesChildren = {
       height: "300px",
     });
     h2.textContent = "singleRowChildren: collapse hides Q1–Q4";
-    addParagraph(wrapper, "Click collapse on Quarterly Sales; only one column (total) should remain for that group.");
+    addParagraph(
+      wrapper,
+      "Click collapse on Quarterly Sales; only one column (total) should remain for that group.",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -169,6 +255,7 @@ export const SingleRowChildren_CollapseHidesChildren = {
 };
 
 export const SingleRowChildren_CollapseIconToggles = {
+  tags: ["single-row-children", "icon-state"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -179,8 +266,18 @@ export const SingleRowChildren_CollapseIconToggles = {
         collapsible: true,
         singleRowChildren: true,
         children: [
-          { showWhen: "parentExpanded", accessor: "q1Sales", label: "Q1", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q2Sales", label: "Q2", width: 80 },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+          },
         ],
       },
     ];
@@ -189,7 +286,10 @@ export const SingleRowChildren_CollapseIconToggles = {
       height: "300px",
     });
     h2.textContent = "singleRowChildren: icon state toggles";
-    addParagraph(wrapper, "Icon should be expanded then collapsed then expanded.");
+    addParagraph(
+      wrapper,
+      "Icon should be expanded then collapsed then expanded.",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -213,6 +313,7 @@ export const SingleRowChildren_CollapseIconToggles = {
 // ============================================================================
 
 export const MultiRowHeader_TwoRows = {
+  tags: ["multi-row-header", "header-layout"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -222,10 +323,34 @@ export const MultiRowHeader_TwoRows = {
         width: 320,
         collapsible: true,
         children: [
-          { showWhen: "parentExpanded", accessor: "q1Sales", label: "Q1", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q2Sales", label: "Q2", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q3Sales", label: "Q3", width: 80, valueFormatter: currency },
-          { showWhen: "parentExpanded", accessor: "q4Sales", label: "Q4", width: 80, valueFormatter: currency },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q3Sales",
+            label: "Q3",
+            width: 80,
+            valueFormatter: currency,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q4Sales",
+            label: "Q4",
+            width: 80,
+            valueFormatter: currency,
+          },
         ],
       },
     ];
@@ -246,6 +371,7 @@ export const MultiRowHeader_TwoRows = {
 };
 
 export const MultiRowHeader_CollapseShowsOneColumn = {
+  tags: ["multi-row-header", "collapse-expand"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -255,10 +381,30 @@ export const MultiRowHeader_CollapseShowsOneColumn = {
         width: 320,
         collapsible: true,
         children: [
-          { showWhen: "parentExpanded", accessor: "q1Sales", label: "Q1", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q2Sales", label: "Q2", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q3Sales", label: "Q3", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q4Sales", label: "Q4", width: 80 },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q3Sales",
+            label: "Q3",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q4Sales",
+            label: "Q4",
+            width: 80,
+          },
         ],
       },
     ];
@@ -267,7 +413,10 @@ export const MultiRowHeader_CollapseShowsOneColumn = {
       height: "300px",
     });
     h2.textContent = "Multi-row: collapse reduces to one column";
-    addParagraph(wrapper, "Collapse Quarterly; only one column for that group.");
+    addParagraph(
+      wrapper,
+      "Collapse Quarterly; only one column for that group.",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -283,6 +432,7 @@ export const MultiRowHeader_CollapseShowsOneColumn = {
 // ============================================================================
 
 export const CollapseDefault_StartsCollapsed = {
+  tags: ["collapse-default", "initial-state"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -294,10 +444,30 @@ export const CollapseDefault_StartsCollapsed = {
         collapseDefault: true,
         singleRowChildren: true,
         children: [
-          { showWhen: "parentExpanded", accessor: "q1Sales", label: "Q1", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q2Sales", label: "Q2", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q3Sales", label: "Q3", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q4Sales", label: "Q4", width: 80 },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q3Sales",
+            label: "Q3",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q4Sales",
+            label: "Q4",
+            width: 80,
+          },
         ],
       },
     ];
@@ -306,7 +476,10 @@ export const CollapseDefault_StartsCollapsed = {
       height: "300px",
     });
     h2.textContent = "collapseDefault: group starts collapsed";
-    addParagraph(wrapper, "Quarterly Sales should start with one column; icon collapsed.");
+    addParagraph(
+      wrapper,
+      "Quarterly Sales should start with one column; icon collapsed.",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -323,6 +496,7 @@ export const CollapseDefault_StartsCollapsed = {
 // ============================================================================
 
 export const ShowWhenParentCollapsed_SummaryVisibleWhenCollapsed = {
+  tags: ["show-when", "parent-collapsed"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -332,9 +506,24 @@ export const ShowWhenParentCollapsed_SummaryVisibleWhenCollapsed = {
         width: 200,
         collapsible: true,
         children: [
-          { accessor: "summary", label: "Summary", width: 120, showWhen: "parentCollapsed" },
-          { accessor: "q1Sales", label: "Q1", width: 80, showWhen: "parentExpanded" },
-          { accessor: "q2Sales", label: "Q2", width: 80, showWhen: "parentExpanded" },
+          {
+            accessor: "summary",
+            label: "Summary",
+            width: 120,
+            showWhen: "parentCollapsed",
+          },
+          {
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+            showWhen: "parentExpanded",
+          },
+          {
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+            showWhen: "parentExpanded",
+          },
         ],
       },
     ];
@@ -366,6 +555,7 @@ export const ShowWhenParentCollapsed_SummaryVisibleWhenCollapsed = {
 // ============================================================================
 
 export const MultipleCollapsibleGroups = {
+  tags: ["multiple-groups", "collapse-expand"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60 },
@@ -376,8 +566,18 @@ export const MultipleCollapsibleGroups = {
         collapsible: true,
         singleRowChildren: true,
         children: [
-          { showWhen: "parentExpanded", accessor: "q1Sales", label: "Q1", width: 80 },
-          { showWhen: "parentExpanded", accessor: "q2Sales", label: "Q2", width: 80 },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q1Sales",
+            label: "Q1",
+            width: 80,
+          },
+          {
+            showWhen: "parentExpanded",
+            accessor: "q2Sales",
+            label: "Q2",
+            width: 80,
+          },
         ],
       },
       { accessor: "region", label: "Region", width: 100 },
@@ -387,7 +587,10 @@ export const MultipleCollapsibleGroups = {
       height: "300px",
     });
     h2.textContent = "Multiple groups and non-collapsible columns";
-    addParagraph(wrapper, "ID and Region stay; Sales group collapses independently.");
+    addParagraph(
+      wrapper,
+      "ID and Region stay; Sales group collapses independently.",
+    );
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {

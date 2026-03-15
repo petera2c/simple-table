@@ -402,6 +402,7 @@ const COLLAPSIBLE_HEADERS: HeaderObject[] = [
     width: 200,
     collapsible: true,
     singleRowChildren: true,
+    valueFormatter: currencyFormatter,
     children: [
       {
         showWhen: "parentExpanded",
@@ -450,7 +451,6 @@ const COLLAPSIBLE_HEADERS: HeaderObject[] = [
     label: "Monthly Performance",
     width: 800,
     collapsible: true,
-    singleRowChildren: true,
     children: [
       {
         accessor: "avgMonthly",
@@ -587,6 +587,7 @@ const COLLAPSIBLE_HEADERS: HeaderObject[] = [
     label: "Product Categories",
     width: 450,
     collapsible: true,
+    singleRowChildren: true,
     children: [
       {
         accessor: "topCategory",

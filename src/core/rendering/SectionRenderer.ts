@@ -421,7 +421,7 @@ export class SectionRenderer {
             left: currentLeft,
             top: depth * headerHeight,
             width,
-            height: headerHeight,
+            height: (maxDepth - depth) * headerHeight,
             colIndex,
             parentHeader,
           });
@@ -430,7 +430,7 @@ export class SectionRenderer {
 
           let childrenWidth = 0;
           visibleChildren.forEach((child) => {
-            childrenWidth += processHeader(child, depth + 1, header);
+            childrenWidth += processHeader(child, depth, header);
           });
 
           return width + childrenWidth;
