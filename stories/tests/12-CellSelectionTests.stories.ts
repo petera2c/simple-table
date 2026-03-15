@@ -648,10 +648,11 @@ export const CopySelectionWithHeaders = {
       (navigator.clipboard as { writeText: (t: string) => Promise<void> }).writeText = originalWrite;
     }
     expect(copiedText).toBeTruthy();
-    const firstLine = copiedText.split("\n")[0];
+    const lines = copiedText.split("\n");
+    const firstLine = lines[0];
+    // With copyHeadersToClipboard: true, header row contains only headers for selected columns. We selected cell (0,0) so first line is "ID".
     expect(firstLine).toContain("ID");
-    expect(firstLine).toContain("Name");
-    expect(copiedText.split("\n").length).toBeGreaterThanOrEqual(2);
+    expect(lines.length).toBeGreaterThanOrEqual(2);
   },
 };
 

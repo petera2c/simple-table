@@ -30,8 +30,12 @@ export default meta;
 type TableInstance = InstanceType<typeof SimpleTableVanilla>;
 type WrapperWithTable = HTMLDivElement & { _table?: TableInstance };
 
-const getTable = (canvasElement: HTMLElement) =>
-  (canvasElement as WrapperWithTable)._table!;
+const TABLE_REF_KEY = "__storybook_table_ref";
+const getTable = (_canvasElement: HTMLElement): TableInstance => {
+  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[TABLE_REF_KEY];
+  if (!t) throw new Error("Table ref not set (run render first)");
+  return t;
+};
 
 const headers: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -52,7 +56,7 @@ export const GetVisibleRowsGetAllRowsGetHeaders = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (result.wrapper as WrapperWithTable)._table = result.table;
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -77,7 +81,7 @@ export const GetSortStateApplySortState = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (result.wrapper as WrapperWithTable)._table = result.table;
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -106,7 +110,7 @@ export const GetFilterStateApplyFilterClearFilter = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (result.wrapper as WrapperWithTable)._table = result.table;
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -135,7 +139,7 @@ export const GetCurrentPageSetPage = {
       shouldPaginate: true,
       rowsPerPage: 2,
     });
-    (result.wrapper as WrapperWithTable)._table = result.table;
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -163,7 +167,7 @@ export const SetQuickFilter = {
         },
       },
     });
-    (result.wrapper as WrapperWithTable)._table = result.table;
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -185,7 +189,7 @@ export const ToggleColumnEditorApplyColumnVisibility = {
       height: "300px",
       editColumns: true,
     });
-    (result.wrapper as WrapperWithTable)._table = result.table;
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -222,7 +226,7 @@ export const ExpandAllCollapseAllGetExpandedDepths = {
       rowGrouping: ["items"],
       expandAll: false,
     });
-    (result.wrapper as WrapperWithTable)._table = result.table;
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {

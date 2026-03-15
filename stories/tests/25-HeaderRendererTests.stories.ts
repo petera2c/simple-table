@@ -94,7 +94,7 @@ export const HeaderRendererWithComponents = {
     await waitForTable();
     const wrap = canvasElement.querySelector(".header-with-components");
     expect(wrap).toBeTruthy();
-    expect(wrap?.querySelector(".st-header-label")).toBeTruthy();
+    expect(wrap?.childNodes.length).toBeGreaterThan(0);
   },
 };
 

@@ -617,6 +617,7 @@ export class SimpleTableVanilla {
       headers: this.headers,
       customTheme: this.customTheme,
       currentPage: this.currentPage,
+      getCurrentPage: () => this.currentPage,
       expandedRows: this.expandedRows,
       collapsedRows: this.collapsedRows,
       expandedDepths: this.expandedDepths,

@@ -28,6 +28,10 @@ export interface CreateTableFooterOptions {
   shouldPaginate?: boolean;
   totalPages: number;
   totalRows: number;
+  /** Custom icon for previous page button (string = HTML, HTMLElement = node to clone/append). */
+  prevIcon?: string | HTMLElement | SVGSVGElement;
+  /** Custom icon for next page button. */
+  nextIcon?: string | HTMLElement | SVGSVGElement;
 }
 
 const getVisiblePages = (currentPage: number, totalPages: number): number[] => {
@@ -75,6 +79,15 @@ const getVisiblePages = (currentPage: number, totalPages: number): number[] => {
   return pages;
 };
 
+const setButtonIcon = (btn: HTMLButtonElement, icon: string | HTMLElement | SVGSVGElement): void => {
+  if (typeof icon === "string") {
+    btn.innerHTML = icon;
+  } else {
+    btn.innerHTML = "";
+    btn.appendChild(icon.cloneNode(true));
+  }
+};
+
 export const createTableFooter = (options: CreateTableFooterOptions) => {
   let {
     currentPage,
@@ -86,6 +99,8 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     shouldPaginate,
     totalPages,
     totalRows,
+    prevIcon,
+    nextIcon,
   } = options;
 
   let hasMoreData = true;
@@ -193,7 +208,8 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     prevBtn.className = `st-next-prev-btn ${isPrevDisabled ? "disabled" : ""}`;
     prevBtn.disabled = isPrevDisabled;
     prevBtn.setAttribute("aria-label", "Go to previous page");
-    prevBtn.innerHTML = PREV_ICON_SVG;
+    if (prevIcon) setButtonIcon(prevBtn, prevIcon);
+    else prevBtn.innerHTML = PREV_ICON_SVG;
     prevBtn.addEventListener("click", handlePrevPage);
     paginationDiv.appendChild(prevBtn);
 
@@ -201,7 +217,8 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     nextBtn.className = `st-next-prev-btn ${isNextDisabled ? "disabled" : ""}`;
     nextBtn.disabled = isNextDisabled;
     nextBtn.setAttribute("aria-label", "Go to next page");
-    nextBtn.innerHTML = NEXT_ICON_SVG;
+    if (nextIcon) setButtonIcon(nextBtn, nextIcon);
+    else nextBtn.innerHTML = NEXT_ICON_SVG;
     nextBtn.addEventListener("click", handleNextPage);
     paginationDiv.appendChild(nextBtn);
 
@@ -220,6 +237,8 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     if (newOptions.shouldPaginate !== undefined) shouldPaginate = newOptions.shouldPaginate;
     if (newOptions.totalPages !== undefined) totalPages = newOptions.totalPages;
     if (newOptions.totalRows !== undefined) totalRows = newOptions.totalRows;
+    if (newOptions.prevIcon !== undefined) prevIcon = newOptions.prevIcon;
+    if (newOptions.nextIcon !== undefined) nextIcon = newOptions.nextIcon;
 
     if (hideFooter || !shouldPaginate) {
       container.style.display = "none";

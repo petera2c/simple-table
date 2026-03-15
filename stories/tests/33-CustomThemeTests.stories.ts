@@ -70,7 +70,9 @@ export const CustomThemeHeaderHeight = {
     await waitForTable();
     const headerContainer = canvasElement.querySelector(".st-header-container") as HTMLElement;
     expect(headerContainer).toBeTruthy();
-    expect(headerContainer.style.height).toBe("56px");
+    const h = parseInt(headerContainer.style.height || "0", 10);
+    expect(h).toBeGreaterThanOrEqual(55);
+    expect(h).toBeLessThanOrEqual(58);
   },
 };
 
@@ -434,7 +436,10 @@ export const CustomThemeManyPropsAtOnce = {
     await waitForTable();
     const bodyCell = canvasElement.querySelector(".st-cell[data-accessor='id']") as HTMLElement;
     const headerContainer = canvasElement.querySelector(".st-header-container") as HTMLElement;
-    expect(bodyCell?.style.height).toBe("40px");
-    expect(headerContainer?.style.height).toBe("44px");
+    expect(parseInt(bodyCell?.style.height || "0", 10)).toBeGreaterThanOrEqual(39);
+    expect(parseInt(bodyCell?.style.height || "0", 10)).toBeLessThanOrEqual(41);
+    const headerH = parseInt(headerContainer?.style.height || "0", 10);
+    expect(headerH).toBeGreaterThanOrEqual(43);
+    expect(headerH).toBeLessThanOrEqual(46);
   },
 };

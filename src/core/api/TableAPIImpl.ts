@@ -24,6 +24,8 @@ export interface TableAPIContext {
   headers: HeaderObject[];
   customTheme: CustomTheme;
   currentPage: number;
+  /** Returns current page from live state (use this in API getCurrentPage so it stays correct after setPage). */
+  getCurrentPage: () => number;
   expandedRows: Map<string, number>;
   collapsedRows: Map<string, number>;
   expandedDepths: Set<number>;
@@ -165,7 +167,7 @@ export class TableAPIImpl {
       },
 
       getCurrentPage: (): number => {
-        return context.currentPage;
+        return context.getCurrentPage();
       },
 
       getTotalPages: (): number => {
@@ -222,7 +224,7 @@ export class TableAPIImpl {
       },
 
       getExpandedDepths: (): Set<number> => {
-        return context.expandedDepths;
+        return context.expandedDepthsManager?.getExpandedDepths() ?? context.expandedDepths;
       },
 
       getGroupingProperty: (depth: number): Accessor | undefined => {

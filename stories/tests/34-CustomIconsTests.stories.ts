@@ -37,9 +37,13 @@ export const CustomSortIcons = {
     const sortUpEl = document.createElement("span");
     sortUpEl.className = "custom-sort-up-icon";
     sortUpEl.setAttribute("data-testid", "sort-up");
+    sortUpEl.textContent = "↑";
+    sortUpEl.title = "Sort ascending";
     const sortDownEl = document.createElement("span");
     sortDownEl.className = "custom-sort-down-icon";
     sortDownEl.setAttribute("data-testid", "sort-down");
+    sortDownEl.textContent = "↓";
+    sortDownEl.title = "Sort descending";
     const { wrapper } = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
@@ -62,6 +66,8 @@ export const CustomExpandIcon = {
     const expandEl = document.createElement("span");
     expandEl.className = "custom-expand-icon";
     expandEl.setAttribute("data-testid", "expand");
+    expandEl.textContent = "▶";
+    expandEl.title = "Expand";
     const groupHeaders: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -90,8 +96,14 @@ export const CustomPaginationIcons = {
   render: () => {
     const prevEl = document.createElement("span");
     prevEl.className = "custom-prev-icon";
+    prevEl.textContent = "‹";
+    prevEl.title = "Previous page";
+    prevEl.setAttribute("aria-hidden", "true");
     const nextEl = document.createElement("span");
     nextEl.className = "custom-next-icon";
+    nextEl.textContent = "›";
+    nextEl.title = "Next page";
+    nextEl.setAttribute("aria-hidden", "true");
     const { wrapper } = renderVanillaTable(headers, [...data(), { id: 3, name: "Carol" }], {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",

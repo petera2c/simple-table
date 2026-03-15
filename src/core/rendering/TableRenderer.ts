@@ -668,6 +668,8 @@ export class TableRenderer {
         shouldPaginate: deps.config.shouldPaginate ?? false,
         totalPages,
         totalRows,
+        prevIcon: deps.resolvedIcons?.prev,
+        nextIcon: deps.resolvedIcons?.next,
       });
     } else {
       container.innerHTML = "";
@@ -681,6 +683,8 @@ export class TableRenderer {
         shouldPaginate: deps.config.shouldPaginate ?? false,
         totalPages,
         totalRows,
+        prevIcon: deps.resolvedIcons?.prev,
+        nextIcon: deps.resolvedIcons?.next,
       });
       this.footerInstance = footer;
       container.appendChild(footer.element);
