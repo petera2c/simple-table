@@ -628,6 +628,13 @@ input {
 .st-cell {
   border: var(--st-border-width) solid transparent;
 }
+
+/* Remove browser default focus ring when Tab moves focus to a cell; selection styling indicates focus */
+.st-cell:focus,
+.st-cell:focus-visible {
+  outline: none;
+}
+
 .st-cell.even-column:not(.st-cell-selected) {
   background-color: var(--st-even-column-background-color);
 }
