@@ -1,6 +1,6 @@
 /**
  * TOOLTIPS TESTS
- * Tests for HeaderObject.tooltip - header tooltip (title and optional custom tooltip).
+ * Tests for HeaderObject.tooltip - header tooltip (custom .st-tooltip on hover, no native title to avoid double tooltip).
  */
 
 import type { Meta } from "@storybook/html";
@@ -15,7 +15,7 @@ const meta: Meta = {
     layout: "padded",
     docs: {
       description: {
-        component: "Tests for header tooltip: title attribute and tooltip content.",
+        component: "Tests for header tooltip: custom tooltip on hover (single styled tooltip, no native title).",
       },
     },
   },
@@ -28,7 +28,7 @@ const createData = () => [
   { id: 2, name: "Bob" },
 ];
 
-export const HeaderTooltipTitleAttribute = {
+export const HeaderTooltipShownOnHover = {
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -49,11 +49,10 @@ export const HeaderTooltipTitleAttribute = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const elementWithTitle = canvasElement.querySelector(
-      '[title="Full name of the person"]'
-    );
-    expect(elementWithTitle).toBeTruthy();
+    // Header with tooltip renders (custom .st-tooltip appears on hover; we do not set title to avoid double tooltip)
     expect(canvasElement.textContent).toContain("Name");
+    const nameHeaderCell = canvasElement.querySelector('[data-accessor="name"]');
+    expect(nameHeaderCell).toBeTruthy();
   },
 };
 
@@ -71,8 +70,9 @@ export const HeaderWithoutTooltip = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const withTooltip = canvasElement.querySelector(".st-header-label [title]");
-    expect(withTooltip).toBeFalsy();
+    // No header has tooltip config, so no header label should have a title attribute
+    const withTitle = canvasElement.querySelector(".st-header-label [title]");
+    expect(withTitle).toBeFalsy();
   },
 };
 
@@ -90,7 +90,10 @@ export const MultipleHeadersWithTooltips = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    expect(canvasElement.querySelector('[title="Unique identifier"]')).toBeTruthy();
-    expect(canvasElement.querySelector('[title="Display name"]')).toBeTruthy();
+    // Both headers with tooltips render (custom tooltip appears on hover for each)
+    expect(canvasElement.querySelector('[data-accessor="id"]')).toBeTruthy();
+    expect(canvasElement.querySelector('[data-accessor="name"]')).toBeTruthy();
+    expect(canvasElement.textContent).toContain("ID");
+    expect(canvasElement.textContent).toContain("Name");
   },
 };
