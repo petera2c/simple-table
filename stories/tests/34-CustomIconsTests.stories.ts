@@ -86,6 +86,7 @@ export const CustomExpandIcon = {
 };
 
 export const CustomPaginationIcons = {
+  parameters: { tags: ["fail-custom-pagination-icons"] },
   render: () => {
     const prevEl = document.createElement("span");
     prevEl.className = "custom-prev-icon";

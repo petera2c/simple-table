@@ -45,6 +45,7 @@ const simpleGroupedData = () => [
 ];
 
 export const AggregationSum = {
+  parameters: { tags: ["fail-aggregation-sum"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
@@ -176,6 +177,7 @@ export const AggregationMinMax = {
 };
 
 export const AggregationParseAndFormat = {
+  parameters: { tags: ["fail-aggregation-parse-and-format"] },
   render: () => {
     const data = [
       {
@@ -216,6 +218,7 @@ export const AggregationParseAndFormat = {
 };
 
 export const AggregationCustom = {
+  parameters: { tags: ["fail-aggregation-custom"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },

@@ -63,6 +63,7 @@ export const CustomHeaderRenderer = {
 };
 
 export const HeaderRendererWithComponents = {
+  parameters: { tags: ["fail-header-renderer-with-components"] },
   render: () => {
     const headers: HeaderObject[] = [
       {

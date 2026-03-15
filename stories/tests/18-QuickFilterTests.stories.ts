@@ -152,6 +152,7 @@ export const SmartModeMultiWord = {
 // ---------------------------------------------------------------------------
 
 export const QuickFilterColumns = {
+  parameters: { tags: ["fail-quick-filter-columns"] },
   render: () => {
     const data = createTestData();
     const headers: HeaderObject[] = [
@@ -179,6 +180,7 @@ export const QuickFilterColumns = {
 };
 
 export const QuickFilterUseFormattedValue = {
+  parameters: { tags: ["fail-quick-filter-formatted-value"] },
   render: () => {
     const rows = [
       { id: 1, name: "Alice", price: 50 },

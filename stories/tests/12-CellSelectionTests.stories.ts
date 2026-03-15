@@ -607,6 +607,7 @@ const simpleData = () => [
 ];
 
 export const CopySelectionWithHeaders = {
+  parameters: { tags: ["fail-copy-selection-with-headers"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },

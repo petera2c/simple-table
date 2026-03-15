@@ -57,6 +57,7 @@ export const CustomThemeRowHeight = {
 };
 
 export const CustomThemeHeaderHeight = {
+  parameters: { tags: ["fail-custom-theme-header-height"] },
   render: () => {
     const { wrapper } = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -404,6 +405,7 @@ export const CustomThemeOverrideWithInlineStyles = {
 // ---------------------------------------------------------------------------
 
 export const CustomThemeManyPropsAtOnce = {
+  parameters: { tags: ["fail-custom-theme-many-props"] },
   render: () => {
     const { wrapper } = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),

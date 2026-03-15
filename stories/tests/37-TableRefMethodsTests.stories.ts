@@ -46,6 +46,7 @@ const data = () => [
 ];
 
 export const GetVisibleRowsGetAllRowsGetHeaders = {
+  parameters: { tags: ["fail-get-visible-rows"] },
   render: () => {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -70,6 +71,7 @@ export const GetVisibleRowsGetAllRowsGetHeaders = {
 };
 
 export const GetSortStateApplySortState = {
+  parameters: { tags: ["fail-get-sort-state"] },
   render: () => {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -94,6 +96,7 @@ export const GetSortStateApplySortState = {
 };
 
 export const GetFilterStateApplyFilterClearFilter = {
+  parameters: { tags: ["fail-get-filter-state"] },
   render: () => {
     const filterHeaders: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
@@ -124,6 +127,7 @@ export const GetFilterStateApplyFilterClearFilter = {
 };
 
 export const GetCurrentPageSetPage = {
+  parameters: { tags: ["fail-get-current-page"] },
   render: () => {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -146,6 +150,7 @@ export const GetCurrentPageSetPage = {
 };
 
 export const SetQuickFilter = {
+  parameters: { tags: ["fail-set-quick-filter"] },
   render: () => {
     const captured: { value: string } = { value: "" };
     (window as unknown as { __quickFilterCapture?: { value: string } }).__quickFilterCapture = captured;
@@ -173,6 +178,7 @@ export const SetQuickFilter = {
 };
 
 export const ToggleColumnEditorApplyColumnVisibility = {
+  parameters: { tags: ["fail-toggle-column-editor"] },
   render: () => {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -200,6 +206,7 @@ export const ToggleColumnEditorApplyColumnVisibility = {
 };
 
 export const ExpandAllCollapseAllGetExpandedDepths = {
+  parameters: { tags: ["fail-expand-all-collapse-all"] },
   render: () => {
     const groupHeaders: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
