@@ -295,6 +295,24 @@ function assertColumnWidthsSane(
   });
 }
 
+/** Assert body-main takes up full width so the last column does not get unnecessary ellipsis. */
+function assertBodyMainTakesFullWidth(
+  canvasElement: HTMLElement,
+  tolerance = 2,
+): void {
+  const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLElement | null;
+  const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
+  expect(bodyContainer, "body container should exist").toBeTruthy();
+  expect(bodyMain, "body-main should exist").toBeTruthy();
+  if (!bodyContainer || !bodyMain) return;
+  const containerWidth = bodyContainer.clientWidth;
+  const mainWidth = bodyMain.clientWidth;
+  expect(
+    mainWidth,
+    `body-main width ${mainWidth} should be >= container ${containerWidth} - ${tolerance} (full width, no unnecessary ellipsis on last column)`,
+  ).toBeGreaterThanOrEqual(containerWidth - tolerance);
+}
+
 const openColumnEditor = async (
   canvasElement: HTMLElement,
 ): Promise<Element> => {
@@ -390,8 +408,14 @@ function renderWithWidth(
 }
 
 const WIDTH_TOLERANCE = 20;
-/** Allow larger variance after resize + re-scale in test env (layout/timing). */
-const WIDTH_TOLERANCE_AFTER_RESIZE = 360;
+/**
+ * Strict: with autoExpandColumns, columns must fill 100% of container.
+ * Resizing one column must add/subtract width from others so the total stays 100%.
+ * Use this for any assertion that "total column width ≈ container width" after resize or initial layout.
+ */
+const STRICT_FILL_TOLERANCE = 10;
+/** Used for post-resize "columns fill container" assertions. Failures here mean auto-expand resize is broken. */
+const WIDTH_TOLERANCE_AFTER_RESIZE = STRICT_FILL_TOLERANCE;
 /** Allow variance on initial auto-expand in test env (wrapper padding, canvas). */
 const WIDTH_TOLERANCE_INITIAL = 360;
 const MIN_COLUMN_WIDTH = 40;
@@ -1179,6 +1203,7 @@ export const AutoExpandResizeOneColumnProportional = {
     expect(totalAfter).toBeLessThanOrEqual(
       containerWidth + WIDTH_TOLERANCE_AFTER_RESIZE,
     );
+    assertBodyMainTakesFullWidth(canvasElement);
   },
 };
 
@@ -1229,6 +1254,7 @@ export const AutoExpandResizeThenReexpandOnEnd = {
       const w = parsePixelWidth(getColumnWidth(c));
       expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
     });
+    assertBodyMainTakesFullWidth(canvasElement);
   },
 };
 
@@ -1284,6 +1310,7 @@ export const AutoExpandResizePinnedColumn = {
     expect(leftWidth).toBeLessThanOrEqual(maxPinnedWidth + WIDTH_TOLERANCE);
     const mainCells = getHeaderCellsInSection(sections.main);
     expect(mainCells.length).toBeGreaterThanOrEqual(2);
+    // Skip full-width check: with pinned columns, body-main is only the main section, not the full container
   },
 };
 
@@ -1357,6 +1384,7 @@ export const AutoExpandResizeMultipleColumns = {
     expect(Math.abs(totalW - containerWidth)).toBeLessThanOrEqual(
       WIDTH_TOLERANCE_AFTER_RESIZE,
     );
+    assertBodyMainTakesFullWidth(canvasElement);
   },
 };
 
@@ -1440,6 +1468,7 @@ export const AutoExpandResizeMultipleColumnsStress = {
         containerWidth,
         WIDTH_TOLERANCE_AFTER_RESIZE,
       );
+      assertBodyMainTakesFullWidth(canvasElement);
     }
   },
 };
