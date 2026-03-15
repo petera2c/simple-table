@@ -21,6 +21,8 @@ export interface AbsoluteCell {
 
 export interface HeaderRenderContext {
   collapsedHeaders: Set<Accessor>;
+  /** Get current collapsed headers (avoids stale closure in toggle handler). */
+  getCollapsedHeaders?: () => Set<Accessor>;
   columnBorders: boolean;
   columnReordering: boolean;
   columnResizing: boolean;

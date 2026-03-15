@@ -36,6 +36,7 @@ export interface RenderContext {
   expandedRows: Map<string, number>;
   filterManager: FilterManager | null;
   getCollapsedRows: () => Map<string, number>;
+  getCollapsedHeaders?: () => Set<Accessor>;
   getExpandedRows: () => Map<string, number>;
   getRowStateMap: () => Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
@@ -576,6 +577,7 @@ export class RenderOrchestrator {
       setExpandedRows: context.setExpandedRows,
       setRowStateMap: context.setRowStateMap,
       getCollapsedRows: context.getCollapsedRows,
+      getCollapsedHeaders: context.getCollapsedHeaders,
       getExpandedRows: context.getExpandedRows,
       getRowStateMap: context.getRowStateMap,
       positionOnlyBody: context.positionOnlyBody,

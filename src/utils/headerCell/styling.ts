@@ -271,9 +271,7 @@ export const updateHeaderCellElement = (
   // Update icons (sort/filter/collapse) - remove old ones and create new ones
   const oldSortIcon = cellElement.querySelector('.st-icon-container[aria-label*="Sort"]');
   const oldFilterIcon = cellElement.querySelector('.st-icon-container[aria-label*="Filter"]');
-  const oldCollapseIcon = cellElement.querySelector(
-    '.st-icon-container[aria-label*="Collapse"], .st-icon-container[aria-label*="Expand"]',
-  );
+  const oldCollapseIcon = cellElement.querySelector(".st-expand-icon-container");
 
   oldSortIcon?.remove();
   oldFilterIcon?.remove();

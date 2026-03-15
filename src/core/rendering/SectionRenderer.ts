@@ -650,6 +650,17 @@ export class SectionRenderer {
     if (context.expandedDepths) {
       hash += `|expandedDepths:${Array.isArray(context.expandedDepths) ? context.expandedDepths.length : context.expandedDepths.size}`;
     }
+    // Include column collapse state so header/body re-render with correct collapse icons and visibility
+    if (context.collapsedHeaders != null) {
+      const size = context.collapsedHeaders.size;
+      const serialized =
+        size === 0
+          ? ""
+          : Array.from(context.collapsedHeaders as Set<unknown>)
+              .sort()
+              .join(",");
+      hash += `|collapsedHeaders:${size}:${serialized}`;
+    }
     // Include row selection so body re-renders with updated isRowSelected when selection changes
     if (context.selectedRowCount !== undefined) {
       hash += `|selectedRowCount:${context.selectedRowCount}`;

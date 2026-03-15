@@ -30,21 +30,36 @@ export const findLeafHeaders = (
 
   // If this header is collapsed, only return children that are visible when collapsed
   if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
-    return header.children
-      .filter((child) => {
-        const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
-        return showWhen === "parentCollapsed" || showWhen === "always";
-      })
-      .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
+    const visibleWhenCollapsed = header.children.filter((child) => {
+      const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+      return showWhen === "parentCollapsed" || showWhen === "always";
+    });
+    // singleRowChildren: when collapsed and no such children, the parent is the visible column (e.g. "Quarterly Sales" showing total)
+    if (header.singleRowChildren && visibleWhenCollapsed.length === 0) {
+      return [header];
+    }
+    return visibleWhenCollapsed.flatMap((child) =>
+      findLeafHeaders(child, collapsedHeaders),
+    );
   }
 
   // If not collapsed, return leaf headers that are visible when parent is expanded
-  return header.children
-    .filter((child) => {
-      const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
-      return showWhen === "parentExpanded" || showWhen === "always";
-    })
-    .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
+  const visibleWhenExpanded = header.children.filter((child) => {
+    const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+    return showWhen === "parentExpanded" || showWhen === "always";
+  });
+  // singleRowChildren: parent + children are all "leaves" on the same row (e.g. Quarterly Sales + Q1–Q4)
+  if (header.singleRowChildren) {
+    return [
+      header,
+      ...visibleWhenExpanded.flatMap((child) =>
+        findLeafHeaders(child, collapsedHeaders),
+      ),
+    ];
+  }
+  return visibleWhenExpanded.flatMap((child) =>
+    findLeafHeaders(child, collapsedHeaders),
+  );
 };
 
 /** Default pixel width for 1fr when converting before container width is known */

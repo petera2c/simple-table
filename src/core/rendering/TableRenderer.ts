@@ -61,6 +61,7 @@ export interface TableRendererDeps {
   setExpandedRows: (rows: Map<string, number>) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
   getCollapsedRows: () => Map<string, number>;
+  getCollapsedHeaders?: () => Set<Accessor>;
   getExpandedRows: () => Map<string, number>;
   getRowStateMap: () => Map<string | number, any>;
   /** When true, body sections use position-only updates for existing cells (scroll performance). */
@@ -137,6 +138,7 @@ export class TableRenderer {
       deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
     const headerContext: HeaderRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
+      getCollapsedHeaders: deps.getCollapsedHeaders,
       columnBorders: deps.config.columnBorders ?? false,
       columnReordering: deps.config.columnReordering ?? false,
       columnResizing: deps.config.columnResizing ?? false,

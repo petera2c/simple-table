@@ -10,6 +10,8 @@ import {
   getLastHeaderIndex,
 } from "./headerCell/styling";
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
+import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
+import { hasCollapsibleChildren } from "./collapseUtils";
 
 // Re-export types for backward compatibility
 export type { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
@@ -125,6 +127,12 @@ export const renderHeaderCells = (
       const newClassNames = calculateHeaderCellClasses(cell, context, isLastHeader);
       if (cellElement.className !== newClassNames) {
         cellElement.className = newClassNames;
+      }
+
+      // Sync header collapse icon direction when collapsed state changes (same animation as body expand icon)
+      if (hasCollapsibleChildren(cell.header)) {
+        const isCollapsed = context.collapsedHeaders.has(cell.header.accessor);
+        updateHeaderCollapseIconState(cellElement, isCollapsed, cell.header.label);
       }
     }
   });
