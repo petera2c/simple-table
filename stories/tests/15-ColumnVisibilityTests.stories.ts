@@ -1,6 +1,6 @@
 /**
- * COLUMN VISIBILITY TESTS
- * Ported from React - same tests, vanilla table only.
+ * COLUMN VISIBILITY / COLUMN EDITING TESTS
+ * Column editing is the same feature as column visibility (editColumns, column editor, show/hide).
  */
 
 import type { Meta } from "@storybook/html";
@@ -16,13 +16,19 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Comprehensive tests for column visibility including show/hide and visibility API.",
+          "Comprehensive tests for column visibility (column editing): show/hide, editColumnsInitOpen, columnEditorConfig, onColumnVisibilityChange.",
       },
     },
   },
 };
 
 export default meta;
+
+const createData = () => [
+  { id: 1, name: "Alpha", role: "Admin", region: "North" },
+  { id: 2, name: "Beta", role: "User", region: "South" },
+  { id: 3, name: "Gamma", role: "User", region: "East" },
+];
 
 const createStoreData = () => [
   { id: 1, storeName: "Downtown Store", city: "New York", squareFootage: 5000, openingDate: "2020-01-15", customerRating: 4.5, clothingSales: 125000, electronicsSales: 89000 },
@@ -259,5 +265,164 @@ export const ColumnCountChanges = {
     await toggleColumnVisibility(cityItem2!);
     await new Promise((r) => setTimeout(r, 500));
     expect(getVisibleColumnLabels(canvasElement).length).toBe(4);
+  },
+};
+
+export const EditColumnsInitOpen = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "role", label: "Role", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      editColumnsInitOpen: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const popout = canvasElement.querySelector(".st-column-editor-popout.open");
+    expect(popout).toBeTruthy();
+    expect(popout?.classList.contains("open")).toBe(true);
+    const items = popout?.querySelectorAll(".st-header-checkbox-item");
+    expect(items?.length).toBe(3);
+  },
+};
+
+export const ColumnEditorConfigCustomText = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      columnEditorConfig: { text: "Choose columns" },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const columnEditorText = canvasElement.querySelector(".st-column-editor-text");
+    expect(columnEditorText?.textContent?.trim()).toBe("Choose columns");
+  },
+};
+
+export const ColumnEditorConfigSearchEnabled = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "role", label: "Role", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      columnEditorConfig: { searchEnabled: true, searchPlaceholder: "Filter columns..." },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const popout = await openColumnEditor(canvasElement);
+    const searchInput = popout.querySelector(".st-column-editor-search input");
+    expect(searchInput).toBeTruthy();
+    expect((searchInput as HTMLInputElement).placeholder).toBe("Filter columns...");
+  },
+};
+
+export const ColumnEditorConfigSearchDisabled = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      columnEditorConfig: { searchEnabled: false },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const popout = await openColumnEditor(canvasElement);
+    const searchWrapper = popout.querySelector(".st-column-editor-search-wrapper");
+    expect(searchWrapper).toBeFalsy();
+  },
+};
+
+export const OnColumnVisibilityChangeCallback = {
+  render: () => {
+    const captured: { calls: Record<string, boolean>[] } = { calls: [] };
+    (window as unknown as { __columnVisibilityCapture?: typeof captured }).__columnVisibilityCapture =
+      captured;
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "role", label: "Role", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      onColumnVisibilityChange: (state) => {
+        captured.calls.push({ ...state });
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const captured = (window as unknown as { __columnVisibilityCapture?: { calls: Record<string, boolean>[] } })
+      .__columnVisibilityCapture;
+    expect(captured).toBeTruthy();
+    const initialCalls = captured!.calls.length;
+
+    const popout = await openColumnEditor(canvasElement);
+    const items = getColumnCheckboxItems(popout);
+    expect(items.length).toBe(3);
+    const roleItem = items.find((i) => i.textContent?.trim().includes("Role"));
+    expect(roleItem).toBeTruthy();
+    getCheckboxInput(roleItem!).click();
+    await new Promise((r) => setTimeout(r, 400));
+
+    expect(captured!.calls.length).toBeGreaterThan(initialCalls);
+    const lastCall = captured!.calls[captured!.calls.length - 1];
+    expect(typeof lastCall.role).toBe("boolean");
+    expect(lastCall.role).toBe(false);
+  },
+};
+
+export const ColumnEditorOpenClose = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    expect(canvasElement.querySelector(".st-column-editor-popout.open")).toBeFalsy();
+    await openColumnEditor(canvasElement);
+    expect(canvasElement.querySelector(".st-column-editor-popout.open")).toBeTruthy();
+    const columnEditorText = canvasElement.querySelector(".st-column-editor-text");
+    (columnEditorText as HTMLElement).click();
+    await new Promise((r) => setTimeout(r, 300));
+    expect(canvasElement.querySelector(".st-column-editor-popout.open")).toBeFalsy();
   },
 };
