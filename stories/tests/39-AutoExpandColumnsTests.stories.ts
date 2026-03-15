@@ -338,6 +338,7 @@ const MIN_COLUMN_WIDTH = 40;
 // ============================================================================
 
 export const AutoExpandWithLeftPinned = {
+  parameters: { tags: ["auto-expand-left-pinned"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -400,6 +401,7 @@ export const AutoExpandWithLeftPinned = {
 };
 
 export const AutoExpandWithRightPinned = {
+  parameters: { tags: ["auto-expand-right-pinned"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, type: "string" },
@@ -462,6 +464,7 @@ export const AutoExpandWithRightPinned = {
 };
 
 export const AutoExpandWithBothLeftAndRightPinned = {
+  parameters: { tags: ["auto-expand-both-pinned"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -531,6 +534,7 @@ export const AutoExpandWithBothLeftAndRightPinned = {
 };
 
 export const AutoExpandMultiplePinnedBothSides = {
+  parameters: { tags: ["auto-expand-multiple-pinned-both-sides"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -576,7 +580,7 @@ export const AutoExpandMultiplePinnedBothSides = {
         autoExpandColumns: true,
         height: "400px",
       },
-      "800px",
+      "100%",
     );
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -609,6 +613,7 @@ export const AutoExpandMultiplePinnedBothSides = {
 };
 
 export const PinnedSectionScalesWithinBounds = {
+  parameters: { tags: ["auto-expand-pinned-section-scales-within-bounds"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -667,6 +672,7 @@ export const PinnedSectionScalesWithinBounds = {
 // ============================================================================
 
 export const AutoExpandWithRowGrouping = {
+  parameters: { tags: ["auto-expand-row-grouping"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -686,7 +692,8 @@ export const AutoExpandWithRowGrouping = {
       autoExpandColumns: true,
       rowGrouping: ["teams"],
     });
-    wrapper.style.width = "700px";
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     h2.textContent = "Auto Expand with Row Grouping";
     return wrapper;
   },
@@ -714,6 +721,7 @@ export const AutoExpandWithRowGrouping = {
 };
 
 export const AutoExpandGroupedExpandCollapse = {
+  parameters: { tags: ["auto-expand-grouped-expand-collapse"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -735,6 +743,7 @@ export const AutoExpandGroupedExpandCollapse = {
       expandAll: false,
     });
     wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -756,6 +765,7 @@ export const AutoExpandGroupedExpandCollapse = {
 };
 
 export const AutoExpandWithNestedGrouping = {
+  parameters: { tags: ["auto-expand-nested-grouping"] },
   render: () => {
     const nestedData = [
       {
@@ -796,7 +806,8 @@ export const AutoExpandWithNestedGrouping = {
       rowGrouping: ["teams", "members"],
       expandAll: false,
     });
-    wrapper.style.width = "800px";
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -820,6 +831,7 @@ export const AutoExpandWithNestedGrouping = {
 // ============================================================================
 
 export const AutoExpandHideColumnReexpand = {
+  parameters: { tags: ["auto-expand-hide-column-reexpand"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -849,7 +861,8 @@ export const AutoExpandHideColumnReexpand = {
       autoExpandColumns: true,
       editColumns: true,
     });
-    wrapper.style.width = "900px";
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -886,6 +899,7 @@ export const AutoExpandHideColumnReexpand = {
 };
 
 export const AutoExpandShowColumnReexpand = {
+  parameters: { tags: ["auto-expand-show-column-reexpand"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -916,6 +930,7 @@ export const AutoExpandShowColumnReexpand = {
       editColumns: true,
     });
     wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -945,6 +960,7 @@ export const AutoExpandShowColumnReexpand = {
 };
 
 export const AutoExpandHideMultipleThenShowOne = {
+  parameters: { tags: ["auto-expand-hide-multiple-then-show-one"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -970,7 +986,8 @@ export const AutoExpandHideMultipleThenShowOne = {
       autoExpandColumns: true,
       editColumns: true,
     });
-    wrapper.style.width = "800px";
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -1024,6 +1041,7 @@ export const AutoExpandHideMultipleThenShowOne = {
 // ============================================================================
 
 export const AutoExpandResizeOneColumnProportional = {
+  parameters: { tags: ["auto-expand-resize-one-column-proportional"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -1042,7 +1060,8 @@ export const AutoExpandResizeOneColumnProportional = {
       autoExpandColumns: true,
       columnResizing: true,
     });
-    wrapper.style.width = "800px";
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -1072,6 +1091,7 @@ export const AutoExpandResizeOneColumnProportional = {
 };
 
 export const AutoExpandResizeThenReexpandOnEnd = {
+  parameters: { tags: ["auto-expand-resize-then-reexpand-on-end"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -1091,6 +1111,7 @@ export const AutoExpandResizeThenReexpandOnEnd = {
       columnResizing: true,
     });
     wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -1120,6 +1141,7 @@ export const AutoExpandResizeThenReexpandOnEnd = {
 };
 
 export const AutoExpandResizePinnedColumn = {
+  parameters: { tags: ["auto-expand-resize-pinned-column"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -1145,6 +1167,7 @@ export const AutoExpandResizePinnedColumn = {
       columnResizing: true,
     });
     wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -1173,6 +1196,7 @@ export const AutoExpandResizePinnedColumn = {
 };
 
 export const AutoExpandResizeMultipleColumns = {
+  parameters: { tags: ["auto-expand-resize-multiple-columns"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -1198,6 +1222,7 @@ export const AutoExpandResizeMultipleColumns = {
       columnResizing: true,
     });
     wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -1238,6 +1263,7 @@ export const AutoExpandResizeMultipleColumns = {
 // ============================================================================
 
 export const AutoExpandWideContainerNoHorizontalScroll = {
+  parameters: { tags: ["auto-expand-wide-container-no-horizontal-scroll"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
@@ -1269,6 +1295,7 @@ export const AutoExpandWideContainerNoHorizontalScroll = {
 };
 
 export const AutoExpandNarrowContainerHorizontalScroll = {
+  parameters: { tags: ["auto-expand-narrow-container-horizontal-scroll"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, minWidth: 60, type: "number" },
@@ -1322,6 +1349,7 @@ export const AutoExpandNarrowContainerHorizontalScroll = {
 };
 
 export const AutoExpandHorizontalScrollHeaderBodySync = {
+  parameters: { tags: ["auto-expand-horizontal-scroll-header-body-sync"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -1360,6 +1388,7 @@ export const AutoExpandHorizontalScrollHeaderBodySync = {
 };
 
 export const AutoExpandScrollThenResizeStable = {
+  parameters: { tags: ["auto-expand-scroll-then-resize-stable"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -1379,6 +1408,7 @@ export const AutoExpandScrollThenResizeStable = {
       columnResizing: true,
     });
     wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -1410,6 +1440,7 @@ export const AutoExpandScrollThenResizeStable = {
 // ============================================================================
 
 export const AutoExpandSingleColumn = {
+  parameters: { tags: ["auto-expand-single-column"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 200, type: "string" },
@@ -1439,6 +1470,7 @@ export const AutoExpandSingleColumn = {
 };
 
 export const AutoExpandAllPinnedNoMain = {
+  parameters: { tags: ["auto-expand-all-pinned-no-main"] },
   render: () => {
     const headers: HeaderObject[] = [
       {
@@ -1495,6 +1527,7 @@ export const AutoExpandAllPinnedNoMain = {
 };
 
 export const AutoExpandContainerResizeTriggersRescale = {
+  parameters: { tags: ["auto-expand-container-resize-triggers-rescale"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -1512,7 +1545,8 @@ export const AutoExpandContainerResizeTriggersRescale = {
       height: "400px",
       autoExpandColumns: true,
     });
-    wrapper.style.width = "600px";
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -1538,6 +1572,7 @@ export const AutoExpandContainerResizeTriggersRescale = {
 };
 
 export const AutoExpandDisabledNoExpand = {
+  parameters: { tags: ["auto-expand-disabled-no-expand"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
