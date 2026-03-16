@@ -20,54 +20,51 @@ export interface AbsoluteCell {
 }
 
 export interface HeaderRenderContext {
+  areAllRowsSelected?: () => boolean;
+  autoExpandColumns: boolean;
   collapsedHeaders: Set<Accessor>;
-  /** Get current collapsed headers (avoids stale closure in toggle handler). */
-  getCollapsedHeaders?: () => Set<Accessor>;
   columnBorders: boolean;
   columnReordering: boolean;
   columnResizing: boolean;
+  columnsWithSelectedCells: Set<number>;
   containerWidth: number;
-  /** Main section viewport width (avoids clientWidth read when set); use for getVisibleCells when !pinned */
-  mainSectionContainerWidth?: number;
+  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
-  /** Used for context cache invalidation when row selection changes */
-  selectedRowCount?: number;
   filters: TableFilterState;
-  icons: IconsConfig;
-  selectedColumns: Set<number>;
-  columnsWithSelectedCells: Set<number>;
-  sort: SortColumn | null;
-  autoExpandColumns?: boolean;
-  selectableColumns?: boolean;
-  headers: HeaderObject[];
-  rows: Row[];
-  headerHeight: number;
-  lastHeaderIndex: number;
-  onSort: (accessor: Accessor) => void;
+  forceUpdate: () => void;
+  getCollapsedHeaders?: () => Set<Accessor>; /** Get current collapsed headers (avoids stale closure in toggle handler). */
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearFilter: (accessor: Accessor) => void;
   handleSelectAll?: (checked: boolean) => void;
-  setCollapsedHeaders: Dispatch<SetStateAction<Set<Accessor>>>;
-  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
-  setIsResizing: Dispatch<SetStateAction<boolean>>;
-  onColumnWidthChange?: (headers: HeaderObject[]) => void;
-  onColumnOrderChange?: (headers: HeaderObject[]) => void;
-  onTableHeaderDragEnd: (headers: HeaderObject[]) => void;
-  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
-  onColumnSelect?: (header: HeaderObject) => void;
-  selectColumns?: (columnIndices: number[]) => void;
-  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
-  setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
-  setInitialFocusedCell: (cell: any) => void;
-  areAllRowsSelected?: () => boolean;
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  headerHeight: number;
   headerRegistry?: Map<string, { setEditing: (editing: boolean) => void }>;
-  reverse?: boolean;
-  pinned?: "left" | "right";
-  forceUpdate: () => void;
+  headers: HeaderObject[];
+  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  icons: IconsConfig;
+  lastHeaderIndex: number;
   mainBodyRef: RefObject<HTMLDivElement>;
+  mainSectionContainerWidth?: number; /** Main section viewport width (avoids clientWidth read when set); use for getVisibleCells when !pinned */
+  onColumnOrderChange?: (headers: HeaderObject[]) => void;
+  onColumnSelect?: (header: HeaderObject) => void;
+  onColumnWidthChange?: (headers: HeaderObject[]) => void;
+  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
+  onSort: (accessor: Accessor) => void;
+  onTableHeaderDragEnd: (headers: HeaderObject[]) => void;
+  pinned?: "left" | "right";
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
+  reverse: boolean;
+  rows: Row[];
+  selectColumns?: (columnIndices: number[]) => void;
+  selectableColumns?: boolean;
+  selectedColumns: Set<number>;
+  selectedRowCount?: number; /** Used for context cache invalidation when row selection changes */
+  setCollapsedHeaders: Dispatch<SetStateAction<Set<Accessor>>>;
+  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
+  setInitialFocusedCell: (cell: any) => void;
+  setIsResizing: Dispatch<SetStateAction<boolean>>;
+  setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
+  setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
+  sort: SortColumn | null;
 }

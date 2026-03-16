@@ -24,48 +24,47 @@ import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 
 export interface TableRendererDeps {
-  config: SimpleTableConfig;
-  customTheme: CustomTheme;
-  resolvedIcons: any;
-  effectiveHeaders: HeaderObject[];
-  headers: HeaderObject[];
-  localRows: any[];
+  cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
   collapsedRows: Map<string, number>;
-  expandedRows: Map<string, number>;
-  expandedDepths: Set<number>;
-  isResizing: boolean;
-  internalIsLoading: boolean;
-  cellRegistry: Map<string, any>;
-  headerRegistry: Map<string, any>;
-  draggedHeaderRef: { current: HeaderObject | null };
-  hoveredHeaderRef: { current: HeaderObject | null };
-  mainBodyRef: { current: HTMLDivElement | null };
-  pinnedLeftRef: { current: HTMLDivElement | null };
-  pinnedRightRef: { current: HTMLDivElement | null };
-  mainHeaderRef: { current: HTMLDivElement | null };
-  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
-  pinnedRightHeaderRef: { current: HTMLDivElement | null };
+  config: SimpleTableConfig;
+  customTheme: CustomTheme;
   dimensionManager: DimensionManager | null;
-  sectionScrollController: SectionScrollController | null;
-  sortManager: SortManager | null;
+  draggedHeaderRef: { current: HeaderObject | null };
+  effectiveHeaders: HeaderObject[];
+  expandedDepths: Set<number>;
+  expandedRows: Map<string, number>;
   filterManager: FilterManager | null;
-  selectionManager: SelectionManager | null;
+  getCollapsedHeaders?: () => Set<Accessor>;
+  getCollapsedRows: () => Map<string, number>;
+  getExpandedRows: () => Map<string, number>;
+  getRowStateMap: () => Map<string | number, any>;
+  headerRegistry: Map<string, any>;
+  headers: HeaderObject[];
+  hoveredHeaderRef: { current: HeaderObject | null };
+  internalIsLoading: boolean;
+  isResizing: boolean;
+  localRows: any[];
+  mainBodyRef: { current: HTMLDivElement | null };
+  mainHeaderRef: { current: HTMLDivElement | null };
+  onRender: () => void;
+  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
+  pinnedLeftRef: { current: HTMLDivElement | null };
+  pinnedRightHeaderRef: { current: HTMLDivElement | null };
+  pinnedRightRef: { current: HTMLDivElement | null };
+  positionOnlyBody?: boolean; /** When true, body sections use position-only updates for existing cells (scroll performance). */
+  resolvedIcons: any;
   rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, any>;
-  onRender: () => void;
-  setIsResizing: (value: boolean) => void;
-  setHeaders: (headers: HeaderObject[]) => void;
+  sectionScrollController: SectionScrollController | null;
+  selectionManager: SelectionManager | null;
   setCollapsedHeaders: (headers: Set<Accessor>) => void;
   setCollapsedRows: (rows: Map<string, number>) => void;
   setExpandedRows: (rows: Map<string, number>) => void;
+  setHeaders: (headers: HeaderObject[]) => void;
+  setIsResizing: (value: boolean) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
-  getCollapsedRows: () => Map<string, number>;
-  getCollapsedHeaders?: () => Set<Accessor>;
-  getExpandedRows: () => Map<string, number>;
-  getRowStateMap: () => Map<string | number, any>;
-  /** When true, body sections use position-only updates for existing cells (scroll performance). */
-  positionOnlyBody?: boolean;
+  sortManager: SortManager | null;
 }
 
 export class TableRenderer {
@@ -137,6 +136,7 @@ export class TableRenderer {
     const headerSelectedRowCount =
       deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
     const headerContext: HeaderRenderContext = {
+      reverse: false,
       collapsedHeaders: deps.collapsedHeaders,
       getCollapsedHeaders: deps.getCollapsedHeaders,
       columnBorders: deps.config.columnBorders ?? false,
@@ -160,7 +160,7 @@ export class TableRenderer {
             columnsWithSelectedCells: new Set<number>(),
           }),
       sort: sortState?.sort ?? null,
-      autoExpandColumns: deps.config.autoExpandColumns,
+      autoExpandColumns: deps.config.autoExpandColumns ?? false,
       selectableColumns: deps.config.selectableColumns,
       headers: deps.effectiveHeaders,
       rows: deps.localRows,

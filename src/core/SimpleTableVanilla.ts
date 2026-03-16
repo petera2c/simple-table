@@ -30,7 +30,11 @@ import {
   MergedColumnEditorConfig,
 } from "./initialization/TableInitializer";
 import { DOMManager } from "./dom/DOMManager";
-import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/RenderOrchestrator";
+import {
+  RenderOrchestrator,
+  RenderContext,
+  RenderState,
+} from "./rendering/RenderOrchestrator";
 import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
 
 import "../styles/all-themes.css";
@@ -45,8 +49,12 @@ export class SimpleTableVanilla {
   private domManager: DOMManager;
   private renderOrchestrator: RenderOrchestrator;
 
-  private draggedHeaderRef: { current: HeaderObject | null } = { current: null };
-  private hoveredHeaderRef: { current: HeaderObject | null } = { current: null };
+  private draggedHeaderRef: { current: HeaderObject | null } = {
+    current: null,
+  };
+  private hoveredHeaderRef: { current: HeaderObject | null } = {
+    current: null,
+  };
 
   private localRows: Row[] = [];
   private headers: HeaderObject[] = [];
@@ -99,7 +107,8 @@ export class SimpleTableVanilla {
     checkDeprecatedProps(config);
 
     this.customTheme = TableInitializer.mergeCustomTheme(config);
-    this.mergedColumnEditorConfig = TableInitializer.mergeColumnEditorConfig(config);
+    this.mergedColumnEditorConfig =
+      TableInitializer.mergeColumnEditorConfig(config);
     this.resolvedIcons = TableInitializer.resolveIcons(config);
 
     this.localRows = [...config.rows];
@@ -107,7 +116,9 @@ export class SimpleTableVanilla {
     this.columnEditorOpen = config.editColumnsInitOpen ?? false;
     this.internalIsLoading = config.isLoading ?? false;
 
-    this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(config.defaultHeaders);
+    this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(
+      config.defaultHeaders,
+    );
     this.expandedDepths = TableInitializer.getInitialExpandedDepths(config);
 
     this.domManager = new DOMManager();
@@ -228,7 +239,9 @@ export class SimpleTableVanilla {
 
     if (!refs.tableBodyContainerRef.current || !elements) return;
 
-    this.scrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
+    this.scrollbarWidth = calculateScrollbarWidth(
+      refs.tableBodyContainerRef.current,
+    );
 
     const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
       this.headers,
@@ -305,7 +318,9 @@ export class SimpleTableVanilla {
     this.windowResizeManager = new WindowResizeManager();
     this.windowResizeManager.addCallback(() => {
       if (refs.tableBodyContainerRef.current) {
-        const newScrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
+        const newScrollbarWidth = calculateScrollbarWidth(
+          refs.tableBodyContainerRef.current,
+        );
         this.scrollbarWidth = newScrollbarWidth;
         this.scrollbarVisibilityManager?.setScrollbarWidth(newScrollbarWidth);
       }
@@ -328,8 +343,10 @@ export class SimpleTableVanilla {
         selectableColumns: this.config.selectableColumns ?? false,
         selectedCells: new Set(),
         selectedColumns: new Set(),
-        setSelectedCells: (cells) => this.selectionManager!.setSelectedCells(cells),
-        setSelectedColumns: (columns) => this.selectionManager!.setSelectedColumns(columns),
+        setSelectedCells: (cells) =>
+          this.selectionManager!.setSelectedCells(cells),
+        setSelectedColumns: (columns) =>
+          this.selectionManager!.setSelectedColumns(columns),
         getSelectedCells: () => this.selectionManager!.getSelectedCells(),
         getSelectedColumns: () => this.selectionManager!.getSelectedColumns(),
         onClearSelection: () => this.selectionManager!.clearSelection(),
@@ -344,7 +361,10 @@ export class SimpleTableVanilla {
     const elements = this.domManager.getElements();
     if (!elements?.bodyContainer) return;
 
-    elements.bodyContainer.addEventListener("scroll", this.handleScroll.bind(this));
+    elements.bodyContainer.addEventListener(
+      "scroll",
+      this.handleScroll.bind(this),
+    );
     elements.bodyContainer.addEventListener("mouseleave", () => {
       this.clearHoveredRows();
     });

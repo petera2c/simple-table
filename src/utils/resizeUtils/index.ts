@@ -110,19 +110,19 @@ export const handleResizeStart = ({
           : header;
 
       handleResizeWithAutoExpand({
-        delta,
-        startWidth,
-        resizedHeader: headerToResize,
-        sectionHeaders,
-        rootPinned,
-        reverse,
-        collapsedHeaders,
-        initialWidthsMap,
-        sectionWidth,
-        isParentResize: childrenToResize.length > 1,
         childrenToResize,
-        headers,
+        collapsedHeaders,
         containerWidth,
+        delta,
+        headers,
+        initialWidthsMap,
+        isParentResize: childrenToResize.length > 1,
+        resizedHeader: headerToResize,
+        reverse,
+        rootPinned,
+        sectionHeaders,
+        sectionWidth,
+        startWidth,
       });
     } else {
       // Normal resize mode
