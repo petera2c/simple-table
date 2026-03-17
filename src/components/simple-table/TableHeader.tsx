@@ -6,6 +6,7 @@ import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import { canDisplaySection } from "../../utils/generalUtils";
 
 const TableHeader = ({
+  calculatedHeaderHeight,
   centerHeaderRef,
   headers,
   mainTemplateColumns,
@@ -26,6 +27,19 @@ const TableHeader = ({
     maxHeaderDepth,
   } = useTableContext();
 
+  // When no section (left, main, or right) has visible columns, apply minHeight so the header doesn't collapse.
+  const hasAnyVisibleSection = useMemo(
+    () =>
+      canDisplaySection(headers, "left") ||
+      canDisplaySection(headers, undefined) ||
+      canDisplaySection(headers, "right"),
+    [headers],
+  );
+  const headerContainerStyle = useMemo(
+    () => (!hasAnyVisibleSection ? { minHeight: calculatedHeaderHeight } : undefined),
+    [hasAnyVisibleSection, calculatedHeaderHeight],
+  );
+
   // Calculate column indices for all headers to ensure consistent colIndex values
   const columnIndices = useMemo(() => {
     return calculateColumnIndices({
@@ -45,6 +59,7 @@ const TableHeader = ({
     <div
       className="st-header-container"
       ref={headerContainerRef}
+      style={headerContainerStyle}
       aria-rowcount={tableRows.length + maxHeaderDepth}
       aria-colcount={totalColumns}
     >

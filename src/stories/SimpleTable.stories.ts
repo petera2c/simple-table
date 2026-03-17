@@ -122,6 +122,9 @@ import CustomHeaderRenderingExample, {
 } from "./examples/CustomHeaderRenderingExample";
 import NestedGridExample from "./examples/NestedGridExample";
 import ColumnWidthChangeExample from "./examples/ColumnWidthChangeExample";
+import AllColumnsHiddenCollapseExampleComponent, {
+  allColumnsHiddenCollapseExampleDefaults,
+} from "./examples/AllColumnsHiddenCollapseExample";
 
 const meta = {
   title: "Docs & Examples",
@@ -180,6 +183,26 @@ export const Alignment: StoryObj<UniversalTableProps> = {
       description: {
         story:
           "Demonstrates column alignment functionality with left, right, and center-aligned columns. This story is used as a base for comprehensive alignment testing.",
+      },
+    },
+  },
+};
+export const AllColumnsHiddenCollapse: StoryObj<UniversalTableProps> = {
+  args: {
+    ...defaultUniversalArgs,
+    ...allColumnsHiddenCollapseExampleDefaults,
+  },
+  argTypes: universalArgTypes,
+  render: (args) =>
+    React.createElement(StoryWrapper, {
+      ExampleComponent: AllColumnsHiddenCollapseExampleComponent,
+      ...args,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Reproduces the table collapse bug when no column is visible. Uses responsive height (no height/maxHeight), editColumns, and basic data. Starts with only the Name column visible. Open the column editor and hide the Name column — the table collapses and the reset button becomes inaccessible because st-body-main is not rendered when every column has hide: true.",
       },
     },
   },

@@ -3,6 +3,7 @@ import SortColumn from "./SortColumn";
 import HeaderObject from "./HeaderObject";
 
 type TableHeaderProps = {
+  calculatedHeaderHeight: number;
   centerHeaderRef: RefObject<HTMLDivElement>;
   headers: HeaderObject[];
   mainTemplateColumns: string;
