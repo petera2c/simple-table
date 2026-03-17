@@ -80,6 +80,7 @@ const TableContent = ({
   }, [pinnedRightColumns, collapsedHeaders, autoExpandColumns]);
 
   const tableHeaderProps: TableHeaderProps = {
+    calculatedHeaderHeight,
     centerHeaderRef,
     headers,
     mainTemplateColumns,

@@ -20,9 +20,6 @@ export const allColumnsHiddenCollapseExampleDefaults = {
   editColumns: true,
   editColumnsInitOpen: false,
   columnReordering: true,
-  // Intentionally no height or maxHeight — responsive height triggers the collapse bug
-  height: undefined,
-  // maxHeight: "500px",
 };
 
 const roles = ["Developer", "Designer", "Manager", "Intern", "DevOps", "Engineer"];
@@ -55,6 +52,7 @@ const AllColumnsHiddenCollapseExampleComponent = (props: UniversalTableProps) =>
       width: "1fr",
       isSortable: true,
       filterable: true,
+      hide: true,
       // Only this column visible by default — hide it via column editor to reproduce collapse
     },
     { accessor: "age", label: "Age", width: 100, isSortable: true, filterable: true, hide: true },

@@ -4,6 +4,7 @@ import TableSection from "./TableSection";
 import StickyParentsContainer from "./StickyParentsContainer";
 import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
 import { useTableContext } from "../../context/TableContext";
+import { canDisplaySection } from "../../utils/generalUtils";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
@@ -143,6 +144,20 @@ const TableBody = ({
     });
   }, [headers, pinnedLeftColumns, pinnedRightColumns, collapsedHeaders]);
 
+  // When no section (left, main, or right) has visible columns, no body section is rendered and the container collapses.
+  // Apply minHeight so the table keeps its height and the column editor/reset remains accessible.
+  const hasAnyVisibleSection = useMemo(
+    () =>
+      canDisplaySection(headers, "left") ||
+      canDisplaySection(headers, undefined) ||
+      canDisplaySection(headers, "right"),
+    [headers],
+  );
+  const bodyContainerStyle = useMemo(
+    () => (!hasAnyVisibleSection ? { minHeight: totalHeight } : undefined),
+    [hasAnyVisibleSection, totalHeight],
+  );
+
   // Calculate row indices for all visible rows
   const rowIndices = useMemo(() => {
     const indices: RowIndices = {};
@@ -265,6 +280,7 @@ const TableBody = ({
         onMouseLeave={() => setHoveredIndex(null)}
         onScroll={handleScroll}
         ref={tableBodyContainerRef}
+        style={bodyContainerStyle}
       >
         {shouldShowEmptyState ? (
           <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
