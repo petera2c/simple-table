@@ -1,12 +1,13 @@
-import { useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import HeaderObject from "../../../types/HeaderObject";
 import ColumnEditorCheckbox from "./ColumnEditorCheckbox";
 import {
   ColumnEditorCustomRenderer,
   ColumnEditorSearchFunction,
 } from "../../../types/ColumnEditorConfig";
-import { FlattenedHeader } from "./columnEditorUtils";
+import { FlattenedHeader, flattenHeadersForPanelSection } from "./columnEditorUtils";
 import { useTableContext } from "../../../context/TableContext";
+import { partitionRootHeadersByPin, type PanelSection } from "../../../utils/pinnedColumnUtils";
 
 type TableColumnEditorPopoutProps = {
   headers: HeaderObject[];
@@ -17,16 +18,13 @@ type TableColumnEditorPopoutProps = {
   customRenderer?: ColumnEditorCustomRenderer;
 };
 
-// Default search function - checks if a header or any of its children match the search term
 const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): boolean => {
   const lowerSearch = searchTerm.toLowerCase();
 
-  // Check if the current header matches
   if (header.label.toLowerCase().includes(lowerSearch)) {
     return true;
   }
 
-  // Check if any children match
   if (header.children && header.children.length > 0) {
     return header.children.some((child) => defaultHeaderMatchesSearch(child, searchTerm));
   }
@@ -34,7 +32,6 @@ const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): b
   return false;
 };
 
-// Helper function to filter headers based on search term
 const filterHeaders = (
   headers: HeaderObject[],
   searchTerm: string,
@@ -54,6 +51,74 @@ const filterHeaders = (
   });
 };
 
+type HoverSepState = { section: PanelSection; index: number | null } | null;
+
+function renderSectionList({
+  title,
+  panelSection,
+  doesAnyHeaderHaveChildren,
+  allHeaders,
+  expandedHeaders,
+  setExpandedHeaders,
+  forceExpanded,
+  draggingRow,
+  setDraggingRow,
+  hoverSep,
+  setHoverSep,
+  flattenedForSection,
+}: {
+  title: string;
+  panelSection: PanelSection;
+  doesAnyHeaderHaveChildren: boolean;
+  allHeaders: HeaderObject[];
+  expandedHeaders: Set<string>;
+  setExpandedHeaders: (s: Set<string>) => void;
+  forceExpanded: boolean;
+  draggingRow: FlattenedHeader | null;
+  setDraggingRow: (row: FlattenedHeader | null) => void;
+  hoverSep: HoverSepState;
+  setHoverSep: (s: HoverSepState) => void;
+  flattenedForSection: FlattenedHeader[];
+}): ReactNode {
+  const hoveredSeparatorIndex = hoverSep?.section === panelSection ? hoverSep.index : null;
+
+  const setHoveredSeparatorIndex = (index: number | null) => {
+    if (index === null) {
+      setHoverSep(null);
+    } else {
+      setHoverSep({ section: panelSection, index });
+    }
+  };
+
+  return (
+    <div className="st-column-editor-section" data-panel-section={panelSection}>
+      <div className="st-column-editor-section-label">{title}</div>
+      <div className="st-column-editor-list st-column-editor-list-section">
+        {flattenedForSection.map((flatItem) => (
+          <ColumnEditorCheckbox
+            allHeaders={allHeaders}
+            clearHoverSeparator={() => setHoverSep(null)}
+            doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
+            key={`${panelSection}-${flatItem.header.accessor}-${flatItem.visualIndex}`}
+            depth={flatItem.depth}
+            draggingRow={draggingRow}
+            expandedHeaders={expandedHeaders}
+            flattenedHeaders={flattenedForSection}
+            forceExpanded={forceExpanded}
+            header={flatItem.header}
+            hoveredSeparatorIndex={hoveredSeparatorIndex}
+            panelSection={panelSection}
+            rowIndex={flatItem.visualIndex}
+            setDraggingRow={setDraggingRow}
+            setExpandedHeaders={setExpandedHeaders}
+            setHoveredSeparatorIndex={setHoveredSeparatorIndex}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const TableColumnEditorPopout = ({
   headers,
   open,
@@ -65,9 +130,8 @@ const TableColumnEditorPopout = ({
   const { resetColumns } = useTableContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [draggingRow, setDraggingRow] = useState<FlattenedHeader | null>(null);
-  const [hoveredSeparatorIndex, setHoveredSeparatorIndex] = useState<number | null>(null);
+  const [hoverSep, setHoverSep] = useState<HoverSepState>(null);
 
-  // Initialize with all headers expanded by default
   const [expandedHeaders, setExpandedHeaders] = useState<Set<string>>(() => {
     const initialExpanded = new Set<string>();
     const collectAccessors = (headerList: HeaderObject[]) => {
@@ -92,50 +156,53 @@ const TableColumnEditorPopout = ({
     [headers, searchTerm, searchEnabled, searchFunction],
   );
 
-  const flattenedHeaders = useMemo(() => {
-    const result: FlattenedHeader[] = [];
-    const forceExpanded = searchEnabled && searchTerm.trim().length > 0;
+  const { pinnedLeft, unpinned, pinnedRight } = useMemo(
+    () => partitionRootHeadersByPin(filteredHeaders),
+    [filteredHeaders],
+  );
 
-    const flatten = ({
-      headers,
-      depth = 0,
-      parent = null,
-      currentPath = [],
-    }: {
-      headers: HeaderObject[];
-      depth: number;
-      parent: HeaderObject | null;
-      currentPath: number[];
-    }) => {
-      headers.forEach((header, index) => {
-        // Skip selection columns and excluded headers
-        if (header.isSelectionColumn || header.excludeFromRender) {
-          return;
-        }
+  const forceExpanded = searchEnabled && searchTerm.trim().length > 0;
 
-        const visualIndex = result.length;
-        const indexPath = [...currentPath, index];
-        result.push({ header, visualIndex, depth, parent, indexPath });
+  const flatLeft = useMemo(
+    () =>
+      flattenHeadersForPanelSection({
+        sectionRoots: pinnedLeft,
+        fullRootHeaders: headers,
+        panelSection: "left",
+        expandedHeaders,
+        forceExpanded,
+      }),
+    [pinnedLeft, headers, expandedHeaders, forceExpanded],
+  );
 
-        // Check if this header should be expanded
-        const hasChildren = header.children && header.children.length > 0;
-        const shouldExpand = forceExpanded || expandedHeaders.has(header.accessor);
+  const flatMain = useMemo(
+    () =>
+      flattenHeadersForPanelSection({
+        sectionRoots: unpinned,
+        fullRootHeaders: headers,
+        panelSection: "main",
+        expandedHeaders,
+        forceExpanded,
+      }),
+    [unpinned, headers, expandedHeaders, forceExpanded],
+  );
 
-        // Recursively flatten children if expanded
-        if (hasChildren && shouldExpand && header.children) {
-          flatten({
-            headers: header.children,
-            depth: depth + 1,
-            parent: header,
-            currentPath: indexPath,
-          });
-        }
-      });
-    };
+  const flatRight = useMemo(
+    () =>
+      flattenHeadersForPanelSection({
+        sectionRoots: pinnedRight,
+        fullRootHeaders: headers,
+        panelSection: "right",
+        expandedHeaders,
+        forceExpanded,
+      }),
+    [pinnedRight, headers, expandedHeaders, forceExpanded],
+  );
 
-    flatten({ headers: filteredHeaders, depth: 0, parent: null, currentPath: [] });
-    return result;
-  }, [filteredHeaders, expandedHeaders, searchEnabled, searchTerm]);
+  const flattenedHeadersAll = useMemo(
+    () => [...flatLeft, ...flatMain, ...flatRight],
+    [flatLeft, flatMain, flatRight],
+  );
 
   const searchSection = searchEnabled ? (
     <div className="st-column-editor-search-wrapper">
@@ -152,26 +219,62 @@ const TableColumnEditorPopout = ({
     </div>
   ) : null;
 
+  const pinnedLeftList =
+    pinnedLeft.length > 0
+      ? renderSectionList({
+          title: "Pinned left",
+          panelSection: "left",
+          doesAnyHeaderHaveChildren,
+          allHeaders: headers,
+          expandedHeaders,
+          setExpandedHeaders,
+          forceExpanded,
+          draggingRow,
+          setDraggingRow,
+          hoverSep,
+          setHoverSep,
+          flattenedForSection: flatLeft,
+        })
+      : null;
+
+  const unpinnedList = renderSectionList({
+    title: "Columns",
+    panelSection: "main",
+    doesAnyHeaderHaveChildren,
+    allHeaders: headers,
+    expandedHeaders,
+    setExpandedHeaders,
+    forceExpanded,
+    draggingRow,
+    setDraggingRow,
+    hoverSep,
+    setHoverSep,
+    flattenedForSection: flatMain,
+  });
+
+  const pinnedRightList =
+    pinnedRight.length > 0
+      ? renderSectionList({
+          title: "Pinned right",
+          panelSection: "right",
+          doesAnyHeaderHaveChildren,
+          allHeaders: headers,
+          expandedHeaders,
+          setExpandedHeaders,
+          forceExpanded,
+          draggingRow,
+          setDraggingRow,
+          hoverSep,
+          setHoverSep,
+          flattenedForSection: flatRight,
+        })
+      : null;
+
   const listSection = (
-    <div className="st-column-editor-list">
-      {flattenedHeaders.map((flatItem) => (
-        <ColumnEditorCheckbox
-          doesAnyHeaderHaveChildren={doesAnyHeaderHaveChildren}
-          key={`${flatItem.header.accessor}-${flatItem.visualIndex}`}
-          header={flatItem.header}
-          allHeaders={headers}
-          depth={flatItem.depth}
-          forceExpanded={searchEnabled && searchTerm.trim().length > 0}
-          rowIndex={flatItem.visualIndex}
-          draggingRow={draggingRow}
-          setDraggingRow={setDraggingRow}
-          hoveredSeparatorIndex={hoveredSeparatorIndex}
-          setHoveredSeparatorIndex={setHoveredSeparatorIndex}
-          expandedHeaders={expandedHeaders}
-          setExpandedHeaders={setExpandedHeaders}
-          flattenedHeaders={flattenedHeaders}
-        />
-      ))}
+    <div className="st-column-editor-lists">
+      {pinnedLeftList}
+      {unpinnedList}
+      {pinnedRightList}
     </div>
   );
 
@@ -179,7 +282,10 @@ const TableColumnEditorPopout = ({
     customRenderer({
       searchSection,
       listSection,
-      flattenedHeaders,
+      pinnedLeftList,
+      unpinnedList,
+      pinnedRightList,
+      flattenedHeaders: flattenedHeadersAll,
       searchTerm,
       setSearchTerm,
       searchEnabled,

@@ -3,6 +3,7 @@ import HeaderObject, { Accessor } from "./HeaderObject";
 import TableRow from "./TableRow";
 import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
+import type { PinnedSectionsState } from "../utils/pinnedColumnUtils";
 
 interface SetHeaderRenameProps {
   accessor: Accessor;
@@ -26,6 +27,10 @@ type TableRefType = {
   getSortState: () => SortColumn | null;
   /** Applies a new sort state to the table. Pass null to clear sort. Direction defaults to cycling through asc -> desc -> null */
   applySortState: (props?: { accessor: Accessor; direction?: SortDirection }) => Promise<void>;
+  /** Ordered root accessors per pin section (left, main/unpinned, right) */
+  getPinnedState: () => PinnedSectionsState;
+  /** Reorder root columns and set pinned flags; lists must include every root accessor exactly once. Essential order is clamped per section. */
+  applyPinnedState: (state: PinnedSectionsState) => Promise<void>;
   /** Returns the current filter state */
   getFilterState: () => TableFilterState;
   /** Applies a filter to a specific column */

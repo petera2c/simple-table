@@ -737,7 +737,7 @@ export const ActualDragAndDropReordering: Story = {
 
 /**
  * Test 12: Drag and Drop with Pinned Columns
- * Tests dragging columns within and across pinned sections
+ * Tests dragging columns within pinned left, main, and pinned right sections (cross-section drag does not change pin)
  */
 export const DragAndDropWithPinnedColumns: Story = {
   render: () => {
@@ -826,6 +826,62 @@ export const DragAndDropWithPinnedColumns: Story = {
     expect(canvasElement.querySelector(".st-header-pinned-left")).toBeTruthy();
     expect(canvasElement.querySelector(".st-header-main")).toBeTruthy();
     expect(canvasElement.querySelector(".st-header-pinned-right")).toBeTruthy();
+  },
+};
+
+/**
+ * Test 12b: Drag from main onto pinned header does not repin the column
+ */
+export const CrossSectionHeaderDragDoesNotReassignPin: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 150, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 200, type: "string" },
+      { accessor: "department", label: "Department", width: 150, type: "string" },
+      { accessor: "salary", label: "Salary", width: 120, pinned: "right", type: "number" },
+    ];
+
+    return (
+      <div style={{ padding: "20px", width: "800px" }}>
+        <SimpleTable
+          columnReordering={true}
+          defaultHeaders={headers}
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const pinnedLeftSection = canvasElement.querySelector(".st-header-pinned-left");
+    const mainSection = canvasElement.querySelector(".st-header-main");
+
+    expect(pinnedLeftSection).toBeTruthy();
+    expect(mainSection).toBeTruthy();
+
+    const initialLeft = getColumnOrderFromSection(pinnedLeftSection!);
+    const initialMain = getColumnOrderFromSection(mainSection!);
+
+    const emailLabel = mainSection!.querySelector(
+      "[id*='header-email'] .st-header-label",
+    ) as HTMLElement;
+    const nameLabel = pinnedLeftSection!.querySelector(
+      "[id*='header-name'] .st-header-label",
+    ) as HTMLElement;
+
+    expect(emailLabel).toBeTruthy();
+    expect(nameLabel).toBeTruthy();
+
+    await performDragAndDrop(emailLabel, nameLabel, "Email → Name (cross-section)");
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    expect(getColumnOrderFromSection(pinnedLeftSection!)).toEqual(initialLeft);
+    expect(getColumnOrderFromSection(mainSection!)).toEqual(initialMain);
   },
 };
 

@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { expect } from "@storybook/test";
-import { Row, SimpleTable } from "../..";
-import { HeaderObject } from "../..";
+import { HeaderObject, Row, SimpleTable, TableRefType } from "../..";
 
 // ============================================================================
 // DATA INTERFACES
@@ -638,5 +637,136 @@ export const PinnedColumnsWithAlignment: Story = {
 
     const rightHeaderLabel = rightHeaderCells[0].querySelector(".st-header-label-text");
     expect(rightHeaderLabel?.classList.contains("right-aligned")).toBe(true);
+  },
+};
+
+/**
+ * Test 11: Column editor shows separate Pinned left / Columns / Pinned right sections
+ */
+export const ColumnEditorPanelPinSections: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "email", label: "Email", width: 200, type: "string" },
+      { accessor: "salary", label: "Salary", width: 120, pinned: "right", type: "number" },
+    ];
+
+    return (
+      <div style={{ padding: "20px", width: "700px" }}>
+        <SimpleTable
+          defaultHeaders={headers}
+          editColumns
+          editColumnsInitOpen
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const labels = canvasElement.querySelectorAll(".st-column-editor-section-label");
+    expect(labels.length).toBeGreaterThanOrEqual(3);
+    const text = Array.from(labels).map((el) => el.textContent?.trim() || "");
+    expect(text.some((t) => /pinned left/i.test(t))).toBe(true);
+    expect(text.some((t) => /^columns$/i.test(t))).toBe(true);
+    expect(text.some((t) => /pinned right/i.test(t))).toBe(true);
+  },
+};
+
+/**
+ * Test 12: Programmatic applyPinnedState reorders and sets pins
+ */
+export const ProgrammaticPinnedState: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "email", label: "Email", width: 200, type: "string" },
+    ];
+
+    const ref = React.createRef<TableRefType | null>();
+
+    return (
+      <div style={{ padding: "20px", width: "700px" }}>
+        <button
+          type="button"
+          id="apply-pinned-test-btn"
+          onClick={async () => {
+            await ref.current?.applyPinnedState({
+              left: ["name"],
+              main: ["email"],
+              right: ["id"],
+            });
+          }}
+        >
+          Apply pinned state
+        </button>
+        <SimpleTable
+          tableRef={ref}
+          defaultHeaders={headers}
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const btn = canvasElement.querySelector("#apply-pinned-test-btn") as HTMLButtonElement | null;
+    expect(btn).toBeTruthy();
+    btn?.click();
+    await new Promise((r) => setTimeout(r, 50));
+    const left = canvasElement.querySelector(".st-header-pinned-left");
+    const right = canvasElement.querySelector(".st-header-pinned-right");
+    expect(left).toBeTruthy();
+    expect(right).toBeTruthy();
+    const leftOrder = Array.from(left!.querySelectorAll(".st-header-label-text")).map(
+      (el) => el.textContent?.trim(),
+    );
+    const rightOrder = Array.from(right!.querySelectorAll(".st-header-label-text")).map(
+      (el) => el.textContent?.trim(),
+    );
+    expect(leftOrder).toContain("Name");
+    expect(rightOrder).toContain("ID");
+  },
+};
+
+/**
+ * Test 13: Essential column keeps visibility checkbox disabled in column editor
+ */
+export const EssentialColumnVisibilityLocked: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+
+    return (
+      <div style={{ padding: "20px", width: "600px" }}>
+        <SimpleTable
+          defaultHeaders={headers}
+          essentialColumns={["id"]}
+          editColumns
+          editColumnsInitOpen
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const disabled = canvasElement.querySelector(
+      ".st-column-editor-list .st-checkbox-input[disabled]",
+    );
+    expect(disabled).toBeTruthy();
   },
 };

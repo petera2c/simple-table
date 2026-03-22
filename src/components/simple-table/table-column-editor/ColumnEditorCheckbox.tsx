@@ -1,4 +1,4 @@
-import { DragEvent } from "react";
+import { DragEvent, useCallback } from "react";
 import Checkbox from "../../Checkbox";
 import HeaderObject from "../../../types/HeaderObject";
 import { useTableContext } from "../../../context/TableContext";
@@ -10,18 +10,18 @@ import {
   findClosestValidSeparatorIndex,
   FlattenedHeader,
 } from "./columnEditorUtils";
-import {
-  getSiblingArray,
-  setSiblingArray,
-  insertHeaderAcrossSections,
-  getHeaderSection,
-  swapHeaders,
-} from "../../../hooks/useDragHandler";
+import { getSiblingArray, setSiblingArray, swapHeaders } from "../../../hooks/useDragHandler";
 import { deepClone } from "../../../utils/generalUtils";
+import {
+  isHeaderEssential,
+  moveRootColumnPinSide,
+  validateFullHeaderTreeEssentialOrder,
+  type PanelSection,
+} from "../../../utils/pinnedColumnUtils";
 
-// Component to render a single header row
 const ColumnEditorCheckbox = ({
   allHeaders,
+  clearHoverSeparator,
   depth = 0,
   doesAnyHeaderHaveChildren,
   draggingRow,
@@ -31,12 +31,14 @@ const ColumnEditorCheckbox = ({
   header,
   hoveredSeparatorIndex,
   isCheckedOverride,
+  panelSection,
   rowIndex,
   setDraggingRow,
   setExpandedHeaders,
   setHoveredSeparatorIndex,
 }: {
   allHeaders: HeaderObject[];
+  clearHoverSeparator?: () => void;
   depth?: number;
   doesAnyHeaderHaveChildren: boolean;
   draggingRow: FlattenedHeader | null;
@@ -46,6 +48,7 @@ const ColumnEditorCheckbox = ({
   header: HeaderObject;
   hoveredSeparatorIndex: number | null;
   isCheckedOverride?: boolean;
+  panelSection: PanelSection;
   rowIndex?: number;
   setDraggingRow: (row: FlattenedHeader | null) => void;
   setExpandedHeaders: (headers: Set<string>) => void;
@@ -53,24 +56,27 @@ const ColumnEditorCheckbox = ({
 }) => {
   const {
     columnEditorConfig,
+    essentialAccessors,
     headers,
     icons,
     setHeaders,
     onColumnVisibilityChange,
     onColumnOrderChange,
   } = useTableContext();
+  const allowColumnPinning = columnEditorConfig.allowColumnPinning !== false;
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
+
+  const isEssential = isHeaderEssential(header, essentialAccessors);
+  const canToggleVisibility = !isEssential;
 
   const isChecked =
     isCheckedOverride ??
     !(header.hide || (hasChildren && header.children && areAllChildrenHidden(header.children)));
 
-  // Check if this header is expanded
   const isExpanded = expandedHeaders.has(header.accessor);
   const shouldExpand = forceExpanded || isExpanded;
 
-  // Toggle expansion
   const toggleExpanded = () => {
     if (forceExpanded) return;
 
@@ -83,10 +89,45 @@ const ColumnEditorCheckbox = ({
     setExpandedHeaders(newExpanded);
   };
 
-  // Drag handlers
+  const applyHeaderOrder = useCallback(
+    (updatedHeaders: HeaderObject[]) => {
+      if (
+        essentialAccessors.size > 0 &&
+        !validateFullHeaderTreeEssentialOrder(updatedHeaders, essentialAccessors)
+      ) {
+        return false;
+      }
+      onColumnOrderChange?.(updatedHeaders);
+      setHeaders(updatedHeaders);
+      return true;
+    },
+    [essentialAccessors, onColumnOrderChange, setHeaders],
+  );
+
+  const pinLeft = useCallback(() => {
+    const next = moveRootColumnPinSide(headers, header.accessor, "left", essentialAccessors);
+    if (next) applyHeaderOrder(next);
+  }, [applyHeaderOrder, essentialAccessors, header.accessor, headers]);
+
+  const pinRight = useCallback(() => {
+    const next = moveRootColumnPinSide(headers, header.accessor, "right", essentialAccessors);
+    if (next) applyHeaderOrder(next);
+  }, [applyHeaderOrder, essentialAccessors, header.accessor, headers]);
+
+  const unpin = useCallback(() => {
+    const next = moveRootColumnPinSide(headers, header.accessor, "main", essentialAccessors);
+    if (next) applyHeaderOrder(next);
+  }, [applyHeaderOrder, essentialAccessors, header.accessor, headers]);
+
+  const pinnedSide = header.pinned === "left" || header.pinned === "right" ? header.pinned : null;
+  const canUnpin = Boolean(pinnedSide) && !isEssential;
+  const canPinLeft = !pinnedSide && panelSection === "main";
+  const canPinRight = !pinnedSide && panelSection === "main";
+
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.effectAllowed = "move";
     if (rowIndex === undefined) return;
+    clearHoverSeparator?.();
     setDraggingRow(flattenedHeaders[rowIndex]);
   };
 
@@ -97,13 +138,12 @@ const ColumnEditorCheckbox = ({
   const onDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
 
-    if (rowIndex !== undefined && draggingRow) {
+    if (rowIndex !== undefined && draggingRow && draggingRow.panelSection === panelSection) {
       const rect = event.currentTarget.getBoundingClientRect();
       const mouseY = event.clientY;
       const rowMiddle = rect.top + rect.height / 2;
       const isTopHalfOfRow = mouseY < rowMiddle;
 
-      // Find the closest valid separator index based on hierarchy constraints
       const validSeparatorIndex = findClosestValidSeparatorIndex({
         flattenedHeaders,
         draggingRow,
@@ -120,7 +160,11 @@ const ColumnEditorCheckbox = ({
       setDraggingRow(null);
       setHoveredSeparatorIndex(null);
     };
-    if (!draggingRow || hoveredSeparatorIndex === null) {
+    if (
+      !draggingRow ||
+      hoveredSeparatorIndex === null ||
+      draggingRow.panelSection !== panelSection
+    ) {
       cancelDrag();
       return;
     }
@@ -135,8 +179,6 @@ const ColumnEditorCheckbox = ({
       return;
     }
 
-    // If dragging row is at shallower depth and hovering over a deeper child,
-    // use the parent instead for reordering at the parent level
     if (draggingRow.depth < hoveredHeader.depth && hoveredHeader.parent) {
       const parentIndex = flattenedHeaders.findIndex(
         (h) => h.header.accessor === hoveredHeader.parent!.accessor,
@@ -151,57 +193,32 @@ const ColumnEditorCheckbox = ({
       return;
     }
 
-    // Check if both headers share the same parent
     const haveSameParent =
       draggingRow.indexPath.length === hoveredHeader.indexPath.length &&
       (draggingRow.indexPath.length === 1 ||
         draggingRow.indexPath.slice(0, -1).every((idx, i) => idx === hoveredHeader.indexPath[i]));
 
     if (!haveSameParent) {
-      // Different parents - cancel the drag
       cancelDrag();
       return;
     }
 
     let updatedHeaders: HeaderObject[];
 
-    // For root-level headers, check if this is a cross-section drag
     if (draggingRow.indexPath.length === 1) {
-      const draggedSection = getHeaderSection(draggingRow.header);
-      const hoveredSection = getHeaderSection(hoveredHeader.header);
-      const isCrossSectionDrag = draggedSection !== hoveredSection;
+      const { newHeaders, emergencyBreak } = swapHeaders(
+        headers,
+        draggingRow.indexPath,
+        hoveredHeader.indexPath,
+      );
 
-      if (isCrossSectionDrag) {
-        // Cross-section drag - use insertHeaderAcrossSections with full headers array
-        const { newHeaders, emergencyBreak } = insertHeaderAcrossSections({
-          headers: headers,
-          draggedHeader: draggingRow.header,
-          hoveredHeader: hoveredHeader.header,
-        });
-
-        if (emergencyBreak) {
-          cancelDrag();
-          return;
-        }
-
-        updatedHeaders = newHeaders;
-      } else {
-        // Same-section drag - use swapHeaders
-        const { newHeaders, emergencyBreak } = swapHeaders(
-          headers,
-          draggingRow.indexPath,
-          hoveredHeader.indexPath,
-        );
-
-        if (emergencyBreak) {
-          cancelDrag();
-          return;
-        }
-
-        updatedHeaders = newHeaders;
+      if (emergencyBreak) {
+        cancelDrag();
+        return;
       }
+
+      updatedHeaders = newHeaders;
     } else {
-      // Nested headers - reorder within the sibling array
       const siblingArray = getSiblingArray(headers, draggingRow.indexPath);
       const { newHeaders, emergencyBreak } = swapHeaders(
         siblingArray,
@@ -217,50 +234,42 @@ const ColumnEditorCheckbox = ({
       updatedHeaders = setSiblingArray(deepClone(headers), draggingRow.indexPath, newHeaders);
     }
 
-    onColumnOrderChange?.(updatedHeaders);
-    setHeaders(updatedHeaders);
+    if (!applyHeaderOrder(updatedHeaders)) {
+      cancelDrag();
+      return;
+    }
     cancelDrag();
   };
 
-  // Handle checkbox change
   const handleCheckboxChange = (checked: boolean) => {
-    // Update this header's state (checked = visible, so hide = !checked)
+    if (!canToggleVisibility) return;
+
     header.hide = !checked;
 
     if (!checked) {
-      // If unchecked (hidden), check if we need to update any parents to be hidden
       updateParentHeaders(allHeaders);
     } else {
-      // If checked (visible), ensure all parent headers are also visible
       findAndMarkParentsVisible(allHeaders, header.accessor);
 
-      // If this is a parent header being made visible, and all its children are hidden,
-      // make at least the first child visible for better UX
       if (hasChildren && header.children && header.children.length > 0) {
         const allChildrenCurrentlyHidden = header.children.every((child) => child.hide === true);
 
         if (allChildrenCurrentlyHidden && header.children[0]) {
-          // Make the first child visible
           header.children[0].hide = false;
-
-          // Also make sure any parents of the child we just made visible are also visible
           findAndMarkParentsVisible(allHeaders, header.children[0].accessor);
         }
       }
     }
 
-    // Update state
     const updatedHeaders = [...headers];
     setHeaders(updatedHeaders);
 
-    // Notify consumer of visibility change
     if (onColumnVisibilityChange) {
       const visibilityState = buildColumnVisibilityState(updatedHeaders);
       onColumnVisibilityChange(visibilityState);
     }
   };
 
-  // Create component elements for custom renderer
   const ExpandIconComponent = doesAnyHeaderHaveChildren && hasChildren && (
     <div className="st-header-icon-container">
       <div
@@ -277,11 +286,88 @@ const ColumnEditorCheckbox = ({
     </div>
   );
 
-  const CheckboxComponent = <Checkbox checked={isChecked} onChange={handleCheckboxChange} />;
+  const CheckboxComponent = (
+    <Checkbox checked={isChecked} disabled={!canToggleVisibility} onChange={handleCheckboxChange} />
+  );
 
   const DragIconComponent = <div className="st-drag-icon-container">{icons.drag}</div>;
 
+  const pinControl = {
+    pinnedSide,
+    canPinLeft,
+    canPinRight,
+    canUnpin,
+    pinLeft,
+    pinRight,
+    unpin,
+  };
+
+  const pinnedSideLetter = pinnedSide === "left" ? "L" : pinnedSide === "right" ? "R" : null;
+
+  const defaultPinIcon = !allowColumnPinning
+    ? null
+    : pinnedSide !== null && pinnedSideLetter !== null ? (
+      canUnpin ? (
+        <button
+          type="button"
+          className="st-column-pin-btn st-column-pin-side st-column-pin-pinned-mark st-column-pin-pinned-active"
+          aria-label="Unpin column"
+          title="Unpin"
+          onClick={(e) => {
+            e.stopPropagation();
+            unpin();
+          }}
+        >
+          {pinnedSideLetter}
+        </button>
+      ) : (
+        <span
+          className="st-column-pin-pinned-mark st-column-pin-side st-column-pin-pinned-essential st-column-pin-pinned-active"
+          aria-hidden
+          title="Pinned (essential)"
+        >
+          {pinnedSideLetter}
+        </span>
+      )
+    ) : panelSection === "main" && (canPinLeft || canPinRight) ? (
+      <div className="st-column-pin-side-group">
+        {canPinLeft ? (
+          <button
+            type="button"
+            className="st-column-pin-btn st-column-pin-side st-column-pin-side-option"
+            aria-label="Pin column to left"
+            title="Pin to left"
+            onClick={(e) => {
+              e.stopPropagation();
+              pinLeft();
+            }}
+          >
+            L
+          </button>
+        ) : null}
+        {canPinRight ? (
+          <button
+            type="button"
+            className="st-column-pin-btn st-column-pin-side st-column-pin-side-option"
+            aria-label="Pin column to right"
+            title="Pin to right"
+            onClick={(e) => {
+              e.stopPropagation();
+              pinRight();
+            }}
+          >
+            R
+          </button>
+        ) : null}
+      </div>
+    ) : null;
+
   const LabelContent = <div className="st-column-label-container">{header.label}</div>;
+
+  const rowDraggable =
+    rowIndex !== undefined &&
+    !header.disableReorder &&
+    !isHeaderEssential(header, essentialAccessors);
 
   return (
     <>
@@ -294,7 +380,7 @@ const ColumnEditorCheckbox = ({
       <div
         className="st-header-checkbox-item"
         style={{ paddingLeft }}
-        draggable
+        draggable={rowDraggable}
         onDragStart={onDragStart}
         onDragEnter={onDragEnter}
         onDragOver={onDragOver}
@@ -304,11 +390,17 @@ const ColumnEditorCheckbox = ({
           columnEditorConfig.rowRenderer({
             accessor: header.accessor,
             header,
+            panelSection,
+            isEssential,
+            canToggleVisibility,
+            allowColumnPinning,
+            pinControl,
             components: {
               expandIcon: ExpandIconComponent || undefined,
               checkbox: CheckboxComponent,
               dragIcon: DragIconComponent,
               labelContent: LabelContent,
+              pinIcon: allowColumnPinning ? (defaultPinIcon ?? undefined) : undefined,
             },
           })
         ) : (
@@ -330,7 +422,12 @@ const ColumnEditorCheckbox = ({
                 ) : null}
               </div>
             )}
-            <Checkbox checked={isChecked} onChange={handleCheckboxChange}></Checkbox>
+            <Checkbox
+              checked={isChecked}
+              disabled={!canToggleVisibility}
+              onChange={handleCheckboxChange}
+            />
+            {defaultPinIcon}
             <div className="st-drag-icon-container">{icons.drag}</div>
             <div className="st-column-label-container">{header.label}</div>
           </>

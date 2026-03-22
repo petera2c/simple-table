@@ -1,4 +1,5 @@
 import HeaderObject, { Accessor } from "../../../types/HeaderObject";
+import type { PanelSection } from "../../../utils/pinnedColumnUtils";
 import { ColumnVisibilityState } from "../../../types/ColumnVisibilityTypes";
 
 // Find all parents for a given header to ensure they're visible
@@ -86,7 +87,10 @@ export type FlattenedHeader = {
   visualIndex: number;
   depth: number;
   parent: HeaderObject | null;
+  /** Path in the full headers tree (indices into root array, then children, …) */
   indexPath: number[];
+  /** Column editor panel section this row belongs to */
+  panelSection: PanelSection;
 };
 
 export const findClosestValidSeparatorIndex = ({
@@ -101,6 +105,7 @@ export const findClosestValidSeparatorIndex = ({
   isTopHalfOfRow: boolean;
 }): number | null => {
   const hoveredRow = flattenedHeaders[hoveredRowIndex];
+  if (hoveredRow.panelSection !== draggingRow.panelSection) return null;
 
   if (hoveredRow.depth === draggingRow.depth) {
     if (hoveredRow.parent?.accessor !== draggingRow.parent?.accessor) {
@@ -172,3 +177,55 @@ export const findClosestValidSeparatorIndex = ({
     return null;
   }
 };
+
+/** Flatten one column-editor panel section; `indexPath` matches the full `fullRootHeaders` tree. */
+export function flattenHeadersForPanelSection({
+  sectionRoots,
+  fullRootHeaders,
+  panelSection,
+  expandedHeaders,
+  forceExpanded,
+}: {
+  sectionRoots: HeaderObject[];
+  fullRootHeaders: HeaderObject[];
+  panelSection: PanelSection;
+  expandedHeaders: Set<string>;
+  forceExpanded: boolean;
+}): FlattenedHeader[] {
+  const result: FlattenedHeader[] = [];
+
+  const visit = (
+    header: HeaderObject,
+    depth: number,
+    parent: HeaderObject | null,
+    indexPath: number[],
+  ): void => {
+    if (header.isSelectionColumn || header.excludeFromRender) {
+      return;
+    }
+    const visualIndex = result.length;
+    result.push({
+      header,
+      visualIndex,
+      depth,
+      parent,
+      indexPath,
+      panelSection,
+    });
+    const hasChildren = header.children && header.children.length > 0;
+    const shouldExpand = forceExpanded || expandedHeaders.has(header.accessor);
+    if (hasChildren && shouldExpand && header.children) {
+      header.children.forEach((child, childIndex) => {
+        visit(child, depth + 1, header, [...indexPath, childIndex]);
+      });
+    }
+  };
+
+  sectionRoots.forEach((header) => {
+    const rootIndex = fullRootHeaders.findIndex((h) => h.accessor === header.accessor);
+    if (rootIndex === -1) return;
+    visit(header, 0, null, [rootIndex]);
+  });
+
+  return result;
+}

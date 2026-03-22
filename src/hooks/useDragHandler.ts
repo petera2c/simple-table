@@ -4,6 +4,7 @@ import DragHandlerProps from "../types/DragHandlerProps";
 import usePrevious from "./usePrevious";
 import { deepClone } from "../utils/generalUtils";
 import { useTableContext } from "../context/TableContext";
+import { validateFullHeaderTreeEssentialOrder } from "../utils/pinnedColumnUtils";
 
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 let prevUpdateTime = Date.now();
@@ -182,6 +183,7 @@ export function insertHeaderAcrossSections({
 
 const useDragHandler = ({
   draggedHeaderRef,
+  essentialAccessors,
   headers,
   hoveredHeaderRef,
   onColumnOrderChange,
@@ -232,10 +234,7 @@ const useDragHandler = ({
     let emergencyBreak = false;
 
     if (isCrossSectionDrag) {
-      // Handle cross-section dragging with insertion
-      const result = insertHeaderAcrossSections({ headers, draggedHeader, hoveredHeader });
-      newHeaders = result.newHeaders;
-      emergencyBreak = result.emergencyBreak;
+      return;
     } else {
       // Handle same-section dragging (existing logic)
       const currentHeaders = headers;
@@ -277,6 +276,15 @@ const useDragHandler = ({
       const result = swapHeaders(currentHeaders, draggedHeaderIndexPath, targetHoveredIndexPath);
       newHeaders = result.newHeaders;
       emergencyBreak = result.emergencyBreak;
+    }
+
+    const essential = essentialAccessors ?? new Set<string>();
+    if (
+      essential.size > 0 &&
+      !emergencyBreak &&
+      !validateFullHeaderTreeEssentialOrder(newHeaders, essential as ReadonlySet<string>)
+    ) {
+      return;
     }
 
     if (

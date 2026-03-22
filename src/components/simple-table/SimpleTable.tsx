@@ -9,6 +9,8 @@ import {
   AscIcon,
   FilterIcon,
   DragIcon,
+  PinFilledIcon,
+  PinOutlineIcon,
 } from "../../icons";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
@@ -46,6 +48,7 @@ import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { checkDeprecatedProps } from "../../utils/deprecatedPropsWarnings";
 import { useAutoScaleMainSection } from "../../hooks/useAutoScaleMainSection";
 import { deepClone } from "../../utils/generalUtils";
+import { collectEssentialAccessors } from "../../utils/pinnedColumnUtils";
 
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
@@ -86,6 +89,7 @@ const SimpleTableComp = ({
   enableHeaderEditing = false,
   enableRowSelection = false,
   enableStickyParents = false,
+  essentialColumns,
   errorStateRenderer,
   expandAll = true,
   expandIcon: expandIconDeprecated,
@@ -155,6 +159,8 @@ const SimpleTableComp = ({
       prev: <AngleLeftIcon className="st-next-prev-icon" />,
       sortDown: <DescIcon className="st-header-icon" />,
       sortUp: <AscIcon className="st-header-icon" />,
+      pinOutline: <PinOutlineIcon className="st-column-pin-svg" />,
+      pinFilled: <PinFilledIcon className="st-column-pin-svg" />,
     };
 
     return {
@@ -168,6 +174,8 @@ const SimpleTableComp = ({
       prev: icons?.prev ?? prevIconDeprecated ?? defaultIcons.prev,
       sortDown: icons?.sortDown ?? sortDownIconDeprecated ?? defaultIcons.sortDown,
       sortUp: icons?.sortUp ?? sortUpIconDeprecated ?? defaultIcons.sortUp,
+      pinOutline: icons?.pinOutline ?? defaultIcons.pinOutline,
+      pinFilled: icons?.pinFilled ?? defaultIcons.pinFilled,
     };
   }, [
     icons,
@@ -199,6 +207,8 @@ const SimpleTableComp = ({
         columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
       searchPlaceholder:
         columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+      allowColumnPinning:
+        columnEditorConfig?.allowColumnPinning ?? DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,
       searchFunction: columnEditorConfig?.searchFunction,
       rowRenderer: columnEditorConfig?.rowRenderer,
       customRenderer: columnEditorConfig?.customRenderer,
@@ -365,6 +375,11 @@ const SimpleTableComp = ({
 
     return processedHeaders;
   }, [enableRowSelection, headers, selectionColumnWidth]);
+
+  const essentialAccessors = useMemo(
+    () => collectEssentialAccessors(essentialColumns, effectiveHeaders),
+    [essentialColumns, effectiveHeaders],
+  );
 
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
@@ -751,12 +766,14 @@ const SimpleTableComp = ({
     currentPage,
     resetColumns,
     editColumns,
+    essentialAccessors,
     expandedDepths,
     filters,
     flattenedRows,
     headerRegistryRef,
     headers: effectiveHeaders,
     includeHeadersInCSVExport,
+    onColumnOrderChange,
     onColumnVisibilityChange,
     onPageChange,
     paginatableRows,
@@ -824,6 +841,7 @@ const SimpleTableComp = ({
         draggedHeaderRef,
         editColumns,
         emptyStateRenderer,
+        essentialAccessors,
         enableHeaderEditing,
         enableRowSelection,
         errorStateRenderer,

@@ -11,6 +11,12 @@ import HeaderObject from "../types/HeaderObject";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { SortDirection } from "../types/SortColumn";
 import { QuickFilterConfig } from "../types/QuickFilterTypes";
+import type { PinnedSectionsState } from "../utils/pinnedColumnUtils";
+import {
+  getPinnedSectionsState,
+  isHeaderEssential,
+  rebuildHeadersFromPinnedState,
+} from "../utils/pinnedColumnUtils";
 
 /**
  * Wraps a function to return a Promise that resolves after the next tick.
@@ -35,12 +41,14 @@ const useTableAPI = ({
   currentPage,
   resetColumns,
   editColumns,
+  essentialAccessors,
   expandedDepths,
   filters,
   flattenedRows,
   headerRegistryRef,
   headers,
   includeHeadersInCSVExport,
+  onColumnOrderChange,
   onColumnVisibilityChange,
   onPageChange,
   paginatableRows,
@@ -71,12 +79,14 @@ const useTableAPI = ({
   currentPage: number;
   resetColumns: () => void;
   editColumns: boolean;
+  essentialAccessors: ReadonlySet<string>;
   expandedDepths: Set<number>;
   filters: TableFilterState;
   flattenedRows: TableRow[];
   headerRegistryRef: MutableRefObject<Map<string, HeaderRegistryEntry>>;
   headers: HeaderObject[];
   includeHeadersInCSVExport: boolean;
+  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onColumnVisibilityChange?: (visibilityState: Record<string, boolean>) => void;
   onPageChange?: (page: number) => void | Promise<void>;
   paginatableRows: TableRow[];
@@ -157,6 +167,22 @@ const useTableAPI = ({
           return sort;
         },
         applySortState: asyncStateUpdate(updateSort),
+        getPinnedState: (): PinnedSectionsState => {
+          return getPinnedSectionsState(headers);
+        },
+        applyPinnedState: asyncStateUpdate((state: PinnedSectionsState) => {
+          setHeaders((currentHeaders) => {
+            const next = rebuildHeadersFromPinnedState(currentHeaders, state, essentialAccessors);
+            if (!next) {
+              console.warn(
+                "applyPinnedState: left, main, and right accessor lists must include each root column exactly once.",
+              );
+              return currentHeaders;
+            }
+            onColumnOrderChange?.(next);
+            return next;
+          });
+        }),
         getFilterState: () => {
           return filters;
         },
@@ -304,17 +330,18 @@ const useTableAPI = ({
           }
         },
         applyColumnVisibility: asyncStateUpdate((visibility: { [accessor: string]: boolean }) => {
-          // Helper function to recursively update headers
-          const updateHeaderVisibility = (headers: HeaderObject[]): HeaderObject[] => {
-            return headers.map((header) => {
+          const updateHeaderVisibility = (headerList: HeaderObject[]): HeaderObject[] => {
+            return headerList.map((header) => {
               const accessor = String(header.accessor);
               const shouldUpdate = accessor in visibility;
+              let hide = shouldUpdate ? !visibility[accessor] : header.hide;
+              if (isHeaderEssential(header, essentialAccessors)) {
+                hide = false;
+              }
 
               return {
                 ...header,
-                // Update hide property if this accessor is in the visibility object
-                hide: shouldUpdate ? !visibility[accessor] : header.hide,
-                // Recursively update children if they exist
+                hide,
                 children: header.children
                   ? updateHeaderVisibility(header.children)
                   : header.children,
@@ -346,12 +373,14 @@ const useTableAPI = ({
     currentPage,
     resetColumns,
     editColumns,
+    essentialAccessors,
     expandedDepths,
     filters,
     flattenedRows,
     headerRegistryRef,
     headers,
     includeHeadersInCSVExport,
+    onColumnOrderChange,
     onColumnVisibilityChange,
     onPageChange,
     paginatableRows,

@@ -10,14 +10,22 @@ export const cellHighlightingDefaults = {
 
 // Define headers with conditional cell styling
 const headers: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, type: "number" },
-  { accessor: "product", label: "Product", minWidth: 100, width: "1fr", type: "string" },
+  { accessor: "id", label: "ID", width: 80, type: "number", isEditable: true },
+  {
+    accessor: "product",
+    label: "Product",
+    minWidth: 100,
+    width: "1fr",
+    type: "string",
+    isEditable: true,
+  },
   {
     accessor: "sales",
     label: "Sales",
     width: 120,
     align: "right",
     type: "number",
+    isEditable: true,
   },
   {
     accessor: "growth",
@@ -25,31 +33,90 @@ const headers: HeaderObject[] = [
     width: 120,
     align: "right",
     type: "number",
+    isEditable: true,
   },
   {
     accessor: "status",
     label: "Status",
     width: 150,
     type: "string",
+    isEditable: true,
   },
   {
     accessor: "risk",
     label: "Risk",
     width: 120,
     type: "string",
+    isEditable: true,
   },
 ];
 
 // Sample data with values to highlight - using new simplified structure
 const data = [
-  { id: 1, product: "Laptop", sales: 1250, growth: 15, status: "In Stock", risk: "Low" },
-  { id: 2, product: "Smartphone", sales: 2430, growth: -5, status: "Low Stock", risk: "Medium" },
-  { id: 3, product: "Tablet", sales: 890, growth: 23, status: "In Stock", risk: "Low" },
-  { id: 4, product: "Headphones", sales: 560, growth: -12, status: "Out of Stock", risk: "High" },
-  { id: 5, product: "Monitor", sales: 1180, growth: 8, status: "In Stock", risk: "Low" },
-  { id: 6, product: "Keyboard", sales: 350, growth: -2, status: "Low Stock", risk: "Medium" },
-  { id: 7, product: "Mouse", sales: 410, growth: 5, status: "In Stock", risk: "Low" },
-  { id: 8, product: "Speaker", sales: 680, growth: -8, status: "Out of Stock", risk: "High" },
+  {
+    id: 1,
+    product: "Laptop",
+    sales: 1250,
+    growth: 15,
+    status: "In Stock",
+    risk: "Low",
+  },
+  {
+    id: 2,
+    product: "Smartphone",
+    sales: 2430,
+    growth: -5,
+    status: "Low Stock",
+    risk: "Medium",
+  },
+  {
+    id: 3,
+    product: "Tablet",
+    sales: 890,
+    growth: 23,
+    status: "In Stock",
+    risk: "Low",
+  },
+  {
+    id: 4,
+    product: "Headphones",
+    sales: 560,
+    growth: -12,
+    status: "Out of Stock",
+    risk: "High",
+  },
+  {
+    id: 5,
+    product: "Monitor",
+    sales: 1180,
+    growth: 8,
+    status: "In Stock",
+    risk: "Low",
+  },
+  {
+    id: 6,
+    product: "Keyboard",
+    sales: 350,
+    growth: -2,
+    status: "Low Stock",
+    risk: "Medium",
+  },
+  {
+    id: 7,
+    product: "Mouse",
+    sales: 410,
+    growth: 5,
+    status: "In Stock",
+    risk: "Low",
+  },
+  {
+    id: 8,
+    product: "Speaker",
+    sales: 680,
+    growth: -8,
+    status: "Out of Stock",
+    risk: "High",
+  },
 ];
 
 const CellHighlightingDemo = (props: UniversalTableProps) => {

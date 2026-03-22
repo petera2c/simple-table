@@ -8,9 +8,15 @@ import { ColumnEditorRowRenderer } from "./ColumnEditorRowRendererProps";
 export interface ColumnEditorCustomRendererProps {
   /** The search input section (when searchEnabled) */
   searchSection: ReactNode;
-  /** The list of column checkboxes */
+  /** The list of column checkboxes (pinned left, then unpinned, then pinned right) */
   listSection: ReactNode;
-  /** Flattened headers for the column list */
+  /** Pinned-left section list only */
+  pinnedLeftList?: ReactNode;
+  /** Unpinned (main) section list only */
+  unpinnedList?: ReactNode;
+  /** Pinned-right section list only */
+  pinnedRightList?: ReactNode;
+  /** Flattened headers for all panel sections combined (left, then main, then right) */
   flattenedHeaders: import("../components/simple-table/table-column-editor/columnEditorUtils").FlattenedHeader[];
   /** Current search term */
   searchTerm: string;
@@ -52,6 +58,11 @@ export interface ColumnEditorConfig {
   searchPlaceholder?: string;
   /** Custom search function to override default search behavior. Receives header and searchTerm, returns true if header matches. */
   searchFunction?: ColumnEditorSearchFunction;
+  /**
+   * When false, hides pin/unpin controls (L/R) in the column editor. Pinned sections still appear if columns are pinned.
+   * Default: true.
+   */
+  allowColumnPinning?: boolean;
   /** Custom renderer for column editor row layout to reposition icons and labels */
   rowRenderer?: ColumnEditorRowRenderer;
   /** Custom renderer for the entire column editor popout. Receives searchSection, listSection, flattenedHeaders, searchTerm, etc. */
@@ -64,10 +75,11 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
   text: "Columns",
   searchEnabled: true,
   searchPlaceholder: "Search columns...",
+  allowColumnPinning: true,
 };
 
 /** Column editor config with defaults applied (text, searchEnabled, searchPlaceholder are required) */
 export type MergedColumnEditorConfig = Required<
-  Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder">
+  Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning">
 > &
   Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">;

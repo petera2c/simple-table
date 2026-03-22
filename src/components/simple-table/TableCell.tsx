@@ -115,6 +115,7 @@ const TableCell = ({
     columnBorders,
     draggedHeaderRef,
     enableRowSelection,
+    essentialAccessors,
     expandedDepths,
     expandedRows,
     handleMouseDown,
@@ -191,6 +192,7 @@ const TableCell = ({
   // Hooks
   const { handleDragOver } = useDragHandler({
     draggedHeaderRef,
+    essentialAccessors,
     headers,
     hoveredHeaderRef,
     onTableHeaderDragEnd,

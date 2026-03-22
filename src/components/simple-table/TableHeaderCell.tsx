@@ -33,6 +33,7 @@ import Checkbox from "../Checkbox";
 import StringEdit from "./editable-cells/StringEdit";
 import useDropdownPosition from "../../hooks/useDropdownPosition";
 import { hasCollapsibleChildren } from "../../utils/collapseUtils";
+import { isHeaderEssential } from "../../utils/pinnedColumnUtils";
 import Tooltip from "../Tooltip";
 
 interface HeaderCellProps {
@@ -79,6 +80,7 @@ const TableHeaderCell = ({
     draggedHeaderRef,
     enableHeaderEditing,
     enableRowSelection,
+    essentialAccessors,
     filters,
     handleApplyFilter,
     handleClearFilter,
@@ -203,6 +205,7 @@ const TableHeaderCell = ({
   // Hooks
   const { handleDragStart, handleDragEnd, handleDragOver } = useDragHandler({
     draggedHeaderRef,
+    essentialAccessors,
     headers,
     hoveredHeaderRef,
     onColumnOrderChange,
@@ -695,7 +698,12 @@ const TableHeaderCell = ({
       <div
         ref={headerCellRef}
         className="st-header-label"
-        draggable={columnReordering && !header.disableReorder && !isSelectionColumn}
+        draggable={
+          columnReordering &&
+          !header.disableReorder &&
+          !isSelectionColumn &&
+          !isHeaderEssential(header, essentialAccessors)
+        }
         onClick={(event) => {
           if (!isSelectionColumn) {
             handleColumnHeaderClick({ event, header });

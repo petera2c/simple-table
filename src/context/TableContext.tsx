@@ -60,6 +60,8 @@ interface TableContextType {
   copyHeadersToClipboard: boolean;
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   editColumns?: boolean;
+  /** Root accessors marked essential (prop + header.isEssential); empty when unused */
+  essentialAccessors: ReadonlySet<string>;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   expandedDepths: Set<number>;

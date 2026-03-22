@@ -50,8 +50,10 @@ import HeaderRendererProps, {
   HeaderRendererComponents,
 } from "./types/HeaderRendererProps";
 import ColumnEditorRowRendererProps, {
+  ColumnEditorPinControl,
   ColumnEditorRowRenderer,
   ColumnEditorRowRendererComponents,
+  PanelSection,
 } from "./types/ColumnEditorRowRendererProps";
 import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps";
 import { RowButtonProps } from "./types/RowButton";
@@ -73,6 +75,7 @@ import {
 } from "./types/ColumnEditorConfig";
 import { IconsConfig } from "./types/IconsConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
+import type { PinnedSectionsState } from "./utils/pinnedColumnUtils";
 
 export { SimpleTable, LineAreaChart, BarChart };
 
@@ -94,6 +97,7 @@ export type {
   ColumnEditorConfig,
   ColumnEditorCustomRenderer,
   ColumnEditorCustomRendererProps,
+  ColumnEditorPinControl,
   ColumnEditorRowRenderer,
   ColumnEditorRowRendererComponents,
   ColumnEditorRowRendererProps,
@@ -127,6 +131,8 @@ export type {
   HeaderRendererComponents,
   OnRowGroupExpandProps,
   OnSortProps,
+  PanelSection,
+  PinnedSectionsState,
   QuickFilterConfig,
   QuickFilterGetter,
   QuickFilterGetterProps,

@@ -15,4 +15,6 @@ export { default as CheckIcon } from "./CheckIcon";
 export { default as DescIcon } from "./DescIcon";
 export { default as DragIcon } from "./DragIcon";
 export { default as FilterIcon } from "./FilterIcon";
+export { default as PinFilledIcon } from "./PinFilledIcon";
+export { default as PinOutlineIcon } from "./PinOutlineIcon";
 export { default as SelectIcon } from "./SelectIcon";

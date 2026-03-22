@@ -4,15 +4,21 @@ import { CheckIcon } from "../icons";
 interface CheckboxProps {
   checked?: boolean;
   children?: ReactNode;
+  disabled?: boolean;
   onChange?: (checked: boolean) => void;
   ariaLabel?: string;
 }
 
-const Checkbox = ({ checked = false, children, onChange, ariaLabel }: CheckboxProps) => {
+const Checkbox = ({
+  checked = false,
+  children,
+  disabled = false,
+  onChange,
+  ariaLabel,
+}: CheckboxProps) => {
   const toggleCheckbox = () => {
-    if (onChange) {
-      onChange(!checked);
-    }
+    if (disabled || !onChange) return;
+    onChange(!checked);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -23,10 +29,11 @@ const Checkbox = ({ checked = false, children, onChange, ariaLabel }: CheckboxPr
   };
 
   return (
-    <label className="st-checkbox-label">
+    <label className={`st-checkbox-label${disabled ? " st-checkbox-disabled" : ""}`}>
       <input
         checked={checked}
         className="st-checkbox-input"
+        disabled={disabled}
         onChange={toggleCheckbox}
         onKeyDown={handleKeyDown}
         type="checkbox"
