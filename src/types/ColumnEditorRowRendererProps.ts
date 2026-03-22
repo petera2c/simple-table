@@ -12,7 +12,7 @@ export interface ColumnEditorRowRendererComponents {
   pinIcon?: ReactNode;
 }
 
-/** Pin / unpin actions for column editor rows (also use for lock/tooltip UX via isEssential). */
+/** Pin / unpin actions for column editor rows (also use for lock/tooltip UX via HeaderObject.isEssential). */
 export interface ColumnEditorPinControl {
   pinnedSide: "left" | "right" | null;
   canPinLeft: boolean;
@@ -29,7 +29,7 @@ interface ColumnEditorRowRendererProps {
   components: ColumnEditorRowRendererComponents;
   /** Which panel section this row is rendered in */
   panelSection?: PanelSection;
-  /** Resolved from essentialColumns, HeaderObject.isEssential */
+  /** Resolved from HeaderObject.isEssential / essentialAccessors */
   isEssential?: boolean;
   /** False when visibility cannot be toggled (essential columns) */
   canToggleVisibility?: boolean;

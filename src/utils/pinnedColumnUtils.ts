@@ -31,15 +31,9 @@ export function isHeaderEssential(
   );
 }
 
-/** Build set from prop list plus any header with isEssential on the tree. */
-export function collectEssentialAccessors(
-  essentialColumns: readonly Accessor[] | undefined,
-  headers: HeaderObject[],
-): Set<string> {
+/** Accessors for every header with `isEssential` in the tree (including nested). */
+export function collectEssentialAccessors(headers: HeaderObject[]): Set<string> {
   const set = new Set<string>();
-  if (essentialColumns) {
-    essentialColumns.forEach((a) => set.add(String(a)));
-  }
   const walk = (list: HeaderObject[]) => {
     for (const h of list) {
       if (h.isEssential) set.add(String(h.accessor));

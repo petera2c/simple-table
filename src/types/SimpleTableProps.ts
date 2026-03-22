@@ -45,8 +45,6 @@ export interface SimpleTableProps {
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
   enableStickyParents?: boolean; // Flag for enabling sticky parent rows during scrolling in grouped tables (default: false)
-  /** Root column accessors treated as essential (see HeaderObject.isEssential); merged with per-header isEssential */
-  essentialColumns?: Accessor[];
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
   expandIcon?: ReactNode; // @deprecated Use icons.expand instead

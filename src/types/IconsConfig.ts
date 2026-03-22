@@ -22,8 +22,8 @@ export interface IconsConfig {
   sortDown?: ReactNode;
   /** Icon for sort ascending (default: AscIcon) */
   sortUp?: ReactNode;
-  /** Unpinned column pin affordance in column editor (outline) */
-  pinOutline?: ReactNode;
-  /** Pinned column indicator in column editor (filled) */
-  pinFilled?: ReactNode;
+  /** Label for pin-to-left control in column editor (default: "L") */
+  pinnedLeftIcon?: ReactNode;
+  /** Label for pin-to-right control in column editor (default: "R") */
+  pinnedRightIcon?: ReactNode;
 }

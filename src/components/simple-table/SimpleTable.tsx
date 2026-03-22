@@ -9,8 +9,6 @@ import {
   AscIcon,
   FilterIcon,
   DragIcon,
-  PinFilledIcon,
-  PinOutlineIcon,
 } from "../../icons";
 import TableContent from "./TableContent";
 import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
@@ -89,7 +87,6 @@ const SimpleTableComp = ({
   enableHeaderEditing = false,
   enableRowSelection = false,
   enableStickyParents = false,
-  essentialColumns,
   errorStateRenderer,
   expandAll = true,
   expandIcon: expandIconDeprecated,
@@ -159,8 +156,8 @@ const SimpleTableComp = ({
       prev: <AngleLeftIcon className="st-next-prev-icon" />,
       sortDown: <DescIcon className="st-header-icon" />,
       sortUp: <AscIcon className="st-header-icon" />,
-      pinOutline: <PinOutlineIcon className="st-column-pin-svg" />,
-      pinFilled: <PinFilledIcon className="st-column-pin-svg" />,
+      pinnedLeftIcon: <div>L</div>,
+      pinnedRightIcon: <div>R</div>,
     };
 
     return {
@@ -174,8 +171,8 @@ const SimpleTableComp = ({
       prev: icons?.prev ?? prevIconDeprecated ?? defaultIcons.prev,
       sortDown: icons?.sortDown ?? sortDownIconDeprecated ?? defaultIcons.sortDown,
       sortUp: icons?.sortUp ?? sortUpIconDeprecated ?? defaultIcons.sortUp,
-      pinOutline: icons?.pinOutline ?? defaultIcons.pinOutline,
-      pinFilled: icons?.pinFilled ?? defaultIcons.pinFilled,
+      pinnedLeftIcon: icons?.pinnedLeftIcon ?? defaultIcons.pinnedLeftIcon,
+      pinnedRightIcon: icons?.pinnedRightIcon ?? defaultIcons.pinnedRightIcon,
     };
   }, [
     icons,
@@ -377,8 +374,8 @@ const SimpleTableComp = ({
   }, [enableRowSelection, headers, selectionColumnWidth]);
 
   const essentialAccessors = useMemo(
-    () => collectEssentialAccessors(essentialColumns, effectiveHeaders),
-    [essentialColumns, effectiveHeaders],
+    () => collectEssentialAccessors(effectiveHeaders),
+    [effectiveHeaders],
   );
 
   const [scrollTop, setScrollTop] = useState<number>(0);

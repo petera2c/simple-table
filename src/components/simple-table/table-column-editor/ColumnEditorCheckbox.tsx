@@ -302,11 +302,16 @@ const ColumnEditorCheckbox = ({
     unpin,
   };
 
-  const pinnedSideLetter = pinnedSide === "left" ? "L" : pinnedSide === "right" ? "R" : null;
+  const pinnedSideMark =
+    pinnedSide === "left"
+      ? icons.pinnedLeftIcon
+      : pinnedSide === "right"
+        ? icons.pinnedRightIcon
+        : null;
 
   const defaultPinIcon = !allowColumnPinning
     ? null
-    : pinnedSide !== null && pinnedSideLetter !== null ? (
+    : pinnedSide !== null && pinnedSideMark !== null ? (
       canUnpin ? (
         <button
           type="button"
@@ -318,7 +323,7 @@ const ColumnEditorCheckbox = ({
             unpin();
           }}
         >
-          {pinnedSideLetter}
+          {pinnedSideMark}
         </button>
       ) : (
         <span
@@ -326,7 +331,7 @@ const ColumnEditorCheckbox = ({
           aria-hidden
           title="Pinned (essential)"
         >
-          {pinnedSideLetter}
+          {pinnedSideMark}
         </span>
       )
     ) : panelSection === "main" && (canPinLeft || canPinRight) ? (
@@ -342,7 +347,7 @@ const ColumnEditorCheckbox = ({
               pinLeft();
             }}
           >
-            L
+            {icons.pinnedLeftIcon}
           </button>
         ) : null}
         {canPinRight ? (
@@ -356,7 +361,7 @@ const ColumnEditorCheckbox = ({
               pinRight();
             }}
           >
-            R
+            {icons.pinnedRightIcon}
           </button>
         ) : null}
       </div>

@@ -744,7 +744,7 @@ export const EssentialColumnVisibilityLocked: Story = {
   render: () => {
     const data = createEmployeeData();
     const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 60, type: "number" },
+      { accessor: "id", label: "ID", width: 60, type: "number", isEssential: true },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
 
@@ -752,7 +752,6 @@ export const EssentialColumnVisibilityLocked: Story = {
       <div style={{ padding: "20px", width: "600px" }}>
         <SimpleTable
           defaultHeaders={headers}
-          essentialColumns={["id"]}
           editColumns
           editColumnsInitOpen
           rows={data}
@@ -768,5 +767,188 @@ export const EssentialColumnVisibilityLocked: Story = {
       ".st-column-editor-list .st-checkbox-input[disabled]",
     );
     expect(disabled).toBeTruthy();
+  },
+};
+
+const findColumnEditorRowByLabel = (root: Element, label: string): Element | undefined => {
+  const items = Array.from(root.querySelectorAll(".st-header-checkbox-item"));
+  return items.find((item) => {
+    const el = item.querySelector(".st-column-label-container");
+    return el?.textContent?.trim() === label;
+  });
+};
+
+/**
+ * Test 14: Column editor shows only the main "Columns" section when nothing is pinned
+ */
+export const ColumnEditorUnpinnedOnlySection: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "email", label: "Email", width: 200, type: "string" },
+    ];
+
+    return (
+      <div style={{ padding: "20px", width: "700px" }}>
+        <SimpleTable
+          defaultHeaders={headers}
+          editColumns
+          editColumnsInitOpen
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const labels = canvasElement.querySelectorAll(".st-column-editor-section-label");
+    expect(labels.length).toBe(1);
+    expect(labels[0].textContent?.trim().toLowerCase()).toBe("columns");
+    const text = Array.from(labels).map((el) => el.textContent?.trim() || "");
+    expect(text.some((t) => /pinned left/i.test(t))).toBe(false);
+    expect(text.some((t) => /pinned right/i.test(t))).toBe(false);
+  },
+};
+
+/**
+ * Test 15: columnEditorConfig.allowColumnPinning false hides L/R pin controls
+ */
+export const ColumnEditorPinningDisabled: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "email", label: "Email", width: 200, type: "string" },
+    ];
+
+    return (
+      <div style={{ padding: "20px", width: "700px" }}>
+        <SimpleTable
+          columnEditorConfig={{ allowColumnPinning: false }}
+          defaultHeaders={headers}
+          editColumns
+          editColumnsInitOpen
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    expect(canvasElement.querySelector(".st-column-pin-btn")).toBeNull();
+    expect(canvasElement.querySelector(".st-column-pin-side-group")).toBeNull();
+  },
+};
+
+/**
+ * Test 16: getPinnedState reflects initial left / main / right accessors
+ */
+export const GetPinnedStateSnapshot: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "email", label: "Email", width: 200, type: "string" },
+      { accessor: "salary", label: "Salary", width: 120, pinned: "right", type: "number" },
+    ];
+
+    const ref = React.createRef<TableRefType | null>();
+
+    return (
+      <div style={{ padding: "20px", width: "700px" }}>
+        <button
+          type="button"
+          id="dump-pinned-state"
+          onClick={() => {
+            const dump = document.getElementById("pinned-state-json");
+            if (dump) {
+              dump.textContent = JSON.stringify(ref.current?.getPinnedState() ?? null);
+            }
+          }}
+        >
+          Dump pinned state
+        </button>
+        <div id="pinned-state-json" />
+        <SimpleTable
+          tableRef={ref}
+          defaultHeaders={headers}
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const btn = canvasElement.querySelector("#dump-pinned-state") as HTMLButtonElement | null;
+    expect(btn).toBeTruthy();
+    btn?.click();
+    await new Promise((r) => setTimeout(r, 50));
+    const raw = canvasElement.querySelector("#pinned-state-json")?.textContent;
+    expect(raw).toBeTruthy();
+    const state = JSON.parse(raw!) as { left: string[]; main: string[]; right: string[] };
+    expect(state.left.map(String)).toEqual(["id"]);
+    expect(state.main.map(String)).toEqual(["name", "email"]);
+    expect(state.right.map(String)).toEqual(["salary"]);
+  },
+};
+
+/**
+ * Test 17: Essential pinned column shows locked pin mark (not an unpin button); main row still has L/R
+ */
+export const EssentialPinnedColumnUnpinLocked: Story = {
+  render: () => {
+    const data = createEmployeeData();
+    const headers: HeaderObject[] = [
+      {
+        accessor: "id",
+        label: "ID",
+        width: 60,
+        pinned: "left",
+        type: "number",
+        isEssential: true,
+      },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+
+    return (
+      <div style={{ padding: "20px", width: "600px" }}>
+        <SimpleTable
+          defaultHeaders={headers}
+          editColumns
+          editColumnsInitOpen
+          rows={data}
+          getRowId={(params) => String(params.row?.id)}
+          height="400px"
+        />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const popout =
+      canvasElement.querySelector(".st-column-editor-popout.open") ||
+      canvasElement.querySelector(".st-column-editor-popout");
+    expect(popout).toBeTruthy();
+
+    const idRow = findColumnEditorRowByLabel(popout!, "ID");
+    expect(idRow).toBeTruthy();
+    expect(idRow!.querySelector(".st-column-pin-pinned-essential")).toBeTruthy();
+    expect(idRow!.querySelector('button[aria-label="Unpin"]')).toBeNull();
+
+    const nameRow = findColumnEditorRowByLabel(popout!, "Name");
+    expect(nameRow).toBeTruthy();
+    expect(nameRow!.querySelector(".st-column-pin-side-group")).toBeTruthy();
+    expect(nameRow!.querySelector('button[aria-label="Pin column to left"]')).toBeTruthy();
+    expect(nameRow!.querySelector('button[aria-label="Pin column to right"]')).toBeTruthy();
   },
 };
