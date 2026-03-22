@@ -96,22 +96,23 @@ const getColumnCheckboxItems = (popout: Element) => {
 };
 
 const getColumnLabelFromCheckbox = (checkboxItem: Element): string => {
-  // The label text might be in a sibling element or as direct text content
-  // Try multiple strategies to find the label text
+  // Default column editor row: title lives in .st-column-label-container (not raw row textContent,
+  // which includes L/R pin labels and other chrome).
+  const columnLabel = checkboxItem.querySelector(".st-column-label-container");
+  if (columnLabel?.textContent?.trim()) {
+    return columnLabel.textContent.trim();
+  }
 
-  // Strategy 1: Look for a label element with text (not the checkbox label)
   const labelSpan = checkboxItem.querySelector(".st-checkbox-label-text");
   if (labelSpan?.textContent?.trim()) {
     return labelSpan.textContent.trim();
   }
 
-  // Strategy 2: Get text content from the checkbox item itself, excluding the checkbox
   const itemText = checkboxItem.textContent?.trim() || "";
   if (itemText) {
     return itemText;
   }
 
-  // Strategy 3: Look for any text node that's not inside the checkbox elements
   const walker = document.createTreeWalker(checkboxItem, NodeFilter.SHOW_TEXT, null);
 
   let textNode;
