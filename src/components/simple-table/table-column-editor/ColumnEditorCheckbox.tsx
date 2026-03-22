@@ -309,63 +309,62 @@ const ColumnEditorCheckbox = ({
         ? icons.pinnedRightIcon
         : null;
 
-  const defaultPinIcon = !allowColumnPinning
-    ? null
-    : pinnedSide !== null && pinnedSideMark !== null ? (
-      canUnpin ? (
+  const defaultPinIcon = !allowColumnPinning ? null : pinnedSide !== null &&
+    pinnedSideMark !== null ? (
+    canUnpin ? (
+      <button
+        type="button"
+        className="st-column-pin-btn st-column-pin-side st-column-pin-pinned-mark st-column-pin-pinned-active"
+        aria-label="Unpin column"
+        title="Unpin"
+        onClick={(e) => {
+          e.stopPropagation();
+          unpin();
+        }}
+      >
+        {pinnedSideMark}
+      </button>
+    ) : (
+      <span
+        className="st-column-pin-pinned-mark st-column-pin-side st-column-pin-pinned-essential st-column-pin-pinned-active"
+        aria-hidden
+        title="Pinned (essential)"
+      >
+        {pinnedSideMark}
+      </span>
+    )
+  ) : panelSection === "main" && (canPinLeft || canPinRight) ? (
+    <div className="st-column-pin-side-group">
+      {canPinLeft ? (
         <button
           type="button"
-          className="st-column-pin-btn st-column-pin-side st-column-pin-pinned-mark st-column-pin-pinned-active"
-          aria-label="Unpin column"
-          title="Unpin"
+          className="st-column-pin-btn st-column-pin-side st-column-pin-side-option"
+          aria-label="Pin column to left"
+          title="Pin to left"
           onClick={(e) => {
             e.stopPropagation();
-            unpin();
+            pinLeft();
           }}
         >
-          {pinnedSideMark}
+          {icons.pinnedLeftIcon}
         </button>
-      ) : (
-        <span
-          className="st-column-pin-pinned-mark st-column-pin-side st-column-pin-pinned-essential st-column-pin-pinned-active"
-          aria-hidden
-          title="Pinned (essential)"
+      ) : null}
+      {canPinRight ? (
+        <button
+          type="button"
+          className="st-column-pin-btn st-column-pin-side st-column-pin-side-option"
+          aria-label="Pin column to right"
+          title="Pin to right"
+          onClick={(e) => {
+            e.stopPropagation();
+            pinRight();
+          }}
         >
-          {pinnedSideMark}
-        </span>
-      )
-    ) : panelSection === "main" && (canPinLeft || canPinRight) ? (
-      <div className="st-column-pin-side-group">
-        {canPinLeft ? (
-          <button
-            type="button"
-            className="st-column-pin-btn st-column-pin-side st-column-pin-side-option"
-            aria-label="Pin column to left"
-            title="Pin to left"
-            onClick={(e) => {
-              e.stopPropagation();
-              pinLeft();
-            }}
-          >
-            {icons.pinnedLeftIcon}
-          </button>
-        ) : null}
-        {canPinRight ? (
-          <button
-            type="button"
-            className="st-column-pin-btn st-column-pin-side st-column-pin-side-option"
-            aria-label="Pin column to right"
-            title="Pin to right"
-            onClick={(e) => {
-              e.stopPropagation();
-              pinRight();
-            }}
-          >
-            {icons.pinnedRightIcon}
-          </button>
-        ) : null}
-      </div>
-    ) : null;
+          {icons.pinnedRightIcon}
+        </button>
+      ) : null}
+    </div>
+  ) : null;
 
   const LabelContent = <div className="st-column-label-container">{header.label}</div>;
 
