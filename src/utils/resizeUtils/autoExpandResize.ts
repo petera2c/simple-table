@@ -37,17 +37,6 @@ export const handleResizeWithAutoExpand = ({
   sectionWidth: number;
   startWidth: number;
 }): void => {
-  console.log("\n");
-  console.log("containerWidth", containerWidth);
-  console.log("delta", delta);
-  console.log("sectionWidth", sectionWidth);
-  console.log("startWidth", startWidth);
-  console.log("initialWidthsMap", JSON.stringify(initialWidthsMap));
-  console.log("headers", JSON.stringify(headers));
-  console.log("childrenToResize", JSON.stringify(childrenToResize));
-  console.log("collapsedHeaders", JSON.stringify(collapsedHeaders));
-  console.log("rootPinned", rootPinned);
-  console.log("sectionHeaders", JSON.stringify(sectionHeaders));
   // For pinned sections, clamp delta to prevent exceeding max section width
   // This prevents the drag from causing unwanted auto-scaling of other columns
   let clampedDelta = delta;
