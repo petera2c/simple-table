@@ -265,7 +265,7 @@ const TableCell = ({
   // Derived state
   const isEditInDropdown =
     header.type === "boolean" || header.type === "date" || header.type === "enum";
-  const clickable = Boolean(header?.isEditable);
+  const clickable = Boolean(header?.isEditable) || Boolean(onCellClick && !isSelectionColumn);
 
   // Check if this cell is selected due to column selection (no borders) vs individual cell selection (with borders)
   const isColumnSelected = selectedColumns.has(colIndex);

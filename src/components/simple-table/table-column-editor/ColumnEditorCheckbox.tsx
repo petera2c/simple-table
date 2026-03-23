@@ -309,7 +309,7 @@ const ColumnEditorCheckbox = ({
         ? icons.pinnedRightIcon
         : null;
 
-  const defaultPinIcon = !allowColumnPinning ? null : pinnedSide !== null &&
+  const defaultPinIcon = !allowColumnPinning || depth !== 0 ? null : pinnedSide !== null &&
     pinnedSideMark !== null ? (
     canUnpin ? (
       <button
