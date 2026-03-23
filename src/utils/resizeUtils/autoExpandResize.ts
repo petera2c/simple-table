@@ -1,10 +1,7 @@
 import type HeaderObject from "../../types/HeaderObject";
 import type { Pinned } from "../../types/Pinned";
 import { getAllVisibleLeafHeaders } from "../headerWidthUtils";
-import {
-  MIN_COLUMN_WIDTH,
-  getMaxPinnedSectionWidth,
-} from "../../consts/column-constraints";
+import { MIN_COLUMN_WIDTH, getMaxPinnedSectionWidth } from "../../consts/column-constraints";
 import { distributeCompensationProportionally } from "./compensation";
 
 /**
@@ -60,16 +57,9 @@ export const handleResizeWithAutoExpand = ({
     const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
 
     // Calculate the max allowed width for this pinned section
-    const maxSectionWidth = getMaxPinnedSectionWidth(
-      containerWidth,
-      hasPinnedLeft,
-      hasPinnedRight,
-    );
+    const maxSectionWidth = getMaxPinnedSectionWidth(containerWidth, hasPinnedLeft, hasPinnedRight);
 
-    const currentSectionWidth = Array.from(initialWidthsMap.values()).reduce(
-      (a, b) => a + b,
-      0,
-    );
+    const currentSectionWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
     const newSectionWidth = currentSectionWidth + delta;
 
     // If growing beyond max section width, clamp the delta
@@ -83,18 +73,14 @@ export const handleResizeWithAutoExpand = ({
 
   // Special handling for parent header resize (multiple children)
   if (isParentResize && childrenToResize.length > 1) {
-    const leafHeaders = getAllVisibleLeafHeaders(
-      sectionHeaders,
-      collapsedHeaders,
-    );
+    const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
 
     // Find the index range of the children being resized
     const firstChildIndex = leafHeaders.findIndex(
       (h) => h.accessor === childrenToResize[0].accessor,
     );
     const lastChildIndex = leafHeaders.findIndex(
-      (h) =>
-        h.accessor === childrenToResize[childrenToResize.length - 1].accessor,
+      (h) => h.accessor === childrenToResize[childrenToResize.length - 1].accessor,
     );
 
     if (firstChildIndex === -1 || lastChildIndex === -1) return;
@@ -127,10 +113,7 @@ export const handleResizeWithAutoExpand = ({
         : leafHeaders.slice(lastChildIndex + 1);
     }
 
-    const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce(
-      (a, b) => a + b,
-      0,
-    );
+    const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
 
     const effectiveSectionWidth =
       sectionWidth > 0
@@ -150,14 +133,10 @@ export const handleResizeWithAutoExpand = ({
           // We would exceed effective section width
           needsCompensation = true;
 
-          const maxGrowthToFit = Math.max(
-            0,
-            effectiveSectionWidth - currentTotalWidth,
-          );
+          const maxGrowthToFit = Math.max(0, effectiveSectionWidth - currentTotalWidth);
           // Calculate max possible shrinkage
           const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
-            const initialWidth =
-              initialWidthsMap.get(col.accessor as string) || 100;
+            const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
             const canShrink = Math.max(0, initialWidth - MIN_COLUMN_WIDTH);
             return total + canShrink;
           }, 0);
@@ -175,8 +154,7 @@ export const handleResizeWithAutoExpand = ({
       const scaleFactor = newTotalWidth / totalOriginalWidth;
 
       childrenToResize.forEach((child) => {
-        const originalWidth =
-          initialWidthsMap.get(child.accessor as string) || 100;
+        const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
         // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
         const minWidth = MIN_COLUMN_WIDTH;
         const newWidth = Math.max(originalWidth * scaleFactor, minWidth);
@@ -204,8 +182,7 @@ export const handleResizeWithAutoExpand = ({
       const scaleFactor = newTotalWidth / totalOriginalWidth;
 
       childrenToResize.forEach((child) => {
-        const originalWidth =
-          initialWidthsMap.get(child.accessor as string) || 100;
+        const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
         // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
         const minWidth = MIN_COLUMN_WIDTH;
         child.width = Math.max(originalWidth * scaleFactor, minWidth);
@@ -225,13 +202,8 @@ export const handleResizeWithAutoExpand = ({
     return;
   }
 
-  const leafHeaders = getAllVisibleLeafHeaders(
-    sectionHeaders,
-    collapsedHeaders,
-  );
-  const resizedIndex = leafHeaders.findIndex(
-    (h) => h.accessor === resizedHeader.accessor,
-  );
+  const leafHeaders = getAllVisibleLeafHeaders(sectionHeaders, collapsedHeaders);
+  const resizedIndex = leafHeaders.findIndex((h) => h.accessor === resizedHeader.accessor);
 
   if (resizedIndex === -1) return;
 
@@ -278,10 +250,7 @@ export const handleResizeWithAutoExpand = ({
   const minWidth = MIN_COLUMN_WIDTH;
 
   // Calculate current total width and what it would be after resize
-  const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce(
-    (a, b) => a + b,
-    0,
-  );
+  const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
 
   // Use effective section width: never compress below current total; when unknown (0) allow growth without shrinking others
   const effectiveSectionWidth =
@@ -301,10 +270,7 @@ export const handleResizeWithAutoExpand = ({
 
     // We would exceed effective section width, so we need to shrink others
     // Limit growth to what keeps total at or below effectiveSectionWidth
-    const maxGrowthToFit = Math.max(
-      0,
-      effectiveSectionWidth - currentTotalWidth,
-    );
+    const maxGrowthToFit = Math.max(0, effectiveSectionWidth - currentTotalWidth);
     // Calculate how much others can shrink
     const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;

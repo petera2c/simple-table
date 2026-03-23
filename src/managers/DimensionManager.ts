@@ -153,8 +153,6 @@ export class DimensionManager {
       }
     };
 
-    updateContainerWidth();
-
     this.resizeObserver = new ResizeObserver(updateContainerWidth);
     this.resizeObserver.observe(containerElement);
   }

@@ -170,18 +170,7 @@ export class RenderOrchestrator {
       context.mainHeaderRef?.current?.scrollLeft ??
       0;
 
-    let dimensionState = context.dimensionManager.getState();
-
-    const fallbackContainerWidth =
-      dimensionState.containerWidth ||
-      context.mainBodyRef?.current?.clientWidth ||
-      (context.mainBodyRef?.current?.parentElement?.clientWidth ?? 0);
-    if (fallbackContainerWidth > 0 && dimensionState.containerWidth === 0) {
-      dimensionState = {
-        ...dimensionState,
-        containerWidth: fallbackContainerWidth,
-      };
-    }
+    const dimensionState = context.dimensionManager.getState();
 
     const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } =
       dimensionState;

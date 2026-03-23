@@ -65,6 +65,7 @@ export class SimpleTableVanilla {
   private isScrolling: boolean = false;
   /** True when this render is scroll-driven so body can use position-only updates for existing cells. */
   private _positionOnlyBody: boolean = false;
+  private firstRenderDone: boolean = false;
   private internalIsLoading: boolean = false;
   private scrollbarWidth: number = 0;
   private isMainSectionScrollable: boolean = false;
@@ -226,11 +227,6 @@ export class SimpleTableVanilla {
     this.domManager.createDOMStructure(this.container, this.config);
     this.mounted = true;
     this.setupManagers();
-    this.render("mount");
-
-    if (this.config.onGridReady) {
-      this.config.onGridReady();
-    }
   }
 
   private setupManagers(): void {
@@ -265,6 +261,12 @@ export class SimpleTableVanilla {
 
     this.dimensionManager.subscribe(() => {
       this.render("dimensionManager");
+      if (!this.firstRenderDone) {
+        this.firstRenderDone = true;
+        if (this.config.onGridReady) {
+          this.config.onGridReady();
+        }
+      }
     });
 
     this.scrollManager = new ScrollManager({
@@ -606,6 +608,7 @@ export class SimpleTableVanilla {
 
   destroy(): void {
     this.mounted = false;
+    this.firstRenderDone = false;
 
     // Clean up RAF and timeouts
     if (this.scrollRafId !== null) {
