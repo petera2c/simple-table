@@ -930,3 +930,100 @@ export const LastGroupRowSeparatorLogic = {
     expect(regularSeparators.length).toBeGreaterThan(0);
   },
 };
+
+// ============================================================================
+// PER-GROUP LOADING / ERROR / EMPTY STATE RENDERERS
+// ============================================================================
+
+export const LoadingStateRendererPerGroup = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+    ];
+    const groupData = [
+      { id: "dept-1", name: "Engineering", budget: 500000, items: [] },
+      { id: "dept-2", name: "Sales", budget: 300000, items: [] },
+    ];
+    const { wrapper } = renderVanillaTable(headers, groupData, {
+      getRowId: (p) => String((p.row as { id?: string })?.id),
+      height: "400px",
+      rowGrouping: ["items"],
+      loadingStateRenderer: "Loading team members...",
+      onRowGroupExpand: ({ setLoading }: { setLoading: (b: boolean) => void }) => {
+        setLoading(true);
+        // Never resolves — stays in loading state for the test
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const expandIcons = canvasElement.querySelectorAll(".st-expand-icon-container");
+    expect(expandIcons.length).toBeGreaterThan(0);
+    (expandIcons[0] as HTMLElement).click();
+    await new Promise((r) => setTimeout(r, 600));
+    // Custom loading message should appear in the expanded row
+    expect(canvasElement.textContent).toContain("Loading team members...");
+  },
+};
+
+export const ErrorStateRendererPerGroup = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+    ];
+    const groupData = [
+      { id: "dept-1", name: "Engineering", budget: 500000, items: [] },
+    ];
+    const { wrapper } = renderVanillaTable(headers, groupData, {
+      getRowId: (p) => String((p.row as { id?: string })?.id),
+      height: "300px",
+      rowGrouping: ["items"],
+      errorStateRenderer: "Failed to load members",
+      onRowGroupExpand: ({ setError }: { setError: (b: boolean) => void }) => {
+        setError(true);
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const expandIcon = canvasElement.querySelector(".st-expand-icon-container") as HTMLElement | null;
+    expect(expandIcon).toBeTruthy();
+    expandIcon!.click();
+    await new Promise((r) => setTimeout(r, 600));
+    expect(canvasElement.textContent).toContain("Failed to load members");
+  },
+};
+
+export const EmptyStateRendererPerGroup = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+    ];
+    const groupData = [
+      { id: "dept-1", name: "Engineering", budget: 500000, items: [] },
+    ];
+    const { wrapper } = renderVanillaTable(headers, groupData, {
+      getRowId: (p) => String((p.row as { id?: string })?.id),
+      height: "300px",
+      rowGrouping: ["items"],
+      emptyStateRenderer: "No members found",
+      onRowGroupExpand: ({ setEmpty }: { setEmpty: (b: boolean) => void }) => {
+        setEmpty(true);
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const expandIcon = canvasElement.querySelector(".st-expand-icon-container") as HTMLElement | null;
+    expect(expandIcon).toBeTruthy();
+    expandIcon!.click();
+    await new Promise((r) => setTimeout(r, 600));
+    expect(canvasElement.textContent).toContain("No members found");
+  },
+};

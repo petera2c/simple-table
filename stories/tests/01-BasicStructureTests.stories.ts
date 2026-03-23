@@ -542,3 +542,29 @@ export const ComprehensiveStructureValidation = {
     expect(cellContent).toBeTruthy();
   },
 };
+
+// When both height and maxHeight are set, height is ignored and maxHeight governs sizing.
+export const HeightIgnoredWhenMaxHeightSet = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+    const rows = Array.from({ length: 5 }, (_, i) => ({ id: i + 1, name: `Item ${i + 1}` }));
+    const { wrapper } = renderVanillaTable(headers, rows, {
+      getRowId: ({ row }) => String(row.id),
+      height: "800px",
+      maxHeight: "250px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await validateBasicTableStructure(canvasElement);
+    const root = canvasElement.querySelector(".simple-table-root") as HTMLElement | null;
+    expect(root).toBeTruthy();
+    // maxHeight takes precedence: actual rendered height should be ≤ 250px, not 800px.
+    const { height } = root!.getBoundingClientRect();
+    expect(height).toBeLessThanOrEqual(260);
+    expect(height).not.toBeGreaterThan(300);
+  },
+};

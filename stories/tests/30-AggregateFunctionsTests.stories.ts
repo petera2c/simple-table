@@ -45,7 +45,6 @@ const simpleGroupedData = () => [
 ];
 
 export const AggregationSum = {
-  parameters: { tags: ["fail-aggregation-sum"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
@@ -69,6 +68,10 @@ export const AggregationSum = {
     await waitForTable();
     const cells = canvasElement.querySelectorAll(".st-cell[data-accessor='amount']");
     expect(cells.length).toBeGreaterThan(0);
+    const textContents = Array.from(cells).map((c) => c.textContent?.trim() ?? "");
+    // Group A sum = 10+20+30 = 60, Group B sum = 40+50 = 90
+    expect(textContents.some((t) => t.includes("60"))).toBe(true);
+    expect(textContents.some((t) => t.includes("90"))).toBe(true);
   },
 };
 
@@ -173,7 +176,6 @@ export const AggregationMinMax = {
 };
 
 export const AggregationParseAndFormat = {
-  parameters: { tags: ["fail-aggregation-parse-and-format"] },
   render: () => {
     const data = [
       {
@@ -195,7 +197,7 @@ export const AggregationParseAndFormat = {
         aggregation: {
           type: "sum",
           parseValue: (v) => parseFloat(String(v).replace(/[^0-9.]/g, "")) || 0,
-          formatResult: (n) => `$${n.toFixed(2)}`,
+          formatResult: (n) => `$${(n as number).toFixed(2)}`,
         },
       },
     ];
@@ -211,11 +213,13 @@ export const AggregationParseAndFormat = {
     await waitForTable();
     const cells = canvasElement.querySelectorAll(".st-cell[data-accessor='amount']");
     expect(cells.length).toBeGreaterThan(0);
+    const textContents = Array.from(cells).map((c) => c.textContent?.trim() ?? "");
+    // Parent group shows formatted aggregated result $30.00
+    expect(textContents.some((t) => t.includes("$30") || t.includes("30"))).toBe(true);
   },
 };
 
 export const AggregationCustom = {
-  parameters: { tags: ["fail-aggregation-custom"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
@@ -243,7 +247,70 @@ export const AggregationCustom = {
     await waitForTable();
     const cells = canvasElement.querySelectorAll(".st-cell[data-accessor='amount']");
     expect(cells.length).toBeGreaterThan(0);
-    const fullText = canvasElement.textContent ?? "";
-    expect(fullText.includes("2")).toBe(true);
+    const textContents = Array.from(cells).map((c) => c.textContent?.trim() ?? "");
+    // Group A: values > 15 are 20, 30 → count = 2
+    // Group B: values > 15 are 40, 50 → count = 2
+    expect(textContents.some((t) => t.includes("2"))).toBe(true);
+  },
+};
+
+// ============================================================================
+// HIERARCHICAL MULTI-LEVEL AGGREGATION
+// ============================================================================
+
+export const HierarchicalAggregation = {
+  render: () => {
+    const hierarchicalData = [
+      {
+        id: "dept-1",
+        name: "Engineering",
+        teams: [
+          {
+            id: "team-1",
+            name: "Frontend",
+            members: [
+              { id: "m1", name: "Alice", salary: 100000 },
+              { id: "m2", name: "Bob", salary: 90000 },
+            ],
+          },
+          {
+            id: "team-2",
+            name: "Backend",
+            members: [
+              { id: "m3", name: "Charlie", salary: 120000 },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
+      {
+        accessor: "salary",
+        label: "Total Salary",
+        width: 120,
+        type: "number",
+        aggregation: { type: "sum" },
+      },
+    ];
+    const { wrapper } = renderVanillaTable(headers, hierarchicalData, {
+      getRowId: (p) => String((p.row as { id?: string })?.id),
+      height: "400px",
+      rowGrouping: ["teams", "members"],
+      expandAll: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const cells = canvasElement.querySelectorAll(".st-cell[data-accessor='salary']");
+    expect(cells.length).toBeGreaterThan(0);
+    const textContents = Array.from(cells).map((c) => c.textContent?.trim() ?? "");
+    // Individual: 100000, 90000, 120000
+    // Frontend team: 190000
+    // Dept: 310000
+    expect(textContents.some((t) => t.includes("100000"))).toBe(true);
+    expect(textContents.some((t) => t.includes("310000"))).toBe(true);
   },
 };

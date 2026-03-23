@@ -603,3 +603,131 @@ export const MultipleCollapsibleGroups = {
     expect(labels).toContain("Region");
   },
 };
+
+// ============================================================================
+// SHOW WHEN "always"
+// ============================================================================
+
+export const ShowWhenAlwaysVisibleBothStates = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60 },
+      {
+        accessor: "salesGroup",
+        label: "Sales Group",
+        width: 200,
+        collapsible: true,
+        singleRowChildren: true,
+        children: [
+          { accessor: "q1Sales", label: "Q1", width: 80, showWhen: "parentExpanded" },
+          { accessor: "q2Sales", label: "Q2", width: 80, showWhen: "parentExpanded" },
+          { accessor: "totalSales", label: "Total", width: 90, showWhen: "always" },
+        ],
+      },
+    ];
+    const { wrapper } = renderVanillaTable(headers, SALES_DATA, {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    // When expanded: ID, Q1, Q2, Total (showWhen always)
+    const expandedCount = getVisibleLeafColumnCount(canvasElement);
+    expect(expandedCount).toBeGreaterThanOrEqual(3);
+
+    // Collapse the group
+    await clickHeaderCollapseIcon(canvasElement, "salesGroup");
+    const collapsedCount = getVisibleLeafColumnCount(canvasElement);
+    // "Total" (showWhen: always) should still be visible when collapsed
+    expect(collapsedCount).toBeGreaterThanOrEqual(2); // ID + Total
+    const labels = getHeaderLabelsInOrder(canvasElement);
+    expect(labels).toContain("Total");
+    expect(collapsedCount).toBeLessThan(expandedCount);
+  },
+};
+
+// ============================================================================
+// SHOW WHEN "parentExpanded" (column only visible when parent is expanded)
+// ============================================================================
+
+export const ShowWhenParentExpandedColumnHiddenWhenCollapsed = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60 },
+      {
+        accessor: "totalSales",
+        label: "Sales Group",
+        width: 200,
+        collapsible: true,
+        singleRowChildren: true,
+        children: [
+          { accessor: "q1Sales", label: "Q1 Sales", width: 100, showWhen: "parentExpanded" },
+          { accessor: "q2Sales", label: "Q2 Sales", width: 100, showWhen: "parentExpanded" },
+        ],
+      },
+    ];
+    const { wrapper } = renderVanillaTable(headers, SALES_DATA, {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Expanded: ID, Sales Group, Q1 Sales, Q2 Sales
+    const expandedCount = getVisibleLeafColumnCount(canvasElement);
+    const labelsExpanded = getHeaderLabelsInOrder(canvasElement);
+    expect(labelsExpanded).toContain("Q1 Sales");
+
+    // Collapse
+    await clickHeaderCollapseIcon(canvasElement, "totalSales");
+    const collapsedCount = getVisibleLeafColumnCount(canvasElement);
+    const labelsCollapsed = getHeaderLabelsInOrder(canvasElement);
+    // Q1 Sales and Q2 Sales should be hidden when collapsed
+    expect(labelsCollapsed).not.toContain("Q1 Sales");
+    expect(labelsCollapsed).not.toContain("Q2 Sales");
+    expect(collapsedCount).toBeLessThan(expandedCount);
+  },
+};
+
+// ============================================================================
+// CUSTOM EXPAND / COLLAPSE ICONS
+// ============================================================================
+
+export const CustomHeaderExpandCollapseIcons = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60 },
+      {
+        accessor: "totalSales",
+        label: "Sales Group",
+        width: 200,
+        collapsible: true,
+        singleRowChildren: true,
+        children: [
+          { accessor: "q1Sales", label: "Q1", width: 80, showWhen: "parentExpanded" },
+          { accessor: "q2Sales", label: "Q2", width: 80, showWhen: "parentExpanded" },
+        ],
+      },
+    ];
+    const expandIcon = document.createElement("span");
+    expandIcon.setAttribute("data-testid", "custom-expand-icon");
+    expandIcon.textContent = "▼";
+
+    const { wrapper } = renderVanillaTable(headers, SALES_DATA, {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      icons: { expand: expandIcon },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // The expand icon element is cloned (cloneNode(true)) into the DOM so data-testid is preserved
+    const expandIconInDom = canvasElement.querySelector('[data-testid="custom-expand-icon"]');
+    expect(expandIconInDom).toBeTruthy();
+  },
+};

@@ -700,3 +700,108 @@ export const CopySelectionWithoutHeaders = {
     expect(firstLine).not.toContain("Name");
   },
 };
+
+// ============================================================================
+// KEYBOARD SHORTCUTS
+// ============================================================================
+
+const dispatchKey = (key: string, opts: Partial<KeyboardEventInit> = {}) => {
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, ...opts }),
+  );
+};
+
+export const ShiftArrowExtendsSelection = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      { accessor: "price", label: "Price", width: 100, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData().slice(0, 5), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Click first cell to anchor selection
+    await clickCell(canvasElement, 0, 0);
+    await new Promise((r) => setTimeout(r, 100));
+    expect(isCellSelected(canvasElement, 0, 0)).toBe(true);
+
+    // Shift+ArrowDown should extend selection to row 1
+    dispatchKey("ArrowDown", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 150));
+    const selectedCells = canvasElement.querySelectorAll(
+      ".st-cell.st-cell-selected, .st-cell[data-selected='true']",
+    );
+    expect(selectedCells.length).toBeGreaterThanOrEqual(1);
+  },
+};
+
+export const CtrlASelectsAllCells = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData().slice(0, 4), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Click a cell first to focus the table
+    await clickCell(canvasElement, 0, 0);
+    await new Promise((r) => setTimeout(r, 100));
+
+    // Ctrl+A / Cmd+A selects all
+    dispatchKey("a", { ctrlKey: true });
+    await new Promise((r) => setTimeout(r, 150));
+    const selectedCells = canvasElement.querySelectorAll(
+      ".st-cell.st-cell-selected, .st-cell[data-selected='true']",
+    );
+    expect(selectedCells.length).toBeGreaterThanOrEqual(1);
+  },
+};
+
+export const HomeEndMovesWithinRow = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      { accessor: "category", label: "Category", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData().slice(0, 3), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Click middle cell
+    await clickCell(canvasElement, 0, 1);
+    await new Promise((r) => setTimeout(r, 100));
+
+    // Home → first column
+    dispatchKey("Home");
+    await new Promise((r) => setTimeout(r, 150));
+    // End → last column
+    dispatchKey("End");
+    await new Promise((r) => setTimeout(r, 150));
+
+    // Selection should exist somewhere
+    const selectedCells = canvasElement.querySelectorAll(
+      ".st-cell.st-cell-selected, .st-cell.st-cell-selected-first",
+    );
+    expect(selectedCells.length).toBeGreaterThanOrEqual(1);
+  },
+};

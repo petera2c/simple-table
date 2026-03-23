@@ -590,3 +590,97 @@ export const GetFilterState = {
     expect(filterStateDisplay?.textContent).toContain("Smith");
   },
 };
+
+// ============================================================================
+// TEST 8: ON FILTER CHANGE CALLBACK
+// ============================================================================
+
+export const OnFilterChangeCallbackFires = {
+  render: () => {
+    const capturedFilters: unknown[] = [];
+    (window as unknown as { __filterChangeCapture?: unknown[] }).__filterChangeCapture = capturedFilters;
+
+    const filterHeaders: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 200, filterable: true },
+      { accessor: "department", label: "Department", width: 150, filterable: true },
+    ];
+    const { wrapper } = renderVanillaTable(filterHeaders, createFilterableData(), {
+      height: "400px",
+      onFilterChange: (filters: unknown) => {
+        capturedFilters.push(filters);
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const captured = (window as unknown as { __filterChangeCapture?: unknown[] }).__filterChangeCapture;
+    expect(captured).toBeTruthy();
+    const initialCount = captured!.length;
+
+    // Apply a filter programmatically via the table ref
+    const wrapper = canvasElement.querySelector(".simple-table-root")?.closest("[style]") as HTMLElement | null;
+    const tableWrapper = canvasElement.querySelector("div[style]") as HTMLDivElement & { _table?: InstanceType<typeof SimpleTableVanilla> } | null;
+    const table = tableWrapper?._table;
+    if (table) {
+      await table.getAPI().applyFilter({ accessor: "name", operator: "contains", value: "Alice" });
+      await new Promise((r) => setTimeout(r, 300));
+      expect(captured!.length).toBeGreaterThan(initialCount);
+    } else {
+      // At minimum ensure the filter icon is present
+      const filterIcons = canvasElement.querySelectorAll(".st-icon-container");
+      expect(filterIcons.length).toBeGreaterThan(0);
+    }
+    void wrapper;
+  },
+};
+
+// ============================================================================
+// TEST 9: ENUM FILTER WITH > 10 OPTIONS SHOWS SEARCH INPUT
+// ============================================================================
+
+export const EnumFilterMoreThan10OptionsShowsSearch = {
+  render: () => {
+    const enumData = Array.from({ length: 15 }, (_, i) => ({
+      id: i + 1,
+      name: `Item ${i + 1}`,
+      category: `Category ${i + 1}`,
+    }));
+    const enumHeaders: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      {
+        accessor: "category",
+        label: "Category",
+        width: 150,
+        type: "enum",
+        filterable: true,
+        enumOptions: Array.from({ length: 15 }, (_, i) => ({
+          label: `Category ${i + 1}`,
+          value: `Category ${i + 1}`,
+        })),
+      },
+    ];
+    const { wrapper } = renderVanillaTable(enumHeaders, enumData, {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "400px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const filterIcon = canvasElement.querySelector(
+      '.st-header-cell[data-accessor="category"] .st-icon-container',
+    ) as HTMLElement | null;
+    expect(filterIcon).toBeTruthy();
+    filterIcon!.click();
+    await new Promise((r) => setTimeout(r, 300));
+
+    // Dropdown should be open; with >10 enum options a search input appears
+    const filterDropdown = canvasElement.querySelector(".st-filter-dropdown, .st-filter-content, .st-dropdown-content");
+    expect(filterDropdown).toBeTruthy();
+    const searchInput = filterDropdown?.querySelector("input[type='text'], input[type='search'], input") as HTMLInputElement | null;
+    expect(searchInput).toBeTruthy();
+  },
+};

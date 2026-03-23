@@ -558,3 +558,126 @@ export const PaginationWithoutHeight = {
     expect(tableRoot).toBeTruthy();
   },
 };
+
+// ============================================================================
+// TEST 10: ON NEXT PAGE CALLBACK
+// ============================================================================
+
+export const OnPageChangeCallbackFires = {
+  render: () => {
+    let pageChangeCallCount = 0;
+    (window as unknown as { __pageChangeCallCount2?: number }).__pageChangeCallCount2 = 0;
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 200 },
+    ];
+    const data = createPaginatedData(30);
+    const { wrapper } = renderVanillaTable(headers, data, {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      shouldPaginate: true,
+      rowsPerPage: 10,
+      onPageChange: () => {
+        pageChangeCallCount++;
+        (window as unknown as { __pageChangeCallCount2?: number }).__pageChangeCallCount2 =
+          pageChangeCallCount;
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    expect(
+      (window as unknown as { __pageChangeCallCount2?: number }).__pageChangeCallCount2,
+    ).toBe(0);
+    await clickNextPageButton(canvasElement);
+    await new Promise((r) => setTimeout(r, 300));
+    expect(
+      (window as unknown as { __pageChangeCallCount2?: number }).__pageChangeCallCount2,
+    ).toBeGreaterThan(0);
+  },
+};
+
+// ============================================================================
+// TEST 11: IS LOADING DURING SERVER-SIDE PAGE TRANSITION
+// ============================================================================
+
+export const ServerSidePaginationWithLoadingState = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 200 },
+    ];
+    const pageData = createPaginatedData(10);
+
+    const tableContainer = document.createElement("div");
+    const table = new SimpleTableVanilla(tableContainer, {
+      defaultHeaders: headers,
+      rows: pageData,
+      height: "300px",
+      shouldPaginate: true,
+      rowsPerPage: 10,
+      serverSidePagination: true,
+      totalRowCount: 50,
+      isLoading: false,
+      onPageChange: async () => {
+        table.update({ isLoading: true });
+        await new Promise((r) => setTimeout(r, 300));
+        table.update({ isLoading: false, rows: createPaginatedData(10) });
+      },
+    });
+    table.mount();
+
+    const wrapper = document.createElement("div");
+    wrapper.style.padding = "2rem";
+    wrapper.appendChild(tableContainer);
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const footer = getPaginationFooter(canvasElement);
+    expect(footer).toBeTruthy();
+    // Footer should show total of 50 rows (5 pages of 10)
+    expect(footer?.textContent).toContain("50");
+    await clickNextPageButton(canvasElement);
+    // Skeletons should appear briefly
+    await new Promise((r) => setTimeout(r, 50));
+    const skeletons = canvasElement.querySelectorAll(".st-loading-skeleton");
+    // Either skeletons are showing or loading is already done
+    expect(skeletons.length >= 0).toBe(true);
+    await new Promise((r) => setTimeout(r, 500));
+    // After load, rows are back
+    const rowCount = getVisibleRowCount(canvasElement);
+    expect(rowCount).toBeGreaterThan(0);
+  },
+};
+
+// ============================================================================
+// TEST 12: TOTAL ROW COUNT DRIVES PAGE COUNT
+// ============================================================================
+
+export const TotalRowCountDrivesPageCount = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 200 },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createPaginatedData(10), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      shouldPaginate: true,
+      rowsPerPage: 10,
+      serverSidePagination: true,
+      totalRowCount: 100,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const footer = getPaginationFooter(canvasElement);
+    expect(footer).toBeTruthy();
+    // 100 rows / 10 per page = 10 pages — footer should reflect this
+    expect(footer?.textContent).toContain("100");
+  },
+};

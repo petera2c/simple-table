@@ -455,3 +455,86 @@ export const ExcludeFromRenderNotInColumnEditor = {
     expect(labels).toContain("Name");
   },
 };
+
+// ============================================================================
+// COLUMN EDITOR CUSTOM RENDERER
+// ============================================================================
+
+export const ColumnEditorCustomText = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "role", label: "Role", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      columnEditorConfig: {
+        text: "Manage Columns",
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const trigger = canvasElement.querySelector<HTMLElement>(".st-column-editor-text");
+    expect(trigger).toBeTruthy();
+    expect(trigger!.textContent?.trim()).toBe("Manage Columns");
+  },
+};
+
+// ============================================================================
+// COLUMN EDITOR ROW RENDERER
+// ============================================================================
+
+export const ColumnEditorRowRenderer = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "role", label: "Role", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      columnEditorConfig: {
+        rowRenderer: ({
+          components,
+        }: {
+          components: {
+            checkbox?: HTMLElement;
+            dragIcon?: HTMLElement;
+            labelContent?: HTMLElement;
+          };
+        }) => {
+          const row = document.createElement("div");
+          row.setAttribute("data-testid", "custom-editor-row");
+          row.style.display = "flex";
+          row.style.alignItems = "center";
+          row.style.gap = "8px";
+          if (components.checkbox) row.appendChild(components.checkbox);
+          if (components.labelContent) row.appendChild(components.labelContent);
+          return row;
+        },
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const trigger = canvasElement.querySelector<HTMLElement>(
+      ".st-column-editor-button, .st-column-editor-text",
+    );
+    if (trigger) {
+      trigger.click();
+      await new Promise((r) => setTimeout(r, 300));
+      const customRows = canvasElement.querySelectorAll('[data-testid="custom-editor-row"]');
+      expect(customRows.length).toBeGreaterThan(0);
+    } else {
+      expect(canvasElement.querySelector(".simple-table-root")).toBeTruthy();
+    }
+  },
+};

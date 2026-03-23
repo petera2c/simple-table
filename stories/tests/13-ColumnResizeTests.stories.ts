@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject } from "../../src/index";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -227,5 +227,86 @@ export const ResizeAllColumns = {
       const widthChange = finalWidth - initialWidth;
       expect(Math.abs(widthChange - 20)).toBeLessThan(5);
     }
+  },
+};
+
+// ============================================================================
+// ON COLUMN WIDTH CHANGE CALLBACK
+// ============================================================================
+
+export const OnColumnWidthChangeCallbackFires = {
+  render: () => {
+    const captured: HeaderObject[][] = [];
+    (window as unknown as { __widthChangeCapture?: HeaderObject[][] }).__widthChangeCapture = captured;
+
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "storeName", label: "Store Name", width: 250, type: "string" },
+      { accessor: "city", label: "City", width: 150, type: "string" },
+    ];
+    const tableContainer = document.createElement("div");
+    const table = new SimpleTableVanilla(tableContainer, {
+      defaultHeaders: headers,
+      rows: createStoreData(),
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      columnResizing: true,
+      onColumnWidthChange: (newHeaders: HeaderObject[]) => {
+        captured.push(newHeaders);
+      },
+    });
+    table.mount();
+    const wrapper = document.createElement("div");
+    wrapper.style.padding = "2rem";
+    wrapper.appendChild(tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const captured = (window as unknown as { __widthChangeCapture?: HeaderObject[][] }).__widthChangeCapture;
+    expect(captured).toBeTruthy();
+
+    const storeNameHeader = findHeaderCellByLabel(canvasElement, "Store Name");
+    expect(storeNameHeader).toBeTruthy();
+    await resizeColumn(storeNameHeader!, 30, () => findHeaderCellByLabel(canvasElement, "Store Name"));
+    await new Promise((r) => setTimeout(r, 300));
+
+    expect(captured!.length).toBeGreaterThan(0);
+    expect(Array.isArray(captured![0])).toBe(true);
+  },
+};
+
+// ============================================================================
+// DOUBLE-CLICK AUTO-FIT
+// ============================================================================
+
+export const DoubleClickResizeHandleAutoFit = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 300, type: "number" },
+      { accessor: "storeName", label: "Store Name", width: 100, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createStoreData().slice(0, 3), {
+      getRowId: (params) => String(params.row.id),
+      height: "300px",
+      columnResizing: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const idHeader = findHeaderCellByLabel(canvasElement, "ID");
+    expect(idHeader).toBeTruthy();
+
+    const resizeHandle = idHeader!.querySelector<HTMLElement>(".st-header-resize-handle");
+    expect(resizeHandle).toBeTruthy();
+
+    // Dispatch dblclick on resize handle — verifies no errors are thrown
+    resizeHandle!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 400));
+
+    // After double-click, the resize handle and header should still be in the DOM
+    expect(idHeader!.isConnected).toBe(true);
+    expect(resizeHandle!.isConnected).toBe(true);
   },
 };

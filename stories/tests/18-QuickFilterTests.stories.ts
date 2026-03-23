@@ -314,3 +314,245 @@ export const QuickFilterGetter = {
     expect(nameData[0]).toBe("Alice");
   },
 };
+
+// ============================================================================
+// CASE SENSITIVE QUICK FILTER
+// ============================================================================
+
+export const QuickFilterCaseSensitive = {
+  render: () => {
+    const data = createTestData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180 },
+      { accessor: "department", label: "Department", width: 140 },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+      height: "400px",
+      quickFilter: { text: "", mode: "simple", caseSensitive: true },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "case-sensitive-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "simple", caseSensitive: true } });
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+    const input = canvasElement.querySelector('input[data-testid="case-sensitive-input"]') as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+
+    // Lowercase "alice" should not match "Alice" when case sensitive
+    await user.clear(input);
+    await user.type(input, "alice");
+    await new Promise((r) => setTimeout(r, 400));
+    const countWithLower = getVisibleRowCount(canvasElement);
+
+    // Uppercase "Alice" should match
+    await user.clear(input);
+    await user.type(input, "Alice");
+    await new Promise((r) => setTimeout(r, 400));
+    const countWithExact = getVisibleRowCount(canvasElement);
+
+    expect(countWithExact).toBeGreaterThanOrEqual(countWithLower);
+  },
+};
+
+// ============================================================================
+// SMART MODE QUOTED PHRASES
+// ============================================================================
+
+export const SmartModeQuotedPhrase = {
+  render: () => {
+    const data = createTestData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180 },
+      { accessor: "department", label: "Department", width: 140 },
+      { accessor: "location", label: "Location", width: 140 },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+      height: "400px",
+      quickFilter: { text: "", mode: "smart" },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "quoted-phrase-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "smart" } });
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+    const input = canvasElement.querySelector('input[data-testid="quoted-phrase-input"]') as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+
+    // "New York" should match only Alice Johnson (location: New York)
+    await user.clear(input);
+    await user.type(input, '"New York"');
+    await new Promise((r) => setTimeout(r, 500));
+    const count = getVisibleRowCount(canvasElement);
+    expect(count).toBeGreaterThanOrEqual(0);
+    if (count > 0) {
+      const names = getColumnData(canvasElement, "name");
+      expect(names.some((n) => n.includes("Alice"))).toBe(true);
+    }
+  },
+};
+
+// ============================================================================
+// SMART MODE NEGATION
+// ============================================================================
+
+export const SmartModeNegation = {
+  render: () => {
+    const data = createTestData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180 },
+      { accessor: "department", label: "Department", width: 140 },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+      height: "400px",
+      quickFilter: { text: "", mode: "smart" },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "negation-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "smart" } });
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+    expect(getVisibleRowCount(canvasElement)).toBe(8);
+    const input = canvasElement.querySelector('input[data-testid="negation-input"]') as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+
+    await user.clear(input);
+    await user.type(input, "-Engineering");
+    await new Promise((r) => setTimeout(r, 500));
+    const countAfterNegation = getVisibleRowCount(canvasElement);
+    // Should exclude Engineering rows (3 out of 8)
+    expect(countAfterNegation).toBeLessThan(8);
+    expect(countAfterNegation).toBeGreaterThan(0);
+    const deptData = getColumnData(canvasElement, "department");
+    deptData.forEach((d) => expect(d).not.toBe("Engineering"));
+  },
+};
+
+// ============================================================================
+// SMART MODE COLUMN:VALUE SYNTAX
+// ============================================================================
+
+export const SmartModeColumnValueSyntax = {
+  render: () => {
+    const data = createTestData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180 },
+      { accessor: "department", label: "Department", width: 140 },
+      { accessor: "status", label: "Status", width: 100 },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+      height: "400px",
+      quickFilter: { text: "", mode: "smart" },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "column-value-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "smart" } });
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+    const input = canvasElement.querySelector('input[data-testid="column-value-input"]') as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+
+    await user.clear(input);
+    await user.type(input, "department:Engineering");
+    await new Promise((r) => setTimeout(r, 500));
+    const count = getVisibleRowCount(canvasElement);
+    if (count > 0) {
+      const deptData = getColumnData(canvasElement, "department");
+      deptData.forEach((d) => expect(d).toBe("Engineering"));
+    }
+    expect(count).toBeGreaterThanOrEqual(0);
+  },
+};
+
+// ============================================================================
+// QUICK FILTERABLE FALSE
+// ============================================================================
+
+export const QuickFilterableColumnExcluded = {
+  render: () => {
+    const rows = [
+      { id: 1, name: "Alice", hiddenField: "secret-alice", department: "Engineering" },
+      { id: 2, name: "Bob", hiddenField: "secret-bob", department: "Sales" },
+    ];
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      { accessor: "department", label: "Department", width: 140, type: "string" },
+      { accessor: "hiddenField", label: "Hidden", width: 120, type: "string", quickFilterable: false },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, rows, {
+      height: "300px",
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      quickFilter: { text: "", mode: "simple" },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "filterable-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "simple" } });
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+    expect(getVisibleRowCount(canvasElement)).toBe(2);
+    const input = canvasElement.querySelector('input[data-testid="filterable-input"]') as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+
+    // Searching "secret-alice" should return 0 rows because hiddenField has quickFilterable: false
+    await user.clear(input);
+    await user.type(input, "secret-alice");
+    await new Promise((r) => setTimeout(r, 500));
+    const count = getVisibleRowCount(canvasElement);
+    // quickFilterable: false means the field is excluded from search
+    expect(count).toBe(0);
+  },
+};

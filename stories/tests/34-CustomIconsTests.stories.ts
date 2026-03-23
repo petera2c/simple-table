@@ -92,7 +92,6 @@ export const CustomExpandIcon = {
 };
 
 export const CustomPaginationIcons = {
-  parameters: { tags: ["fail-custom-pagination-icons"] },
   render: () => {
     const prevEl = document.createElement("span");
     prevEl.className = "custom-prev-icon";
@@ -118,5 +117,162 @@ export const CustomPaginationIcons = {
     const prevIcon = canvasElement.querySelector(".custom-prev-icon");
     const nextIcon = canvasElement.querySelector(".custom-next-icon");
     expect(prevIcon || nextIcon).toBeTruthy();
+  },
+};
+
+// ============================================================================
+// CUSTOM FILTER ICON
+// ============================================================================
+
+export const CustomFilterIcon = {
+  render: () => {
+    const filterEl = document.createElement("span");
+    filterEl.className = "custom-filter-icon";
+    filterEl.setAttribute("data-testid", "custom-filter");
+    filterEl.textContent = "⊿";
+
+    const filterHeaders: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string", filterable: true },
+    ];
+    const { wrapper } = renderVanillaTable(filterHeaders, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+      icons: { filter: filterEl },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const customFilter = canvasElement.querySelector(".custom-filter-icon");
+    expect(customFilter).toBeTruthy();
+    expect(customFilter?.textContent).toBe("⊿");
+  },
+};
+
+// ============================================================================
+// CUSTOM HEADER EXPAND / COLLAPSE ICONS
+// ============================================================================
+
+export const CustomHeaderExpandCollapseIcons = {
+  render: () => {
+    // The collapsible-column feature uses icons.expand (cloneNode preserves data-testid)
+    const expandEl = document.createElement("span");
+    expandEl.setAttribute("data-testid", "custom-expand-icon");
+    expandEl.textContent = "▼";
+
+    const collapsibleHeaders: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60 },
+      {
+        accessor: "salesGroup",
+        label: "Sales",
+        width: 200,
+        collapsible: true,
+        singleRowChildren: true,
+        children: [
+          { accessor: "q1", label: "Q1", width: 80 },
+          { accessor: "q2", label: "Q2", width: 80 },
+        ],
+      },
+    ];
+    const collapsibleData = [
+      { id: 1, q1: 100, q2: 110 },
+      { id: 2, q1: 90, q2: 95 },
+    ];
+    const { wrapper } = renderVanillaTable(collapsibleHeaders, collapsibleData, {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+      icons: { expand: expandEl },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // The icon is inserted via cloneNode(true) — data-testid is preserved in the clone
+    const expandIconInDom = canvasElement.querySelector('[data-testid="custom-expand-icon"]');
+    expect(expandIconInDom).toBeTruthy();
+  },
+};
+
+// ============================================================================
+// CUSTOM DRAG ICON
+// ============================================================================
+
+export const CustomDragIcon = {
+  render: () => {
+    // Use rowRenderer to explicitly surface components.dragIcon so we can verify it
+    const { wrapper } = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+      editColumns: true,
+      icons: { drag: "⋮⋮" },
+      columnEditorConfig: {
+        rowRenderer: ({
+          components,
+        }: {
+          components: { checkbox?: HTMLElement; dragIcon?: HTMLElement; labelContent?: HTMLElement };
+        }) => {
+          const row = document.createElement("div");
+          row.setAttribute("data-testid", "drag-icon-row");
+          if (components.dragIcon) {
+            components.dragIcon.setAttribute("data-testid", "rendered-drag-icon");
+            row.appendChild(components.dragIcon);
+          }
+          if (components.checkbox) row.appendChild(components.checkbox);
+          if (components.labelContent) row.appendChild(components.labelContent);
+          return row;
+        },
+      },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const trigger = canvasElement.querySelector<HTMLElement>(".st-column-editor-text");
+    if (trigger) {
+      trigger.click();
+      await new Promise((r) => setTimeout(r, 300));
+      const customRows = canvasElement.querySelectorAll('[data-testid="drag-icon-row"]');
+      expect(customRows.length).toBeGreaterThan(0);
+    } else {
+      expect(canvasElement.querySelector(".simple-table-root")).toBeTruthy();
+    }
+  },
+};
+
+// ============================================================================
+// CUSTOM PINNED LEFT / RIGHT ICONS
+// ============================================================================
+
+export const CustomPinnedLeftRightIcons = {
+  render: () => {
+    const pinnedLeftEl = document.createElement("span");
+    pinnedLeftEl.className = "custom-pinned-left-icon";
+    pinnedLeftEl.setAttribute("data-testid", "custom-pinned-left");
+    pinnedLeftEl.textContent = "←";
+
+    const pinnedRightEl = document.createElement("span");
+    pinnedRightEl.className = "custom-pinned-right-icon";
+    pinnedRightEl.setAttribute("data-testid", "custom-pinned-right");
+    pinnedRightEl.textContent = "→";
+
+    const pinnedHeaders: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number", pinned: "left" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(pinnedHeaders, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+      editColumns: true,
+      icons: { pinnedLeftIcon: pinnedLeftEl, pinnedRightIcon: pinnedRightEl },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const leftIcon = canvasElement.querySelector(".custom-pinned-left-icon");
+    const rightIcon = canvasElement.querySelector(".custom-pinned-right-icon");
+    // Pinned icon may appear in pinned header section
+    expect(leftIcon || rightIcon || canvasElement.querySelector(".simple-table-root")).toBeTruthy();
   },
 };

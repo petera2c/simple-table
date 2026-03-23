@@ -104,3 +104,47 @@ export const NoPaginationNoFooter = {
     expect(footer).toBeFalsy();
   },
 };
+
+// ============================================================================
+// STANDARD FOOTER NAVIGATION (page count display)
+// ============================================================================
+
+export const FooterShowsCorrectPageCount = {
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, createData(25), {
+      getRowId: (p) => String(p.row?.id),
+      height: "350px",
+      shouldPaginate: true,
+      rowsPerPage: 10,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const footer = canvasElement.querySelector(".st-footer");
+    expect(footer).toBeTruthy();
+    // 25 rows / 10 per page = 3 pages — footer should mention page count
+    expect(footer?.textContent).toContain("3");
+  },
+};
+
+export const FooterPrevDisabledOnFirstPage = {
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, createData(20), {
+      getRowId: (p) => String(p.row?.id),
+      height: "350px",
+      shouldPaginate: true,
+      rowsPerPage: 10,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const footer = canvasElement.querySelector(".st-footer");
+    expect(footer).toBeTruthy();
+    // On the first page the prev button should be disabled
+    const prevBtn = footer?.querySelector<HTMLButtonElement>("button");
+    expect(prevBtn).toBeTruthy();
+    expect(prevBtn?.disabled).toBe(true);
+  },
+};
