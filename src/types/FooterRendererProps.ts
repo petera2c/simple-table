@@ -1,15 +1,15 @@
-import { ReactNode } from "react";
+import type { IconElement } from "./IconsConfig";
 
 interface FooterRendererProps {
   currentPage: number;
   endRow: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
-  nextIcon?: ReactNode;
+  nextIcon?: IconElement;
   onNextPage: () => Promise<void>;
   onPageChange: (page: number) => void;
   onPrevPage: () => void;
-  prevIcon?: ReactNode;
+  prevIcon?: IconElement;
   rowsPerPage: number;
   startRow: number;
   totalPages: number;

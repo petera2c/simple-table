@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, RefObject } from "react";
+import { useCallback, useEffect, useRef, RefObject, Dispatch, SetStateAction } from "react";
 import HeaderObject from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
 import { getHeaderMinWidth } from "../utils/headerWidthUtils";
@@ -215,7 +215,7 @@ interface UseAutoScaleMainSectionProps {
   pinnedRightWidth: number;
   mainBodyRef: RefObject<HTMLDivElement>;
   isResizing: boolean;
-  setHeaders: React.Dispatch<React.SetStateAction<HeaderObject[]>>;
+  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
 }
 
 /**

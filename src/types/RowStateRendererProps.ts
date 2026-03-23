@@ -1,54 +1,25 @@
-import { ReactNode } from "react";
+import type Row from "./Row";
 
-/**
- * Props passed to the loading state renderer
- */
 export interface LoadingStateRendererProps {
-  /**
-   * The row that is being loaded (parent row for nested loading states)
-   */
-  parentRow?: any;
+  parentRow?: Row;
 }
 
-/**
- * Props passed to the error state renderer
- */
 export interface ErrorStateRendererProps {
-  /**
-   * The error message to display
-   */
   error: string;
-  /**
-   * The row that encountered the error (parent row for nested error states)
-   */
-  parentRow?: any;
+  parentRow?: Row;
 }
 
-/**
- * Props passed to the empty state renderer
- */
 export interface EmptyStateRendererProps {
-  /**
-   * Optional custom message to display
-   */
   message?: string;
-  /**
-   * The row that has no children (parent row for nested empty states)
-   */
-  parentRow?: any;
+  parentRow?: Row;
 }
 
-/**
- * Loading state renderer can be a function, string, or ReactNode
- */
-export type LoadingStateRenderer = string | ReactNode;
+export type VanillaLoadingStateRenderer = string | HTMLElement | ((props: LoadingStateRendererProps) => HTMLElement | string);
 
-/**
- * Error state renderer can be a function, string, or ReactNode
- */
-export type ErrorStateRenderer = string | ReactNode;
+export type VanillaErrorStateRenderer = string | HTMLElement | ((props: ErrorStateRendererProps) => HTMLElement | string);
 
-/**
- * Empty state renderer can be a function, string, or ReactNode
- */
-export type EmptyStateRenderer = string | ReactNode;
+export type VanillaEmptyStateRenderer = string | HTMLElement | ((props: EmptyStateRendererProps) => HTMLElement | string);
+
+export type LoadingStateRenderer = VanillaLoadingStateRenderer;
+export type ErrorStateRenderer = VanillaErrorStateRenderer;
+export type EmptyStateRenderer = VanillaEmptyStateRenderer;

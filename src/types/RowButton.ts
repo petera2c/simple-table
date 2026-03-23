@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import Row from "./Row";
 
 export interface RowButtonProps {
@@ -6,4 +5,13 @@ export interface RowButtonProps {
   rowIndex: number; // The position of the row in the table
 }
 
-export type RowButton = (props: RowButtonProps) => ReactNode;
+// BREAKING CHANGE: RowButton now returns HTMLElement instead of ReactNode
+// Users must provide vanilla JS functions that create DOM elements
+// Example:
+//   rowButtons={[(props) => {
+//     const button = document.createElement('button');
+//     button.textContent = 'Edit';
+//     button.onclick = () => handleEdit(props.row);
+//     return button;
+//   }]}
+export type RowButton = (props: RowButtonProps) => HTMLElement | null;

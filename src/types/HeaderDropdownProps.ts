@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import HeaderRendererProps from "./HeaderRendererProps";
 
 interface HeaderDropdownProps extends HeaderRendererProps {
@@ -12,6 +11,8 @@ interface HeaderDropdownProps extends HeaderRendererProps {
   };
 }
 
-export type HeaderDropdown = (props: HeaderDropdownProps) => ReactNode;
+export type VanillaHeaderDropdown = (props: HeaderDropdownProps) => HTMLElement | string | null;
+
+export type HeaderDropdown = (props: HeaderDropdownProps) => HTMLElement | string | null;
 
 export default HeaderDropdownProps;

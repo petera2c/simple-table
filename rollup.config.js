@@ -1,13 +1,11 @@
-import babel from "@rollup/plugin-babel";
 import resolve from "@rollup/plugin-node-resolve";
 import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import del from "rollup-plugin-delete";
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
 export default {
-  input: "src/index.tsx",
+  input: "src/index.ts",
   output: [
     {
       dir: "dist/cjs",
@@ -28,7 +26,6 @@ export default {
   ],
   plugins: [
     del({ targets: "dist/*" }),
-    peerDepsExternal(),
     postcss({
       extract: "styles.css", // All-in-one file for backward compatibility
       inject: false,
@@ -65,14 +62,9 @@ export default {
         }),
       ],
     }),
-    babel({
-      exclude: ["node_modules/**", "src/stories/**"],
-      presets: ["@babel/preset-react"],
-      babelHelpers: "bundled",
-    }),
     resolve(),
     typescript({
-      exclude: ["node_modules/**", "src/stories/**"],
+      exclude: ["node_modules/**"],
       rollupCommonJSResolveHack: false,
       clean: true,
     }),
@@ -95,5 +87,5 @@ export default {
       },
     }),
   ],
-  external: ["react", "react/jsx-runtime"],
+  external: [],
 };

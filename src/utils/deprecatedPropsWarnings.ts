@@ -1,3 +1,4 @@
+import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { SimpleTableProps } from "../types/SimpleTableProps";
 
 /**
@@ -68,7 +69,7 @@ const DEPRECATED_PROPS: DeprecatedProp[] = [
  * Checks for deprecated props and logs console errors with helpful migration messages
  * @param props - The SimpleTable props to check
  */
-export const checkDeprecatedProps = (props: SimpleTableProps): void => {
+export const checkDeprecatedProps = (props: SimpleTableConfig): void => {
   // Only run in development mode
   if (process.env.NODE_ENV === "production") {
     return;
@@ -85,7 +86,7 @@ export const checkDeprecatedProps = (props: SimpleTableProps): void => {
         typeof props[propName] === "string" ? JSON.stringify(props[propName]) : "<YourIcon />";
 
       console.error(
-        `${baseMessage}\n${replacementMessage}${additionalMessage}\n\nExample:\n<SimpleTable\n  ${objectName}={{\n    ${propertyName}: ${exampleValue}\n  }}\n/>`
+        `${baseMessage}\n${replacementMessage}${additionalMessage}\n\nExample:\n<SimpleTable\n  ${objectName}={{\n    ${propertyName}: ${exampleValue}\n  }}\n/>`,
       );
     }
   });

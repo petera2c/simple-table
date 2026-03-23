@@ -1,29 +1,20 @@
-import { ReactNode } from "react";
+/** Single icon value used across header, footer, and column editor props */
+export type IconElement = SVGSVGElement | HTMLElement | string;
 
-/**
- * Configuration for all icons used in the table
- */
-export interface IconsConfig {
-  /** Icon for drag handle in column editor (default: DragIcon) */
-  drag?: ReactNode;
-  /** Icon for expanded state in expandable rows (default: AngleRightIcon) */
-  expand?: ReactNode;
-  /** Icon for filter button in headers (default: FilterIcon) */
-  filter?: ReactNode;
-  /** Icon for collapsed column headers (default: AngleRightIcon) */
-  headerCollapse?: ReactNode;
-  /** Icon for expanded column headers (default: AngleLeftIcon) */
-  headerExpand?: ReactNode;
-  /** Icon for next page button (default: AngleRightIcon) */
-  next?: ReactNode;
-  /** Icon for previous page button (default: AngleLeftIcon) */
-  prev?: ReactNode;
-  /** Icon for sort descending (default: DescIcon) */
-  sortDown?: ReactNode;
-  /** Icon for sort ascending (default: AscIcon) */
-  sortUp?: ReactNode;
+export interface VanillaIconsConfig {
+  drag?: IconElement;
+  expand?: IconElement;
+  filter?: IconElement;
+  headerCollapse?: IconElement;
+  headerExpand?: IconElement;
+  next?: IconElement;
+  prev?: IconElement;
+  sortDown?: IconElement;
+  sortUp?: IconElement;
   /** Label for pin-to-left control in column editor (default: "L") */
-  pinnedLeftIcon?: ReactNode;
+  pinnedLeftIcon?: IconElement;
   /** Label for pin-to-right control in column editor (default: "R") */
-  pinnedRightIcon?: ReactNode;
+  pinnedRightIcon?: IconElement;
 }
+
+export interface IconsConfig extends VanillaIconsConfig {}

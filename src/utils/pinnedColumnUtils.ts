@@ -1,12 +1,8 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
+import { PinnedSectionsState } from "../types/PinnedSectionsState";
+import { PanelSection } from "../types/PanelSection";
 
-export type PanelSection = "left" | "main" | "right";
-
-export type PinnedSectionsState = {
-  left: Accessor[];
-  main: Accessor[];
-  right: Accessor[];
-};
+export type { PinnedSectionsState, PanelSection };
 
 /** Root-level columns only, preserving order within each pin group. */
 export function partitionRootHeadersByPin(headers: HeaderObject[]): {

@@ -1,0 +1,1458 @@
+import type Cell from "../../types/Cell";
+import type HeaderObject from "../../types/HeaderObject";
+import type TableRowType from "../../types/TableRow";
+import { findLeafHeaders } from "../../utils/headerWidthUtils";
+import { rowIdToString } from "../../utils/rowUtils";
+import { scrollCellIntoView } from "../../utils/cellScrollUtils";
+import {
+  copySelectedCellsToClipboard,
+  pasteClipboardDataToCells,
+  deleteSelectedCellsContent,
+} from "../../utils/cellClipboardUtils";
+import { createSetString, type SelectionManagerConfig } from "./types";
+import { findEdgeInDirection as findEdgeInDirectionUtil } from "./keyboardUtils";
+import { computeSelectionRange } from "./selectionRangeUtils";
+import {
+  getCellFromMousePosition as getCellFromMousePositionUtil,
+  handleAutoScroll as handleAutoScrollUtil,
+  calculateNearestCell as calculateNearestCellUtil,
+} from "./mouseUtils";
+
+export type { SelectionManagerConfig } from "./types";
+export { createSetString } from "./types";
+
+export class SelectionManager {
+  // Configuration
+  private config: SelectionManagerConfig;
+
+  // Internal state
+  private selectedCells: Set<string> = new Set();
+  private selectedColumns: Set<number> = new Set();
+  private lastSelectedColumnIndex: number | null = null;
+  private initialFocusedCell: Cell | null = null;
+  private copyFlashCells: Set<string> = new Set();
+  private warningFlashCells: Set<string> = new Set();
+  private isSelecting: boolean = false;
+  private startCell: Cell | null = null;
+
+  // Event handlers that need to be cleaned up
+  private keydownHandler: ((event: KeyboardEvent) => void) | null = null;
+
+  // Mouse interaction state
+  private currentMouseX: number | null = null;
+  private currentMouseY: number | null = null;
+  private scrollAnimationFrame: number | null = null;
+  private lastSelectionUpdate: number = 0;
+  private selectionThrottleMs: number = 16;
+  private globalMouseMoveHandler: ((event: MouseEvent) => void) | null = null;
+  private globalMouseUpHandler: (() => void) | null = null;
+
+  // Cached derived state
+  private columnsWithSelectedCells: Set<number> = new Set();
+  private rowsWithSelectedCells: Set<string> = new Set();
+  private leafHeaders: HeaderObject[] = [];
+  /** rowId -> table row index; avoids O(tableRows) findIndex per cell in getBorderClass */
+  private rowIdToTableIndex: Map<string, number> = new Map();
+  /** Set of "rowId\tcolIndex" for O(1) selected membership in syncAllCellClasses */
+  private selectedByRowIdColIndex: Set<string> = new Set();
+  /** When true, all cells are selected without storing R×C cell IDs (fast path for Cmd+A). */
+  private fullTableSelected: boolean = false;
+
+  constructor(config: SelectionManagerConfig) {
+    this.config = config;
+    this.updateDerivedState();
+    this.setupKeyboardNavigation();
+  }
+
+  /**
+   * Update configuration when props change.
+   * When options.positionOnlyBody is true (e.g. scroll-only render), only updates rowIdToTableIndex and
+   * selectedByRowIdColIndex so lookups work for new cells; skips columnsWithSelectedCells/rowsWithSelectedCells.
+   */
+  updateConfig(
+    config: Partial<SelectionManagerConfig>,
+    options?: { positionOnlyBody?: boolean },
+  ): void {
+    this.config = { ...this.config, ...config };
+    if (options?.positionOnlyBody) {
+      this.updateRowIdAndSelectionLookupOnly();
+    } else {
+      this.updateDerivedState();
+    }
+  }
+
+  /**
+   * Update derived state based on current selections.
+   * When fullTableSelected, derives columns/rows from table shape (O(R+C)) instead of iterating selectedCells (O(R×C)).
+   * Otherwise, single pass over selectedCells to build selectedByRowIdColIndex, columnsWithSelectedCells, rowsWithSelectedCells.
+   */
+  private updateDerivedState(): void {
+    // Update leaf headers
+    this.leafHeaders = this.config.headers.flatMap((header) =>
+      findLeafHeaders(header, this.config.collapsedHeaders),
+    );
+
+    // Build rowId -> table row index cache for O(1) lookups in getBorderClass
+    this.rowIdToTableIndex.clear();
+    this.config.tableRows.forEach((r, i) => {
+      this.rowIdToTableIndex.set(rowIdToString(r.rowId), i);
+    });
+
+    if (this.fullTableSelected) {
+      // Fast path: derive from table shape without iterating R×C cell IDs
+      this.selectedByRowIdColIndex.clear();
+      this.columnsWithSelectedCells = new Set<number>();
+      const numCols = this.leafHeaders.length;
+      const offset = this.config.enableRowSelection ? 1 : 0;
+      for (let col = 0; col < numCols; col++) {
+        this.columnsWithSelectedCells.add(col + offset);
+      }
+      this.rowsWithSelectedCells = new Set<string>();
+      this.config.tableRows.forEach((r) => {
+        this.rowsWithSelectedCells.add(rowIdToString(r.rowId));
+      });
+      return;
+    }
+
+    // Single pass over selectedCells: build selectedByRowIdColIndex, columnsWithSelectedCells, rowsWithSelectedCells
+    this.selectedByRowIdColIndex.clear();
+    this.columnsWithSelectedCells = new Set<number>();
+    this.rowsWithSelectedCells = new Set<string>();
+
+    this.selectedCells.forEach((key) => {
+      const parts = key.split("-");
+      if (parts.length >= 3) {
+        const colIndex = parseInt(parts[1], 10);
+        const rowId = parts.slice(2).join("-");
+        if (!isNaN(colIndex)) {
+          this.selectedByRowIdColIndex.add(`${rowId}\t${colIndex}`);
+          this.columnsWithSelectedCells.add(colIndex);
+          this.rowsWithSelectedCells.add(rowId);
+        }
+      }
+    });
+
+    this.selectedColumns.forEach((colIndex) => {
+      this.columnsWithSelectedCells.add(colIndex);
+      this.config.tableRows.forEach((r) => {
+        this.selectedByRowIdColIndex.add(
+          `${rowIdToString(r.rowId)}\t${colIndex}`,
+        );
+        this.rowsWithSelectedCells.add(rowIdToString(r.rowId));
+      });
+    });
+  }
+
+  /**
+   * Minimal update for scroll-only renders: only rowIdToTableIndex and selectedByRowIdColIndex
+   * so isSelected/getBorderClass work for new cells; skips columnsWithSelectedCells and rowsWithSelectedCells.
+   * When fullTableSelected, selectedByRowIdColIndex is left empty (isSelected uses the flag).
+   */
+  private updateRowIdAndSelectionLookupOnly(): void {
+    this.rowIdToTableIndex.clear();
+    this.config.tableRows.forEach((r, i) => {
+      this.rowIdToTableIndex.set(rowIdToString(r.rowId), i);
+    });
+
+    if (this.fullTableSelected) return;
+
+    this.selectedByRowIdColIndex.clear();
+    this.selectedCells.forEach((key) => {
+      const parts = key.split("-");
+      if (parts.length >= 3) {
+        const colIndex = parseInt(parts[1], 10);
+        const rowId = parts.slice(2).join("-");
+        if (!isNaN(colIndex))
+          this.selectedByRowIdColIndex.add(`${rowId}\t${colIndex}`);
+      }
+    });
+    this.selectedColumns.forEach((colIndex) => {
+      this.config.tableRows.forEach((r) => {
+        this.selectedByRowIdColIndex.add(
+          `${rowIdToString(r.rowId)}\t${colIndex}`,
+        );
+      });
+    });
+  }
+
+  /**
+   * Setup keyboard navigation event listener
+   */
+  private setupKeyboardNavigation(): void {
+    this.keydownHandler = this.handleKeyDown.bind(this);
+    document.addEventListener("keydown", this.keydownHandler);
+  }
+
+  /**
+   * Clean up event listeners and resources
+   */
+  destroy(): void {
+    if (this.keydownHandler) {
+      document.removeEventListener("keydown", this.keydownHandler);
+      this.keydownHandler = null;
+    }
+
+    // Clean up mouse handlers if they exist
+    if (this.globalMouseMoveHandler) {
+      document.removeEventListener("mousemove", this.globalMouseMoveHandler);
+      this.globalMouseMoveHandler = null;
+    }
+    if (this.globalMouseUpHandler) {
+      document.removeEventListener("mouseup", this.globalMouseUpHandler);
+      this.globalMouseUpHandler = null;
+    }
+
+    // Cancel any pending animation frames
+    if (this.scrollAnimationFrame !== null) {
+      cancelAnimationFrame(this.scrollAnimationFrame);
+      this.scrollAnimationFrame = null;
+    }
+  }
+
+  /**
+   * Handle keyboard events for navigation and clipboard operations
+   */
+  private handleKeyDown(event: KeyboardEvent): void {
+    if (!this.config.selectableCells) return;
+    if (!this.initialFocusedCell) return;
+
+    // Don't intercept if user is typing in a form element
+    const activeElement = document.activeElement;
+    if (
+      activeElement instanceof HTMLInputElement ||
+      activeElement instanceof HTMLTextAreaElement ||
+      activeElement instanceof HTMLSelectElement ||
+      activeElement?.getAttribute("contenteditable") === "true"
+    ) {
+      return;
+    }
+
+    // Select All: allow even when no selection yet (only requires focus)
+    if ((event.ctrlKey || event.metaKey) && event.key === "a") {
+      event.preventDefault();
+      this.selectAll();
+      return;
+    }
+
+    if (this.selectedCells.size === 0 && !this.fullTableSelected) return;
+
+    // Copy functionality
+    if ((event.ctrlKey || event.metaKey) && event.key === "c") {
+      this.copyToClipboard();
+      return;
+    }
+
+    // Paste functionality
+    if ((event.ctrlKey || event.metaKey) && event.key === "v") {
+      event.preventDefault();
+      this.pasteFromClipboard();
+      return;
+    }
+
+    // Delete functionality
+    if (event.key === "Delete" || event.key === "Backspace") {
+      event.preventDefault();
+      this.deleteSelectedCells();
+      return;
+    }
+
+    // Escape to clear selection
+    if (event.key === "Escape") {
+      this.clearSelection();
+      return;
+    }
+
+    // Arrow key navigation and other keys handled in separate methods
+    this.handleNavigationKeys(event);
+  }
+
+  /**
+   * Handle navigation keys (arrows, home, end, page up/down)
+   */
+  private handleNavigationKeys(event: KeyboardEvent): void {
+    if (!this.initialFocusedCell) return;
+
+    let { rowIndex, colIndex, rowId } = this.initialFocusedCell;
+
+    // Check if the visible rows have changed
+    const currentRow = this.config.tableRows[rowIndex];
+    const currentRowId = currentRow ? rowIdToString(currentRow.rowId) : null;
+    if (currentRowId !== rowId) {
+      const currentRowIndex = this.config.tableRows.findIndex(
+        (visibleRow) => rowIdToString(visibleRow.rowId) === rowId,
+      );
+      if (currentRowIndex !== -1) {
+        rowIndex = currentRowIndex;
+      } else return;
+    }
+
+    // Handle keyboard navigation
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      this.handleArrowUp(event, rowIndex, colIndex);
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      this.handleArrowDown(event, rowIndex, colIndex);
+    } else if (
+      event.key === "ArrowLeft" ||
+      (event.key === "Tab" && event.shiftKey)
+    ) {
+      event.preventDefault();
+      this.handleArrowLeft(event, rowIndex, colIndex);
+    } else if (event.key === "ArrowRight" || event.key === "Tab") {
+      event.preventDefault();
+      this.handleArrowRight(event, rowIndex, colIndex);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      this.handleHome(event, rowIndex, colIndex);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      this.handleEnd(event, rowIndex, colIndex);
+    } else if (event.key === "PageUp") {
+      event.preventDefault();
+      this.handlePageUp(event, rowIndex, colIndex);
+    } else if (event.key === "PageDown") {
+      event.preventDefault();
+      this.handlePageDown(event, rowIndex, colIndex);
+    }
+  }
+
+  /**
+   * Helper function to find the edge of data in a direction
+   */
+  private findEdgeInDirection(
+    startRow: number,
+    startCol: number,
+    direction: "up" | "down" | "left" | "right",
+  ): { rowIndex: number; colIndex: number } {
+    return findEdgeInDirectionUtil(
+      this.config.tableRows.length,
+      this.leafHeaders.length,
+      !!this.config.enableRowSelection,
+      startRow,
+      startCol,
+      direction,
+    );
+  }
+
+  /**
+   * Handle arrow up key
+   */
+  private handleArrowUp(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    if (event.shiftKey) {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      let targetRow = rowIndex - 1;
+
+      if (event.ctrlKey || event.metaKey) {
+        const edge = this.findEdgeInDirection(rowIndex, colIndex, "up");
+        targetRow = edge.rowIndex;
+      }
+
+      if (targetRow >= 0) {
+        const targetTableRow = this.config.tableRows[targetRow];
+        const newRowId = rowIdToString(targetTableRow.rowId);
+        const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+        this.selectCellRange(this.startCell, endCell);
+      }
+    } else {
+      if (rowIndex > 0) {
+        let targetRow = rowIndex - 1;
+
+        if (event.ctrlKey || event.metaKey) {
+          const edge = this.findEdgeInDirection(rowIndex, colIndex, "up");
+          targetRow = edge.rowIndex;
+        }
+
+        const targetTableRow = this.config.tableRows[targetRow];
+        const newRowId = rowIdToString(targetTableRow.rowId);
+        const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+        this.selectSingleCell(newCell);
+        this.startCell = null;
+      }
+    }
+  }
+
+  /**
+   * Handle arrow down key
+   */
+  private handleArrowDown(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    if (event.shiftKey) {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      let targetRow = rowIndex + 1;
+
+      if (event.ctrlKey || event.metaKey) {
+        const edge = this.findEdgeInDirection(rowIndex, colIndex, "down");
+        targetRow = edge.rowIndex;
+      }
+
+      if (targetRow < this.config.tableRows.length) {
+        const targetTableRow = this.config.tableRows[targetRow];
+        const newRowId = rowIdToString(targetTableRow.rowId);
+        const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+        this.selectCellRange(this.startCell, endCell);
+      }
+    } else {
+      if (rowIndex < this.config.tableRows.length - 1) {
+        let targetRow = rowIndex + 1;
+
+        if (event.ctrlKey || event.metaKey) {
+          const edge = this.findEdgeInDirection(rowIndex, colIndex, "down");
+          targetRow = edge.rowIndex;
+        }
+
+        const targetTableRow = this.config.tableRows[targetRow];
+        const newRowId = rowIdToString(targetTableRow.rowId);
+        const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+        this.selectSingleCell(newCell);
+        this.startCell = null;
+      }
+    }
+  }
+
+  /**
+   * Handle arrow left key
+   */
+  private handleArrowLeft(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    if (event.shiftKey && event.key === "ArrowLeft") {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      let targetCol = colIndex - 1;
+
+      if (event.ctrlKey || event.metaKey) {
+        const edge = this.findEdgeInDirection(rowIndex, colIndex, "left");
+        targetCol = edge.colIndex;
+      } else {
+        if (this.config.enableRowSelection && targetCol === 0) {
+          return;
+        }
+      }
+
+      if (targetCol >= 0) {
+        const currentTableRow = this.config.tableRows[rowIndex];
+        const newRowId = rowIdToString(currentTableRow.rowId);
+        const endCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
+        this.selectCellRange(this.startCell, endCell);
+      }
+    } else {
+      if (colIndex > 0) {
+        let targetCol = colIndex - 1;
+
+        if ((event.ctrlKey || event.metaKey) && event.key === "ArrowLeft") {
+          const edge = this.findEdgeInDirection(rowIndex, colIndex, "left");
+          targetCol = edge.colIndex;
+        } else {
+          if (this.config.enableRowSelection && targetCol === 0) {
+            return;
+          }
+        }
+
+        if (targetCol >= 0) {
+          const currentTableRow = this.config.tableRows[rowIndex];
+          const newRowId = rowIdToString(currentTableRow.rowId);
+          const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
+          this.selectSingleCell(newCell);
+          this.startCell = null;
+        }
+      }
+    }
+  }
+
+  /**
+   * Handle arrow right key
+   */
+  private handleArrowRight(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    const maxColIndex = this.config.enableRowSelection
+      ? this.leafHeaders.length
+      : this.leafHeaders.length - 1;
+
+    if (event.shiftKey && event.key === "ArrowRight") {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      let targetCol = colIndex + 1;
+
+      if (event.ctrlKey || event.metaKey) {
+        const edge = this.findEdgeInDirection(rowIndex, colIndex, "right");
+        targetCol = edge.colIndex;
+      }
+
+      if (targetCol <= maxColIndex) {
+        const currentTableRow = this.config.tableRows[rowIndex];
+        const newRowId = rowIdToString(currentTableRow.rowId);
+        const endCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
+        this.selectCellRange(this.startCell, endCell);
+      }
+    } else {
+      if (colIndex < maxColIndex) {
+        let targetCol = colIndex + 1;
+
+        if ((event.ctrlKey || event.metaKey) && event.key === "ArrowRight") {
+          const edge = this.findEdgeInDirection(rowIndex, colIndex, "right");
+          targetCol = edge.colIndex;
+        }
+
+        if (targetCol <= maxColIndex) {
+          const currentTableRow = this.config.tableRows[rowIndex];
+          const newRowId = rowIdToString(currentTableRow.rowId);
+          const newCell = { rowIndex, colIndex: targetCol, rowId: newRowId };
+          this.selectSingleCell(newCell);
+          this.startCell = null;
+        }
+      }
+    }
+  }
+
+  /**
+   * Handle home key
+   */
+  private handleHome(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    if (event.shiftKey) {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      let targetRow = rowIndex;
+      const targetCol = this.config.enableRowSelection ? 1 : 0;
+
+      if (event.ctrlKey || event.metaKey) {
+        targetRow = 0;
+      }
+
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const endCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
+      this.selectCellRange(this.startCell, endCell);
+    } else {
+      let targetRow = rowIndex;
+      const targetCol = this.config.enableRowSelection ? 1 : 0;
+
+      if (event.ctrlKey || event.metaKey) {
+        targetRow = 0;
+      }
+
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const newCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
+      this.selectSingleCell(newCell);
+      this.startCell = null;
+    }
+  }
+
+  /**
+   * Handle end key
+   */
+  private handleEnd(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    if (event.shiftKey) {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      let targetRow = rowIndex;
+      const targetCol = this.config.enableRowSelection
+        ? this.leafHeaders.length
+        : this.leafHeaders.length - 1;
+
+      if (event.ctrlKey || event.metaKey) {
+        targetRow = this.config.tableRows.length - 1;
+      }
+
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const endCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
+      this.selectCellRange(this.startCell, endCell);
+    } else {
+      let targetRow = rowIndex;
+      const targetCol = this.config.enableRowSelection
+        ? this.leafHeaders.length
+        : this.leafHeaders.length - 1;
+
+      if (event.ctrlKey || event.metaKey) {
+        targetRow = this.config.tableRows.length - 1;
+      }
+
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const newCell = {
+        rowIndex: targetRow,
+        colIndex: targetCol,
+        rowId: newRowId,
+      };
+      this.selectSingleCell(newCell);
+      this.startCell = null;
+    }
+  }
+
+  /**
+   * Handle page up key
+   */
+  private handlePageUp(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    const pageSize = 10;
+    let targetRow = Math.max(0, rowIndex - pageSize);
+
+    if (event.shiftKey) {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+      this.selectCellRange(this.startCell, endCell);
+    } else {
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+      this.selectSingleCell(newCell);
+      this.startCell = null;
+    }
+  }
+
+  /**
+   * Handle page down key
+   */
+  private handlePageDown(
+    event: KeyboardEvent,
+    rowIndex: number,
+    colIndex: number,
+  ): void {
+    const pageSize = 10;
+    let targetRow = Math.min(
+      this.config.tableRows.length - 1,
+      rowIndex + pageSize,
+    );
+
+    if (event.shiftKey) {
+      if (!this.startCell) {
+        this.startCell = this.initialFocusedCell!;
+      }
+
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const endCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+      this.selectCellRange(this.startCell, endCell);
+    } else {
+      const targetTableRow = this.config.tableRows[targetRow];
+      const newRowId = rowIdToString(targetTableRow.rowId);
+      const newCell = { rowIndex: targetRow, colIndex, rowId: newRowId };
+      this.selectSingleCell(newCell);
+      this.startCell = null;
+    }
+  }
+
+  /**
+   * Copy selected cells to clipboard
+   */
+  private copyToClipboard(): void {
+    const cellsToCopy = this.fullTableSelected
+      ? this.buildFullTableSelectedSet()
+      : this.selectedCells;
+    if (cellsToCopy.size === 0) return;
+
+    const text = copySelectedCellsToClipboard(
+      cellsToCopy,
+      this.leafHeaders,
+      this.config.tableRows,
+      this.config.copyHeadersToClipboard,
+    );
+    navigator.clipboard.writeText(text);
+
+    // Trigger copy flash effect
+    this.copyFlashCells = new Set(cellsToCopy);
+    this.updateCellFlashClasses();
+    setTimeout(() => {
+      this.copyFlashCells = new Set();
+      this.updateCellFlashClasses();
+    }, 800);
+  }
+
+  /**
+   * Paste from clipboard to cells
+   */
+  private async pasteFromClipboard(): Promise<void> {
+    if (!this.initialFocusedCell) return;
+
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (!clipboardText) return;
+
+      const { updatedCells, warningCells } = pasteClipboardDataToCells(
+        clipboardText,
+        this.initialFocusedCell,
+        this.leafHeaders,
+        this.config.tableRows,
+        this.config.onCellEdit,
+        this.config.cellRegistry,
+      );
+
+      if (updatedCells.size > 0) {
+        this.copyFlashCells = updatedCells;
+        this.updateCellFlashClasses();
+        setTimeout(() => {
+          this.copyFlashCells = new Set();
+          this.updateCellFlashClasses();
+        }, 800);
+      }
+
+      if (warningCells.size > 0) {
+        this.warningFlashCells = warningCells;
+        this.updateCellFlashClasses();
+        setTimeout(() => {
+          this.warningFlashCells = new Set();
+          this.updateCellFlashClasses();
+        }, 800);
+      }
+    } catch (error) {
+      console.warn("Failed to paste from clipboard:", error);
+    }
+  }
+
+  /**
+   * Delete content from selected cells
+   */
+  private deleteSelectedCells(): void {
+    const cellsToDelete = this.fullTableSelected
+      ? this.buildFullTableSelectedSet()
+      : this.selectedCells;
+    if (cellsToDelete.size === 0) return;
+
+    const { deletedCells, warningCells } = deleteSelectedCellsContent(
+      cellsToDelete,
+      this.leafHeaders,
+      this.config.tableRows,
+      this.config.onCellEdit,
+      this.config.cellRegistry,
+    );
+
+    if (deletedCells.size > 0) {
+      this.copyFlashCells = deletedCells;
+      this.updateCellFlashClasses();
+      setTimeout(() => {
+        this.copyFlashCells = new Set();
+        this.updateCellFlashClasses();
+      }, 800);
+    }
+
+    if (warningCells.size > 0) {
+      this.warningFlashCells = warningCells;
+      this.updateCellFlashClasses();
+      setTimeout(() => {
+        this.warningFlashCells = new Set();
+        this.updateCellFlashClasses();
+      }, 800);
+    }
+  }
+
+  /**
+   * Select all cells in the table. Uses fullTableSelected flag instead of storing R×C cell IDs for O(1) update.
+   */
+  private selectAll(): void {
+    this.fullTableSelected = true;
+    this.selectedCells = new Set();
+    this.selectedColumns = new Set();
+    this.lastSelectedColumnIndex = null;
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
+   * Build the full set of cell IDs when fullTableSelected. Used for copy/delete/getSelectedCells.
+   */
+  private buildFullTableSelectedSet(): Set<string> {
+    const set = new Set<string>();
+    for (let row = 0; row < this.config.tableRows.length; row++) {
+      for (let col = 0; col < this.leafHeaders.length; col++) {
+        const colIndex = this.config.enableRowSelection ? col + 1 : col;
+        const tableRow = this.config.tableRows[row];
+        const rowId = rowIdToString(tableRow.rowId);
+        set.add(`${row}-${colIndex}-${rowId}`);
+      }
+    }
+    return set;
+  }
+
+  /**
+   * Clear all selections
+   */
+  clearSelection(): void {
+    this.fullTableSelected = false;
+    this.selectedCells = new Set();
+    this.selectedColumns = new Set();
+    this.lastSelectedColumnIndex = null;
+    this.startCell = null;
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
+   * Set selected cells (for external control)
+   */
+  setSelectedCells(cells: Set<string>): void {
+    this.fullTableSelected = false;
+    this.selectedCells = cells;
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
+   * Set selected columns (for external control)
+   */
+  setSelectedColumns(columns: Set<number>): void {
+    this.fullTableSelected = false;
+    this.selectedColumns = columns;
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
+   * Update flash classes on cells (copy/warning animations)
+   */
+  private updateCellFlashClasses(): void {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      const allCells = document.querySelectorAll(
+        ".st-cell[data-row-index][data-col-index][data-row-id]",
+      );
+
+      allCells.forEach((cellElement) => {
+        if (!(cellElement instanceof HTMLElement)) return;
+
+        const rowIndex = parseInt(
+          cellElement.getAttribute("data-row-index") || "-1",
+          10,
+        );
+        const colIndex = parseInt(
+          cellElement.getAttribute("data-col-index") || "-1",
+          10,
+        );
+        const rowId = cellElement.getAttribute("data-row-id");
+
+        if (rowIndex < 0 || colIndex < 0 || !rowId) return;
+
+        const cellId = createSetString({ rowIndex, colIndex, rowId });
+        const isInitialFocused = this.isInitialFocusedCell({
+          rowIndex,
+          colIndex,
+          rowId,
+        });
+
+        // Update copy flash classes
+        if (this.copyFlashCells.has(cellId)) {
+          cellElement.classList.add(
+            isInitialFocused
+              ? "st-cell-copy-flash-first"
+              : "st-cell-copy-flash",
+          );
+        } else {
+          cellElement.classList.remove(
+            "st-cell-copy-flash-first",
+            "st-cell-copy-flash",
+          );
+        }
+
+        // Update warning flash classes
+        if (this.warningFlashCells.has(cellId)) {
+          cellElement.classList.add(
+            isInitialFocused
+              ? "st-cell-warning-flash-first"
+              : "st-cell-warning-flash",
+          );
+        } else {
+          cellElement.classList.remove(
+            "st-cell-warning-flash-first",
+            "st-cell-warning-flash",
+          );
+        }
+      });
+    });
+  }
+
+  private static readonly SELECTION_CLASSES = [
+    "st-cell-selected",
+    "st-cell-selected-first",
+    "st-cell-column-selected",
+    "st-cell-column-selected-first",
+    "st-selected-top-border",
+    "st-selected-bottom-border",
+    "st-selected-left-border",
+    "st-selected-right-border",
+  ] as const;
+
+  /**
+   * Apply selection classes to all currently rendered cells. Used after drag ends
+   * so that the DOM (which may have been replaced during scroll) reflects selection.
+   * Only adds/removes classes that changed to reduce DOM writes.
+   * Fast path when there is no selection: one pass to clear all selection classes.
+   */
+  private syncAllCellClasses(): void {
+    const root = this.config.tableRoot ?? document;
+    const allCells = root.querySelectorAll(
+      ".st-cell[data-row-index][data-col-index][data-row-id]",
+    );
+    const noSelection =
+      !this.fullTableSelected &&
+      this.selectedCells.size === 0 &&
+      this.selectedColumns.size === 0;
+
+    if (noSelection) {
+      for (let i = 0; i < allCells.length; i++) {
+        const cellElement = allCells[i];
+        if (!(cellElement instanceof HTMLElement)) continue;
+        for (const cls of SelectionManager.SELECTION_CLASSES) {
+          if (cellElement.classList.contains(cls)) {
+            cellElement.classList.remove(cls);
+          }
+        }
+        if (cellElement.getAttribute("tabindex") !== "-1") {
+          cellElement.setAttribute("tabindex", "-1");
+        }
+      }
+      return;
+    }
+
+    for (let i = 0; i < allCells.length; i++) {
+      const cellElement = allCells[i];
+      if (!(cellElement instanceof HTMLElement)) continue;
+
+      const rowIndex = parseInt(
+        cellElement.getAttribute("data-row-index") || "-1",
+        10,
+      );
+      const colIndex = parseInt(
+        cellElement.getAttribute("data-col-index") || "-1",
+        10,
+      );
+      const rowId = cellElement.getAttribute("data-row-id");
+
+      if (rowIndex < 0 || colIndex < 0 || !rowId) continue;
+
+      const cell: Cell = { rowIndex, colIndex, rowId };
+      const isSelected = this.isSelected(cell);
+      const isColumnSelected = this.selectedColumns.has(colIndex);
+      const isIndividuallySelected = isSelected && !isColumnSelected;
+      const isInitialFocused = this.isInitialFocusedCell(cell);
+      const borderClass = this.getBorderClass(cell);
+
+      const desiredClasses = new Set<string>();
+      if (isIndividuallySelected) {
+        desiredClasses.add(
+          isInitialFocused ? "st-cell-selected-first" : "st-cell-selected",
+        );
+        const borderClasses = borderClass.split(" ").filter(Boolean);
+        borderClasses.forEach((cls) => desiredClasses.add(cls));
+      }
+      if (isColumnSelected) {
+        desiredClasses.add(
+          isInitialFocused
+            ? "st-cell-column-selected-first"
+            : "st-cell-column-selected",
+        );
+      }
+
+      for (const cls of SelectionManager.SELECTION_CLASSES) {
+        const shouldHave = desiredClasses.has(cls);
+        const has = cellElement.classList.contains(cls);
+        if (shouldHave && !has) {
+          cellElement.classList.add(cls);
+        } else if (!shouldHave && has) {
+          cellElement.classList.remove(cls);
+        }
+      }
+
+      const tabindex = isInitialFocused ? "0" : "-1";
+      if (cellElement.getAttribute("tabindex") !== tabindex) {
+        cellElement.setAttribute("tabindex", tabindex);
+      }
+      if (isInitialFocused && document.activeElement !== cellElement) {
+        const activeElement = document.activeElement;
+        const isActiveInsideCell =
+          activeElement && cellElement.contains(activeElement);
+        if (!isActiveInsideCell) {
+          cellElement.focus();
+        }
+      }
+    }
+  }
+
+  /**
+   * Update all cell classes based on current selection state
+   * Directly manipulates the DOM without triggering React re-renders.
+   * When isSelecting (drag) or fullTableSelected (Cmd+A), run synchronously so classes are applied
+   * before any scroll-triggered render or next frame.
+   */
+  private updateAllCellClasses(): void {
+    if (this.isSelecting || this.fullTableSelected) {
+      this.syncAllCellClasses();
+    } else {
+      requestAnimationFrame(() => this.syncAllCellClasses());
+    }
+  }
+
+  /**
+   * Check if a cell is selected. Uses selectedByRowIdColIndex for O(1) membership.
+   * When fullTableSelected, returns true for any cell without lookup.
+   */
+  isSelected({ colIndex, rowIndex, rowId }: Cell): boolean {
+    if (this.fullTableSelected) return true;
+    const rowIdStr = String(rowId);
+    if (this.selectedByRowIdColIndex.has(`${rowIdStr}\t${colIndex}`))
+      return true;
+    // Fallback: DOM may have virtualized rowIndex; try direct key
+    const tableRowIndex = this.rowIdToTableIndex.get(rowIdStr);
+    if (tableRowIndex !== undefined) {
+      const cellId = createSetString({
+        rowIndex: tableRowIndex,
+        colIndex,
+        rowId: rowIdStr,
+      });
+      if (this.selectedCells.has(cellId)) return true;
+    }
+    const cellId = createSetString({ colIndex, rowIndex, rowId });
+    return this.selectedCells.has(cellId);
+  }
+
+  /**
+   * Get border class for a cell based on its selection state. Uses rowIdToTableIndex for O(1) lookups.
+   * When fullTableSelected, short-circuits with border classes for the full grid (no neighbor lookups).
+   */
+  getBorderClass({ colIndex, rowIndex, rowId }: Cell): string {
+    if (this.isSelecting) {
+      return "";
+    }
+
+    const rowIdStr = String(rowId);
+    const tableIndex = this.rowIdToTableIndex.get(rowIdStr) ?? rowIndex;
+
+    if (this.fullTableSelected) {
+      const firstCol = this.config.enableRowSelection ? 1 : 0;
+      const lastCol = this.config.enableRowSelection
+        ? this.leafHeaders.length
+        : this.leafHeaders.length - 1;
+      const classes: string[] = [];
+      if (tableIndex === 0) classes.push("st-selected-top-border");
+      if (tableIndex === this.config.tableRows.length - 1)
+        classes.push("st-selected-bottom-border");
+      if (colIndex === firstCol) classes.push("st-selected-left-border");
+      if (colIndex === lastCol) classes.push("st-selected-right-border");
+      return classes.join(" ");
+    }
+
+    const classes: string[] = [];
+    const topRow = this.config.tableRows[tableIndex - 1];
+    const topRowId = topRow ? rowIdToString(topRow.rowId) : null;
+    const bottomRow = this.config.tableRows[tableIndex + 1];
+    const bottomRowId = bottomRow ? rowIdToString(bottomRow.rowId) : null;
+
+    const topSelected =
+      topRowId !== null &&
+      this.isSelected({ colIndex, rowIndex: tableIndex - 1, rowId: topRowId });
+    const bottomSelected =
+      bottomRowId !== null &&
+      this.isSelected({
+        colIndex,
+        rowIndex: tableIndex + 1,
+        rowId: bottomRowId,
+      });
+    const leftSelected = this.isSelected({
+      colIndex: colIndex - 1,
+      rowIndex: tableIndex,
+      rowId,
+    });
+    const rightSelected = this.isSelected({
+      colIndex: colIndex + 1,
+      rowIndex: tableIndex,
+      rowId,
+    });
+
+    if (
+      !topRowId ||
+      !topSelected ||
+      (this.selectedColumns.has(colIndex) && tableIndex === 0)
+    )
+      classes.push("st-selected-top-border");
+    if (
+      !bottomRowId ||
+      !bottomSelected ||
+      (this.selectedColumns.has(colIndex) &&
+        tableIndex === this.config.tableRows.length - 1)
+    )
+      classes.push("st-selected-bottom-border");
+    if (!leftSelected) classes.push("st-selected-left-border");
+    if (!rightSelected) classes.push("st-selected-right-border");
+
+    return classes.join(" ");
+  }
+
+  /**
+   * Check if a cell is the initial focused cell
+   */
+  isInitialFocusedCell({ rowIndex, colIndex, rowId }: Cell): boolean {
+    if (!this.initialFocusedCell) return false;
+    // Match by rowId and colIndex so we recognize the anchor cell after scroll/re-render
+    // (DOM cells use virtualized rowIndex; initialFocusedCell may store table or visible index).
+    return (
+      colIndex === this.initialFocusedCell.colIndex &&
+      String(rowId) === String(this.initialFocusedCell.rowId)
+    );
+  }
+
+  /**
+   * Check if a cell is currently showing copy flash animation
+   */
+  isCopyFlashing({ colIndex, rowIndex, rowId }: Cell): boolean {
+    const cellId = createSetString({ colIndex, rowIndex, rowId });
+    return this.copyFlashCells.has(cellId);
+  }
+
+  /**
+   * Check if a cell is currently showing warning flash animation
+   */
+  isWarningFlashing({ colIndex, rowIndex, rowId }: Cell): boolean {
+    const cellId = createSetString({ colIndex, rowIndex, rowId });
+    return this.warningFlashCells.has(cellId);
+  }
+
+  /**
+   * Get columns that have selected cells
+   */
+  getColumnsWithSelectedCells(): Set<number> {
+    return this.columnsWithSelectedCells;
+  }
+
+  /**
+   * Get rows that have selected cells
+   */
+  getRowsWithSelectedCells(): Set<string> {
+    return this.rowsWithSelectedCells;
+  }
+
+  /**
+   * Get selected cells. When fullTableSelected, builds and returns the full set on demand.
+   */
+  getSelectedCells(): Set<string> {
+    if (this.fullTableSelected) return this.buildFullTableSelectedSet();
+    return this.selectedCells;
+  }
+
+  /**
+   * Get selected columns
+   */
+  getSelectedColumns(): Set<number> {
+    return this.selectedColumns;
+  }
+
+  /**
+   * Get last selected column index
+   */
+  getLastSelectedColumnIndex(): number | null {
+    return this.lastSelectedColumnIndex;
+  }
+
+  /**
+   * Get start cell for range selection
+   */
+  getStartCell(): Cell | null {
+    return this.startCell;
+  }
+
+  /**
+   * Set the initial focused cell (e.g. when clearing selection from header drag).
+   */
+  setInitialFocusedCell(cell: Cell | null): void {
+    this.initialFocusedCell = cell;
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
+   * Select a single cell
+   */
+  selectSingleCell(cell: Cell): void {
+    const maxColIndex = this.config.enableRowSelection
+      ? this.leafHeaders.length
+      : this.leafHeaders.length - 1;
+
+    if (
+      cell.rowIndex >= 0 &&
+      cell.rowIndex < this.config.tableRows.length &&
+      cell.colIndex >= 0 &&
+      cell.colIndex <= maxColIndex
+    ) {
+      this.fullTableSelected = false;
+      const cellId = createSetString(cell);
+
+      this.selectedColumns = new Set();
+      this.lastSelectedColumnIndex = null;
+      this.selectedCells = new Set([cellId]);
+      this.initialFocusedCell = cell;
+
+      this.updateDerivedState();
+      this.updateAllCellClasses();
+
+      // Scroll the cell into view
+      setTimeout(
+        () =>
+          scrollCellIntoView(
+            cell,
+            this.config.rowHeight,
+            this.config.customTheme,
+            this.config.tableRows,
+          ),
+        0,
+      );
+    }
+  }
+
+  /**
+   * Select a range of cells from startCell to endCell
+   */
+  selectCellRange(startCell: Cell, endCell: Cell): void {
+    this.fullTableSelected = false;
+    const newSelectedCells = computeSelectionRange(
+      startCell,
+      endCell,
+      this.config.tableRows,
+      !!this.config.enableRowSelection,
+    );
+
+    this.selectedColumns = new Set();
+    this.lastSelectedColumnIndex = null;
+    this.selectedCells = newSelectedCells;
+    this.initialFocusedCell = endCell;
+
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+
+    // Scroll the end cell into view
+    setTimeout(
+      () =>
+        scrollCellIntoView(
+          endCell,
+          this.config.rowHeight,
+          this.config.customTheme,
+          this.config.tableRows,
+        ),
+      0,
+    );
+  }
+
+  /**
+   * Select one or more columns
+   */
+  selectColumns(columnIndices: number[], isShiftKey = false): void {
+    this.fullTableSelected = false;
+    this.selectedCells = new Set();
+    this.initialFocusedCell = null;
+
+    const newSelection = new Set(isShiftKey ? this.selectedColumns : []);
+    columnIndices.forEach((idx) => newSelection.add(idx));
+    this.selectedColumns = newSelection;
+
+    if (columnIndices.length > 0) {
+      this.lastSelectedColumnIndex = columnIndices[columnIndices.length - 1];
+    }
+
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
+   * Update selection range during mouse drag. Skips derived state and class sync when selection unchanged.
+   */
+  private updateSelectionRange(startCell: Cell, endCell: Cell): void {
+    this.fullTableSelected = false;
+    const newSelectedCells = computeSelectionRange(
+      startCell,
+      endCell,
+      this.config.tableRows,
+      !!this.config.enableRowSelection,
+    );
+    if (this.selectedCells.size === newSelectedCells.size) {
+      const allSame = Array.from(newSelectedCells).every((id) =>
+        this.selectedCells.has(id),
+      );
+      if (allSame) return;
+    }
+    this.selectedCells = newSelectedCells;
+    this.updateDerivedState();
+    this.updateAllCellClasses();
+  }
+
+  /**
+   * Calculate the nearest cell to a given mouse position
+   */
+  private calculateNearestCell(clientX: number, clientY: number): Cell | null {
+    return calculateNearestCellUtil(clientX, clientY);
+  }
+
+  /**
+   * Get cell from mouse position
+   */
+  private getCellFromMousePosition(
+    clientX: number,
+    clientY: number,
+  ): Cell | null {
+    return getCellFromMousePositionUtil(clientX, clientY);
+  }
+
+  /**
+   * Handle auto-scrolling when dragging near edges
+   */
+  private handleAutoScroll(clientX: number, clientY: number): void {
+    handleAutoScrollUtil(clientX, clientY);
+  }
+
+  /**
+   * Continuous scroll loop during mouse drag
+   */
+  private continuousScroll(): void {
+    if (!this.isSelecting || !this.startCell) {
+      if (this.scrollAnimationFrame !== null) {
+        cancelAnimationFrame(this.scrollAnimationFrame);
+        this.scrollAnimationFrame = null;
+      }
+      return;
+    }
+
+    // Only process if mouse position has been captured
+    if (this.currentMouseX !== null && this.currentMouseY !== null) {
+      this.handleAutoScroll(this.currentMouseX, this.currentMouseY);
+
+      const now = Date.now();
+      if (now - this.lastSelectionUpdate >= this.selectionThrottleMs) {
+        const cellAtPosition = this.getCellFromMousePosition(
+          this.currentMouseX,
+          this.currentMouseY,
+        );
+        if (cellAtPosition) {
+          this.updateSelectionRange(this.startCell, cellAtPosition);
+          this.lastSelectionUpdate = now;
+        }
+      }
+    }
+
+    this.scrollAnimationFrame = requestAnimationFrame(() =>
+      this.continuousScroll(),
+    );
+  }
+
+  /**
+   * Handle mouse down on a cell to start selection
+   */
+  handleMouseDown({ colIndex, rowIndex, rowId }: Cell): void {
+    if (!this.config.selectableCells) return;
+
+    this.fullTableSelected = false;
+    this.isSelecting = true;
+    this.startCell = { rowIndex, colIndex, rowId };
+
+    setTimeout(() => {
+      this.selectedColumns = new Set();
+      this.lastSelectedColumnIndex = null;
+      const cellId = createSetString({ colIndex, rowIndex, rowId });
+      this.selectedCells = new Set([cellId]);
+      this.initialFocusedCell = { rowIndex, colIndex, rowId };
+      this.updateDerivedState();
+      this.updateAllCellClasses();
+    }, 0);
+
+    this.currentMouseX = null;
+    this.currentMouseY = null;
+    this.lastSelectionUpdate = 0;
+
+    this.globalMouseMoveHandler = (event: MouseEvent) => {
+      if (!this.isSelecting || !this.startCell) return;
+      this.currentMouseX = event.clientX;
+      this.currentMouseY = event.clientY;
+    };
+
+    this.globalMouseUpHandler = () => {
+      this.isSelecting = false;
+
+      if (this.scrollAnimationFrame !== null) {
+        cancelAnimationFrame(this.scrollAnimationFrame);
+        this.scrollAnimationFrame = null;
+      }
+
+      if (this.globalMouseMoveHandler) {
+        document.removeEventListener("mousemove", this.globalMouseMoveHandler);
+        this.globalMouseMoveHandler = null;
+      }
+      if (this.globalMouseUpHandler) {
+        document.removeEventListener("mouseup", this.globalMouseUpHandler);
+        this.globalMouseUpHandler = null;
+      }
+
+      // Re-render table so body DOM is rebuilt; then apply selection classes to the new DOM
+      // in the same tick (so test/UI see them without waiting for rAF).
+      this.config.onSelectionDragEnd?.();
+      this.syncAllCellClasses();
+      requestAnimationFrame(() => this.syncAllCellClasses());
+    };
+
+    document.addEventListener("mousemove", this.globalMouseMoveHandler);
+    document.addEventListener("mouseup", this.globalMouseUpHandler);
+
+    this.scrollAnimationFrame = requestAnimationFrame(() =>
+      this.continuousScroll(),
+    );
+  }
+
+  /**
+   * Handle mouse over a cell during selection drag
+   */
+  handleMouseOver({ colIndex, rowIndex, rowId }: Cell): void {
+    if (!this.config.selectableCells) return;
+    if (this.isSelecting && this.startCell) {
+      this.updateSelectionRange(this.startCell, { colIndex, rowIndex, rowId });
+    }
+  }
+}

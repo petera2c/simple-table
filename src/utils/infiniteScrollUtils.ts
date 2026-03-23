@@ -470,6 +470,16 @@ const isParentRow = (row: TableRow, allTableRows: TableRow[]): boolean => {
 //   return newObj;
 // };
 
+// Cache for sticky parents calculation
+interface StickyParentsCacheEntry {
+  result: { stickyParents: TableRow[]; regularRows: TableRow[] };
+  firstVisiblePosition: number;
+  renderedStartPosition: number;
+  renderedEndPosition: number;
+}
+
+const stickyParentsCache = new Map<string, StickyParentsCacheEntry>();
+
 export const getStickyParents = (
   allTableRows: TableRow[],
   renderedRows: TableRow[],
@@ -477,6 +487,23 @@ export const getStickyParents = (
   partiallyVisibleRows: TableRow[],
   rowGrouping: Accessor[]
 ) => {
+  // Create cache key based on first visible row and rendered range
+  const firstVisiblePosition = partiallyVisibleRows[0]?.position ?? -1;
+  const renderedStartPosition = renderedRows[0]?.position ?? -1;
+  const renderedEndPosition = renderedRows[renderedRows.length - 1]?.position ?? -1;
+  
+  const cacheKey = `${firstVisiblePosition}:${renderedStartPosition}:${renderedEndPosition}:${rowGrouping.join(',')}`;
+  
+  // Check cache
+  const cached = stickyParentsCache.get(cacheKey);
+  if (cached && 
+      cached.firstVisiblePosition === firstVisiblePosition &&
+      cached.renderedStartPosition === renderedStartPosition &&
+      cached.renderedEndPosition === renderedEndPosition) {
+    return cached.result;
+  }
+  
+  // Calculate sticky parents
   const result = findStickyParents({
     allTableRows,
     renderedRows,
@@ -487,6 +514,21 @@ export const getStickyParents = (
     stickyParents: [],
     rowGrouping,
   });
+  
+  // Cache the result
+  stickyParentsCache.set(cacheKey, {
+    result,
+    firstVisiblePosition,
+    renderedStartPosition,
+    renderedEndPosition,
+  });
+  
+  // Limit cache size to prevent memory leaks
+  if (stickyParentsCache.size > 50) {
+    const firstKey = stickyParentsCache.keys().next().value;
+    stickyParentsCache.delete(firstKey);
+  }
+  
   return result;
 };
 

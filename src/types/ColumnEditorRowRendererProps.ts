@@ -1,15 +1,15 @@
-import { ReactNode } from "react";
 import type { Accessor } from "./HeaderObject";
 import type HeaderObject from "./HeaderObject";
-import type { PanelSection } from "../utils/pinnedColumnUtils";
+import type { IconElement } from "./IconsConfig";
+import type { PanelSection } from "./PanelSection";
 
 export interface ColumnEditorRowRendererComponents {
-  expandIcon?: ReactNode;
-  checkbox?: ReactNode;
-  dragIcon?: ReactNode;
-  labelContent?: ReactNode;
+  expandIcon?: IconElement;
+  checkbox?: HTMLElement | string;
+  dragIcon?: IconElement;
+  labelContent?: string | HTMLElement;
   /** Default pin column (outline / filled); omit when building a fully custom row */
-  pinIcon?: ReactNode;
+  pinIcon?: IconElement;
 }
 
 /** Pin / unpin actions for column editor rows (also use for lock/tooltip UX via HeaderObject.isEssential). */
@@ -38,7 +38,7 @@ interface ColumnEditorRowRendererProps {
   pinControl?: ColumnEditorPinControl;
 }
 
-export type ColumnEditorRowRenderer = (props: ColumnEditorRowRendererProps) => ReactNode | string;
+export type ColumnEditorRowRenderer = (props: ColumnEditorRowRendererProps) => HTMLElement | string | null;
 
 export default ColumnEditorRowRendererProps;
 export type { PanelSection };

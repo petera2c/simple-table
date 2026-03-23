@@ -1,4 +1,4 @@
-import { MutableRefObject, ReactNode } from "react";
+import { TableAPI } from "./TableAPI";
 import HeaderObject, { Accessor } from "./HeaderObject";
 import Row from "./Row";
 import {
@@ -26,7 +26,6 @@ import { IconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 
 export interface SimpleTableProps {
-  allowAnimations?: boolean; // Flag for allowing animations
   autoExpandColumns?: boolean; // Flag for converting pixel widths to proportional fr units that fill table width
   canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
@@ -47,14 +46,14 @@ export interface SimpleTableProps {
   enableStickyParents?: boolean; // Flag for enabling sticky parent rows during scrolling in grouped tables (default: false)
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
-  expandIcon?: ReactNode; // @deprecated Use icons.expand instead
+  expandIcon?: IconsConfig["expand"]; // @deprecated Use icons.expand instead
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
-  filterIcon?: ReactNode; // @deprecated Use icons.filter instead
-  footerRenderer?: (props: FooterRendererProps) => ReactNode; // Custom footer renderer
-  headerCollapseIcon?: ReactNode; // @deprecated Use icons.headerCollapse instead
+  filterIcon?: IconsConfig["filter"]; // @deprecated Use icons.filter instead
+  footerRenderer?: (props: FooterRendererProps) => HTMLElement | string | null; // Custom footer renderer
+  headerCollapseIcon?: IconsConfig["headerCollapse"]; // @deprecated Use icons.headerCollapse instead
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
-  headerExpandIcon?: ReactNode; // @deprecated Use icons.headerExpand instead
+  headerExpandIcon?: IconsConfig["headerExpand"]; // @deprecated Use icons.headerExpand instead
   height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   hideHeader?: boolean; // Flag for hiding the header
@@ -65,7 +64,7 @@ export interface SimpleTableProps {
   isLoading?: boolean; // Flag for showing loading skeleton state
   loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
   maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
-  nextIcon?: ReactNode; // @deprecated Use icons.next instead
+  nextIcon?: IconsConfig["next"]; // @deprecated Use icons.next instead
   onCellClick?: (props: CellClickProps) => void;
   onCellEdit?: (props: CellChangeProps) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
@@ -81,7 +80,7 @@ export interface SimpleTableProps {
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>; // Callback when a row is expanded/collapsed
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
-  prevIcon?: ReactNode; // @deprecated Use icons.prev instead
+  prevIcon?: IconsConfig["prev"]; // @deprecated Use icons.prev instead
   quickFilter?: QuickFilterConfig; // Global search configuration across all columns
   rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
@@ -92,10 +91,10 @@ export interface SimpleTableProps {
   selectableColumns?: boolean; // Flag for selectable column headers
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
   shouldPaginate?: boolean; // Flag for pagination
-  sortDownIcon?: ReactNode; // @deprecated Use icons.sortDown instead
-  sortUpIcon?: ReactNode; // @deprecated Use icons.sortUp instead
-  tableEmptyStateRenderer?: ReactNode; // Custom empty state component when table has no rows
-  tableRef?: MutableRefObject<TableRefType | null>;
+  sortDownIcon?: IconsConfig["sortDown"]; // @deprecated Use icons.sortDown instead
+  sortUpIcon?: IconsConfig["sortUp"]; // @deprecated Use icons.sortUp instead
+  tableEmptyStateRenderer?: HTMLElement | string | null; // Custom empty state component when table has no rows
+  tableRef?: { current: TableRefType | null };
   theme?: Theme; // Theme
   totalRowCount?: number; // Total number of rows on server (for server-side pagination)
   useHoverRowBackground?: boolean; // Flag for using hover row background

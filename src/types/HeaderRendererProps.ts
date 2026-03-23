@@ -1,12 +1,12 @@
-import { ReactNode } from "react";
 import type { Accessor } from "./HeaderObject";
 import type HeaderObject from "./HeaderObject";
+import type { IconElement } from "./IconsConfig";
 
 export interface HeaderRendererComponents {
-  sortIcon?: ReactNode;
-  filterIcon?: ReactNode;
-  collapseIcon?: ReactNode;
-  labelContent?: ReactNode;
+  sortIcon?: IconElement;
+  filterIcon?: IconElement;
+  collapseIcon?: IconElement;
+  labelContent?: string | HTMLElement;
 }
 
 interface HeaderRendererProps {
@@ -16,6 +16,6 @@ interface HeaderRendererProps {
   components?: HeaderRendererComponents;
 }
 
-export type HeaderRenderer = (props: HeaderRendererProps) => ReactNode | string;
+export type HeaderRenderer = (props: HeaderRendererProps) => HTMLElement | string | null;
 
 export default HeaderRendererProps;

@@ -16,6 +16,7 @@
   --st-resize-handle-width: 2px;
   --st-resize-handle-container-width: 10px;
   --st-border-width: 1px;
+  --st-footer-height: 49px;
 
   /* Animation variables */
   --st-transition-duration: 0.2s;
@@ -177,12 +178,15 @@ input {
 .st-content {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 /* Header */
 .st-header-container {
   display: flex;
   background-color: var(--st-header-background-color);
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .st-header-container.st-header-scroll-padding::after {
@@ -197,8 +201,12 @@ input {
 .st-header-pinned-left,
 .st-header-main,
 .st-header-pinned-right {
-  display: grid;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-header-grid {
+  position: relative;
+  min-width: 100%;
 }
 
 .st-horizontal-scrollbar-middle,
@@ -237,9 +245,19 @@ input {
 .st-body-pinned-right {
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
+
 .st-header-main {
   flex-grow: 1;
 }
+
+/* Header must only scroll horizontally; prevent vertical scroll (vanilla refactor removed display:grid from header sections) */
+.st-header-main,
+.st-header-pinned-left,
+.st-header-pinned-right {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .st-header-main::-webkit-scrollbar {
   display: none;
 }
@@ -297,7 +315,7 @@ input {
   padding: 48px 24px;
   color: var(--st-header-text-color);
   opacity: 0.6;
-  font-size: 14px;
+  font-size: 0.9em;
 }
 
 .st-body-main,
@@ -350,9 +368,9 @@ input {
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered
-  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
-    .st-cell-column-selected-first
-  ) {
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   background-color: var(--st-hover-row-background-color);
 }
 /* Separate hover background for sub-cells */
@@ -377,9 +395,9 @@ input {
 /* Selected row hover state - should override selected background when hovering */
 .st-row.selected.hovered .st-cell-editing,
 .st-row.selected.hovered
-  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
-    .st-cell-column-selected-first
-  ) {
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   background-color: var(--st-hover-row-background-color);
 }
 
@@ -400,9 +418,34 @@ input {
   color: var(--st-cell-color);
 }
 
+/* Cell-level row background classes (for absolute positioned cells) */
+.st-cell.st-cell-even-row {
+  background-color: var(--st-even-row-background-color);
+}
+.st-cell.st-cell-odd-row {
+  background-color: var(--st-odd-row-background-color);
+}
+.st-cell.st-cell-even-row .st-cell-content {
+  color: var(--st-cell-color);
+}
+.st-cell.st-cell-odd-row .st-cell-content {
+  color: var(--st-cell-odd-row-color);
+}
+
+/* Selected row styling for cells */
+.st-cell.st-cell-selected-row {
+  background-color: var(--st-selected-row-background-color);
+}
+
+/* Row hover styling for cells */
+.st-cell.st-row-hovered:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
+  background-color: var(--st-hover-row-background-color);
+}
+
 /* Styles for table header cells */
 .st-header-cell {
-  position: sticky;
   top: 0;
   background-color: var(--st-header-background-color);
   font-weight: var(--st-font-weight-bold);
@@ -555,7 +598,8 @@ input {
 .st-resizeable .st-body-pinned-right .st-cell-content,
 .st-resizeable .st-sticky-section-right .st-cell-content {
   padding-left: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
+    var(--st-cell-padding) + var(--st-spacing-small) +
+      var(--st-resize-handle-container-width)
   );
   padding-right: var(--st-cell-padding);
 }
@@ -567,7 +611,8 @@ input {
 .st-resizeable .st-sticky-section-main .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
+    var(--st-cell-padding) + var(--st-spacing-small) +
+      var(--st-resize-handle-container-width)
   );
 }
 
@@ -585,6 +630,13 @@ input {
 .st-cell {
   border: var(--st-border-width) solid transparent;
 }
+
+/* Remove browser default focus ring when Tab moves focus to a cell; selection styling indicates focus */
+.st-cell:focus,
+.st-cell:focus-visible {
+  outline: none;
+}
+
 .st-cell.even-column:not(.st-cell-selected) {
   background-color: var(--st-even-column-background-color);
 }
@@ -672,12 +724,11 @@ input {
 
 .st-row-separator {
   position: absolute;
+  width: 100%;
   min-width: 100%;
-  display: grid;
   cursor: pointer;
   height: 1px;
   background-color: var(--st-border-color);
-  grid-column: 1 / -1;
 }
 .st-row-separator.st-last-group-row {
   background-color: var(--st-last-group-row-separator-border-color);
@@ -831,6 +882,7 @@ input {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: var(--st-footer-height, 49px);
   background-color: var(--st-footer-background-color);
   padding: var(--st-spacing-medium);
   border-top: var(--st-border-width) solid var(--st-border-color);
@@ -846,7 +898,7 @@ input {
 
 .st-footer-results-text {
   color: var(--st-cell-color);
-  font-size: 0.875rem;
+  font-size: 0.9em;
   white-space: nowrap;
 }
 
@@ -865,7 +917,8 @@ input {
   background-color: transparent;
   border: none;
   border-radius: var(--st-border-radius);
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 .st-next-prev-btn {
   fill: var(--st-next-prev-btn-color);
@@ -892,7 +945,8 @@ input {
   color: var(--st-page-btn-color);
   border: none;
   border-radius: var(--st-border-radius);
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -936,7 +990,8 @@ input {
   font-size: 0.875rem;
 }
 .editable-cell-input:focus {
-  border: var(--st-border-width) solid var(--st-editable-cell-focus-border-color);
+  border: var(--st-border-width) solid
+    var(--st-editable-cell-focus-border-color);
 }
 .st-column-editor {
   display: flex;
@@ -946,6 +1001,7 @@ input {
   border-left: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-column-editor-text-color);
   flex-shrink: 0;
+  height: 100%;
 }
 
 .st-column-editor-text {
@@ -1001,8 +1057,6 @@ input {
   padding-right: var(--st-spacing-medium);
   padding-left: var(--st-spacing-medium);
   padding-bottom: var(--st-spacing-medium);
-  overflow: auto;
-  flex-grow: 1;
 }
 
 .st-column-editor-lists {
@@ -1025,6 +1079,32 @@ input {
 .st-column-editor-list-section {
   padding-top: 0;
   padding-bottom: var(--st-spacing-small);
+}
+
+.st-column-editor-footer {
+  position: sticky;
+  bottom: 0;
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  background-color: var(--st-column-editor-popout-background-color);
+  border-top: var(--st-border-width) solid var(--st-border-color);
+  z-index: 1;
+}
+
+.st-column-editor-reset-btn {
+  width: 100%;
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--st-column-editor-text-color);
+  background: transparent;
+  border: var(--st-border-width) solid var(--st-border-color);
+  border-radius: var(--st-border-radius);
+  cursor: pointer;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-column-editor-reset-btn:hover {
+  background-color: var(--st-hover-background-color);
 }
 
 .st-column-pin-btn {
@@ -1185,6 +1265,7 @@ input {
 .st-checkbox-label {
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   gap: var(--st-spacing-small);
   min-width: 0;
@@ -1260,7 +1341,8 @@ input {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-cell-color);
   font-weight: var(--st-font-weight-bold);
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-group-header:hover {
@@ -1332,38 +1414,6 @@ input {
 
 .st-cell-updating {
   animation: cell-flash 0.6s ease-in-out;
-}
-
-/* Animation z-index handling */
-.st-animating {
-  z-index: 10 !important;
-  position: relative;
-  /* Performance optimizations for buttery smooth animations */
-  contain: style layout paint; /* Isolate this element's rendering */
-  transform-style: preserve-3d; /* Enable 3D rendering context */
-  isolation: isolate; /* Create new stacking context */
-}
-
-/* Respect user's motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .st-animating {
-    /* For users who prefer reduced motion, keep animations short and simple */
-    transition-duration: 0.15s !important;
-    animation-duration: 0.15s !important;
-  }
-
-  /* Disable FLIP animations entirely for users who prefer no motion */
-  .st-animating {
-    transform: none !important;
-    transition: none !important;
-  }
-}
-
-/* Enhanced animation easing for modern browsers */
-@supports (transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1)) {
-  .st-animating {
-    transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
-  }
 }
 
 @keyframes copy-flash {
@@ -1460,8 +1510,10 @@ input {
   padding: var(--st-spacing-small) var(--st-spacing-medium);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   color: var(--st-cell-color);
+  font-size: 0.9em;
 }
 
 .st-dropdown-item:hover {
@@ -1560,7 +1612,8 @@ input {
   width: 24px;
   border-radius: 50%;
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   font-size: 0.9em;
 }
 
@@ -1594,7 +1647,8 @@ input {
   padding: 12px 8px;
   border-radius: var(--st-border-radius);
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-datepicker-month:hover,
@@ -1621,7 +1675,8 @@ input {
   border-radius: var(--st-border-radius);
   padding: 6px 12px;
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   color: var(--st-cell-color);
 }
 
@@ -1652,12 +1707,13 @@ input {
   padding: var(--st-spacing-small);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  font-size: 14px;
+  font-size: 0.9em;
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
   outline: none;
-  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-filter-input:focus {
@@ -1675,13 +1731,14 @@ input {
   padding: var(--st-spacing-medium) var(--st-spacing-medium);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  font-size: 14px;
+  font-size: 0.9em;
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
   cursor: pointer;
   outline: none;
-  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-filter-select:focus {
@@ -1702,10 +1759,11 @@ input {
   border: none;
   border-radius: var(--st-border-radius);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9em;
   font-weight: 500;
   font-family: inherit;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 .st-filter-button:focus {
   outline: 2px solid var(--st-focus-ring-color);
@@ -1754,14 +1812,15 @@ input {
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 0.9em;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--st-spacing-medium);
   outline: none;
-  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration)
+    var(--st-transition-ease);
 }
 
 .st-custom-select-trigger:focus {
@@ -1809,12 +1868,13 @@ input {
   flex-shrink: 0;
   padding: var(--st-spacing-small);
   cursor: pointer;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration)
+    var(--st-transition-ease);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--st-cell-color);
-  font-size: 14px;
+  font-size: 0.9em;
 }
 
 .st-custom-select-option:hover,
@@ -1877,7 +1937,7 @@ input {
 
 /* Enum option label */
 .st-enum-option-label {
-  font-size: 14px;
+  font-size: 0.9em;
   color: var(--st-cell-color);
   user-select: none;
 }
@@ -1886,14 +1946,14 @@ input {
 .st-enum-no-results {
   padding: var(--st-spacing-medium);
   text-align: center;
-  font-size: 14px;
+  font-size: 0.9em;
   color: var(--st-slate-400);
   font-style: italic;
 }
 
 /* Row number styling */
 .st-row-number {
-  font-size: 12px;
+  font-size: 0.8em;
   opacity: 0.6;
   user-select: none;
   font-weight: 500;
@@ -1941,18 +2001,18 @@ input {
 /* Maintain column borders on hover */
 .st-column-borders
   .st-row.hovered
-  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
-    .st-cell-column-selected
-  ):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(
+    .st-cell-selected-first
+  ):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 
 /* Maintain column borders on selected row hover */
 .st-column-borders
   .st-row.selected.hovered
-  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
-    .st-cell-column-selected
-  ):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(
+    .st-cell-selected-first
+  ):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 
@@ -1965,7 +2025,7 @@ input {
   color: var(--st-tooltip-text-color);
   padding: var(--st-tooltip-padding);
   border-radius: var(--st-tooltip-border-radius);
-  font-size: var(--st-tooltip-font-size);
+  font-size: 0.8em;
   line-height: 1.4;
   max-width: 300px;
   word-wrap: break-word;

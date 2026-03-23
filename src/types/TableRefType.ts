@@ -3,7 +3,7 @@ import HeaderObject, { Accessor } from "./HeaderObject";
 import TableRow from "./TableRow";
 import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
-import type { PinnedSectionsState } from "../utils/pinnedColumnUtils";
+import type { PinnedSectionsState } from "./PinnedSectionsState";
 
 interface SetHeaderRenameProps {
   accessor: Accessor;

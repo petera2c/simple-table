@@ -1,42 +1,5 @@
-import { ReactNode } from "react";
 import HeaderObject from "./HeaderObject";
 import { ColumnEditorRowRenderer } from "./ColumnEditorRowRendererProps";
-
-/**
- * Props passed to the column editor custom renderer
- */
-export interface ColumnEditorCustomRendererProps {
-  /** The search input section (when searchEnabled) */
-  searchSection: ReactNode;
-  /** The list of column checkboxes (pinned left, then unpinned, then pinned right) */
-  listSection: ReactNode;
-  /** Pinned-left section list only */
-  pinnedLeftList?: ReactNode;
-  /** Unpinned (main) section list only */
-  unpinnedList?: ReactNode;
-  /** Pinned-right section list only */
-  pinnedRightList?: ReactNode;
-  /** Flattened headers for all panel sections combined (left, then main, then right) */
-  flattenedHeaders: import("../components/simple-table/table-column-editor/columnEditorUtils").FlattenedHeader[];
-  /** Current search term */
-  searchTerm: string;
-  /** Setter for search term */
-  setSearchTerm: (term: string) => void;
-  /** Whether search is enabled */
-  searchEnabled: boolean;
-  /** Search placeholder text */
-  searchPlaceholder: string;
-  /** All headers (unflattened) */
-  headers: HeaderObject[];
-  /** Reset columns to default order and visibility */
-  resetColumns: () => void;
-}
-
-/**
- * Custom renderer for the entire column editor popout content.
- * Receives the default search and list sections as props for flexible layout.
- */
-export type ColumnEditorCustomRenderer = (props: ColumnEditorCustomRendererProps) => ReactNode;
 
 /**
  * Custom search function for filtering columns in the column editor
@@ -65,12 +28,10 @@ export interface ColumnEditorConfig {
   allowColumnPinning?: boolean;
   /** Custom renderer for column editor row layout to reposition icons and labels */
   rowRenderer?: ColumnEditorRowRenderer;
-  /** Custom renderer for the entire column editor popout. Receives searchSection, listSection, flattenedHeaders, searchTerm, etc. */
-  customRenderer?: ColumnEditorCustomRenderer;
 }
 
 export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
-  Omit<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">
+  Omit<ColumnEditorConfig, "searchFunction" | "rowRenderer">
 > = {
   text: "Columns",
   searchEnabled: true,
@@ -82,4 +43,4 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
 export type MergedColumnEditorConfig = Required<
   Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning">
 > &
-  Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">;
+  Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer">;
