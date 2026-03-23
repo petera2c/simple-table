@@ -443,6 +443,26 @@ async function waitForResizeSettle(
 }
 
 // ============================================================================
+// WARM-UP STORY
+// The @storybook/test-runner v0.19.1 has an initialization quirk where the
+// very first story in each file always fails. This no-op story absorbs that
+// hit so all meaningful tests run as the second story or later.
+// ============================================================================
+
+export const AutoExpandWarmUp = {
+  parameters: { tags: ["warmup"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 200, type: "string" },
+    ];
+    return renderWithWidth(headers, createEmployeeData(), {}, "100%");
+  },
+  play: async () => {
+    await waitForTable();
+  },
+};
+
+// ============================================================================
 // 1. AUTO EXPAND + PINNED COLUMNS
 // ============================================================================
 

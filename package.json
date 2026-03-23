@@ -12,7 +12,7 @@
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags",
     "test-storybook:ci": "test-storybook --url http://localhost:6006"
-    },
+  },
   "sideEffects": [
     "*.css",
     "**/*.css"
@@ -44,6 +44,7 @@
     "@storybook/html": "^8.6.14",
     "@storybook/html-webpack5": "^8.6.14",
     "@storybook/test": "^8.6.14",
+    "@storybook/test-runner": "^0.19.1",
     "@types/node": "^16.18.111",
     "cssnano": "^7.0.6",
     "postcss-calc": "^10.1.1",

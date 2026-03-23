@@ -182,12 +182,23 @@ export class RenderOrchestrator {
       containerWidth,
     );
 
+    // Calculate pinned section widths from un-scaled headers first so auto-scale
+    // knows exactly how much space is available for the main section.
+    const {
+      leftWidth: pinnedLeftWidth,
+      rightWidth: pinnedRightWidth,
+    } = recalculateAllSectionWidths({
+      headers: effectiveHeaders,
+      containerWidth,
+      collapsedHeaders: context.collapsedHeaders,
+    });
+
     if (context.config.autoExpandColumns && containerWidth > 0) {
       effectiveHeaders = applyAutoScaleToHeaders(effectiveHeaders, {
         autoExpandColumns: true,
         containerWidth,
-        pinnedLeftWidth: 0,
-        pinnedRightWidth: 0,
+        pinnedLeftWidth,
+        pinnedRightWidth,
         mainBodyRef: context.mainBodyRef ?? { current: null },
         isResizing: context.isResizing ?? false,
       });

@@ -104,12 +104,9 @@ export const applyAutoScaleToHeaders = (
     return headers;
   }
 
-  let availableMainSectionWidth: number;
-  if (mainBodyRef.current) {
-    availableMainSectionWidth = mainBodyRef.current.clientWidth;
-  } else {
-    availableMainSectionWidth = Math.max(0, containerWidth - pinnedLeftWidth - pinnedRightWidth);
-  }
+  // Always derive available main width from calculated pinned widths rather than
+  // reading from the DOM, which may reflect stale CSS from the previous render.
+  const availableMainSectionWidth = Math.max(0, containerWidth - pinnedLeftWidth - pinnedRightWidth);
 
   const leftSectionHeaders = headers.filter((h) => h.pinned === "left");
   const rightSectionHeaders = headers.filter((h) => h.pinned === "right");

@@ -258,7 +258,6 @@ export const handleResizeWithAutoExpand = ({
 
     // We would exceed effective section width, so we need to shrink others
     // Limit growth to what keeps total at or below effectiveSectionWidth
-    const maxGrowthToFit = Math.max(0, effectiveSectionWidth - currentTotalWidth);
     // Calculate how much others can shrink
     const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
