@@ -12,7 +12,7 @@ import { expect } from "@storybook/test";
 export const getRowCount = (container: HTMLElement): number => {
   const cells = container.querySelectorAll(".st-cell[data-row-index]");
   const uniqueRowIndices = new Set(
-    Array.from(cells).map((cell) => cell.getAttribute("data-row-index"))
+    Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
   );
   return uniqueRowIndices.size;
 };
@@ -20,13 +20,8 @@ export const getRowCount = (container: HTMLElement): number => {
 /**
  * Get all cells for a specific row index
  */
-export const getCellsForRow = (
-  container: HTMLElement,
-  rowIndex: string
-): HTMLElement[] => {
-  const cells = container.querySelectorAll(
-    `.st-cell[data-row-index="${rowIndex}"]`
-  );
+export const getCellsForRow = (container: HTMLElement, rowIndex: string): HTMLElement[] => {
+  const cells = container.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
   return Array.from(cells) as HTMLElement[];
 };
 
@@ -39,7 +34,7 @@ export const getUniqueRowIndices = (container: HTMLElement): number[] => {
     Array.from(cells)
       .map((cell) => cell.getAttribute("data-row-index"))
       .filter((idx): idx is string => idx !== null)
-      .map((idx) => parseInt(idx, 10))
+      .map((idx) => parseInt(idx, 10)),
   );
   return Array.from(uniqueIndices).sort((a, b) => a - b);
 };
@@ -47,13 +42,8 @@ export const getUniqueRowIndices = (container: HTMLElement): number[] => {
 /**
  * Check if a row exists (has any cells rendered)
  */
-export const rowExists = (
-  container: HTMLElement,
-  rowIndex: string
-): boolean => {
-  const cell = container.querySelector(
-    `.st-cell[data-row-index="${rowIndex}"]`
-  );
+export const rowExists = (container: HTMLElement, rowIndex: string): boolean => {
+  const cell = container.querySelector(`.st-cell[data-row-index="${rowIndex}"]`);
   return cell !== null;
 };
 
@@ -61,13 +51,9 @@ export const rowExists = (
  * Get row elements as virtual rows (groups cells by row index)
  * This mimics the old .st-row structure for backward compatibility with tests
  */
-export const getVirtualRows = (
-  container: HTMLElement
-): HTMLElement[][] => {
+export const getVirtualRows = (container: HTMLElement): HTMLElement[][] => {
   const rowIndices = getUniqueRowIndices(container);
-  return rowIndices.map((rowIndex) =>
-    getCellsForRow(container, String(rowIndex))
-  );
+  return rowIndices.map((rowIndex) => getCellsForRow(container, String(rowIndex)));
 };
 
 export const waitForTable = async (timeout = 5000): Promise<void> => {
@@ -83,9 +69,7 @@ export const waitForTable = async (timeout = 5000): Promise<void> => {
   throw new Error("Table did not render within timeout");
 };
 
-export const validateBasicTableStructure = async (
-  canvasElement: HTMLElement
-): Promise<void> => {
+export const validateBasicTableStructure = async (canvasElement: HTMLElement): Promise<void> => {
   await waitForTable();
 
   const tableRoot = canvasElement.querySelector(".simple-table-root");
@@ -116,24 +100,18 @@ export const validateBasicTableStructure = async (
   expect(bodyMain).toBeTruthy();
 };
 
-export const validateColumnCount = (
-  canvasElement: HTMLElement,
-  expectedCount: number
-): void => {
+export const validateColumnCount = (canvasElement: HTMLElement, expectedCount: number): void => {
   const headerCells = canvasElement.querySelectorAll(".st-header-cell");
   expect(headerCells.length).toBe(expectedCount);
 };
 
-export const validateRowCount = (
-  canvasElement: HTMLElement,
-  expectedCount: number
-): void => {
+export const validateRowCount = (canvasElement: HTMLElement, expectedCount: number): void => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) throw new Error("Body container not found");
 
   const cells = bodyContainer.querySelectorAll(".st-cell[data-row-index]");
   const uniqueRowIndices = new Set(
-    Array.from(cells).map((cell) => cell.getAttribute("data-row-index"))
+    Array.from(cells).map((cell) => cell.getAttribute("data-row-index")),
   );
 
   expect(uniqueRowIndices.size).toBe(expectedCount);
@@ -143,19 +121,14 @@ export const validateCellContent = (
   canvasElement: HTMLElement,
   rowIndex: number,
   accessor: string,
-  expectedValue: string
+  expectedValue: string,
 ): void => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) throw new Error("Body container not found");
 
-  const cells = bodyContainer.querySelectorAll(
-    `[data-accessor="${accessor}"]`
-  );
+  const cells = bodyContainer.querySelectorAll(`[data-accessor="${accessor}"]`);
   const cell = cells[rowIndex] as HTMLElement | undefined;
-  if (!cell)
-    throw new Error(
-      `Cell at row ${rowIndex} with accessor "${accessor}" not found`
-    );
+  if (!cell) throw new Error(`Cell at row ${rowIndex} with accessor "${accessor}" not found`);
   expect(cell).toBeTruthy();
 
   const cellContent = cell.querySelector(".st-cell-content");

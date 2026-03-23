@@ -30,6 +30,7 @@ export class DimensionManager {
   private state: DimensionManagerState;
   private subscribers: Set<StateChangeCallback> = new Set();
   private resizeObserver: ResizeObserver | null = null;
+  private rafId: number | null = null;
 
   constructor(config: DimensionManagerConfig) {
     this.config = config;
@@ -143,14 +144,24 @@ export class DimensionManager {
 
   private observeContainer(containerElement: HTMLElement): void {
     const updateContainerWidth = () => {
-      const newWidth = containerElement.clientWidth;
-      if (newWidth !== this.state.containerWidth) {
-        this.state = {
-          ...this.state,
-          containerWidth: newWidth,
-        };
-        this.notifySubscribers();
+      // Defer notification to the next animation frame to prevent ResizeObserver
+      // loop errors in Chromium. Without this, a synchronous render triggered by
+      // the ResizeObserver callback can modify the observed element's layout within
+      // the same frame, causing Chromium to fire a window error with event.error=null.
+      if (this.rafId !== null) {
+        cancelAnimationFrame(this.rafId);
       }
+      this.rafId = requestAnimationFrame(() => {
+        this.rafId = null;
+        const newWidth = containerElement.clientWidth;
+        if (newWidth !== this.state.containerWidth) {
+          this.state = {
+            ...this.state,
+            containerWidth: newWidth,
+          };
+          this.notifySubscribers();
+        }
+      });
     };
 
     this.resizeObserver = new ResizeObserver(updateContainerWidth);
@@ -230,6 +241,10 @@ export class DimensionManager {
   }
 
   destroy(): void {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;

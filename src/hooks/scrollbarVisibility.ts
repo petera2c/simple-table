@@ -9,6 +9,7 @@ export class ScrollbarVisibilityManager {
   private scrollbarWidth: number = 0;
   private resizeObserver: ResizeObserver | null = null;
   private observers: Set<(isScrollable: boolean) => void> = new Set();
+  private rafId: number | null = null;
 
   constructor(config: {
     headerContainer?: HTMLElement | null;
@@ -33,9 +34,17 @@ export class ScrollbarVisibilityManager {
     // Check on initial setup
     this.checkScrollability();
 
-    // Set up a ResizeObserver to check when the content size changes
+    // Use requestAnimationFrame to defer scroll checks triggered by ResizeObserver,
+    // preventing ResizeObserver loop errors in Chromium when the callback
+    // synchronously triggers renders that affect the observed element's layout.
     this.resizeObserver = new ResizeObserver(() => {
-      this.checkScrollability();
+      if (this.rafId !== null) {
+        cancelAnimationFrame(this.rafId);
+      }
+      this.rafId = requestAnimationFrame(() => {
+        this.rafId = null;
+        this.checkScrollability();
+      });
     });
 
     this.resizeObserver.observe(this.mainSection);
@@ -142,6 +151,10 @@ export class ScrollbarVisibilityManager {
    * Cleans up the manager and removes all observers
    */
   destroy(): void {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     if (this.resizeObserver && this.mainSection) {
       this.resizeObserver.unobserve(this.mainSection);
       this.resizeObserver = null;
