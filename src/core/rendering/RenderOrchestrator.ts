@@ -95,6 +95,7 @@ interface FlattenedRowsCache {
     expandedRowsSize: number;
     collapsedRowsSize: number;
     expandedDepthsSize: number;
+    rowStateMapSize: number;
     sortKey: string;
     filterKey: string;
   };
@@ -303,6 +304,8 @@ export class RenderOrchestrator {
         context.collapsedRows.size &&
       this.flattenedRowsCache.deps.expandedDepthsSize ===
         context.expandedDepths.size &&
+      this.flattenedRowsCache.deps.rowStateMapSize ===
+        context.rowStateMap.size &&
       this.flattenedRowsCache.deps.sortKey === sortKey &&
       this.flattenedRowsCache.deps.filterKey === filterKey;
 
@@ -358,6 +361,7 @@ export class RenderOrchestrator {
           expandedRowsSize: context.expandedRows.size,
           collapsedRowsSize: context.collapsedRows.size,
           expandedDepthsSize: context.expandedDepths.size,
+          rowStateMapSize: context.rowStateMap.size,
           sortKey,
           filterKey,
         },

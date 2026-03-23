@@ -62,6 +62,10 @@ const getColumnCheckboxItems = (popout: Element): Element[] => {
 };
 
 const getColumnLabelFromCheckbox = (checkboxItem: Element): string => {
+  // The column editor row renders the label inside .st-column-label-container
+  const labelContainer = checkboxItem.querySelector(".st-column-label-container");
+  if (labelContainer?.textContent?.trim()) return labelContainer.textContent.trim();
+  // Fallback for alternative markup
   const labelSpan = checkboxItem.querySelector(".st-checkbox-label-text");
   if (labelSpan?.textContent?.trim()) return labelSpan.textContent.trim();
   return checkboxItem.textContent?.trim() || "";

@@ -105,14 +105,16 @@ export class SortManager {
 
   private computeSortedRows(tableRows: Row[], sortColumn: SortColumn | null): Row[] {
     if (this.config.externalSortHandling) return tableRows;
-    if (!sortColumn) return tableRows;
 
-    // Calculate aggregated values before sorting so parent rows have aggregated values
+    // Always calculate aggregated values so parent rows display aggregated values
+    // regardless of whether a sort is active.
     const aggregatedRows = calculateAggregatedRows({
       rows: tableRows,
       headers: this.config.headers,
       rowGrouping: this.config.rowGrouping,
     });
+
+    if (!sortColumn) return aggregatedRows;
 
     if (this.config.rowGrouping && this.config.rowGrouping.length > 0) {
       return this.sortNestedRows({

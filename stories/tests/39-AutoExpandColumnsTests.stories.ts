@@ -333,6 +333,8 @@ const getColumnCheckboxItems = (popout: Element): Element[] =>
   Array.from(popout.querySelectorAll(".st-header-checkbox-item"));
 
 const getColumnLabelFromCheckbox = (checkboxItem: Element): string => {
+  const labelContainer = checkboxItem.querySelector(".st-column-label-container");
+  if (labelContainer?.textContent?.trim()) return labelContainer.textContent.trim();
   const labelSpan = checkboxItem.querySelector(".st-checkbox-label-text");
   if (labelSpan?.textContent?.trim()) return labelSpan.textContent.trim();
   return checkboxItem.textContent?.trim() || "";

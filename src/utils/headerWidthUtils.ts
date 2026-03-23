@@ -34,8 +34,17 @@ export const findLeafHeaders = (
       const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
       return showWhen === "parentCollapsed" || showWhen === "always";
     });
-    // singleRowChildren: when collapsed and no such children, the parent is the visible column (e.g. "Quarterly Sales" showing total)
-    if (header.singleRowChildren && visibleWhenCollapsed.length === 0) {
+    // singleRowChildren: the parent is always a leaf (has its own column). When collapsed, also include visible children.
+    if (header.singleRowChildren) {
+      if (visibleWhenCollapsed.length === 0) {
+        return [header];
+      }
+      return [
+        header,
+        ...visibleWhenCollapsed.flatMap((child) => findLeafHeaders(child, collapsedHeaders)),
+      ];
+    }
+    if (visibleWhenCollapsed.length === 0) {
       return [header];
     }
     return visibleWhenCollapsed.flatMap((child) =>

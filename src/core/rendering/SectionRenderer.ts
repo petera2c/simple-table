@@ -23,6 +23,7 @@ import {
   createNestedGridSpacer,
   type NestedGridRowRenderContext,
 } from "../../utils/nestedGridRowRenderer";
+import { createStateRow, type StateRowRenderContext } from "../../utils/stateRowRenderer";
 
 export interface HeaderSectionParams {
   headers: HeaderObject[];
@@ -96,6 +97,9 @@ export class SectionRenderer {
 
   // Track the next colIndex for each section after rendering
   private nextColIndexMap: Map<string, number> = new Map();
+
+  // State row elements per section (key: sectionKey, value: Map<position, HTMLElement>)
+  private stateRowsMap: Map<string, Map<number, HTMLElement>> = new Map();
 
   // Nested grid row elements per section (key: sectionKey, value: Map<position, { element, cleanup? }>)
   private nestedGridRowsMap: Map<
@@ -297,6 +301,11 @@ export class SectionRenderer {
     // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
     this.renderNestedGridRows(section, sectionKey, rows, pinned, cachedContext);
 
+    // Render state indicator rows (loading/error/empty) as full-width rows – only in main (non-pinned) section
+    if (!pinned) {
+      this.renderStateRows(section, sectionKey, rows, cachedContext);
+    }
+
     // For main section (not pinned), attach render function for scroll updates (used by SectionScrollController.onMainSectionScrollLeft)
     if (!pinned && section) {
       (section as any).__renderBodyCells = (scrollLeft: number) => {
@@ -380,6 +389,71 @@ export class SectionRenderer {
         section.appendChild(element);
         map!.set(position, { element, cleanup });
       }
+    });
+  }
+
+  private renderStateRows(
+    section: HTMLElement,
+    sectionKey: string,
+    rows: TableRow[],
+    context: CellRenderContext,
+  ): void {
+    const stateRows = rows.filter((r) => r.stateIndicator);
+    const currentPositions = new Set(stateRows.map((r) => r.position));
+
+    let map = this.stateRowsMap.get(sectionKey);
+    if (!map) {
+      map = new Map();
+      this.stateRowsMap.set(sectionKey, map);
+    }
+
+    // Remove state row elements that are no longer in the list
+    map.forEach((element, position) => {
+      if (!currentPositions.has(position)) {
+        element.remove();
+        map!.delete(position);
+      }
+    });
+
+    const stateContext: StateRowRenderContext = {
+      index: 0,
+      rowHeight: context.rowHeight,
+      heightOffsets: context.heightOffsets,
+      customTheme: context.customTheme ?? ({} as any),
+      loadingStateRenderer: context.loadingStateRenderer,
+      errorStateRenderer: context.errorStateRenderer,
+      emptyStateRenderer: context.emptyStateRenderer,
+    };
+
+    stateRows.forEach((tableRow, i) => {
+      const position = tableRow.position;
+      const existing = map!.get(position);
+
+      if (existing) {
+        // Update position in case it changed
+        const top = calculateRowTopPosition({
+          position,
+          rowHeight: context.rowHeight,
+          heightOffsets: context.heightOffsets,
+          customTheme: context.customTheme ?? ({} as any),
+        });
+        existing.style.transform = `translate3d(0, ${top}px, 0)`;
+        return;
+      }
+
+      const rowElement = createStateRow(tableRow, { ...stateContext, index: i });
+      // Position the state row correctly
+      const top = calculateRowTopPosition({
+        position,
+        rowHeight: context.rowHeight,
+        heightOffsets: context.heightOffsets,
+        customTheme: context.customTheme ?? ({} as any),
+      });
+      rowElement.style.position = "absolute";
+      rowElement.style.transform = `translate3d(0, ${top}px, 0)`;
+      rowElement.style.width = "100%";
+      section.appendChild(rowElement);
+      map!.set(position, rowElement);
     });
   }
 
@@ -505,8 +579,8 @@ export class SectionRenderer {
   ): AbsoluteBodyCell[] {
     const cells: AbsoluteBodyCell[] = [];
 
-    // Exclude nested table rows – they are rendered as full-width nested grid rows, not per-column cells
-    const rowsForCells = rows.filter((r) => !r.nestedTable);
+    // Exclude nested table rows and state indicator rows – both are rendered as full-width rows, not per-column cells
+    const rowsForCells = rows.filter((r) => !r.nestedTable && !r.stateIndicator);
 
     const leafHeaders = this.getLeafHeaders(headers, collapsedHeaders);
 

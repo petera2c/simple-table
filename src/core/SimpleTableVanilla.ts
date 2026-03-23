@@ -503,14 +503,17 @@ export class SimpleTableVanilla {
       setCollapsedHeaders: (headers: Set<Accessor>) => {
         this.collapsedHeaders = headers;
       },
-      setCollapsedRows: (rows: Map<string, number>) => {
-        this.collapsedRows = rows;
+      setCollapsedRows: (rowsOrUpdater: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)) => {
+        this.collapsedRows = typeof rowsOrUpdater === "function" ? rowsOrUpdater(this.collapsedRows) : rowsOrUpdater;
+        this.render("expansion");
       },
-      setExpandedRows: (rows: Map<string, number>) => {
-        this.expandedRows = rows;
+      setExpandedRows: (rowsOrUpdater: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>)) => {
+        this.expandedRows = typeof rowsOrUpdater === "function" ? rowsOrUpdater(this.expandedRows) : rowsOrUpdater;
+        this.render("expansion");
       },
-      setRowStateMap: (map: Map<string | number, any>) => {
-        this.rowStateMap = map;
+      setRowStateMap: (mapOrUpdater: Map<string | number, any> | ((prev: Map<string | number, any>) => Map<string | number, any>)) => {
+        this.rowStateMap = typeof mapOrUpdater === "function" ? mapOrUpdater(this.rowStateMap) : mapOrUpdater;
+        this.render("rowStateMap");
       },
       getCollapsedRows: () => this.collapsedRows,
       getCollapsedHeaders: () => this.collapsedHeaders,
@@ -649,11 +652,14 @@ export class SimpleTableVanilla {
       this.customTheme,
     );
 
+    // Use `thiz` so that getter properties can read live instance state rather
+    // than a snapshot captured at getAPI() call time.
+    const thiz = this;
     const context: TableAPIContext = {
       config: this.config,
       localRows: this.localRows,
       effectiveHeaders,
-      headers: this.headers,
+      get headers() { return thiz.headers; },
       essentialAccessors: this.essentialAccessors,
       customTheme: this.customTheme,
       currentPage: this.currentPage,

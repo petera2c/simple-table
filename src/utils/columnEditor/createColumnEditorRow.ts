@@ -1,5 +1,6 @@
 import HeaderObject from "../../types/HeaderObject";
 import { ColumnEditorConfig } from "../../types/ColumnEditorConfig";
+import { ColumnEditorRowRendererComponents } from "../../types/ColumnEditorRowRendererProps";
 import {
   areAllChildrenHidden,
   findAndMarkParentsVisible,
@@ -306,6 +307,8 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
   rowContainer.addEventListener("dragover", onDragOver);
   rowContainer.addEventListener("dragend", onDragEnd);
 
+  // Build expand icon (if applicable)
+  let expandIconEl: HTMLElement | undefined;
   if (doesAnyHeaderHaveChildren) {
     const iconContainer = document.createElement("div");
     iconContainer.className = "st-header-icon-container";
@@ -318,9 +321,12 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
       expandIcon.innerHTML = EXPAND_ICON_SVG;
       expandIcon.addEventListener("click", toggleExpanded);
       iconContainer.appendChild(expandIcon);
+      expandIconEl = expandIcon;
     }
 
-    rowContainer.appendChild(iconContainer);
+    if (!options.columnEditorConfig.rowRenderer) {
+      rowContainer.appendChild(iconContainer);
+    }
   }
 
   const checkboxObj = createCheckbox({
@@ -331,89 +337,117 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     checkboxObj.element.classList.add("st-checkbox-disabled");
     checkboxObj.element.style.pointerEvents = "none";
   }
-  rowContainer.appendChild(checkboxObj.element);
 
   const dragIcon = document.createElement("div");
   dragIcon.className = "st-drag-icon-container";
   dragIcon.innerHTML = DRAG_ICON_SVG;
-  rowContainer.appendChild(dragIcon);
 
   const label = document.createElement("div");
   label.className = "st-column-label-container";
   label.textContent = header.label;
-  rowContainer.appendChild(label);
 
   // Pin controls — only for root-level columns (depth === 0) when pinning is enabled
-  if (allowColumnPinning && depth === 0) {
-    const pinnedSide = header.pinned === "left" || header.pinned === "right" ? header.pinned : null;
-    const canUnpin = Boolean(pinnedSide) && !isEssential;
-    const canPinLeft = !pinnedSide && panelSection === "main";
-    const canPinRight = !pinnedSide && panelSection === "main";
+  const pinnedSide = header.pinned === "left" || header.pinned === "right" ? header.pinned : null;
+  const canUnpin = Boolean(pinnedSide) && !isEssential;
+  const canPinLeft = !pinnedSide && panelSection === "main";
+  const canPinRight = !pinnedSide && panelSection === "main";
 
-    const pinLeft = () => {
-      const next = moveRootColumnPinSide(headers, header.accessor, "left", essentialAccessors);
-      if (next) applyHeaderOrder(next);
+  const pinLeft = () => {
+    const next = moveRootColumnPinSide(headers, header.accessor, "left", essentialAccessors);
+    if (next) applyHeaderOrder(next);
+  };
+
+  const pinRight = () => {
+    const next = moveRootColumnPinSide(headers, header.accessor, "right", essentialAccessors);
+    if (next) applyHeaderOrder(next);
+  };
+
+  const unpin = () => {
+    const next = moveRootColumnPinSide(headers, header.accessor, "main", essentialAccessors);
+    if (next) applyHeaderOrder(next);
+  };
+
+  const { rowRenderer } = options.columnEditorConfig;
+  if (rowRenderer) {
+    // Delegate full row layout to the custom renderer
+    const components: ColumnEditorRowRendererComponents = {
+      expandIcon: expandIconEl,
+      checkbox: checkboxObj.element as HTMLElement,
+      dragIcon: dragIcon as HTMLElement,
+      labelContent: label as HTMLElement,
     };
-
-    const pinRight = () => {
-      const next = moveRootColumnPinSide(headers, header.accessor, "right", essentialAccessors);
-      if (next) applyHeaderOrder(next);
-    };
-
-    const unpin = () => {
-      const next = moveRootColumnPinSide(headers, header.accessor, "main", essentialAccessors);
-      if (next) applyHeaderOrder(next);
-    };
-
-    const pinGroup = document.createElement("div");
-    pinGroup.className = "st-column-pin-side-group";
-
-    if (pinnedSide) {
-      // Show filled pin indicator (click to unpin if allowed)
-      const pinnedMark = document.createElement("div");
-      const isPinnedEssential = isEssential;
-      pinnedMark.className = `st-column-pin-btn st-column-pin-side st-column-pin-pinned-active${
-        isPinnedEssential ? " st-column-pin-pinned-essential" : ""
-      }`;
-      pinnedMark.textContent = pinnedSide === "left" ? "L" : "R";
-      pinnedMark.title = isPinnedEssential
-        ? "Essential column — cannot be unpinned"
-        : `Unpin column`;
-      if (canUnpin) {
-        pinnedMark.addEventListener("click", (e) => {
-          e.stopPropagation();
-          unpin();
-        });
-      }
-      pinGroup.appendChild(pinnedMark);
-    } else {
-      // Show L / R options in main section
-      if (canPinLeft) {
-        const pinLeftBtn = document.createElement("button");
-        pinLeftBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
-        pinLeftBtn.textContent = "L";
-        pinLeftBtn.title = "Pin column to left";
-        pinLeftBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          pinLeft();
-        });
-        pinGroup.appendChild(pinLeftBtn);
-      }
-
-      if (canPinRight) {
-        const pinRightBtn = document.createElement("button");
-        pinRightBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
-        pinRightBtn.textContent = "R";
-        pinRightBtn.title = "Pin column to right";
-        pinRightBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          pinRight();
-        });
-        pinGroup.appendChild(pinRightBtn);
-      }
+    const rendered = rowRenderer({
+      accessor: header.accessor,
+      header,
+      components,
+      panelSection,
+      isEssential,
+      canToggleVisibility,
+      allowColumnPinning,
+      pinControl: allowColumnPinning && depth === 0
+        ? { pinnedSide, canPinLeft, canPinRight, canUnpin, pinLeft, pinRight, unpin }
+        : undefined,
+    });
+    if (rendered instanceof HTMLElement) {
+      rowContainer.appendChild(rendered);
+    } else if (typeof rendered === "string") {
+      rowContainer.innerHTML = rendered;
     }
+  } else {
+    // Default layout
+    rowContainer.appendChild(checkboxObj.element);
+    rowContainer.appendChild(dragIcon);
+    rowContainer.appendChild(label);
 
-    rowContainer.appendChild(pinGroup);
+    if (allowColumnPinning && depth === 0) {
+      const pinGroup = document.createElement("div");
+      pinGroup.className = "st-column-pin-side-group";
+
+      if (pinnedSide) {
+        const pinnedMark = document.createElement("div");
+        const isPinnedEssential = isEssential;
+        pinnedMark.className = `st-column-pin-btn st-column-pin-side st-column-pin-pinned-active${
+          isPinnedEssential ? " st-column-pin-pinned-essential" : ""
+        }`;
+        pinnedMark.textContent = pinnedSide === "left" ? "L" : "R";
+        pinnedMark.title = isPinnedEssential
+          ? "Essential column — cannot be unpinned"
+          : `Unpin column`;
+        if (canUnpin) {
+          pinnedMark.addEventListener("click", (e) => {
+            e.stopPropagation();
+            unpin();
+          });
+        }
+        pinGroup.appendChild(pinnedMark);
+      } else {
+        if (canPinLeft) {
+          const pinLeftBtn = document.createElement("button");
+          pinLeftBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
+          pinLeftBtn.textContent = "L";
+          pinLeftBtn.title = "Pin column to left";
+          pinLeftBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            pinLeft();
+          });
+          pinGroup.appendChild(pinLeftBtn);
+        }
+
+        if (canPinRight) {
+          const pinRightBtn = document.createElement("button");
+          pinRightBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
+          pinRightBtn.textContent = "R";
+          pinRightBtn.title = "Pin column to right";
+          pinRightBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            pinRight();
+          });
+          pinGroup.appendChild(pinRightBtn);
+        }
+      }
+
+      rowContainer.appendChild(pinGroup);
+    }
   }
 
   fragment.appendChild(rowContainer);

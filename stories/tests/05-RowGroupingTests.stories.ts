@@ -949,6 +949,7 @@ export const LoadingStateRendererPerGroup = {
       getRowId: (p) => String((p.row as { id?: string })?.id),
       height: "400px",
       rowGrouping: ["items"],
+      expandAll: false,
       loadingStateRenderer: "Loading team members...",
       onRowGroupExpand: ({ setLoading }: { setLoading: (b: boolean) => void }) => {
         setLoading(true);
@@ -981,6 +982,7 @@ export const ErrorStateRendererPerGroup = {
       getRowId: (p) => String((p.row as { id?: string })?.id),
       height: "300px",
       rowGrouping: ["items"],
+      expandAll: false,
       errorStateRenderer: "Failed to load members",
       onRowGroupExpand: ({ setError }: { setError: (b: boolean) => void }) => {
         setError(true);
@@ -1011,6 +1013,7 @@ export const EmptyStateRendererPerGroup = {
       getRowId: (p) => String((p.row as { id?: string })?.id),
       height: "300px",
       rowGrouping: ["items"],
+      expandAll: false,
       emptyStateRenderer: "No members found",
       onRowGroupExpand: ({ setEmpty }: { setEmpty: (b: boolean) => void }) => {
         setEmpty(true);

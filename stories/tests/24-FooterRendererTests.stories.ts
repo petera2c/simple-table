@@ -142,8 +142,10 @@ export const FooterPrevDisabledOnFirstPage = {
     await waitForTable();
     const footer = canvasElement.querySelector(".st-footer");
     expect(footer).toBeTruthy();
-    // On the first page the prev button should be disabled
-    const prevBtn = footer?.querySelector<HTMLButtonElement>("button");
+    // On the first page the prev button should be disabled.
+    // The footer renders page-number buttons first, then prev/next buttons,
+    // so we select by aria-label to target the correct button.
+    const prevBtn = footer?.querySelector<HTMLButtonElement>('button[aria-label="Go to previous page"]');
     expect(prevBtn).toBeTruthy();
     expect(prevBtn?.disabled).toBe(true);
   },
