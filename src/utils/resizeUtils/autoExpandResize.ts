@@ -133,7 +133,6 @@ export const handleResizeWithAutoExpand = ({
           // We would exceed effective section width
           needsCompensation = true;
 
-          const maxGrowthToFit = Math.max(0, effectiveSectionWidth - currentTotalWidth);
           // Calculate max possible shrinkage
           const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
             const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
@@ -141,7 +140,7 @@ export const handleResizeWithAutoExpand = ({
             return total + canShrink;
           }, 0);
 
-          actualDelta = Math.min(delta, maxPossibleShrinkage, maxGrowthToFit);
+          actualDelta = Math.min(delta, maxPossibleShrinkage);
         }
       }
 
@@ -278,8 +277,7 @@ export const handleResizeWithAutoExpand = ({
       return total + canShrink;
     }, 0);
 
-    // Limit growth to what can be compensated and what fits in the section
-    const actualGrowth = Math.min(delta, maxPossibleShrinkage, maxGrowthToFit);
+    const actualGrowth = Math.min(delta, maxPossibleShrinkage);
     resizedHeader.width = startWidth + actualGrowth;
     // Shrink other columns by the amount needed
     if (actualGrowth > 0) {

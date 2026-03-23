@@ -75,7 +75,7 @@ export const handleResizeStart = ({
 
     // Calculate widths of pinned sections using the passed containerWidth
     if (containerWidth > 0) {
-      const { leftWidth, rightWidth } = recalculateAllSectionWidths({
+      const { leftWidth, rightWidth, mainWidth } = recalculateAllSectionWidths({
         headers,
         containerWidth,
         collapsedHeaders,
@@ -87,8 +87,8 @@ export const handleResizeStart = ({
       } else if (rootPinned === "right") {
         sectionWidth = rightWidth;
       } else {
-        // Main section: full width minus pinned sections
-        sectionWidth = Math.max(0, containerWidth - leftWidth - rightWidth);
+        // Main section: use the raw content width (no pinned border subtraction)
+        sectionWidth = mainWidth;
       }
     }
   }
