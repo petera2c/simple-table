@@ -35,6 +35,7 @@ export interface RenderContext {
   dimensionManager: DimensionManager | null;
   draggedHeaderRef: { current: HeaderObject | null };
   effectiveHeaders: HeaderObject[];
+  essentialAccessors: Set<string>;
   expandedDepths: Set<number>;
   expandedRows: Map<string, number>;
   filterManager: FilterManager | null;
@@ -641,6 +642,7 @@ export class RenderOrchestrator {
       getExpandedRows: context.getExpandedRows,
       getRowStateMap: context.getRowStateMap,
       positionOnlyBody: context.positionOnlyBody,
+      essentialAccessors: context.essentialAccessors,
     };
   }
 

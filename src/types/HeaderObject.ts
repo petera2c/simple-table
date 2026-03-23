@@ -99,6 +99,8 @@ type HeaderObject = {
   excludeFromRender?: boolean; // When true, excludes this column from the rendered table (e.g., use only for CSV export)
   excludeFromCsv?: boolean; // When true, excludes this column from the exported CSV file
   isSelectionColumn?: boolean; // This is a flag for the checkbox select row column
+  /** When true, column stays visible, cannot be unpinned from a pinned side, cannot reorder above non-essentials in its section */
+  isEssential?: boolean;
   isSortable?: boolean;
   label: string;
   minWidth?: number | string;

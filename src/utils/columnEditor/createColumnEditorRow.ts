@@ -8,14 +8,16 @@ import {
   findClosestValidSeparatorIndex,
   FlattenedHeader,
 } from "./columnEditorUtils";
-import {
-  getSiblingArray,
-  setSiblingArray,
-  insertHeaderAcrossSections,
-} from "../../managers/DragHandlerManager";
+import { swapHeaders } from "../../managers/DragHandlerManager";
 import { deepClone } from "../generalUtils";
 import { createCheckbox } from "./createCheckbox";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
+import {
+  isHeaderEssential,
+  moveRootColumnPinSide,
+  validateFullHeaderTreeEssentialOrder,
+  PanelSection,
+} from "../pinnedColumnUtils";
 
 const DRAG_ICON_SVG = `<svg
   aria-hidden="true"
@@ -43,6 +45,7 @@ const EXPAND_ICON_SVG = `<svg
 
 export interface CreateColumnEditorRowOptions {
   allHeaders: HeaderObject[];
+  clearHoverSeparator?: () => void;
   depth: number;
   doesAnyHeaderHaveChildren: boolean;
   draggingRow: FlattenedHeader | null;
@@ -53,11 +56,13 @@ export interface CreateColumnEditorRowOptions {
   forceExpanded: boolean;
   header: HeaderObject;
   hoveredSeparatorIndex: number | null;
+  panelSection?: PanelSection;
   rowIndex: number;
   setDraggingRow: (row: FlattenedHeader | null) => void;
   setExpandedHeaders: (headers: Set<string>) => void;
   setHoveredSeparatorIndex: (index: number | null) => void;
   columnEditorConfig: ColumnEditorConfig;
+  essentialAccessors?: ReadonlySet<string>;
   headers: HeaderObject[];
   setHeaders: (headers: HeaderObject[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
@@ -67,6 +72,7 @@ export interface CreateColumnEditorRowOptions {
 export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => {
   const {
     allHeaders,
+    clearHoverSeparator,
     depth,
     doesAnyHeaderHaveChildren,
     draggingRow,
@@ -77,6 +83,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     forceExpanded,
     header,
     hoveredSeparatorIndex,
+    panelSection,
     rowIndex,
     setDraggingRow,
     setExpandedHeaders,
@@ -86,6 +93,11 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     onColumnVisibilityChange,
     onColumnOrderChange,
   } = options;
+
+  const essentialAccessors: ReadonlySet<string> = options.essentialAccessors ?? new Set();
+  const allowColumnPinning = options.columnEditorConfig.allowColumnPinning !== false;
+  const isEssential = isHeaderEssential(header, essentialAccessors);
+  const canToggleVisibility = !isEssential;
 
   const fragment = document.createDocumentFragment();
   const paddingLeft = `${depth * 16}px`;
@@ -111,7 +123,21 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
   rowContainer.style.paddingLeft = paddingLeft;
   rowContainer.draggable = true;
 
+  const applyHeaderOrder = (updatedHeaders: HeaderObject[]): boolean => {
+    if (
+      essentialAccessors.size > 0 &&
+      !validateFullHeaderTreeEssentialOrder(updatedHeaders, essentialAccessors)
+    ) {
+      return false;
+    }
+    onColumnOrderChange?.(updatedHeaders);
+    setHeaders(updatedHeaders);
+    return true;
+  };
+
   const handleCheckboxChange = (checked: boolean) => {
+    if (!canToggleVisibility) return;
+
     header.hide = !checked;
 
     if (!checked) {
@@ -155,6 +181,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = "move";
     }
+    clearHoverSeparator?.();
     setDraggingRow(flattenedHeaders[rowIndex]);
   };
 
@@ -167,7 +194,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
 
     const currentDraggingRow = getDraggingRow ? getDraggingRow() : draggingRow;
 
-    if (currentDraggingRow) {
+    if (currentDraggingRow && currentDraggingRow.panelSection === panelSection) {
       const target = event.currentTarget as HTMLElement;
       const rect = target.getBoundingClientRect();
       const mouseY = event.clientY;
@@ -196,7 +223,11 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
       setHoveredSeparatorIndex(null);
     };
 
-    if (!currentDraggingRow || currentHoveredSeparatorIndex === null) {
+    if (
+      !currentDraggingRow ||
+      currentHoveredSeparatorIndex === null ||
+      currentDraggingRow.panelSection !== panelSection
+    ) {
       cancelDrag();
       return;
     }
@@ -226,25 +257,47 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
       return;
     }
 
-    const { newHeaders, emergencyBreak } = insertHeaderAcrossSections({
-      headers: getSiblingArray(headers, currentDraggingRow.indexPath),
-      draggedHeader: currentDraggingRow.header,
-      hoveredHeader: hoveredHeader.header,
-    });
+    const haveSameParent =
+      currentDraggingRow.indexPath.length === hoveredHeader.indexPath.length &&
+      (currentDraggingRow.indexPath.length === 1 ||
+        currentDraggingRow.indexPath
+          .slice(0, -1)
+          .every((idx, i) => idx === hoveredHeader.indexPath[i]));
 
-    if (emergencyBreak) {
+    if (!haveSameParent) {
       cancelDrag();
       return;
     }
 
-    const updatedHeaders = setSiblingArray(
-      deepClone(headers),
-      currentDraggingRow.indexPath,
-      newHeaders,
-    );
+    let updatedHeaders: HeaderObject[];
 
-    onColumnOrderChange?.(updatedHeaders);
-    setHeaders(updatedHeaders);
+    if (currentDraggingRow.indexPath.length === 1) {
+      // Root-level drag within the same panel section: use swapHeaders
+      const { newHeaders, emergencyBreak } = swapHeaders(
+        headers,
+        currentDraggingRow.indexPath,
+        hoveredHeader.indexPath,
+      );
+      if (emergencyBreak) {
+        cancelDrag();
+        return;
+      }
+      updatedHeaders = newHeaders;
+    } else {
+      // Nested drag: swap siblings
+      const { newHeaders, emergencyBreak } = swapHeaders(
+        headers,
+        currentDraggingRow.indexPath,
+        hoveredHeader.indexPath,
+      );
+      if (emergencyBreak) {
+        cancelDrag();
+        return;
+      }
+      updatedHeaders = newHeaders;
+    }
+
+    applyHeaderOrder(updatedHeaders);
     cancelDrag();
   };
 
@@ -274,6 +327,10 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     checked: isChecked,
     onChange: handleCheckboxChange,
   });
+  if (!canToggleVisibility) {
+    checkboxObj.element.classList.add("st-checkbox-disabled");
+    checkboxObj.element.style.pointerEvents = "none";
+  }
   rowContainer.appendChild(checkboxObj.element);
 
   const dragIcon = document.createElement("div");
@@ -285,6 +342,79 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
   label.className = "st-column-label-container";
   label.textContent = header.label;
   rowContainer.appendChild(label);
+
+  // Pin controls — only for root-level columns (depth === 0) when pinning is enabled
+  if (allowColumnPinning && depth === 0) {
+    const pinnedSide = header.pinned === "left" || header.pinned === "right" ? header.pinned : null;
+    const canUnpin = Boolean(pinnedSide) && !isEssential;
+    const canPinLeft = !pinnedSide && panelSection === "main";
+    const canPinRight = !pinnedSide && panelSection === "main";
+
+    const pinLeft = () => {
+      const next = moveRootColumnPinSide(headers, header.accessor, "left", essentialAccessors);
+      if (next) applyHeaderOrder(next);
+    };
+
+    const pinRight = () => {
+      const next = moveRootColumnPinSide(headers, header.accessor, "right", essentialAccessors);
+      if (next) applyHeaderOrder(next);
+    };
+
+    const unpin = () => {
+      const next = moveRootColumnPinSide(headers, header.accessor, "main", essentialAccessors);
+      if (next) applyHeaderOrder(next);
+    };
+
+    const pinGroup = document.createElement("div");
+    pinGroup.className = "st-column-pin-side-group";
+
+    if (pinnedSide) {
+      // Show filled pin indicator (click to unpin if allowed)
+      const pinnedMark = document.createElement("div");
+      const isPinnedEssential = isEssential;
+      pinnedMark.className = `st-column-pin-btn st-column-pin-side st-column-pin-pinned-active${
+        isPinnedEssential ? " st-column-pin-pinned-essential" : ""
+      }`;
+      pinnedMark.textContent = pinnedSide === "left" ? "L" : "R";
+      pinnedMark.title = isPinnedEssential
+        ? "Essential column — cannot be unpinned"
+        : `Unpin column`;
+      if (canUnpin) {
+        pinnedMark.addEventListener("click", (e) => {
+          e.stopPropagation();
+          unpin();
+        });
+      }
+      pinGroup.appendChild(pinnedMark);
+    } else {
+      // Show L / R options in main section
+      if (canPinLeft) {
+        const pinLeftBtn = document.createElement("button");
+        pinLeftBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
+        pinLeftBtn.textContent = "L";
+        pinLeftBtn.title = "Pin column to left";
+        pinLeftBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          pinLeft();
+        });
+        pinGroup.appendChild(pinLeftBtn);
+      }
+
+      if (canPinRight) {
+        const pinRightBtn = document.createElement("button");
+        pinRightBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
+        pinRightBtn.textContent = "R";
+        pinRightBtn.title = "Pin column to right";
+        pinRightBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          pinRight();
+        });
+        pinGroup.appendChild(pinRightBtn);
+      }
+    }
+
+    rowContainer.appendChild(pinGroup);
+  }
 
   fragment.appendChild(rowContainer);
 

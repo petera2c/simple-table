@@ -11,6 +11,7 @@ import {
   createDragIcon,
 } from "../../icons";
 import { initializeExpandedDepths } from "../../hooks/expandedDepths";
+import { collectEssentialAccessors } from "../../utils/pinnedColumnUtils";
 
 export interface ResolvedIcons {
   drag: string | HTMLElement | SVGSVGElement;
@@ -28,6 +29,7 @@ export interface MergedColumnEditorConfig {
   text: string;
   searchEnabled: boolean;
   searchPlaceholder: string;
+  allowColumnPinning: boolean;
   searchFunction?: (header: HeaderObject, searchText: string) => boolean;
   rowRenderer?: any;
 }
@@ -77,9 +79,16 @@ export class TableInitializer {
       searchPlaceholder:
         config.columnEditorConfig?.searchPlaceholder ??
         DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+      allowColumnPinning:
+        config.columnEditorConfig?.allowColumnPinning ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,
       searchFunction: config.columnEditorConfig?.searchFunction,
       rowRenderer: config.columnEditorConfig?.rowRenderer,
     };
+  }
+
+  static buildEssentialAccessors(headers: HeaderObject[]): Set<string> {
+    return collectEssentialAccessors(headers);
   }
 
   static getInitialCollapsedHeaders(headers: HeaderObject[]): Set<Accessor> {

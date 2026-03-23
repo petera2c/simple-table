@@ -23,6 +23,7 @@ export interface HeaderRenderContext {
   areAllRowsSelected?: () => boolean;
   autoExpandColumns: boolean;
   collapsedHeaders: Set<Accessor>;
+  essentialAccessors?: ReadonlySet<string>;
   columnBorders: boolean;
   columnReordering: boolean;
   columnResizing: boolean;

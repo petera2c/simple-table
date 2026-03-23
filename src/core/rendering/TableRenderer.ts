@@ -22,6 +22,7 @@ import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
+import { canDisplaySection } from "../../utils/generalUtils";
 
 export interface TableRendererDeps {
   cellRegistry: Map<string, any>;
@@ -32,6 +33,7 @@ export interface TableRendererDeps {
   dimensionManager: DimensionManager | null;
   draggedHeaderRef: { current: HeaderObject | null };
   effectiveHeaders: HeaderObject[];
+  essentialAccessors: Set<string>;
   expandedDepths: Set<number>;
   expandedRows: Map<string, number>;
   filterManager: FilterManager | null;
@@ -112,6 +114,14 @@ export class TableRenderer {
     if (!container || deps.config.hideHeader) return;
 
     container.style.height = `${calculatedHeaderHeight}px`;
+
+    // When no section has visible columns, apply minHeight so the header doesn't collapse
+    // and the column editor / reset button remain accessible.
+    const hasAnyVisibleSection =
+      canDisplaySection(deps.effectiveHeaders, "left") ||
+      canDisplaySection(deps.effectiveHeaders, undefined) ||
+      canDisplaySection(deps.effectiveHeaders, "right");
+    container.style.minHeight = hasAnyVisibleSection ? "" : `${calculatedHeaderHeight}px`;
     container.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
     container.setAttribute(
       "aria-colcount",
@@ -161,6 +171,7 @@ export class TableRenderer {
           }),
       sort: sortState?.sort ?? null,
       autoExpandColumns: deps.config.autoExpandColumns ?? false,
+      essentialAccessors: deps.essentialAccessors,
       selectableColumns: deps.config.selectableColumns,
       headers: deps.effectiveHeaders,
       rows: deps.localRows,
@@ -343,6 +354,19 @@ export class TableRenderer {
     deps: TableRendererDeps,
   ): void {
     if (!container) return;
+
+    // When no section has visible columns, apply minHeight so the table keeps its height
+    // and the column editor / reset button remain accessible.
+    const hasAnyVisibleBodySection =
+      canDisplaySection(deps.effectiveHeaders, "left") ||
+      canDisplaySection(deps.effectiveHeaders, undefined) ||
+      canDisplaySection(deps.effectiveHeaders, "right");
+    if (!hasAnyVisibleBodySection) {
+      const totalHeight = processedResult?.heightMap?.totalHeight ?? 0;
+      container.style.minHeight = `${totalHeight}px`;
+    } else {
+      container.style.minHeight = "";
+    }
 
     const rowsToRender =
       processedResult.rowsToRender || processedResult.currentTableRows;
@@ -710,6 +734,15 @@ export class TableRenderer {
       return;
     }
 
+    const resetColumns = () => {
+      const defaultHeaders = deps.config.defaultHeaders;
+      if (defaultHeaders) {
+        const cloned = defaultHeaders.map((h: HeaderObject) => ({ ...h }));
+        deps.setHeaders(cloned);
+        deps.onRender();
+      }
+    };
+
     if (this.columnEditorInstance) {
       this.columnEditorInstance.update({
         columnEditorText: mergedColumnEditorConfig.text,
@@ -721,6 +754,7 @@ export class TableRenderer {
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
         contextHeaders: deps.headers,
+        essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
@@ -733,6 +767,7 @@ export class TableRenderer {
         },
         onColumnVisibilityChange: deps.config.onColumnVisibilityChange,
         onColumnOrderChange: deps.config.onColumnOrderChange,
+        resetColumns,
         setOpen: setColumnEditorOpen,
       });
     } else {
@@ -746,6 +781,7 @@ export class TableRenderer {
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
         contextHeaders: deps.headers,
+        essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
@@ -758,6 +794,7 @@ export class TableRenderer {
         },
         onColumnVisibilityChange: deps.config.onColumnVisibilityChange,
         onColumnOrderChange: deps.config.onColumnOrderChange,
+        resetColumns,
         setOpen: setColumnEditorOpen,
       });
       this.columnEditorInstance = columnEditor;

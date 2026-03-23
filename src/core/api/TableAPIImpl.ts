@@ -16,12 +16,19 @@ import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { flattenRows } from "../../utils/rowFlattening";
 import { exportTableToCSV } from "../../utils/csvExportUtils";
+import {
+  getPinnedSectionsState,
+  rebuildHeadersFromPinnedState,
+} from "../../utils/pinnedColumnUtils";
+import { PinnedSectionsState } from "../../types/PinnedSectionsState";
+import { deepClone } from "../../utils/generalUtils";
 
 export interface TableAPIContext {
   config: SimpleTableConfig;
   localRows: Row[];
   effectiveHeaders: HeaderObject[];
   headers: HeaderObject[];
+  essentialAccessors: Set<string>;
   customTheme: CustomTheme;
   currentPage: number;
   /** Returns current page from live state (use this in API getCurrentPage so it stays correct after setPage). */
@@ -142,6 +149,27 @@ export class TableAPIImpl {
         if (context.sortManager) {
           context.sortManager.updateSort(props);
         }
+      },
+
+      getPinnedState: (): PinnedSectionsState => {
+        return getPinnedSectionsState(context.headers);
+      },
+
+      applyPinnedState: async (state: PinnedSectionsState) => {
+        const updated = rebuildHeadersFromPinnedState(
+          context.headers,
+          state,
+          context.essentialAccessors,
+        );
+        if (updated) {
+          context.setHeaders(updated);
+          context.onRender();
+        }
+      },
+
+      resetColumns: () => {
+        context.setHeaders(deepClone(context.config.defaultHeaders));
+        context.onRender();
       },
 
       getFilterState: (): TableFilterState => {

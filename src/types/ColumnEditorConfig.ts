@@ -21,6 +21,11 @@ export interface ColumnEditorConfig {
   searchPlaceholder?: string;
   /** Custom search function to override default search behavior. Receives header and searchTerm, returns true if header matches. */
   searchFunction?: ColumnEditorSearchFunction;
+  /**
+   * When false, hides pin/unpin controls (L/R) in the column editor. Pinned sections still appear if columns are pinned.
+   * Default: true.
+   */
+  allowColumnPinning?: boolean;
   /** Custom renderer for column editor row layout to reposition icons and labels */
   rowRenderer?: ColumnEditorRowRenderer;
 }
@@ -31,4 +36,11 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
   text: "Columns",
   searchEnabled: true,
   searchPlaceholder: "Search columns...",
+  allowColumnPinning: true,
 };
+
+/** Column editor config with defaults applied (text, searchEnabled, searchPlaceholder are required) */
+export type MergedColumnEditorConfig = Required<
+  Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning">
+> &
+  Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer">;

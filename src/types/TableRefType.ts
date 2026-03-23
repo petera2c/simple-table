@@ -3,6 +3,7 @@ import HeaderObject, { Accessor } from "./HeaderObject";
 import TableRow from "./TableRow";
 import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
+import type { PinnedSectionsState } from "./PinnedSectionsState";
 
 interface SetHeaderRenameProps {
   accessor: Accessor;
@@ -26,6 +27,10 @@ type TableRefType = {
   getSortState: () => SortColumn | null;
   /** Applies a new sort state to the table. Pass null to clear sort. Direction defaults to cycling through asc -> desc -> null */
   applySortState: (props?: { accessor: Accessor; direction?: SortDirection }) => Promise<void>;
+  /** Ordered root accessors per pin section (left, main/unpinned, right) */
+  getPinnedState: () => PinnedSectionsState;
+  /** Reorder root columns and set pinned flags; lists must include every root accessor exactly once. Essential order is clamped per section. */
+  applyPinnedState: (state: PinnedSectionsState) => Promise<void>;
   /** Returns the current filter state */
   getFilterState: () => TableFilterState;
   /** Applies a filter to a specific column */
@@ -62,6 +67,8 @@ type TableRefType = {
   toggleColumnEditor: (open?: boolean) => void;
   /** Apply column visibility changes. Pass an object with column accessors as keys and boolean visibility as values. */
   applyColumnVisibility: (visibility: { [accessor: string]: boolean }) => Promise<void>;
+  /** Reset columns to default order and visibility (restores defaultHeaders state). */
+  resetColumns: () => void;
   /** Set the quick filter text programmatically. Triggers the onChange callback if provided in quickFilter config. */
   setQuickFilter: (text: string) => void;
 };

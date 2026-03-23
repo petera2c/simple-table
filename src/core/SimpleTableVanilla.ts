@@ -58,6 +58,7 @@ export class SimpleTableVanilla {
 
   private localRows: Row[] = [];
   private headers: HeaderObject[] = [];
+  private essentialAccessors: Set<string> = new Set();
   private currentPage: number = 1;
   private scrollTop: number = 0;
   private scrollDirection: "up" | "down" | "none" = "none";
@@ -114,6 +115,7 @@ export class SimpleTableVanilla {
 
     this.localRows = [...config.rows];
     this.headers = [...config.defaultHeaders];
+    this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
     this.columnEditorOpen = config.editColumnsInitOpen ?? false;
     this.internalIsLoading = config.isLoading ?? false;
 
@@ -450,6 +452,7 @@ export class SimpleTableVanilla {
       customTheme: this.customTheme,
       resolvedIcons: this.resolvedIcons,
       effectiveHeaders: [],
+      essentialAccessors: this.essentialAccessors,
       headers: this.headers,
       localRows: this.localRows,
       collapsedHeaders: this.collapsedHeaders,
@@ -579,6 +582,7 @@ export class SimpleTableVanilla {
 
     if (config.defaultHeaders !== undefined) {
       this.headers = [...config.defaultHeaders];
+      this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
 
       if (this.filterManager) {
         this.filterManager.updateConfig({ headers: this.headers });
@@ -650,6 +654,7 @@ export class SimpleTableVanilla {
       localRows: this.localRows,
       effectiveHeaders,
       headers: this.headers,
+      essentialAccessors: this.essentialAccessors,
       customTheme: this.customTheme,
       currentPage: this.currentPage,
       getCurrentPage: () => this.currentPage,

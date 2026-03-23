@@ -3,6 +3,7 @@ import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/Colu
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { createColumnEditorRow } from "./createColumnEditorRow";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
+import { partitionRootHeadersByPin, PanelSection } from "../../utils/pinnedColumnUtils";
 
 export interface CreateColumnEditorPopoutOptions {
   headers: HeaderObject[];
@@ -12,9 +13,11 @@ export interface CreateColumnEditorPopoutOptions {
   searchFunction?: ColumnEditorSearchFunction;
   columnEditorConfig: ColumnEditorConfig;
   contextHeaders: HeaderObject[];
+  essentialAccessors?: ReadonlySet<string>;
   setHeaders: (headers: HeaderObject[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
   onColumnOrderChange?: (headers: HeaderObject[]) => void;
+  resetColumns?: () => void;
 }
 
 const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): boolean => {
@@ -60,9 +63,11 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     searchFunction,
     columnEditorConfig,
     contextHeaders,
+    essentialAccessors,
     setHeaders,
     onColumnVisibilityChange,
     onColumnOrderChange,
+    resetColumns,
   } = options;
 
   let searchTerm = "";
@@ -113,15 +118,33 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     content.appendChild(searchWrapper);
   }
 
-  const listContainer = document.createElement("div");
-  listContainer.className = "st-column-editor-list";
-  content.appendChild(listContainer);
+  const listsContainer = document.createElement("div");
+  listsContainer.className = "st-column-editor-lists";
+  content.appendChild(listsContainer);
+
+  if (resetColumns) {
+    const onReset = resetColumns;
+    const footer = document.createElement("div");
+    footer.className = "st-column-editor-footer";
+
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "st-column-editor-reset-btn";
+    resetBtn.textContent = "Reset columns";
+    resetBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      onReset();
+    });
+
+    footer.appendChild(resetBtn);
+    content.appendChild(footer);
+  }
 
   container.appendChild(content);
 
   const setDraggingRow = (row: FlattenedHeader | null) => {
     draggingRow = row;
-    
+
     if (row !== null) {
       isDragging = true;
     } else {
@@ -130,9 +153,13 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     }
   };
 
+  const clearHoverSeparator = () => {
+    hoveredSeparatorIndex = null;
+  };
+
   const setHoveredSeparatorIndex = (index: number | null) => {
     hoveredSeparatorIndex = index;
-    
+
     if (!isDragging) {
       render();
     } else {
@@ -140,17 +167,17 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     }
   };
 
-  const setExpandedHeaders = (headers: Set<string>) => {
-    expandedHeaders = headers;
+  const setExpandedHeaders = (newHeaders: Set<string>) => {
+    expandedHeaders = newHeaders;
     render();
   };
 
   const updateSeparatorVisibility = () => {
-    const separators = listContainer.querySelectorAll(".st-column-editor-drag-separator");
-    
+    const separators = listsContainer.querySelectorAll(".st-column-editor-drag-separator");
+
     separators.forEach((separator, sepIndex) => {
       const htmlSeparator = separator as HTMLElement;
-      
+
       if (sepIndex === 0) {
         htmlSeparator.style.opacity = hoveredSeparatorIndex === -1 ? "1" : "0";
       } else {
@@ -160,20 +187,20 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     });
   };
 
-  const doesAnyHeaderHaveChildren = () => {
-    return headers.some((header) => header.children && header.children.length > 0);
+  const doesAnyHeaderHaveChildren = (sectionHeaders: HeaderObject[]) => {
+    return sectionHeaders.some((header) => header.children && header.children.length > 0);
   };
 
-  const getFlattenedHeaders = (): FlattenedHeader[] => {
+  const getFlattenedHeaders = (sectionHeaders: HeaderObject[], panelSection: PanelSection): FlattenedHeader[] => {
     const filteredHeaders = searchEnabled
-      ? filterHeaders(headers, searchTerm, searchFunction)
-      : headers;
+      ? filterHeaders(sectionHeaders, searchTerm, searchFunction)
+      : sectionHeaders;
 
     const result: FlattenedHeader[] = [];
     const forceExpanded = searchEnabled && searchTerm.trim().length > 0;
 
     const flatten = ({
-      headers,
+      headers: list,
       depth = 0,
       parent = null,
       currentPath = [],
@@ -183,14 +210,14 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       parent: HeaderObject | null;
       currentPath: number[];
     }) => {
-      headers.forEach((header, index) => {
+      list.forEach((header, index) => {
         if (header.isSelectionColumn || header.excludeFromRender) {
           return;
         }
 
         const visualIndex = result.length;
         const indexPath = [...currentPath, index];
-        result.push({ header, visualIndex, depth, parent, indexPath });
+        result.push({ header, visualIndex, depth, parent, indexPath, panelSection });
 
         const hasChildren = header.children && header.children.length > 0;
         const shouldExpand = forceExpanded || expandedHeaders.has(header.accessor);
@@ -210,15 +237,41 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     return result;
   };
 
-  const render = () => {
-    listContainer.innerHTML = "";
+  const renderSection = (
+    sectionHeaders: HeaderObject[],
+    panelSection: PanelSection,
+    label: string | null,
+    targetContainer: HTMLElement,
+  ) => {
+    if (sectionHeaders.length === 0) return;
 
-    const flattenedHeaders = getFlattenedHeaders();
-    const hasChildren = doesAnyHeaderHaveChildren();
+    const visibleHeaders = sectionHeaders.filter(
+      (h) => !h.isSelectionColumn && !h.excludeFromRender,
+    );
+    const filteredVisible = searchEnabled
+      ? filterHeaders(visibleHeaders, searchTerm, searchFunction)
+      : visibleHeaders;
+
+    if (filteredVisible.length === 0) return;
+
+    if (label) {
+      const sectionLabel = document.createElement("div");
+      sectionLabel.className = "st-column-editor-section-label";
+      sectionLabel.textContent = label;
+      targetContainer.appendChild(sectionLabel);
+    }
+
+    const listEl = document.createElement("div");
+    listEl.className = "st-column-editor-list st-column-editor-list-section";
+    targetContainer.appendChild(listEl);
+
+    const flattenedHeaders = getFlattenedHeaders(sectionHeaders, panelSection);
+    const hasChildren = doesAnyHeaderHaveChildren(sectionHeaders);
 
     flattenedHeaders.forEach((flatItem) => {
       const rowFragment = createColumnEditorRow({
         allHeaders: headers,
+        clearHoverSeparator,
         depth: flatItem.depth,
         doesAnyHeaderHaveChildren: hasChildren,
         draggingRow,
@@ -229,19 +282,38 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
         forceExpanded: searchEnabled && searchTerm.trim().length > 0,
         header: flatItem.header,
         hoveredSeparatorIndex,
+        panelSection,
         rowIndex: flatItem.visualIndex,
         setDraggingRow,
         setExpandedHeaders,
         setHoveredSeparatorIndex,
         columnEditorConfig,
+        essentialAccessors: essentialAccessors ?? new Set(),
         headers: contextHeaders,
         setHeaders,
         onColumnVisibilityChange,
         onColumnOrderChange,
       });
 
-      listContainer.appendChild(rowFragment);
+      listEl.appendChild(rowFragment);
     });
+  };
+
+  const render = () => {
+    listsContainer.innerHTML = "";
+
+    const allowColumnPinning = columnEditorConfig.allowColumnPinning !== false;
+    const { pinnedLeft, unpinned, pinnedRight } = partitionRootHeadersByPin(headers);
+
+    if (allowColumnPinning) {
+      renderSection(pinnedLeft, "left", "Pinned Left", listsContainer);
+      renderSection(unpinned, "main", null, listsContainer);
+      renderSection(pinnedRight, "right", "Pinned Right", listsContainer);
+    } else {
+      // When pinning is disabled, just show all headers in a flat list
+      const allHeaders = [...pinnedLeft, ...unpinned, ...pinnedRight];
+      renderSection(allHeaders, "main", null, listsContainer);
+    }
   };
 
   render();
@@ -255,11 +327,13 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     if (newOptions.columnEditorConfig !== undefined)
       columnEditorConfig = newOptions.columnEditorConfig;
     if (newOptions.contextHeaders !== undefined) contextHeaders = newOptions.contextHeaders;
+    if (newOptions.essentialAccessors !== undefined) essentialAccessors = newOptions.essentialAccessors;
     if (newOptions.setHeaders !== undefined) setHeaders = newOptions.setHeaders;
     if (newOptions.onColumnVisibilityChange !== undefined)
       onColumnVisibilityChange = newOptions.onColumnVisibilityChange;
     if (newOptions.onColumnOrderChange !== undefined)
       onColumnOrderChange = newOptions.onColumnOrderChange;
+    if (newOptions.resetColumns !== undefined) resetColumns = newOptions.resetColumns;
 
     if (newOptions.open !== undefined) {
       open = newOptions.open;

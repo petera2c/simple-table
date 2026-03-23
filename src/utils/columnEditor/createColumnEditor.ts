@@ -14,6 +14,8 @@ export interface CreateColumnEditorOptions {
   searchFunction?: ColumnEditorSearchFunction;
   columnEditorConfig: ColumnEditorConfig;
   contextHeaders: HeaderObject[];
+  essentialAccessors?: ReadonlySet<string>;
+  resetColumns?: () => void;
   setHeaders: (headers: HeaderObject[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
   onColumnOrderChange?: (headers: HeaderObject[]) => void;
@@ -31,6 +33,8 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     searchFunction,
     columnEditorConfig,
     contextHeaders,
+    essentialAccessors,
+    resetColumns,
     setHeaders,
     onColumnVisibilityChange,
     onColumnOrderChange,
@@ -68,6 +72,8 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     searchFunction,
     columnEditorConfig,
     contextHeaders,
+    essentialAccessors,
+    resetColumns,
     setHeaders,
     onColumnVisibilityChange,
     onColumnOrderChange,
@@ -94,6 +100,12 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
         textDiv.textContent = newOptions.columnEditorText;
       }
 
+      if (newOptions.essentialAccessors !== undefined) {
+        essentialAccessors = newOptions.essentialAccessors;
+      }
+      if (newOptions.resetColumns !== undefined) {
+        resetColumns = newOptions.resetColumns;
+      }
       popout.update({
         headers: newOptions.headers,
         open: newOptions.open,
@@ -102,6 +114,8 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
         searchFunction: newOptions.searchFunction,
         columnEditorConfig: newOptions.columnEditorConfig,
         contextHeaders: newOptions.contextHeaders,
+        essentialAccessors: newOptions.essentialAccessors,
+        resetColumns: newOptions.resetColumns,
         setHeaders: newOptions.setHeaders,
         onColumnVisibilityChange: newOptions.onColumnVisibilityChange,
         onColumnOrderChange: newOptions.onColumnOrderChange,

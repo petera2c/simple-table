@@ -1021,7 +1021,7 @@ input {
   position: absolute;
   top: 0;
   right: calc(100% + 1px);
-  z-index: 1;
+  z-index: 10;
   height: 100%;
   background-color: var(--st-column-editor-popout-background-color);
   transition: width var(--st-transition-duration) var(--st-transition-ease);
@@ -1031,7 +1031,6 @@ input {
 .st-column-editor-popout-content {
   display: flex;
   flex-direction: column;
-  overflow: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: auto;
   border-left: var(--st-border-width) solid var(--st-border-color);
@@ -1058,6 +1057,127 @@ input {
   padding-right: var(--st-spacing-medium);
   padding-left: var(--st-spacing-medium);
   padding-bottom: var(--st-spacing-medium);
+}
+
+.st-column-editor-lists {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.st-column-editor-section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--st-column-editor-text-color);
+  opacity: 0.75;
+  padding: var(--st-spacing-small) var(--st-spacing-medium) 0;
+}
+
+.st-column-editor-list-section {
+  padding-top: 0;
+  padding-bottom: var(--st-spacing-small);
+}
+
+.st-column-editor-footer {
+  position: sticky;
+  bottom: 0;
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  background-color: var(--st-column-editor-popout-background-color);
+  border-top: var(--st-border-width) solid var(--st-border-color);
+  z-index: 1;
+}
+
+.st-column-editor-reset-btn {
+  width: 100%;
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--st-column-editor-text-color);
+  background: transparent;
+  border: var(--st-border-width) solid var(--st-border-color);
+  border-radius: var(--st-border-radius);
+  cursor: pointer;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-column-editor-reset-btn:hover {
+  background-color: var(--st-hover-background-color);
+}
+
+.st-column-pin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.st-column-pin-btn:hover {
+  background: color-mix(in srgb, var(--st-column-editor-text-color) 12%, transparent);
+}
+
+.st-column-pin-pinned-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pinned left/right: same surface as .st-column-pin-btn:hover */
+.st-column-pin-pinned-active {
+  background: color-mix(in srgb, var(--st-column-editor-text-color) 12%, transparent);
+  border-radius: 4px;
+}
+
+.st-column-pin-pinned-essential {
+  cursor: default;
+}
+
+.st-column-pin-side-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1px;
+}
+
+.st-column-pin-side {
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+
+/* Main section: L / R always visible; stronger on row hover */
+.st-column-pin-side-option {
+  color: color-mix(in srgb, var(--st-column-editor-text-color) 52%, transparent);
+  transition:
+    color var(--st-transition-duration) var(--st-transition-ease),
+    background var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-header-checkbox-item:hover .st-column-pin-side-option {
+  color: var(--st-column-editor-text-color);
+}
+
+.st-column-pin-svg {
+  display: block;
+  color: var(--st-column-editor-text-color);
+}
+
+.st-checkbox-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 /* Column Editor Header Checkbox Styles */
@@ -1129,7 +1249,7 @@ input {
 }
 
 .st-column-editor-popout.open {
-  min-width: 200px;
+  min-width: 240px;
   width: auto;
 }
 

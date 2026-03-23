@@ -1,6 +1,7 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { deepClone } from "../utils/generalUtils";
 import PreviousValueTracker from "../hooks/previousValue";
+import { validateFullHeaderTreeEssentialOrder } from "../utils/pinnedColumnUtils";
 
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 
@@ -152,6 +153,7 @@ export function insertHeaderAcrossSections({
 
 export interface DragHandlerManagerConfig {
   headers: HeaderObject[];
+  essentialAccessors?: ReadonlySet<string>;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
   onHeadersChange?: (newHeaders: HeaderObject[]) => void;
@@ -268,6 +270,15 @@ export class DragHandlerManager {
       emergencyBreak
     )
       return;
+
+    const essentialAccessors = this.config.essentialAccessors;
+    if (
+      essentialAccessors &&
+      essentialAccessors.size > 0 &&
+      !validateFullHeaderTreeEssentialOrder(newHeaders, essentialAccessors)
+    ) {
+      return;
+    }
 
     const now = Date.now();
     const prevHeaders = this.prevHeadersTracker.get();

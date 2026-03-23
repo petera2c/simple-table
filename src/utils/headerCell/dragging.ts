@@ -7,6 +7,7 @@ import {
   insertHeaderAcrossSections,
   getHeaderSection,
 } from "../../managers/DragHandlerManager";
+import { validateFullHeaderTreeEssentialOrder } from "../pinnedColumnUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { HeaderRenderContext } from "./types";
 import { createEditableInput } from "./editing";
@@ -226,6 +227,15 @@ export const attachDragHandlers = (
         distance < 10 ||
         JSON.stringify(newHeaders) === JSON.stringify(headers) ||
         emergencyBreak
+      ) {
+        return;
+      }
+
+      const essentialAccessors = context.essentialAccessors;
+      if (
+        essentialAccessors &&
+        essentialAccessors.size > 0 &&
+        !validateFullHeaderTreeEssentialOrder(newHeaders, essentialAccessors)
       ) {
         return;
       }
