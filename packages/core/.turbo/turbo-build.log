@@ -1,0 +1,9 @@
+
+> simple-table-core@2.5.3 build /Users/peter/Documents/dev_projects/simple-table-core/packages/core
+> rollup -c
+
+
+src/index.ts → dist/cjs, dist...
+(!) Circular dependency
+src/core/SimpleTableVanilla.ts -> src/core/rendering/RenderOrchestrator.ts -> src/core/rendering/TableRenderer.ts -> src/core/rendering/SectionRenderer.ts -> src/utils/nestedGridRowRenderer.ts -> src/core/SimpleTableVanilla.ts
+created dist/cjs, dist in 16.3s

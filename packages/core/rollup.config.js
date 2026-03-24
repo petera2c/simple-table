@@ -67,6 +67,12 @@ export default {
       exclude: ["node_modules/**"],
       rollupCommonJSResolveHack: false,
       clean: true,
+      tsconfigOverride: {
+        compilerOptions: {
+          declaration: true,
+          declarationDir: "dist",
+        },
+      },
     }),
     terser({
       compress: {

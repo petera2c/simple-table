@@ -67,6 +67,7 @@ import { ColumnEditorConfig, ColumnEditorSearchFunction } from "./types/ColumnEd
 import { IconsConfig } from "./types/IconsConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
 import { SimpleTableConfig } from "./types/SimpleTableConfig";
+import { SimpleTableProps } from "./types/SimpleTableProps";
 import { RowId } from "./types/RowId";
 
 export { SimpleTableVanilla };
@@ -131,6 +132,7 @@ export type {
   SharedTableProps,
   ShowWhen,
   SimpleTableConfig,
+  SimpleTableProps,
   SortColumn,
   TableAPI,
   TableFilterState,

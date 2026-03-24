@@ -1,0 +1,12 @@
+
+> simple-table-core@2.5.3 preview /Users/peter/Documents/dev_projects/simple-table-core/packages/core
+> rollup -c -w
+
+c[4mrollup v2.80.0[24m
+[36mbundles [1msrc/index.ts[22m → [1mdist/cjs, dist[22m...[39m
+[1m[33m(!) Circular dependency[39m[22m
+src/core/SimpleTableVanilla.ts -> src/core/rendering/RenderOrchestrator.ts -> src/core/rendering/TableRenderer.ts -> src/core/rendering/SectionRenderer.ts -> src/utils/nestedGridRowRenderer.ts -> src/core/SimpleTableVanilla.ts
+[32mcreated [1mdist/cjs, dist[22m in [1m13.5s[22m[39m
+
+[2026-03-24 00:12:18] waiting for changes...
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed.[39m
