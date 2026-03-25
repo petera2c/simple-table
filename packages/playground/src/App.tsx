@@ -25,20 +25,25 @@ const ROWS: Row[] = Array.from({ length: 100 }, (_, i) => ({
 function MedalCell({ value }: CellRendererProps) {
   const count = Number(value) || 0;
   const color = count >= 20 ? "#22c55e" : count >= 10 ? "#f59e0b" : "#94a3b8";
-  return (
-    <span style={{ fontWeight: 700, color }}>
-      {count} 🏅
-    </span>
-  );
+  return <span style={{ fontWeight: 700, color }}>{count} 🏅</span>;
 }
 
 function CountryCell({ value }: CellRendererProps) {
   const flagMap: Record<string, string> = {
-    USA: "🇺🇸", China: "🇨🇳", Russia: "🇷🇺",
-    UK: "🇬🇧", Brazil: "🇧🇷", Australia: "🇦🇺", Japan: "🇯🇵",
+    USA: "🇺🇸",
+    China: "🇨🇳",
+    Russia: "🇷🇺",
+    UK: "🇬🇧",
+    Brazil: "🇧🇷",
+    Australia: "🇦🇺",
+    Japan: "🇯🇵",
   };
   const flag = flagMap[String(value)] ?? "🏳️";
-  return <span>{flag} {String(value)}</span>;
+  return (
+    <span>
+      {flag} {String(value)}
+    </span>
+  );
 }
 
 // ─── Column definitions ───────────────────────────────────────────────────────
@@ -110,9 +115,7 @@ export default function App() {
         </button>
         <button
           style={btnStyle}
-          onClick={() =>
-            tableRef.current?.applySortState({ accessor: "gold", direction: "desc" })
-          }
+          onClick={() => tableRef.current?.applySortState({ accessor: "gold", direction: "desc" })}
         >
           Sort by gold ↓
         </button>

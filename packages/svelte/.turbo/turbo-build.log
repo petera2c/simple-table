@@ -1,0 +1,7 @@
+
+> simple-table-svelte@0.0.1 build /Users/peter/Documents/dev_projects/simple-table-core/packages/svelte
+> rollup -c
+
+
+src/index.ts → dist/cjs, dist...
+created dist/cjs, dist in 3.6s

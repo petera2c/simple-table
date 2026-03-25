@@ -526,7 +526,7 @@ export const getStickyParents = (
   // Limit cache size to prevent memory leaks
   if (stickyParentsCache.size > 50) {
     const firstKey = stickyParentsCache.keys().next().value;
-    stickyParentsCache.delete(firstKey);
+    if (firstKey !== undefined) stickyParentsCache.delete(firstKey);
   }
   
   return result;

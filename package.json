@@ -6,12 +6,30 @@
     "build": "turbo run build",
     "build:core": "turbo run build --filter=simple-table-core",
     "build:react": "turbo run build --filter=simple-table-react",
+    "build:vue": "turbo run build --filter=simple-table-vue",
+    "build:solid": "turbo run build --filter=simple-table-solid",
+    "build:svelte": "turbo run build --filter=simple-table-svelte",
+    "build:angular": "turbo run build --filter=simple-table-angular",
     "dev": "turbo run preview --parallel",
     "dev:playground": "pnpm --filter=playground dev",
+    "dev:playground-vue": "pnpm --filter=playground-vue dev",
+    "dev:playground-solid": "pnpm --filter=playground-solid dev",
+    "dev:playground-svelte": "pnpm --filter=playground-svelte dev",
+    "dev:playground-angular": "pnpm --filter=playground-angular dev",
     "start:core": "turbo run start --filter=simple-table-core",
     "test": "turbo run test"
   },
   "devDependencies": {
     "turbo": "latest"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "lmdb", "msgpackr-extract"],
+    "packageExtensions": {
+      "@analogjs/vite-plugin-angular": {
+        "dependencies": {
+          "vite": "^6.0.0"
+        }
+      }
+    }
   }
 }
