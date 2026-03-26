@@ -1,5 +1,5 @@
 {
-  "name": "simple-table-solid",
+  "name": "@simple-table/solid",
   "version": "0.0.1",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
@@ -20,6 +20,9 @@
     }
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist",
     "LICENSE"
