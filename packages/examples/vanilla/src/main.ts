@@ -93,7 +93,8 @@ async function loadDemo(id: string) {
     return;
   }
   const mod = await loader();
-  mod.render(content, { height, theme });
+  const result = mod.render(content, { height, theme });
+  if (result?.mount) result.mount();
 }
 
 function selectDemo(id: string) {
