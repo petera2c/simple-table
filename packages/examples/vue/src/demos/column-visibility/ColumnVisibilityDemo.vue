@@ -13,7 +13,8 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   <SimpleTable
     :default-headers="columnVisibilityConfig.headers"
     :rows="columnVisibilityConfig.rows"
-    :edit-columns="true"
+    :edit-columns="columnVisibilityConfig.tableProps.editColumns"
+    :column-editor-config="columnVisibilityConfig.tableProps.columnEditorConfig"
     :height="height"
     :theme="theme"
   />

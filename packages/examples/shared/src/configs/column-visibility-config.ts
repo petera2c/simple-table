@@ -34,5 +34,10 @@ export const columnVisibilityConfig = {
   rows: columnVisibilityData,
   tableProps: {
     editColumns: true,
+    columnEditorConfig: {
+      text: "Manage Columns",
+      searchEnabled: true,
+      searchPlaceholder: "Search columns…",
+    },
   },
 } as const;

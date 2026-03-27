@@ -12,4 +12,5 @@
   rows={valueFormatterConfig.rows}
   {height}
   {theme}
+  selectableCells={valueFormatterConfig.tableProps.selectableCells}
 />

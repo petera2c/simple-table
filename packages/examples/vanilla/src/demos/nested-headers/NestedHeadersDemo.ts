@@ -12,7 +12,7 @@ export function renderNestedHeadersDemo(
     rows: nestedHeadersConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    columnResizing: true,
+    columnResizing: nestedHeadersConfig.tableProps.columnResizing,
   });
   return table;
 }

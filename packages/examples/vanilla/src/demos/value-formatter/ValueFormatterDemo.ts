@@ -12,6 +12,7 @@ export function renderValueFormatterDemo(
     rows: valueFormatterConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
+    selectableCells: valueFormatterConfig.tableProps.selectableCells,
   });
   return table;
 }

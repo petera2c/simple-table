@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit, OnDestroy } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
 import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { Row } from "simple-table-core";
@@ -11,11 +11,18 @@ import "simple-table-core/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <div>
-      <div style="margin-bottom: 8px">
-        <button (click)="reload()">Reload Data</button>
+      <div style="margin-bottom: 12px">
+        <button
+          (click)="loadData()"
+          [disabled]="isLoading"
+          [style.padding]="'6px 16px'"
+          [style.cursor]="isLoading ? 'not-allowed' : 'pointer'"
+        >
+          {{ isLoading ? 'Loading\u2026' : 'Reload Data' }}
+        </button>
       </div>
       <simple-table
-        [rows]="rows"
+        [rows]="data"
         [defaultHeaders]="headers"
         [height]="height"
         [theme]="theme"
@@ -24,20 +31,30 @@ import "simple-table-core/styles.css";
     </div>
   `,
 })
-export class LoadingStateDemoComponent implements OnInit {
+export class LoadingStateDemoComponent implements OnInit, OnDestroy {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = loadingStateConfig.rows;
   readonly headers: AngularHeaderObject[] = loadingStateConfig.headers;
+  data: Row[] = [];
   isLoading = true;
+  private timer: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit(): void {
-    setTimeout(() => (this.isLoading = false), 2000);
+    this.loadData();
   }
 
-  reload(): void {
+  ngOnDestroy(): void {
+    if (this.timer) clearTimeout(this.timer);
+  }
+
+  loadData(): void {
     this.isLoading = true;
-    setTimeout(() => (this.isLoading = false), 2000);
+    this.data = [];
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      this.data = loadingStateConfig.rows as Row[];
+      this.isLoading = false;
+    }, 2000);
   }
 }

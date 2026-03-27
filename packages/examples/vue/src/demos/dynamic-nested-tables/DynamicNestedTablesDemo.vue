@@ -46,7 +46,7 @@ async function handleCompanyExpand({
       setLoading(true);
       const divisions = await fetchDivisionsForCompany(company.id);
       if (divisions.length === 0) {
-        setEmpty(true, "No divisions found");
+        setEmpty(true, "No divisions found for this company");
         return;
       }
       const newRows = [...rows.value];

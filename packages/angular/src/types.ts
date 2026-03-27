@@ -13,6 +13,7 @@ import type {
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
   ColumnEditorConfig,
+  IconsConfig,
 } from "simple-table-core";
 
 // ─── Internal instance contract ───────────────────────────────────────────────
@@ -81,8 +82,10 @@ export interface SimpleTableAngularProps
   loadingStateRenderer?: AngularLoadingStateRenderer;
   errorStateRenderer?: AngularErrorStateRenderer;
   emptyStateRenderer?: AngularEmptyStateRenderer;
+  tableEmptyStateRenderer?: HTMLElement | string | null;
   headerDropdown?: AngularHeaderDropdown;
   columnEditorConfig?: AngularColumnEditorConfig;
+  icons?: IconsConfig;
 }
 
 // Re-export vanilla prop types that consumers still need directly

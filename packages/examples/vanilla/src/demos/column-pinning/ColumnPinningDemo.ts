@@ -12,7 +12,7 @@ export function renderColumnPinningDemo(
     rows: columnPinningConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    columnResizing: true,
+    columnResizing: columnPinningConfig.tableProps.columnResizing,
   });
   return table;
 }

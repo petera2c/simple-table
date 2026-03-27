@@ -12,5 +12,5 @@
   rows={nestedHeadersConfig.rows}
   {height}
   {theme}
-  columnResizing={true}
+  columnResizing={nestedHeadersConfig.tableProps.columnResizing}
 />

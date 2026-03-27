@@ -17,6 +17,10 @@
     lastAdded = col.label;
   }
 
+  function handleHeaderEdit(_header: HeaderObject, newLabel: string) {
+    lastAdded = `Renamed to: ${newLabel}`;
+  }
+
   let headers = $derived([...columnEditingHeaders, ...additionalColumns]);
 </script>
 
@@ -39,5 +43,6 @@
     {theme}
     enableHeaderEditing={true}
     selectableColumns={true}
+    onHeaderEdit={handleHeaderEdit}
   />
 </div>

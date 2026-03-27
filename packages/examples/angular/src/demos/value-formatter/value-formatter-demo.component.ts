@@ -15,6 +15,7 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
+      [selectableCells]="selectableCellsProp"
     ></simple-table>
   `,
 })
@@ -24,4 +25,5 @@ export class ValueFormatterDemoComponent {
 
   readonly rows: Row[] = valueFormatterConfig.rows;
   readonly headers: AngularHeaderObject[] = valueFormatterConfig.headers;
+  readonly selectableCellsProp = valueFormatterConfig.tableProps.selectableCells;
 }

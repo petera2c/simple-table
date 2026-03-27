@@ -10,7 +10,8 @@
 <SimpleTable
   defaultHeaders={columnVisibilityConfig.headers}
   rows={columnVisibilityConfig.rows}
-  editColumns={true}
+  editColumns={columnVisibilityConfig.tableProps.editColumns}
+  columnEditorConfig={columnVisibilityConfig.tableProps.columnEditorConfig}
   {height}
   {theme}
 />

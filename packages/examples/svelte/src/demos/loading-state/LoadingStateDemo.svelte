@@ -10,7 +10,7 @@
   let isLoading = $state(true);
   let data = $state<Row[]>([]);
 
-  function load() {
+  function loadData() {
     isLoading = true;
     data = [];
     setTimeout(() => {
@@ -20,13 +20,19 @@
   }
 
   onMount(() => {
-    load();
+    loadData();
   });
 </script>
 
 <div>
-  <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-    <button onclick={load}>Reload Data</button>
+  <div style="margin-bottom: 12px">
+    <button
+      onclick={loadData}
+      disabled={isLoading}
+      style="padding: 6px 16px; cursor: {isLoading ? 'not-allowed' : 'pointer'}"
+    >
+      {isLoading ? "Loading\u2026" : "Reload Data"}
+    </button>
   </div>
   <SimpleTable
     defaultHeaders={loadingStateConfig.headers}

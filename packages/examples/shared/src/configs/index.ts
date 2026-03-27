@@ -20,7 +20,7 @@ export { nestedHeadersConfig, nestedHeadersHeaders, nestedHeadersData } from "./
 export { aggregateFunctionsConfig, aggregateFunctionsHeaders, aggregateFunctionsData } from "./aggregate-functions-config";
 export { collapsibleColumnsConfig, collapsibleColumnsHeaders, collapsibleColumnsData } from "./collapsible-columns-config";
 export { externalSortConfig, externalSortHeaders, externalSortData } from "./external-sort-config";
-export { externalFilterConfig, externalFilterHeaders, externalFilterData } from "./external-filter-config";
+export { externalFilterConfig, externalFilterHeaders, externalFilterData, matchesFilter } from "./external-filter-config";
 export { loadingStateConfig, loadingStateHeaders, loadingStateData } from "./loading-state-config";
 export { infiniteScrollConfig, infiniteScrollHeaders, generateInfiniteScrollData } from "./infinite-scroll-config";
 export { rowSelectionConfig, rowSelectionHeaders, rowSelectionData } from "./row-selection-config";
@@ -36,10 +36,10 @@ export { cellClickingConfig, cellClickingHeaders, cellClickingData, STATUSES as 
 export type { ProjectTask } from "./cell-clicking-config";
 export { tooltipConfig, tooltipHeaders, tooltipData } from "./tooltip-config";
 export { customThemeConfig, customThemeHeaders, customThemeData } from "./custom-theme-config";
-export { customIconsConfig, customIconsHeaders, customIconsData } from "./custom-icons-config";
-export { emptyStateConfig, emptyStateHeaders, emptyStateData } from "./empty-state-config";
+export { customIconsConfig, customIconsHeaders, customIconsData, createSvgIcon, ICON_PATHS, buildVanillaCustomIcons } from "./custom-icons-config";
+export { emptyStateConfig, emptyStateHeaders, emptyStateData, buildEmptyStateElement } from "./empty-state-config";
 export { columnVisibilityConfig, columnVisibilityHeaders, columnVisibilityData } from "./column-visibility-config";
-export { columnEditorCustomRendererConfig, columnEditorCustomRendererHeaders, columnEditorCustomRendererData } from "./column-editor-custom-renderer-config";
+export { columnEditorCustomRendererConfig, columnEditorCustomRendererHeaders, columnEditorCustomRendererData, COLUMN_EDITOR_TEXT, COLUMN_EDITOR_SEARCH_PLACEHOLDER, buildVanillaColumnEditorRowRenderer } from "./column-editor-custom-renderer-config";
 export { singleRowChildrenConfig, singleRowChildrenHeaders, singleRowChildrenData } from "./single-row-children-config";
 export { nestedTablesConfig, nestedTablesHeaders, nestedTablesDivisionHeaders, generateNestedTablesData } from "./nested-tables-config";
 export { dynamicNestedTablesConfig, dynamicNestedTablesCompanyHeaders, dynamicNestedTablesDivisionHeaders, dynamicNestedTablesData, fetchDivisionsForCompany } from "./dynamic-nested-tables-config";

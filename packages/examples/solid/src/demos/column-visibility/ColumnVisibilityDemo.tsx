@@ -11,6 +11,7 @@ export default function ColumnVisibilityDemo(props: { height?: string | number; 
       height={props.height ?? "400px"}
       theme={props.theme}
       editColumns={columnVisibilityConfig.tableProps.editColumns}
+      columnEditorConfig={columnVisibilityConfig.tableProps.columnEditorConfig}
     />
   );
 }

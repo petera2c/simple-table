@@ -10,7 +10,7 @@ export default function NestedHeadersDemo(props: { height?: string | number; the
       rows={nestedHeadersConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
-      columnResizing
+      columnResizing={nestedHeadersConfig.tableProps.columnResizing}
     />
   );
 }

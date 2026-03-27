@@ -15,7 +15,7 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
-      [selectableColumns]="true"
+      [selectableColumns]="selectableColumns"
     ></simple-table>
   `,
 })
@@ -25,4 +25,5 @@ export class ColumnSelectionDemoComponent {
 
   readonly rows: Row[] = columnSelectionConfig.rows;
   readonly headers: AngularHeaderObject[] = columnSelectionConfig.headers;
+  readonly selectableColumns = columnSelectionConfig.tableProps.selectableColumns;
 }

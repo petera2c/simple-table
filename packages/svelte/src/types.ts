@@ -86,6 +86,7 @@ export interface SimpleTableSvelteProps
   loadingStateRenderer?: SvelteLoadingStateRenderer;
   errorStateRenderer?: SvelteErrorStateRenderer;
   emptyStateRenderer?: SvelteEmptyStateRenderer;
+  tableEmptyStateRenderer?: HTMLElement | string | null;
   headerDropdown?: SvelteHeaderDropdown;
   columnEditorConfig?: SvelteColumnEditorConfig;
 }

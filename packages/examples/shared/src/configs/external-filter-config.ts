@@ -1,4 +1,52 @@
-import type { HeaderObject } from "simple-table-core";
+import type { HeaderObject, TableFilterState } from "simple-table-core";
+
+type CellValue = string | number | boolean | null | undefined;
+
+export function matchesFilter(
+  value: CellValue,
+  filter: TableFilterState[string]
+): boolean {
+  const { operator } = filter;
+
+  switch (operator) {
+    case "equals":
+      return value === filter.value;
+    case "notEquals":
+      return value !== filter.value;
+    case "contains":
+      return String(value).toLowerCase().includes(String(filter.value).toLowerCase());
+    case "notContains":
+      return !String(value).toLowerCase().includes(String(filter.value).toLowerCase());
+    case "startsWith":
+      return String(value).toLowerCase().startsWith(String(filter.value).toLowerCase());
+    case "endsWith":
+      return String(value).toLowerCase().endsWith(String(filter.value).toLowerCase());
+    case "greaterThan":
+      return Number(value) > Number(filter.value);
+    case "lessThan":
+      return Number(value) < Number(filter.value);
+    case "greaterThanOrEqual":
+      return Number(value) >= Number(filter.value);
+    case "lessThanOrEqual":
+      return Number(value) <= Number(filter.value);
+    case "between":
+      return (
+        filter.values != null &&
+        Number(value) >= Number(filter.values[0]) &&
+        Number(value) <= Number(filter.values[1])
+      );
+    case "in":
+      return filter.values != null && filter.values.includes(value);
+    case "notIn":
+      return filter.values != null && !filter.values.includes(value);
+    case "isEmpty":
+      return value == null || value === "";
+    case "isNotEmpty":
+      return value != null && value !== "";
+    default:
+      return true;
+  }
+}
 
 const DEPARTMENT_OPTIONS = [
   { label: "AI Research", value: "AI Research" },

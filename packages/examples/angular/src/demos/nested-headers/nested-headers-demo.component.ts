@@ -15,7 +15,7 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
-      [columnResizing]="true"
+      [columnResizing]="columnResizing"
     ></simple-table>
   `,
 })
@@ -25,4 +25,5 @@ export class NestedHeadersDemoComponent {
 
   readonly rows: Row[] = nestedHeadersConfig.rows;
   readonly headers: AngularHeaderObject[] = nestedHeadersConfig.headers;
+  readonly columnResizing = nestedHeadersConfig.tableProps.columnResizing;
 }

@@ -10,7 +10,7 @@ export default function ColumnPinningDemo(props: { height?: string | number; the
       rows={columnPinningConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
-      columnResizing
+      columnResizing={columnPinningConfig.tableProps.columnResizing}
     />
   );
 }

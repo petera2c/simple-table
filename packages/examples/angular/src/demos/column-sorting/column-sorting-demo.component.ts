@@ -15,8 +15,8 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
-      initialSortColumn="age"
-      initialSortDirection="desc"
+      [initialSortColumn]="initialSortColumn"
+      [initialSortDirection]="initialSortDirection"
     ></simple-table>
   `,
 })
@@ -26,4 +26,6 @@ export class ColumnSortingDemoComponent {
 
   readonly rows: Row[] = columnSortingConfig.rows;
   readonly headers: AngularHeaderObject[] = columnSortingConfig.headers;
+  readonly initialSortColumn = columnSortingConfig.tableProps.initialSortColumn;
+  readonly initialSortDirection = columnSortingConfig.tableProps.initialSortDirection;
 }

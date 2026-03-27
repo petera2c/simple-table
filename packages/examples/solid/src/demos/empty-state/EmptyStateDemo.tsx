@@ -3,6 +3,14 @@ import type { Theme } from "@simple-table/solid";
 import { emptyStateConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
+const EmptyIcon = () => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7" />
+    <path d="M16 3H8L3 7h18l-5-4z" />
+    <line x1="10" y1="12" x2="14" y2="12" />
+  </svg>
+);
+
 export default function EmptyStateDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
@@ -16,12 +24,13 @@ export default function EmptyStateDemo(props: { height?: string | number; theme?
           "flex-direction": "column",
           "align-items": "center",
           "justify-content": "center",
-          padding: "48px 16px",
-          color: "#94a3b8",
+          padding: "48px 24px",
+          color: "#64748b",
+          gap: "12px",
         }}>
-          <div style={{ "font-size": "32px", "margin-bottom": "8px" }}>📭</div>
-          <div style={{ "font-size": "15px", "font-weight": "600" }}>No data available</div>
-          <div style={{ "font-size": "13px", "margin-top": "4px" }}>Try adding some records to see them here.</div>
+          <EmptyIcon />
+          <div style={{ "font-size": "16px", "font-weight": "600" }}>No data available</div>
+          <div style={{ "font-size": "13px" }}>Try adjusting your filters or adding new records.</div>
         </div>
       }
     />

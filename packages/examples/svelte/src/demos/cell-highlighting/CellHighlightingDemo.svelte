@@ -12,6 +12,6 @@
   rows={cellHighlightingConfig.rows}
   {height}
   {theme}
-  selectableCells={true}
-  selectableColumns={true}
+  selectableCells={cellHighlightingConfig.tableProps.selectableCells}
+  selectableColumns={cellHighlightingConfig.tableProps.selectableColumns}
 />

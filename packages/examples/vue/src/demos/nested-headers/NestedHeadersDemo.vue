@@ -4,7 +4,7 @@
     :rows="nestedHeadersConfig.rows"
     :height="height"
     :theme="theme"
-    :column-resizing="true"
+    :column-resizing="nestedHeadersConfig.tableProps.columnResizing"
   />
 </template>
 

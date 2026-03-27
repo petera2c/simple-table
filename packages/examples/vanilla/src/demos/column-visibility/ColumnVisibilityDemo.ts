@@ -13,6 +13,7 @@ export function renderColumnVisibilityDemo(
     height: options?.height ?? "400px",
     theme: options?.theme,
     editColumns: columnVisibilityConfig.tableProps.editColumns,
+    columnEditorConfig: columnVisibilityConfig.tableProps.columnEditorConfig,
   });
   return table;
 }

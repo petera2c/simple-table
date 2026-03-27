@@ -6,7 +6,7 @@ import "simple-table-core/styles.css";
 export function renderLiveUpdateDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla & { _cleanup?: () => void } {
   const table = new SimpleTableVanilla(container, {
     defaultHeaders: liveUpdateConfig.headers,
     rows: liveUpdateConfig.rows,
@@ -14,7 +14,6 @@ export function renderLiveUpdateDemo(
     theme: options?.theme,
   });
 
-  const api = table.getAPI();
   const currentData = JSON.parse(JSON.stringify(liveUpdateData));
   const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
   const currentPeriodSales = new Map<string | number, number>();
@@ -26,6 +25,7 @@ export function renderLiveUpdateDemo(
       const interval = 300 + Math.random() * 700;
       const timerId = setTimeout(() => {
         if (!isActive) return;
+        const api = table.getAPI();
         const idx = currentData.findIndex((r: any) => r.id === rowId);
         if (idx === -1) return;
         const product = currentData[idx];
@@ -59,6 +59,7 @@ export function renderLiveUpdateDemo(
   };
 
   const syncTimers = () => {
+    const api = table.getAPI();
     const visibleRows = api.getVisibleRows();
     const visibleIds = new Set(visibleRows.map((vr) => vr.row.id as string | number));
     timerMap.forEach((tid, rid) => {
@@ -75,6 +76,7 @@ export function renderLiveUpdateDemo(
 
   const salesRotate = setInterval(() => {
     if (!isActive) return;
+    const api = table.getAPI();
     currentData.forEach((row: any, i: number) => {
       if (Array.isArray(row.salesHistory)) {
         const rid = row.id;
@@ -87,8 +89,23 @@ export function renderLiveUpdateDemo(
     });
   }, 2000);
 
-  syncTimers();
   const syncInt = setInterval(syncTimers, 500);
+
+  const originalDestroy = table.destroy.bind(table);
+  table.destroy = () => {
+    isActive = false;
+    clearInterval(syncInt);
+    clearInterval(salesRotate);
+    timerMap.forEach((t) => clearTimeout(t));
+    timerMap.clear();
+    originalDestroy();
+  };
+
+  const originalMount = table.mount.bind(table);
+  table.mount = () => {
+    originalMount();
+    syncTimers();
+  };
 
   return table;
 }

@@ -18,7 +18,7 @@
       :theme="theme"
       :enable-header-editing="true"
       :selectable-columns="true"
-      @header-edit="() => {}"
+      :on-header-edit="handleHeaderEdit"
     />
   </div>
 </template>
@@ -50,5 +50,9 @@ function addColumn() {
   };
   additionalColumns.value = [...additionalColumns.value, col];
   lastAdded.value = col.label;
+}
+
+function handleHeaderEdit(_header: HeaderObject, newLabel: string) {
+  lastAdded.value = `Renamed to: ${newLabel}`;
 }
 </script>

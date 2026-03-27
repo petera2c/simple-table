@@ -4,7 +4,7 @@
     :rows="columnSelectionConfig.rows"
     :height="height"
     :theme="theme"
-    :selectable-columns="true"
+    :selectable-columns="columnSelectionConfig.tableProps.selectableColumns"
   />
 </template>
 

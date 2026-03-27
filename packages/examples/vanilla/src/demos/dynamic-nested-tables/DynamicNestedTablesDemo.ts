@@ -31,7 +31,7 @@ export function renderDynamicNestedTablesDemo(
         setLoading(true);
         const divisions = await fetchDivisionsForCompany(company.id);
         if (divisions.length === 0) {
-          setEmpty(true, "No divisions found");
+          setEmpty(true, "No divisions found for this company");
           return;
         }
         rows[rowIndexPath[0]] = { ...rows[rowIndexPath[0]], divisions };

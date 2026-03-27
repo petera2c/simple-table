@@ -4,18 +4,27 @@ import type { Theme } from "@simple-table/vue";
 import { footerRendererConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
-withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
+const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-function tableFooterRenderer() {
-  const rows = footerRendererConfig.rows;
-  const totalQty = rows.reduce((sum, r) => sum + Number(r.quantity), 0);
-  const totalVal = rows.reduce((sum, r) => sum + Number(r.quantity) * Number(r.price), 0);
+const rows = footerRendererConfig.rows;
+const totalQty = rows.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
+const totalAmount = rows.reduce((sum, r) => sum + (Number(r.total) || 0), 0);
 
+function footerRenderer() {
   const el = document.createElement("div");
-  el.style.cssText = "display:flex;justify-content:space-between;padding:8px 16px;font-size:13px;";
-  el.innerHTML = `<span>Total items: <strong>${totalQty}</strong></span><span>Total value: <strong>$${totalVal.toFixed(2)}</strong></span>`;
+  Object.assign(el.style, {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px 16px",
+    background: "#f8fafc",
+    borderTop: "2px solid #e2e8f0",
+    fontSize: "13px",
+    fontWeight: "600",
+  });
+  el.innerHTML = `<span>${rows.length} items · ${totalQty} units</span><span>Grand Total: $${totalAmount.toLocaleString()}</span>`;
   return el;
 }
 </script>
@@ -24,8 +33,9 @@ function tableFooterRenderer() {
   <SimpleTable
     :default-headers="footerRendererConfig.headers"
     :rows="footerRendererConfig.rows"
-    :footer-renderer="tableFooterRenderer"
-    :height="height"
-    :theme="theme"
+    :footer-renderer="footerRenderer"
+    :hide-footer="false"
+    :height="props.height"
+    :theme="props.theme"
   />
 </template>

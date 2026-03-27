@@ -10,8 +10,8 @@ export default function CellHighlightingDemo(props: { height?: string | number; 
       rows={cellHighlightingConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
-      selectableCells
-      selectableColumns
+      selectableCells={cellHighlightingConfig.tableProps.selectableCells}
+      selectableColumns={cellHighlightingConfig.tableProps.selectableColumns}
     />
   );
 }

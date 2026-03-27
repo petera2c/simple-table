@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
 import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { Row } from "simple-table-core";
-import { externalFilterConfig } from "@simple-table/examples-shared";
+import type { Row, TableFilterState } from "simple-table-core";
+import { externalFilterConfig, matchesFilter } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
 @Component({
@@ -10,23 +10,15 @@ import "simple-table-core/styles.css";
   standalone: true,
   imports: [SimpleTableComponent],
   template: `
-    <div>
-      <div style="margin-bottom: 8px">
-        <input
-          type="text"
-          placeholder="Filter rows..."
-          [value]="filterText"
-          (input)="onFilterInput($event)"
-          style="padding: 4px 8px"
-        />
-      </div>
-      <simple-table
-        [rows]="filteredRows"
-        [defaultHeaders]="headers"
-        [height]="height"
-        [theme]="theme"
-      ></simple-table>
-    </div>
+    <simple-table
+      [rows]="filteredRows"
+      [defaultHeaders]="headers"
+      [externalFilterHandling]="true"
+      [columnResizing]="true"
+      [height]="height"
+      [theme]="theme"
+      [onFilterChange]="handleFilterChange"
+    ></simple-table>
   `,
 })
 export class ExternalFilterDemoComponent {
@@ -34,18 +26,19 @@ export class ExternalFilterDemoComponent {
   @Input() theme?: Theme;
 
   readonly headers: AngularHeaderObject[] = externalFilterConfig.headers;
-  filterText = "";
+  private filters: TableFilterState = {};
 
-  onFilterInput(event: Event): void {
-    this.filterText = (event.target as HTMLInputElement).value;
-  }
+  handleFilterChange = (newFilters: TableFilterState) => {
+    this.filters = newFilters;
+  };
 
   get filteredRows(): Row[] {
-    const text = this.filterText.toLowerCase();
-    if (!text) return externalFilterConfig.rows;
-    return externalFilterConfig.rows.filter((row) =>
-      Object.values(row).some((val) =>
-        String(val).toLowerCase().includes(text)
+    const entries = Object.entries(this.filters);
+    if (entries.length === 0) return externalFilterConfig.rows as Row[];
+
+    return (externalFilterConfig.rows as Row[]).filter((row) =>
+      entries.every(([accessor, filter]) =>
+        matchesFilter(row[accessor] as any, filter)
       )
     );
   }

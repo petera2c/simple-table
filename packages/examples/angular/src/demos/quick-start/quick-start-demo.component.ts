@@ -15,8 +15,8 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
-      [editColumns]="true"
-      [selectableCells]="true"
+      [editColumns]="editColumnsProp"
+      [selectableCells]="selectableCellsProp"
       [customTheme]="customTheme"
     ></simple-table>
   `,
@@ -27,5 +27,7 @@ export class QuickStartDemoComponent {
 
   readonly rows: Row[] = quickStartConfig.rows;
   readonly headers: AngularHeaderObject[] = quickStartConfig.headers;
+  readonly editColumnsProp = quickStartConfig.tableProps.editColumns;
+  readonly selectableCellsProp = quickStartConfig.tableProps.selectableCells;
   readonly customTheme = quickStartConfig.tableProps.customTheme;
 }

@@ -44,6 +44,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() loadingStateRenderer?: SimpleTableAngularProps["loadingStateRenderer"];
   @Input() errorStateRenderer?: SimpleTableAngularProps["errorStateRenderer"];
   @Input() emptyStateRenderer?: SimpleTableAngularProps["emptyStateRenderer"];
+  @Input() tableEmptyStateRenderer?: SimpleTableAngularProps["tableEmptyStateRenderer"];
   @Input() headerDropdown?: SimpleTableAngularProps["headerDropdown"];
   @Input() columnEditorConfig?: SimpleTableAngularProps["columnEditorConfig"];
   @Input() onCellClick?: SimpleTableAngularProps["onCellClick"];
@@ -74,8 +75,20 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() columnReordering?: SimpleTableAngularProps["columnReordering"];
   @Input() editColumns?: SimpleTableAngularProps["editColumns"];
   @Input() selectableCells?: SimpleTableAngularProps["selectableCells"];
+  @Input() selectableColumns?: SimpleTableAngularProps["selectableColumns"];
+  @Input() enableHeaderEditing?: SimpleTableAngularProps["enableHeaderEditing"];
+  @Input() onHeaderEdit?: SimpleTableAngularProps["onHeaderEdit"];
+  @Input() customTheme?: SimpleTableAngularProps["customTheme"];
+  @Input() icons?: SimpleTableAngularProps["icons"];
+  @Input() externalFilterHandling?: SimpleTableAngularProps["externalFilterHandling"];
+  @Input() externalSortHandling?: SimpleTableAngularProps["externalSortHandling"];
   @Input() columnBorders?: SimpleTableAngularProps["columnBorders"];
   @Input() rowButtons?: SimpleTableAngularProps["rowButtons"];
+  @Input() hideFooter?: SimpleTableAngularProps["hideFooter"];
+  @Input() initialSortColumn?: SimpleTableAngularProps["initialSortColumn"];
+  @Input() initialSortDirection?: SimpleTableAngularProps["initialSortDirection"];
+  @Input() expandAll?: SimpleTableAngularProps["expandAll"];
+  @Input() autoExpandColumns?: SimpleTableAngularProps["autoExpandColumns"];
 
   /** Emits the TableAPI once the table has mounted. */
   @Output() tableReady = new EventEmitter<TableAPI>();
@@ -124,6 +137,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.loadingStateRenderer !== undefined) props.loadingStateRenderer = this.loadingStateRenderer;
     if (this.errorStateRenderer !== undefined) props.errorStateRenderer = this.errorStateRenderer;
     if (this.emptyStateRenderer !== undefined) props.emptyStateRenderer = this.emptyStateRenderer;
+    if (this.tableEmptyStateRenderer !== undefined) props.tableEmptyStateRenderer = this.tableEmptyStateRenderer;
     if (this.headerDropdown !== undefined) props.headerDropdown = this.headerDropdown;
     if (this.columnEditorConfig !== undefined) props.columnEditorConfig = this.columnEditorConfig;
     if (this.onCellClick !== undefined) props.onCellClick = this.onCellClick;
@@ -154,8 +168,20 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.columnReordering !== undefined) props.columnReordering = this.columnReordering;
     if (this.editColumns !== undefined) props.editColumns = this.editColumns;
     if (this.selectableCells !== undefined) props.selectableCells = this.selectableCells;
+    if (this.selectableColumns !== undefined) props.selectableColumns = this.selectableColumns;
+    if (this.enableHeaderEditing !== undefined) props.enableHeaderEditing = this.enableHeaderEditing;
+    if (this.onHeaderEdit !== undefined) props.onHeaderEdit = this.onHeaderEdit;
+    if (this.customTheme !== undefined) props.customTheme = this.customTheme;
+    if (this.icons !== undefined) props.icons = this.icons;
+    if (this.externalFilterHandling !== undefined) props.externalFilterHandling = this.externalFilterHandling;
+    if (this.externalSortHandling !== undefined) props.externalSortHandling = this.externalSortHandling;
     if (this.columnBorders !== undefined) props.columnBorders = this.columnBorders;
     if (this.rowButtons !== undefined) props.rowButtons = this.rowButtons;
+    if (this.hideFooter !== undefined) props.hideFooter = this.hideFooter;
+    if (this.initialSortColumn !== undefined) props.initialSortColumn = this.initialSortColumn;
+    if (this.initialSortDirection !== undefined) props.initialSortDirection = this.initialSortDirection;
+    if (this.expandAll !== undefined) props.expandAll = this.expandAll;
+    if (this.autoExpandColumns !== undefined) props.autoExpandColumns = this.autoExpandColumns;
 
     return props;
   }

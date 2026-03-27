@@ -15,6 +15,7 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
+      [externalSortHandling]="true"
       [columnResizing]="true"
       [onSortChange]="handleSortChange"
     ></simple-table>
@@ -35,11 +36,15 @@ export class ExternalSortDemoComponent {
     const rows = [...externalSortConfig.rows];
     if (!this.sortState) return rows;
     const accessor = this.sortState.key.accessor as string;
+    const type = this.sortState.key.type;
     const dir = this.sortState.direction;
     return rows.sort((a, b) => {
       const aVal = a[accessor];
       const bVal = b[accessor];
-      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      if (aVal === bVal) return 0;
+      const cmp = type === "number"
+        ? (aVal as number) - (bVal as number)
+        : String(aVal).localeCompare(String(bVal));
       return dir === "asc" ? cmp : -cmp;
     });
   }

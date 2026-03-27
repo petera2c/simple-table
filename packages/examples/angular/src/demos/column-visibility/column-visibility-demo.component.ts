@@ -15,7 +15,8 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
-      [editColumns]="true"
+      [editColumns]="tableProps.editColumns"
+      [columnEditorConfig]="tableProps.columnEditorConfig"
     ></simple-table>
   `,
 })
@@ -25,4 +26,5 @@ export class ColumnVisibilityDemoComponent {
 
   readonly rows: Row[] = columnVisibilityConfig.rows;
   readonly headers: AngularHeaderObject[] = columnVisibilityConfig.headers;
+  readonly tableProps = columnVisibilityConfig.tableProps;
 }

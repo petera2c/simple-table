@@ -20,7 +20,7 @@ export function renderColumnWidthDemo(
 
   const check = () => {
     const mobile = window.innerWidth < 768;
-    table.setConfig({ autoExpandColumns: !mobile });
+    table.update({ autoExpandColumns: !mobile });
   };
   window.addEventListener("resize", check);
 

@@ -18,6 +18,7 @@ export function buildVanillaConfig(
     emptyStateRenderer,
     errorStateRenderer,
     loadingStateRenderer,
+    tableEmptyStateRenderer,
     headerDropdown,
     columnEditorConfig,
     ...rest
@@ -69,6 +70,10 @@ export function buildVanillaConfig(
 
   if (loadingStateRenderer !== undefined) {
     vanillaConfig.loadingStateRenderer = wrap(loadingStateRenderer) as any;
+  }
+
+  if (tableEmptyStateRenderer !== undefined) {
+    vanillaConfig.tableEmptyStateRenderer = tableEmptyStateRenderer;
   }
 
   if (headerDropdown !== undefined) {

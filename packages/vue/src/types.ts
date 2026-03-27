@@ -103,7 +103,7 @@ export interface SimpleTableVueProps
   loadingStateRenderer?: VueLoadingStateRenderer;
   errorStateRenderer?: VueErrorStateRenderer;
   emptyStateRenderer?: VueEmptyStateRenderer;
-  tableEmptyStateRenderer?: VNode;
+  tableEmptyStateRenderer?: VNode | HTMLElement | string | null;
   headerDropdown?: VueHeaderDropdown;
   columnEditorConfig?: VueColumnEditorConfig;
   icons?: VueIconsConfig;

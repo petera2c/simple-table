@@ -195,6 +195,7 @@ const registry: Record<
 
 const params = new URLSearchParams(window.location.search);
 let activeDemo = params.get("demo") || "quick-start";
+let currentInstance: any = null;
 const height = params.get("height") || undefined;
 const theme = (params.get("theme") as Theme) || undefined;
 
@@ -246,6 +247,10 @@ function updateActive(id: string) {
 }
 
 async function loadDemo(id: string) {
+  if (currentInstance?.destroy) {
+    currentInstance.destroy();
+  }
+  currentInstance = null;
   content.innerHTML = "";
   const loader = registry[id];
   if (!loader) {
@@ -255,6 +260,7 @@ async function loadDemo(id: string) {
   const mod = await loader();
   const result = mod.render(content, { height, theme });
   if (result?.mount) result.mount();
+  currentInstance = result;
 }
 
 function selectDemo(id: string) {

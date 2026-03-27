@@ -83,13 +83,13 @@ export function renderCellClickingDemo(
         case "priority":
           updateBanner(`Filtering by ${value} priority`);
           rows = cellClickingData.filter((t) => t.priority === value);
-          table.setConfig({ rows });
+          table.update({ rows });
           break;
         case "status": {
           const idx = CELL_CLICKING_STATUSES.indexOf(String(value));
           const next = CELL_CLICKING_STATUSES[(idx + 1) % CELL_CLICKING_STATUSES.length];
           rows = rows.map((t) => (t.id === task.id ? { ...t, status: next } : t));
-          table.setConfig({ rows });
+          table.update({ rows });
           updateBanner(`Status: "${value}" → "${next}"`);
           break;
         }
@@ -100,14 +100,14 @@ export function renderCellClickingDemo(
         case "estimatedHours": {
           const n = Math.min(task.estimatedHours + 2, 40);
           rows = rows.map((t) => (t.id === task.id ? { ...t, estimatedHours: n } : t));
-          table.setConfig({ rows });
+          table.update({ rows });
           updateBanner(`Est. hours: ${task.estimatedHours}h → ${n}h`);
           break;
         }
         case "completedHours": {
           const n = Math.min(task.completedHours + 1, task.estimatedHours);
           rows = rows.map((t) => (t.id === task.id ? { ...t, completedHours: n } : t));
-          table.setConfig({ rows });
+          table.update({ rows });
           updateBanner(`Done hours: ${task.completedHours}h → ${n}h`);
           break;
         }

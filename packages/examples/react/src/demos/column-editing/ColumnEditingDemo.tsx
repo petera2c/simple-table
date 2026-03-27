@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject } from "@simple-table/react";
+import type { HeaderObject } from "simple-table-core";
 import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
@@ -12,63 +13,62 @@ const ColumnEditingDemo = ({
   theme?: Theme;
 }) => {
   const [additionalColumns, setAdditionalColumns] = useState<ReactHeaderObject[]>([]);
+  const [lastAdded, setLastAdded] = useState("");
 
   const headers: ReactHeaderObject[] = useMemo(
-    () => [
-      ...columnEditingHeaders,
-      ...additionalColumns,
-      {
-        accessor: "actions",
-        label: "Actions",
-        width: 120,
-        filterable: false,
-        type: "other" as const,
-        headerRenderer: () => (
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <button
-              onClick={() => {
-                const newCol: ReactHeaderObject = {
-                  accessor: `custom-${additionalColumns.length + 1}`,
-                  label: `Custom ${additionalColumns.length + 1}`,
-                  width: 120,
-                  type: "string",
-                };
-                setAdditionalColumns((prev) => [...prev, newCol]);
-              }}
-              style={{
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                padding: "4px 8px",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "12px",
-              }}
-            >
-              + Add Column
-            </button>
-          </div>
-        ),
-        cellRenderer: ({ row }) => (
-          <div style={{ display: "flex", justifyContent: "center", gap: "4px" }}>
-            <span style={{ fontSize: "12px", color: "#666" }}>Row {String(row.id || "")}</span>
-          </div>
-        ),
-      },
-    ],
+    () => [...columnEditingHeaders, ...additionalColumns],
     [additionalColumns],
   );
 
+  const addColumn = () => {
+    const n = additionalColumns.length + 1;
+    const col: ReactHeaderObject = {
+      accessor: `custom-${n}`,
+      label: `Custom ${n}`,
+      width: 120,
+      type: "string",
+    };
+    setAdditionalColumns((prev) => [...prev, col]);
+    setLastAdded(col.label);
+  };
+
+  const handleHeaderEdit = (_header: HeaderObject, newLabel: string) => {
+    setLastAdded(`Renamed to: ${newLabel}`);
+  };
+
   return (
-    <SimpleTable
-      defaultHeaders={headers}
-      enableHeaderEditing
-      height={height}
-      onHeaderEdit={() => {}}
-      rows={columnEditingData}
-      selectableColumns
-      theme={theme}
-    />
+    <div>
+      <div style={{ marginBottom: 12 }}>
+        <button
+          onClick={addColumn}
+          style={{
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            padding: "6px 14px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "13px",
+          }}
+        >
+          + Add Column
+        </button>
+        {lastAdded && (
+          <span style={{ marginLeft: 12, color: "#64748b", fontSize: 13 }}>
+            Added: {lastAdded}
+          </span>
+        )}
+      </div>
+      <SimpleTable
+        defaultHeaders={headers}
+        rows={columnEditingData}
+        enableHeaderEditing
+        selectableColumns
+        onHeaderEdit={handleHeaderEdit}
+        height={height}
+        theme={theme}
+      />
+    </div>
   );
 };
 

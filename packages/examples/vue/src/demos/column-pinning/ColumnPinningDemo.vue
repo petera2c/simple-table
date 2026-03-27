@@ -4,7 +4,7 @@
     :rows="columnPinningConfig.rows"
     :height="height"
     :theme="theme"
-    :column-resizing="true"
+    :column-resizing="columnPinningConfig.tableProps.columnResizing"
   />
 </template>
 

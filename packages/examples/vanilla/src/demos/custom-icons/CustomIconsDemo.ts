@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { customIconsConfig } from "@simple-table/examples-shared";
+import { customIconsConfig, buildVanillaCustomIcons } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
 export function renderCustomIconsDemo(
@@ -12,10 +12,7 @@ export function renderCustomIconsDemo(
     rows: customIconsConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    icons: {
-      sortUp: "\u25B2",
-      sortDown: "\u25BC",
-    },
+    icons: buildVanillaCustomIcons(),
   });
   return table;
 }

@@ -47,6 +47,7 @@ export default function ColumnEditingDemo(props: { height?: string | number; the
         theme={props.theme}
         enableHeaderEditing
         selectableColumns
+        onHeaderEdit={(_header, newLabel) => setLastAdded(`Renamed to: ${newLabel}`)}
       />
     </div>
   );

@@ -13,6 +13,7 @@ export default function ValueFormatterDemo(props: {
       rows={valueFormatterConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
+      selectableCells={valueFormatterConfig.tableProps.selectableCells}
     />
   );
 }

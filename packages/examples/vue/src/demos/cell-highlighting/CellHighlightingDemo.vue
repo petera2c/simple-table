@@ -4,8 +4,8 @@
     :rows="cellHighlightingConfig.rows"
     :height="height"
     :theme="theme"
-    :selectable-cells="true"
-    :selectable-columns="true"
+    :selectable-cells="cellHighlightingConfig.tableProps.selectableCells"
+    :selectable-columns="cellHighlightingConfig.tableProps.selectableColumns"
   />
 </template>
 

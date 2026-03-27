@@ -14,12 +14,8 @@ const ColumnVisibilityDemo = ({
     <SimpleTable
       defaultHeaders={columnVisibilityConfig.headers}
       rows={columnVisibilityConfig.rows}
-      editColumns
-      columnEditorConfig={{
-        text: "Toggle Columns",
-        searchEnabled: true,
-        searchPlaceholder: "Find column…",
-      }}
+      editColumns={columnVisibilityConfig.tableProps.editColumns}
+      columnEditorConfig={columnVisibilityConfig.tableProps.columnEditorConfig}
       height={height}
       theme={theme}
     />

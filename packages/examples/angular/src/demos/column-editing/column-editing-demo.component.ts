@@ -30,6 +30,7 @@ import "simple-table-core/styles.css";
         [theme]="theme"
         [enableHeaderEditing]="true"
         [selectableColumns]="true"
+        [onHeaderEdit]="handleHeaderEdit"
       ></simple-table>
     </div>
   `,
@@ -52,4 +53,8 @@ export class ColumnEditingDemoComponent {
     this.additionalColumns = [...this.additionalColumns, col];
     this.lastAdded = col.label;
   }
+
+  handleHeaderEdit = (_header: AngularHeaderObject, newLabel: string) => {
+    this.lastAdded = `Renamed to: ${newLabel}`;
+  };
 }

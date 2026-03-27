@@ -12,5 +12,5 @@
   rows={columnPinningConfig.rows}
   {height}
   {theme}
-  columnResizing={true}
+  columnResizing={columnPinningConfig.tableProps.columnResizing}
 />

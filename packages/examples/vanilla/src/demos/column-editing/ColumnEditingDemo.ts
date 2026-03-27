@@ -36,6 +36,9 @@ export function renderColumnEditingDemo(
     theme: options?.theme,
     enableHeaderEditing: true,
     selectableColumns: true,
+    onHeaderEdit: (_header: HeaderObject, newLabel: string) => {
+      info.textContent = `Renamed to: ${newLabel}`;
+    },
   });
 
   btn.addEventListener("click", () => {
@@ -43,7 +46,7 @@ export function renderColumnEditingDemo(
     const col: HeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     additionalColumns = [...additionalColumns, col];
     info.textContent = `Added: ${col.label}`;
-    table.setConfig({ defaultHeaders: [...columnEditingHeaders, ...additionalColumns] });
+    table.update({ defaultHeaders: [...columnEditingHeaders, ...additionalColumns] });
   });
 
   return table;

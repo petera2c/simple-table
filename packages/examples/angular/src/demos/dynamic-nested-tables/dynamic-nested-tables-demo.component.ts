@@ -16,12 +16,12 @@ import "simple-table-core/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [autoExpandColumns]="true"
+      [autoExpandColumns]="tableProps.autoExpandColumns"
       [defaultHeaders]="headers"
-      [expandAll]="false"
+      [expandAll]="tableProps.expandAll"
       [height]="height"
-      [rowGrouping]="grouping"
-      [getRowId]="getRowId"
+      [rowGrouping]="tableProps.rowGrouping"
+      [getRowId]="tableProps.getRowId"
       [rows]="rows"
       [onRowGroupExpand]="handleCompanyExpand"
       [theme]="theme"
@@ -34,8 +34,7 @@ export class DynamicNestedTablesDemoComponent {
 
   headers: AngularHeaderObject[] = dynamicNestedTablesConfig.headers;
   rows: DynamicCompany[] = [...dynamicNestedTablesData];
-  readonly grouping = ["divisions"];
-  readonly getRowId = ({ row }: { row: Record<string, unknown> }) => row["id"] as string;
+  readonly tableProps = dynamicNestedTablesConfig.tableProps;
 
   handleCompanyExpand = async ({
     row,
@@ -54,7 +53,7 @@ export class DynamicNestedTablesDemoComponent {
         setLoading(true);
         const divisions = await fetchDivisionsForCompany(company.id);
         if (divisions.length === 0) {
-          setEmpty(true, "No divisions found");
+          setEmpty(true, "No divisions found for this company");
           return;
         }
         const newRows = [...this.rows];

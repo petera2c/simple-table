@@ -4,6 +4,7 @@
     :rows="valueFormatterConfig.rows"
     :height="height"
     :theme="theme"
+    :selectable-cells="valueFormatterConfig.tableProps.selectableCells"
   />
 </template>
 

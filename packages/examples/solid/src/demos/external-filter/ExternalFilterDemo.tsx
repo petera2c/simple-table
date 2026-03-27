@@ -1,42 +1,33 @@
+import { createSignal, createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
-import { externalFilterConfig } from "@simple-table/examples-shared";
-import { createSignal, createMemo } from "solid-js";
+import type { TableFilterState } from "simple-table-core";
+import { externalFilterConfig, matchesFilter } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
-export default function ExternalFilterDemo(props: {
-  height?: string | number;
-  theme?: Theme;
-}) {
-  const [filterText, setFilterText] = createSignal("");
+export default function ExternalFilterDemo(props: { height?: string | number; theme?: Theme }) {
+  const [filters, setFilters] = createSignal<TableFilterState>({});
 
-  const filteredRows = createMemo(() => {
-    const text = filterText().toLowerCase();
-    if (!text) return externalFilterConfig.rows;
+  const filteredData = createMemo(() => {
+    const entries = Object.entries(filters());
+    if (entries.length === 0) return externalFilterConfig.rows;
+
     return externalFilterConfig.rows.filter((row) =>
-      Object.values(row).some((val) =>
-        String(val).toLowerCase().includes(text)
+      entries.every(([accessor, filter]) =>
+        matchesFilter(row[accessor as keyof typeof row] as any, filter)
       )
     );
   });
 
   return (
-    <div>
-      <div style={{ "margin-bottom": "8px" }}>
-        <input
-          type="text"
-          placeholder="Filter rows..."
-          value={filterText()}
-          onInput={(e) => setFilterText(e.currentTarget.value)}
-          style={{ padding: "4px 8px" }}
-        />
-      </div>
-      <SimpleTable
-        defaultHeaders={externalFilterConfig.headers}
-        rows={filteredRows()}
-        height={props.height ?? "400px"}
-        theme={props.theme}
-      />
-    </div>
+    <SimpleTable
+      defaultHeaders={externalFilterConfig.headers}
+      rows={filteredData()}
+      onFilterChange={setFilters}
+      externalFilterHandling
+      columnResizing
+      height={props.height ?? "400px"}
+      theme={props.theme}
+    />
   );
 }

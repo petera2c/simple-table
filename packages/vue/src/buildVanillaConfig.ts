@@ -113,8 +113,15 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
   }
 
   if (tableEmptyStateRenderer !== undefined) {
-    vanillaConfig.tableEmptyStateRenderer =
-      tableEmptyStateRenderer === null ? null : wrapVueNode(tableEmptyStateRenderer);
+    if (tableEmptyStateRenderer === null) {
+      vanillaConfig.tableEmptyStateRenderer = null;
+    } else if (tableEmptyStateRenderer instanceof HTMLElement) {
+      vanillaConfig.tableEmptyStateRenderer = tableEmptyStateRenderer;
+    } else if (typeof tableEmptyStateRenderer === "string") {
+      vanillaConfig.tableEmptyStateRenderer = tableEmptyStateRenderer;
+    } else {
+      vanillaConfig.tableEmptyStateRenderer = wrapVueNode(tableEmptyStateRenderer);
+    }
   }
 
   if (headerDropdown !== undefined) {
