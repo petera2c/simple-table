@@ -5,7 +5,6 @@ import Row from "../../types/Row";
 import TableRow from "../../types/TableRow";
 import SortColumn, { SortDirection } from "../../types/SortColumn";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
-import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { CustomTheme } from "../../types/CustomTheme";
 import UpdateDataProps from "../../types/UpdateCellProps";
 import { SetHeaderRenameProps, ExportToCSVProps } from "../../types/TableAPI";
@@ -14,10 +13,12 @@ import Cell from "../../types/Cell";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
-import { flattenRows } from "../../utils/rowFlattening";
+import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
+import { ProcessRowsResult } from "../../utils/rowProcessing";
 import { exportTableToCSV } from "../../utils/csvExportUtils";
 import {
   getPinnedSectionsState,
+  isHeaderEssential,
   rebuildHeadersFromPinnedState,
 } from "../../utils/pinnedColumnUtils";
 import { PinnedSectionsState } from "../../types/PinnedSectionsState";
@@ -44,6 +45,8 @@ export interface TableAPIContext {
   selectionManager: SelectionManager | null;
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
+  getCachedFlattenResult?: () => FlattenRowsResult | null;
+  getCachedProcessedResult?: () => ProcessRowsResult | null;
   onRender: () => void;
   setHeaders: (headers: HeaderObject[]) => void;
   setCurrentPage: (page: number) => void;
@@ -52,6 +55,27 @@ export interface TableAPIContext {
 
 export class TableAPIImpl {
   static createAPI(context: TableAPIContext): TableAPI {
+    const getFlattenResult = (): FlattenRowsResult => {
+      const cached = context.getCachedFlattenResult?.();
+      if (cached) return cached;
+      return flattenRows({
+        rows: context.localRows,
+        rowGrouping: context.config.rowGrouping,
+        getRowId: context.config.getRowId,
+        expandedRows: context.expandedRows,
+        collapsedRows: context.collapsedRows,
+        expandedDepths: context.expandedDepths,
+        rowStateMap: context.rowStateMap,
+        hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
+        hasErrorRenderer: Boolean(context.config.errorStateRenderer),
+        hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
+        headers: context.effectiveHeaders,
+        rowHeight: context.customTheme.rowHeight,
+        headerHeight: context.customTheme.headerHeight,
+        customTheme: context.customTheme,
+      });
+    };
+
     return {
       updateData: (props: UpdateDataProps) => {
         const { rowIndex, accessor, newValue } = props;
@@ -89,43 +113,13 @@ export class TableAPIImpl {
       },
 
       getVisibleRows: (): TableRow[] => {
-        const flattenResult = flattenRows({
-          rows: context.localRows,
-          rowGrouping: context.config.rowGrouping,
-          getRowId: context.config.getRowId,
-          expandedRows: context.expandedRows,
-          collapsedRows: context.collapsedRows,
-          expandedDepths: context.expandedDepths,
-          rowStateMap: context.rowStateMap,
-          hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
-          hasErrorRenderer: Boolean(context.config.errorStateRenderer),
-          hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
-          headers: context.effectiveHeaders,
-          rowHeight: context.customTheme.rowHeight,
-          headerHeight: context.customTheme.headerHeight,
-          customTheme: context.customTheme,
-        });
-        return flattenResult.flattenedRows;
+        const processed = context.getCachedProcessedResult?.();
+        if (processed) return processed.rowsToRender;
+        return getFlattenResult().flattenedRows;
       },
 
       getAllRows: (): TableRow[] => {
-        const flattenResult = flattenRows({
-          rows: context.localRows,
-          rowGrouping: context.config.rowGrouping,
-          getRowId: context.config.getRowId,
-          expandedRows: context.expandedRows,
-          collapsedRows: context.collapsedRows,
-          expandedDepths: context.expandedDepths,
-          rowStateMap: context.rowStateMap,
-          hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
-          hasErrorRenderer: Boolean(context.config.errorStateRenderer),
-          hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
-          headers: context.effectiveHeaders,
-          rowHeight: context.customTheme.rowHeight,
-          headerHeight: context.customTheme.headerHeight,
-          customTheme: context.customTheme,
-        });
-        return flattenResult.flattenedRows;
+        return getFlattenResult().flattenedRows;
       },
 
       getHeaders: (): HeaderObject[] => {
@@ -133,24 +127,8 @@ export class TableAPIImpl {
       },
 
       exportToCSV: (props?: ExportToCSVProps) => {
-        const flattenResult = flattenRows({
-          rows: context.localRows,
-          rowGrouping: context.config.rowGrouping,
-          getRowId: context.config.getRowId,
-          expandedRows: context.expandedRows,
-          collapsedRows: context.collapsedRows,
-          expandedDepths: context.expandedDepths,
-          rowStateMap: context.rowStateMap,
-          hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
-          hasErrorRenderer: Boolean(context.config.errorStateRenderer),
-          hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
-          headers: context.effectiveHeaders,
-          rowHeight: context.customTheme.rowHeight,
-          headerHeight: context.customTheme.headerHeight,
-          customTheme: context.customTheme,
-        });
         exportTableToCSV(
-          flattenResult.flattenedRows,
+          getFlattenResult().flattenedRows,
           context.effectiveHeaders,
           props?.filename,
           context.config.includeHeadersInCSVExport ?? true,
@@ -215,26 +193,15 @@ export class TableAPIImpl {
       },
 
       getTotalPages: (): number => {
-        const flattenResult = flattenRows({
-          rows: context.localRows,
-          rowGrouping: context.config.rowGrouping,
-          getRowId: context.config.getRowId,
-          expandedRows: context.expandedRows,
-          collapsedRows: context.collapsedRows,
-          expandedDepths: context.expandedDepths,
-          rowStateMap: context.rowStateMap,
-          hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
-          hasErrorRenderer: Boolean(context.config.errorStateRenderer),
-          hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
-          headers: context.effectiveHeaders,
-          rowHeight: context.customTheme.rowHeight,
-          headerHeight: context.customTheme.headerHeight,
-          customTheme: context.customTheme,
-        });
-        return Math.ceil(flattenResult.paginatableRows.length / (context.config.rowsPerPage ?? 10));
+        const totalRows = context.config.totalRowCount ?? getFlattenResult().paginatableRows.length;
+        return Math.ceil(totalRows / (context.config.rowsPerPage ?? 10));
       },
 
       setPage: async (page: number) => {
+        const totalRows = context.config.totalRowCount ?? getFlattenResult().paginatableRows.length;
+        const rowsPerPage = context.config.rowsPerPage ?? 10;
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        if (page < 1 || page > totalPages) return;
         context.setCurrentPage(page);
         context.onRender();
         if (context.config.onPageChange) {
@@ -280,26 +247,34 @@ export class TableAPIImpl {
       },
 
       toggleColumnEditor: (open?: boolean) => {
+        if (!context.config.editColumns) return;
         context.setColumnEditorOpen(open !== undefined ? open : !context.columnEditorOpen);
         context.onRender();
       },
 
       applyColumnVisibility: async (visibility: { [accessor: string]: boolean }) => {
-        const updatedHeaders = context.headers.map((header) => {
-          const accessor = header.accessor as string;
-          if (accessor in visibility) {
-            return { ...header, hide: !visibility[accessor] };
-          }
-          return header;
-        });
-        context.setHeaders(updatedHeaders);
+        const updateHeaderVisibility = (headerList: HeaderObject[]): HeaderObject[] => {
+          return headerList.map((header) => {
+            const acc = String(header.accessor);
+            const shouldUpdate = acc in visibility;
+            let hide = shouldUpdate ? !visibility[acc] : header.hide;
+            if (isHeaderEssential(header, context.essentialAccessors)) {
+              hide = false;
+            }
+            return {
+              ...header,
+              hide,
+              children: header.children
+                ? updateHeaderVisibility(header.children)
+                : header.children,
+            };
+          });
+        };
+
+        context.setHeaders(updateHeaderVisibility(context.headers));
         context.onRender();
         if (context.config.onColumnVisibilityChange) {
-          const visibilityState: ColumnVisibilityState = {};
-          Object.entries(visibility).forEach(([accessor, visible]) => {
-            visibilityState[accessor] = visible;
-          });
-          context.config.onColumnVisibilityChange(visibilityState);
+          context.config.onColumnVisibilityChange(visibility);
         }
       },
 

@@ -675,6 +675,8 @@ export class SimpleTableVanilla {
       headerRegistry: this.headerRegistry,
       cellRegistry: this.cellRegistry,
       columnEditorOpen: this.columnEditorOpen,
+      getCachedFlattenResult: () => this.renderOrchestrator.getCachedFlattenResult(),
+      getCachedProcessedResult: () => this.renderOrchestrator.getLastProcessedResult(),
       expandedDepthsManager: this.expandedDepthsManager,
       selectionManager: this.selectionManager,
       sortManager: this.sortManager,

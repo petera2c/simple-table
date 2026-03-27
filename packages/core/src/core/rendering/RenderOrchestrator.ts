@@ -11,8 +11,8 @@ import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import { TableRenderer } from "./TableRenderer";
-import { flattenRows } from "../../utils/rowFlattening";
-import { processRows } from "../../utils/rowProcessing";
+import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
+import { processRows, ProcessRowsResult } from "../../utils/rowProcessing";
 import { calculateContentHeight } from "../../hooks/contentHeight";
 import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
@@ -106,15 +106,25 @@ export class RenderOrchestrator {
   private lastHeadersRef: HeaderObject[] | null = null;
   private lastRowsRef: Row[] | null = null;
   private flattenedRowsCache: FlattenedRowsCache | null = null;
+  private lastProcessedResult: ProcessRowsResult | null = null;
 
   constructor() {
     this.tableRenderer = new TableRenderer();
+  }
+
+  getCachedFlattenResult(): FlattenRowsResult | null {
+    return this.flattenedRowsCache?.flattenResult ?? null;
+  }
+
+  getLastProcessedResult(): ProcessRowsResult | null {
+    return this.lastProcessedResult;
   }
 
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
     this.tableRenderer.invalidateCache(type);
     if (!type || type === "all" || type === "body") {
       this.flattenedRowsCache = null;
+      this.lastProcessedResult = null;
     }
   }
 
@@ -400,6 +410,7 @@ export class RenderOrchestrator {
       enableStickyParents: context.config.enableStickyParents ?? false,
       rowGrouping: context.config.rowGrouping,
     });
+    this.lastProcessedResult = processedResult;
 
     context.rowSelectionManager?.updateConfig({
       tableRows: processedResult.currentTableRows,
