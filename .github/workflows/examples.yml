@@ -1,0 +1,43 @@
+name: Verify Examples
+
+on:
+  pull_request:
+    paths:
+      - "packages/examples/**"
+      - "packages/core/src/**"
+      - "packages/react/src/**"
+      - "packages/vue/src/**"
+      - "packages/angular/src/**"
+      - "packages/svelte/src/**"
+      - "packages/solid/src/**"
+  push:
+    branches: [main, master]
+    paths:
+      - "packages/examples/**"
+
+jobs:
+  verify-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify demo parity across frameworks
+        run: node scripts/verify-examples.mjs
+
+      - name: Build all example apps
+        run: pnpm run build:examples
