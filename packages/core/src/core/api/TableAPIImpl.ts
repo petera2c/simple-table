@@ -89,7 +89,23 @@ export class TableAPIImpl {
       },
 
       getVisibleRows: (): TableRow[] => {
-        return [];
+        const flattenResult = flattenRows({
+          rows: context.localRows,
+          rowGrouping: context.config.rowGrouping,
+          getRowId: context.config.getRowId,
+          expandedRows: context.expandedRows,
+          collapsedRows: context.collapsedRows,
+          expandedDepths: context.expandedDepths,
+          rowStateMap: context.rowStateMap,
+          hasLoadingRenderer: Boolean(context.config.loadingStateRenderer),
+          hasErrorRenderer: Boolean(context.config.errorStateRenderer),
+          hasEmptyRenderer: Boolean(context.config.emptyStateRenderer),
+          headers: context.effectiveHeaders,
+          rowHeight: context.customTheme.rowHeight,
+          headerHeight: context.customTheme.headerHeight,
+          customTheme: context.customTheme,
+        });
+        return flattenResult.flattenedRows;
       },
 
       getAllRows: (): TableRow[] => {
