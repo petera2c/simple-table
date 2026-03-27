@@ -20,6 +20,9 @@ node_modules
 # pnpm
 pnpm-lock.yaml
 
+# turbo
+.turbo
+
 # misc
 .DS_Store
 .env.local

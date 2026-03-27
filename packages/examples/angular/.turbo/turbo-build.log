@@ -1,0 +1,18 @@
+
+> examples-angular@0.0.1 build /Users/peter/Documents/dev_projects/simple-table-core/packages/examples/angular
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 409 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                     0.62 kB │ gzip:   0.41 kB
+dist/assets/index-D92Zg3zm.css     70.39 kB │ gzip:   9.65 kB
+dist/assets/index-B9x3Lxy7.js   1,556.97 kB │ gzip: 469.16 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.99s

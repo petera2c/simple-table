@@ -1,0 +1,20 @@
+
+> examples-vue@0.0.1 build /Users/peter/Documents/dev_projects/simple-table-core/packages/examples/vue
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 163 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                0.62 kB │ gzip:  0.41 kB
+dist/assets/index-DDCgk6YR.css                 0.88 kB │ gzip:  0.43 kB
+dist/assets/base-Di8axIQa.css                 69.52 kB │ gzip:  9.33 kB
+dist/assets/QuickStartDemo-NiLvCWtp.js         2.35 kB │ gzip:  0.94 kB
+dist/assets/ColumnSortingDemo-DkabXqX5.js      2.60 kB │ gzip:  1.06 kB
+dist/assets/ValueFormatterDemo-Dua8lPXN.js     3.34 kB │ gzip:  1.28 kB
+dist/assets/ColumnFilteringDemo-uIToDhHk.js    3.35 kB │ gzip:  1.22 kB
+dist/assets/PaginationDemo-D-xwCmhK.js         4.60 kB │ gzip:  1.61 kB
+dist/assets/index-CG-zKDKj.js                 67.22 kB │ gzip: 26.97 kB
+dist/assets/base-5ps89FRK.js                 248.08 kB │ gzip: 64.81 kB
+✓ built in 1.33s

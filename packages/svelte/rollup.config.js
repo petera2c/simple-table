@@ -26,6 +26,15 @@ const ignoreCss = {
 export default {
   input: "src/index.ts",
 
+  onwarn(warning, warn) {
+    if (isDev) {
+      if (warning.code === "SOURCEMAP_ERROR") return;
+      if (warning.code === "NON_EXISTENT_EXPORT") return;
+      if (warning.code === "CIRCULAR_DEPENDENCY") return;
+    }
+    warn(warning);
+  },
+
   output: isDev
     ? [
         {
@@ -93,6 +102,7 @@ export default {
       tsconfig: "tsconfig.build.json",
       exclude: ["node_modules/**", "**/*.svelte"],
       clean: true,
+      check: !isDev,
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isDev,

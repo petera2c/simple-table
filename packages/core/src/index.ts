@@ -1,11 +1,12 @@
 import { SimpleTableVanilla } from "./core/SimpleTableVanilla";
-import BoundingBox from "./types/BoundingBox";
-import Cell from "./types/Cell";
-import CellChangeProps from "./types/CellChangeProps";
-import CellValue from "./types/CellValue";
-import DragHandlerProps from "./types/DragHandlerProps";
-import EnumOption from "./types/EnumOption";
-import HeaderObject, {
+import type BoundingBox from "./types/BoundingBox";
+import type Cell from "./types/Cell";
+import type CellChangeProps from "./types/CellChangeProps";
+import type CellValue from "./types/CellValue";
+import type DragHandlerProps from "./types/DragHandlerProps";
+import type EnumOption from "./types/EnumOption";
+import type HeaderObject from "./types/HeaderObject";
+import type {
   Accessor,
   ChartOptions,
   ColumnType,
@@ -19,42 +20,46 @@ import HeaderObject, {
   ValueGetter,
   ValueGetterProps,
 } from "./types/HeaderObject";
-import { AggregationConfig, AggregationType } from "./types/AggregationTypes";
-import OnSortProps from "./types/OnSortProps";
-import OnRowGroupExpandProps from "./types/OnRowGroupExpandProps";
-import Row from "./types/Row";
-import RowState from "./types/RowState";
-import SharedTableProps from "./types/SharedTableProps";
-import SortColumn from "./types/SortColumn";
-import TableHeaderProps from "./types/TableHeaderProps";
-import { TableAPI, SetHeaderRenameProps, ExportToCSVProps } from "./types/TableAPI";
-import TableRefType from "./types/TableRefType";
-import TableRowProps from "./types/TableRowProps";
-import Theme from "./types/Theme";
-import UpdateDataProps from "./types/UpdateCellProps";
-import { FilterCondition, TableFilterState } from "./types/FilterTypes";
-import {
+import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
+import type OnSortProps from "./types/OnSortProps";
+import type OnRowGroupExpandProps from "./types/OnRowGroupExpandProps";
+import type Row from "./types/Row";
+import type RowState from "./types/RowState";
+import type SharedTableProps from "./types/SharedTableProps";
+import type SortColumn from "./types/SortColumn";
+import type TableHeaderProps from "./types/TableHeaderProps";
+import type { TableAPI, SetHeaderRenameProps, ExportToCSVProps } from "./types/TableAPI";
+import type TableRefType from "./types/TableRefType";
+import type TableRowProps from "./types/TableRowProps";
+import type Theme from "./types/Theme";
+import type UpdateDataProps from "./types/UpdateCellProps";
+import type { FilterCondition, TableFilterState } from "./types/FilterTypes";
+import type {
   QuickFilterConfig,
   QuickFilterGetter,
   QuickFilterGetterProps,
   QuickFilterMode,
 } from "./types/QuickFilterTypes";
-import { ColumnVisibilityState } from "./types/ColumnVisibilityTypes";
-import RowSelectionChangeProps from "./types/RowSelectionChangeProps";
-import CellClickProps from "./types/CellClickProps";
-import CellRendererProps, { CellRenderer } from "./types/CellRendererProps";
-import HeaderRendererProps, {
+import type { ColumnVisibilityState } from "./types/ColumnVisibilityTypes";
+import type RowSelectionChangeProps from "./types/RowSelectionChangeProps";
+import type CellClickProps from "./types/CellClickProps";
+import type CellRendererProps from "./types/CellRendererProps";
+import type { CellRenderer } from "./types/CellRendererProps";
+import type HeaderRendererProps from "./types/HeaderRendererProps";
+import type {
   HeaderRenderer,
   HeaderRendererComponents,
 } from "./types/HeaderRendererProps";
-import ColumnEditorRowRendererProps, {
+import type ColumnEditorRowRendererProps from "./types/ColumnEditorRowRendererProps";
+import type {
   ColumnEditorRowRenderer,
   ColumnEditorRowRendererComponents,
 } from "./types/ColumnEditorRowRendererProps";
-import HeaderDropdownProps, { HeaderDropdown } from "./types/HeaderDropdownProps";
-import { RowButtonProps } from "./types/RowButton";
-import FooterRendererProps from "./types/FooterRendererProps";
-import {
+import type HeaderDropdownProps from "./types/HeaderDropdownProps";
+import type { HeaderDropdown } from "./types/HeaderDropdownProps";
+import type { RowButtonProps } from "./types/RowButton";
+import type FooterRendererProps from "./types/FooterRendererProps";
+import type {
   LoadingStateRenderer,
   ErrorStateRenderer,
   EmptyStateRenderer,
@@ -62,13 +67,13 @@ import {
   ErrorStateRendererProps,
   EmptyStateRendererProps,
 } from "./types/RowStateRendererProps";
-import { CustomTheme, CustomThemeProps } from "./types/CustomTheme";
-import { ColumnEditorConfig, ColumnEditorSearchFunction } from "./types/ColumnEditorConfig";
-import { IconsConfig } from "./types/IconsConfig";
-import { GetRowId, GetRowIdParams } from "./types/GetRowId";
-import { SimpleTableConfig } from "./types/SimpleTableConfig";
-import { SimpleTableProps } from "./types/SimpleTableProps";
-import { RowId } from "./types/RowId";
+import type { CustomTheme, CustomThemeProps } from "./types/CustomTheme";
+import type { ColumnEditorConfig, ColumnEditorSearchFunction } from "./types/ColumnEditorConfig";
+import type { IconsConfig } from "./types/IconsConfig";
+import type { GetRowId, GetRowIdParams } from "./types/GetRowId";
+import type { SimpleTableConfig } from "./types/SimpleTableConfig";
+import type { SimpleTableProps } from "./types/SimpleTableProps";
+import type { RowId } from "./types/RowId";
 
 export { SimpleTableVanilla };
 

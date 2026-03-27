@@ -1,7 +1,0 @@
-
-> simple-table-angular@0.0.1 build /Users/peter/Documents/dev_projects/simple-table-core/packages/angular
-> rollup -c
-
-
-src/index.ts → dist/cjs, dist...
-created dist/cjs, dist in 3.1s
