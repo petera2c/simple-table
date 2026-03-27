@@ -10,6 +10,10 @@ export function renderCollapsibleColumnsDemo(
   const table = new SimpleTableVanilla(container, {
     defaultHeaders: collapsibleColumnsConfig.headers,
     rows: collapsibleColumnsConfig.rows,
+    columnResizing: true,
+    editColumns: true,
+    selectableCells: true,
+    columnReordering: true,
     height: options?.height ?? "400px",
     theme: options?.theme,
   });

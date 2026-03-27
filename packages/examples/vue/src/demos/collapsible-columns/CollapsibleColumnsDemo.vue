@@ -2,7 +2,10 @@
   <SimpleTable
     :default-headers="collapsibleColumnsConfig.headers"
     :rows="collapsibleColumnsConfig.rows"
-    :column-resizing="collapsibleColumnsConfig.tableProps.columnResizing"
+    :column-resizing="true"
+    :edit-columns="true"
+    :selectable-cells="true"
+    :column-reordering="true"
     :height="height"
     :theme="theme"
   />

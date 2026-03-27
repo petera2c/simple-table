@@ -13,6 +13,10 @@ import "simple-table-core/styles.css";
     <simple-table
       [rows]="rows"
       [defaultHeaders]="headers"
+      [columnResizing]="true"
+      [editColumns]="true"
+      [selectableCells]="true"
+      [columnReordering]="true"
       [height]="height"
       [theme]="theme"
     ></simple-table>

@@ -15,6 +15,9 @@ const CollapsibleColumnsDemo = ({
       defaultHeaders={collapsibleColumnsConfig.headers}
       rows={collapsibleColumnsConfig.rows}
       columnResizing
+      editColumns
+      selectableCells
+      columnReordering
       height={height}
       theme={theme}
     />

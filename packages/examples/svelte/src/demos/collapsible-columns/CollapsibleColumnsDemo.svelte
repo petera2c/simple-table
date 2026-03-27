@@ -10,7 +10,10 @@
 <SimpleTable
   defaultHeaders={collapsibleColumnsConfig.headers}
   rows={collapsibleColumnsConfig.rows}
-  columnResizing={collapsibleColumnsConfig.tableProps.columnResizing}
+  columnResizing={true}
+  editColumns={true}
+  selectableCells={true}
+  columnReordering={true}
   {height}
   {theme}
 />
