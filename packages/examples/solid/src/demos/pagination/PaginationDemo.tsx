@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
-import { SimpleTable } from "simple-table-solid";
-import type { Theme } from "simple-table-solid";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme } from "@simple-table/solid";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 

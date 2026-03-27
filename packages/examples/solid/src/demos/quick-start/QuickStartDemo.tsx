@@ -1,5 +1,5 @@
-import { SimpleTable } from "simple-table-solid";
-import type { Theme } from "simple-table-solid";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme } from "@simple-table/solid";
 import { quickStartConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 

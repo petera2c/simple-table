@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "simple-table-angular";
-import type { AngularHeaderObject, Theme } from "simple-table-angular";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { Row } from "simple-table-core";
 import { valueFormatterConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";

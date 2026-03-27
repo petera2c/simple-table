@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { SimpleTable } from "simple-table-vue";
-import type { Theme } from "simple-table-vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme } from "@simple-table/vue";
 import { quickStartConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 

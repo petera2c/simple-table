@@ -4,7 +4,7 @@ import "../../shared/src/styles/shell.css";
 
 import { bootstrapApplication } from "@angular/platform-browser";
 import { AppComponent } from "./app.component";
-import { provideSimpleTable } from "simple-table-angular";
+import { provideSimpleTable } from "@simple-table/angular";
 
 bootstrapApplication(AppComponent, {
   providers: [provideSimpleTable()],

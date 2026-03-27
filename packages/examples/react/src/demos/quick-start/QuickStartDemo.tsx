@@ -1,5 +1,5 @@
-import { SimpleTable } from "simple-table-react";
-import type { Theme } from "simple-table-react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
 import { quickStartConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 

@@ -1,5 +1,5 @@
-import { SimpleTable } from "simple-table-react";
-import type { Theme } from "simple-table-react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
 import { columnFilteringConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 

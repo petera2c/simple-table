@@ -13,8 +13,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { SimpleTable } from "simple-table-vue";
-import type { Theme } from "simple-table-vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme } from "@simple-table/vue";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 

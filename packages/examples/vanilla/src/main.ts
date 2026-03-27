@@ -31,6 +31,166 @@ const registry: Record<
     import("./demos/pagination/PaginationDemo").then((m) => ({
       render: m.renderPaginationDemo,
     })),
+  "column-pinning": () =>
+    import("./demos/column-pinning/ColumnPinningDemo").then((m) => ({
+      render: m.renderColumnPinningDemo,
+    })),
+  "column-alignment": () =>
+    import("./demos/column-alignment/ColumnAlignmentDemo").then((m) => ({
+      render: m.renderColumnAlignmentDemo,
+    })),
+  "column-width": () =>
+    import("./demos/column-width/ColumnWidthDemo").then((m) => ({
+      render: m.renderColumnWidthDemo,
+    })),
+  "column-resizing": () =>
+    import("./demos/column-resizing/ColumnResizingDemo").then((m) => ({
+      render: m.renderColumnResizingDemo,
+    })),
+  "column-reordering": () =>
+    import("./demos/column-reordering/ColumnReorderingDemo").then((m) => ({
+      render: m.renderColumnReorderingDemo,
+    })),
+  "column-selection": () =>
+    import("./demos/column-selection/ColumnSelectionDemo").then((m) => ({
+      render: m.renderColumnSelectionDemo,
+    })),
+  "column-editing": () =>
+    import("./demos/column-editing/ColumnEditingDemo").then((m) => ({
+      render: m.renderColumnEditingDemo,
+    })),
+  "cell-editing": () =>
+    import("./demos/cell-editing/CellEditingDemo").then((m) => ({
+      render: m.renderCellEditingDemo,
+    })),
+  "cell-highlighting": () =>
+    import("./demos/cell-highlighting/CellHighlightingDemo").then((m) => ({
+      render: m.renderCellHighlightingDemo,
+    })),
+  "themes": () =>
+    import("./demos/themes/ThemesDemo").then((m) => ({
+      render: m.renderThemesDemo,
+    })),
+  "row-height": () =>
+    import("./demos/row-height/RowHeightDemo").then((m) => ({
+      render: m.renderRowHeightDemo,
+    })),
+  "table-height": () =>
+    import("./demos/table-height/TableHeightDemo").then((m) => ({
+      render: m.renderTableHeightDemo,
+    })),
+  "quick-filter": () =>
+    import("./demos/quick-filter/QuickFilterDemo").then((m) => ({
+      render: m.renderQuickFilterDemo,
+    })),
+  "nested-headers": () =>
+    import("./demos/nested-headers/NestedHeadersDemo").then((m) => ({
+      render: m.renderNestedHeadersDemo,
+    })),
+  "aggregate-functions": () =>
+    import("./demos/aggregate-functions/AggregateFunctionsDemo").then((m) => ({
+      render: m.renderAggregateFunctionsDemo,
+    })),
+  "collapsible-columns": () =>
+    import("./demos/collapsible-columns/CollapsibleColumnsDemo").then((m) => ({
+      render: m.renderCollapsibleColumnsDemo,
+    })),
+  "external-sort": () =>
+    import("./demos/external-sort/ExternalSortDemo").then((m) => ({
+      render: m.renderExternalSortDemo,
+    })),
+  "external-filter": () =>
+    import("./demos/external-filter/ExternalFilterDemo").then((m) => ({
+      render: m.renderExternalFilterDemo,
+    })),
+  "loading-state": () =>
+    import("./demos/loading-state/LoadingStateDemo").then((m) => ({
+      render: m.renderLoadingStateDemo,
+    })),
+  "infinite-scroll": () =>
+    import("./demos/infinite-scroll/InfiniteScrollDemo").then((m) => ({
+      render: m.renderInfiniteScrollDemo,
+    })),
+  "row-selection": () =>
+    import("./demos/row-selection/RowSelectionDemo").then((m) => ({
+      render: m.renderRowSelectionDemo,
+    })),
+  "csv-export": () =>
+    import("./demos/csv-export/CsvExportDemo").then((m) => ({
+      render: m.renderCsvExportDemo,
+    })),
+  "programmatic-control": () =>
+    import("./demos/programmatic-control/ProgrammaticControlDemo").then((m) => ({
+      render: m.renderProgrammaticControlDemo,
+    })),
+  "row-grouping": () =>
+    import("./demos/row-grouping/RowGroupingDemo").then((m) => ({
+      render: m.renderRowGroupingDemo,
+    })),
+  "cell-renderer": () =>
+    import("./demos/cell-renderer/CellRendererDemo").then((m) => ({
+      render: m.renderCellRendererDemo,
+    })),
+  "header-renderer": () =>
+    import("./demos/header-renderer/HeaderRendererDemo").then((m) => ({
+      render: m.renderHeaderRendererDemo,
+    })),
+  "footer-renderer": () =>
+    import("./demos/footer-renderer/FooterRendererDemo").then((m) => ({
+      render: m.renderFooterRendererDemo,
+    })),
+  "cell-clicking": () =>
+    import("./demos/cell-clicking/CellClickingDemo").then((m) => ({
+      render: m.renderCellClickingDemo,
+    })),
+  "tooltip": () =>
+    import("./demos/tooltip/TooltipDemo").then((m) => ({
+      render: m.renderTooltipDemo,
+    })),
+  "custom-theme": () =>
+    import("./demos/custom-theme/CustomThemeDemo").then((m) => ({
+      render: m.renderCustomThemeDemo,
+    })),
+  "custom-icons": () =>
+    import("./demos/custom-icons/CustomIconsDemo").then((m) => ({
+      render: m.renderCustomIconsDemo,
+    })),
+  "empty-state": () =>
+    import("./demos/empty-state/EmptyStateDemo").then((m) => ({
+      render: m.renderEmptyStateDemo,
+    })),
+  "column-visibility": () =>
+    import("./demos/column-visibility/ColumnVisibilityDemo").then((m) => ({
+      render: m.renderColumnVisibilityDemo,
+    })),
+  "column-editor-custom-renderer": () =>
+    import("./demos/column-editor-custom-renderer/ColumnEditorCustomRendererDemo").then((m) => ({
+      render: m.renderColumnEditorCustomRendererDemo,
+    })),
+  "single-row-children": () =>
+    import("./demos/single-row-children/SingleRowChildrenDemo").then((m) => ({
+      render: m.renderSingleRowChildrenDemo,
+    })),
+  "nested-tables": () =>
+    import("./demos/nested-tables/NestedTablesDemo").then((m) => ({
+      render: m.renderNestedTablesDemo,
+    })),
+  "dynamic-nested-tables": () =>
+    import("./demos/dynamic-nested-tables/DynamicNestedTablesDemo").then((m) => ({
+      render: m.renderDynamicNestedTablesDemo,
+    })),
+  "dynamic-row-loading": () =>
+    import("./demos/dynamic-row-loading/DynamicRowLoadingDemo").then((m) => ({
+      render: m.renderDynamicRowLoadingDemo,
+    })),
+  charts: () =>
+    import("./demos/charts/ChartsDemo").then((m) => ({
+      render: m.renderChartsDemo,
+    })),
+  "live-update": () =>
+    import("./demos/live-update/LiveUpdateDemo").then((m) => ({
+      render: m.renderLiveUpdateDemo,
+    })),
 };
 
 const params = new URLSearchParams(window.location.search);

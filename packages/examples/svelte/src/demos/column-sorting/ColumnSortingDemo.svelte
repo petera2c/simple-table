@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { SimpleTable } from "simple-table-svelte";
-  import type { Theme } from "simple-table-svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme } from "@simple-table/svelte";
   import { columnSortingConfig } from "@simple-table/examples-shared";
   import "simple-table-core/styles.css";
 
