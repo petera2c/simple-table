@@ -1,4 +1,15 @@
-import type { HeaderObject } from "simple-table-core";
+import type { HeaderObject, Theme } from "simple-table-core";
+
+export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "modern-light", label: "Modern Light" },
+  { value: "modern-dark", label: "Modern Dark" },
+  { value: "sky", label: "Sky" },
+  { value: "violet", label: "Violet" },
+  { value: "neutral", label: "Neutral" },
+  { value: "frost", label: "Frost" },
+];
 
 export const themesHeaders: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },

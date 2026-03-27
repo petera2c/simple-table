@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    column-reordering
+    :column-reordering="true"
     :default-headers="headers"
     :rows="columnReorderingConfig.rows"
     :height="height"

@@ -10,13 +10,14 @@ import "simple-table-core/styles.css";
   standalone: true,
   imports: [SimpleTableComponent],
   template: `
-    <div>
-      <div style="margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap">
-        <button (click)="expandAll()">Expand All</button>
-        <button (click)="collapseAll()">Collapse All</button>
-        <button (click)="expandDepth0()">Expand Depth 0</button>
-        <button (click)="collapseDepth0()">Collapse Depth 0</button>
-        <button (click)="toggleDepth0()">Toggle Depth 0</button>
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+        <span style="font-size: 13px; font-weight: 600; margin-right: 8px">Control Expansion:</span>
+        <button [style.padding]="'6px 12px'" [style.background]="'#28a745'" [style.color]="'white'" [style.border]="'none'" [style.borderRadius]="'4px'" [style.cursor]="'pointer'" [style.fontSize]="'12px'" [style.fontWeight]="500" (click)="expandAll()" title="expandAll()">Expand All</button>
+        <button [style.padding]="'6px 12px'" [style.background]="'#dc3545'" [style.color]="'white'" [style.border]="'none'" [style.borderRadius]="'4px'" [style.cursor]="'pointer'" [style.fontSize]="'12px'" [style.fontWeight]="500" (click)="collapseAll()" title="collapseAll()">Collapse All</button>
+        <button [style.padding]="'6px 12px'" [style.background]="'#007bff'" [style.color]="'white'" [style.border]="'none'" [style.borderRadius]="'4px'" [style.cursor]="'pointer'" [style.fontSize]="'12px'" [style.fontWeight]="500" (click)="onlyDivisions()" title="expandDepth(0)">Only Divisions</button>
+        <button [style.padding]="'6px 12px'" [style.background]="'#6c757d'" [style.color]="'white'" [style.border]="'none'" [style.borderRadius]="'4px'" [style.cursor]="'pointer'" [style.fontSize]="'12px'" [style.fontWeight]="500" (click)="divisionsAndDepts()" title="setExpandedDepths(new Set([0, 1]))">Divisions + Departments</button>
+        <button [style.padding]="'6px 12px'" [style.background]="'#6f42c1'" [style.color]="'white'" [style.border]="'none'" [style.borderRadius]="'4px'" [style.cursor]="'pointer'" [style.fontSize]="'12px'" [style.fontWeight]="500" (click)="toggleDivisions()" title="toggleDepth(0)">Toggle Divisions</button>
       </div>
       <simple-table
         #simpleTable
@@ -25,6 +26,9 @@ import "simple-table-core/styles.css";
         [height]="height"
         [theme]="theme"
         [rowGrouping]="grouping"
+        [enableStickyParents]="true"
+        [getRowId]="getRowId"
+        [columnResizing]="true"
       ></simple-table>
     </div>
   `,
@@ -36,25 +40,12 @@ export class RowGroupingDemoComponent {
 
   readonly rows: Row[] = rowGroupingConfig.rows;
   readonly headers: AngularHeaderObject[] = rowGroupingConfig.headers;
-  readonly grouping = ["id"];
+  readonly grouping = rowGroupingConfig.tableProps.rowGrouping;
+  readonly getRowId = rowGroupingConfig.tableProps.getRowId;
 
-  expandAll(): void {
-    this.tableRef.getAPI()?.expandAll();
-  }
-
-  collapseAll(): void {
-    this.tableRef.getAPI()?.collapseAll();
-  }
-
-  expandDepth0(): void {
-    this.tableRef.getAPI()?.expandDepth(0);
-  }
-
-  collapseDepth0(): void {
-    this.tableRef.getAPI()?.collapseDepth(0);
-  }
-
-  toggleDepth0(): void {
-    this.tableRef.getAPI()?.toggleDepth(0);
-  }
+  expandAll() { this.tableRef.getAPI()?.expandAll(); }
+  collapseAll() { this.tableRef.getAPI()?.collapseAll(); }
+  onlyDivisions() { this.tableRef.getAPI()?.collapseAll(); this.tableRef.getAPI()?.expandDepth(0); }
+  divisionsAndDepts() { this.tableRef.getAPI()?.setExpandedDepths(new Set([0, 1])); }
+  toggleDivisions() { this.tableRef.getAPI()?.toggleDepth(0); }
 }

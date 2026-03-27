@@ -602,6 +602,10 @@ export class SimpleTableVanilla {
       this.internalIsLoading = config.isLoading;
     }
 
+    if (config.theme !== undefined) {
+      this.domManager.updateTheme(config.theme);
+    }
+
     if (config.customTheme !== undefined) {
       this.customTheme = TableInitializer.mergeCustomTheme(this.config);
       if (this.selectionManager) {

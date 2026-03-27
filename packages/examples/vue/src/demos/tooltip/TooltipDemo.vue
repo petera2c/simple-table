@@ -15,5 +15,8 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
     :rows="tooltipConfig.rows"
     :height="height"
     :theme="theme"
+    :column-resizing="true"
+    :column-reordering="true"
+    :selectable-cells="true"
   />
 </template>

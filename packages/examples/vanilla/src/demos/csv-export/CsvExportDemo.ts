@@ -1,34 +1,49 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
-import { csvExportConfig } from "@simple-table/examples-shared";
+import type { Theme, HeaderObject } from "simple-table-core";
+import { csvExportHeaders, csvExportData, csvExportConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
 export function renderCsvExportDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme }
+  options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
   const wrapper = document.createElement("div");
 
   const controls = document.createElement("div");
-  controls.style.marginBottom = "8px";
+  controls.style.cssText = "display:flex;gap:8px;margin-bottom:12px";
 
   const exportBtn = document.createElement("button");
   exportBtn.textContent = "Export to CSV";
+  exportBtn.style.padding = "6px 16px";
   controls.appendChild(exportBtn);
 
-  const exportCustomBtn = document.createElement("button");
-  exportCustomBtn.textContent = "Export with Custom Name";
-  exportCustomBtn.style.marginLeft = "8px";
-  controls.appendChild(exportCustomBtn);
+  const infoBtn = document.createElement("button");
+  infoBtn.textContent = "Get Table Info";
+  infoBtn.style.padding = "6px 16px";
+  controls.appendChild(infoBtn);
 
   const tableContainer = document.createElement("div");
   wrapper.appendChild(controls);
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
+  const headers: HeaderObject[] = csvExportHeaders.map((h) => {
+    if (h.accessor === "actions") {
+      return {
+        ...h,
+        cellRenderer: () =>
+          `<button style="background:#3b82f6;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold">View</button>`,
+      };
+    }
+    return { ...h };
+  });
+
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: csvExportConfig.headers,
-    rows: csvExportConfig.rows,
+    defaultHeaders: headers,
+    rows: csvExportData,
+    editColumns: csvExportConfig.tableProps.editColumns,
+    selectableCells: csvExportConfig.tableProps.selectableCells,
+    customTheme: csvExportConfig.tableProps.customTheme,
     height: options?.height ?? "400px",
     theme: options?.theme,
   });
@@ -37,8 +52,14 @@ export function renderCsvExportDemo(
     table.getAPI().exportToCSV();
   });
 
-  exportCustomBtn.addEventListener("click", () => {
-    table.getAPI().exportToCSV({ filename: "custom-export" });
+  infoBtn.addEventListener("click", () => {
+    const api = table.getAPI();
+    const rows = api.getAllRows();
+    const hdrs = api.getHeaders();
+    const totalRevenue = rows.reduce((sum, r) => sum + (Number(r.revenue) || 0), 0);
+    alert(
+      `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    );
   });
 
   return table;

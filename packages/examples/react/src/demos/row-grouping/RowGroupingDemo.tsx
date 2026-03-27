@@ -4,6 +4,17 @@ import type { Theme, TableAPI } from "@simple-table/react";
 import { rowGroupingConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
+const btnStyle = (color: string) => ({
+  padding: "6px 12px",
+  background: color,
+  color: "white",
+  border: "none",
+  borderRadius: 4,
+  cursor: "pointer",
+  fontSize: 12,
+  fontWeight: 500 as const,
+});
+
 const RowGroupingDemo = ({
   height = "400px",
   theme,
@@ -13,35 +24,32 @@ const RowGroupingDemo = ({
 }) => {
   const tableRef = useRef<TableAPI>(null);
 
-  const handleExpandAll = () => tableRef.current?.expandAll();
-  const handleCollapseAll = () => tableRef.current?.collapseAll();
-  const handleExpandDepth0 = () => tableRef.current?.expandDepth(0);
-  const handleSetExpandedDepths = () =>
-    tableRef.current?.setExpandedDepths(new Set([0, 1]));
-  const handleToggleDepth1 = () => tableRef.current?.toggleDepth(1);
-
   return (
-    <div>
-      <div
-        style={{ marginBottom: 12, display: "flex", gap: 8, flexWrap: "wrap" }}
-      >
-        <button onClick={handleExpandAll} style={{ padding: "6px 16px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, marginRight: 8 }}>Control Expansion:</span>
+        <button style={btnStyle("#28a745")} onClick={() => tableRef.current?.expandAll()} title="expandAll()">
           Expand All
         </button>
-        <button onClick={handleCollapseAll} style={{ padding: "6px 16px" }}>
+        <button style={btnStyle("#dc3545")} onClick={() => tableRef.current?.collapseAll()} title="collapseAll()">
           Collapse All
         </button>
-        <button onClick={handleExpandDepth0} style={{ padding: "6px 16px" }}>
-          Expand Depth 0
+        <button
+          style={btnStyle("#007bff")}
+          onClick={() => { tableRef.current?.collapseAll(); tableRef.current?.expandDepth(0); }}
+          title="expandDepth(0)"
+        >
+          Only Divisions
         </button>
         <button
-          onClick={handleSetExpandedDepths}
-          style={{ padding: "6px 16px" }}
+          style={btnStyle("#6c757d")}
+          onClick={() => tableRef.current?.setExpandedDepths(new Set([0, 1]))}
+          title="setExpandedDepths(new Set([0, 1]))"
         >
-          Expand All Depths
+          Divisions + Departments
         </button>
-        <button onClick={handleToggleDepth1} style={{ padding: "6px 16px" }}>
-          Toggle Depth 1
+        <button style={btnStyle("#6f42c1")} onClick={() => tableRef.current?.toggleDepth(0)} title="toggleDepth(0)">
+          Toggle Divisions
         </button>
       </div>
       <SimpleTable

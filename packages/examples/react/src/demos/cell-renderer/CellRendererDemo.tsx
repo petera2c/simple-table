@@ -2,44 +2,110 @@ import { useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
 import { cellRendererConfig } from "@simple-table/examples-shared";
+import type { CellRendererEmployee } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
+
+const getInitials = (name: string) =>
+  name.split(" ").map((n) => n[0]).join("").toUpperCase();
+
+const TeamCell = ({ row }: CellRendererProps) => {
+  const members = (row as CellRendererEmployee).teamMembers;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      {members.map((m) => (
+        <div key={m.name} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <div
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: "50%",
+              background: "#DBEAFE",
+              color: "#1E40AF",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 10,
+              fontWeight: 600,
+              flexShrink: 0,
+            }}
+          >
+            {getInitials(m.name)}
+          </div>
+          <span style={{ fontSize: 13, whiteSpace: "nowrap" }}>{m.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const WebsiteCell = ({ value }: CellRendererProps) => {
+  const url = String(value);
+  return (
+    <span>
+      🌐{" "}
+      <a
+        href={`https://${url}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "#2563EB", textDecoration: "none" }}
+        onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+        onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+      >
+        {url}
+      </a>
+    </span>
+  );
+};
 
 const StatusCell = ({ value }: CellRendererProps) => {
   const status = String(value);
   const map: Record<string, { icon: string; color: string }> = {
-    active: { icon: "✓", color: "#16a34a" },
-    inactive: { icon: "✕", color: "#dc2626" },
-    pending: { icon: "!", color: "#ca8a04" },
+    active: { icon: "✓", color: "#10B981" },
+    inactive: { icon: "✕", color: "#EF4444" },
+    pending: { icon: "!", color: "#F59E0B" },
   };
   const { icon, color } = map[status] ?? { icon: "?", color: "#6b7280" };
-  return <span style={{ color, fontWeight: 600 }}>{icon} {status}</span>;
+  return (
+    <span style={{ color, fontWeight: 600, textTransform: "capitalize" }}>
+      {icon} {status}
+    </span>
+  );
 };
 
 const ProgressCell = ({ value }: CellRendererProps) => {
   const pct = Number(value) || 0;
+  const color = pct < 30 ? "#EF4444" : pct < 70 ? "#F59E0B" : "#10B981";
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <div style={{ flex: 1, height: 8, background: "#e5e7eb", borderRadius: 4, overflow: "hidden" }}>
+    <div>
+      <div style={{ fontSize: 12, marginBottom: 2 }}>{pct}%</div>
+      <div style={{ height: 10, background: "#E5E7EB", borderRadius: 5, overflow: "hidden" }}>
         <div
           style={{
             width: `${pct}%`,
             height: "100%",
-            background: pct >= 80 ? "#16a34a" : pct >= 50 ? "#ca8a04" : "#dc2626",
-            borderRadius: 4,
+            background: color,
+            borderRadius: 5,
             transition: "width 0.3s",
           }}
         />
       </div>
-      <span style={{ fontSize: 12, minWidth: 32, textAlign: "right" }}>{pct}%</span>
     </div>
   );
 };
 
 const RatingCell = ({ value }: CellRendererProps) => {
-  const n = Number(value) || 0;
+  const rating = Number(value) || 0;
+  const full = Math.floor(rating);
+  const hasHalf = rating % 1 >= 0.25;
+  const empty = 5 - full - (hasHalf ? 1 : 0);
   return (
-    <span style={{ color: "#f59e0b", letterSpacing: 2 }}>
-      {"★".repeat(n)}{"☆".repeat(Math.max(0, 5 - n))}
+    <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <span style={{ color: "#F59E0B", letterSpacing: 1 }}>
+        {"★".repeat(full)}
+        {hasHalf && <span style={{ opacity: 0.5 }}>★</span>}
+        {"☆".repeat(Math.max(0, empty))}
+      </span>
+      <span style={{ fontSize: 12, color: "#6b7280" }}>{rating}</span>
     </span>
   );
 };
@@ -47,7 +113,7 @@ const RatingCell = ({ value }: CellRendererProps) => {
 const VerifiedCell = ({ value }: CellRendererProps) => {
   const yes = Boolean(value);
   return (
-    <span style={{ color: yes ? "#16a34a" : "#dc2626", fontWeight: 600 }}>
+    <span style={{ color: yes ? "#10B981" : "#EF4444", fontWeight: 600 }}>
       {yes ? "✓ Yes" : "✕ No"}
     </span>
   );
@@ -56,18 +122,19 @@ const VerifiedCell = ({ value }: CellRendererProps) => {
 const TagsCell = ({ value }: CellRendererProps) => {
   const tags = Array.isArray(value) ? value : [];
   return (
-    <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+    <div style={{ display: "flex", gap: 4, flexWrap: "nowrap", overflow: "hidden" }}>
       {tags.map((tag: string) => (
         <span
           key={tag}
           style={{
             display: "inline-block",
             padding: "2px 8px",
-            borderRadius: 12,
-            fontSize: 11,
+            borderRadius: 4,
+            fontSize: 12,
             fontWeight: 500,
-            background: "#e0e7ff",
-            color: "#3730a3",
+            background: "#DBEAFE",
+            color: "#1E40AF",
+            whiteSpace: "nowrap",
           }}
         >
           {tag}
@@ -88,6 +155,8 @@ const CellRendererDemo = ({
     () =>
       cellRendererConfig.headers.map((h) => {
         const renderers: Record<string, React.ComponentType<CellRendererProps>> = {
+          teamMembers: TeamCell,
+          website: WebsiteCell,
           status: StatusCell,
           progress: ProgressCell,
           rating: RatingCell,
@@ -106,6 +175,8 @@ const CellRendererDemo = ({
       rows={cellRendererConfig.rows}
       height={height}
       theme={theme}
+      selectableCells={cellRendererConfig.tableProps.selectableCells}
+      customTheme={cellRendererConfig.tableProps.customTheme}
     />
   );
 };

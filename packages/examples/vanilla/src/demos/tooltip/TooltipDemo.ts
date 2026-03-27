@@ -12,6 +12,8 @@ export function renderTooltipDemo(
     rows: tooltipConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
+    columnResizing: tooltipConfig.tableProps.columnResizing,
+    columnReordering: tooltipConfig.tableProps.columnReordering,
     selectableCells: tooltipConfig.tableProps.selectableCells,
   });
   return table;

@@ -33,7 +33,9 @@ import type { SimpleTableVueProps, TableInstance } from "./types";
  */
 function camelizeAttrs(attrs: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
-  for (const key in attrs) out[camelize(key)] = attrs[key];
+  for (const key in attrs) {
+    out[camelize(key)] = attrs[key] === "" ? true : attrs[key];
+  }
   return out;
 }
 

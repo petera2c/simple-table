@@ -7,7 +7,7 @@
       {{ saveMessage }}
     </div>
     <SimpleTable
-      column-resizing
+      :column-resizing="true"
       :default-headers="headers"
       :rows="columnResizingData"
       :height="height"

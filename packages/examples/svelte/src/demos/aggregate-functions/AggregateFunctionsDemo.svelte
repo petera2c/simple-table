@@ -11,7 +11,7 @@
   defaultHeaders={aggregateFunctionsConfig.headers}
   rows={aggregateFunctionsConfig.rows}
   rowGrouping={aggregateFunctionsConfig.tableProps.rowGrouping}
-  columnResizing={aggregateFunctionsConfig.tableProps.columnResizing}
+  columnResizing={true}
   {height}
   {theme}
 />

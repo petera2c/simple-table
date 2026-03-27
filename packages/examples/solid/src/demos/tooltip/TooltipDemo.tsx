@@ -10,6 +10,8 @@ export default function TooltipDemo(props: { height?: string | number; theme?: T
       rows={tooltipConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
+      columnResizing={tooltipConfig.tableProps.columnResizing}
+      columnReordering={tooltipConfig.tableProps.columnReordering}
       selectableCells={tooltipConfig.tableProps.selectableCells}
     />
   );

@@ -11,6 +11,8 @@ export default function AggregateFunctionsDemo(props: {
     <SimpleTable
       defaultHeaders={aggregateFunctionsConfig.headers}
       rows={aggregateFunctionsConfig.rows}
+      rowGrouping={aggregateFunctionsConfig.tableProps.rowGrouping}
+      columnResizing
       height={props.height ?? "400px"}
       theme={props.theme}
     />

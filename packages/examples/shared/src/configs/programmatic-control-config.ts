@@ -1,38 +1,36 @@
 import type { HeaderObject } from "simple-table-core";
 
+export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
+  Available: { bg: "#dcfce7", color: "#166534" },
+  "Low Stock": { bg: "#fef3c7", color: "#92400e" },
+  "Out of Stock": { bg: "#fee2e2", color: "#991b1b" },
+};
+
 export const programmaticControlData = [
-  { id: 1, name: "Dr. Elena Vasquez", age: 42, department: "AI Research", salary: 145000 },
-  { id: 2, name: "Kai Tanaka", age: 29, department: "UX Design", salary: 95000 },
-  { id: 3, name: "Amara Okafor", age: 35, department: "DevOps", salary: 125000 },
-  { id: 4, name: "Santiago Rodriguez", age: 27, department: "Marketing", salary: 82000 },
-  { id: 5, name: "Priya Chakraborty", age: 33, department: "Engineering", salary: 118000 },
-  { id: 6, name: "Magnus Eriksson", age: 38, department: "Product", salary: 110000 },
-  { id: 7, name: "Zara Al-Rashid", age: 31, department: "Sales", salary: 98000 },
-  { id: 8, name: "Luca Rossi", age: 26, department: "Marketing", salary: 75000 },
-  { id: 9, name: "Dr. Sarah Kim", age: 45, department: "AI Research", salary: 165000 },
-  { id: 10, name: "Olumide Adebayo", age: 30, department: "Engineering", salary: 105000 },
-  { id: 11, name: "Isabella Chen", age: 24, department: "UX Design", salary: 68000 },
-  { id: 12, name: "Dmitri Volkov", age: 39, department: "DevOps", salary: 135000 },
+  { id: 1, name: "Wireless Keyboard", category: "Electronics", price: 49.99, stock: 145, status: "Available" },
+  { id: 2, name: "Ergonomic Mouse", category: "Electronics", price: 29.99, stock: 12, status: "Low Stock" },
+  { id: 3, name: "USB-C Hub", category: "Electronics", price: 39.99, stock: 234, status: "Available" },
+  { id: 4, name: "Standing Desk", category: "Furniture", price: 399.99, stock: 0, status: "Out of Stock" },
+  { id: 5, name: "Office Chair", category: "Furniture", price: 249.99, stock: 56, status: "Available" },
+  { id: 6, name: "Monitor Stand", category: "Furniture", price: 79.99, stock: 8, status: "Low Stock" },
+  { id: 7, name: "Notebook Set", category: "Stationery", price: 12.99, stock: 445, status: "Available" },
+  { id: 8, name: "Pen Collection", category: "Stationery", price: 19.99, stock: 312, status: "Available" },
+  { id: 9, name: "Desk Organizer", category: "Stationery", price: 24.99, stock: 5, status: "Low Stock" },
+  { id: 10, name: "Coffee Maker", category: "Appliances", price: 89.99, stock: 78, status: "Available" },
+  { id: 11, name: "Electric Kettle", category: "Appliances", price: 34.99, stock: 134, status: "Available" },
+  { id: 12, name: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 0, status: "Out of Stock" },
 ];
 
 export const programmaticControlHeaders: HeaderObject[] = [
-  { accessor: "name", label: "Name", width: "1fr", minWidth: 120, isSortable: true, filterable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 100, isSortable: true, filterable: true, type: "number" },
-  { accessor: "department", label: "Department", width: 150, isSortable: true, filterable: true, type: "string" },
-  {
-    accessor: "salary",
-    label: "Salary",
-    width: 120,
-    isSortable: true,
-    filterable: true,
-    type: "number",
-    align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
-  },
+  { accessor: "id", label: "ID", width: 70, type: "number", isSortable: true, filterable: true },
+  { accessor: "name", label: "Product Name", width: "1fr", minWidth: 150, type: "string", isSortable: true, filterable: true },
+  { accessor: "category", label: "Category", width: 140, type: "enum", isSortable: true, filterable: true, enumOptions: ["Electronics", "Furniture", "Stationery", "Appliances"] },
+  { accessor: "price", label: "Price", width: 110, align: "right", type: "number", isSortable: true, filterable: true, valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}` },
+  { accessor: "stock", label: "Stock", width: 100, align: "right", type: "number", isSortable: true, filterable: true },
+  { accessor: "status", label: "Status", width: 110, type: "enum", isSortable: true, filterable: true, enumOptions: ["Available", "Low Stock", "Out of Stock"] },
 ];
 
 export const programmaticControlConfig = {
   headers: programmaticControlHeaders,
   rows: programmaticControlData,
-  tableProps: { columnResizing: true },
 } as const;

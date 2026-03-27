@@ -15,6 +15,8 @@ import "simple-table-core/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
+      [columnResizing]="true"
+      [columnReordering]="true"
       [selectableCells]="true"
     ></simple-table>
   `,

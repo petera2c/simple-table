@@ -127,7 +127,7 @@ function handleCellClick({ accessor, rowIndex, value, row }: CellClickProps) {
     </div>
 
     <SimpleTable
-      column-resizing
+      :column-resizing="true"
       :default-headers="headers"
       :height="height"
       :on-cell-click="handleCellClick"

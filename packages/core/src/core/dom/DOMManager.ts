@@ -104,6 +104,13 @@ export class DOMManager {
     return this.elements;
   }
 
+  updateTheme(theme: string): void {
+    if (!this.elements) return;
+    const root = this.elements.rootElement;
+    const classes = root.className.replace(/\btheme-\S+/g, "").trim();
+    root.className = `${classes} theme-${theme}`;
+  }
+
   getElements(): DOMElements | null {
     return this.elements;
   }

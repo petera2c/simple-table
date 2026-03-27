@@ -12,7 +12,7 @@ export { columnSelectionConfig, columnSelectionHeaders, columnSelectionData } fr
 export { columnEditingConfig, columnEditingHeaders, columnEditingData } from "./column-editing-config";
 export { cellEditingConfig, cellEditingHeaders, cellEditingData } from "./cell-editing-config";
 export { cellHighlightingConfig, cellHighlightingHeaders, cellHighlightingData } from "./cell-highlighting-config";
-export { themesConfig, themesHeaders, themesData } from "./themes-config";
+export { themesConfig, themesHeaders, themesData, AVAILABLE_THEMES } from "./themes-config";
 export { rowHeightConfig, rowHeightHeaders, rowHeightData } from "./row-height-config";
 export { tableHeightConfig, tableHeightHeaders, tableHeightData } from "./table-height-config";
 export { quickFilterConfig, quickFilterHeaders, quickFilterData } from "./quick-filter-config";
@@ -24,10 +24,12 @@ export { externalFilterConfig, externalFilterHeaders, externalFilterData } from 
 export { loadingStateConfig, loadingStateHeaders, loadingStateData } from "./loading-state-config";
 export { infiniteScrollConfig, infiniteScrollHeaders, generateInfiniteScrollData } from "./infinite-scroll-config";
 export { rowSelectionConfig, rowSelectionHeaders, rowSelectionData } from "./row-selection-config";
+export type { LibraryBook } from "./row-selection-config";
 export { csvExportConfig, csvExportHeaders, csvExportData } from "./csv-export-config";
-export { programmaticControlConfig, programmaticControlHeaders, programmaticControlData } from "./programmatic-control-config";
+export { programmaticControlConfig, programmaticControlHeaders, programmaticControlData, STATUS_COLORS as PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control-config";
 export { rowGroupingConfig, rowGroupingHeaders, rowGroupingData } from "./row-grouping-config";
 export { cellRendererConfig, cellRendererHeaders, cellRendererData } from "./cell-renderer-config";
+export type { CellRendererEmployee } from "./cell-renderer-config";
 export { headerRendererConfig, headerRendererHeaders, headerRendererData } from "./header-renderer-config";
 export { footerRendererConfig, footerRendererHeaders, footerRendererData } from "./footer-renderer-config";
 export { cellClickingConfig, cellClickingHeaders, cellClickingData, STATUSES as CELL_CLICKING_STATUSES } from "./cell-clicking-config";

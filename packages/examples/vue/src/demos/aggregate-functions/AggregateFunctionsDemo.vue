@@ -3,7 +3,7 @@
     :default-headers="aggregateFunctionsConfig.headers"
     :rows="aggregateFunctionsConfig.rows"
     :row-grouping="aggregateFunctionsConfig.tableProps.rowGrouping"
-    :column-resizing="aggregateFunctionsConfig.tableProps.columnResizing"
+    :column-resizing="true"
     :height="height"
     :theme="theme"
   />

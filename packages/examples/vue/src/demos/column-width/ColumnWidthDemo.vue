@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     :auto-expand-columns="!isMobile"
-    column-resizing
+    :column-resizing="true"
     :default-headers="columnWidthConfig.headers"
     :height="height"
     :rows="columnWidthConfig.rows"

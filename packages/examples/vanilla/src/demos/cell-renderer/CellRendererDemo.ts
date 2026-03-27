@@ -1,57 +1,93 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject, CellRenderer } from "simple-table-core";
 import { cellRendererConfig } from "@simple-table/examples-shared";
+import type { CellRendererEmployee } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
-const statusRenderer: CellRenderer = ({ value }) => {
-  const v = value as string;
-  const span = document.createElement("span");
-  span.style.fontWeight = "600";
-  span.style.color = v === "active" ? "#22c55e" : v === "pending" ? "#f59e0b" : "#94a3b8";
-  span.textContent = `${v === "active" ? "\u25CF" : "\u25CB"} ${v}`;
-  return span;
+const html = (str: string): Node => {
+  const t = document.createElement("template");
+  t.innerHTML = str.trim();
+  return t.content;
 };
 
-const progressRenderer: CellRenderer = ({ value }) => `${value}%`;
-
-const ratingRenderer: CellRenderer = ({ value }) => {
-  const n = value as number;
-  const span = document.createElement("span");
-  span.style.color = "#f59e0b";
-  span.textContent = "\u2605".repeat(n) + "\u2606".repeat(5 - n);
-  return span;
-};
-
-const verifiedRenderer: CellRenderer = ({ value }) => {
-  const ok = value as boolean;
-  const span = document.createElement("span");
-  span.style.color = ok ? "#22c55e" : "#94a3b8";
-  span.textContent = ok ? "\u2713 Yes" : "\u2717 No";
-  return span;
-};
-
-const tagsRenderer: CellRenderer = ({ row }) => {
-  const container = document.createElement("span");
-  for (const t of row.tags as string[]) {
-    const tag = document.createElement("span");
-    tag.textContent = t;
-    tag.style.cssText = "display:inline-block;padding:1px 6px;margin:0 2px;border-radius:3px;background:#e2e8f0;font-size:11px";
-    container.appendChild(tag);
-  }
-  return container;
-};
+const getInitials = (name: string) =>
+  name.split(" ").map((n) => n[0]).join("").toUpperCase();
 
 const RENDERERS: Record<string, CellRenderer> = {
-  status: statusRenderer,
-  progress: progressRenderer,
-  rating: ratingRenderer,
-  verified: verifiedRenderer,
-  tags: tagsRenderer,
+  teamMembers: ({ row }) => {
+    const members = (row as CellRendererEmployee).teamMembers;
+    return html(
+      `<div style="display:flex;align-items:center;gap:6px">${members
+        .map(
+          (m) =>
+            `<div style="display:flex;align-items:center;gap:4px"><div style="width:24px;height:24px;border-radius:50%;background:#DBEAFE;color:#1E40AF;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0">${getInitials(m.name)}</div><span style="font-size:13px;white-space:nowrap">${m.name}</span></div>`,
+        )
+        .join("")}</div>`,
+    );
+  },
+
+  website: ({ value }) => {
+    const url = String(value);
+    return html(
+      `<span>🌐 <a href="https://${url}" target="_blank" rel="noopener noreferrer" style="color:#2563EB;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${url}</a></span>`,
+    );
+  },
+
+  status: ({ value }) => {
+    const status = String(value);
+    const map: Record<string, { icon: string; color: string }> = {
+      active: { icon: "✓", color: "#10B981" },
+      inactive: { icon: "✕", color: "#EF4444" },
+      pending: { icon: "!", color: "#F59E0B" },
+    };
+    const { icon, color } = map[status] ?? { icon: "?", color: "#6b7280" };
+    return html(
+      `<span style="color:${color};font-weight:600;text-transform:capitalize">${icon} ${status}</span>`,
+    );
+  },
+
+  progress: ({ value }) => {
+    const pct = Number(value) || 0;
+    const color = pct < 30 ? "#EF4444" : pct < 70 ? "#F59E0B" : "#10B981";
+    return html(
+      `<div><div style="font-size:12px;margin-bottom:2px">${pct}%</div><div style="height:10px;background:#E5E7EB;border-radius:5px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${color};border-radius:5px;transition:width 0.3s"></div></div></div>`,
+    );
+  },
+
+  rating: ({ value }) => {
+    const rating = Number(value) || 0;
+    const full = Math.floor(rating);
+    const hasHalf = rating % 1 >= 0.25;
+    const empty = 5 - full - (hasHalf ? 1 : 0);
+    const halfStar = hasHalf ? '<span style="opacity:0.5">★</span>' : "";
+    return html(
+      `<span style="display:flex;align-items:center;gap:4px"><span style="color:#F59E0B;letter-spacing:1px">${"★".repeat(full)}${halfStar}${"☆".repeat(Math.max(0, empty))}</span><span style="font-size:12px;color:#6b7280">${rating}</span></span>`,
+    );
+  },
+
+  verified: ({ value }) => {
+    const yes = Boolean(value);
+    return html(
+      `<span style="color:${yes ? "#10B981" : "#EF4444"};font-weight:600">${yes ? "✓ Yes" : "✕ No"}</span>`,
+    );
+  },
+
+  tags: ({ value }) => {
+    const tags = Array.isArray(value) ? (value as string[]) : [];
+    return html(
+      `<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden">${tags
+        .map(
+          (tag) =>
+            `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500;background:#DBEAFE;color:#1E40AF;white-space:nowrap">${tag}</span>`,
+        )
+        .join("")}</div>`,
+    );
+  },
 };
 
 export function renderCellRendererDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme }
+  options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
   const headers: HeaderObject[] = cellRendererConfig.headers.map((h) => {
     const renderer = RENDERERS[h.accessor as string];

@@ -10,6 +10,8 @@ export function renderAggregateFunctionsDemo(
   const table = new SimpleTableVanilla(container, {
     defaultHeaders: aggregateFunctionsConfig.headers,
     rows: aggregateFunctionsConfig.rows,
+    rowGrouping: aggregateFunctionsConfig.tableProps.rowGrouping,
+    columnResizing: true,
     height: options?.height ?? "400px",
     theme: options?.theme,
   });

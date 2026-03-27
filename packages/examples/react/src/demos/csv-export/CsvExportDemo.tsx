@@ -1,7 +1,7 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI } from "@simple-table/react";
-import { csvExportConfig } from "@simple-table/examples-shared";
+import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
+import { csvExportHeaders, csvExportData, csvExportConfig } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
 const CsvExportDemo = ({
@@ -13,17 +13,47 @@ const CsvExportDemo = ({
 }) => {
   const tableRef = useRef<TableAPI>(null);
 
+  const headers: ReactHeaderObject[] = useMemo(
+    () =>
+      csvExportHeaders.map((h) => {
+        if (h.accessor === "actions") {
+          return {
+            ...h,
+            cellRenderer: () => (
+              <button
+                style={{
+                  backgroundColor: "#3b82f6",
+                  color: "white",
+                  border: "none",
+                  padding: "4px 12px",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  fontSize: 12,
+                  fontWeight: "bold",
+                }}
+              >
+                View
+              </button>
+            ),
+          } as ReactHeaderObject;
+        }
+        return { ...h } as ReactHeaderObject;
+      }),
+    [],
+  );
+
   const handleExport = () => {
-    tableRef.current?.exportToCSV({ filename: "employees.csv" });
+    tableRef.current?.exportToCSV();
   };
 
   const handleGetInfo = () => {
     const api = tableRef.current;
     if (!api) return;
-    const headers = api.getHeaders();
     const rows = api.getAllRows();
+    const hdrs = api.getHeaders();
+    const totalRevenue = rows.reduce((sum, r) => sum + (Number(r.revenue) || 0), 0);
     alert(
-      `Table Info:\n• ${headers.length} columns\n• ${rows.length} rows\n• Columns: ${headers.map((h) => h.label).join(", ")}`
+      `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     );
   };
 
@@ -39,9 +69,11 @@ const CsvExportDemo = ({
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={csvExportConfig.headers}
-        rows={csvExportConfig.rows}
-        columnResizing
+        defaultHeaders={headers}
+        rows={csvExportData}
+        editColumns={csvExportConfig.tableProps.editColumns}
+        selectableCells={csvExportConfig.tableProps.selectableCells}
+        customTheme={csvExportConfig.tableProps.customTheme}
         height={height}
         theme={theme}
       />

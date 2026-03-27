@@ -1,33 +1,77 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, RowSelectionChangeProps } from "@simple-table/react";
-import { rowSelectionConfig } from "@simple-table/examples-shared";
+import type { Theme, ReactHeaderObject, RowSelectionChangeProps } from "@simple-table/react";
+import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
+import type { LibraryBook } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 
 const RowSelectionDemo = ({
-  height = "400px",
+  height = "348px",
   theme,
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [selectedCount, setSelectedCount] = useState(0);
+  const [selectedBooks, setSelectedBooks] = useState<LibraryBook[]>([]);
+
+  const headers: ReactHeaderObject[] = useMemo(
+    () =>
+      rowSelectionConfig.headers.map((h) => {
+        if (h.accessor === "status") {
+          return {
+            ...h,
+            cellRenderer: ({ row }) => {
+              const s = String(row.status);
+              const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
+              return (
+                <span style={{ color, fontWeight: "bold" }}>{s}</span>
+              );
+            },
+          } as ReactHeaderObject;
+        }
+        return { ...h } as ReactHeaderObject;
+      }),
+    [],
+  );
 
   const handleRowSelectionChange = (props: RowSelectionChangeProps) => {
-    setSelectedCount(props.selectedRows.length);
+    const selected = rowSelectionData.filter((book) =>
+      props.selectedRows.has(String(book.id)),
+    );
+    setSelectedBooks(selected);
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: 8, fontSize: 13 }}>
-        {selectedCount > 0
-          ? `${selectedCount} row${selectedCount > 1 ? "s" : ""} selected`
-          : "No rows selected"}
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div
+        style={{
+          padding: 12,
+          backgroundColor: "#f0f9ff",
+          borderRadius: 8,
+          border: "1px solid #bae6fd",
+        }}
+      >
+        <div style={{ fontWeight: "bold", marginBottom: 4, color: "#0c4a6e" }}>
+          Library Management Demo
+        </div>
+        <div style={{ fontSize: 13, color: "#475569", marginBottom: 6 }}>
+          Click rows to select books. Use the checkbox column to select multiple.
+        </div>
+        <div style={{ fontSize: 13, color: "#334155" }}>
+          <strong>Selected Books: </strong>
+          {selectedBooks.length > 0
+            ? selectedBooks.map((b) => b.title).join(", ")
+            : "None"}
+        </div>
       </div>
+
       <SimpleTable
-        defaultHeaders={rowSelectionConfig.headers}
+        defaultHeaders={headers}
         rows={rowSelectionConfig.rows}
         enableRowSelection
+        columnResizing
+        columnReordering
+        selectableCells
         onRowSelectionChange={handleRowSelectionChange}
         height={height}
         theme={theme}

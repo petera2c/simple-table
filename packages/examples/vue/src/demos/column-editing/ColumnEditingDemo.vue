@@ -16,8 +16,8 @@
       :rows="columnEditingData"
       :height="height"
       :theme="theme"
-      enable-header-editing
-      selectable-columns
+      :enable-header-editing="true"
+      :selectable-columns="true"
       @header-edit="() => {}"
     />
   </div>

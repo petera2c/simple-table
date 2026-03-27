@@ -13,6 +13,8 @@ import "simple-table-core/styles.css";
     <simple-table
       [rows]="rows"
       [defaultHeaders]="headers"
+      [rowGrouping]="grouping"
+      [columnResizing]="true"
       [height]="height"
       [theme]="theme"
     ></simple-table>
@@ -24,4 +26,5 @@ export class AggregateFunctionsDemoComponent {
 
   readonly rows: Row[] = aggregateFunctionsConfig.rows;
   readonly headers: AngularHeaderObject[] = aggregateFunctionsConfig.headers;
+  readonly grouping = aggregateFunctionsConfig.tableProps.rowGrouping;
 }

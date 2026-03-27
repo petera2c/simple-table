@@ -12,4 +12,7 @@
   rows={tooltipConfig.rows}
   {height}
   {theme}
+  columnResizing={true}
+  columnReordering={true}
+  selectableCells={true}
 />
