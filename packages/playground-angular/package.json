@@ -14,7 +14,7 @@
     "@angular/core": "^19.0.0",
     "@angular/platform-browser": "^19.0.0",
     "rxjs": "^7.0.0",
-    "simple-table-angular": "workspace:*",
+    "@simple-table/angular": "workspace:*",
     "simple-table-core": "workspace:*",
     "zone.js": "^0.15.0"
   },

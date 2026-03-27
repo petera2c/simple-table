@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "simple-table-core": "workspace:*",
-    "simple-table-svelte": "workspace:*",
+    "@simple-table/svelte": "workspace:*",
     "svelte": "^5.0.0"
   },
   "devDependencies": {

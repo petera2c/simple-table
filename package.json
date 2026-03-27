@@ -23,7 +23,11 @@
     "turbo": "latest"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "lmdb", "msgpackr-extract"],
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract"
+    ],
     "packageExtensions": {
       "@analogjs/vite-plugin-angular": {
         "dependencies": {

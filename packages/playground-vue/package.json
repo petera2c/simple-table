@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "simple-table-core": "workspace:*",
-    "simple-table-vue": "workspace:*",
+    "@simple-table/vue": "workspace:*",
     "vue": "^3.0.0"
   },
   "devDependencies": {
