@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -75,7 +76,14 @@ jobs:
       - name: "[core] Publish"
         if: steps.core-check.outputs.changed == 'true'
         working-directory: packages/core
-        run: pnpm publish --no-git-checks --access public --provenance
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --access public --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --access public --provenance
+          fi
 
       - name: "[core] Create Git tag"
         if: steps.core-check.outputs.changed == 'true'
@@ -111,7 +119,14 @@ jobs:
       - name: "[react] Publish"
         if: steps.react-check.outputs.changed == 'true'
         working-directory: packages/react
-        run: pnpm publish --no-git-checks --provenance
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
 
       - name: "[react] Create Git tag"
         if: steps.react-check.outputs.changed == 'true'
@@ -147,7 +162,14 @@ jobs:
       - name: "[vue] Publish"
         if: steps.vue-check.outputs.changed == 'true'
         working-directory: packages/vue
-        run: pnpm publish --no-git-checks --provenance
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
 
       - name: "[vue] Create Git tag"
         if: steps.vue-check.outputs.changed == 'true'
@@ -183,7 +205,14 @@ jobs:
       - name: "[svelte] Publish"
         if: steps.svelte-check.outputs.changed == 'true'
         working-directory: packages/svelte
-        run: pnpm publish --no-git-checks --provenance
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
 
       - name: "[svelte] Create Git tag"
         if: steps.svelte-check.outputs.changed == 'true'
@@ -219,7 +248,14 @@ jobs:
       - name: "[solid] Publish"
         if: steps.solid-check.outputs.changed == 'true'
         working-directory: packages/solid
-        run: pnpm publish --no-git-checks --provenance
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
 
       - name: "[solid] Create Git tag"
         if: steps.solid-check.outputs.changed == 'true'
@@ -255,7 +291,14 @@ jobs:
       - name: "[angular] Publish"
         if: steps.angular-check.outputs.changed == 'true'
         working-directory: packages/angular
-        run: pnpm publish --no-git-checks --provenance
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
 
       - name: "[angular] Create Git tag"
         if: steps.angular-check.outputs.changed == 'true'
@@ -264,5 +307,39 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a "@simple-table/angular@${{ steps.angular-check.outputs.version }}" -m "Release @simple-table/angular@${{ steps.angular-check.outputs.version }}"
           git push origin "@simple-table/angular@${{ steps.angular-check.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─── StackBlitz examples ─────────────────────────────────────────────────
+
+      - name: "[stackblitz] Check if any package was published"
+        id: any-published
+        run: |
+          if [[ "${{ steps.core-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.react-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.vue-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.svelte-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.solid-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.angular-check.outputs.changed }}" == "true" ]]; then
+            echo "published=true" >> $GITHUB_OUTPUT
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[stackblitz] Generate examples"
+        if: steps.any-published.outputs.published == 'true'
+        run: node scripts/generate-stackblitz.mjs
+
+      - name: "[stackblitz] Deploy to branch"
+        if: steps.any-published.outputs.published == 'true'
+        run: |
+          cd stackblitz-examples
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b stackblitz-examples
+          git add -A
+          git commit -m "Update StackBlitz examples ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}" HEAD:stackblitz-examples
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

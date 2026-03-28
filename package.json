@@ -21,6 +21,8 @@
     "build:examples": "pnpm --filter=examples-react --filter=examples-vue --filter=examples-svelte --filter=examples-solid --filter=examples-angular --filter=examples-vanilla build",
     "new-demo": "node scripts/new-demo.mjs",
     "verify-examples": "node scripts/verify-examples.mjs",
+    "generate-stackblitz": "node scripts/generate-stackblitz.mjs",
+    "generate-stackblitz:test": "node scripts/generate-stackblitz.mjs --demos quick-start,live-update,crm",
     "start:core": "turbo run start --filter=simple-table-core",
     "test": "turbo run test"
   },

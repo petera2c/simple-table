@@ -23,6 +23,9 @@ pnpm-lock.yaml
 # turbo
 .turbo
 
+# generated stackblitz examples
+stackblitz-examples
+
 # misc
 .DS_Store
 .env.local
