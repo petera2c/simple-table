@@ -57,4 +57,12 @@ export const registry: DemoRegistry = {
   "dynamic-row-loading": () => import("./demos/dynamic-row-loading/DynamicRowLoadingDemo"),
   "charts": () => import("./demos/charts/ChartsDemo"),
   "live-update": () => import("./demos/live-update/LiveUpdateDemo"),
+  "crm": () => import("./demos/crm/CRMDemo"),
+  "infrastructure": () => import("./demos/infrastructure/InfrastructureDemo"),
+  "music": () => import("./demos/music/MusicDemo"),
+  "billing": () => import("./demos/billing/BillingDemo"),
+  "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo"),
+  "hr": () => import("./demos/hr/HRDemo"),
+  "sales": () => import("./demos/sales/SalesDemo"),
+  "spreadsheet": () => import("./demos/spreadsheet/SpreadsheetDemo"),
 };

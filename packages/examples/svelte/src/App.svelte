@@ -54,6 +54,14 @@
     "dynamic-row-loading": () => import("./demos/dynamic-row-loading/DynamicRowLoadingDemo.svelte"),
     "charts": () => import("./demos/charts/ChartsDemo.svelte"),
     "live-update": () => import("./demos/live-update/LiveUpdateDemo.svelte"),
+    "crm": () => import("./demos/crm/CRMDemo.svelte"),
+    "infrastructure": () => import("./demos/infrastructure/InfrastructureDemo.svelte"),
+    "music": () => import("./demos/music/MusicDemo.svelte"),
+    "billing": () => import("./demos/billing/BillingDemo.svelte"),
+    "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo.svelte"),
+    "hr": () => import("./demos/hr/HRDemo.svelte"),
+    "sales": () => import("./demos/sales/SalesDemo.svelte"),
+    "spreadsheet": () => import("./demos/spreadsheet/SpreadsheetDemo.svelte"),
   };
 
   let loader = $derived(registry[activeDemo]);

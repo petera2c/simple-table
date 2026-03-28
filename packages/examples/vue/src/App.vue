@@ -48,6 +48,14 @@ const registry: Record<string, () => Promise<{ default: any }>> = {
   "dynamic-row-loading": () => import("./demos/dynamic-row-loading/DynamicRowLoadingDemo.vue"),
   "charts": () => import("./demos/charts/ChartsDemo.vue"),
   "live-update": () => import("./demos/live-update/LiveUpdateDemo.vue"),
+  "crm": () => import("./demos/crm/CRMDemo.vue"),
+  "infrastructure": () => import("./demos/infrastructure/InfrastructureDemo.vue"),
+  "music": () => import("./demos/music/MusicDemo.vue"),
+  "billing": () => import("./demos/billing/BillingDemo.vue"),
+  "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo.vue"),
+  "hr": () => import("./demos/hr/HRDemo.vue"),
+  "sales": () => import("./demos/sales/SalesDemo.vue"),
+  "spreadsheet": () => import("./demos/spreadsheet/SpreadsheetDemo.vue"),
 };
 
 const params = new URLSearchParams(window.location.search);

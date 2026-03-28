@@ -1,1 +1,9 @@
 export type { Employee } from "./employee";
+export type { CRMLead } from "./crm";
+export type { InfrastructureServer } from "./infrastructure";
+export type { MusicArtist } from "./music";
+export type { BillingRow } from "./billing";
+export type { ManufacturingRow } from "./manufacturing";
+export type { HREmployee } from "./hr";
+export type { SalesRow } from "./sales";
+export type { SpreadsheetRow } from "./spreadsheet";

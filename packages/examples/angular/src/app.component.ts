@@ -51,6 +51,14 @@ import { DynamicNestedTablesDemoComponent } from "./demos/dynamic-nested-tables/
 import { DynamicRowLoadingDemoComponent } from "./demos/dynamic-row-loading/dynamic-row-loading-demo.component";
 import { ChartsDemoComponent } from "./demos/charts/charts-demo.component";
 import { LiveUpdateDemoComponent } from "./demos/live-update/live-update-demo.component";
+import { CRMDemoComponent } from "./demos/crm/crm-demo.component";
+import { InfrastructureDemoComponent } from "./demos/infrastructure/infrastructure-demo.component";
+import { MusicDemoComponent } from "./demos/music/music-demo.component";
+import { BillingDemoComponent } from "./demos/billing/billing-demo.component";
+import { ManufacturingDemoComponent } from "./demos/manufacturing/manufacturing-demo.component";
+import { HRDemoComponent } from "./demos/hr/hr-demo.component";
+import { SalesDemoComponent } from "./demos/sales/sales-demo.component";
+import { SpreadsheetDemoComponent } from "./demos/spreadsheet/spreadsheet-demo.component";
 
 const REGISTRY: Record<string, any> = {
   "quick-start": QuickStartDemoComponent,
@@ -98,6 +106,14 @@ const REGISTRY: Record<string, any> = {
   "dynamic-row-loading": DynamicRowLoadingDemoComponent,
   charts: ChartsDemoComponent,
   "live-update": LiveUpdateDemoComponent,
+  "crm": CRMDemoComponent,
+  "infrastructure": InfrastructureDemoComponent,
+  "music": MusicDemoComponent,
+  "billing": BillingDemoComponent,
+  "manufacturing": ManufacturingDemoComponent,
+  "hr": HRDemoComponent,
+  "sales": SalesDemoComponent,
+  "spreadsheet": SpreadsheetDemoComponent,
 };
 
 @Component({
@@ -149,6 +165,14 @@ const REGISTRY: Record<string, any> = {
     DynamicRowLoadingDemoComponent,
     ChartsDemoComponent,
     LiveUpdateDemoComponent,
+    CRMDemoComponent,
+    InfrastructureDemoComponent,
+    MusicDemoComponent,
+    BillingDemoComponent,
+    ManufacturingDemoComponent,
+    HRDemoComponent,
+    SalesDemoComponent,
+    SpreadsheetDemoComponent,
   ],
   template: `
     <div class="examples-shell">

@@ -191,6 +191,38 @@ const registry: Record<
     import("./demos/live-update/LiveUpdateDemo").then((m) => ({
       render: m.renderLiveUpdateDemo,
     })),
+  crm: () =>
+    import("./demos/crm/CRMDemo").then((m) => ({
+      render: m.renderCRMDemo,
+    })),
+  infrastructure: () =>
+    import("./demos/infrastructure/InfrastructureDemo").then((m) => ({
+      render: m.renderInfrastructureDemo,
+    })),
+  music: () =>
+    import("./demos/music/MusicDemo").then((m) => ({
+      render: m.renderMusicDemo,
+    })),
+  billing: () =>
+    import("./demos/billing/BillingDemo").then((m) => ({
+      render: m.renderBillingDemo,
+    })),
+  manufacturing: () =>
+    import("./demos/manufacturing/ManufacturingDemo").then((m) => ({
+      render: m.renderManufacturingDemo,
+    })),
+  hr: () =>
+    import("./demos/hr/HRDemo").then((m) => ({
+      render: m.renderHRDemo,
+    })),
+  sales: () =>
+    import("./demos/sales/SalesDemo").then((m) => ({
+      render: m.renderSalesDemo,
+    })),
+  spreadsheet: () =>
+    import("./demos/spreadsheet/SpreadsheetDemo").then((m) => ({
+      render: m.renderSpreadsheetDemo,
+    })),
 };
 
 const params = new URLSearchParams(window.location.search);

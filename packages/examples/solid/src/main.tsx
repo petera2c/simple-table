@@ -50,6 +50,14 @@ const registry: Record<string, ReturnType<typeof lazy>> = {
   "dynamic-row-loading": lazy(() => import("./demos/dynamic-row-loading/DynamicRowLoadingDemo")),
   charts: lazy(() => import("./demos/charts/ChartsDemo")),
   "live-update": lazy(() => import("./demos/live-update/LiveUpdateDemo")),
+  "crm": lazy(() => import("./demos/crm/CRMDemo")),
+  "infrastructure": lazy(() => import("./demos/infrastructure/InfrastructureDemo")),
+  "music": lazy(() => import("./demos/music/MusicDemo")),
+  "billing": lazy(() => import("./demos/billing/BillingDemo")),
+  "manufacturing": lazy(() => import("./demos/manufacturing/ManufacturingDemo")),
+  "hr": lazy(() => import("./demos/hr/HRDemo")),
+  "sales": lazy(() => import("./demos/sales/SalesDemo")),
+  "spreadsheet": lazy(() => import("./demos/spreadsheet/SpreadsheetDemo")),
 };
 
 function App() {

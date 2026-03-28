@@ -44,6 +44,14 @@ export const DEMO_LIST = [
   { id: "dynamic-row-loading", label: "Dynamic Row Loading" },
   { id: "charts", label: "Charts" },
   { id: "live-update", label: "Live Update" },
+  { id: "crm", label: "CRM" },
+  { id: "infrastructure", label: "Infrastructure" },
+  { id: "music", label: "Music" },
+  { id: "billing", label: "Billing" },
+  { id: "manufacturing", label: "Manufacturing" },
+  { id: "hr", label: "HR" },
+  { id: "sales", label: "Sales" },
+  { id: "spreadsheet", label: "Spreadsheet" },
 ] as const;
 
 export type DemoId = (typeof DEMO_LIST)[number]["id"];

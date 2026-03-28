@@ -10,7 +10,8 @@
     "./data/*": "./src/data/*",
     "./configs/*": "./src/configs/*",
     "./types/*": "./src/types/*",
-    "./utils/*": "./src/utils/*"
+    "./utils/*": "./src/utils/*",
+    "./styles/*": "./src/styles/*"
   },
   "dependencies": {
     "simple-table-core": "workspace:*"

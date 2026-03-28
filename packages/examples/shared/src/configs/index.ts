@@ -48,3 +48,12 @@ export { dynamicRowLoadingConfig, dynamicRowLoadingHeaders, generateInitialRegio
 export type { DynamicRegion, DynamicStore, DynamicProduct } from "./dynamic-row-loading-config";
 export { chartsConfig, chartsHeaders, chartsData } from "./charts-config";
 export { liveUpdateConfig, liveUpdateHeaders, liveUpdateData, generateStockHistory, generateSalesHistory } from "./live-update-config";
+export { crmConfig, crmHeaders, crmData, generateCRMData, CRM_FOOTER_COLORS_LIGHT, CRM_FOOTER_COLORS_DARK, CRM_THEME_COLORS_LIGHT, CRM_THEME_COLORS_DARK, generateVisiblePages } from "./crm-config";
+export { infrastructureConfig, infrastructureHeaders, infrastructureData, generateInfrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure-config";
+export { musicConfig, musicHeaders, musicData, generateMusicData, getMusicThemeColors, MUSIC_THEME_COLORS } from "./music-config";
+export { billingConfig, billingHeaders, billingData, generateBillingData } from "./billing-config";
+export { manufacturingConfig, manufacturingHeaders, manufacturingData, generateManufacturingData, getManufacturingStatusColors } from "./manufacturing-config";
+export { hrConfig, hrHeaders, hrData, generateHRData, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr-config";
+export type { HRTagColorKey } from "./hr-config";
+export { salesConfig, salesHeaders, salesData, generateSalesData, getSalesThemeColors } from "./sales-config";
+export { spreadsheetConfig, spreadsheetHeaders, spreadsheetData, generateSpreadsheetData, recalculateAmortization } from "./spreadsheet-config";
