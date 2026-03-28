@@ -201,7 +201,7 @@ export class SimpleTableVanilla {
 
     // Initialize SelectionManager with empty tableRows (will be updated during render)
     this.selectionManager = new SelectionManager({
-      selectableCells: this.config.selectableCells ?? true,
+      selectableCells: this.config.selectableCells ?? false,
       headers: this.headers,
       tableRows: [],
       onCellEdit: this.config.onCellEdit,
@@ -255,7 +255,7 @@ export class SimpleTableVanilla {
       maxHeight: this.config.maxHeight,
       totalRowCount: this.localRows.length,
       footerHeight:
-        this.config.shouldPaginate && !this.config.hideFooter
+        (this.config.shouldPaginate || this.config.footerRenderer) && !this.config.hideFooter
           ? this.customTheme.footerHeight
           : undefined,
       containerElement: refs.tableBodyContainerRef.current,

@@ -676,12 +676,52 @@ export class TableRenderer {
   ): void {
     if (!container) return;
 
-    if (deps.config.hideFooter || !deps.config.shouldPaginate) {
+    const hasCustomFooter = Boolean(deps.config.footerRenderer);
+    const hasPaginationFooter = deps.config.shouldPaginate && !deps.config.hideFooter;
+
+    if (!hasCustomFooter && !hasPaginationFooter) {
       container.innerHTML = "";
       return;
     }
 
-    const totalPages = Math.ceil(totalRows / (deps.config.rowsPerPage ?? 10));
+    const rowsPerPage = deps.config.rowsPerPage ?? 10;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+    if (hasCustomFooter) {
+      const startRow = (currentPage - 1) * rowsPerPage + 1;
+      const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+      const renderedContent = deps.config.footerRenderer!({
+        currentPage,
+        endRow,
+        hasNextPage: currentPage < totalPages,
+        hasPrevPage: currentPage > 1,
+        nextIcon: deps.resolvedIcons?.next,
+        onNextPage: async () => {
+          if (currentPage < totalPages) {
+            onPageChange(currentPage + 1);
+            if (deps.config.onNextPage) await deps.config.onNextPage(currentPage + 1);
+          }
+        },
+        onPageChange,
+        onPrevPage: () => {
+          if (currentPage > 1) onPageChange(currentPage - 1);
+        },
+        prevIcon: deps.resolvedIcons?.prev,
+        rowsPerPage,
+        startRow,
+        totalPages,
+        totalRows,
+      });
+
+      container.innerHTML = "";
+      if (renderedContent instanceof HTMLElement) {
+        container.appendChild(renderedContent);
+      } else if (typeof renderedContent === "string") {
+        container.innerHTML = renderedContent;
+      }
+      this.footerInstance = null;
+      return;
+    }
 
     if (this.footerInstance) {
       this.footerInstance.update({
@@ -690,7 +730,7 @@ export class TableRenderer {
         onPageChange,
         onNextPage: deps.config.onNextPage,
         onUserPageChange: deps.config.onPageChange,
-        rowsPerPage: deps.config.rowsPerPage ?? 10,
+        rowsPerPage,
         shouldPaginate: deps.config.shouldPaginate ?? false,
         totalPages,
         totalRows,
@@ -705,7 +745,7 @@ export class TableRenderer {
         onPageChange,
         onNextPage: deps.config.onNextPage,
         onUserPageChange: deps.config.onPageChange,
-        rowsPerPage: deps.config.rowsPerPage ?? 10,
+        rowsPerPage,
         shouldPaginate: deps.config.shouldPaginate ?? false,
         totalPages,
         totalRows,

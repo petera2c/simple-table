@@ -17,7 +17,11 @@
       return { ...h, cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
         const p = String(row.priority);
         const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
-        return `<span style="color:${color};font-weight:bold;cursor:pointer">${p}</span>`;
+        const el = document.createElement("span");
+        Object.assign(el.style, { color, fontWeight: "bold", cursor: "pointer" });
+        el.title = "Click to filter by priority";
+        el.textContent = p;
+        return el;
       }};
     }
     if (h.accessor === "status") {
@@ -25,13 +29,20 @@
         const s = String(row.status);
         const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
         const c = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
-        return `<span style="background:${bg};color:${c};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold;cursor:pointer">${s}</span>`;
+        const el = document.createElement("span");
+        Object.assign(el.style, { background: bg, color: c, padding: "4px 8px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold", cursor: "pointer" });
+        el.title = "Click to change status";
+        el.textContent = s;
+        return el;
       }};
     }
     if (h.accessor === "details") {
-      return { ...h, cellRenderer: () =>
-        `<button style="background:#3b82f6;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold">View Details</button>`
-      };
+      return { ...h, cellRenderer: () => {
+        const btn = document.createElement("button");
+        Object.assign(btn.style, { background: "#3b82f6", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" });
+        btn.textContent = "View Details";
+        return btn;
+      }};
     }
     return { ...h };
   });

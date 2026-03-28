@@ -388,7 +388,7 @@ export class RenderOrchestrator {
         context.config.totalRowCount ?? flattenResult.paginatableRows.length,
       headerHeight: calculatedHeaderHeight,
       footerHeight:
-        context.config.shouldPaginate && !context.config.hideFooter
+        (context.config.shouldPaginate || context.config.footerRenderer) && !context.config.hideFooter
           ? context.customTheme.footerHeight
           : undefined,
     });

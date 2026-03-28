@@ -1,4 +1,5 @@
 import CellValue from "../../types/CellValue";
+import type Row from "../../types/Row";
 import { getCellId } from "../cellUtils";
 import { getNestedValue, setNestedValue } from "../rowUtils";
 import { AbsoluteBodyCell, CellData, CellRenderContext } from "./types";
@@ -8,6 +9,10 @@ import { createCellContent } from "./content";
 
 // Global map for efficient row hover tracking: rowIndex -> Set<HTMLElement>
 const rowCellsMap = new Map<number, Set<HTMLElement>>();
+
+// WeakMap holding a mutable row ref per cell element so click handlers always
+// read the latest row data even when the cell DOM node is reused across renders.
+const cellRowRefMap = new WeakMap<HTMLElement, { current: Row }>();
 
 // Track current hovered row for cleanup
 let currentHoveredRow: number | null = null;
@@ -336,6 +341,11 @@ export const createBodyCellElement = (
 
   addTrackedEventListener(cellElement, "dblclick", handleDoubleClick);
 
+  // Mutable row ref so click handler always reads the latest row data
+  // even when updateBodyCellElement re-uses this DOM element with new rows.
+  const rowRef = { current: row as Row };
+  cellRowRefMap.set(cellElement, rowRef);
+
   // Cell click callback
   if (context.onCellClick && !isSelectionColumn) {
     const handleClick = (event: Event) => {
@@ -346,11 +356,12 @@ export const createBodyCellElement = (
         return;
       }
 
-      const currentValue = getNestedValue(row, header.accessor);
+      const currentRow = cellRowRefMap.get(cellElement)?.current ?? row;
+      const currentValue = getNestedValue(currentRow, header.accessor);
       context.onCellClick?.({
         accessor: header.accessor,
         colIndex,
-        row,
+        row: currentRow,
         rowIndex,
         value: currentValue,
       });
@@ -433,6 +444,12 @@ export const updateBodyCellElement = (
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
   cellElement.setAttribute("data-row-id", String(rowId));
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
+
+  // Keep the mutable row ref current so click handlers read fresh data.
+  const existingRowRef = cellRowRefMap.get(cellElement);
+  if (existingRowRef) {
+    existingRowRef.current = cell.row as Row;
+  }
 
   // Update cell content (important for sorting/filtering where row data changes).
   // Skip full content replace for expandable cells so the expand icon DOM node is preserved;

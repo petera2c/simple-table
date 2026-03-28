@@ -43,11 +43,19 @@ function transformHeader(header: VueHeaderObject): HeaderObject {
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
-    transformed.cellRenderer = wrapVueRenderer(cellRenderer) as any;
+    if (typeof cellRenderer === "object") {
+      transformed.cellRenderer = wrapVueRenderer(cellRenderer) as any;
+    } else {
+      transformed.cellRenderer = cellRenderer as any;
+    }
   }
 
   if (headerRenderer) {
-    transformed.headerRenderer = wrapVueRenderer(headerRenderer) as any;
+    if (typeof headerRenderer === "object") {
+      transformed.headerRenderer = wrapVueRenderer(headerRenderer) as any;
+    } else {
+      transformed.headerRenderer = headerRenderer as any;
+    }
   }
 
   if (children) {
@@ -82,7 +90,11 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
   };
 
   if (footerRenderer !== undefined) {
-    vanillaConfig.footerRenderer = wrapVueRenderer(footerRenderer) as any;
+    if (typeof footerRenderer === "object") {
+      vanillaConfig.footerRenderer = wrapVueRenderer(footerRenderer) as any;
+    } else {
+      vanillaConfig.footerRenderer = footerRenderer as any;
+    }
   }
 
   if (emptyStateRenderer !== undefined) {

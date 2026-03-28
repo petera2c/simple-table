@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
+import { renderToStaticMarkup } from "react-dom/server";
 
 /**
  * Wraps a React component into a function that returns an HTMLElement, matching
@@ -36,19 +37,14 @@ export function wrapReactNode(node: React.ReactNode): HTMLElement {
 }
 
 /**
- * Converts a ReactNode to an HTML string by rendering it into a temporary container.
+ * Converts a ReactNode to an HTML string using server-side static rendering.
  * Used for icon props where the vanilla table expects a string | HTMLElement | SVGSVGElement.
- * The root is immediately unmounted after extracting the HTML.
+ * Uses renderToStaticMarkup so it works synchronously from any context — including
+ * inside a useEffect — unlike createRoot + flushSync which silently produces empty
+ * output when called during React 18's passive effects phase.
  */
 export function reactNodeToHtmlString(node: React.ReactNode): string {
-  const container = document.createElement("div");
-  const root = createRoot(container);
-  flushSync(() => {
-    root.render(<>{node}</>);
-  });
-  const html = container.innerHTML;
-  root.unmount();
-  return html;
+  return renderToStaticMarkup(<>{node}</>);
 }
 
 /** Returns true if the value is a React component (function or class). */

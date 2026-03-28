@@ -39,8 +39,20 @@ export function buildVanillaConfig(
     const { cellRenderer, headerRenderer, children, nestedTable, ...headerRest } = header;
     const transformed: HeaderObject = { ...(headerRest as any) };
 
-    if (cellRenderer) transformed.cellRenderer = wrap(cellRenderer) as any;
-    if (headerRenderer) transformed.headerRenderer = wrap(headerRenderer) as any;
+    if (cellRenderer) {
+      if ((cellRenderer as any).ɵcmp) {
+        transformed.cellRenderer = wrap(cellRenderer) as any;
+      } else {
+        transformed.cellRenderer = cellRenderer as any;
+      }
+    }
+    if (headerRenderer) {
+      if ((headerRenderer as any).ɵcmp) {
+        transformed.headerRenderer = wrap(headerRenderer) as any;
+      } else {
+        transformed.headerRenderer = headerRenderer as any;
+      }
+    }
     if (children) transformed.children = children.map(transformHeader);
 
     if (nestedTable) {
@@ -57,19 +69,35 @@ export function buildVanillaConfig(
   };
 
   if (footerRenderer !== undefined) {
-    vanillaConfig.footerRenderer = wrap(footerRenderer) as any;
+    if ((footerRenderer as any).ɵcmp) {
+      vanillaConfig.footerRenderer = wrap(footerRenderer) as any;
+    } else {
+      vanillaConfig.footerRenderer = footerRenderer as any;
+    }
   }
 
   if (emptyStateRenderer !== undefined) {
-    vanillaConfig.emptyStateRenderer = wrap(emptyStateRenderer) as any;
+    if ((emptyStateRenderer as any).ɵcmp) {
+      vanillaConfig.emptyStateRenderer = wrap(emptyStateRenderer) as any;
+    } else {
+      vanillaConfig.emptyStateRenderer = emptyStateRenderer as any;
+    }
   }
 
   if (errorStateRenderer !== undefined) {
-    vanillaConfig.errorStateRenderer = wrap(errorStateRenderer) as any;
+    if ((errorStateRenderer as any).ɵcmp) {
+      vanillaConfig.errorStateRenderer = wrap(errorStateRenderer) as any;
+    } else {
+      vanillaConfig.errorStateRenderer = errorStateRenderer as any;
+    }
   }
 
   if (loadingStateRenderer !== undefined) {
-    vanillaConfig.loadingStateRenderer = wrap(loadingStateRenderer) as any;
+    if ((loadingStateRenderer as any).ɵcmp) {
+      vanillaConfig.loadingStateRenderer = wrap(loadingStateRenderer) as any;
+    } else {
+      vanillaConfig.loadingStateRenderer = loadingStateRenderer as any;
+    }
   }
 
   if (tableEmptyStateRenderer !== undefined) {

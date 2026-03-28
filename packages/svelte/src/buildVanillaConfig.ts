@@ -20,11 +20,19 @@ function transformHeader(header: SvelteHeaderObject): HeaderObject {
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
-    transformed.cellRenderer = wrapSvelteRenderer(cellRenderer) as any;
+    if (typeof cellRenderer === "function" && cellRenderer.length >= 2) {
+      transformed.cellRenderer = wrapSvelteRenderer(cellRenderer) as any;
+    } else {
+      transformed.cellRenderer = cellRenderer as any;
+    }
   }
 
   if (headerRenderer) {
-    transformed.headerRenderer = wrapSvelteRenderer(headerRenderer) as any;
+    if (typeof headerRenderer === "function" && headerRenderer.length >= 2) {
+      transformed.headerRenderer = wrapSvelteRenderer(headerRenderer) as any;
+    } else {
+      transformed.headerRenderer = headerRenderer as any;
+    }
   }
 
   if (children) {
@@ -57,19 +65,35 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
   };
 
   if (footerRenderer !== undefined) {
-    vanillaConfig.footerRenderer = wrapSvelteRenderer(footerRenderer) as any;
+    if (typeof footerRenderer === "function" && footerRenderer.length >= 2) {
+      vanillaConfig.footerRenderer = wrapSvelteRenderer(footerRenderer) as any;
+    } else {
+      vanillaConfig.footerRenderer = footerRenderer as any;
+    }
   }
 
   if (emptyStateRenderer !== undefined) {
-    vanillaConfig.emptyStateRenderer = wrapSvelteRenderer(emptyStateRenderer) as any;
+    if (typeof emptyStateRenderer === "function" && emptyStateRenderer.length >= 2) {
+      vanillaConfig.emptyStateRenderer = wrapSvelteRenderer(emptyStateRenderer) as any;
+    } else {
+      vanillaConfig.emptyStateRenderer = emptyStateRenderer as any;
+    }
   }
 
   if (errorStateRenderer !== undefined) {
-    vanillaConfig.errorStateRenderer = wrapSvelteRenderer(errorStateRenderer) as any;
+    if (typeof errorStateRenderer === "function" && errorStateRenderer.length >= 2) {
+      vanillaConfig.errorStateRenderer = wrapSvelteRenderer(errorStateRenderer) as any;
+    } else {
+      vanillaConfig.errorStateRenderer = errorStateRenderer as any;
+    }
   }
 
   if (loadingStateRenderer !== undefined) {
-    vanillaConfig.loadingStateRenderer = wrapSvelteRenderer(loadingStateRenderer) as any;
+    if (typeof loadingStateRenderer === "function" && loadingStateRenderer.length >= 2) {
+      vanillaConfig.loadingStateRenderer = wrapSvelteRenderer(loadingStateRenderer) as any;
+    } else {
+      vanillaConfig.loadingStateRenderer = loadingStateRenderer as any;
+    }
   }
 
   if (headerDropdown !== undefined) {
