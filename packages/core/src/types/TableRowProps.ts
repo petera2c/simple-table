@@ -19,7 +19,7 @@ type TableRowProps = {
   row: Row;
   rowIndex: number;
   shouldPaginate: boolean;
-  tableRef: { current: HTMLDivElement };
+  tableRef: { current: HTMLDivElement | null };
 };
 
 export default TableRowProps;

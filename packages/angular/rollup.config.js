@@ -73,7 +73,6 @@ export default {
     resolve(),
 
     typescript({
-      tsconfig: "tsconfig.build.json",
       exclude: ["node_modules/**"],
       clean: true,
       tsconfigOverride: {

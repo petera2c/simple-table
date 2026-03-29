@@ -103,10 +103,17 @@ export default {
       exclude: ["node_modules/**", "**/*.svelte"],
       clean: true,
       check: !isDev,
+      verbosity: isDev ? 3 : 0,
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isDev,
           declarationDir: isDev ? undefined : "dist/types",
+          ...(isDev
+            ? {
+                paths: { "simple-table-core": ["../core/src/index.ts"] },
+                verbatimModuleSyntax: false,
+              }
+            : {}),
         },
       },
     }),

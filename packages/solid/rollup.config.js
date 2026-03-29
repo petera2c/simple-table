@@ -86,9 +86,15 @@ export default {
     }),
 
     // Babel with solid preset transforms JSX to Solid's reactive runtime calls.
+    // @babel/preset-typescript strips TypeScript types (including `export type`)
+    // before the solid preset processes JSX, preventing Babel from misreading
+    // TS type syntax as Flow types.
     babel({
       babelHelpers: "bundled",
-      presets: [["solid", { generate: "dom", hydratable: false }]],
+      presets: [
+        "@babel/preset-typescript",
+        ["solid", { generate: "dom", hydratable: false }],
+      ],
       extensions: [".ts", ".tsx", ".js", ".jsx"],
       exclude: "node_modules/**",
     }),
