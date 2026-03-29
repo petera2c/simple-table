@@ -17,9 +17,6 @@ node_modules
 **/storybook-static
 **/dist
 
-# pnpm
-pnpm-lock.yaml
-
 # turbo
 .turbo
 
