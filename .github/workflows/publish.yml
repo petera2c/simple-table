@@ -63,9 +63,9 @@ jobs:
         if: steps.core-check.outputs.changed == 'true'
         working-directory: packages/core
         run: |
-          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
-            "npx http-server storybook-static --port 6006 --silent" \
-            "npx wait-on --timeout 60000 http://localhost:6006 && pnpm run test-storybook:ci"
+          npx --yes concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "npx --yes http-server storybook-static --port 6006 --silent" \
+            "npx --yes wait-on --timeout 60000 http://localhost:6006 && pnpm run test-storybook:ci"
 
       - name: "[core] Build"
         if: steps.core-check.outputs.changed == 'true'
