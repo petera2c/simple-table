@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
 
@@ -117,6 +117,8 @@ jobs:
       - name: "[react] Publish"
         if: steps.react-check.outputs.changed == 'true'
         working-directory: packages/react
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
@@ -160,6 +162,8 @@ jobs:
       - name: "[vue] Publish"
         if: steps.vue-check.outputs.changed == 'true'
         working-directory: packages/vue
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
@@ -203,6 +207,8 @@ jobs:
       - name: "[svelte] Publish"
         if: steps.svelte-check.outputs.changed == 'true'
         working-directory: packages/svelte
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
@@ -246,6 +252,8 @@ jobs:
       - name: "[solid] Publish"
         if: steps.solid-check.outputs.changed == 'true'
         working-directory: packages/solid
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
@@ -289,6 +297,8 @@ jobs:
       - name: "[angular] Publish"
         if: steps.angular-check.outputs.changed == 'true'
         working-directory: packages/angular
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
