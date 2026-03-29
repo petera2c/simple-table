@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/react",
-  "version": "3.0.0-beta.5",
+  "version": "3.0.0-beta.6",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -45,7 +45,7 @@
     "rollup-plugin-delete": "^2.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.36.0",
+    "rollup-plugin-typescript2": "^0.37.0",
     "typescript": "^4.9.5"
   },
   "description": "React adapter for simple-table-core — use the Simple Table data grid with full React component support for renderers.",

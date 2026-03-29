@@ -356,8 +356,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2(rollup@2.80.0)
       rollup-plugin-typescript2:
-        specifier: ^0.36.0
-        version: 0.36.0(rollup@2.80.0)(typescript@4.9.5)
+        specifier: ^0.37.0
+        version: 0.37.0(rollup@2.80.0)(typescript@4.9.5)
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -396,8 +396,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2(rollup@2.80.0)
       rollup-plugin-typescript2:
-        specifier: ^0.36.0
-        version: 0.36.0(rollup@2.80.0)(typescript@4.9.5)
+        specifier: ^0.37.0
+        version: 0.37.0(rollup@2.80.0)(typescript@4.9.5)
       solid-js:
         specifier: ^1.8.0
         version: 1.9.12
@@ -433,8 +433,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2(rollup@2.80.0)
       rollup-plugin-typescript2:
-        specifier: ^0.36.0
-        version: 0.36.0(rollup@2.80.0)(typescript@5.9.3)
+        specifier: ^0.37.0
+        version: 0.37.0(rollup@2.80.0)(typescript@5.9.3)
       svelte:
         specifier: ^5.0.0
         version: 5.55.0
@@ -473,8 +473,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2(rollup@2.80.0)
       rollup-plugin-typescript2:
-        specifier: ^0.36.0
-        version: 0.36.0(rollup@2.80.0)(typescript@4.9.5)
+        specifier: ^0.37.0
+        version: 0.37.0(rollup@2.80.0)(typescript@4.9.5)
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -10428,7 +10428,7 @@ snapshots:
       tslib: 2.8.1
       typescript: 4.9.5
 
-  rollup-plugin-typescript2@0.36.0(rollup@2.80.0)(typescript@5.9.3):
+  rollup-plugin-typescript2@0.37.0(rollup@2.80.0)(typescript@4.9.5):
     dependencies:
       '@rollup/pluginutils': 4.2.1
       find-cache-dir: 3.3.2
@@ -10436,7 +10436,7 @@ snapshots:
       rollup: 2.80.0
       semver: 7.7.4
       tslib: 2.8.1
-      typescript: 5.9.3
+      typescript: 4.9.5
 
   rollup-plugin-typescript2@0.37.0(rollup@2.80.0)(typescript@5.9.3):
     dependencies:
