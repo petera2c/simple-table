@@ -1,0 +1,106 @@
+{
+  "name": "simple-table-core",
+  "version": "3.0.0-beta.1",
+  "main": "dist/cjs/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "preview": "rollup -c -w",
+    "start": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "version:patch": "npm version patch && git push && git push --tags",
+    "version:minor": "npm version minor && git push && git push --tags",
+    "version:major": "npm version major && git push && git push --tags",
+    "test-storybook:ci": "test-storybook --url http://localhost:6006"
+  },
+  "sideEffects": [
+    "*.css",
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./styles/base.css": "./src/styles/base.css",
+    "./styles/themes/*.css": "./src/styles/themes/*.css"
+  },
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src/styles",
+    "LICENSE",
+    "EULA.txt",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/addon-links": "^8.6.14",
+    "@storybook/html": "^8.6.14",
+    "@storybook/html-webpack5": "^8.6.14",
+    "@storybook/test": "^8.6.14",
+    "@storybook/test-runner": "^0.19.1",
+    "@types/node": "^16.18.111",
+    "cssnano": "^7.0.6",
+    "postcss-calc": "^10.1.1",
+    "postcss-custom-properties": "^14.0.4",
+    "postcss-import": "^16.1.0",
+    "postcss-preset-env": "^10.1.5",
+    "rollup": "^2.79.2",
+    "rollup-plugin-delete": "^2.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "size-limit": "^11.2.0",
+    "storybook": "^8.6.14",
+    "ts-loader": "^9.5.4",
+    "typescript": "^4.9.5"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "size-limit": [
+    {
+      "path": "dist/cjs/index.js"
+    }
+  ],
+  "description": "Simple Table: A lightweight, free framework-agnostic data grid and table component with TypeScript support, sorting, filtering, and virtualization. Works with vanilla JS, React, Vue, Angular, and more.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petera2c/simple-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/petera2c/simple-table/issues"
+  },
+  "homepage": "https://www.simple-table.com",
+  "keywords": [
+    "simple-table",
+    "simple-table-core",
+    "datagrid",
+    "data-grid",
+    "data grid",
+    "datatable",
+    "data-table",
+    "data table",
+    "grid",
+    "table",
+    "spreadsheet",
+    "spreadsheet-table"
+  ]
+}

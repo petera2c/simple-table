@@ -5,9 +5,10 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
 
 permissions:
-  id-token: write # Required for OIDC
+  id-token: write
   contents: write
 
 jobs:
@@ -19,81 +20,324 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-
-      - name: Install latest npm
-        run: npm install -g npm@latest
-
-      - name: Check if version changed
-        id: version-check
-        run: |
-          # Get current version from package.json
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          echo "Current version: $CURRENT_VERSION"
-
-          # Get previous version from the last commit
-          git checkout HEAD~1 -- package.json 2>/dev/null || echo "No previous version"
-          PREVIOUS_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-          echo "Previous version: $PREVIOUS_VERSION"
-
-          # Restore current package.json
-          git checkout HEAD -- package.json
-
-          # Compare versions
-          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
-            echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
-            echo "version_changed=true" >> $GITHUB_OUTPUT
-            echo "new_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          else
-            echo "Version unchanged"
-            echo "version_changed=false" >> $GITHUB_OUTPUT
-          fi
+          cache: "pnpm"
 
       - name: Install dependencies
-        if: steps.version-check.outputs.version_changed == 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Build Storybook
-        if: steps.version-check.outputs.version_changed == 'true'
-        run: npm run build-storybook
+      # ─── simple-table-core ───────────────────────────────────────────────────
 
-      - name: Install Playwright
-        if: steps.version-check.outputs.version_changed == 'true'
+      - name: "[core] Check version changed"
+        id: core-check
+        working-directory: packages/core
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          git checkout HEAD~1 -- package.json 2>/dev/null || true
+          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          git checkout HEAD -- package.json
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[core] Build Storybook"
+        if: steps.core-check.outputs.changed == 'true'
+        working-directory: packages/core
+        run: pnpm run build-storybook
+
+      - name: "[core] Install Playwright"
+        if: steps.core-check.outputs.changed == 'true'
         run: npx playwright install --with-deps chromium
 
-      - name: Serve Storybook and run tests
-        if: steps.version-check.outputs.version_changed == 'true'
+      - name: "[core] Serve Storybook and run tests"
+        if: steps.core-check.outputs.changed == 'true'
+        working-directory: packages/core
         run: |
           npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
             "npx http-server storybook-static --port 6006 --silent" \
-            "npx wait-on --timeout 60000 http://localhost:6006 && npm run test-storybook:ci"
+            "npx wait-on --timeout 60000 http://localhost:6006 && pnpm run test-storybook:ci"
 
-      - name: Build package
-        if: steps.version-check.outputs.version_changed == 'true'
-        run: npm run build
+      - name: "[core] Build"
+        if: steps.core-check.outputs.changed == 'true'
+        run: pnpm run build:core
 
-      - name: Publish to npm
-        if: steps.version-check.outputs.version_changed == 'true'
-        run: npm publish --access public
+      - name: "[core] Publish"
+        if: steps.core-check.outputs.changed == 'true'
+        working-directory: packages/core
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --access public --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --access public --provenance
+          fi
 
-      - name: Create Git tag
-        if: steps.version-check.outputs.version_changed == 'true'
+      - name: "[core] Create Git tag"
+        if: steps.core-check.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "v${{ steps.version-check.outputs.new_version }}" -m "Release v${{ steps.version-check.outputs.new_version }}"
-          git push origin "v${{ steps.version-check.outputs.new_version }}"
+          git tag -a "simple-table-core@${{ steps.core-check.outputs.version }}" -m "Release simple-table-core@${{ steps.core-check.outputs.version }}"
+          git push origin "simple-table-core@${{ steps.core-check.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Summary
-        if: steps.version-check.outputs.version_changed == 'true'
+      # ─── @simple-table/react ─────────────────────────────────────────────────
+
+      - name: "[react] Check version changed"
+        id: react-check
+        working-directory: packages/react
         run: |
-          echo "✅ Successfully published simple-table-core@${{ steps.version-check.outputs.new_version }} to npm" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📦 Package: https://www.npmjs.com/package/simple-table-core" >> $GITHUB_STEP_SUMMARY
-          echo "🏷️ Version: ${{ steps.version-check.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          CURRENT=$(node -p "require('./package.json').version")
+          git checkout HEAD~1 -- package.json 2>/dev/null || true
+          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          git checkout HEAD -- package.json
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[react] Build"
+        if: steps.react-check.outputs.changed == 'true'
+        run: pnpm run build:react
+
+      - name: "[react] Publish"
+        if: steps.react-check.outputs.changed == 'true'
+        working-directory: packages/react
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
+
+      - name: "[react] Create Git tag"
+        if: steps.react-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "@simple-table/react@${{ steps.react-check.outputs.version }}" -m "Release @simple-table/react@${{ steps.react-check.outputs.version }}"
+          git push origin "@simple-table/react@${{ steps.react-check.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─── @simple-table/vue ───────────────────────────────────────────────────
+
+      - name: "[vue] Check version changed"
+        id: vue-check
+        working-directory: packages/vue
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          git checkout HEAD~1 -- package.json 2>/dev/null || true
+          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          git checkout HEAD -- package.json
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[vue] Build"
+        if: steps.vue-check.outputs.changed == 'true'
+        run: pnpm run build:vue
+
+      - name: "[vue] Publish"
+        if: steps.vue-check.outputs.changed == 'true'
+        working-directory: packages/vue
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
+
+      - name: "[vue] Create Git tag"
+        if: steps.vue-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "@simple-table/vue@${{ steps.vue-check.outputs.version }}" -m "Release @simple-table/vue@${{ steps.vue-check.outputs.version }}"
+          git push origin "@simple-table/vue@${{ steps.vue-check.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─── @simple-table/svelte ────────────────────────────────────────────────
+
+      - name: "[svelte] Check version changed"
+        id: svelte-check
+        working-directory: packages/svelte
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          git checkout HEAD~1 -- package.json 2>/dev/null || true
+          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          git checkout HEAD -- package.json
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[svelte] Build"
+        if: steps.svelte-check.outputs.changed == 'true'
+        run: pnpm run build:svelte
+
+      - name: "[svelte] Publish"
+        if: steps.svelte-check.outputs.changed == 'true'
+        working-directory: packages/svelte
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
+
+      - name: "[svelte] Create Git tag"
+        if: steps.svelte-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "@simple-table/svelte@${{ steps.svelte-check.outputs.version }}" -m "Release @simple-table/svelte@${{ steps.svelte-check.outputs.version }}"
+          git push origin "@simple-table/svelte@${{ steps.svelte-check.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─── @simple-table/solid ─────────────────────────────────────────────────
+
+      - name: "[solid] Check version changed"
+        id: solid-check
+        working-directory: packages/solid
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          git checkout HEAD~1 -- package.json 2>/dev/null || true
+          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          git checkout HEAD -- package.json
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[solid] Build"
+        if: steps.solid-check.outputs.changed == 'true'
+        run: pnpm run build:solid
+
+      - name: "[solid] Publish"
+        if: steps.solid-check.outputs.changed == 'true'
+        working-directory: packages/solid
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
+
+      - name: "[solid] Create Git tag"
+        if: steps.solid-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "@simple-table/solid@${{ steps.solid-check.outputs.version }}" -m "Release @simple-table/solid@${{ steps.solid-check.outputs.version }}"
+          git push origin "@simple-table/solid@${{ steps.solid-check.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─── @simple-table/angular ───────────────────────────────────────────────
+
+      - name: "[angular] Check version changed"
+        id: angular-check
+        working-directory: packages/angular
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          git checkout HEAD~1 -- package.json 2>/dev/null || true
+          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          git checkout HEAD -- package.json
+          if [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[angular] Build"
+        if: steps.angular-check.outputs.changed == 'true'
+        run: pnpm run build:angular
+
+      - name: "[angular] Publish"
+        if: steps.angular-check.outputs.changed == 'true'
+        working-directory: packages/angular
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *"-"* ]]; then
+            TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            pnpm publish --no-git-checks --provenance --tag "$TAG"
+          else
+            pnpm publish --no-git-checks --provenance
+          fi
+
+      - name: "[angular] Create Git tag"
+        if: steps.angular-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "@simple-table/angular@${{ steps.angular-check.outputs.version }}" -m "Release @simple-table/angular@${{ steps.angular-check.outputs.version }}"
+          git push origin "@simple-table/angular@${{ steps.angular-check.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─── StackBlitz examples ─────────────────────────────────────────────────
+
+      - name: "[stackblitz] Check if any package was published"
+        id: any-published
+        run: |
+          if [[ "${{ steps.core-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.react-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.vue-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.svelte-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.solid-check.outputs.changed }}" == "true" ]] || \
+             [[ "${{ steps.angular-check.outputs.changed }}" == "true" ]]; then
+            echo "published=true" >> $GITHUB_OUTPUT
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "[stackblitz] Generate examples"
+        if: steps.any-published.outputs.published == 'true'
+        run: node scripts/generate-stackblitz.mjs
+
+      - name: "[stackblitz] Deploy to branch"
+        if: steps.any-published.outputs.published == 'true'
+        run: |
+          cd stackblitz-examples
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b stackblitz-examples
+          git add -A
+          git commit -m "Update StackBlitz examples ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}" HEAD:stackblitz-examples
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

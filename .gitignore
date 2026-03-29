@@ -1,17 +1,27 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
+**/node_modules
 /.pnp
+/.playwright-browsers
+/.cursor
 .pnp.js
 
 # testing
 /coverage
+**/coverage
 
 # production
-/build
-/storybook-static
-/dist
+**/build
+**/storybook-static
+**/dist
+
+# turbo
+.turbo
+
+# generated stackblitz examples
+stackblitz-examples
 
 # misc
 .DS_Store

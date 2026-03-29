@@ -1,138 +1,47 @@
 {
-  "version": "2.6.3",
-  "main": "dist/cjs/index.js",
-  "module": "dist/index.es.js",
-  "types": "dist/index.d.ts",
+  "name": "simple-table-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
   "scripts": {
-    "build": "rollup -c",
-    "start": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "preview": "rollup -c -w",
-    "test-storybook": "test-storybook",
-    "test-storybook:watch": "test-storybook --watch",
-    "test-storybook:coverage": "test-storybook --coverage",
-    "test-storybook:ci": "test-storybook --url http://localhost:6006",
-    "version:patch": "npm version patch && git push && git push --tags",
-    "version:minor": "npm version minor && git push && git push --tags",
-    "version:major": "npm version major && git push && git push --tags"
-  },
-  "sideEffects": [
-    "*.css",
-    "**/*.css"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./styles.css": "./dist/styles.css",
-    "./styles/base.css": "./src/styles/base.css",
-    "./styles/themes/*.css": "./src/styles/themes/*.css"
-  },
-  "license": "MIT",
-  "files": [
-    "dist",
-    "src/styles",
-    "LICENSE",
-    "EULA.txt",
-    "README.md"
-  ],
-  "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
+    "install:all": "pnpm install",
+    "build": "turbo run build",
+    "build:core": "turbo run build --filter=simple-table-core",
+    "build:react": "turbo run build --filter=@simple-table/react",
+    "build:vue": "turbo run build --filter=@simple-table/vue",
+    "build:solid": "turbo run build --filter=@simple-table/solid",
+    "build:svelte": "turbo run build --filter=@simple-table/svelte",
+    "build:angular": "turbo run build --filter=@simple-table/angular",
+    "dev": "turbo run preview --parallel",
+    "dev:examples": "pnpm --filter=examples-react --filter=examples-vue --filter=examples-svelte --filter=examples-solid --filter=examples-angular --filter=examples-vanilla dev",
+    "dev:examples-react": "pnpm --filter=examples-react dev",
+    "dev:examples-vue": "pnpm --filter=examples-vue dev",
+    "dev:examples-svelte": "pnpm --filter=examples-svelte dev",
+    "dev:examples-solid": "pnpm --filter=examples-solid dev",
+    "dev:examples-angular": "pnpm --filter=examples-angular dev",
+    "dev:examples-vanilla": "pnpm --filter=examples-vanilla dev",
+    "build:examples": "pnpm --filter=examples-react --filter=examples-vue --filter=examples-svelte --filter=examples-solid --filter=examples-angular --filter=examples-vanilla build",
+    "new-demo": "node scripts/new-demo.mjs",
+    "verify-examples": "node scripts/verify-examples.mjs",
+    "generate-stackblitz": "node scripts/generate-stackblitz.mjs",
+    "generate-stackblitz:test": "node scripts/generate-stackblitz.mjs --demos quick-start,live-update,crm",
+    "start:core": "turbo run start --filter=simple-table-core",
+    "test": "turbo run test"
   },
   "devDependencies": {
-    "@babel/preset-react": "^7.25.7",
-    "@rollup/plugin-node-resolve": "^15.3.0",
-    "@size-limit/preset-small-lib": "^11.2.0",
-    "@storybook/addon-a11y": "^8.4.1",
-    "@storybook/addon-controls": "^8.4.1",
-    "@storybook/addon-docs": "^8.4.1",
-    "@storybook/addon-essentials": "^8.4.1",
-    "@storybook/addon-interactions": "^8.4.1",
-    "@storybook/addon-links": "^8.4.1",
-    "@storybook/addon-onboarding": "^8.4.1",
-    "@storybook/blocks": "^8.4.1",
-    "@storybook/preset-create-react-app": "^8.4.1",
-    "@storybook/react": "^8.4.1",
-    "@storybook/react-webpack5": "^8.4.1",
-    "@storybook/test": "^8.4.1",
-    "@storybook/test-runner": "^0.23.0",
-    "@types/node": "^16.18.111",
-    "chromatic": "^13.0.1",
-    "cssnano": "^7.0.6",
-    "eslint-plugin-storybook": "^0.9.0",
-    "postcss-calc": "^10.1.1",
-    "postcss-custom-properties": "^14.0.4",
-    "postcss-import": "^16.1.0",
-    "postcss-preset-env": "^10.1.5",
-    "prop-types": "^15.8.1",
-    "rollup": "^2.79.2",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-delete": "^2.1.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.36.0",
-    "size-limit": "^11.2.0",
-    "storybook": "^8.4.1",
-    "typescript": "^4.9.5",
-    "webpack": "^5.95.0"
+    "turbo": "latest"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "plugin:storybook/recommended"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract"
     ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "size-limit": [
-    {
-      "path": "dist/cjs/index.js"
+    "packageExtensions": {
+      "@analogjs/vite-plugin-angular": {
+        "dependencies": {
+          "vite": "^6.0.0"
+        }
+      }
     }
-  ],
-  "name": "simple-table-core",
-  "description": "Simple Table: A lightweight, free React data grid and table component with TypeScript support, sorting, filtering, and virtualization.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/petera2c/simple-table.git"
-  },
-  "bugs": {
-    "url": "https://github.com/petera2c/simple-table/issues"
-  },
-  "homepage": "https://www.simple-table.com",
-  "keywords": [
-    "simple-table",
-    "simple-table-core",
-    "datagrid",
-    "data-grid",
-    "data grid",
-    "datatable",
-    "data-table",
-    "data table",
-    "grid",
-    "table",
-    "reacttable",
-    "react-table",
-    "react-grid",
-    "react-spreadsheet",
-    "react",
-    "react data grid",
-    "react table",
-    "react-component",
-    "spreadsheet",
-    "spreadsheet-table"
-  ]
+  }
 }

@@ -1,0 +1,70 @@
+{
+  "name": "@simple-table/react",
+  "version": "3.0.0-beta.1",
+  "main": "dist/cjs/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "preview": "rollup -c -w",
+    "version:patch": "npm version patch && git push && git push --tags",
+    "version:minor": "npm version minor && git push && git push --tags",
+    "version:major": "npm version major && git push && git push --tags"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "simple-table-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@rollup/plugin-alias": "^4.0.4",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "rollup": "^2.79.2",
+    "rollup-plugin-delete": "^2.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "typescript": "^4.9.5"
+  },
+  "description": "React adapter for simple-table-core — use the Simple Table data grid with full React component support for renderers.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petera2c/simple-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/petera2c/simple-table/issues"
+  },
+  "homepage": "https://www.simple-table.com",
+  "keywords": [
+    "simple-table",
+    "simple-table-react",
+    "react",
+    "datagrid",
+    "data-grid",
+    "data table",
+    "react-table",
+    "react data grid"
+  ]
+}

@@ -1,0 +1,29 @@
+<script lang="ts">
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme } from "@simple-table/svelte";
+  import {
+    columnEditorCustomRendererConfig,
+    COLUMN_EDITOR_TEXT,
+    COLUMN_EDITOR_SEARCH_PLACEHOLDER,
+    buildVanillaColumnEditorRowRenderer,
+  } from "@simple-table/examples-shared";
+  import "simple-table-core/styles.css";
+
+  let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
+
+  const editorConfig = {
+    text: COLUMN_EDITOR_TEXT,
+    searchEnabled: true,
+    searchPlaceholder: COLUMN_EDITOR_SEARCH_PLACEHOLDER,
+    rowRenderer: buildVanillaColumnEditorRowRenderer,
+  };
+</script>
+
+<SimpleTable
+  defaultHeaders={columnEditorCustomRendererConfig.headers}
+  rows={columnEditorCustomRendererConfig.rows}
+  editColumns={true}
+  columnEditorConfig={editorConfig}
+  {height}
+  {theme}
+/>

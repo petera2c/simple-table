@@ -1,0 +1,72 @@
+{
+  "name": "@simple-table/angular",
+  "version": "3.0.0-beta.1",
+  "main": "dist/cjs/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "preview": "rollup -c -w",
+    "version:patch": "npm version patch && git push && git push --tags",
+    "version:minor": "npm version minor && git push && git push --tags",
+    "version:major": "npm version major && git push && git push --tags"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@angular/common": ">=17.0.0 <22.0.0",
+    "@angular/core": ">=17.0.0 <22.0.0"
+  },
+  "dependencies": {
+    "simple-table-core": "workspace:*",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@angular/common": "^20.0.0",
+    "@angular/compiler": "^20.0.0",
+    "@angular/compiler-cli": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@rollup/plugin-alias": "4.0.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@types/node": "^16.18.126",
+    "rollup": "^2.79.2",
+    "rollup-plugin-delete": "^2.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.37.0",
+    "typescript": "^5.9.0",
+    "zone.js": "^0.15.0"
+  },
+  "description": "Angular adapter for simple-table-core — use the Simple Table data grid with full Angular component support for renderers.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petera2c/simple-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/petera2c/simple-table/issues"
+  },
+  "homepage": "https://www.simple-table.com",
+  "keywords": [
+    "simple-table",
+    "simple-table-angular",
+    "angular",
+    "datagrid",
+    "data-grid",
+    "data table",
+    "angular data grid"
+  ]
+}
