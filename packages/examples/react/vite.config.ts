@@ -13,6 +13,7 @@ export default defineConfig({
       { find: "@simple-table/react", replacement: path.resolve(__dirname, "../../react/src/index.ts") },
       { find: "simple-table-core/styles.css", replacement: path.resolve(__dirname, "../../core/src/styles/base.css") },
       { find: "simple-table-core", replacement: path.resolve(__dirname, "../../core/src/index.ts") },
+      { find: /^@simple-table\/examples-shared\/(.*)$/, replacement: path.resolve(__dirname, "../shared/src/$1") },
       { find: "@simple-table/examples-shared", replacement: path.resolve(__dirname, "../shared/src/index.ts") },
     ],
   },
