@@ -102,7 +102,7 @@ export default {
       tsconfig: "tsconfig.build.json",
       exclude: ["node_modules/**", "**/*.svelte"],
       clean: true,
-      check: !isDev,
+      check: isDev,
       verbosity: isDev ? 3 : 0,
       tsconfigOverride: {
         compilerOptions: {

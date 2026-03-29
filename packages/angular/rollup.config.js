@@ -75,10 +75,12 @@ export default {
     typescript({
       exclude: ["node_modules/**"],
       clean: true,
+      check: isDev,
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isDev,
           declarationDir: isDev ? undefined : "dist/types",
+          ...(isDev ? {} : { paths: {} }),
         },
       },
     }),
