@@ -1,6 +1,5 @@
 import HeaderObject from "./HeaderObject";
 import TableRow from "./TableRow";
-import Cell from "./Cell";
 
 export interface TableCellProps {
   borderClass?: string;

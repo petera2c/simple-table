@@ -17,15 +17,12 @@
  *
  * For SINGLE ROW CHILDREN, parent gets its OWN colIndex and each child increments:
  *   calculateColumnIndices: parent=N, child1=N+1, child2=N+2  (childIsFirst=false)
- *   findLeafHeaders:        parent excluded, child1 at position N in leaf array
- *   → colIndexToAccessor[N] = child1.accessor  (cell has colIdx N → maps to child1) BUG!
- *   → colIndexToAccessor[N+1] = child2.accessor (cell has colIdx N+1 → maps to child2) BUG!
- *   → colIndexToAccessor[N+2] = undefined        (cell has colIdx N+2 → empty)        BUG!
+ *   findLeafHeaders:        parent INCLUDED at position N, child1 at N+1, child2 at N+2
+ *   → colIndexToAccessor[N]   = parent.accessor  ✓  CORRECT
+ *   → colIndexToAccessor[N+1] = child1.accessor  ✓  CORRECT
+ *   → colIndexToAccessor[N+2] = child2.accessor  ✓  CORRECT
  *
- * Conclusion: A singleRowChildren parent adds +1 to the indices of ALL its children
- * relative to their positions in leafHeaders, causing clipboard to read the wrong
- * accessor for every cell in that group. Only columns BEFORE the singleRowChildren
- * group are unaffected.
+ * This alignment is achieved by including the singleRowChildren parent in findLeafHeaders.
  *
  * ─── TABLE STRUCTURE ────────────────────────────────────────────────────────────
  *
@@ -55,8 +52,8 @@
  *  The colIndex→accessor mapping in EXPANDED state (no collapses):
  *    0→id  1→name  2→region  3→q1Sales  4→q2Sales  5→q3Sales  6→q4Sales
  *    7→softwareSales  8→hardwareSales  9→servicesSales
- *    10→weekly_diff.score (WRONG — cell has colIdx 11; this entry is for colIdx 10 = singleRowChildren parent)
- *    11→monthly_diff.score (WRONG — cell has colIdx 12)
+ *    10→latest.score (singleRowChildren parent)
+ *    11→weekly_diff.score  12→monthly_diff.score
  */
 
 import type { Meta, StoryObj } from "@storybook/react";
@@ -1152,14 +1149,11 @@ export const SingleRowChildren_PrecedingColumnsUnaffected: Story = {
 };
 
 /**
- * Test B2: The singleRowChildren PARENT cell is selectable and triggers copy flash.
- * The parent column (latest.score) exists in the grid as a real cell at colIdx=10.
- * Flash behavior is driven by selectedCells membership, not by leaf header resolution —
- * so it works correctly even though the clipboard value is misaligned.
+ * Test B2: The singleRowChildren PARENT cell is selectable and triggers copy flash,
+ * and the clipboard value correctly reflects the parent's own accessor.
  *
- * NOTE: The clipboard VALUE at colIdx=10 will map to weekly_diff.score (wrong),
- * not latest.score (correct). This is the known alignment bug. The assertion below
- * verifies current (buggy) behavior so any future fix is caught as a regression.
+ * The parent (latest.score) is now included in leafHeaders at position 10, so
+ * colIdx=10 maps to "latest.score" and copies Alice's score of 92.
  */
 export const SingleRowChildren_ParentCellSelectableFlashWorks: Story = {
   tags: ["test"],
@@ -1189,32 +1183,18 @@ export const SingleRowChildren_ParentCellSelectableFlashWorks: Story = {
     // Flash DOES appear (flash is based on selectedCells membership, which works)
     expect(hasCopyFlash(parentCell!)).toBe(true);
 
-    // BUG DOCUMENTATION:
-    // The clipboard content is Alice's weekly_diff.score (5), not latest.score (92).
-    // colIndex=10 maps to leafHeaders[10] = "weekly_diff.score" accessor
-    // because the singleRowChildren parent occupies colIdx=10 but is NOT in leafHeaders,
-    // making weekly_diff.score land at leafHeaders position 10 instead of 11.
-    //
-    // CURRENT (buggy) behavior: clipboard = "5" (weekly_diff.score)
-    // EXPECTED (correct) behavior: clipboard = "92" (latest.score)
-    //
-    // TODO: Update this assertion to "92" once the alignment bug is fixed.
-    expect(clipboard.get()).toBe("5"); // BUG: should be "92"
+    // The parent cell (latest.score) is now included in leafHeaders, so colIdx=10
+    // correctly maps to the "latest.score" accessor → Alice's value = "92".
+    expect(clipboard.get()).toBe("92");
   },
 };
 
 /**
- * Test B3: Child columns of a singleRowChildren group are selectable.
- * Documents that each child's colIdx is shifted +1 relative to its leafHeaders position.
+ * Test B3: Child columns of a singleRowChildren group copy the correct values.
  *
- * weekly_diff.score is at colIdx=11 in the grid.
- * But colIndexToAccessor[11] = "monthly_diff.score" (adjacent child).
- * So copying the first child reads the second child's value.
- *
- * CURRENT behavior: clipboard = Alice's monthly_diff.score (12)
- * EXPECTED behavior: clipboard = Alice's weekly_diff.score (5)
- *
- * monthly_diff.score (colIdx=12) maps to colIndexToAccessor[12] = undefined → empty string.
+ * With the parent included in leafHeaders:
+ *   col 11 → weekly_diff.score → Alice's value = "5"
+ *   col 12 → monthly_diff.score → Alice's value = "12"
  */
 export const SingleRowChildren_ChildColumnsDocumentedBug: Story = {
   tags: ["test"],
@@ -1243,12 +1223,8 @@ export const SingleRowChildren_ChildColumnsDocumentedBug: Story = {
     // Flash works correctly (UI behavior)
     expect(hasCopyFlash(child1Cell!)).toBe(true);
 
-    // BUG: colIdx=11 → colIndexToAccessor[11] = "monthly_diff.score" (position 11 in leafHeaders)
-    // Alice's monthly_diff.score = 12, Alice's weekly_diff.score = 5
-    // CURRENT behavior: "12" (monthly_diff.score - wrong column)
-    // EXPECTED behavior: "5" (weekly_diff.score - correct column)
-    // TODO: Update to "5" once fixed.
-    expect(clipboard.get()).toBe("12"); // BUG: should be "5"
+    // colIdx=11 → leafHeaders[11] = "weekly_diff.score" → Alice's value = "5"
+    expect(clipboard.get()).toBe("5");
 
     // Second child (monthly_diff.score) at colIdx=12
     await clearSelection();
@@ -1258,21 +1234,19 @@ export const SingleRowChildren_ChildColumnsDocumentedBug: Story = {
     pressCtrlC();
     await waitForUpdate();
 
-    // BUG: colIdx=12 → colIndexToAccessor[12] = undefined → empty string
-    // EXPECTED: "12" (Alice's monthly_diff.score)
-    // TODO: Update to "12" once fixed.
-    expect(clipboard.get()).toBe(""); // BUG: should be "12"
+    // colIdx=12 → leafHeaders[12] = "monthly_diff.score" → Alice's value = "12"
+    expect(clipboard.get()).toBe("12");
   },
 };
 
 /**
  * Test B4: Copying a full row that includes the singleRowChildren group.
- * Demonstrates precisely where correct values end and the misalignment begins.
  *
- * Cols 0–9 (normal + normal nested): ALL CORRECT.
- * Col 10 (singleRowChildren parent): reads weekly_diff.score (5) instead of latest.score (92).
- * Col 11 (first child): reads monthly_diff.score (12) instead of weekly_diff.score (5).
- * Col 12 (second child): reads undefined → empty string instead of monthly_diff.score (12).
+ * All 13 columns map correctly after the findLeafHeaders fix:
+ *   Cols 0–9  (normal + normal nested): correct as before.
+ *   Col 10 (singleRowChildren parent): latest.score → "92"
+ *   Col 11 (first child): weekly_diff.score → "5"
+ *   Col 12 (second child): monthly_diff.score → "12"
  */
 export const SingleRowChildren_FullRowCopyShowsMisalignment: Story = {
   tags: ["test"],
@@ -1310,14 +1284,10 @@ export const SingleRowChildren_FullRowCopyShowsMisalignment: Story = {
     expect(cols[8]).toBe("$342,000"); // hardwareSales ✓
     expect(cols[9]).toBe("$346,000"); // servicesSales ✓
 
-    // Cols 10–12: singleRowChildren misalignment (BUG)
-    // TODO: After fixing the alignment bug, update these to:
-    //   cols[10] = "92"  (latest.score — parent)
-    //   cols[11] = "5"   (weekly_diff.score — child1)
-    //   cols[12] = "12"  (monthly_diff.score — child2)
-    expect(cols[10]).toBe("5"); // BUG: reads weekly_diff.score instead of latest.score (92)
-    expect(cols[11]).toBe("12"); // BUG: reads monthly_diff.score instead of weekly_diff.score (5)
-    expect(cols[12]).toBe(""); // BUG: reads undefined instead of monthly_diff.score (12)
+    // Cols 10–12: singleRowChildren group, now correctly aligned
+    expect(cols[10]).toBe("92"); // latest.score — parent
+    expect(cols[11]).toBe("5"); // weekly_diff.score — child1
+    expect(cols[12]).toBe("12"); // monthly_diff.score — child2
   },
 };
 
@@ -1501,24 +1471,16 @@ export const CopyExpandedCollapseAndCopyAgain: Story = {
 //   productCategories=7(singleRowChildren parent, OWN colIdx)
 //   softwareSales=8  hardwareSales=9  servicesSales=10
 //
-// flattenedLeafHeaders (expanded):
+// flattenedLeafHeaders (expanded) — with findLeafHeaders fix:
 //   [id(0) name(1) region(2) q1Sales(3) q2Sales(4) q3Sales(5) q4Sales(6)
-//    softwareSales(7) hardwareSales(8) servicesSales(9)]
-//   → productCategories is NOT a leaf, so it does NOT appear here
+//    productCategories(7) softwareSales(8) hardwareSales(9) servicesSales(10)]
+//   → productCategories IS included because singleRowChildren=true
 //
 // colIndexToAccessor:
 //   0→id  1→name  2→region  3→q1Sales  4→q2Sales  5→q3Sales  6→q4Sales
-//   7→softwareSales   (cell at colIdx=7 is the productCategories PARENT — MISMATCH)
-//   8→hardwareSales   (cell at colIdx=8 is softwareSales CHILD — off by 1)
-//   9→servicesSales   (cell at colIdx=9 is hardwareSales CHILD — off by 1)
-//   10→undefined      (cell at colIdx=10 is servicesSales CHILD — no entry)
+//   7→productCategories  8→softwareSales  9→hardwareSales  10→servicesSales  ✓
 //
-// RESULT:
-//   Quarterly columns (cols 0–6): all correct ✓
-//   productCategories parent cell (colIdx=7): reads softwareSales value (BUG)
-//   softwareSales child cell (colIdx=8): reads hardwareSales value (BUG)
-//   hardwareSales child cell (colIdx=9): reads servicesSales value (BUG)
-//   servicesSales child cell (colIdx=10): reads undefined → "" (BUG)
+// RESULT: all columns correctly aligned ✓
 // ============================================================================
 
 /** Headers where Product Categories uses singleRowChildren (not the quarterly group). */
@@ -1669,12 +1631,11 @@ export const ProductCategories_SingleRowChildren_QuarterlyStillCorrect: Story = 
     expect(idNameRegion[1]).toBe("Alice Thompson");
     expect(idNameRegion[2]).toBe("North America");
 
-    // ── Part 2: singleRowChildren parent cell (col 7) — BUG ───────────────────
+    // ── Part 2: singleRowChildren parent cell (col 7) ────────────────────────
     //
-    // The productCategories parent renders as a real cell at colIdx=7.
-    // colIndexToAccessor[7] = "softwareSales" (position 7 in leafHeaders)
-    // because productCategories is NOT in leafHeaders (only leaves are).
-    // So the parent cell copies softwareSales's value, not its own.
+    // productCategories is now included in leafHeaders, so colIdx=7 maps to
+    // the "productCategories" accessor. That accessor has no data field in the
+    // rows, so the clipboard value is "".
 
     await clearSelection();
     const parentCell = getCellByIndex(canvasElement, 0, 7);
@@ -1686,42 +1647,31 @@ export const ProductCategories_SingleRowChildren_QuarterlyStillCorrect: Story = 
     // Flash works (selection is correct)
     expect(hasCopyFlash(parentCell!)).toBe(true);
 
-    // BUG: colIdx=7 → leafHeaders[7] = "softwareSales" → Alice's softwareSales = $456,000
-    // EXPECTED: productCategories parent value (accessor "productCategories" has no data field → "")
-    // OR if the intent is to read the label, something else.
-    // The point is: it reads softwareSales instead of the parent column's own data.
-    // TODO: Once fixed, productCategories parent should read its own accessor or be excluded.
-    expect(clipboard.get()).toBe("$456,000"); // BUG: reads softwareSales, not parent
+    // colIdx=7 → leafHeaders[7] = "productCategories" → no data field → ""
+    expect(clipboard.get()).toBe("");
 
-    // ── Part 3: Child cells are all off by one ─────────────────────────────────
+    // ── Part 3: Child cells now map correctly ─────────────────────────────────
     //
-    // softwareSales cell: colIdx=8 → colIndexToAccessor[8] = "hardwareSales" → reads HW value
-    // hardwareSales cell: colIdx=9 → colIndexToAccessor[9] = "servicesSales" → reads SVC value
-    // servicesSales cell: colIdx=10 → colIndexToAccessor[10] = undefined → ""
+    // softwareSales cell: colIdx=8 → softwareSales → $456,000
+    // hardwareSales cell: colIdx=9 → hardwareSales → $342,000
+    // servicesSales cell: colIdx=10 → servicesSales → $346,000
 
     await clearSelection();
     await clickCell(canvasElement, 0, 8); // softwareSales cell
     pressCtrlC();
     await waitForUpdate();
-    // BUG: colIdx=8 → leafHeaders[8] = "hardwareSales" → Alice's hardware = $342,000
-    // EXPECTED: "$456,000" (softwareSales)
-    // TODO: Update to "$456,000" once the alignment bug is fixed.
-    expect(clipboard.get()).toBe("$342,000"); // BUG: reads hardwareSales instead of softwareSales
+    expect(clipboard.get()).toBe("$456,000");
 
     await clearSelection();
     await clickCell(canvasElement, 0, 9); // hardwareSales cell
     pressCtrlC();
     await waitForUpdate();
-    // BUG: reads servicesSales ($346,000) instead of hardwareSales ($342,000)
-    // TODO: Update to "$342,000" once fixed.
-    expect(clipboard.get()).toBe("$346,000"); // BUG: reads servicesSales
+    expect(clipboard.get()).toBe("$342,000");
 
     await clearSelection();
     await clickCell(canvasElement, 0, 10); // servicesSales cell
     pressCtrlC();
     await waitForUpdate();
-    // BUG: colIdx=10 → colIndexToAccessor[10] = undefined → ""
-    // TODO: Update to "$346,000" once fixed.
-    expect(clipboard.get()).toBe(""); // BUG: reads undefined
+    expect(clipboard.get()).toBe("$346,000");
   },
 };

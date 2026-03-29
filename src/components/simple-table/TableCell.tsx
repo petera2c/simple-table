@@ -512,8 +512,9 @@ const TableCell = ({
   };
 
   // Handle mouse down - only if not editing and not selection column
-  const handleCellMouseDown = () => {
+  const handleCellMouseDown = (e: React.MouseEvent) => {
     if (!isEditing && !isSelectionColumn) {
+      e.preventDefault();
       handleMouseDown({ rowIndex, colIndex, rowId });
     }
   };

@@ -3,7 +3,7 @@ import { RefObject, useLayoutEffect, useState } from "react";
 const useScrollbarWidth = ({
   tableBodyContainerRef,
 }: {
-  tableBodyContainerRef: RefObject<HTMLDivElement>;
+  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }) => {
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
 

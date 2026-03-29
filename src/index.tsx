@@ -75,7 +75,7 @@ import {
 } from "./types/ColumnEditorConfig";
 import { IconsConfig } from "./types/IconsConfig";
 import { GetRowId, GetRowIdParams } from "./types/GetRowId";
-import type { PinnedSectionsState } from "./utils/pinnedColumnUtils";
+import { PinnedSectionsState } from "./utils/pinnedColumnUtils";
 
 export { SimpleTable, LineAreaChart, BarChart };
 

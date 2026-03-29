@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
 import { expect } from "@storybook/test";
 import { Row, SimpleTable } from "../..";
 import { HeaderObject } from "../..";
@@ -58,10 +57,7 @@ const getHeaderCells = (canvasElement: HTMLElement): HTMLElement[] => {
   return Array.from(canvasElement.querySelectorAll(".st-header-cell"));
 };
 
-const findHeaderCellByLabel = (
-  canvasElement: HTMLElement,
-  label: string
-): HTMLElement | null => {
+const findHeaderCellByLabel = (canvasElement: HTMLElement, label: string): HTMLElement | null => {
   const headers = getHeaderCells(canvasElement);
   for (const header of headers) {
     const labelElement = header.querySelector(".st-header-label");
@@ -74,49 +70,45 @@ const findHeaderCellByLabel = (
 
 const resizeColumn = async (
   headerCell: HTMLElement,
-  resizeAmount: number
+  resizeAmount: number,
 ): Promise<{ initialWidth: number; finalWidth: number }> => {
   const initialWidth = headerCell.getBoundingClientRect().width;
 
   const resizeHandle = headerCell.querySelector(
-    ".st-header-resize-handle-container"
+    ".st-header-resize-handle-container",
   ) as HTMLElement;
 
   if (!resizeHandle) {
     throw new Error("Resize handle not found");
   }
 
-  const startX = resizeHandle.getBoundingClientRect().left + 5;
-  const endX = startX + resizeAmount;
+  const rect = resizeHandle.getBoundingClientRect();
+  const startX = rect.left + rect.width / 2;
+  const startY = rect.top + rect.height / 2;
 
-  const mouseDownEvent = new MouseEvent("mousedown", {
-    clientX: startX,
-    clientY: resizeHandle.getBoundingClientRect().top + 5,
-    bubbles: true,
-    cancelable: true,
-  });
+  resizeHandle.dispatchEvent(
+    new MouseEvent("mousedown", { bubbles: true, cancelable: true, clientX: startX, clientY: startY }),
+  );
 
-  const mouseMoveEvent = new MouseEvent("mousemove", {
-    clientX: endX,
-    clientY: resizeHandle.getBoundingClientRect().top + 5,
-    bubbles: true,
-    cancelable: true,
-  });
+  await new Promise((resolve) => setTimeout(resolve, 50));
 
-  const mouseUpEvent = new MouseEvent("mouseup", {
-    clientX: endX,
-    clientY: resizeHandle.getBoundingClientRect().top + 5,
-    bubbles: true,
-    cancelable: true,
-  });
+  document.dispatchEvent(
+    new MouseEvent("mousemove", { bubbles: true, cancelable: true, clientX: startX + resizeAmount, clientY: startY }),
+  );
 
-  resizeHandle.dispatchEvent(mouseDownEvent);
-  document.dispatchEvent(mouseMoveEvent);
-  document.dispatchEvent(mouseUpEvent);
+  await new Promise((resolve) => setTimeout(resolve, 50));
 
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  document.dispatchEvent(
+    new MouseEvent("mouseup", { bubbles: true, cancelable: true, clientX: startX + resizeAmount, clientY: startY }),
+  );
 
-  const finalWidth = headerCell.getBoundingClientRect().width;
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
+  // Re-query the cell by label in case React remounted the DOM node during the state update
+  const labelText = headerCell.querySelector(".st-header-label")?.textContent?.trim() ?? "";
+  const freshCell = labelText ? findHeaderCellByLabel(document.body, labelText) : null;
+  const resolvedCell = freshCell ?? headerCell;
+  const finalWidth = resolvedCell.getBoundingClientRect().width;
 
   return { initialWidth, finalWidth };
 };
@@ -222,7 +214,7 @@ export const ResizeMultipleColumns: Story = {
     expect(storeNameHeader).toBeTruthy();
     const { initialWidth: storeInitial, finalWidth: storeFinal } = await resizeColumn(
       storeNameHeader!,
-      30
+      30,
     );
     expect(storeFinal - storeInitial).toBeGreaterThan(25);
 
@@ -231,7 +223,7 @@ export const ResizeMultipleColumns: Story = {
     expect(cityHeader).toBeTruthy();
     const { initialWidth: cityInitial, finalWidth: cityFinal } = await resizeColumn(
       cityHeader!,
-      40
+      40,
     );
     expect(cityFinal - cityInitial).toBeGreaterThan(35);
   },

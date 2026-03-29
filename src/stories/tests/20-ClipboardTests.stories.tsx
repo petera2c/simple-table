@@ -166,24 +166,6 @@ const getCellByIndex = (
     `[data-row-index="${rowIndex}"][data-col-index="${colIndex}"]`,
   ) as HTMLElement | null;
 
-const getCellByAccessor = (
-  canvasElement: HTMLElement,
-  rowIndex: number,
-  accessor: string,
-): HTMLElement | null => {
-  const bodyContainer = canvasElement.querySelector(".st-body-container");
-  if (!bodyContainer) return null;
-  const rows = bodyContainer.querySelectorAll(".st-row");
-  const row = rows[rowIndex];
-  if (!row) return null;
-  return row.querySelector(`[data-accessor="${accessor}"]`) as HTMLElement | null;
-};
-
-const getCellContent = (cell: HTMLElement): string => {
-  const span = cell.querySelector(".st-cell-content");
-  return span?.textContent?.trim() ?? "";
-};
-
 const clickCell = async (
   canvasElement: HTMLElement,
   rowIndex: number,

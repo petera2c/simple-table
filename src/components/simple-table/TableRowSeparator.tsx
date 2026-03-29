@@ -19,6 +19,7 @@ const TableRowSeparator = ({
   const targetCellRef = useRef<HTMLElement | null>(null);
 
   const handleSeparatorMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
     // Use elementFromPoint to find which cell is underneath the click position
     // Temporarily disable pointer events on the separator so we can see through it
     const separatorElement = event.currentTarget as HTMLElement;

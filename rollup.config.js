@@ -72,6 +72,7 @@ export default {
     }),
     resolve(),
     typescript({
+      include: ["*.ts", "*.tsx", "**/*.ts", "**/*.tsx"],
       exclude: ["node_modules/**", "src/stories/**"],
       rollupCommonJSResolveHack: false,
       clean: true,

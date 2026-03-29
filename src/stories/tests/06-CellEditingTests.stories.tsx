@@ -100,8 +100,7 @@ const getCellContent = (cell: HTMLElement): string => {
 };
 
 const doubleClickCell = async (cell: HTMLElement) => {
-  const user = userEvent.setup();
-  await user.dblClick(cell);
+  cell.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, cancelable: true }));
 };
 
 const findInputInCell = (canvasElement: HTMLElement): HTMLInputElement | null => {
