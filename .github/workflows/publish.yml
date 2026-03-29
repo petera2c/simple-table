@@ -76,6 +76,8 @@ jobs:
       - name: "[core] Publish"
         if: steps.core-check.outputs.changed == 'true'
         working-directory: packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
