@@ -62,7 +62,7 @@ const calculateBodyCellClasses = (
 
   const isSelectionColumn =
     header.isSelectionColumn && context.enableRowSelection;
-  const clickable = Boolean(header?.isEditable);
+  const clickable = Boolean(header?.isEditable) || Boolean(context.onCellClick && !isSelectionColumn);
 
   // Calculate selection states
   const cellData: CellData = { rowIndex, colIndex, rowId };
@@ -296,6 +296,7 @@ export const createBodyCellElement = (
   // Event handlers for cell selection
   if (!isEditing && !isSelectionColumn) {
     const handleMouseDown = (event: Event) => {
+      event.preventDefault();
       const target = event.target as HTMLElement;
       if (target.closest(".st-expand-icon-container")) return;
       context.handleMouseDown(cellData);

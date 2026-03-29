@@ -7,7 +7,7 @@ export interface RefObject<T> {
 
 type TableHeaderProps = {
   calculatedHeaderHeight: number;
-  centerHeaderRef: RefObject<HTMLDivElement>;
+  centerHeaderRef: RefObject<HTMLDivElement | null>;
   headers: HeaderObject[];
   mainBodyWidth: number;
   pinnedLeftColumns: HeaderObject[];

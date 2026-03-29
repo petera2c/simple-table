@@ -64,6 +64,7 @@ export default {
     }),
     resolve(),
     typescript({
+      include: ["*.ts", "**/*.ts"],
       exclude: ["node_modules/**"],
       rollupCommonJSResolveHack: false,
       clean: true,

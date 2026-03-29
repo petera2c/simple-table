@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.32.1",
   "scripts": {
+    "install:all": "pnpm install",
     "build": "turbo run build",
     "build:core": "turbo run build --filter=simple-table-core",
     "build:react": "turbo run build --filter=@simple-table/react",

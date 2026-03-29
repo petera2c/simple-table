@@ -74,6 +74,7 @@ import type { GetRowId, GetRowIdParams } from "./types/GetRowId";
 import type { SimpleTableConfig } from "./types/SimpleTableConfig";
 import type { SimpleTableProps } from "./types/SimpleTableProps";
 import type { RowId } from "./types/RowId";
+import type { PinnedSectionsState } from "./types/PinnedSectionsState";
 
 export { SimpleTableVanilla };
 
@@ -145,6 +146,7 @@ export type {
   TableRefType,
   TableRowProps,
   Theme,
+  PinnedSectionsState,
   UpdateDataProps,
   ValueFormatter,
   ValueFormatterProps,

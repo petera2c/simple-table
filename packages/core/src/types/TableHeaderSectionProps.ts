@@ -12,7 +12,7 @@ interface TableHeaderSectionProps {
   leftOffset?: number;
   maxDepth: number;
   pinned?: Pinned;
-  sectionRef: RefObject<HTMLDivElement>;
+  sectionRef: RefObject<HTMLDivElement | null>;
   sort: SortColumn | null;
   width?: number;
 }

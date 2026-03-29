@@ -5,19 +5,19 @@ export interface RefObject<T> {
 }
 
 interface SharedTableProps {
-  centerHeaderRef: RefObject<HTMLDivElement>;
+  centerHeaderRef: RefObject<HTMLDivElement | null>;
   draggedHeaderRef: { current: HeaderObject | null };
-  headerContainerRef: RefObject<HTMLDivElement>;
+  headerContainerRef: RefObject<HTMLDivElement | null>;
   headers: HeaderObject[];
   hoveredHeaderRef: { current: HeaderObject | null };
-  mainBodyRef: RefObject<HTMLDivElement>;
+  mainBodyRef: RefObject<HTMLDivElement | null>;
   onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
   pinnedLeftColumns: HeaderObject[];
-  pinnedLeftHeaderRef: RefObject<HTMLDivElement>;
+  pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
   pinnedRightColumns: HeaderObject[];
-  pinnedRightHeaderRef: RefObject<HTMLDivElement>;
+  pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
   rowHeight: number;
-  tableBodyContainerRef: RefObject<HTMLDivElement>;
+  tableBodyContainerRef: RefObject<HTMLDivElement | null>;
 }
 
 export default SharedTableProps;

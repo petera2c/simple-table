@@ -57,6 +57,7 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
   let targetCell: HTMLElement | null = null;
 
   const handleMouseDown = (event: MouseEvent) => {
+    event.preventDefault();
     // Temporarily disable pointer events on separator to see through it
     const originalPointerEvents = separator.style.pointerEvents;
     separator.style.pointerEvents = "none";
