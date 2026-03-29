@@ -28,21 +28,27 @@ export const findLeafHeaders = (
 
   // If this header is collapsed, only return children that are visible when collapsed
   if (collapsedHeaders && collapsedHeaders.has(header.accessor)) {
-    return header.children
+    const collapsedChildren = header.children
       .filter((child) => {
         const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
         return showWhen === "parentCollapsed" || showWhen === "always";
       })
       .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
+
+    // singleRowChildren parents always render their own cell in addition to children
+    return header.singleRowChildren ? [header, ...collapsedChildren] : collapsedChildren;
   }
 
   // If not collapsed, return leaf headers that are visible when parent is expanded
-  return header.children
+  const expandedChildren = header.children
     .filter((child) => {
       const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
       return showWhen === "parentExpanded" || showWhen === "always";
     })
     .flatMap((child) => findLeafHeaders(child, collapsedHeaders));
+
+  // singleRowChildren parents always render their own cell in addition to children
+  return header.singleRowChildren ? [header, ...expandedChildren] : expandedChildren;
 };
 
 /**

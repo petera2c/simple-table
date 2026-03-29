@@ -2267,26 +2267,19 @@ export const SingleRowChildrenPasteIntoChild: Story = {
     pressCtrlV();
     await waitForPaste();
 
-    // Verify that a paste operation occurred (onCellEdit was called)
-    // NOTE: Due to singleRowChildren alignment bug, the accessor may not be
-    // "weekly_diff.score" as expected — it currently maps one position off.
-    // TODO: When the alignment bug is fixed, assert:
-    //   expect(capturedEditCalls[0].accessor).toBe("weekly_diff.score");
     expect(capturedEditCalls.length).toBeGreaterThan(0);
+    expect(capturedEditCalls[0].accessor).toBe("weekly_diff.score");
     expect(capturedEditCalls[0].rowIndex).toBe(0);
   },
 };
 
 /**
  * Test 15c: Copy from a singleRowChildren parent column.
- * Documents the current colIndex→accessor alignment for parent cells.
+ * Verifies that copying the parent cell yields the parent's own value.
  *
- * Due to the alignment bug: parent at colIndex=2 maps to the first child's
- * accessor in flattenedLeafHeaders. This test verifies flash appears (UI works)
- * even though the underlying value lookup is misaligned.
- *
- * TODO: Once the alignment bug is fixed, assert:
- *   expect(clipboard.get()).toBe("85"); // latest.score for row 0
+ * Layout: [id(0), latest.score parent(1), weekly_diff.score child(2)]
+ * Copying col 1 must produce "85" (latest.score for row 0), not "5"
+ * (weekly_diff.score), which was the pre-fix behaviour.
  */
 export const SingleRowChildrenParentCopyFlash: Story = {
   tags: ["test"],
@@ -2333,6 +2326,81 @@ export const SingleRowChildrenParentCopyFlash: Story = {
     // Flash should appear on the selected parent cell
     const parentCell = getCellByIndex(canvasElement, 0, 1);
     expect(hasCopyFlash(parentCell!)).toBe(true);
+    // Value must be the parent's own value, not the first child's
+    const clipboard = mockClipboard();
+    pressCtrlC();
+    await waitForUpdate();
+    expect(clipboard.get()).toBe("85"); // latest.score for row 0
+  },
+};
+
+/**
+ * Test 15d: singleRowChildren parent copy with a pinned left column.
+ *
+ * Layout (col-indices from calculateColumnIndices):
+ *   col 0 → name     (pinned left)
+ *   col 1 → latest.score  (singleRowChildren parent)
+ *   col 2 → weekly_diff.score  (child)
+ *   col 3 → monthly_diff.score (child)
+ *
+ * Before the findLeafHeaders fix, leafHeaders was built as:
+ *   [name, weekly_diff.score, monthly_diff.score]  (parent omitted)
+ * So colIndexToAccessor mapped:
+ *   0 → name, 1 → weekly_diff.score, 2 → monthly_diff.score
+ * Copying the parent cell (col 1) wrongly returned weekly_diff.score's value
+ * instead of latest.score's value — one cell to the right.
+ *
+ * After the fix, leafHeaders is:
+ *   [name, latest.score, weekly_diff.score, monthly_diff.score]
+ * and col 1 correctly maps to latest.score.
+ */
+export const SingleRowChildrenWithPinnedColumnCopy: Story = {
+  tags: ["test"],
+  render: () => {
+    const data = createSingleRowChildrenData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 150, type: "string", pinned: "left" },
+      {
+        accessor: "latest.score",
+        label: "Score",
+        width: 120,
+        type: "number",
+        singleRowChildren: true,
+        children: [
+          { accessor: "weekly_diff.score", label: "7d", width: 100, type: "number" },
+          { accessor: "monthly_diff.score", label: "30d", width: 100, type: "number" },
+        ],
+      },
+    ];
+    return (
+      <SimpleTable
+        defaultHeaders={headers}
+        rows={data}
+        getRowId={({ row }) => String(row.id)}
+        height="400px"
+        selectableCells
+      />
+    );
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    const clipboard = mockClipboard();
+
+    // Copy the singleRowChildren parent cell (latest.score = 85 for row 0)
+    await clearSelection();
+    await clickCell(canvasElement, 0, 1); // col 1 = latest.score parent
+    pressCtrlC();
+    await waitForUpdate();
+
+    // Must copy the parent's value (85), NOT the first child's value (5 = weekly_diff)
+    expect(clipboard.get()).toBe("85");
+
+    // Also verify copying a child cell still works correctly
+    await clearSelection();
+    await clickCell(canvasElement, 0, 2); // col 2 = weekly_diff.score
+    pressCtrlC();
+    await waitForUpdate();
+    expect(clipboard.get()).toBe("5");
   },
 };
 
