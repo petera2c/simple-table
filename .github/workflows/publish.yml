@@ -57,15 +57,17 @@ jobs:
 
       - name: "[core] Install Playwright"
         if: steps.core-check.outputs.changed == 'true'
-        run: npx playwright install --with-deps chromium
+        run: |
+          npx playwright install --with-deps chromium
+          npm install -g concurrently http-server wait-on
 
       - name: "[core] Serve Storybook and run tests"
         if: steps.core-check.outputs.changed == 'true'
         working-directory: packages/core
         run: |
-          npx --yes concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
-            "npx --yes http-server storybook-static --port 6006 --silent" \
-            "npx --yes wait-on --timeout 60000 http://localhost:6006 && pnpm run test-storybook:ci"
+          concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "http-server storybook-static --port 6006 --silent" \
+            "wait-on --timeout 60000 http://localhost:6006 && pnpm run test-storybook:ci"
 
       - name: "[core] Build"
         if: steps.core-check.outputs.changed == 'true'
