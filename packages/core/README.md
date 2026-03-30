@@ -5,29 +5,34 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/simple-table-core.svg)](LICENSE)
 
-Simple Table is a **lightweight**, **high-performance** React table and data grid component for building modern, scalable applications. With a **simple API**, **completely free features**, and a focus on developer experience, Simple Table makes it easy to create powerful, responsive tables.
+Simple Table is a **lightweight**, **high-performance**, **framework-agnostic** data grid and table component for building modern, scalable applications. With a **simple API**, **completely free features**, and a focus on developer experience, Simple Table works with any framework — or no framework at all.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
 </div>
 
-## 🚀 Quick Start
+## Framework Support
 
-Get started with Simple Table in just a few lines of code!
+Simple Table provides first-class adapters for the most popular frameworks:
 
-### Installation
+| Framework | Package | Version |
+|-----------|---------|---------|
+| **Vanilla JS** | [`simple-table-core`](https://www.npmjs.com/package/simple-table-core) | [![npm](https://img.shields.io/npm/v/simple-table-core.svg)](https://www.npmjs.com/package/simple-table-core) |
+| **React** | [`@simple-table/react`](https://www.npmjs.com/package/@simple-table/react) | [![npm](https://img.shields.io/npm/v/@simple-table/react.svg)](https://www.npmjs.com/package/@simple-table/react) |
+| **Vue 3** | [`@simple-table/vue`](https://www.npmjs.com/package/@simple-table/vue) | [![npm](https://img.shields.io/npm/v/@simple-table/vue.svg)](https://www.npmjs.com/package/@simple-table/vue) |
+| **Svelte** | [`@simple-table/svelte`](https://www.npmjs.com/package/@simple-table/svelte) | [![npm](https://img.shields.io/npm/v/@simple-table/svelte.svg)](https://www.npmjs.com/package/@simple-table/svelte) |
+| **Solid** | [`@simple-table/solid`](https://www.npmjs.com/package/@simple-table/solid) | [![npm](https://img.shields.io/npm/v/@simple-table/solid.svg)](https://www.npmjs.com/package/@simple-table/solid) |
+| **Angular** | [`@simple-table/angular`](https://www.npmjs.com/package/@simple-table/angular) | [![npm](https://img.shields.io/npm/v/@simple-table/angular.svg)](https://www.npmjs.com/package/@simple-table/angular) |
+
+## Quick Start
 
 ```bash
 npm install simple-table-core
 ```
 
-### 📖 Complete Guide
+**[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
-**[👉 Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
-
-## Quick Examples
-
-Explore Simple Table's capabilities with these focused examples:
+## Features
 
 ### Column Features
 
@@ -69,9 +74,7 @@ Explore Simple Table's capabilities with these focused examples:
 - **[Themes](https://www.simple-table.com/docs/themes)** - Apply built-in themes or create your own
 - **[Custom Icons](https://www.simple-table.com/docs/custom-icons)** - Replace default icons with your own
 
-## 🎯 Examples & Use Cases
-
-### Real-World Examples
+## Examples
 
 See Simple Table in action across different industries:
 
@@ -104,12 +107,12 @@ See Simple Table in action across different industries:
 
 </div>
 
-## 📚 Resources
+## Resources
 
-- **🌐 Website**: [simple-table.com](https://www.simple-table.com/)
-- **📖 Documentation**: [Complete Documentation](https://www.simple-table.com/docs/installation)
+- **Website**: [simple-table.com](https://www.simple-table.com/)
+- **Documentation**: [Complete Documentation](https://www.simple-table.com/docs/installation)
 
-## 💰 Pricing
+## Pricing
 
 Simple, transparent pricing that never changes based on your revenue or team size:
 

@@ -1,24 +1,20 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
-import { flushSync } from "react-dom";
 import { renderToStaticMarkup } from "react-dom/server";
 
 /**
  * Wraps a React component into a function that returns an HTMLElement, matching
  * the vanilla renderer contract expected by simple-table-core.
  *
- * Uses flushSync to ensure the React tree is fully painted into the container
- * before it is returned to the vanilla rendering pipeline.
+ * Uses renderToStaticMarkup for synchronous rendering that is safe to call from
+ * any context (including inside useEffect) without triggering React 18's
+ * "flushSync was called from inside a lifecycle method" warning.
  */
 export function wrapReactRenderer<P extends object>(
   Component: React.ComponentType<P>
 ): (props: P) => HTMLElement {
   return (props: P): HTMLElement => {
     const container = document.createElement("div");
-    const root = createRoot(container);
-    flushSync(() => {
-      root.render(<Component {...(props as any)} />);
-    });
+    container.innerHTML = renderToStaticMarkup(<Component {...(props as any)} />);
     return container;
   };
 }
@@ -29,10 +25,7 @@ export function wrapReactRenderer<P extends object>(
  */
 export function wrapReactNode(node: React.ReactNode): HTMLElement {
   const container = document.createElement("div");
-  const root = createRoot(container);
-  flushSync(() => {
-    root.render(<>{node}</>);
-  });
+  container.innerHTML = renderToStaticMarkup(<>{node}</>);
   return container;
 }
 
