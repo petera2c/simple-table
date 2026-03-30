@@ -11,13 +11,14 @@
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"
   },
-  "sideEffects": false,
+  "sideEffects": ["*.css", "**/*.css"],
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/cjs/index.js",
       "types": "./dist/types/svelte/src/index.d.ts"
-    }
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "license": "MIT",
   "publishConfig": {

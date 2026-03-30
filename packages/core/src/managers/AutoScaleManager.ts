@@ -59,7 +59,7 @@ const scaleSection = (
 
   const scaleFactor = availableSectionWidth / totalCurrentWidth;
 
-  if (Math.abs(scaleFactor - 1) < 0.01) {
+  if (scaleFactor >= 1 && scaleFactor - 1 < 0.01) {
     return scaledWidths;
   }
 

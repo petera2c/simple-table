@@ -4,6 +4,7 @@ import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import del from "rollup-plugin-delete";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -83,6 +84,15 @@ export default {
         },
       },
     }),
+
+    !isDev && {
+      name: "copy-core-styles",
+      writeBundle() {
+        const src = path.resolve(__dirname, "../core/dist/styles.css");
+        const dest = path.resolve(__dirname, "dist/styles.css");
+        if (fs.existsSync(src)) fs.copyFileSync(src, dest);
+      },
+    },
 
     !isDev &&
       terser({
