@@ -13,6 +13,7 @@ export const infrastructureExampleDefaults = {
   columnReordering: true,
   selectableCells: true,
   height: "70dvh",
+  autoExpandColumns: true,
 };
 
 export function renderInfrastructureExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {

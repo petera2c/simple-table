@@ -5,10 +5,8 @@ import {
 } from "../consts/general-consts";
 import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
-import type { Pinned } from "../types/Pinned";
 import { getCellId } from "./cellUtils";
 import { getNestedValue } from "./rowUtils";
-import { findParentHeader } from "./collapseUtils";
 
 /**
  * Find all leaf headers (headers without children) in a header tree
@@ -108,32 +106,6 @@ function getLeafHeadersForNormalization(headers: HeaderObject[]): HeaderObject[]
   return leaves;
 }
 
-/** Get the pinned value from the root header (for nested headers, children inherit from parent). */
-function getRootPinned(header: HeaderObject, headers: HeaderObject[]): Pinned | undefined {
-  if (header.pinned) return header.pinned;
-  const parent = findParentHeader(headers, header.accessor);
-  return parent ? getRootPinned(parent, headers) : undefined;
-}
-
-/** Split headers into left, main, right by root pinned. */
-function splitHeadersBySection(headers: HeaderObject[]): {
-  left: HeaderObject[];
-  main: HeaderObject[];
-  right: HeaderObject[];
-} {
-  const left: HeaderObject[] = [];
-  const main: HeaderObject[] = [];
-  const right: HeaderObject[] = [];
-  headers.forEach((h) => {
-    if (h.hide) return;
-    const pinned = getRootPinned(h, headers);
-    if (pinned === "left") left.push(h);
-    else if (pinned === "right") right.push(h);
-    else main.push(h);
-  });
-  return { left, main, right };
-}
-
 /**
  * Build a width map for a section's leaves given a total width.
  * Used so we can normalize main section to container width after left/right are sized.
@@ -195,8 +167,8 @@ function sumWidthMap(map: Map<string, number>): number {
  * Normalize header widths so that fr and % are converted to pixels.
  * Call this as soon as headers are received so the rest of the code can assume numeric widths.
  * If totalWidth is not provided, a reasonable total is computed from fixed widths + default for fr columns.
- * If options.containerWidth is provided, the main section's fr columns are given the remaining space
- * (container width minus pinned left/right), so the flexible column fills available space.
+ * If options.containerWidth is provided, all fr/% columns are resolved against the full container width,
+ * so pinned and non-pinned fr columns share the same proportional pool.
  */
 export function normalizeHeaderWidths(
   headers: HeaderObject[],
@@ -212,47 +184,8 @@ export function normalizeHeaderWidths(
   let widthMap: Map<string, number>;
 
   if (containerWidth != null && containerWidth > 0) {
-    const { left, main, right } = splitHeadersBySection(headers);
-    const leftLeaves = getLeafHeadersForNormalization(left);
-    const rightLeaves = getLeafHeadersForNormalization(right);
-    const mainLeaves = getLeafHeadersForNormalization(main);
-
-    const leftSpecs = leftLeaves.map((h) => parseWidthSpec(h));
-    const rightSpecs = rightLeaves.map((h) => parseWidthSpec(h));
-    const mainSpecs = mainLeaves.map((h) => parseWidthSpec(h));
-
-    const defaultTotalForSection = (specs: (WidthSpec | null)[]): number => {
-      const fixedSum = specs.reduce(
-        (sum, s) => (s?.type === "px" ? sum + s.value : sum),
-        0,
-      );
-      const frCount = specs.filter((s) => s?.type === "fr").length;
-      const pctCount = specs.filter((s) => s?.type === "pct").length;
-      let t =
-        fixedSum +
-        (frCount > 0 ? frCount * DEFAULT_FR_PX : 0) +
-        (pctCount > 0 ? DEFAULT_TABLE_WIDTH * 0.2 : 0);
-      return Math.max(t, DEFAULT_TABLE_WIDTH);
-    };
-
-    const leftTotal = defaultTotalForSection(leftSpecs);
-    const rightTotal = defaultTotalForSection(rightSpecs);
-    const leftMap = buildSectionWidthMap(leftLeaves, leftTotal);
-    const rightMap = buildSectionWidthMap(rightLeaves, rightTotal);
-    const leftWidth = sumWidthMap(leftMap);
-    const rightWidth = sumWidthMap(rightMap);
-    const mainSectionWidth = Math.max(0, containerWidth - leftWidth - rightWidth);
-    const mainTotal =
-      mainLeaves.length > 0 ? mainSectionWidth : 0;
-    const mainMap =
-      mainLeaves.length > 0
-        ? buildSectionWidthMap(mainLeaves, mainTotal)
-        : new Map<string, number>();
-
-    widthMap = new Map<string, number>();
-    leftMap.forEach((w, k) => widthMap.set(k, w));
-    rightMap.forEach((w, k) => widthMap.set(k, w));
-    mainMap.forEach((w, k) => widthMap.set(k, w));
+    const allLeaves = getLeafHeadersForNormalization(headers);
+    widthMap = buildSectionWidthMap(allLeaves, containerWidth);
   } else {
     const leaves = getLeafHeadersForNormalization(headers);
     const specs = leaves.map((h) => parseWidthSpec(h));

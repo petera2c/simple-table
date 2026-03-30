@@ -35,3 +35,6 @@ yarn-debug.log*
 yarn-error.log*
 
 *storybook.log
+
+# npm pack tarballs
+*.tgz
