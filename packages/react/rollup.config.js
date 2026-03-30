@@ -6,6 +6,18 @@ import del from "rollup-plugin-delete";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
+
+/** Writes dist/cjs/package.json so Node.js treats the CJS bundle as CommonJS
+ *  even if the root package.json has "type": "module" in the future. */
+const writeCjsPackageJson = {
+  name: "write-cjs-package-json",
+  writeBundle({ dir }) {
+    if (dir === "dist/cjs") {
+      fs.writeFileSync(`${dir}/package.json`, JSON.stringify({ type: "commonjs" }, null, 2) + "\n");
+    }
+  },
+};
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = process.env.ROLLUP_WATCH === "true";
@@ -114,5 +126,6 @@ export default {
           comments: false,
         },
       }),
+    !isDev && writeCjsPackageJson,
   ].filter(Boolean),
 };

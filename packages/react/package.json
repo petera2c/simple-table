@@ -1,7 +1,6 @@
 {
   "name": "@simple-table/react",
-  "version": "3.0.0-beta.9",
-  "type": "module",
+  "version": "3.0.0-beta.10",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -49,7 +48,7 @@
     "rollup-plugin-typescript2": "^0.37.0",
     "typescript": "^4.9.5"
   },
-  "description": "React adapter for simple-table-core — use the Simple Table data grid with full React component support for renderers.",
+  "description": "React adapter for simple-table-core \u2014 use the Simple Table data grid with full React component support for renderers.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"

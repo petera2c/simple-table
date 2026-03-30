@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
-import { renderToStaticMarkup } from "react-dom/server";
 
 /**
  * Wraps a React component into a function that returns an HTMLElement, matching
@@ -25,7 +24,13 @@ export function wrapReactRenderer<P extends object>(
 
 /**
  * Renders a static ReactNode into an HTMLElement.
- * Used for props like tableEmptyStateRenderer that are not called with arguments.
+ * Used for static ReactNode props (tableEmptyStateRenderer) and icon props where
+ * the vanilla table accepts string | HTMLElement | SVGSVGElement.
+ *
+ * Note: react-dom/server (renderToStaticMarkup) is intentionally NOT used here.
+ * A static top-level import of react-dom/server causes Turbopack to throw during
+ * client bundle evaluation, making the entire @simple-table/react module fail and
+ * SimpleTable export as undefined.
  */
 export function wrapReactNode(node: React.ReactNode): HTMLElement {
   const container = document.createElement("div");
@@ -34,17 +39,6 @@ export function wrapReactNode(node: React.ReactNode): HTMLElement {
     root.render(<>{node}</>);
   });
   return container;
-}
-
-/**
- * Converts a ReactNode to an HTML string using server-side static rendering.
- * Used for icon props where the vanilla table expects a string | HTMLElement | SVGSVGElement.
- * Uses renderToStaticMarkup so it works synchronously from any context — including
- * inside a useEffect — unlike createRoot + flushSync which silently produces empty
- * output when called during React 18's passive effects phase.
- */
-export function reactNodeToHtmlString(node: React.ReactNode): string {
-  return renderToStaticMarkup(<>{node}</>);
 }
 
 /** Returns true if the value is a React component (function or class). */

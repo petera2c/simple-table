@@ -3,6 +3,18 @@ import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import del from "rollup-plugin-delete";
+import fs from "fs";
+
+/** Writes dist/cjs/package.json so Node.js treats the CJS bundle as CommonJS
+ *  even if the root package.json has "type": "module" in the future. */
+const writeCjsPackageJson = {
+  name: "write-cjs-package-json",
+  writeBundle({ dir }) {
+    if (dir === "dist/cjs") {
+      fs.writeFileSync(`${dir}/package.json`, JSON.stringify({ type: "commonjs" }, null, 2) + "\n");
+    }
+  },
+};
 
 export default {
   input: "src/index.ts",
@@ -93,6 +105,7 @@ export default {
         comments: false, // Remove all comments
       },
     }),
+    writeCjsPackageJson,
   ],
   external: [],
 };

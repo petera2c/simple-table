@@ -9,7 +9,6 @@ import type {
 import {
   wrapReactRenderer,
   wrapReactNode,
-  reactNodeToHtmlString,
   isReactComponent,
 } from "./utils/wrapReactRenderer";
 
@@ -23,7 +22,7 @@ function transformIcons(icons: ReactIconsConfig): NonNullable<SimpleTableConfig[
     if (typeof value === "string" || value instanceof HTMLElement || value instanceof SVGElement) {
       (result as any)[key] = value;
     } else {
-      (result as any)[key] = reactNodeToHtmlString(value);
+      (result as any)[key] = wrapReactNode(value);
     }
   }
 

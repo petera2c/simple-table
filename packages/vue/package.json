@@ -1,7 +1,6 @@
 {
   "name": "@simple-table/vue",
-  "version": "3.0.0-beta.9",
-  "type": "module",
+  "version": "3.0.0-beta.10",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -46,7 +45,7 @@
     "typescript": "^4.9.5",
     "vue": "^3.0.0"
   },
-  "description": "Vue 3 adapter for simple-table-core — use the Simple Table data grid with full Vue component support for renderers.",
+  "description": "Vue 3 adapter for simple-table-core \u2014 use the Simple Table data grid with full Vue component support for renderers.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"

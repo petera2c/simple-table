@@ -1,7 +1,6 @@
 {
   "name": "@simple-table/angular",
-  "version": "3.0.0-beta.9",
-  "type": "module",
+  "version": "3.0.0-beta.10",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -52,7 +51,7 @@
     "typescript": "^5.9.0",
     "zone.js": "^0.15.0"
   },
-  "description": "Angular adapter for simple-table-core — use the Simple Table data grid with full Angular component support for renderers.",
+  "description": "Angular adapter for simple-table-core \u2014 use the Simple Table data grid with full Angular component support for renderers.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
