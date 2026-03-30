@@ -3,7 +3,7 @@
   import type { Theme } from "@simple-table/svelte";
   import type { HeaderObject } from "simple-table-core";
   import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 

@@ -5,7 +5,7 @@ import {
   infiniteScrollConfig,
   generateInfiniteScrollData,
 } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const MAX_ROWS = 200;
 const BATCH_SIZE = 15;

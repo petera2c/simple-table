@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, TableAPI, SolidHeaderObject } from "@simple-table/solid";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function CsvExportDemo(props: {
   height?: string | number;

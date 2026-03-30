@@ -5,7 +5,7 @@ import type { Theme, RowSelectionChangeProps } from "@simple-table/vue";
 import type { HeaderObject } from "simple-table-core";
 import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
 import type { LibraryBook } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "348px",

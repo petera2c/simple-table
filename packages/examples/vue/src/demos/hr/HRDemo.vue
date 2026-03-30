@@ -5,7 +5,7 @@ import type { Theme } from "@simple-table/vue";
 import type { HeaderObject, CellRenderer, CellChangeProps } from "simple-table-core";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
 import type { HREmployee } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",

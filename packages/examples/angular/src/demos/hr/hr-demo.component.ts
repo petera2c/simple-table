@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { CellRenderer, CellChangeProps } from "simple-table-core";
 import type { HREmployee, HRTagColorKey } from "@simple-table/examples-shared";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
   const e = document.createElement(tag);

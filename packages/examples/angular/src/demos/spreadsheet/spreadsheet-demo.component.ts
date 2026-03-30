@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { HeaderObject, HeaderRenderer, CellChangeProps } from "simple-table-core";
 import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
 import type { SpreadsheetRow } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 import "../../../../shared/src/styles/spreadsheet-custom.css";
 
 @Component({

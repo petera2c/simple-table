@@ -11,8 +11,8 @@ export default defineConfig({
   },
   resolve: {
     alias: [
+      { find: "@simple-table/angular/styles.css", replacement: path.resolve(__dirname, "../../core/src/styles/base.css") },
       { find: "@simple-table/angular", replacement: path.resolve(__dirname, "../../angular/src/index.ts") },
-      { find: "simple-table-core/styles.css", replacement: path.resolve(__dirname, "../../core/src/styles/base.css") },
       { find: "simple-table-core", replacement: path.resolve(__dirname, "../../core/src/index.ts") },
       { find: /^@simple-table\/examples-shared\/(.*)$/, replacement: path.resolve(__dirname, "../shared/src/$1") },
       { find: "@simple-table/examples-shared", replacement: path.resolve(__dirname, "../shared/src/index.ts") },

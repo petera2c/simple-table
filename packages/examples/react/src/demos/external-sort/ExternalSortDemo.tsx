@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, SortColumn } from "@simple-table/react";
 import { externalSortConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const ExternalSortDemo = ({
   height = "400px",

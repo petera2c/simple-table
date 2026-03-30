@@ -5,7 +5,7 @@ import type { Theme } from "@simple-table/vue";
 import type { HeaderObject, CellChangeProps } from "simple-table-core";
 import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
 import type { SpreadsheetRow } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, HeaderRendererProps } from "@simple-table/react";
 import { headerRendererConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 type SortDir = "asc" | "desc" | null;
 interface SortState {

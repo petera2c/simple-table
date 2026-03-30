@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { CellRenderer, Row } from "simple-table-core";
 import type { ManufacturingRow } from "@simple-table/examples-shared";
 import { manufacturingConfig, getManufacturingStatusColors } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 function hasStations(row: Record<string, unknown>): boolean {
   return Boolean(row.stations && Array.isArray(row.stations));

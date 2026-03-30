@@ -2,7 +2,7 @@
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
   import { themesConfig, AVAILABLE_THEMES } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
   let selectedTheme: Theme = $state(theme ?? "light");

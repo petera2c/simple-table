@@ -2,7 +2,7 @@
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, SortColumn } from "@simple-table/svelte";
   import { externalSortConfig } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 

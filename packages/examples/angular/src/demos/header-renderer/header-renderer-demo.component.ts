@@ -3,7 +3,7 @@ import { SimpleTableComponent } from "@simple-table/angular";
 import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { Row, HeaderObject } from "simple-table-core";
 import { headerRendererConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 type SortDir = "asc" | "desc" | null;
 const CYCLE: SortDir[] = ["asc", "desc", null];

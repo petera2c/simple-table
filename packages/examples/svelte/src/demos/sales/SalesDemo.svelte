@@ -4,7 +4,7 @@
   import type { HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
   import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
   import type { SalesRow } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 

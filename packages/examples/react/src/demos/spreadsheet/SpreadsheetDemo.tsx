@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject } from "@simple-table/react";
 import type { CellChangeProps, HeaderObject } from "simple-table-core";
 import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
 
 const SpreadsheetDemo = ({ height = "400px", theme = "light" }: { height?: string | number; theme?: Theme }) => {

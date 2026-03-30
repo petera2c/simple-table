@@ -2,7 +2,7 @@
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
 import { customThemeConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 import "../../../../shared/src/styles/custom-theme.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

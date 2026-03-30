@@ -4,7 +4,7 @@ import { SimpleTable } from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
 import type { HeaderObject, Row } from "simple-table-core";
 import { headerRendererConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",

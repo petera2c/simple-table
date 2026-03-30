@@ -5,7 +5,7 @@ import type { Theme } from "@simple-table/vue";
 import type { HeaderObject, CellRenderer } from "simple-table-core";
 import { musicConfig, getMusicThemeColors } from "@simple-table/examples-shared";
 import type { MusicArtist } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 import "@simple-table/examples-shared/styles/music-theme.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

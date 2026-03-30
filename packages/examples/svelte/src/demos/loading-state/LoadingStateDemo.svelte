@@ -3,7 +3,7 @@
   import type { Theme, Row } from "@simple-table/svelte";
   import { onMount } from "svelte";
   import { loadingStateConfig } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 

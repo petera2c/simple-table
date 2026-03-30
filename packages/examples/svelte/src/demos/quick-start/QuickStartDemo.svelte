@@ -2,7 +2,7 @@
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
   import { quickStartConfig } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "300px", theme }: { height?: string | number; theme?: Theme } = $props();
 </script>

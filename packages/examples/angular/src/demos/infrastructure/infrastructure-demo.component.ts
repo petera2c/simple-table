@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { CellRenderer, Row } from "simple-table-core";
 import type { InfrastructureServer } from "@simple-table/examples-shared";
 import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {
   const t = currentTheme || "light";

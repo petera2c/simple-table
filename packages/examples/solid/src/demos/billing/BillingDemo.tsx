@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject } from "@simple-table/solid";
 import { billingConfig } from "@simple-table/examples-shared";
 import type { BillingRow } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function BillingDemo(props: { height?: string | number; theme?: Theme }) {
   const headers: SolidHeaderObject[] = billingConfig.headers.map((h) => {

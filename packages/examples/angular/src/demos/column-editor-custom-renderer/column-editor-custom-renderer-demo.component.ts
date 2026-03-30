@@ -8,7 +8,7 @@ import {
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
   buildVanillaColumnEditorRowRenderer,
 } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "column-editor-custom-renderer-demo",

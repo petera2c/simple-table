@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject } from "@simple-table/react";
 import { billingConfig } from "@simple-table/examples-shared";
 import type { BillingRow } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const BillingDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
   const headers: ReactHeaderObject[] = billingConfig.headers.map((h) => {

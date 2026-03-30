@@ -2,7 +2,7 @@ import { createSignal, createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject, HeaderRendererProps } from "@simple-table/solid";
 import { headerRendererConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 type SortDir = "asc" | "desc" | null;
 const CycleOrder: SortDir[] = ["asc", "desc", null];

@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI } from "@simple-table/react";
 import { rowGroupingConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const btnStyle = (color: string) => ({
   padding: "6px 12px",

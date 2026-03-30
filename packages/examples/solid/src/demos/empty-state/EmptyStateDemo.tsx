@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
 import { emptyStateConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 const EmptyIcon = () => (
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">

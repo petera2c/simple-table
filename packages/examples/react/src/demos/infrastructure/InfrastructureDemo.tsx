@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
 import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "@simple-table/examples-shared";
 import type { InfrastructureServer } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 function getHeaders(currentTheme?: Theme): ReactHeaderObject[] {
   const t = currentTheme || "light";

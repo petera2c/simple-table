@@ -11,7 +11,7 @@ import {
   CRM_FOOTER_COLORS_DARK,
   generateVisiblePages,
 } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 import "../../../../shared/src/styles/crm-custom-theme.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, text?: string): HTMLElement {

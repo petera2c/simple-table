@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
 import { cellRendererConfig } from "@simple-table/examples-shared";
 import type { CellRendererEmployee } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 const getInitials = (name: string) =>
   name.split(" ").map((n) => n[0]).join("").toUpperCase();

@@ -4,7 +4,7 @@ import type { Theme, ReactHeaderObject } from "@simple-table/react";
 import type { CellChangeProps } from "simple-table-core";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
 import type { HREmployee } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 function getHeaders(): ReactHeaderObject[] {
   return hrConfig.headers.map((h) => {

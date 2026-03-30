@@ -2,7 +2,7 @@ import { useRef, useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const ProgrammaticControlDemo = ({
   height = "400px",

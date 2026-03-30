@@ -2,7 +2,7 @@ import { onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, TableAPI } from "@simple-table/solid";
 import { liveUpdateConfig, liveUpdateData } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function LiveUpdateDemo(props: { height?: string | number; theme?: Theme }) {
   let tableRef: TableAPI | undefined;

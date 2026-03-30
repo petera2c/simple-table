@@ -4,7 +4,7 @@
   import type { HeaderObject } from "simple-table-core";
   import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
   import type { LibraryBook } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "348px", theme }: { height?: string | number; theme?: Theme } = $props();
 

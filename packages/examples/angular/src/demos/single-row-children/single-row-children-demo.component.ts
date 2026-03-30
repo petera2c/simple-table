@@ -3,7 +3,7 @@ import { SimpleTableComponent } from "@simple-table/angular";
 import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { Row } from "simple-table-core";
 import { singleRowChildrenConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "single-row-children-demo",

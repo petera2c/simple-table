@@ -8,7 +8,7 @@ import {
   fetchDivisionsForCompany,
 } from "@simple-table/examples-shared";
 import type { DynamicCompany } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const DynamicNestedTablesDemo = ({ height = "500px", theme }: { height?: string | number; theme?: Theme }) => {
   const [rows, setRows] = useState<DynamicCompany[]>([...dynamicNestedTablesData]);

@@ -2,7 +2,7 @@ import { createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
 import { nestedTablesConfig, generateNestedTablesData } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function NestedTablesDemo(props: { height?: string | number; theme?: Theme }) {
   const sampleData = createMemo(() => generateNestedTablesData(25));

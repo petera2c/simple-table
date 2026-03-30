@@ -8,7 +8,7 @@ import {
   fetchDivisionsForCompany,
 } from "@simple-table/examples-shared";
 import type { DynamicCompany } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function DynamicNestedTablesDemo(props: { height?: string | number; theme?: Theme }) {
   const [rows, setRows] = createSignal<DynamicCompany[]>([...dynamicNestedTablesData]);

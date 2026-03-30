@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
 import { columnWidthConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const ColumnWidthDemo = ({
   height = "400px",

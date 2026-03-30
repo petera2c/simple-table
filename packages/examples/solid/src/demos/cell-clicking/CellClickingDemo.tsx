@@ -4,7 +4,7 @@ import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/
 import type { CellClickProps } from "simple-table-core";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "@simple-table/examples-shared";
 import type { ProjectTask } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 const DETAIL_KEYS = ["task", "details", "assignee", "status", "priority"] as const;
 

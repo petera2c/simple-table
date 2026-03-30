@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject, TableAPI } from "@simple-table/solid";
 import { musicData, getMusicThemeColors } from "@simple-table/examples-shared";
 import type { MusicArtist } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 import "@simple-table/examples-shared/styles/music-theme.css";
 
 const Tag = (props: { children: any; color?: string; theme?: string }) => {

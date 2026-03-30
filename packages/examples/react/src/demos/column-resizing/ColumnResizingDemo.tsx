@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
 import type { HeaderObject } from "simple-table-core";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const ColumnResizingDemo = ({
   height = "400px",

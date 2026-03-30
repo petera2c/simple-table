@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { CellRenderer, Row } from "simple-table-core";
 import type { BillingRow } from "@simple-table/examples-shared";
 import { billingConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "billing-demo",

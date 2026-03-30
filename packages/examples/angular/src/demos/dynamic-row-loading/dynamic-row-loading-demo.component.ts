@@ -9,7 +9,7 @@ import {
   fetchProductsForStore,
 } from "@simple-table/examples-shared";
 import type { DynamicRegion, DynamicStore } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "dynamic-row-loading-demo",

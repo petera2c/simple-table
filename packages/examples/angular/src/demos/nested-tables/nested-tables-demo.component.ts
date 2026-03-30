@@ -2,7 +2,7 @@ import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
 import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import { nestedTablesConfig, generateNestedTablesData } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "nested-tables-demo",

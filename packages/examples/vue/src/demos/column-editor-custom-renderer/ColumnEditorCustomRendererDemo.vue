@@ -7,7 +7,7 @@ import {
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
   buildVanillaColumnEditorRowRenderer,
 } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",

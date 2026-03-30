@@ -2,7 +2,7 @@ import { createSignal, onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
 import { columnWidthConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function ColumnWidthDemo(props: { height?: string | number; theme?: Theme }) {
   const [isMobile, setIsMobile] = createSignal(false);

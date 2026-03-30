@@ -4,7 +4,7 @@
   import type { HeaderObject, CellChangeProps } from "simple-table-core";
   import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
   import type { SpreadsheetRow } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
   import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
 
   let { height = "400px", theme = "light" as Theme }: { height?: string | number; theme?: Theme } = $props();

@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, TableAPI } from "@simple-table/solid";
 import { rowGroupingConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 const btnStyle = (color: string) => ({
   padding: "6px 12px",

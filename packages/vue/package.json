@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/vue",
-  "version": "3.0.0-beta.14",
+  "version": "3.0.0-beta.15",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/vue/src/index.d.ts",
@@ -11,7 +11,10 @@
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"
   },
-  "sideEffects": ["*.css", "**/*.css"],
+  "sideEffects": [
+    "*.css",
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.es.js",

@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject } from "@simple-table/react";
 import { manufacturingConfig, getManufacturingStatusColors } from "@simple-table/examples-shared";
 import type { ManufacturingRow } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 function getHeaders(): ReactHeaderObject[] {
   const baseHeaders = [...manufacturingConfig.headers];

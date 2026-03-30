@@ -4,7 +4,7 @@
   import type { HeaderObject, CellRenderer, CellChangeProps } from "simple-table-core";
   import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
   import type { HREmployee } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 

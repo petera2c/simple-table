@@ -4,7 +4,7 @@
   import type { HeaderObject, CellRenderer, Row } from "simple-table-core";
   import { billingConfig } from "@simple-table/examples-shared";
   import type { BillingRow } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 

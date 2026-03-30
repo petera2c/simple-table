@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, TableAPI, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function ProgrammaticControlDemo(props: {
   height?: string | number;

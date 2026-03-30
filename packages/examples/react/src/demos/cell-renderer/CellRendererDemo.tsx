@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
 import { cellRendererConfig } from "@simple-table/examples-shared";
 import type { CellRendererEmployee } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const getInitials = (name: string) =>
   name.split(" ").map((n) => n[0]).join("").toUpperCase();

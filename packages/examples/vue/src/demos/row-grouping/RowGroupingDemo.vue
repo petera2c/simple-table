@@ -27,7 +27,7 @@ import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, TableAPI } from "@simple-table/vue";
 import { rowGroupingConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",

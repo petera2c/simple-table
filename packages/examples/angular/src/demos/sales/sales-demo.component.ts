@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
 import type { SalesRow } from "@simple-table/examples-shared";
 import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
   const e = document.createElement(tag);

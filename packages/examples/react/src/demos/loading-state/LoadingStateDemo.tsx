@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, Row } from "@simple-table/react";
 import { loadingStateConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const LoadingStateDemo = ({
   height = "400px",

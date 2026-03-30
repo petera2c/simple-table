@@ -8,7 +8,7 @@ import {
   fetchDivisionsForCompany,
 } from "@simple-table/examples-shared";
 import type { DynamicCompany } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "dynamic-nested-tables-demo",

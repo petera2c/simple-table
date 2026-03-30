@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, FooterRendererProps } from "@simple-table/react";
 import { footerRendererConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 function getFooterColors(theme?: Theme) {
   const isModernDark = theme === "modern-dark";

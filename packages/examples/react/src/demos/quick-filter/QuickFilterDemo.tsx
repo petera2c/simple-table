@@ -2,7 +2,7 @@ import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, QuickFilterMode } from "@simple-table/react";
 import { quickFilterConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const QuickFilterDemo = ({
   height = "400px",

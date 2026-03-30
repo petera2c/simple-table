@@ -9,7 +9,7 @@ import {
   fetchProductsForStore,
 } from "@simple-table/examples-shared";
 import type { DynamicRegion, DynamicStore } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
   const [rows, setRows] = useState<DynamicRegion[]>(() => generateInitialRegions());

@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme } from "@simple-table/angular";
 import type { Row, CellRenderer } from "simple-table-core";
 import { cellRendererConfig } from "@simple-table/examples-shared";
 import type { CellRendererEmployee } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 const html = (str: string): Node => {
   const t = document.createElement("template");

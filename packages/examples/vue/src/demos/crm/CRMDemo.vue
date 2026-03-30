@@ -12,7 +12,7 @@ import {
   generateVisiblePages,
 } from "@simple-table/examples-shared";
 import type { CRMLead } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 import "@simple-table/examples-shared/styles/crm-custom-theme.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

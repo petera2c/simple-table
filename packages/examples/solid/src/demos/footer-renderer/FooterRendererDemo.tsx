@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/solid";
 import type { Theme, FooterRendererProps } from "@simple-table/solid";
 import { footerRendererConfig } from "@simple-table/examples-shared";
 import { For } from "solid-js";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 function getFooterColors(theme?: Theme) {
   const isModernDark = theme === "modern-dark";

@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
 import { musicData, getMusicThemeColors } from "@simple-table/examples-shared";
 import type { MusicArtist } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 import "@simple-table/examples-shared/styles/music-theme.css";
 
 const Tag = ({ children, color, theme }: { children: React.ReactNode; color?: string; theme?: string }) => {

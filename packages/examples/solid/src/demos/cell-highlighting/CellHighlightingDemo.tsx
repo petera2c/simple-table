@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
 import { cellHighlightingConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function CellHighlightingDemo(props: { height?: string | number; theme?: Theme }) {
   return (

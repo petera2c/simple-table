@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject } from "@simple-table/react";
 import type { HeaderObject } from "simple-table-core";
 import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const ColumnEditingDemo = ({
   height = "400px",

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
 import { nestedTablesConfig, generateNestedTablesData } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const NestedTablesDemo = ({ height = "500px", theme }: { height?: string | number; theme?: Theme }) => {
   const sampleData = useMemo(() => generateNestedTablesData(25), []);

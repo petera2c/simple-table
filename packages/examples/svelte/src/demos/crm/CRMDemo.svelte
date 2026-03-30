@@ -11,7 +11,7 @@
     generateVisiblePages,
   } from "@simple-table/examples-shared";
   import type { CRMLead } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import "@simple-table/svelte/styles.css";
   import "@simple-table/examples-shared/styles/crm-custom-theme.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();

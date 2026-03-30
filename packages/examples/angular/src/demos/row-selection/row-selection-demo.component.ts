@@ -4,7 +4,7 @@ import type { AngularHeaderObject, Theme, RowSelectionChangeProps } from "@simpl
 import type { Row } from "simple-table-core";
 import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
 import type { LibraryBook } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "row-selection-demo",

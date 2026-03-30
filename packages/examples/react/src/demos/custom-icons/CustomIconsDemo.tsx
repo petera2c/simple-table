@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactIconsConfig } from "@simple-table/react";
 import { customIconsConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const customIcons: ReactIconsConfig = {
   sortUp: (

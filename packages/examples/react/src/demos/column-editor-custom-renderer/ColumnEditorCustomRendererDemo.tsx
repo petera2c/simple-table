@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactColumnEditorConfig } from "@simple-table/react";
 import type { ColumnEditorRowRendererProps } from "@simple-table/react";
 import { columnEditorCustomRendererConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps) => (
   <div

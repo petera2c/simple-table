@@ -2,7 +2,7 @@ import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SortColumn } from "@simple-table/solid";
 import { externalSortConfig } from "@simple-table/examples-shared";
 import { createSignal, createMemo } from "solid-js";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 export default function ExternalSortDemo(props: {
   height?: string | number;

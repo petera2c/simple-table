@@ -6,7 +6,7 @@ import {
   COLUMN_EDITOR_TEXT,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
 } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps) => (
   <div

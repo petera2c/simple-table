@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
 import { customThemeConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 import "../../../../shared/src/styles/custom-theme.css";
 
 export default function CustomThemeDemo(props: { height?: string | number; theme?: Theme }) {

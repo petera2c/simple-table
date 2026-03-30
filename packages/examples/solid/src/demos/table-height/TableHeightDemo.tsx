@@ -2,7 +2,7 @@ import { createSignal, For } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
 import { tableHeightConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 
 const heights = ["200px", "300px", "400px"];
 

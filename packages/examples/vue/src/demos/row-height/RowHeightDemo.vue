@@ -12,7 +12,7 @@
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
 import { rowHeightConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",

@@ -2,7 +2,7 @@ import { useRef, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const CsvExportDemo = ({
   height = "400px",

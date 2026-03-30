@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
 import { quickStartConfig } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const QuickStartDemo = ({
   height = "300px",

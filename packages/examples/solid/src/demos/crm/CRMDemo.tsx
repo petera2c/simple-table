@@ -4,7 +4,7 @@ import type { Theme, SolidHeaderObject, FooterRendererProps } from "@simple-tabl
 import type { CellChangeProps } from "simple-table-core";
 import { crmData, CRM_THEME_COLORS_LIGHT, CRM_THEME_COLORS_DARK, CRM_FOOTER_COLORS_LIGHT, CRM_FOOTER_COLORS_DARK, generateVisiblePages } from "@simple-table/examples-shared";
 import type { CRMLead } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 import "@simple-table/examples-shared/styles/crm-custom-theme.css";
 
 const EmailEnrich = (props: { colors: typeof CRM_THEME_COLORS_LIGHT }) => {

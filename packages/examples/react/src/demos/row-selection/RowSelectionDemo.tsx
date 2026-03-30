@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, RowSelectionChangeProps } from "@simple-table/react";
 import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
 import type { LibraryBook } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/react/styles.css";
 
 const RowSelectionDemo = ({
   height = "348px",

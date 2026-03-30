@@ -4,7 +4,7 @@ import type { Theme, SolidHeaderObject } from "@simple-table/solid";
 import type { CellChangeProps, HeaderObject } from "simple-table-core";
 import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
 import type { SpreadsheetRow } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import "@simple-table/solid/styles.css";
 import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
 
 export default function SpreadsheetDemo(props: { height?: string | number; theme?: Theme }) {
