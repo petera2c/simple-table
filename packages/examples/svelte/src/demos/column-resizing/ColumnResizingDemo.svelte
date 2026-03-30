@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject } from "simple-table-core";
+  import type { Theme, HeaderObject } from "@simple-table/svelte";
   import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
   import "@simple-table/svelte/styles.css";
 

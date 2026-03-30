@@ -1,8 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject, CellRenderer } from "simple-table-core";
-  import type { Row } from "simple-table-core";
+  import type { Theme, HeaderObject, CellRenderer, Row } from "@simple-table/svelte";
   import { onMount } from "svelte";
   import {
     infrastructureData,

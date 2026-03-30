@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { TableFilterState } from "simple-table-core";
+  import type { Theme, TableFilterState } from "@simple-table/svelte";
   import { externalFilterConfig, matchesFilter } from "@simple-table/examples-shared";
   import "@simple-table/svelte/styles.css";
 

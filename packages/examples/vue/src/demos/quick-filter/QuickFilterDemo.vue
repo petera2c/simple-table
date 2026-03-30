@@ -67,8 +67,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { QuickFilterMode } from "simple-table-core";
+import type { Theme, QuickFilterMode } from "@simple-table/vue";
 import { quickFilterConfig } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";
 

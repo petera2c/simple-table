@@ -1,8 +1,6 @@
 import { Component, Input, ViewChild, OnInit } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { CellRenderer, FooterRendererProps, CellChangeProps } from "simple-table-core";
-import type { CRMLead } from "@simple-table/examples-shared";
+import type { AngularHeaderObject, CellChangeProps, CellRenderer, FooterRendererProps, Theme } from "@simple-table/angular";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -11,6 +9,7 @@ import {
   CRM_FOOTER_COLORS_DARK,
   generateVisiblePages,
 } from "@simple-table/examples-shared";
+import type { CRMLead } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 import "../../../../shared/src/styles/crm-custom-theme.css";
 

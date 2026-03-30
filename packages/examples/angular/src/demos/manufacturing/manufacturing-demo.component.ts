@@ -1,9 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { CellRenderer, Row } from "simple-table-core";
-import type { ManufacturingRow } from "@simple-table/examples-shared";
+import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
 import { manufacturingConfig, getManufacturingStatusColors } from "@simple-table/examples-shared";
+import type { ManufacturingRow } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 
 function hasStations(row: Record<string, unknown>): boolean {

@@ -1,7 +1,6 @@
 import { createSignal, createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject } from "@simple-table/solid";
-import type { CellChangeProps, HeaderObject } from "simple-table-core";
+import type { Theme, SolidHeaderObject, CellChangeProps, HeaderObject } from "@simple-table/solid";
 import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
 import type { SpreadsheetRow } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";

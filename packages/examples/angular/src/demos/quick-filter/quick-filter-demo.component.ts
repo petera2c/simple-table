@@ -1,8 +1,7 @@
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { Row, QuickFilterMode } from "simple-table-core";
+import type { AngularHeaderObject, QuickFilterMode, Row, Theme } from "@simple-table/angular";
 import { quickFilterConfig } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 

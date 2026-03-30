@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, Row } from "simple-table-core";
+import type { Theme, HeaderObject, Row } from "@simple-table/vue";
 import { headerRendererConfig } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";
 

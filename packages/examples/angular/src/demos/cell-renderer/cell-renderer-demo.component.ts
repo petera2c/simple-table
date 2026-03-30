@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { Row, CellRenderer } from "simple-table-core";
+import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
 import { cellRendererConfig } from "@simple-table/examples-shared";
 import type { CellRendererEmployee } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";

@@ -1,9 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { CellRenderer, Row } from "simple-table-core";
-import type { MusicArtist } from "@simple-table/examples-shared";
+import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
 import { musicData, getMusicThemeColors } from "@simple-table/examples-shared";
+import type { MusicArtist } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 import "../../../../shared/src/styles/music-theme.css";
 

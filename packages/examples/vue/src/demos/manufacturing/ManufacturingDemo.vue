@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer } from "simple-table-core";
+import type { Theme, HeaderObject, CellRenderer } from "@simple-table/vue";
 import { manufacturingConfig, getManufacturingStatusColors } from "@simple-table/examples-shared";
 import type { ManufacturingRow } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";

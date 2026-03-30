@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { OnRowGroupExpandProps } from "simple-table-core";
+  import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
   import {
     dynamicRowLoadingConfig,
     generateInitialRegions,

@@ -20,8 +20,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject } from "simple-table-core";
+import type { Theme, HeaderObject } from "@simple-table/vue";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";
 

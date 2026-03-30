@@ -11,8 +11,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { CellChangeProps } from "simple-table-core";
+import type { Theme, CellChangeProps } from "@simple-table/vue";
 import { cellEditingConfig } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";
 

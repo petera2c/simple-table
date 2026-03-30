@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellClickProps } from "simple-table-core";
+import type { Theme, HeaderObject, CellClickProps } from "@simple-table/vue";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "@simple-table/examples-shared";
 import type { ProjectTask } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";

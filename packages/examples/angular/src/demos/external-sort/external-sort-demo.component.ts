@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme, SortColumn } from "@simple-table/angular";
-import type { Row } from "simple-table-core";
+import type { AngularHeaderObject, Row, SortColumn, Theme } from "@simple-table/angular";
 import { externalSortConfig } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 

@@ -1,7 +1,6 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
-import type { Row } from "simple-table-core";
+import type { Theme, Row } from "@simple-table/solid";
 import { loadingStateConfig } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";
 

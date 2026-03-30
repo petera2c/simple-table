@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
-import type { CellChangeProps } from "simple-table-core";
+import type { Theme, ReactHeaderObject, CellChangeProps } from "@simple-table/react";
 import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
 import type { SalesRow } from "@simple-table/examples-shared";
 import "@simple-table/react/styles.css";

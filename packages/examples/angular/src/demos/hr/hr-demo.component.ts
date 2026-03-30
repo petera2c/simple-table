@@ -1,9 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { CellRenderer, CellChangeProps } from "simple-table-core";
-import type { HREmployee, HRTagColorKey } from "@simple-table/examples-shared";
+import type { AngularHeaderObject, CellChangeProps, CellRenderer, Theme } from "@simple-table/angular";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
+import type { HREmployee, HRTagColorKey } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {

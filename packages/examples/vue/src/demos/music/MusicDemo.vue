@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer } from "simple-table-core";
+import type { Theme, HeaderObject, CellRenderer } from "@simple-table/vue";
 import { musicConfig, getMusicThemeColors } from "@simple-table/examples-shared";
 import type { MusicArtist } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
+import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "@simple-table/vue";
 import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
 import type { SalesRow } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";

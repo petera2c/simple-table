@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
-import type { OnRowGroupExpandProps } from "simple-table-core";
+import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,

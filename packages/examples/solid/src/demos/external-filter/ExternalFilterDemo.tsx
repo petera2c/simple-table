@@ -1,7 +1,6 @@
 import { createSignal, createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
-import type { TableFilterState } from "simple-table-core";
+import type { Theme, TableFilterState } from "@simple-table/solid";
 import { externalFilterConfig, matchesFilter } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";
 

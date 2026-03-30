@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, RowSelectionChangeProps } from "@simple-table/vue";
-import type { HeaderObject } from "simple-table-core";
+import type { Theme, RowSelectionChangeProps, HeaderObject } from "@simple-table/vue";
 import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
 import type { LibraryBook } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";

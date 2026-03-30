@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { Row, ColumnEditorConfig } from "simple-table-core";
+import type { AngularHeaderObject, ColumnEditorConfig, Row, Theme } from "@simple-table/angular";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_TEXT,

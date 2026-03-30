@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer, CellChangeProps } from "simple-table-core";
+import type { Theme, HeaderObject, CellRenderer, CellChangeProps } from "@simple-table/vue";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
 import type { HREmployee } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";

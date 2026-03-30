@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
-import type { CellChangeProps, HeaderObject } from "simple-table-core";
+import type { Theme, ReactHeaderObject, CellChangeProps, HeaderObject } from "@simple-table/react";
 import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
 import "@simple-table/react/styles.css";
 import "@simple-table/examples-shared/styles/spreadsheet-custom.css";

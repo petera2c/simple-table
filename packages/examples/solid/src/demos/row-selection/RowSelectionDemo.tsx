@@ -1,6 +1,11 @@
 import { createSignal, createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellRendererProps, RowSelectionChangeProps } from "@simple-table/solid";
+import type {
+  Theme,
+  SolidHeaderObject,
+  CellRendererProps,
+  RowSelectionChangeProps,
+} from "@simple-table/solid";
 import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
 import type { LibraryBook } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";

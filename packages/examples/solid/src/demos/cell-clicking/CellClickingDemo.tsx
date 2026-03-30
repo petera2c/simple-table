@@ -1,7 +1,6 @@
 import { createSignal, createMemo, Show, For } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
-import type { CellClickProps } from "simple-table-core";
+import type { Theme, SolidHeaderObject, CellRendererProps, CellClickProps } from "@simple-table/solid";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "@simple-table/examples-shared";
 import type { ProjectTask } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";

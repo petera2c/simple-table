@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject } from "simple-table-core";
+  import type { Theme, HeaderObject } from "@simple-table/svelte";
   import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
   import "@simple-table/svelte/styles.css";
 

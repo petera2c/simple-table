@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { Row } from "simple-table-core";
+import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { emptyStateConfig, buildEmptyStateElement } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 

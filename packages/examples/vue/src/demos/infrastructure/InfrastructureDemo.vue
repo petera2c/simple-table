@@ -16,8 +16,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer, Row } from "simple-table-core";
+import type { Theme, TableAPI, HeaderObject, CellRenderer, Row } from "@simple-table/vue";
 import {
   infrastructureConfig,
   infrastructureData,

@@ -1,9 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
-import type { SalesRow } from "@simple-table/examples-shared";
+import type { AngularHeaderObject, CellChangeProps, CellRenderer, HeaderObject, Row, Theme } from "@simple-table/angular";
 import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
+import type { SalesRow } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {

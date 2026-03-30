@@ -1,7 +1,6 @@
 import { Component, Input, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { HeaderObject, HeaderRenderer, CellChangeProps } from "simple-table-core";
+import type { AngularHeaderObject, CellChangeProps, HeaderObject, HeaderRenderer, Theme } from "@simple-table/angular";
 import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
 import type { SpreadsheetRow } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";

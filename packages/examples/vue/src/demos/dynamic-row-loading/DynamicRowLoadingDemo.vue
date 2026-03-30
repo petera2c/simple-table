@@ -18,8 +18,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { OnRowGroupExpandProps } from "simple-table-core";
+import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,

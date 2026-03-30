@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { CellChangeProps } from "simple-table-core";
+  import type { Theme, CellChangeProps } from "@simple-table/svelte";
   import { cellEditingConfig } from "@simple-table/examples-shared";
   import "@simple-table/svelte/styles.css";
 

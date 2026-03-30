@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject, CellChangeProps } from "simple-table-core";
+  import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/svelte";
   import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
   import type { SpreadsheetRow } from "@simple-table/examples-shared";
   import "@simple-table/svelte/styles.css";

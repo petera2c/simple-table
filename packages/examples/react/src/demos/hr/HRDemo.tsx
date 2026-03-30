@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
-import type { CellChangeProps } from "simple-table-core";
+import type { Theme, ReactHeaderObject, CellChangeProps } from "@simple-table/react";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
 import type { HREmployee } from "@simple-table/examples-shared";
 import "@simple-table/react/styles.css";
@@ -17,7 +16,19 @@ function getHeaders(): ReactHeaderObject[] {
           const initials = `${d.firstName.charAt(0)}${d.lastName.charAt(0)}`;
           return (
             <div style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: c.avatarBg, color: c.avatarText, fontSize: "12px" }}>
+              <div
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: c.avatarBg,
+                  color: c.avatarText,
+                  fontSize: "12px",
+                }}
+              >
                 {initials}
               </div>
               <div style={{ marginLeft: "8px" }}>
@@ -35,13 +46,37 @@ function getHeaders(): ReactHeaderObject[] {
         cellRenderer: ({ row: r, theme }) => {
           const d = r as unknown as HREmployee;
           const c = getHRThemeColors(theme);
-          const color = d.performanceScore >= 90 ? c.progressSuccess : d.performanceScore >= 65 ? c.progressNormal : c.progressException;
+          const color =
+            d.performanceScore >= 90
+              ? c.progressSuccess
+              : d.performanceScore >= 65
+                ? c.progressNormal
+                : c.progressException;
           return (
             <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
-              <div style={{ backgroundColor: c.progressBg, height: "6px", width: "100%", borderRadius: "100px", overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${d.performanceScore}%`, backgroundColor: color, borderRadius: "100px" }} />
+              <div
+                style={{
+                  backgroundColor: c.progressBg,
+                  height: "6px",
+                  width: "100%",
+                  borderRadius: "100px",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${d.performanceScore}%`,
+                    backgroundColor: color,
+                    borderRadius: "100px",
+                  }}
+                />
               </div>
-              <div style={{ fontSize: "12px", textAlign: "center", marginTop: "4px", color: c.gray }}>{d.performanceScore}/100</div>
+              <div
+                style={{ fontSize: "12px", textAlign: "center", marginTop: "4px", color: c.gray }}
+              >
+                {d.performanceScore}/100
+              </div>
             </div>
           );
         },
@@ -56,7 +91,15 @@ function getHeaders(): ReactHeaderObject[] {
           const [year, month, day] = d.hireDate.split("-").map(Number);
           const date = new Date(year, month - 1, day);
           const c = getHRThemeColors(theme);
-          return <span style={{ color: c.gray }}>{date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>;
+          return (
+            <span style={{ color: c.gray }}>
+              {date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          );
         },
       };
     }
@@ -89,7 +132,21 @@ function getHeaders(): ReactHeaderObject[] {
           const c = getHRThemeColors(theme);
           const colorKey = HR_STATUS_COLOR_MAP[d.status] || "default";
           const tagColors = c.tagColors[colorKey];
-          return <span style={{ backgroundColor: tagColors.bg, color: tagColors.text, padding: "0 7px", fontSize: "12px", lineHeight: "20px", borderRadius: "2px", display: "inline-block" }}>{d.status}</span>;
+          return (
+            <span
+              style={{
+                backgroundColor: tagColors.bg,
+                color: tagColors.text,
+                padding: "0 7px",
+                fontSize: "12px",
+                lineHeight: "20px",
+                borderRadius: "2px",
+                display: "inline-block",
+              }}
+            >
+              {d.status}
+            </span>
+          );
         },
       };
     }
@@ -104,11 +161,25 @@ const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?:
   const howManyRowsCanFit = Math.floor(heightNum / rowHeight);
 
   const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
-    setData((prev) => prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)));
+    setData((prev) =>
+      prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)),
+    );
   };
 
   return (
-    <SimpleTable columnReordering columnResizing defaultHeaders={getHeaders()} onCellEdit={handleCellEdit} customTheme={{ rowHeight }} rows={data} rowsPerPage={howManyRowsCanFit} selectableCells shouldPaginate height={height} theme={theme} />
+    <SimpleTable
+      columnReordering
+      columnResizing
+      defaultHeaders={getHeaders()}
+      onCellEdit={handleCellEdit}
+      customTheme={{ rowHeight }}
+      rows={data}
+      rowsPerPage={howManyRowsCanFit}
+      selectableCells
+      shouldPaginate
+      height={height}
+      theme={theme}
+    />
   );
 };
 

@@ -1,5 +1,4 @@
-import type { HeaderObject } from "simple-table-core";
-import type { Row } from "simple-table-core";
+import type { HeaderObject, Row } from "simple-table-core";
 
 const FIRST_NAMES = ["Elena", "Kai", "Amara", "Santiago", "Priya", "Magnus", "Zara", "Luca", "Sarah", "Olumide", "Isabella", "Dmitri"];
 const LAST_NAMES = ["Vasquez", "Tanaka", "Okafor", "Rodriguez", "Chakraborty", "Eriksson", "Al-Rashid", "Rossi", "Kim", "Adebayo", "Chen", "Volkov"];

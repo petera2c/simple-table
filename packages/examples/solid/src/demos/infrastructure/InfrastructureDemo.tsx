@@ -1,9 +1,13 @@
 import { createSignal, createEffect, onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, TableAPI, SolidHeaderObject } from "@simple-table/solid";
-import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "@simple-table/examples-shared";
+import type { Theme, TableAPI, SolidHeaderObject, Row } from "@simple-table/solid";
+import {
+  infrastructureData,
+  INFRA_UPDATE_CONFIG,
+  getInfraMetricColorStyles,
+  getInfraStatusColors,
+} from "@simple-table/examples-shared";
 import type { InfrastructureServer } from "@simple-table/examples-shared";
-import type { Row } from "simple-table-core";
 import "@simple-table/solid/styles.css";
 
 function getHeaders(currentTheme?: Theme): SolidHeaderObject[] {

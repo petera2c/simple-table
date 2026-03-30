@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject, CellRenderer, CellChangeProps } from "simple-table-core";
+  import type { Theme, HeaderObject, CellRenderer, CellChangeProps } from "@simple-table/svelte";
   import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
   import type { HREmployee } from "@simple-table/examples-shared";
   import "@simple-table/svelte/styles.css";

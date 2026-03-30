@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "simple-table-core": "workspace:*",
     "@simple-table/solid": "workspace:*",
     "@simple-table/examples-shared": "workspace:*",
     "solid-js": "^1.0.0"

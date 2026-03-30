@@ -20,8 +20,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI } from "@simple-table/vue";
-import type { HeaderObject } from "simple-table-core";
+import type { Theme, TableAPI, HeaderObject } from "@simple-table/vue";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";
 

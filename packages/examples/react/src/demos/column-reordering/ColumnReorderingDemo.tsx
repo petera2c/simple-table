@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
-import type { HeaderObject } from "simple-table-core";
+import type { Theme, HeaderObject } from "@simple-table/react";
 import { columnReorderingConfig } from "@simple-table/examples-shared";
 import "@simple-table/react/styles.css";
 

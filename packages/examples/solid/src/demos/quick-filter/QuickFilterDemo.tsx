@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
-import type { QuickFilterMode } from "simple-table-core";
+import type { Theme, QuickFilterMode } from "@simple-table/solid";
 import { quickFilterConfig } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";
 

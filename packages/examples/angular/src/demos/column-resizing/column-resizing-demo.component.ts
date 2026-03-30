@@ -1,8 +1,7 @@
 import { NgIf } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { Row, HeaderObject } from "simple-table-core";
+import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 

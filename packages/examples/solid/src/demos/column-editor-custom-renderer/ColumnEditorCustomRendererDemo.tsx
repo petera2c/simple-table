@@ -1,6 +1,5 @@
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidColumnEditorConfig } from "@simple-table/solid";
-import type { ColumnEditorRowRendererProps } from "simple-table-core";
+import type { Theme, SolidColumnEditorConfig, ColumnEditorRowRendererProps } from "@simple-table/solid";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_TEXT,

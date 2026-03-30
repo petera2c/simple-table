@@ -1,7 +1,11 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer } from "simple-table-core";
-import type { Row } from "simple-table-core";
-import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "@simple-table/examples-shared";
+import type { Theme, HeaderObject, CellRenderer, Row } from "simple-table-core";
+import {
+  infrastructureData,
+  INFRA_UPDATE_CONFIG,
+  getInfraMetricColorStyles,
+  getInfraStatusColors,
+} from "@simple-table/examples-shared";
 import type { InfrastructureServer } from "@simple-table/examples-shared";
 import "simple-table-core/styles.css";
 

@@ -1,9 +1,8 @@
 import { Component, Input, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { CellRenderer, Row } from "simple-table-core";
-import type { InfrastructureServer } from "@simple-table/examples-shared";
+import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
 import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "@simple-table/examples-shared";
+import type { InfrastructureServer } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 
 function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {

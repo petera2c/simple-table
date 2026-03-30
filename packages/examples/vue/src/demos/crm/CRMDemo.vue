@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer, FooterRendererProps, CellChangeProps } from "simple-table-core";
+import type {
+  Theme,
+  HeaderObject,
+  CellRenderer,
+  FooterRendererProps,
+  CellChangeProps,
+} from "@simple-table/vue";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,

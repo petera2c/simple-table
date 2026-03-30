@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { CellChangeProps } from "simple-table-core";
+import type { AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
 import { cellEditingConfig } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 

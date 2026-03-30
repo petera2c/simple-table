@@ -1,7 +1,6 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
-import type { HeaderObject } from "simple-table-core";
+import type { Theme, HeaderObject } from "@simple-table/solid";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";
 

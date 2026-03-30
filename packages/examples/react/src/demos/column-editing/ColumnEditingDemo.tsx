@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
-import type { HeaderObject } from "simple-table-core";
+import type { Theme, ReactHeaderObject, HeaderObject } from "@simple-table/react";
 import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
 import "@simple-table/react/styles.css";
 

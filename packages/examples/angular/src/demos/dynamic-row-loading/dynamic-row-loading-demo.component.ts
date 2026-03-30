@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
-import type { OnRowGroupExpandProps } from "simple-table-core";
+import type { AngularHeaderObject, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,

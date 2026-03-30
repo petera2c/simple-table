@@ -33,8 +33,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI } from "@simple-table/vue";
-import type { HeaderObject } from "simple-table-core";
+import type { Theme, TableAPI, HeaderObject } from "@simple-table/vue";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";
 

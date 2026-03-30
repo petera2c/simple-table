@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject, CellRenderer, FooterRendererProps, CellChangeProps } from "simple-table-core";
+  import type { Theme, HeaderObject, CellRenderer, FooterRendererProps, CellChangeProps } from "@simple-table/svelte";
   import {
     crmData,
     CRM_THEME_COLORS_LIGHT,

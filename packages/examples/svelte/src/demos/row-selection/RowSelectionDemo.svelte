@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, RowSelectionChangeProps } from "@simple-table/svelte";
-  import type { HeaderObject } from "simple-table-core";
+  import type { Theme, RowSelectionChangeProps, HeaderObject } from "@simple-table/svelte";
   import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
   import type { LibraryBook } from "@simple-table/examples-shared";
   import "@simple-table/svelte/styles.css";

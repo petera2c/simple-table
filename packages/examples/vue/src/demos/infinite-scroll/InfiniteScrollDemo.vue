@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { Row } from "simple-table-core";
+import type { Theme, Row } from "@simple-table/vue";
 import { infiniteScrollConfig, generateInfiniteScrollData } from "@simple-table/examples-shared";
 import "@simple-table/vue/styles.css";
 

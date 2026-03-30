@@ -1,8 +1,19 @@
 import { createSignal, For } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, FooterRendererProps } from "@simple-table/solid";
-import type { CellChangeProps } from "simple-table-core";
-import { crmData, CRM_THEME_COLORS_LIGHT, CRM_THEME_COLORS_DARK, CRM_FOOTER_COLORS_LIGHT, CRM_FOOTER_COLORS_DARK, generateVisiblePages } from "@simple-table/examples-shared";
+import type {
+  Theme,
+  SolidHeaderObject,
+  FooterRendererProps,
+  CellChangeProps,
+} from "@simple-table/solid";
+import {
+  crmData,
+  CRM_THEME_COLORS_LIGHT,
+  CRM_THEME_COLORS_DARK,
+  CRM_FOOTER_COLORS_LIGHT,
+  CRM_FOOTER_COLORS_DARK,
+  generateVisiblePages,
+} from "@simple-table/examples-shared";
 import type { CRMLead } from "@simple-table/examples-shared";
 import "@simple-table/solid/styles.css";
 import "@simple-table/examples-shared/styles/crm-custom-theme.css";

@@ -1,7 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { Theme } from "@simple-table/angular";
-import type { Row, FooterRendererProps } from "simple-table-core";
+import type { FooterRendererProps, Row, Theme } from "@simple-table/angular";
 import { footerRendererConfig } from "@simple-table/examples-shared";
 import "@simple-table/angular/styles.css";
 
