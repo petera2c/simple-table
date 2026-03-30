@@ -77,6 +77,7 @@ export default {
       exclude: ["node_modules/**"],
       clean: true,
       check: isDev,
+      useTsconfigDeclarationDir: !isDev,
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isDev,

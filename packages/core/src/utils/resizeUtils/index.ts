@@ -61,6 +61,7 @@ export const handleResizeStart = ({
   // For autoExpandColumns, store the initial widths of all columns at drag start
   const initialWidthsMap = new Map<string, number>();
   let sectionWidth = 0;
+  let initialMainAvailable = 0;
 
   if (autoExpandColumns) {
     const sectionHeaders = headers.filter((h) => h.pinned === rootPinned);
@@ -89,6 +90,53 @@ export const handleResizeStart = ({
       } else {
         // Main section: use the raw content width (no pinned border subtraction)
         sectionWidth = mainWidth;
+      }
+
+      initialMainAvailable = containerWidth - leftWidth - rightWidth;
+    }
+  }
+
+  // For boundary column resize (rightmost in left-pinned, leftmost in right-pinned)
+  // with autoExpandColumns, the main section must scale proportionally as the
+  // pinned section grows or shrinks.
+  let isBoundaryResize = false;
+  const mainInitialWidths = new Map<string, number>();
+  let mainLeafHeaders: HeaderObject[] = [];
+
+  if (autoExpandColumns && rootPinned && containerWidth > 0) {
+    const sectionLeafs = getAllVisibleLeafHeaders(
+      headers.filter((h) => h.pinned === rootPinned),
+      collapsedHeaders,
+    );
+
+    if (sectionLeafs.length > 0) {
+      let atBoundary = false;
+
+      if (childrenToResize.length > 1) {
+        const firstIdx = sectionLeafs.findIndex(
+          (h) => h.accessor === childrenToResize[0].accessor,
+        );
+        const lastIdx = sectionLeafs.findIndex(
+          (h) => h.accessor === childrenToResize[childrenToResize.length - 1].accessor,
+        );
+        atBoundary =
+          (rootPinned === "left" && lastIdx === sectionLeafs.length - 1) ||
+          (rootPinned === "right" && firstIdx === 0);
+      } else {
+        const target = childrenToResize[0] || header;
+        const idx = sectionLeafs.findIndex((h) => h.accessor === target.accessor);
+        atBoundary =
+          (rootPinned === "left" && idx === sectionLeafs.length - 1) ||
+          (rootPinned === "right" && idx === 0);
+      }
+
+      if (atBoundary) {
+        isBoundaryResize = true;
+        const mainHeaders = headers.filter((h) => !h.pinned);
+        mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
+        mainLeafHeaders.forEach((h) => {
+          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h));
+        });
       }
     }
   }
@@ -124,6 +172,36 @@ export const handleResizeStart = ({
         sectionWidth,
         startWidth,
       });
+
+      // When a boundary column of a pinned section is resized, the main section
+      // must scale proportionally so all sections together fill the container.
+      if (isBoundaryResize && mainLeafHeaders.length > 0) {
+        const childDelta = childrenToResize.reduce((sum, h) => {
+          const initW = initialWidthsMap.get(h.accessor as string) || 0;
+          const newW = typeof h.width === "number" ? h.width : initW;
+          return sum + (newW - initW);
+        }, 0);
+
+        const newMainAvailable = Math.max(0, initialMainAvailable - childDelta);
+        const initialMainTotal = Array.from(mainInitialWidths.values()).reduce(
+          (a, b) => a + b,
+          0,
+        );
+
+        if (newMainAvailable > 0 && initialMainTotal > 0) {
+          const scale = newMainAvailable / initialMainTotal;
+          let acc = 0;
+          mainLeafHeaders.forEach((h, i) => {
+            const initW = mainInitialWidths.get(h.accessor as string) || 100;
+            if (i === mainLeafHeaders.length - 1) {
+              h.width = newMainAvailable - acc;
+            } else {
+              h.width = Math.round(initW * scale);
+              acc += h.width as number;
+            }
+          });
+        }
+      }
     } else {
       // Normal resize mode
       // Calculate maximum allowable width based on container constraints
@@ -169,6 +247,12 @@ export const handleResizeStart = ({
         if (typeof h.width === "number")
           overrideWidths.set(h.accessor as string, h.width);
       });
+      if (isBoundaryResize) {
+        mainLeafHeaders.forEach((h) => {
+          if (typeof h.width === "number")
+            overrideWidths.set(h.accessor as string, h.width);
+        });
+      }
       updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths);
     } else {
       // During drag: update DOM only for better performance

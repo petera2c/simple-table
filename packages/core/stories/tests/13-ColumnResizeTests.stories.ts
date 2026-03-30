@@ -311,3 +311,160 @@ export const DoubleClickResizeHandleAutoFit = {
     expect(headerStillPresent).toBe(true);
   },
 };
+
+// ============================================================================
+// PINNED COLUMN RESIZE (NO AUTO-EXPAND)
+// ============================================================================
+
+const getColumnWidth = (headerCell: Element): string =>
+  window.getComputedStyle(headerCell).width;
+
+const parsePixelWidth = (widthString: string): number =>
+  parseFloat(String(widthString).replace("px", ""));
+
+const getHeaderSections = (canvasElement: HTMLElement) => ({
+  left: canvasElement.querySelector(".st-header-pinned-left"),
+  main: canvasElement.querySelector(".st-header-main"),
+  right: canvasElement.querySelector(".st-header-pinned-right"),
+});
+
+const getHeaderCellsInSection = (section: Element | null): Element[] => {
+  if (!section) return [];
+  return Array.from(section.querySelectorAll(".st-header-cell"));
+};
+
+const createEmployeeData = () => [
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", department: "Engineering", salary: 120000 },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", department: "Design", salary: 95000 },
+  { id: 3, name: "Charlie Brown", email: "charlie@example.com", department: "Engineering", salary: 140000 },
+];
+
+export const ResizeLeftPinnedColumn = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 200, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 250, type: "string" },
+      { accessor: "department", label: "Department", width: 180, type: "string" },
+      { accessor: "salary", label: "Salary", width: 150, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      columnResizing: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+
+    const { initialWidth, finalWidth } = await resizeColumn(
+      nameHeader!,
+      40,
+      () => findHeaderCellByLabel(canvasElement, "Name"),
+    );
+    expect(finalWidth).toBeGreaterThan(initialWidth);
+    expect(Math.abs(finalWidth - initialWidth - 40)).toBeLessThan(5);
+
+    const sections = getHeaderSections(canvasElement);
+    expect(sections.left).toBeTruthy();
+    const leftCells = getHeaderCellsInSection(sections.left);
+    expect(leftCells.length).toBe(1);
+  },
+};
+
+export const ResizeRightPinnedColumn = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 200, type: "string" },
+      { accessor: "email", label: "Email", width: 250, type: "string" },
+      { accessor: "salary", label: "Salary", width: 150, pinned: "right", type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      columnResizing: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const salaryHeader = findHeaderCellByLabel(canvasElement, "Salary");
+    expect(salaryHeader).toBeTruthy();
+
+    const initialWidth = salaryHeader!.getBoundingClientRect().width;
+    await resizeColumn(salaryHeader!, 50, () =>
+      findHeaderCellByLabel(canvasElement, "Salary"),
+    );
+
+    const salaryAfter = findHeaderCellByLabel(canvasElement, "Salary");
+    expect(salaryAfter).toBeTruthy();
+    const finalWidth = salaryAfter!.getBoundingClientRect().width;
+    // Right-pinned resize reverses delta, so dragging right shrinks
+    // The column should have changed width
+    expect(finalWidth).not.toBe(initialWidth);
+
+    const sections = getHeaderSections(canvasElement);
+    expect(sections.right).toBeTruthy();
+    const rightCells = getHeaderCellsInSection(sections.right);
+    expect(rightCells.length).toBe(1);
+    const w = parsePixelWidth(getColumnWidth(rightCells[0]));
+    expect(w).toBeGreaterThan(0);
+    expect(Number.isNaN(w)).toBe(false);
+  },
+};
+
+export const ResizeWithBothPinnedSections = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 220, type: "string" },
+      { accessor: "department", label: "Department", width: 160, type: "string" },
+      { accessor: "salary", label: "Salary", width: 130, pinned: "right", type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      columnResizing: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    // Resize the left-pinned column
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+    const { initialWidth: nameInit, finalWidth: nameFinal } = await resizeColumn(
+      nameHeader!,
+      30,
+      () => findHeaderCellByLabel(canvasElement, "Name"),
+    );
+    expect(nameFinal).toBeGreaterThan(nameInit);
+
+    // Resize a main-section column
+    const emailHeader = findHeaderCellByLabel(canvasElement, "Email");
+    expect(emailHeader).toBeTruthy();
+    const { initialWidth: emailInit, finalWidth: emailFinal } = await resizeColumn(
+      emailHeader!,
+      -25,
+      () => findHeaderCellByLabel(canvasElement, "Email"),
+    );
+    expect(emailFinal).toBeLessThan(emailInit);
+
+    // Verify all sections still have valid widths
+    const sections = getHeaderSections(canvasElement);
+    expect(sections.left).toBeTruthy();
+    expect(sections.main).toBeTruthy();
+    expect(sections.right).toBeTruthy();
+
+    for (const section of [sections.left, sections.main, sections.right]) {
+      getHeaderCellsInSection(section).forEach((c) => {
+        const w = parsePixelWidth(getColumnWidth(c));
+        expect(w).toBeGreaterThan(0);
+        expect(Number.isNaN(w)).toBe(false);
+      });
+    }
+  },
+};

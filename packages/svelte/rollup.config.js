@@ -104,6 +104,7 @@ export default {
       clean: true,
       check: isDev,
       verbosity: isDev ? 3 : 0,
+      useTsconfigDeclarationDir: !isDev,
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isDev,

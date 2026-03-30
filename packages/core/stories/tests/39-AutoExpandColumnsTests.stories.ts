@@ -1808,6 +1808,656 @@ export const AutoExpandContainerResizeTriggersRescale = {
   },
 };
 
+// ============================================================================
+// 7. AUTO EXPAND + RESIZE EDGE CASES (PINNED + BOUNDARY + MIN/MAX)
+// ============================================================================
+
+/** Resize a right-pinned column with autoExpand. Delta is reversed for right-pinned. */
+export const AutoExpandResizeRightPinnedColumn = {
+  parameters: { tags: ["auto-expand-resize-right-pinned-column"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 70, type: "number" },
+      { accessor: "name", label: "Name", width: 160, type: "string" },
+      { accessor: "email", label: "Email", width: 180, type: "string" },
+      { accessor: "department", label: "Department", width: 140, type: "string" },
+      { accessor: "position", label: "Position", width: 140, type: "string" },
+      { accessor: "salary", label: "Salary", width: 110, pinned: "right", type: "number" },
+      { accessor: "projects", label: "Projects", width: 90, pinned: "right", type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const salaryHeader = findHeaderCellByLabel(canvasElement, "Salary");
+    expect(salaryHeader).toBeTruthy();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 700;
+    const maxPinnedWidth = containerWidth * 0.6;
+
+    const { initialWidth, finalWidth } = await resizeColumn(
+      salaryHeader!,
+      60,
+      () => findHeaderCellByLabel(canvasElement, "Salary"),
+    );
+    expect(finalWidth).toBeGreaterThan(initialWidth - 5);
+
+    await waitForResizeSettle(
+      canvasElement,
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+      containerWidth,
+    );
+
+    const sections = getHeaderSections(canvasElement);
+    const rightCells = getHeaderCellsInSection(sections.right);
+    const rightWidth = rightCells.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    expect(rightWidth).toBeLessThanOrEqual(maxPinnedWidth + WIDTH_TOLERANCE);
+
+    const mainCells = getHeaderCellsInSection(sections.main);
+    expect(mainCells.length).toBe(4);
+    mainCells.forEach((c) => {
+      const w = parsePixelWidth(getColumnWidth(c));
+      expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+      expect(Number.isNaN(w)).toBe(false);
+    });
+  },
+};
+
+/** Resize the boundary column of a left-pinned section (rightmost pinned column).
+ *  This hits the "section boundary" code path where columnsToShrink is empty;
+ *  the section itself grows/shrinks without sibling compensation. */
+export const AutoExpandResizePinnedBoundaryColumn = {
+  parameters: { tags: ["auto-expand-resize-pinned-boundary-column"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 130, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 170, type: "string" },
+      { accessor: "department", label: "Department", width: 130, type: "string" },
+      { accessor: "position", label: "Position", width: 130, type: "string" },
+      { accessor: "salary", label: "Salary", width: 100, type: "number" },
+      { accessor: "projects", label: "Projects", width: 90, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // "Name" is the rightmost left-pinned column = boundary column
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+
+    const sections = getHeaderSections(canvasElement);
+    const leftCellsBefore = getHeaderCellsInSection(sections.left);
+    const idWidthBefore = parsePixelWidth(getColumnWidth(leftCellsBefore[0]));
+
+    await resizeColumn(nameHeader!, 40, () =>
+      findHeaderCellByLabel(canvasElement, "Name"),
+    );
+    await waitForResizeSettle(canvasElement, WIDTH_TOLERANCE_AFTER_RESIZE, 800);
+
+    // ID column should NOT have changed (no sibling compensation at boundary)
+    const leftCellsAfter = getHeaderCellsInSection(
+      getHeaderSections(canvasElement).left,
+    );
+    const idWidthAfter = parsePixelWidth(getColumnWidth(leftCellsAfter[0]));
+    expect(Math.abs(idWidthAfter - idWidthBefore)).toBeLessThanOrEqual(3);
+
+    // All columns should have valid widths
+    const allCells = getHeaderCells(canvasElement);
+    expect(allCells.length).toBe(7);
+    allCells.forEach((c) => {
+      const w = parsePixelWidth(getColumnWidth(c));
+      expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+      expect(Number.isNaN(w)).toBe(false);
+    });
+  },
+};
+
+/** Resize a main-section column when both left and right pinned sections exist.
+ *  Width redistribution should only affect the main section columns. */
+export const AutoExpandResizeMainWithBothPinned = {
+  parameters: { tags: ["auto-expand-resize-main-with-both-pinned"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 140, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 160, type: "string" },
+      { accessor: "department", label: "Department", width: 130, type: "string" },
+      { accessor: "position", label: "Position", width: 130, type: "string" },
+      { accessor: "startDate", label: "Start Date", width: 110, type: "string" },
+      { accessor: "salary", label: "Salary", width: 100, pinned: "right", type: "number" },
+      { accessor: "projects", label: "Projects", width: 80, pinned: "right", type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 800;
+
+    // Record pinned section widths before resize
+    const sectionsBefore = getHeaderSections(canvasElement);
+    const leftCellsBefore = getHeaderCellsInSection(sectionsBefore.left);
+    const rightCellsBefore = getHeaderCellsInSection(sectionsBefore.right);
+    expect(leftCellsBefore.length).toBe(2);
+    expect(rightCellsBefore.length).toBe(2);
+    const leftWidthBefore = leftCellsBefore.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    const rightWidthBefore = rightCellsBefore.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+
+    // Resize a main-section column
+    const emailHeader = findHeaderCellByLabel(canvasElement, "Email");
+    expect(emailHeader).toBeTruthy();
+    await resizeColumn(emailHeader!, 40, () =>
+      findHeaderCellByLabel(canvasElement, "Email"),
+    );
+    await waitForResizeSettle(
+      canvasElement,
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+      containerWidth,
+    );
+
+    // Pinned sections should be unchanged
+    const sectionsAfter = getHeaderSections(canvasElement);
+    const leftWidthAfter = getHeaderCellsInSection(sectionsAfter.left).reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    const rightWidthAfter = getHeaderCellsInSection(
+      sectionsAfter.right,
+    ).reduce((s, c) => s + parsePixelWidth(getColumnWidth(c)), 0);
+
+    expect(Math.abs(leftWidthAfter - leftWidthBefore)).toBeLessThanOrEqual(3);
+    expect(Math.abs(rightWidthAfter - rightWidthBefore)).toBeLessThanOrEqual(3);
+
+    // Main section should still have 4 columns
+    const mainCells = getHeaderCellsInSection(sectionsAfter.main);
+    expect(mainCells.length).toBe(4);
+
+    // Total should still fill container
+    const allCells = getHeaderCells(canvasElement);
+    expect(allCells.length).toBe(8);
+    const totalW = allCells.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    expect(Math.abs(totalW - containerWidth)).toBeLessThanOrEqual(
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+    );
+  },
+};
+
+/** Shrink a column all the way to minWidth with autoExpand.
+ *  The freed space should be redistributed to neighboring columns. */
+export const AutoExpandShrinkColumnToMinWidth = {
+  parameters: { tags: ["auto-expand-shrink-column-to-min-width"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "storeName", label: "Store Name", width: 180, type: "string" },
+      { accessor: "city", label: "City", width: 150, type: "string" },
+      { accessor: "squareFootage", label: "Sq Ft", width: 120, type: "number" },
+      { accessor: "openingDate", label: "Opening", width: 120, type: "string" },
+      { accessor: "customerRating", label: "Rating", width: 100, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "900px";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 900;
+
+    // Drastically shrink "Store Name" to force it to minWidth
+    const storeNameHeader = findHeaderCellByLabel(canvasElement, "Store Name");
+    expect(storeNameHeader).toBeTruthy();
+    await resizeColumnSlow(storeNameHeader!, -300, 10, 30);
+    await waitForResizeSettle(
+      canvasElement,
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+      containerWidth,
+      800,
+    );
+
+    // Store Name should be at or near minWidth
+    const storeNameAfter = findHeaderCellByLabel(canvasElement, "Store Name");
+    if (storeNameAfter) {
+      const w = parsePixelWidth(getColumnWidth(storeNameAfter));
+      expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+    }
+
+    // Neighboring columns should have grown to absorb freed space
+    assertColumnWidthsSane(
+      canvasElement,
+      containerWidth,
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+    );
+
+    // Total should still fill container
+    const allCells = getHeaderCells(canvasElement);
+    expect(allCells.length).toBe(6);
+    const totalW = allCells.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    expect(Math.abs(totalW - containerWidth)).toBeLessThanOrEqual(
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+    );
+    assertBodyMainTakesFullWidth(canvasElement);
+  },
+};
+
+/** Grow a column until all siblings hit minWidth.
+ *  Growth should be clamped once there is no more shrinkable headroom. */
+export const AutoExpandGrowUntilSiblingsAtMin = {
+  parameters: { tags: ["auto-expand-grow-until-siblings-at-min"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 70, type: "number" },
+      { accessor: "storeName", label: "Store Name", width: 120, type: "string" },
+      { accessor: "city", label: "City", width: 100, type: "string" },
+      { accessor: "squareFootage", label: "Sq Ft", width: 90, type: "number" },
+      { accessor: "openingDate", label: "Opening", width: 100, type: "string" },
+      { accessor: "customerRating", label: "Rating", width: 80, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "700px";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 700;
+
+    // Grow ID column by a huge amount to force all 5 siblings to minWidth
+    const idHeader = findHeaderCellByLabel(canvasElement, "ID");
+    expect(idHeader).toBeTruthy();
+    await resizeColumnSlow(idHeader!, 600, 10, 30);
+    await waitForResizeSettle(
+      canvasElement,
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+      containerWidth,
+      800,
+    );
+
+    // All sibling columns should be at minWidth (or very close)
+    const headerCells = getHeaderCells(canvasElement);
+    expect(headerCells.length).toBe(6);
+    headerCells.forEach((c) => {
+      const w = parsePixelWidth(getColumnWidth(c));
+      expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+      expect(Number.isNaN(w)).toBe(false);
+    });
+
+    // Total should still fill container
+    const totalW = headerCells.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    expect(Math.abs(totalW - containerWidth)).toBeLessThanOrEqual(
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+    );
+    assertBodyMainTakesFullWidth(canvasElement);
+  },
+};
+
+/** Resize a left-pinned column with an extreme positive delta to test max section width clamping.
+ *  The pinned section should not exceed 60% of the container (single pinned) or 40% (dual). */
+export const AutoExpandResizePinnedPastMaxSectionWidth = {
+  parameters: { tags: ["auto-expand-resize-pinned-past-max-section-width"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 130, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 160, type: "string" },
+      { accessor: "department", label: "Department", width: 130, type: "string" },
+      { accessor: "position", label: "Position", width: 120, type: "string" },
+      { accessor: "salary", label: "Salary", width: 100, type: "number" },
+      { accessor: "projects", label: "Projects", width: 90, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "900px";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 900;
+    const maxPinnedPercent = 0.6;
+    const maxPinnedWidth = containerWidth * maxPinnedPercent;
+
+    // Try to grow the "Name" (boundary) pinned column by a huge amount
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+    await resizeColumnSlow(nameHeader!, 400, 10, 30);
+    await waitForResizeSettle(
+      canvasElement,
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+      containerWidth,
+      800,
+    );
+
+    // Left pinned section width should be clamped
+    const sections = getHeaderSections(canvasElement);
+    const leftCells = getHeaderCellsInSection(sections.left);
+    expect(leftCells.length).toBe(2);
+    const leftWidth = leftCells.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    expect(leftWidth).toBeLessThanOrEqual(maxPinnedWidth + WIDTH_TOLERANCE);
+
+    // Main section columns should still have valid widths
+    const mainCells = getHeaderCellsInSection(sections.main);
+    expect(mainCells.length).toBe(5);
+    mainCells.forEach((c) => {
+      const w = parsePixelWidth(getColumnWidth(c));
+      expect(w).toBeGreaterThan(0);
+      expect(Number.isNaN(w)).toBe(false);
+    });
+  },
+};
+
+/** Resize with both pinned sections and extreme delta to test dual-pinned max clamping (40% each). */
+export const AutoExpandResizeDualPinnedMaxClamp = {
+  parameters: { tags: ["auto-expand-resize-dual-pinned-max-clamp"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 120, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 150, type: "string" },
+      { accessor: "department", label: "Department", width: 130, type: "string" },
+      { accessor: "position", label: "Position", width: 120, type: "string" },
+      { accessor: "salary", label: "Salary", width: 100, pinned: "right", type: "number" },
+      { accessor: "startDate", label: "Start Date", width: 100, pinned: "right", type: "string" },
+      { accessor: "projects", label: "Projects", width: 80, pinned: "right", type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "1000px";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 1000;
+    const maxDualPinnedPercent = 0.4;
+    const maxPinnedWidth = containerWidth * maxDualPinnedPercent;
+
+    // Try to grow left-pinned "Name" (boundary) by a huge amount
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+    await resizeColumnSlow(nameHeader!, 400, 10, 30);
+    await waitForResizeSettle(
+      canvasElement,
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+      containerWidth,
+      800,
+    );
+
+    const sections = getHeaderSections(canvasElement);
+    const leftCells = getHeaderCellsInSection(sections.left);
+    expect(leftCells.length).toBe(2);
+    const leftWidth = leftCells.reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    expect(leftWidth).toBeLessThanOrEqual(maxPinnedWidth + WIDTH_TOLERANCE);
+
+    // Right pinned section should be unchanged (3 columns)
+    const rightCells = getHeaderCellsInSection(sections.right);
+    expect(rightCells.length).toBe(3);
+    rightCells.forEach((c) => {
+      const w = parsePixelWidth(getColumnWidth(c));
+      expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+      expect(Number.isNaN(w)).toBe(false);
+    });
+
+    // Main section should still exist with 3 columns
+    const mainCells = getHeaderCellsInSection(sections.main);
+    expect(mainCells.length).toBe(3);
+  },
+};
+
+/** Double-click on resize handle with autoExpand + pinned columns.
+ *  Verifies no crash and columns stay within bounds. */
+export const AutoExpandDoubleClickResizePinned = {
+  parameters: { tags: ["auto-expand-double-click-resize-pinned"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 200, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 170, type: "string" },
+      { accessor: "department", label: "Department", width: 140, type: "string" },
+      { accessor: "position", label: "Position", width: 130, type: "string" },
+      { accessor: "salary", label: "Salary", width: 100, pinned: "right", type: "number" },
+      { accessor: "projects", label: "Projects", width: 80, pinned: "right", type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    // Double-click on the pinned "Name" resize handle
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+    const resizeHandle = nameHeader!.querySelector<HTMLElement>(
+      ".st-header-resize-handle",
+    );
+    expect(resizeHandle).toBeTruthy();
+    resizeHandle!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 400));
+
+    // Table should still be intact with all 7 columns
+    const cellsAfterFirst = getHeaderCells(canvasElement);
+    expect(cellsAfterFirst.length).toBe(7);
+    cellsAfterFirst.forEach((c) => {
+      const w = parsePixelWidth(getColumnWidth(c));
+      expect(w).toBeGreaterThan(0);
+      expect(Number.isNaN(w)).toBe(false);
+    });
+
+    // Double-click on a main section column too
+    const emailHeader = findHeaderCellByLabel(canvasElement, "Email");
+    if (emailHeader) {
+      const emailResize = emailHeader.querySelector<HTMLElement>(
+        ".st-header-resize-handle",
+      );
+      if (emailResize) {
+        emailResize.dispatchEvent(
+          new MouseEvent("dblclick", { bubbles: true }),
+        );
+        await new Promise((r) => setTimeout(r, 400));
+      }
+    }
+
+    // Verify table still intact after second double-click
+    const cellsAfterSecond = getHeaderCells(canvasElement);
+    expect(cellsAfterSecond.length).toBe(7);
+    cellsAfterSecond.forEach((c) => {
+      const w = parsePixelWidth(getColumnWidth(c));
+      expect(w).toBeGreaterThan(0);
+      expect(Number.isNaN(w)).toBe(false);
+    });
+  },
+};
+
+/** Stress test: resize across pinned and main sections in sequence, growing and shrinking. */
+export const AutoExpandResizePinnedAndMainStress = {
+  parameters: { tags: ["auto-expand-resize-pinned-and-main-stress"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      {
+        accessor: "id",
+        label: "ID",
+        width: 80,
+        pinned: "left",
+        type: "number",
+      },
+      {
+        accessor: "name",
+        label: "Name",
+        width: 150,
+        pinned: "left",
+        type: "string",
+      },
+      { accessor: "email", label: "Email", width: 180, type: "string" },
+      {
+        accessor: "department",
+        label: "Department",
+        width: 140,
+        type: "string",
+      },
+      {
+        accessor: "salary",
+        label: "Salary",
+        width: 100,
+        pinned: "right",
+        type: "number",
+      },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "800px";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 800;
+
+    const steps: { label: string; delta: number }[] = [
+      // Grow left-pinned "ID"
+      { label: "ID", delta: 30 },
+      // Shrink left-pinned boundary "Name"
+      { label: "Name", delta: -40 },
+      // Grow main "Email"
+      { label: "Email", delta: 50 },
+      // Shrink main "Department" (it's also the last main column before right-pinned)
+      { label: "Department", delta: -30 },
+      // Grow right-pinned "Salary"
+      { label: "Salary", delta: 40 },
+      // Shrink it back
+      { label: "Salary", delta: -25 },
+      // Grow "Name" boundary
+      { label: "Name", delta: 60 },
+      // Shrink "Email" significantly
+      { label: "Email", delta: -80 },
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      const { label, delta } = steps[i];
+      const header = findHeaderCellByLabel(canvasElement, label);
+      expect(header, `Step ${i + 1}: header "${label}" not found`).toBeTruthy();
+      await resizeColumnSlow(header!, delta, 6, 30);
+      await new Promise((r) => setTimeout(r, 80));
+      await waitForResizeSettle(
+        canvasElement,
+        WIDTH_TOLERANCE_AFTER_RESIZE,
+        containerWidth,
+        800,
+      );
+
+      // Every column should have a valid width
+      getHeaderCells(canvasElement).forEach((c) => {
+        const w = parsePixelWidth(getColumnWidth(c));
+        expect(
+          w,
+          `Step ${i + 1}: column width should be >= ${MIN_COLUMN_WIDTH - 2}`,
+        ).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+        expect(Number.isNaN(w)).toBe(false);
+      });
+    }
+  },
+};
+
+// ============================================================================
+// 8. NON-AUTOEXPAND EDGE CASES
+// ============================================================================
+
 export const AutoExpandDisabledNoExpand = {
   parameters: { tags: ["auto-expand-disabled-no-expand"] },
   render: () => {
