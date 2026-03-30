@@ -12,6 +12,7 @@ import type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
   IconsConfig,
 } from "simple-table-core";
@@ -31,13 +32,16 @@ export type AngularHeaderRenderer = Type<HeaderRendererProps>;
 export type AngularFooterRenderer = Type<FooterRendererProps>;
 export type AngularHeaderDropdown = Type<HeaderDropdownProps>;
 export type AngularColumnEditorRowRenderer = Type<ColumnEditorRowRendererProps>;
+export type AngularColumnEditorCustomRenderer = Type<ColumnEditorCustomRendererProps>;
 export type AngularLoadingStateRenderer = Type<LoadingStateRendererProps>;
 export type AngularErrorStateRenderer = Type<ErrorStateRendererProps>;
 export type AngularEmptyStateRenderer = Type<EmptyStateRendererProps>;
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface AngularColumnEditorConfig extends Omit<ColumnEditorConfig, "rowRenderer"> {
+export interface AngularColumnEditorConfig
+  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
   rowRenderer?: AngularColumnEditorRowRenderer;
+  customRenderer?: AngularColumnEditorCustomRenderer;
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
@@ -98,4 +102,5 @@ export type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
 };

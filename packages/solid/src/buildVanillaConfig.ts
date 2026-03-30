@@ -28,10 +28,11 @@ function transformIcons(icons: SolidIconsConfig): NonNullable<SimpleTableConfig[
 }
 
 function transformColumnEditorConfig(config: SolidColumnEditorConfig): ColumnEditorConfig {
-  const { rowRenderer, ...rest } = config;
+  const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
     ...(rowRenderer ? { rowRenderer: wrapSolidRenderer(rowRenderer) as any } : {}),
+    ...(customRenderer ? { customRenderer: wrapSolidRenderer(customRenderer) as any } : {}),
   };
 }
 

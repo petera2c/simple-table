@@ -31,10 +31,11 @@ function transformIcons(icons: ReactIconsConfig): NonNullable<SimpleTableConfig[
 }
 
 function transformColumnEditorConfig(config: ReactColumnEditorConfig): ColumnEditorConfig {
-  const { rowRenderer, ...rest } = config;
+  const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
     ...(rowRenderer ? { rowRenderer: wrapReactRenderer(rowRenderer) as any } : {}),
+    ...(customRenderer ? { customRenderer: wrapReactRenderer(customRenderer) as any } : {}),
   };
 }
 

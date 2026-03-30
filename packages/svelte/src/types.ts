@@ -12,6 +12,7 @@ import type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
 } from "simple-table-core";
 
@@ -30,6 +31,7 @@ export type SvelteHeaderRenderer = Component<HeaderRendererProps>;
 export type SvelteFooterRenderer = Component<FooterRendererProps>;
 export type SvelteHeaderDropdown = Component<HeaderDropdownProps>;
 export type SvelteColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
+export type SvelteColumnEditorCustomRenderer = Component<ColumnEditorCustomRendererProps>;
 
 // State renderers are always components (Svelte has no static "node" concept
 // outside of a component — consumers wanting static markup should use a wrapper
@@ -39,8 +41,10 @@ export type SvelteErrorStateRenderer = Component<ErrorStateRendererProps>;
 export type SvelteEmptyStateRenderer = Component<EmptyStateRendererProps>;
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface SvelteColumnEditorConfig extends Omit<ColumnEditorConfig, "rowRenderer"> {
+export interface SvelteColumnEditorConfig
+  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
   rowRenderer?: SvelteColumnEditorRowRenderer;
+  customRenderer?: SvelteColumnEditorCustomRenderer;
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
@@ -101,4 +105,5 @@ export type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
 };

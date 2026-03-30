@@ -30,10 +30,11 @@ function transformIcons(icons: VueIconsConfig): NonNullable<SimpleTableConfig["i
 }
 
 function transformColumnEditorConfig(config: VueColumnEditorConfig): ColumnEditorConfig {
-  const { rowRenderer, ...rest } = config;
+  const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
     ...(rowRenderer ? { rowRenderer: wrapVueRenderer(rowRenderer) as any } : {}),
+    ...(customRenderer ? { customRenderer: wrapVueRenderer(customRenderer) as any } : {}),
   };
 }
 

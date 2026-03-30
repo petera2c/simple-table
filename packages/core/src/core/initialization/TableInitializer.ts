@@ -1,6 +1,8 @@
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 import { CustomTheme, DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
+import { ColumnEditorRowRenderer } from "../../types/ColumnEditorRowRendererProps";
+import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import {
   createAngleLeftIcon,
@@ -31,7 +33,8 @@ export interface MergedColumnEditorConfig {
   searchPlaceholder: string;
   allowColumnPinning: boolean;
   searchFunction?: (header: HeaderObject, searchText: string) => boolean;
-  rowRenderer?: any;
+  rowRenderer?: ColumnEditorRowRenderer;
+  customRenderer?: ColumnEditorCustomRenderer;
 }
 
 export class TableInitializer {
@@ -84,6 +87,7 @@ export class TableInitializer {
         DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,
       searchFunction: config.columnEditorConfig?.searchFunction,
       rowRenderer: config.columnEditorConfig?.rowRenderer,
+      customRenderer: config.columnEditorConfig?.customRenderer,
     };
   }
 

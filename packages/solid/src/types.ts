@@ -12,6 +12,7 @@ import type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
 } from "simple-table-core";
 
@@ -47,6 +48,7 @@ export type SolidHeaderRenderer = Component<HeaderRendererProps>;
 export type SolidFooterRenderer = Component<FooterRendererProps>;
 export type SolidHeaderDropdown = Component<HeaderDropdownProps>;
 export type SolidColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
+export type SolidColumnEditorCustomRenderer = Component<ColumnEditorCustomRendererProps>;
 
 // State renderers can be a component (receives props) or a plain JSX.Element (static markup)
 export type SolidLoadingStateRenderer = Component<LoadingStateRendererProps> | JSX.Element;
@@ -54,8 +56,10 @@ export type SolidErrorStateRenderer = Component<ErrorStateRendererProps> | JSX.E
 export type SolidEmptyStateRenderer = Component<EmptyStateRendererProps> | JSX.Element;
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface SolidColumnEditorConfig extends Omit<ColumnEditorConfig, "rowRenderer"> {
+export interface SolidColumnEditorConfig
+  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
   rowRenderer?: SolidColumnEditorRowRenderer;
+  customRenderer?: SolidColumnEditorCustomRenderer;
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
@@ -118,4 +122,5 @@ export type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
 };

@@ -55,6 +55,10 @@ import type {
   ColumnEditorRowRenderer,
   ColumnEditorRowRendererComponents,
 } from "./types/ColumnEditorRowRendererProps";
+import type {
+  ColumnEditorCustomRendererProps,
+  ColumnEditorCustomRenderer,
+} from "./types/ColumnEditorCustomRendererProps";
 import type HeaderDropdownProps from "./types/HeaderDropdownProps";
 import type { HeaderDropdown } from "./types/HeaderDropdownProps";
 import type { RowButtonProps } from "./types/RowButton";
@@ -91,6 +95,8 @@ export type {
   CellValue,
   ChartOptions,
   ColumnEditorConfig,
+  ColumnEditorCustomRenderer,
+  ColumnEditorCustomRendererProps,
   ColumnEditorRowRenderer,
   ColumnEditorRowRendererComponents,
   ColumnEditorRowRendererProps,

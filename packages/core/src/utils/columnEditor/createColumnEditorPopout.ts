@@ -1,5 +1,6 @@
 import HeaderObject from "../../types/HeaderObject";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
+import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { createColumnEditorRow } from "./createColumnEditorRow";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
@@ -53,6 +54,86 @@ const filterHeaders = (
   });
 };
 
+function buildSearchSection(
+  searchPlaceholder: string,
+  onSearchInput: (value: string) => void,
+): { wrapper: HTMLElement; input: HTMLInputElement } {
+  const wrapper = document.createElement("div");
+  wrapper.className = "st-column-editor-search-wrapper";
+
+  const searchContainer = document.createElement("div");
+  searchContainer.className = "st-column-editor-search";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = "";
+  input.placeholder = searchPlaceholder;
+  input.className = "st-filter-input";
+  input.addEventListener("click", (e) => e.stopPropagation());
+  input.addEventListener("input", (e) => {
+    onSearchInput((e.target as HTMLInputElement).value);
+  });
+
+  searchContainer.appendChild(input);
+  wrapper.appendChild(searchContainer);
+
+  return { wrapper, input };
+}
+
+function buildResetSection(onReset: () => void): HTMLElement {
+  const footer = document.createElement("div");
+  footer.className = "st-column-editor-footer";
+
+  const resetBtn = document.createElement("button");
+  resetBtn.type = "button";
+  resetBtn.className = "st-column-editor-reset-btn";
+  resetBtn.textContent = "Reset columns";
+  resetBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    onReset();
+  });
+
+  footer.appendChild(resetBtn);
+  return footer;
+}
+
+function assembleDefaultLayout(
+  content: HTMLElement,
+  searchWrapper: HTMLElement | null,
+  listsContainer: HTMLElement,
+  resetFooter: HTMLElement | null,
+): void {
+  if (searchWrapper) content.appendChild(searchWrapper);
+  content.appendChild(listsContainer);
+  if (resetFooter) content.appendChild(resetFooter);
+}
+
+function assembleCustomLayout(
+  content: HTMLElement,
+  customRenderer: ColumnEditorCustomRenderer,
+  headers: HeaderObject[],
+  searchWrapper: HTMLElement | null,
+  listsContainer: HTMLElement,
+  resetFooter: HTMLElement | null,
+  resetColumns?: () => void,
+): void {
+  const rendered = customRenderer({
+    headers,
+    searchSection: searchWrapper,
+    listSection: listsContainer,
+    resetSection: resetFooter,
+    resetColumns,
+  });
+
+  if (rendered instanceof HTMLElement) {
+    content.appendChild(rendered);
+  } else if (typeof rendered === "string") {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = rendered;
+    content.appendChild(wrapper);
+  }
+}
+
 export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopoutOptions) => {
   let options = initialOptions;
   let {
@@ -94,50 +175,36 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   content.className = "st-column-editor-popout-content";
   content.addEventListener("click", (e) => e.stopPropagation());
 
+  const onSearchInput = (value: string) => {
+    searchTerm = value;
+    render();
+  };
+
   let searchInput: HTMLInputElement | null = null;
+  let searchWrapper: HTMLElement | null = null;
   if (searchEnabled) {
-    const searchWrapper = document.createElement("div");
-    searchWrapper.className = "st-column-editor-search-wrapper";
-
-    const searchContainer = document.createElement("div");
-    searchContainer.className = "st-column-editor-search";
-
-    searchInput = document.createElement("input");
-    searchInput.type = "text";
-    searchInput.value = searchTerm;
-    searchInput.placeholder = searchPlaceholder;
-    searchInput.className = "st-filter-input";
-    searchInput.addEventListener("click", (e) => e.stopPropagation());
-    searchInput.addEventListener("input", (e) => {
-      searchTerm = (e.target as HTMLInputElement).value;
-      render();
-    });
-
-    searchContainer.appendChild(searchInput);
-    searchWrapper.appendChild(searchContainer);
-    content.appendChild(searchWrapper);
+    const search = buildSearchSection(searchPlaceholder, onSearchInput);
+    searchWrapper = search.wrapper;
+    searchInput = search.input;
   }
 
   const listsContainer = document.createElement("div");
   listsContainer.className = "st-column-editor-lists";
-  content.appendChild(listsContainer);
 
+  let resetFooter: HTMLElement | null = null;
   if (resetColumns) {
-    const onReset = resetColumns;
-    const footer = document.createElement("div");
-    footer.className = "st-column-editor-footer";
+    resetFooter = buildResetSection(resetColumns);
+  }
 
-    const resetBtn = document.createElement("button");
-    resetBtn.type = "button";
-    resetBtn.className = "st-column-editor-reset-btn";
-    resetBtn.textContent = "Reset columns";
-    resetBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      onReset();
-    });
+  let activeCustomRenderer = columnEditorConfig.customRenderer;
 
-    footer.appendChild(resetBtn);
-    content.appendChild(footer);
+  if (activeCustomRenderer) {
+    assembleCustomLayout(
+      content, activeCustomRenderer, headers,
+      searchWrapper, listsContainer, resetFooter, resetColumns,
+    );
+  } else {
+    assembleDefaultLayout(content, searchWrapper, listsContainer, resetFooter);
   }
 
   container.appendChild(content);
@@ -310,7 +377,6 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       renderSection(unpinned, "main", null, listsContainer);
       renderSection(pinnedRight, "right", "Pinned Right", listsContainer);
     } else {
-      // When pinning is disabled, just show all headers in a flat list
       const allHeaders = [...pinnedLeft, ...unpinned, ...pinnedRight];
       renderSection(allHeaders, "main", null, listsContainer);
     }
@@ -318,14 +384,25 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
   render();
 
+  const rebuildContentLayout = () => {
+    content.innerHTML = "";
+
+    if (activeCustomRenderer) {
+      assembleCustomLayout(
+        content, activeCustomRenderer, headers,
+        searchWrapper, listsContainer, resetFooter, resetColumns,
+      );
+    } else {
+      assembleDefaultLayout(content, searchWrapper, listsContainer, resetFooter);
+    }
+  };
+
   const update = (newOptions: Partial<CreateColumnEditorPopoutOptions>) => {
     if (newOptions.headers !== undefined) headers = newOptions.headers;
     if (newOptions.searchEnabled !== undefined) searchEnabled = newOptions.searchEnabled;
     if (newOptions.searchPlaceholder !== undefined)
       searchPlaceholder = newOptions.searchPlaceholder;
     if (newOptions.searchFunction !== undefined) searchFunction = newOptions.searchFunction;
-    if (newOptions.columnEditorConfig !== undefined)
-      columnEditorConfig = newOptions.columnEditorConfig;
     if (newOptions.contextHeaders !== undefined) contextHeaders = newOptions.contextHeaders;
     if (newOptions.essentialAccessors !== undefined) essentialAccessors = newOptions.essentialAccessors;
     if (newOptions.setHeaders !== undefined) setHeaders = newOptions.setHeaders;
@@ -334,6 +411,17 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     if (newOptions.onColumnOrderChange !== undefined)
       onColumnOrderChange = newOptions.onColumnOrderChange;
     if (newOptions.resetColumns !== undefined) resetColumns = newOptions.resetColumns;
+
+    let needsLayoutRebuild = false;
+
+    if (newOptions.columnEditorConfig !== undefined) {
+      const newCustomRenderer = newOptions.columnEditorConfig.customRenderer;
+      if (newCustomRenderer !== activeCustomRenderer) {
+        activeCustomRenderer = newCustomRenderer;
+        needsLayoutRebuild = true;
+      }
+      columnEditorConfig = newOptions.columnEditorConfig;
+    }
 
     if (newOptions.open !== undefined) {
       open = newOptions.open;
@@ -346,6 +434,10 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
     if (searchInput && newOptions.searchPlaceholder !== undefined) {
       searchInput.placeholder = newOptions.searchPlaceholder;
+    }
+
+    if (needsLayoutRebuild) {
+      rebuildContentLayout();
     }
 
     render();

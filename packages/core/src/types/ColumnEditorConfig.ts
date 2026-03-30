@@ -1,5 +1,6 @@
 import HeaderObject from "./HeaderObject";
 import { ColumnEditorRowRenderer } from "./ColumnEditorRowRendererProps";
+import { ColumnEditorCustomRenderer } from "./ColumnEditorCustomRendererProps";
 
 /**
  * Custom search function for filtering columns in the column editor
@@ -28,10 +29,12 @@ export interface ColumnEditorConfig {
   allowColumnPinning?: boolean;
   /** Custom renderer for column editor row layout to reposition icons and labels */
   rowRenderer?: ColumnEditorRowRenderer;
+  /** Custom renderer for the entire column editor panel. Receives pre-built sections (search, list, reset) and headers. */
+  customRenderer?: ColumnEditorCustomRenderer;
 }
 
 export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
-  Omit<ColumnEditorConfig, "searchFunction" | "rowRenderer">
+  Omit<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">
 > = {
   text: "Columns",
   searchEnabled: true,
@@ -43,4 +46,4 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
 export type MergedColumnEditorConfig = Required<
   Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning">
 > &
-  Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer">;
+  Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">;

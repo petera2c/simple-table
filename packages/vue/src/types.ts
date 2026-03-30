@@ -12,6 +12,7 @@ import type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
 } from "simple-table-core";
 
@@ -49,6 +50,7 @@ export type VueHeaderRenderer = Component<HeaderRendererProps>;
 export type VueFooterRenderer = Component<FooterRendererProps>;
 export type VueHeaderDropdown = Component<HeaderDropdownProps>;
 export type VueColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
+export type VueColumnEditorCustomRenderer = Component<ColumnEditorCustomRendererProps>;
 
 // State renderers can be a component (receives props) or a static VNode
 export type VueLoadingStateRenderer = Component<LoadingStateRendererProps> | VNode;
@@ -56,8 +58,10 @@ export type VueErrorStateRenderer = Component<ErrorStateRendererProps> | VNode;
 export type VueEmptyStateRenderer = Component<EmptyStateRendererProps> | VNode;
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface VueColumnEditorConfig extends Omit<ColumnEditorConfig, "rowRenderer"> {
+export interface VueColumnEditorConfig
+  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
   rowRenderer?: VueColumnEditorRowRenderer;
+  customRenderer?: VueColumnEditorCustomRenderer;
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
@@ -119,4 +123,5 @@ export type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
 };

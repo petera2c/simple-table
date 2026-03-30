@@ -1,11 +1,39 @@
-import type { HeaderObject } from "simple-table-core";
+import type { HeaderObject, Row } from "simple-table-core";
 import type { InfrastructureServer } from "../types/infrastructure";
 
-const SERVER_PREFIXES = ["web", "api", "db", "cache", "worker", "proxy", "auth", "search", "queue", "storage"];
-const SERVER_NAMES = ["Production Primary", "Production Replica", "Staging", "Development", "Analytics", "Load Balancer", "CDN Edge", "Backup Primary", "Monitoring", "Gateway"];
-const STATUSES: Array<InfrastructureServer["status"]> = ["online", "warning", "critical", "maintenance", "offline"];
+const SERVER_PREFIXES = [
+  "web",
+  "api",
+  "db",
+  "cache",
+  "worker",
+  "proxy",
+  "auth",
+  "search",
+  "queue",
+  "storage",
+];
+const SERVER_NAMES = [
+  "Production Primary",
+  "Production Replica",
+  "Staging",
+  "Development",
+  "Analytics",
+  "Load Balancer",
+  "CDN Edge",
+  "Backup Primary",
+  "Monitoring",
+  "Gateway",
+];
+const STATUSES: Array<InfrastructureServer["status"]> = [
+  "online",
+  "warning",
+  "critical",
+  "maintenance",
+  "offline",
+];
 
-export function generateInfrastructureData(count: number = 50): InfrastructureServer[] {
+export function generateInfrastructureData(count: number = 50): Row[] {
   return Array.from({ length: count }, (_, i) => {
     const prefix = SERVER_PREFIXES[i % SERVER_PREFIXES.length];
     const num = String(i + 1).padStart(3, "0");
@@ -131,7 +159,11 @@ export const infrastructureHeaders: HeaderObject[] = [
     ],
     valueGetter: ({ row }) => {
       const severityMap: Record<string, number> = {
-        critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5,
+        critical: 1,
+        offline: 2,
+        warning: 3,
+        maintenance: 4,
+        online: 5,
       };
       return severityMap[String(row.status)] || 999;
     },
@@ -143,7 +175,12 @@ export const INFRA_UPDATE_CONFIG = {
   maxInterval: 1000,
 };
 
-export function getInfraMetricColorStyles(value: number, theme: string, metric: "cpu" | "memory" | "response" | "status", statusValue?: string) {
+export function getInfraMetricColorStyles(
+  value: number,
+  theme: string,
+  metric: "cpu" | "memory" | "response" | "status",
+  statusValue?: string,
+) {
   const getLevel = (val: number, thresholds: [number, number, number]) => {
     if (val >= thresholds[0]) return "critical";
     if (val >= thresholds[1]) return "warning";
@@ -181,8 +218,16 @@ export function getInfraStatusColors(status: string, theme: string) {
     ? {
         online: { color: "#6ee7b7", backgroundColor: "rgba(6, 95, 70, 0.4)", fontWeight: "600" },
         warning: { color: "#fcd34d", backgroundColor: "rgba(146, 64, 14, 0.4)", fontWeight: "600" },
-        critical: { color: "#fca5a5", backgroundColor: "rgba(153, 27, 27, 0.4)", fontWeight: "600" },
-        maintenance: { color: "#93c5fd", backgroundColor: "rgba(30, 64, 175, 0.4)", fontWeight: "600" },
+        critical: {
+          color: "#fca5a5",
+          backgroundColor: "rgba(153, 27, 27, 0.4)",
+          fontWeight: "600",
+        },
+        maintenance: {
+          color: "#93c5fd",
+          backgroundColor: "rgba(30, 64, 175, 0.4)",
+          fontWeight: "600",
+        },
         offline: { color: "#d1d5db", backgroundColor: "rgba(75, 85, 99, 0.4)", fontWeight: "600" },
       }
     : {

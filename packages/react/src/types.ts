@@ -12,6 +12,7 @@ import type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
 } from "simple-table-core";
 
@@ -49,6 +50,7 @@ export type ReactHeaderRenderer = React.ComponentType<HeaderRendererProps>;
 export type ReactFooterRenderer = React.ComponentType<FooterRendererProps>;
 export type ReactHeaderDropdown = React.ComponentType<HeaderDropdownProps>;
 export type ReactColumnEditorRowRenderer = React.ComponentType<ColumnEditorRowRendererProps>;
+export type ReactColumnEditorCustomRenderer = React.ComponentType<ColumnEditorCustomRendererProps>;
 
 // State renderers can be a component (receives props) or a plain ReactNode (static markup)
 export type ReactLoadingStateRenderer =
@@ -62,8 +64,10 @@ export type ReactEmptyStateRenderer =
   | React.ReactNode;
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface ReactColumnEditorConfig extends Omit<ColumnEditorConfig, "rowRenderer"> {
+export interface ReactColumnEditorConfig
+  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
   rowRenderer?: ReactColumnEditorRowRenderer;
+  customRenderer?: ReactColumnEditorCustomRenderer;
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
@@ -150,4 +154,5 @@ export type {
   EmptyStateRendererProps,
   HeaderDropdownProps,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
 };

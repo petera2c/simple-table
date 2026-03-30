@@ -7,10 +7,11 @@ import type {
 import { wrapSvelteRenderer } from "./utils/wrapSvelteRenderer";
 
 function transformColumnEditorConfig(config: SvelteColumnEditorConfig): ColumnEditorConfig {
-  const { rowRenderer, ...rest } = config;
+  const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
     ...(rowRenderer ? { rowRenderer: wrapSvelteRenderer(rowRenderer) as any } : {}),
+    ...(customRenderer ? { customRenderer: wrapSvelteRenderer(customRenderer) as any } : {}),
   };
 }
 

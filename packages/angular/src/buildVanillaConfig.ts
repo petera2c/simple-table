@@ -28,10 +28,11 @@ export function buildVanillaConfig(
     wrapAngularRenderer<P>(component, appRef, injector);
 
   function transformColumnEditorConfig(cfg: AngularColumnEditorConfig): ColumnEditorConfig {
-    const { rowRenderer, ...cfgRest } = cfg;
+    const { rowRenderer, customRenderer, ...cfgRest } = cfg;
     return {
       ...cfgRest,
       ...(rowRenderer ? { rowRenderer: wrap(rowRenderer) as any } : {}),
+      ...(customRenderer ? { customRenderer: wrap(customRenderer) as any } : {}),
     };
   }
 
