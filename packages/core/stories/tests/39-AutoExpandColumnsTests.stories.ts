@@ -1847,7 +1847,7 @@ export const AutoExpandResizeRightPinnedColumn = {
 
     const { initialWidth, finalWidth } = await resizeColumn(
       salaryHeader!,
-      60,
+      -60,
       () => findHeaderCellByLabel(canvasElement, "Salary"),
     );
     expect(finalWidth).toBeGreaterThan(initialWidth - 5);
@@ -1867,7 +1867,7 @@ export const AutoExpandResizeRightPinnedColumn = {
     expect(rightWidth).toBeLessThanOrEqual(maxPinnedWidth + WIDTH_TOLERANCE);
 
     const mainCells = getHeaderCellsInSection(sections.main);
-    expect(mainCells.length).toBe(4);
+    expect(mainCells.length).toBe(5);
     mainCells.forEach((c) => {
       const w = parsePixelWidth(getColumnWidth(c));
       expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
@@ -2416,8 +2416,8 @@ export const AutoExpandResizePinnedAndMainStress = {
       { label: "Name", delta: -40 },
       // Grow main "Email"
       { label: "Email", delta: 50 },
-      // Shrink main "Department" (it's also the last main column before right-pinned)
-      { label: "Department", delta: -30 },
+      // Shrink main "Email" back (Department is the last main column and has no resize handle in auto-expand mode)
+      { label: "Email", delta: -30 },
       // Grow right-pinned "Salary"
       { label: "Salary", delta: 40 },
       // Shrink it back
