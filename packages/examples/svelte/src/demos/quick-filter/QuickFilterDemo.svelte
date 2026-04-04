@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme, QuickFilterMode } from "@simple-table/svelte";
-  import { quickFilterConfig } from "@simple-table/examples-shared";
+  import { quickFilterConfig } from "./quick-filter.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -38,7 +38,7 @@
     </button>
   </div>
   <SimpleTable
-    defaultHeaders={quickFilterConfig.headers}
+    defaultHeaders={defaultHeadersFromCore(quickFilterConfig.headers)}
     rows={quickFilterConfig.rows}
     {height}
     {theme}

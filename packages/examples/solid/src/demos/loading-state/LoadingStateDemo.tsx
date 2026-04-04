@@ -1,7 +1,7 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme, Row } from "@simple-table/solid";
-import { loadingStateConfig } from "@simple-table/examples-shared";
+import { loadingStateConfig } from "./loading-state.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function LoadingStateDemo(props: { height?: string | number; theme?: Theme }) {
@@ -34,7 +34,7 @@ export default function LoadingStateDemo(props: { height?: string | number; them
         </button>
       </div>
       <SimpleTable
-        defaultHeaders={loadingStateConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(loadingStateConfig.headers)}
         rows={data()}
         isLoading={isLoading()}
         height={props.height ?? "400px"}

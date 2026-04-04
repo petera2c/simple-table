@@ -27,7 +27,7 @@
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject } from "@simple-table/vue";
-import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
+import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

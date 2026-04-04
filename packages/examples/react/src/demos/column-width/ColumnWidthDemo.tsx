@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { columnWidthConfig } from "@simple-table/examples-shared";
+import { columnWidthConfig } from "./column-width.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnWidthDemo = ({
@@ -24,7 +24,7 @@ const ColumnWidthDemo = ({
     <SimpleTable
       autoExpandColumns={!isMobile}
       columnResizing
-      defaultHeaders={columnWidthConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(columnWidthConfig.headers)}
       height={height}
       rows={columnWidthConfig.rows}
       theme={theme}

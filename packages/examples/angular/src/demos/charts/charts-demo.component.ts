@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { chartsConfig } from "@simple-table/examples-shared";
+import { chartsConfig } from "./charts.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -24,6 +24,6 @@ export class ChartsDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = chartsConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(chartsConfig.headers);
   readonly rows: Row[] = chartsConfig.rows;
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject } from "@simple-table/svelte";
-  import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
+  import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();

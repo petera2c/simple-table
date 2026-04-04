@@ -3,6 +3,7 @@ import type {
   SimpleTableProps,
   SimpleTableConfig,
   HeaderObject,
+  Row,
   TableAPI,
   CellRendererProps,
   HeaderRendererProps,
@@ -65,33 +66,33 @@ export interface VueColumnEditorConfig
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
+/**
+ * Column definition for `defaultHeaders`: core column metadata with Vue-only
+ * `cellRenderer` / `headerRenderer` / `children` / `nestedTable`. For trees from
+ * `simple-table-core`, use `defaultHeadersFromCore` / `mapToVueHeaderObjects`.
+ */
 export interface VueHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
   cellRenderer?: VueCellRenderer;
   headerRenderer?: VueHeaderRenderer;
   children?: VueHeaderObject[];
-  nestedTable?: Omit<SimpleTableVueProps, "rows">;
+  nestedTable?: Omit<
+    SimpleTableVueProps,
+    | "rows"
+    | "loadingStateRenderer"
+    | "errorStateRenderer"
+    | "emptyStateRenderer"
+    | "tableEmptyStateRenderer"
+  >;
 }
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
-// Mirrors SimpleTableProps with Vue-specific overrides.
-// `tableRef` is omitted — consumers use Vue's template ref mechanism instead:
-//   <SimpleTable ref="tableRef" ... />
-//   then: tableRef.value.sort(...)
+// Mirrors SimpleTableProps with Vue-specific overrides. Use a template ref and
+// `ref.value?.getAPI()` for the imperative TableAPI.
 export interface SimpleTableVueProps
   extends Omit<
     SimpleTableProps,
-    | "tableRef"
-    | "allowAnimations"
-    | "expandIcon"
-    | "filterIcon"
-    | "headerCollapseIcon"
-    | "headerExpandIcon"
-    | "nextIcon"
-    | "prevIcon"
-    | "sortDownIcon"
-    | "sortUpIcon"
-    | "columnEditorText"
+    | "rows"
     | "defaultHeaders"
     | "footerRenderer"
     | "emptyStateRenderer"
@@ -103,6 +104,8 @@ export interface SimpleTableVueProps
     | "icons"
   > {
   defaultHeaders: VueHeaderObject[];
+  /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
+  rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: VueFooterRenderer;
   loadingStateRenderer?: VueLoadingStateRenderer;
   errorStateRenderer?: VueErrorStateRenderer;

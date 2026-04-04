@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type {
-  Theme,
-  HeaderObject,
-  CellRenderer,
-  FooterRendererProps,
-  CellChangeProps,
-} from "@simple-table/vue";
+import type { HeaderObject, CellRenderer, FooterRendererProps, CellChangeProps } from "@simple-table/vue";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -15,12 +9,12 @@ import {
   CRM_FOOTER_COLORS_LIGHT,
   CRM_FOOTER_COLORS_DARK,
   generateVisiblePages,
-} from "@simple-table/examples-shared";
-import type { CRMLead } from "@simple-table/examples-shared";
+} from "./crm.demo-data";
+import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
 import "@simple-table/vue/styles.css";
-import "@simple-table/examples-shared/styles/crm-custom-theme.css";
+import "./crm-custom-theme.css";
 
-const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
+const props = withDefaults(defineProps<{ height?: string | number; theme?: CrmShellTheme }>(), {
   height: "400px",
 });
 

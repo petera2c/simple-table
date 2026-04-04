@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, HeaderObject } from "@simple-table/react";
-import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
+import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnResizingDemo = ({
@@ -11,7 +11,7 @@ const ColumnResizingDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [headers, setHeaders] = useState<HeaderObject[]>(columnResizingHeaders);
+  const [headers, setHeaders] = useState(() => defaultHeadersFromCore(columnResizingHeaders));
   const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
@@ -20,10 +20,12 @@ const ColumnResizingDemo = ({
       if (saved) {
         const widthMap = JSON.parse(saved);
         setHeaders(
-          columnResizingHeaders.map((h) => ({
-            ...h,
-            width: widthMap[h.accessor] ?? h.width,
-          })),
+          defaultHeadersFromCore(
+            columnResizingHeaders.map((h) => ({
+              ...h,
+              width: widthMap[h.accessor] ?? h.width,
+            })),
+          ),
         );
       }
     } catch {
@@ -41,7 +43,7 @@ const ColumnResizingDemo = ({
         {} as Record<string, number | string>,
       );
       localStorage.setItem(COLUMN_RESIZING_STORAGE_KEY, JSON.stringify(widthMap));
-      setHeaders(updatedHeaders);
+      setHeaders(defaultHeadersFromCore(updatedHeaders));
       setSaveMessage("Column widths saved!");
       setTimeout(() => setSaveMessage(""), 2000);
     } catch {

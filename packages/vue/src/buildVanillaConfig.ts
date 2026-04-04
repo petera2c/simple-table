@@ -1,4 +1,4 @@
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig } from "simple-table-core";
+import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
 import type { VNode } from "vue";
 import type {
   SimpleTableVueProps,
@@ -74,6 +74,7 @@ function transformHeader(header: VueHeaderObject): HeaderObject {
 export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConfig {
   const {
     defaultHeaders,
+    rows,
     footerRenderer,
     emptyStateRenderer,
     errorStateRenderer,
@@ -87,6 +88,7 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
+    rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
   };
 

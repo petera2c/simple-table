@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnWidthConfig } from "@simple-table/examples-shared";
+import { columnWidthConfig } from "./column-width.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnWidthDemo(

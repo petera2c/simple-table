@@ -1,5 +1,6 @@
 import HeaderObject from "../../types/HeaderObject";
 import { hasCollapsibleChildren } from "../collapseUtils";
+import { updateExpandIconState } from "../bodyCell/expansion";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 
@@ -67,29 +68,15 @@ export const createCollapseIcon = (header: HeaderObject, context: HeaderRenderCo
   return iconContainer;
 };
 
-/** Update header collapse icon direction on an existing cell (same pattern as body updateExpandIconState). */
+/** Update header collapse icon direction on an existing cell (delegates to body updateExpandIconState). */
 export const updateHeaderCollapseIconState = (
   cellElement: HTMLElement,
   isCollapsed: boolean,
   label?: string
 ): void => {
-  const iconContainer = cellElement.querySelector(".st-expand-icon-container");
-  if (!iconContainer || !(iconContainer instanceof HTMLElement)) return;
-  const currentlyCollapsed = iconContainer.classList.contains("collapsed");
-  if (currentlyCollapsed === isCollapsed) return;
-
-  const ariaLabel = label
-    ? `${isCollapsed ? "Expand" : "Collapse"} ${label} column`
-    : isCollapsed
-      ? "Expand column"
-      : "Collapse column";
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      iconContainer.classList.toggle("expanded", !isCollapsed);
-      iconContainer.classList.toggle("collapsed", isCollapsed);
-      iconContainer.setAttribute("aria-label", ariaLabel);
-      iconContainer.setAttribute("aria-expanded", String(!isCollapsed));
-    });
+  updateExpandIconState(cellElement, !isCollapsed, {
+    ariaLabelWhenExpanded: label ? `Collapse ${label} column` : "Collapse column",
+    ariaLabelWhenCollapsed: label ? `Expand ${label} column` : "Expand column",
+    syncAriaExpanded: true,
   });
 };

@@ -34,7 +34,7 @@
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, TableAPI, HeaderObject } from "@simple-table/vue";
-import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
+import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

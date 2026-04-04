@@ -4,8 +4,8 @@ import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
   fetchDivisionsForCompany,
-} from "@simple-table/examples-shared";
-import type { DynamicCompany } from "@simple-table/examples-shared";
+} from "./dynamic-nested-tables.demo-data";
+import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderDynamicNestedTablesDemo(

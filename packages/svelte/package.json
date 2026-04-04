@@ -1,9 +1,9 @@
 {
   "name": "@simple-table/svelte",
-  "version": "3.0.0-beta.16",
+  "version": "3.0.0-beta.17",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
-  "types": "dist/types/svelte/src/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "preview": "rollup -c -w",
@@ -19,7 +19,7 @@
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/cjs/index.js",
-      "types": "./dist/types/svelte/src/index.d.ts"
+      "types": "./dist/types/index.d.ts"
     },
     "./styles.css": "./dist/styles.css"
   },

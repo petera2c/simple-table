@@ -1,9 +1,10 @@
 import type { ApplicationRef, EnvironmentInjector } from "@angular/core";
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig } from "simple-table-core";
+import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
 import type {
   SimpleTableAngularProps,
   AngularHeaderObject,
   AngularColumnEditorConfig,
+  AngularIconsConfig,
 } from "./types";
 import { wrapAngularRenderer } from "./utils/wrapAngularRenderer";
 
@@ -14,6 +15,7 @@ export function buildVanillaConfig(
 ): SimpleTableConfig {
   const {
     defaultHeaders,
+    rows,
     footerRenderer,
     emptyStateRenderer,
     errorStateRenderer,
@@ -21,11 +23,27 @@ export function buildVanillaConfig(
     tableEmptyStateRenderer,
     headerDropdown,
     columnEditorConfig,
+    icons,
     ...rest
   } = config;
 
   const wrap = <P extends object>(component: any) =>
     wrapAngularRenderer<P>(component, appRef, injector);
+
+  function transformIcons(icons: AngularIconsConfig): NonNullable<SimpleTableConfig["icons"]> {
+    const result: NonNullable<SimpleTableConfig["icons"]> = {};
+    for (const [key, value] of Object.entries(icons)) {
+      if (value == null) continue;
+      if (typeof value === "string" || value instanceof HTMLElement || value instanceof SVGSVGElement) {
+        (result as any)[key] = value;
+      } else if ((value as any).ɵcmp) {
+        (result as any)[key] = wrap(value as any)({});
+      } else {
+        (result as any)[key] = value;
+      }
+    }
+    return result;
+  }
 
   function transformColumnEditorConfig(cfg: AngularColumnEditorConfig): ColumnEditorConfig {
     const { rowRenderer, customRenderer, ...cfgRest } = cfg;
@@ -66,6 +84,7 @@ export function buildVanillaConfig(
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
+    rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
   };
 
@@ -111,6 +130,10 @@ export function buildVanillaConfig(
 
   if (columnEditorConfig !== undefined) {
     vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig);
+  }
+
+  if (icons !== undefined) {
+    vanillaConfig.icons = transformIcons(icons);
   }
 
   return vanillaConfig;

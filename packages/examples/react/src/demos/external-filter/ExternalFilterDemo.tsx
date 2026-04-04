@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, TableFilterState } from "@simple-table/react";
-import { externalFilterConfig, matchesFilter } from "@simple-table/examples-shared";
+import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
 import "@simple-table/react/styles.css";
 
 const ExternalFilterDemo = ({
@@ -26,7 +26,7 @@ const ExternalFilterDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={externalFilterConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(externalFilterConfig.headers)}
       rows={filteredData}
       onFilterChange={setFilters}
       externalFilterHandling

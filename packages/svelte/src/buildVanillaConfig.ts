@@ -1,10 +1,30 @@
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig } from "simple-table-core";
+import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
 import type {
   SimpleTableSvelteProps,
   SvelteHeaderObject,
   SvelteColumnEditorConfig,
+  SvelteIconsConfig,
 } from "./types";
-import { wrapSvelteRenderer } from "./utils/wrapSvelteRenderer";
+import {
+  wrapSvelteRenderer,
+  svelteComponentToHtmlString,
+  isSvelteComponent,
+} from "./utils/wrapSvelteRenderer";
+
+function transformIcons(icons: SvelteIconsConfig): NonNullable<SimpleTableConfig["icons"]> {
+  const result: NonNullable<SimpleTableConfig["icons"]> = {};
+
+  for (const [key, value] of Object.entries(icons)) {
+    if (value == null) continue;
+    if (typeof value === "string" || value instanceof HTMLElement || value instanceof SVGElement) {
+      (result as any)[key] = value;
+    } else if (isSvelteComponent(value)) {
+      (result as any)[key] = svelteComponentToHtmlString(value as any, {});
+    }
+  }
+
+  return result;
+}
 
 function transformColumnEditorConfig(config: SvelteColumnEditorConfig): ColumnEditorConfig {
   const { rowRenderer, customRenderer, ...rest } = config;
@@ -51,17 +71,20 @@ function transformHeader(header: SvelteHeaderObject): HeaderObject {
 export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableConfig {
   const {
     defaultHeaders,
+    rows,
     footerRenderer,
     emptyStateRenderer,
     errorStateRenderer,
     loadingStateRenderer,
     headerDropdown,
     columnEditorConfig,
+    icons,
     ...rest
   } = config;
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
+    rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
   };
 
@@ -103,6 +126,10 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
 
   if (columnEditorConfig !== undefined) {
     vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig);
+  }
+
+  if (icons !== undefined) {
+    vanillaConfig.icons = transformIcons(icons);
   }
 
   return vanillaConfig;

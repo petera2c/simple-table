@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellChangeProps } from "@simple-table/react";
-import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-import type { SalesRow } from "@simple-table/examples-shared";
+import type { Theme, CellChangeProps, CellRendererProps, ReactHeaderObject } from "@simple-table/react";
+import { salesConfig, getSalesThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
 import "@simple-table/react/styles.css";
 
 function getHeaders(): ReactHeaderObject[] {
-  const headers: ReactHeaderObject[] = JSON.parse(JSON.stringify(salesConfig.headers));
+  const headers = JSON.parse(JSON.stringify(salesConfig.headers)) as ReactHeaderObject[];
 
   const addRenderers = (hdrs: ReactHeaderObject[]) => {
     for (const h of hdrs) {
       if (h.accessor === "dealValue") {
-        h.cellRenderer = ({ row: r, theme }) => {
+        h.cellRenderer = ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as SalesRow;
           const c = getSalesThemeColors(theme);
           let style: React.CSSProperties = { color: c.gray };
@@ -26,7 +26,7 @@ function getHeaders(): ReactHeaderObject[] {
         };
       }
       if (h.accessor === "isWon") {
-        h.cellRenderer = ({ row: r }) => {
+        h.cellRenderer = ({ row: r }: CellRendererProps) => {
           const d = r as unknown as SalesRow;
           const s = d.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
           return (
@@ -37,7 +37,7 @@ function getHeaders(): ReactHeaderObject[] {
         };
       }
       if (h.accessor === "commission") {
-        h.cellRenderer = ({ row: r, theme }) => {
+        h.cellRenderer = ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as SalesRow;
           const c = getSalesThemeColors(theme);
           if (d.commission === 0) return <span style={{ color: c.grayMuted }}>$0.00</span>;
@@ -45,7 +45,7 @@ function getHeaders(): ReactHeaderObject[] {
         };
       }
       if (h.accessor === "profitMargin") {
-        h.cellRenderer = ({ row: r, theme }) => {
+        h.cellRenderer = ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as SalesRow;
           const c = getSalesThemeColors(theme);
           let colorStyle: React.CSSProperties = { color: c.gray };
@@ -68,7 +68,7 @@ function getHeaders(): ReactHeaderObject[] {
         };
       }
       if (h.accessor === "dealProfit") {
-        h.cellRenderer = ({ row: r, theme }) => {
+        h.cellRenderer = ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as SalesRow;
           const c = getSalesThemeColors(theme);
           if (d.dealProfit === 0) return <span style={{ color: c.grayMuted }}>$0.00</span>;

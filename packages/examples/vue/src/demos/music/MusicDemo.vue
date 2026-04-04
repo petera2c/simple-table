@@ -2,10 +2,10 @@
 import { computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject, CellRenderer } from "@simple-table/vue";
-import { musicConfig, getMusicThemeColors } from "@simple-table/examples-shared";
-import type { MusicArtist } from "@simple-table/examples-shared";
+import { musicConfig, getMusicThemeColors } from "./music.demo-data";
+import type { MusicArtist } from "./music.demo-data";
 import "@simple-table/vue/styles.css";
-import "@simple-table/examples-shared/styles/music-theme.css";
+import "./music-theme.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",

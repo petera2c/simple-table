@@ -21,7 +21,7 @@
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, TableAPI, HeaderObject } from "@simple-table/vue";
-import { csvExportHeaders, csvExportData, csvExportConfig } from "@simple-table/examples-shared";
+import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

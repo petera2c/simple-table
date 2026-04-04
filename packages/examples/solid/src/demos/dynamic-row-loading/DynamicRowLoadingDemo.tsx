@@ -1,13 +1,13 @@
 import { createSignal } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme, OnRowGroupExpandProps } from "@simple-table/solid";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
   fetchStoresForRegion,
   fetchProductsForStore,
-} from "@simple-table/examples-shared";
-import type { DynamicRegion, DynamicStore } from "@simple-table/examples-shared";
+} from "./dynamic-row-loading.demo-data";
+import type { DynamicRegion, DynamicStore } from "./dynamic-row-loading.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function DynamicRowLoadingDemo(props: { height?: string | number; theme?: Theme }) {
@@ -66,7 +66,7 @@ export default function DynamicRowLoadingDemo(props: { height?: string | number;
   return (
     <SimpleTable
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-      defaultHeaders={dynamicRowLoadingConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(dynamicRowLoadingConfig.headers)}
       editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
       expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
       height={props.height ?? "400px"}

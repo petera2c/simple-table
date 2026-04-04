@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="columnSelectionConfig.headers"
+    :default-headers="defaultHeadersFromCore(columnSelectionConfig.headers)"
     :rows="columnSelectionConfig.rows"
     :height="height"
     :theme="theme"
@@ -9,9 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { columnSelectionConfig } from "@simple-table/examples-shared";
+import { columnSelectionConfig } from "./column-selection.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

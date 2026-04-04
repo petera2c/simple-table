@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject } from "simple-table-core";
-import { csvExportHeaders, csvExportData, csvExportConfig } from "@simple-table/examples-shared";
+import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderCsvExportDemo(
@@ -56,7 +56,10 @@ export function renderCsvExportDemo(
     const api = table.getAPI();
     const rows = api.getAllRows();
     const hdrs = api.getHeaders();
-    const totalRevenue = rows.reduce((sum, r) => sum + (Number(r.revenue) || 0), 0);
+    const totalRevenue = rows.reduce(
+      (sum, r) => sum + (Number((r.row as { revenue?: unknown }).revenue) || 0),
+      0,
+    );
     alert(
       `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     );

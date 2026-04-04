@@ -40,6 +40,7 @@ export interface TableRendererDeps {
   getCollapsedHeaders?: () => Set<Accessor>;
   getCollapsedRows: () => Map<string, number>;
   getExpandedRows: () => Map<string, number>;
+  getHeaders: () => HeaderObject[];
   getRowStateMap: () => Map<string | number, any>;
   headerRegistry: Map<string, any>;
   headers: HeaderObject[];
@@ -205,7 +206,7 @@ export class TableRenderer {
       },
       setHeaders: (value: any) => {
         if (typeof value === "function") {
-          deps.setHeaders(value(deps.headers));
+          deps.setHeaders(value(deps.getHeaders()));
         } else {
           deps.setHeaders(value);
         }

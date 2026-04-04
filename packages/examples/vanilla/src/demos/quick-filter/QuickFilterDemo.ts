@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, QuickFilterMode } from "simple-table-core";
-import { quickFilterConfig } from "@simple-table/examples-shared";
+import { quickFilterConfig } from "./quick-filter.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderQuickFilterDemo(

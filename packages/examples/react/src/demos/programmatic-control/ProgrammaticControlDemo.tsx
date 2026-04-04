@@ -1,7 +1,7 @@
 import { useRef, useState, useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
-import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
+import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
+import type { Theme, TableAPI, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/react/styles.css";
 
 const ProgrammaticControlDemo = ({
@@ -16,11 +16,11 @@ const ProgrammaticControlDemo = ({
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      programmaticControlConfig.headers.map((h) => {
+      mapToReactHeaderObjects(programmaticControlConfig.headers.map((h) => {
         if (h.accessor === "status") {
           return {
             ...h,
-            cellRenderer: ({ row }) => {
+            cellRenderer: ({ row }: CellRendererProps) => {
               const s = String(row.status);
               const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
               return (
@@ -38,10 +38,10 @@ const ProgrammaticControlDemo = ({
                 </span>
               );
             },
-          } as ReactHeaderObject;
+          };
         }
-        return { ...h } as ReactHeaderObject;
-      }),
+        return h;
+      })),
     [],
   );
 
@@ -72,7 +72,10 @@ const ProgrammaticControlDemo = ({
     const hdrs = api.getHeaders();
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
-    const totalValue = allRows.reduce((sum, r) => sum + (r.price as number) * (r.stock as number), 0);
+    const totalValue = allRows.reduce((sum, r) => {
+      const row = r as Record<string, unknown>;
+      return sum + (Number(row.price) || 0) * (Number(row.stock) || 0);
+    }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
       `Table Info:\n• Rows: ${allRows.length}\n• Columns: ${hdrs.length}\n• Active filters: ${Object.keys(filterState).length}\n• Sort: ${sortInfo}\n• Total inventory value: $${totalValue.toFixed(2)}`,

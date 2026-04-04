@@ -6,8 +6,8 @@ import {
   INFRA_UPDATE_CONFIG,
   getInfraMetricColorStyles,
   getInfraStatusColors,
-} from "@simple-table/examples-shared";
-import type { InfrastructureServer } from "@simple-table/examples-shared";
+} from "./infrastructure.demo-data";
+import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/solid/styles.css";
 
 function getHeaders(currentTheme?: Theme): SolidHeaderObject[] {

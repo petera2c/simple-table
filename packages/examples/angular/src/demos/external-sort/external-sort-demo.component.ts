@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, asRows, defaultHeadersFromCore } from "@simple-table/angular";
 import type { AngularHeaderObject, Row, SortColumn, Theme } from "@simple-table/angular";
-import { externalSortConfig } from "@simple-table/examples-shared";
+import { externalSortConfig } from "./external-sort.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -24,7 +24,7 @@ export class ExternalSortDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = externalSortConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(externalSortConfig.headers);
   private sortState: SortColumn | null = null;
 
   handleSortChange = (sort: SortColumn | null): void => {
@@ -32,7 +32,7 @@ export class ExternalSortDemoComponent {
   };
 
   get sortedRows(): Row[] {
-    const rows = [...externalSortConfig.rows];
+    const rows = [...asRows(externalSortConfig.rows)];
     if (!this.sortState) return rows;
     const accessor = this.sortState.key.accessor as string;
     const type = this.sortState.key.type;

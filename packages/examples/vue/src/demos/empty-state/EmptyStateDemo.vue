@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { emptyStateConfig, buildEmptyStateElement } from "@simple-table/examples-shared";
+import { emptyStateConfig, buildEmptyStateElement } from "./empty-state.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -13,7 +13,7 @@ const emptyState = buildEmptyStateElement();
 
 <template>
   <SimpleTable
-    :default-headers="emptyStateConfig.headers"
+    :default-headers="defaultHeadersFromCore(emptyStateConfig.headers)"
     :rows="emptyStateConfig.rows"
     :table-empty-state-renderer="emptyState"
     :height="props.height"

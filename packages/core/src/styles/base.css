@@ -967,6 +967,11 @@ input {
   color: white;
 }
 
+/* Set by createTableFooter when page controls exceed MAX_COMPACT_VISIBLE_PAGE_BUTTONS */
+.st-footer-pagination .st-page-btn.st-page-btn--compact-hidden {
+  display: none;
+}
+
 .st-page-ellipsis {
   display: inline-flex;
   align-items: center;

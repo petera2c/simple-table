@@ -1,7 +1,10 @@
 import { createSignal } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
 import type { Theme, TableAPI, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
-import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
+import {
+  programmaticControlConfig,
+  PROGRAMMATIC_CONTROL_STATUS_COLORS,
+} from "./programmatic-control.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ProgrammaticControlDemo(props: {
@@ -11,32 +14,37 @@ export default function ProgrammaticControlDemo(props: {
   let tableRef: TableAPI | undefined;
   const [statusMessage, setStatusMessage] = createSignal("No status message");
 
-  const headers: SolidHeaderObject[] = programmaticControlConfig.headers.map((h) => {
-    if (h.accessor === "status") {
-      return {
-        ...h,
-        cellRenderer: (cr: CellRendererProps) => {
-          const s = String(cr.row.status);
-          const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
-          return (
-            <span
-              style={{
-                background: colors.bg,
-                color: colors.color,
-                padding: "4px 8px",
-                "border-radius": "4px",
-                "font-size": "12px",
-                "font-weight": "bold",
-              }}
-            >
-              {s}
-            </span>
-          );
-        },
-      };
-    }
-    return { ...h };
-  });
+  const headers: SolidHeaderObject[] = mapToSolidHeaderObjects(
+    programmaticControlConfig.headers.map((h) => {
+      if (h.accessor === "status") {
+        return {
+          ...h,
+          cellRenderer: (cr: CellRendererProps) => {
+            const s = String(cr.row.status);
+            const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
+              bg: "#f3f4f6",
+              color: "#374151",
+            };
+            return (
+              <span
+                style={{
+                  background: colors.bg,
+                  color: colors.color,
+                  padding: "4px 8px",
+                  "border-radius": "4px",
+                  "font-size": "12px",
+                  "font-weight": "bold",
+                }}
+              >
+                {s}
+              </span>
+            );
+          },
+        };
+      }
+      return h;
+    }),
+  );
 
   const handleSortByName = () => {
     tableRef?.applySortState({ accessor: "name", direction: "asc" });
@@ -64,7 +72,10 @@ export default function ProgrammaticControlDemo(props: {
     const hdrs = tableRef.getHeaders();
     const sortState = tableRef.getSortState();
     const filterState = tableRef.getFilterState();
-    const totalValue = allRows.reduce((sum, r) => sum + (r.price as number) * (r.stock as number), 0);
+    const totalValue = allRows.reduce((sum, r) => {
+      const data = r.row as { price?: number; stock?: number };
+      return sum + (Number(data.price) || 0) * (Number(data.stock) || 0);
+    }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
       `Table Info:\n• Rows: ${allRows.length}\n• Columns: ${hdrs.length}\n• Active filters: ${Object.keys(filterState).length}\n• Sort: ${sortInfo}\n• Total inventory value: $${totalValue.toFixed(2)}`,

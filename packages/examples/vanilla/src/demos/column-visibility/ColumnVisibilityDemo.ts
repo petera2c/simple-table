@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnVisibilityConfig } from "@simple-table/examples-shared";
+import { columnVisibilityConfig } from "./column-visibility.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnVisibilityDemo(

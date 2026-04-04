@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellClickProps } from "@simple-table/react";
-import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "@simple-table/examples-shared";
-import type { ProjectTask } from "@simple-table/examples-shared";
+import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
+import type { Theme, ReactHeaderObject, CellRendererProps, CellClickProps } from "@simple-table/react";
+import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
+import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/react/styles.css";
 
 const CellClickingDemo = ({
@@ -18,11 +18,11 @@ const CellClickingDemo = ({
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      cellClickingHeaders.map((h) => {
+      mapToReactHeaderObjects(cellClickingHeaders.map((h) => {
         if (h.accessor === "priority") {
           return {
             ...h,
-            cellRenderer: ({ row }) => {
+            cellRenderer: ({ row }: CellRendererProps) => {
               const p = String(row.priority);
               return (
                 <span
@@ -37,12 +37,12 @@ const CellClickingDemo = ({
                 </span>
               );
             },
-          } as ReactHeaderObject;
+          };
         }
         if (h.accessor === "status") {
           return {
             ...h,
-            cellRenderer: ({ row }) => {
+            cellRenderer: ({ row }: CellRendererProps) => {
               const s = String(row.status);
               const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
               const color = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
@@ -63,7 +63,7 @@ const CellClickingDemo = ({
                 </span>
               );
             },
-          } as ReactHeaderObject;
+          };
         }
         if (h.accessor === "details") {
           return {
@@ -85,10 +85,10 @@ const CellClickingDemo = ({
                 View Details
               </button>
             ),
-          } as ReactHeaderObject;
+          };
         }
-        return { ...h } as ReactHeaderObject;
-      }),
+        return h;
+      })),
     [],
   );
 

@@ -5,8 +5,8 @@ import {
   generateInitialRegions,
   fetchStoresForRegion,
   fetchProductsForStore,
-} from "@simple-table/examples-shared";
-import type { DynamicRegion, DynamicStore } from "@simple-table/examples-shared";
+} from "./dynamic-row-loading.demo-data";
+import type { DynamicRegion, DynamicStore } from "./dynamic-row-loading.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderDynamicRowLoadingDemo(

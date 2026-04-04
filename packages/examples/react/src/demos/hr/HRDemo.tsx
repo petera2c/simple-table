@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellChangeProps } from "@simple-table/react";
-import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
-import type { HREmployee } from "@simple-table/examples-shared";
+import { useMemo, useState } from "react";
+import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
+import type { Theme, CellChangeProps, CellRendererProps, ReactHeaderObject } from "@simple-table/react";
+import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
+import type { HREmployee } from "./hr.demo-data";
 import "@simple-table/react/styles.css";
 
 function getHeaders(): ReactHeaderObject[] {
-  return hrConfig.headers.map((h) => {
+  return mapToReactHeaderObjects(
+    hrConfig.headers.map((h) => {
     if (h.accessor === "fullName") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }) => {
+        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as HREmployee;
           const c = getHRThemeColors(theme);
           const initials = `${d.firstName.charAt(0)}${d.lastName.charAt(0)}`;
@@ -43,7 +44,7 @@ function getHeaders(): ReactHeaderObject[] {
     if (h.accessor === "performanceScore") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }) => {
+        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as HREmployee;
           const c = getHRThemeColors(theme);
           const color =
@@ -85,7 +86,7 @@ function getHeaders(): ReactHeaderObject[] {
     if (h.accessor === "hireDate") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }) => {
+        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as HREmployee;
           if (!d.hireDate) return "";
           const [year, month, day] = d.hireDate.split("-").map(Number);
@@ -106,7 +107,7 @@ function getHeaders(): ReactHeaderObject[] {
     if (h.accessor === "yearsOfService") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }) => {
+        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as HREmployee;
           const c = getHRThemeColors(theme);
           return <span style={{ color: c.gray }}>{`${d.yearsOfService} yrs`}</span>;
@@ -116,7 +117,7 @@ function getHeaders(): ReactHeaderObject[] {
     if (h.accessor === "salary") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }) => {
+        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as HREmployee;
           const c = getHRThemeColors(theme);
           return <span style={{ color: c.gray }}>{`$${d.salary.toLocaleString()}`}</span>;
@@ -126,7 +127,7 @@ function getHeaders(): ReactHeaderObject[] {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }) => {
+        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
           const d = r as unknown as HREmployee;
           if (!d.status) return "";
           const c = getHRThemeColors(theme);
@@ -151,7 +152,8 @@ function getHeaders(): ReactHeaderObject[] {
       };
     }
     return h;
-  });
+  }),
+  );
 }
 
 const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
@@ -166,11 +168,13 @@ const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?:
     );
   };
 
+  const headers = useMemo(() => getHeaders(), []);
+
   return (
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={getHeaders()}
+      defaultHeaders={headers}
       onCellEdit={handleCellEdit}
       customTheme={{ rowHeight }}
       rows={data}

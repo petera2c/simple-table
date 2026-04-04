@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { customIconsConfig, buildVanillaCustomIcons } from "@simple-table/examples-shared";
+  import { customIconsConfig, buildVanillaCustomIcons } from "./custom-icons.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -10,7 +10,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={customIconsConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(customIconsConfig.headers)}
   rows={customIconsConfig.rows}
   {icons}
   {height}

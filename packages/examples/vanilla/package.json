@@ -9,8 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "simple-table-core": "workspace:*",
-    "@simple-table/examples-shared": "workspace:*"
+    "simple-table-core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

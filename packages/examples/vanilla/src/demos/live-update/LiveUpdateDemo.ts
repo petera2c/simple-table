@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { liveUpdateConfig, liveUpdateData } from "@simple-table/examples-shared";
+import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderLiveUpdateDemo(

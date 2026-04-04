@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme, FooterRendererProps } from "@simple-table/svelte";
-  import { footerRendererConfig } from "@simple-table/examples-shared";
+  import { footerRendererConfig } from "./footer-renderer.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -82,7 +82,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={footerRendererConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(footerRendererConfig.headers)}
   rows={footerRendererConfig.rows}
   {footerRenderer}
   shouldPaginate={true}

@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
-import { manufacturingConfig, getManufacturingStatusColors } from "@simple-table/examples-shared";
-import type { ManufacturingRow } from "@simple-table/examples-shared";
+import { SimpleTableComponent, mapToAngularHeaderObjects, asRows } from "@simple-table/angular";
+import type { AngularHeaderObject, CellRenderer, Theme } from "@simple-table/angular";
+import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
+import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/angular/styles.css";
 
 function hasStations(row: Record<string, unknown>): boolean {
@@ -187,10 +187,12 @@ function getHeaders(): AngularHeaderObject[] {
     maintenanceDate: maintenanceDateRenderer,
   };
 
-  return manufacturingConfig.headers.map((h) => {
-    const renderer = rendererMap[String(h.accessor)];
-    return renderer ? { ...h, cellRenderer: renderer } : { ...h };
-  });
+  return mapToAngularHeaderObjects(
+    manufacturingConfig.headers.map((h) => {
+      const renderer = rendererMap[String(h.accessor)];
+      return renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    }),
+  );
 }
 
 @Component({
@@ -215,6 +217,6 @@ export class ManufacturingDemoComponent {
   @Input() theme?: Theme;
 
   readonly grouping = ["stations"];
-  readonly rows: Row[] = manufacturingConfig.rows;
+  readonly rows = asRows(manufacturingConfig.rows);
   readonly headers: AngularHeaderObject[] = getHeaders();
 }

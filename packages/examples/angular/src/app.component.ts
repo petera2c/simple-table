@@ -5,7 +5,7 @@ import {
   OnInit,
   OnDestroy,
 } from "@angular/core";
-import { DEMO_LIST } from "@simple-table/examples-shared";
+import { DEMO_LIST } from "./demo-list";
 import { QuickStartDemoComponent } from "./demos/quick-start/quick-start-demo.component";
 import { ColumnFilteringDemoComponent } from "./demos/column-filtering/column-filtering-demo.component";
 import { ColumnSortingDemoComponent } from "./demos/column-sorting/column-sorting-demo.component";

@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { valueFormatterConfig } from "@simple-table/examples-shared";
+import { valueFormatterConfig } from "./value-formatter.demo-data";
 import "@simple-table/react/styles.css";
 
 const ValueFormatterDemo = ({
@@ -12,7 +12,7 @@ const ValueFormatterDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={valueFormatterConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(valueFormatterConfig.headers)}
       rows={valueFormatterConfig.rows}
       height={height}
       theme={theme}

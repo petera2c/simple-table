@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
 import type { AngularHeaderObject, Row, RowSelectionChangeProps, Theme } from "@simple-table/angular";
-import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
-import type { LibraryBook } from "@simple-table/examples-shared";
+import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
+import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -42,19 +42,21 @@ export class RowSelectionDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = rowSelectionConfig.rows;
-  readonly headers: AngularHeaderObject[] = rowSelectionConfig.headers.map((h) => {
-    if (h.accessor === "status") {
-      return {
-        ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-          const s = String(row.status);
-          const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
-          return `<span style="color:${color};font-weight:bold">${s}</span>`;
-        },
-      };
-    }
-    return { ...h };
-  });
+  readonly headers: AngularHeaderObject[] = mapToAngularHeaderObjects(
+    rowSelectionConfig.headers.map((h) => {
+      if (h.accessor === "status") {
+        return {
+          ...h,
+          cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+            const s = String(row.status);
+            const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
+            return `<span style="color:${color};font-weight:bold">${s}</span>`;
+          },
+        };
+      }
+      return { ...h };
+    }),
+  );
 
   selectedBooks: LibraryBook[] = [];
 

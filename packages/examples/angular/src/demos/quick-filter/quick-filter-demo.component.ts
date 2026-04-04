@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, QuickFilterMode, Row, Theme } from "@simple-table/angular";
-import { quickFilterConfig } from "@simple-table/examples-shared";
+import { quickFilterConfig } from "./quick-filter.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -73,7 +73,7 @@ export class QuickFilterDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = quickFilterConfig.rows;
-  readonly headers: AngularHeaderObject[] = quickFilterConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(quickFilterConfig.headers);
   searchText = "";
   filterMode: QuickFilterMode = "simple";
   caseSensitive = false;

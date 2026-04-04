@@ -1,7 +1,7 @@
 import { createSignal, createMemo } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme, Row } from "@simple-table/solid";
-import { infiniteScrollConfig, generateInfiniteScrollData } from "@simple-table/examples-shared";
+import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
 import "@simple-table/solid/styles.css";
 
 const MAX_ROWS = 200;
@@ -36,7 +36,7 @@ export default function InfiniteScrollDemo(props: { height?: string | number; th
         {statusText()}
       </div>
       <SimpleTable
-        defaultHeaders={infiniteScrollConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(infiniteScrollConfig.headers)}
         rows={rows()}
         onLoadMore={handleLoadMore}
         isLoading={loading()}

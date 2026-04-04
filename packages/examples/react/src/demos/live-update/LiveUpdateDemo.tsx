@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, TableAPI } from "@simple-table/react";
-import { liveUpdateConfig, liveUpdateData } from "@simple-table/examples-shared";
+import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "@simple-table/react/styles.css";
 
 const LiveUpdateDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
@@ -9,7 +9,7 @@ const LiveUpdateDemo = ({ height = "400px", theme }: { height?: string | number;
 
   useEffect(() => {
     const currentData = JSON.parse(JSON.stringify(liveUpdateData));
-    const timerMap = new Map<string | number, NodeJS.Timeout>();
+    const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
     const currentPeriodSales = new Map<string | number, number>();
     let isActive = true;
 
@@ -106,7 +106,7 @@ const LiveUpdateDemo = ({ height = "400px", theme }: { height?: string | number;
 
   return (
     <SimpleTable
-      defaultHeaders={liveUpdateConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(liveUpdateConfig.headers)}
       rows={liveUpdateConfig.rows}
       ref={tableRef}
       height={height}

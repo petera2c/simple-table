@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { columnWidthConfig } from "@simple-table/examples-shared";
+import { columnWidthConfig } from "./column-width.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -24,7 +24,7 @@ export class ColumnWidthDemoComponent implements OnInit, OnDestroy {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnWidthConfig.rows;
-  readonly headers: AngularHeaderObject[] = columnWidthConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(columnWidthConfig.headers);
   isMobile = false;
 
   private checkMobile = () => { this.isMobile = window.innerWidth < 768; };

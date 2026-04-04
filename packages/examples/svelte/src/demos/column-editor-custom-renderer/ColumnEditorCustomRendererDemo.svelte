@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
   import {
     columnEditorCustomRendererConfig,
     COLUMN_EDITOR_TEXT,
     COLUMN_EDITOR_SEARCH_PLACEHOLDER,
     buildVanillaColumnEditorRowRenderer,
-  } from "@simple-table/examples-shared";
+  } from "./column-editor-custom-renderer.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -20,7 +20,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={columnEditorCustomRendererConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(columnEditorCustomRendererConfig.headers)}
   rows={columnEditorCustomRendererConfig.rows}
   editColumns={true}
   columnEditorConfig={editorConfig}

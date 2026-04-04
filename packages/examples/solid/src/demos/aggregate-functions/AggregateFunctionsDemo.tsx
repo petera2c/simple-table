@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
-import { aggregateFunctionsConfig } from "@simple-table/examples-shared";
+import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function AggregateFunctionsDemo(props: {
@@ -9,7 +9,7 @@ export default function AggregateFunctionsDemo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={aggregateFunctionsConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(aggregateFunctionsConfig.headers)}
       rows={aggregateFunctionsConfig.rows}
       rowGrouping={aggregateFunctionsConfig.tableProps.rowGrouping}
       columnResizing

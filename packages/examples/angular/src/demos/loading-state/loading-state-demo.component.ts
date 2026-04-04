@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { loadingStateConfig } from "@simple-table/examples-shared";
+import { loadingStateConfig } from "./loading-state.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -34,7 +34,7 @@ export class LoadingStateDemoComponent implements OnInit, OnDestroy {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = loadingStateConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(loadingStateConfig.headers);
   data: Row[] = [];
   isLoading = true;
   private timer: ReturnType<typeof setTimeout> | null = null;

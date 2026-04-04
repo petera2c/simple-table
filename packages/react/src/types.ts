@@ -4,6 +4,7 @@ import type {
   SimpleTableConfig,
   HeaderObject,
   TableAPI,
+  Row,
   CellRendererProps,
   HeaderRendererProps,
   FooterRendererProps,
@@ -45,12 +46,25 @@ export interface ReactIconsConfig {
 }
 
 // ─── Renderer overrides ───────────────────────────────────────────────────────
-export type ReactCellRenderer = React.ComponentType<CellRendererProps>;
-export type ReactHeaderRenderer = React.ComponentType<HeaderRendererProps>;
-export type ReactFooterRenderer = React.ComponentType<FooterRendererProps>;
-export type ReactHeaderDropdown = React.ComponentType<HeaderDropdownProps>;
-export type ReactColumnEditorRowRenderer = React.ComponentType<ColumnEditorRowRendererProps>;
-export type ReactColumnEditorCustomRenderer = React.ComponentType<ColumnEditorCustomRendererProps>;
+// Allow class/function components or inline render props that return ReactNode (string, number, etc.).
+export type ReactCellRenderer =
+  | React.ComponentType<CellRendererProps>
+  | ((props: CellRendererProps) => React.ReactNode);
+export type ReactHeaderRenderer =
+  | React.ComponentType<HeaderRendererProps>
+  | ((props: HeaderRendererProps) => React.ReactNode);
+export type ReactFooterRenderer =
+  | React.ComponentType<FooterRendererProps>
+  | ((props: FooterRendererProps) => React.ReactNode);
+export type ReactHeaderDropdown =
+  | React.ComponentType<HeaderDropdownProps>
+  | ((props: HeaderDropdownProps) => React.ReactNode);
+export type ReactColumnEditorRowRenderer =
+  | React.ComponentType<ColumnEditorRowRendererProps>
+  | ((props: ColumnEditorRowRendererProps) => React.ReactNode);
+export type ReactColumnEditorCustomRenderer =
+  | React.ComponentType<ColumnEditorCustomRendererProps>
+  | ((props: ColumnEditorCustomRendererProps) => React.ReactNode);
 
 // State renderers can be a component (receives props) or a plain ReactNode (static markup)
 export type ReactLoadingStateRenderer =
@@ -64,36 +78,42 @@ export type ReactEmptyStateRenderer =
   | React.ReactNode;
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface ReactColumnEditorConfig
-  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
+export interface ReactColumnEditorConfig extends Omit<
+  ColumnEditorConfig,
+  "rowRenderer" | "customRenderer"
+> {
   rowRenderer?: ReactColumnEditorRowRenderer;
   customRenderer?: ReactColumnEditorCustomRenderer;
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
-export interface ReactHeaderObject
-  extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
+/**
+ * Column definition for `defaultHeaders`: same column metadata as core `HeaderObject`, but
+ * `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are React-only. For column
+ * defs authored against core types, import `defaultHeadersFromCore`, `defaultHeaderFromCore`, or
+ * `mapToReactHeaderObjects` (after spreading core columns and adding React renderers).
+ */
+export interface ReactHeaderObject extends Omit<
+  HeaderObject,
+  "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
+> {
   cellRenderer?: ReactCellRenderer;
   headerRenderer?: ReactHeaderRenderer;
-  children?: ReactHeaderObject[];
-  nestedTable?: Omit<SimpleTableReactProps, "rows">;
+  children?: ReadonlyArray<ReactHeaderObject>;
+  /** Nested grid: React table props minus row data and inherited state renderers. */
+  nestedTable?: Omit<
+    SimpleTableReactProps,
+    | "rows"
+    | "loadingStateRenderer"
+    | "errorStateRenderer"
+    | "emptyStateRenderer"
+    | "tableEmptyStateRenderer"
+  >;
 }
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
-// Mirrors SimpleTableProps exactly, with the following intentional differences:
-//
-//   Removed:
-//     - tableRef          → consumers use React.forwardRef / useRef<TableAPI> instead
-//     - allowAnimations   → feature is no longer available
-//     - expandIcon        → @deprecated in vanilla; use `icons.expand`
-//     - filterIcon        → @deprecated in vanilla; use `icons.filter`
-//     - headerCollapseIcon → @deprecated in vanilla; use `icons.headerCollapse`
-//     - headerExpandIcon  → @deprecated in vanilla; use `icons.headerExpand`
-//     - nextIcon          → @deprecated in vanilla; use `icons.next`
-//     - prevIcon          → @deprecated in vanilla; use `icons.prev`
-//     - sortDownIcon      → @deprecated in vanilla; use `icons.sortDown`
-//     - sortUpIcon        → @deprecated in vanilla; use `icons.sortUp`
-//     - columnEditorText  → @deprecated in vanilla; use `columnEditorConfig.text`
+// Mirrors SimpleTableProps with React-specific renderer/icon types. Use `ref` +
+// `forwardRef<TableAPI, …>` for the imperative API.
 //
 //   Overridden to React equivalents:
 //     - defaultHeaders         → ReactHeaderObject[]
@@ -105,35 +125,23 @@ export interface ReactHeaderObject
 //     - headerDropdown         → React.ComponentType<HeaderDropdownProps>
 //     - columnEditorConfig     → ReactColumnEditorConfig
 //     - icons                  → ReactIconsConfig
-export interface SimpleTableReactProps
-  extends Omit<
-    SimpleTableProps,
-    // Replaced by forwardRef
-    | "tableRef"
-    // No longer available
-    | "allowAnimations"
-    // Deprecated vanilla-only props — use icons.* and columnEditorConfig.text instead
-    | "expandIcon"
-    | "filterIcon"
-    | "headerCollapseIcon"
-    | "headerExpandIcon"
-    | "nextIcon"
-    | "prevIcon"
-    | "sortDownIcon"
-    | "sortUpIcon"
-    | "columnEditorText"
-    // Overridden below with React types
-    | "defaultHeaders"
-    | "footerRenderer"
-    | "emptyStateRenderer"
-    | "errorStateRenderer"
-    | "loadingStateRenderer"
-    | "tableEmptyStateRenderer"
-    | "headerDropdown"
-    | "columnEditorConfig"
-    | "icons"
-  > {
+export interface SimpleTableReactProps extends Omit<
+  SimpleTableProps,
+  // Overridden below with React types
+  | "defaultHeaders"
+  | "footerRenderer"
+  | "emptyStateRenderer"
+  | "errorStateRenderer"
+  | "loadingStateRenderer"
+  | "tableEmptyStateRenderer"
+  | "headerDropdown"
+  | "columnEditorConfig"
+  | "icons"
+  | "rows"
+> {
   defaultHeaders: ReactHeaderObject[];
+  /** Row data: any object rows (domain models) or core `Row[]`; cast to vanilla `Row[]` inside the adapter. */
+  rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: ReactFooterRenderer;
   loadingStateRenderer?: ReactLoadingStateRenderer;
   errorStateRenderer?: ReactErrorStateRenderer;

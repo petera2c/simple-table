@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject, CellRenderer, FooterRendererProps, CellChangeProps } from "@simple-table/svelte";
+  import type { HeaderObject, CellRenderer, FooterRendererProps, CellChangeProps } from "@simple-table/svelte";
   import {
     crmData,
     CRM_THEME_COLORS_LIGHT,
@@ -8,12 +8,12 @@
     CRM_FOOTER_COLORS_LIGHT,
     CRM_FOOTER_COLORS_DARK,
     generateVisiblePages,
-  } from "@simple-table/examples-shared";
-  import type { CRMLead } from "@simple-table/examples-shared";
+  } from "./crm.demo-data";
+  import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
   import "@simple-table/svelte/styles.css";
-  import "@simple-table/examples-shared/styles/crm-custom-theme.css";
+  import "./crm-custom-theme.css";
 
-  let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
+  let { height = "400px", theme }: { height?: string | number; theme?: CrmShellTheme } = $props();
 
   let data = $state([...crmData]);
   let rowsPerPage = $state(100);

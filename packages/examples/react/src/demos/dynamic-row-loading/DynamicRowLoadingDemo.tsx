@@ -1,13 +1,13 @@
 import { useState, useCallback } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
   fetchStoresForRegion,
   fetchProductsForStore,
-} from "@simple-table/examples-shared";
-import type { DynamicRegion, DynamicStore } from "@simple-table/examples-shared";
+} from "./dynamic-row-loading.demo-data";
+import type { DynamicRegion, DynamicStore } from "./dynamic-row-loading.demo-data";
 import "@simple-table/react/styles.css";
 
 const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
@@ -56,7 +56,7 @@ const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | 
   return (
     <SimpleTable
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-      defaultHeaders={dynamicRowLoadingConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(dynamicRowLoadingConfig.headers)}
       editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
       expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
       height={height}

@@ -1,7 +1,7 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject } from "simple-table-core";
-import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
-import type { LibraryBook } from "@simple-table/examples-shared";
+import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
+import type { LibraryBook } from "./row-selection.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderRowSelectionDemo(

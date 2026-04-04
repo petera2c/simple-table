@@ -1,7 +1,7 @@
 import { createSignal, createMemo } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject, HeaderRendererProps } from "@simple-table/solid";
-import { headerRendererConfig } from "@simple-table/examples-shared";
+import { headerRendererConfig } from "./header-renderer.demo-data";
 import "@simple-table/solid/styles.css";
 
 type SortDir = "asc" | "desc" | null;
@@ -27,7 +27,7 @@ export default function HeaderRendererDemo(props: { height?: string | number; th
   });
 
   const headers = createMemo((): SolidHeaderObject[] =>
-    headerRendererConfig.headers.map((h) => ({
+    mapToSolidHeaderObjects(headerRendererConfig.headers.map((h) => ({
       ...h,
       isSortable: false,
       headerRenderer: ({ accessor }: HeaderRendererProps) => {
@@ -66,7 +66,7 @@ export default function HeaderRendererDemo(props: { height?: string | number; th
           </div>
         );
       },
-    }))
+    })))
   );
 
   return (

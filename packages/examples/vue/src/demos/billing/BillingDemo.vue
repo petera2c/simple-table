@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject, CellRenderer } from "@simple-table/vue";
-import { billingConfig } from "@simple-table/examples-shared";
-import type { BillingRow } from "@simple-table/examples-shared";
+import { billingConfig } from "./billing.demo-data";
+import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

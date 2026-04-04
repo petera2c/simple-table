@@ -1,5 +1,11 @@
 // Component
 export { SimpleTable } from "./SimpleTable";
+export { asRows } from "simple-table-core";
+export {
+  defaultHeaderFromCore,
+  defaultHeadersFromCore,
+  mapToSolidHeaderObjects,
+} from "./defaultHeadersFromCore";
 
 // Solid-specific props and type overrides
 export type {
@@ -30,6 +36,7 @@ export type {
   Cell,
   CellChangeProps,
   CellClickProps,
+  CellRenderer,
   CellRendererProps,
   CellValue,
   ChartOptions,

@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme, FooterRendererProps } from "@simple-table/solid";
-import { footerRendererConfig } from "@simple-table/examples-shared";
+import { footerRendererConfig } from "./footer-renderer.demo-data";
 import { For } from "solid-js";
 import "@simple-table/solid/styles.css";
 
@@ -41,7 +41,7 @@ export default function FooterRendererDemo(props: { height?: string | number; th
 
   return (
     <SimpleTable
-      defaultHeaders={footerRendererConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(footerRendererConfig.headers)}
       rows={footerRendererConfig.rows}
       shouldPaginate={true}
       rowsPerPage={10}

@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnReorderingConfig } from "@simple-table/examples-shared";
+import { columnReorderingConfig } from "./column-reordering.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnReorderingDemo(

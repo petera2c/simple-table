@@ -1,8 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject, CellClickProps } from "@simple-table/svelte";
-  import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "@simple-table/examples-shared";
-  import type { ProjectTask } from "@simple-table/examples-shared";
+  import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
+  import type { ProjectTask } from "./cell-clicking.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "320px", theme }: { height?: string | number; theme?: Theme } = $props();

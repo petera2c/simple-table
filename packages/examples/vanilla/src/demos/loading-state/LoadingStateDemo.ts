@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, Row } from "simple-table-core";
-import { loadingStateConfig } from "@simple-table/examples-shared";
+import { loadingStateConfig } from "./loading-state.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderLoadingStateDemo(

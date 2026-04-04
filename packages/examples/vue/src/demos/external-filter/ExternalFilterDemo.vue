@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme, TableFilterState } from "@simple-table/vue";
-import { externalFilterConfig, matchesFilter } from "@simple-table/examples-shared";
+import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -29,7 +29,7 @@ function handleFilterChange(newFilters: TableFilterState) {
 
 <template>
   <SimpleTable
-    :default-headers="externalFilterConfig.headers"
+    :default-headers="defaultHeadersFromCore(externalFilterConfig.headers)"
     :rows="filteredRows"
     :external-filter-handling="true"
     :column-resizing="true"

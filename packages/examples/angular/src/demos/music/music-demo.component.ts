@@ -1,10 +1,10 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
-import { musicData, getMusicThemeColors } from "@simple-table/examples-shared";
-import type { MusicArtist } from "@simple-table/examples-shared";
+import { SimpleTableComponent, asRows, mapToAngularHeaderObjects } from "@simple-table/angular";
+import type { AngularHeaderObject, CellRenderer, CellRendererProps, Theme } from "@simple-table/angular";
+import { musicData, getMusicThemeColors } from "./music.demo-data";
+import type { MusicArtist } from "./music.demo-data";
 import "@simple-table/angular/styles.css";
-import "../../../../shared/src/styles/music-theme.css";
+import "./music-theme.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
   const e = document.createElement(tag);
@@ -57,7 +57,7 @@ function growthMetric(
 function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
   const c = getMusicThemeColors(theme);
 
-  const artistRenderer: CellRenderer = ({ row }) => {
+  const artistRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     let hash = 0;
     for (let i = 0; i < d.artistName.length; i++) hash = d.artistName.charCodeAt(i) + ((hash << 5) - hash);
@@ -82,7 +82,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     return el("div", { display: "flex", alignItems: "center", gap: "12px" }, [avatar, info]);
   };
 
-  const artistTypeRenderer: CellRenderer = ({ row }) => {
+  const artistTypeRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     return el("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
       el("div", { fontSize: "13px", color: c.gray }, [`${d.artistType}, ${d.pronouns}`]),
@@ -91,7 +91,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     ]);
   };
 
-  const followersRenderer: CellRenderer = ({ row }) => {
+  const followersRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     return el("div", { display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" }, [
       el("div", { fontSize: "14px", color: c.gray }, [d.followersFormatted]),
@@ -99,7 +99,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     ]);
   };
 
-  const playlistReachRenderer: CellRenderer = ({ row }) => {
+  const playlistReachRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     const growth = d.playlistReachChange;
     const isPos = growth >= 0;
@@ -110,7 +110,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     ]);
   };
 
-  const playlistCountRenderer: CellRenderer = ({ row }) => {
+  const playlistCountRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     return el("div", { display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" }, [
       el("div", { fontSize: "14px", color: c.gray }, [d.playlistCount.toLocaleString()]),
@@ -118,7 +118,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     ]);
   };
 
-  const monthlyListenersRenderer: CellRenderer = ({ row }) => {
+  const monthlyListenersRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     const growth = d.monthlyListenersChange;
     const isPos = growth >= 0;
@@ -129,7 +129,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     ]);
   };
 
-  const popularityRenderer: CellRenderer = ({ row }) => {
+  const popularityRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     const pct = d.popularityChangePercent;
     const isPos = pct >= 0;
@@ -138,24 +138,24 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     return wrapper;
   };
 
-  const conversionRateRenderer: CellRenderer = ({ row }) => {
+  const conversionRateRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     return el("span", { color: c.gray }, [`${d.conversionRate.toFixed(2)}%`]);
   };
 
-  const ratioRenderer: CellRenderer = ({ row }) => {
+  const ratioRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     return el("span", { color: c.gray }, [`${d.reachFollowersRatio.toFixed(1)}x`]);
   };
 
-  const growthCell = (valueKey: string, pctKey: string, signed: boolean): CellRenderer => ({ row }) => {
+  const growthCell = (valueKey: string, pctKey: string, signed: boolean): CellRenderer => ({ row }: CellRendererProps) => {
     const d = row as unknown as MusicArtist;
     const val = d[valueKey as keyof MusicArtist] as number;
     const pct = d[pctKey as keyof MusicArtist] as number;
     return growthMetric(val, pct, c, { isPositive: signed ? val >= 0 : true, align: "right" });
   };
 
-  return [
+  return mapToAngularHeaderObjects([
     { accessor: "rank", label: "#", width: 60, isSortable: true, isEditable: false, align: "center", type: "number", pinned: "left" },
     { accessor: "artistName", label: "Artist", width: 330, isSortable: true, isEditable: false, align: "left", type: "string", pinned: "left", cellRenderer: artistRenderer },
     { accessor: "artistType", label: "Identity", width: 280, isSortable: false, isEditable: false, align: "left", type: "string", cellRenderer: artistTypeRenderer },
@@ -198,7 +198,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     },
     { accessor: "conversionRate", label: "Conversion Rate", width: 150, isSortable: true, isEditable: false, align: "right", type: "number", cellRenderer: conversionRateRenderer },
     { accessor: "reachFollowersRatio", label: "Reach/Followers Ratio", width: 220, isSortable: true, isEditable: false, align: "right", type: "number", cellRenderer: ratioRenderer },
-  ];
+  ]);
 }
 
 @Component({
@@ -224,7 +224,7 @@ export class MusicDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = [...musicData];
+  readonly rows = asRows([...musicData]);
   headers: AngularHeaderObject[] = buildMusicHeaders();
 
   ngOnInit(): void {

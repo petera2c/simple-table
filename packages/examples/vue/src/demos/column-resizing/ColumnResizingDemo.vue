@@ -21,7 +21,7 @@
 import { ref, onMounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject } from "@simple-table/vue";
-import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
+import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

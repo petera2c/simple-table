@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { tooltipConfig } from "@simple-table/examples-shared";
+import { tooltipConfig } from "./tooltip.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderTooltipDemo(

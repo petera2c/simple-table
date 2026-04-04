@@ -1,10 +1,10 @@
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme, SolidColumnEditorConfig, ColumnEditorRowRendererProps } from "@simple-table/solid";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_TEXT,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
-} from "@simple-table/examples-shared";
+} from "./column-editor-custom-renderer.demo-data";
 import "@simple-table/solid/styles.css";
 
 const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps) => (
@@ -42,7 +42,7 @@ const columnEditorConfig: SolidColumnEditorConfig = {
 export default function ColumnEditorCustomRendererDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={columnEditorCustomRendererConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(columnEditorCustomRendererConfig.headers)}
       rows={columnEditorCustomRendererConfig.rows}
       editColumns
       columnEditorConfig={columnEditorConfig}

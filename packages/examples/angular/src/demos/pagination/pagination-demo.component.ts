@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "@simple-table/examples-shared";
+import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -25,7 +25,7 @@ export class PaginationDemoComponent {
   @Input() height: string | number = "auto";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = paginationConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(paginationConfig.headers);
   readonly rowsPerPage = PAGINATION_ROWS_PER_PAGE;
   rows: Row[] = paginationData.slice(0, PAGINATION_ROWS_PER_PAGE);
   isLoading = false;

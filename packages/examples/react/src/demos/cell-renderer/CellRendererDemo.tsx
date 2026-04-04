@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
-import { cellRendererConfig } from "@simple-table/examples-shared";
-import type { CellRendererEmployee } from "@simple-table/examples-shared";
+import { cellRendererConfig } from "./cell-renderer.demo-data";
+import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 const getInitials = (name: string) =>
@@ -120,10 +120,11 @@ const VerifiedCell = ({ value }: CellRendererProps) => {
 };
 
 const TagsCell = ({ value }: CellRendererProps) => {
-  const tags = Array.isArray(value) ? value : [];
+  const raw = Array.isArray(value) ? value : [];
+  const tags = raw.filter((t): t is string => typeof t === "string");
   return (
     <div style={{ display: "flex", gap: 4, flexWrap: "nowrap", overflow: "hidden" }}>
-      {tags.map((tag: string) => (
+      {tags.map((tag) => (
         <span
           key={tag}
           style={{
@@ -153,19 +154,21 @@ const CellRendererDemo = ({
 }) => {
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      cellRendererConfig.headers.map((h) => {
-        const renderers: Record<string, React.ComponentType<CellRendererProps>> = {
-          teamMembers: TeamCell,
-          website: WebsiteCell,
-          status: StatusCell,
-          progress: ProgressCell,
-          rating: RatingCell,
-          verified: VerifiedCell,
-          tags: TagsCell,
-        };
-        const cellRenderer = renderers[h.accessor as string];
-        return cellRenderer ? { ...h, cellRenderer } : { ...h };
-      }),
+      mapToReactHeaderObjects(
+        cellRendererConfig.headers.map((h) => {
+          const renderers: Record<string, React.ComponentType<CellRendererProps>> = {
+            teamMembers: TeamCell,
+            website: WebsiteCell,
+            status: StatusCell,
+            progress: ProgressCell,
+            rating: RatingCell,
+            verified: VerifiedCell,
+            tags: TagsCell,
+          };
+          const cellRenderer = renderers[h.accessor as string];
+          return cellRenderer ? { ...h, cellRenderer } : h;
+        }),
+      ),
     [],
   );
 

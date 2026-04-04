@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { aggregateFunctionsConfig } from "@simple-table/examples-shared";
+import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderAggregateFunctionsDemo(

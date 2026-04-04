@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnSelectionConfig } from "@simple-table/examples-shared";
+import { columnSelectionConfig } from "./column-selection.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnSelectionDemo(

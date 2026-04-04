@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject } from "@simple-table/svelte";
-  import { columnReorderingConfig } from "@simple-table/examples-shared";
+  import { columnReorderingConfig } from "./column-reordering.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();

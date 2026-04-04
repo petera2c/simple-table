@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
 import { NgFor } from "@angular/common";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { themesConfig, AVAILABLE_THEMES } from "@simple-table/examples-shared";
+import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -41,7 +41,7 @@ export class ThemesDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = themesConfig.rows;
-  readonly headers: AngularHeaderObject[] = themesConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(themesConfig.headers);
   readonly themes = AVAILABLE_THEMES;
   selectedTheme: Theme = "light";
 

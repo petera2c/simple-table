@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject } from "@simple-table/svelte";
-  import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
+  import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();

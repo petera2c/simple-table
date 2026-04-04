@@ -1,5 +1,5 @@
-import type React from "react";
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig } from "simple-table-core";
+import type { ComponentType, ReactNode } from "react";
+import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
 import type {
   SimpleTableReactProps,
   ReactHeaderObject,
@@ -34,8 +34,12 @@ function transformColumnEditorConfig(config: ReactColumnEditorConfig): ColumnEdi
   const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
-    ...(rowRenderer ? { rowRenderer: wrapReactRenderer(rowRenderer) as any } : {}),
-    ...(customRenderer ? { customRenderer: wrapReactRenderer(customRenderer) as any } : {}),
+    ...(rowRenderer
+      ? { rowRenderer: wrapReactRenderer(rowRenderer as ComponentType<object>) as any }
+      : {}),
+    ...(customRenderer
+      ? { customRenderer: wrapReactRenderer(customRenderer as ComponentType<object>) as any }
+      : {}),
   };
 }
 
@@ -45,11 +49,11 @@ function transformHeader(header: ReactHeaderObject): HeaderObject {
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
-    transformed.cellRenderer = wrapReactRenderer(cellRenderer) as any;
+    transformed.cellRenderer = wrapReactRenderer(cellRenderer as ComponentType<object>) as any;
   }
 
   if (headerRenderer) {
-    transformed.headerRenderer = wrapReactRenderer(headerRenderer) as any;
+    transformed.headerRenderer = wrapReactRenderer(headerRenderer as ComponentType<object>) as any;
   }
 
   if (children) {
@@ -69,6 +73,7 @@ function transformHeader(header: ReactHeaderObject): HeaderObject {
 export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableConfig {
   const {
     defaultHeaders,
+    rows,
     footerRenderer,
     emptyStateRenderer,
     errorStateRenderer,
@@ -82,11 +87,14 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
+    rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
   };
 
   if (footerRenderer !== undefined) {
-    vanillaConfig.footerRenderer = wrapReactRenderer(footerRenderer) as any;
+    vanillaConfig.footerRenderer = wrapReactRenderer(
+      footerRenderer as ComponentType<object>,
+    ) as any;
   }
 
   if (emptyStateRenderer !== undefined) {
@@ -94,7 +102,7 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
       vanillaConfig.emptyStateRenderer = wrapReactRenderer(emptyStateRenderer) as any;
     } else {
       // Static ReactNode — TypeScript can't auto-narrow the union here, so cast explicitly.
-      const node = emptyStateRenderer as React.ReactNode;
+      const node = emptyStateRenderer as ReactNode;
       vanillaConfig.emptyStateRenderer = () => wrapReactNode(node);
     }
   }
@@ -103,7 +111,7 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
     if (isReactComponent(errorStateRenderer)) {
       vanillaConfig.errorStateRenderer = wrapReactRenderer(errorStateRenderer) as any;
     } else {
-      const node = errorStateRenderer as React.ReactNode;
+      const node = errorStateRenderer as ReactNode;
       vanillaConfig.errorStateRenderer = () => wrapReactNode(node);
     }
   }
@@ -112,7 +120,7 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
     if (isReactComponent(loadingStateRenderer)) {
       vanillaConfig.loadingStateRenderer = wrapReactRenderer(loadingStateRenderer) as any;
     } else {
-      const node = loadingStateRenderer as React.ReactNode;
+      const node = loadingStateRenderer as ReactNode;
       vanillaConfig.loadingStateRenderer = () => wrapReactNode(node);
     }
   }
@@ -123,7 +131,9 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
   }
 
   if (headerDropdown !== undefined) {
-    vanillaConfig.headerDropdown = wrapReactRenderer(headerDropdown) as any;
+    vanillaConfig.headerDropdown = wrapReactRenderer(
+      headerDropdown as ComponentType<object>,
+    ) as any;
   }
 
   if (columnEditorConfig !== undefined) {

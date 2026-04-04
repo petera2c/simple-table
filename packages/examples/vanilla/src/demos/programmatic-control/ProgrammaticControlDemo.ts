@@ -3,7 +3,7 @@ import type { Theme, HeaderObject } from "simple-table-core";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
-} from "@simple-table/examples-shared";
+} from "./programmatic-control.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderProgrammaticControlDemo(

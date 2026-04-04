@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { chartsConfig } from "@simple-table/examples-shared";
+import { chartsConfig } from "./charts.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderChartsDemo(

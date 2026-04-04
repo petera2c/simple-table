@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme, TableAPI } from "@simple-table/solid";
-import { rowGroupingConfig } from "@simple-table/examples-shared";
+import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/solid/styles.css";
 
 const btnStyle = (color: string) => ({
@@ -29,7 +29,7 @@ export default function RowGroupingDemo(props: { height?: string | number; theme
       </div>
       <SimpleTable
         ref={(api) => (tableRef = api)}
-        defaultHeaders={rowGroupingConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(rowGroupingConfig.headers)}
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
         enableStickyParents={true}

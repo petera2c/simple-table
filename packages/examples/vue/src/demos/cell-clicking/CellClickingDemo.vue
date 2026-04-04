@@ -2,8 +2,8 @@
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject, CellClickProps } from "@simple-table/vue";
-import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "@simple-table/examples-shared";
-import type { ProjectTask } from "@simple-table/examples-shared";
+import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
+import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

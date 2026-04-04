@@ -1,12 +1,12 @@
 import { createSignal, createEffect, onCleanup } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject, CellChangeProps } from "@simple-table/solid";
-import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-import type { SalesRow } from "@simple-table/examples-shared";
+import { salesConfig, getSalesThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
 import "@simple-table/solid/styles.css";
 
 function getHeaders(): SolidHeaderObject[] {
-  const headers: SolidHeaderObject[] = JSON.parse(JSON.stringify(salesConfig.headers));
+  const headers = defaultHeadersFromCore(JSON.parse(JSON.stringify(salesConfig.headers)));
 
   const addRenderers = (hdrs: SolidHeaderObject[]) => {
     for (const h of hdrs) {

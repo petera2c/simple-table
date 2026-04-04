@@ -5,7 +5,7 @@ import {
   COLUMN_EDITOR_TEXT,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
   buildVanillaColumnEditorRowRenderer,
-} from "@simple-table/examples-shared";
+} from "./column-editor-custom-renderer.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnEditorCustomRendererDemo(

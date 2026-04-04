@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme, QuickFilterMode } from "@simple-table/solid";
-import { quickFilterConfig } from "@simple-table/examples-shared";
+import { quickFilterConfig } from "./quick-filter.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function QuickFilterDemo(props: { height?: string | number; theme?: Theme }) {
@@ -59,7 +59,7 @@ export default function QuickFilterDemo(props: { height?: string | number; theme
         </button>
       </div>
       <SimpleTable
-        defaultHeaders={quickFilterConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(quickFilterConfig.headers)}
         rows={quickFilterConfig.rows}
         height={props.height ?? "400px"}
         theme={props.theme}

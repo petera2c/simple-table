@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { tableHeightConfig } from "@simple-table/examples-shared";
+import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -41,7 +41,7 @@ export class TableHeightDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = tableHeightConfig.rows;
-  readonly headers: AngularHeaderObject[] = tableHeightConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(tableHeightConfig.headers);
   readonly heights = ["200px", "300px", "400px"];
   selectedHeight = "400px";
 }

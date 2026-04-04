@@ -164,15 +164,9 @@ importers:
       '@simple-table/angular':
         specifier: workspace:*
         version: link:../../angular
-      '@simple-table/examples-shared':
-        specifier: workspace:*
-        version: link:../shared
       rxjs:
         specifier: ^7.0.0
         version: 7.8.2
-      simple-table-core:
-        specifier: workspace:*
-        version: link:../../core
       zone.js:
         specifier: ^0.15.0
         version: 0.15.1
@@ -186,9 +180,6 @@ importers:
 
   packages/examples/react:
     dependencies:
-      '@simple-table/examples-shared':
-        specifier: workspace:*
-        version: link:../shared
       '@simple-table/react':
         specifier: workspace:*
         version: link:../../react
@@ -198,9 +189,6 @@ importers:
       react-dom:
         specifier: ^18.0.0
         version: 18.3.1(react@18.3.1)
-      simple-table-core:
-        specifier: workspace:*
-        version: link:../../core
     devDependencies:
       '@types/react':
         specifier: ^18.0.0
@@ -218,27 +206,11 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(terser@5.46.1)
 
-  packages/examples/shared:
-    dependencies:
-      simple-table-core:
-        specifier: workspace:*
-        version: link:../../core
-    devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
   packages/examples/solid:
     dependencies:
-      '@simple-table/examples-shared':
-        specifier: workspace:*
-        version: link:../shared
       '@simple-table/solid':
         specifier: workspace:*
         version: link:../../solid
-      simple-table-core:
-        specifier: workspace:*
-        version: link:../../core
       solid-js:
         specifier: ^1.0.0
         version: 1.9.12
@@ -255,15 +227,9 @@ importers:
 
   packages/examples/svelte:
     dependencies:
-      '@simple-table/examples-shared':
-        specifier: workspace:*
-        version: link:../shared
       '@simple-table/svelte':
         specifier: workspace:*
         version: link:../../svelte
-      simple-table-core:
-        specifier: workspace:*
-        version: link:../../core
       svelte:
         specifier: ^5.0.0
         version: 5.55.0
@@ -280,9 +246,6 @@ importers:
 
   packages/examples/vanilla:
     dependencies:
-      '@simple-table/examples-shared':
-        specifier: workspace:*
-        version: link:../shared
       simple-table-core:
         specifier: workspace:*
         version: link:../../core
@@ -296,15 +259,9 @@ importers:
 
   packages/examples/vue:
     dependencies:
-      '@simple-table/examples-shared':
-        specifier: workspace:*
-        version: link:../shared
       '@simple-table/vue':
         specifier: workspace:*
         version: link:../../vue
-      simple-table-core:
-        specifier: workspace:*
-        version: link:../../core
       vue:
         specifier: ^3.0.0
         version: 3.5.31(typescript@5.9.3)

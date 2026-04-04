@@ -1,13 +1,13 @@
 import { createSignal, createMemo } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
 import type {
   Theme,
   SolidHeaderObject,
   CellRendererProps,
   RowSelectionChangeProps,
 } from "@simple-table/solid";
-import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
-import type { LibraryBook } from "@simple-table/examples-shared";
+import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
+import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function RowSelectionDemo(props: {
@@ -21,7 +21,7 @@ export default function RowSelectionDemo(props: {
     return books.length > 0 ? books.map((b) => b.title).join(", ") : "None";
   });
 
-  const headers: SolidHeaderObject[] = rowSelectionConfig.headers.map((h) => {
+  const headers: SolidHeaderObject[] = mapToSolidHeaderObjects(rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -32,8 +32,8 @@ export default function RowSelectionDemo(props: {
         },
       };
     }
-    return { ...h };
-  });
+    return h;
+  }));
 
   const handleSelectionChange = (selection: RowSelectionChangeProps) => {
     const selected = rowSelectionData.filter((book) =>

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, HeaderRendererProps } from "@simple-table/react";
-import { headerRendererConfig } from "@simple-table/examples-shared";
+import { headerRendererConfig } from "./header-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 type SortDir = "asc" | "desc" | null;
@@ -37,7 +37,7 @@ const HeaderRendererDemo = ({
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      headerRendererConfig.headers.map((h) => ({
+      mapToReactHeaderObjects(headerRendererConfig.headers.map((h) => ({
         ...h,
         isSortable: false,
         headerRenderer: ({ accessor }: HeaderRendererProps) => {
@@ -74,7 +74,7 @@ const HeaderRendererDemo = ({
             </div>
           );
         },
-      })),
+      }))),
     [sortState],
   );
 

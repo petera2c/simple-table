@@ -226,18 +226,6 @@
   font-weight: 600;
 }
 
-/* Hide buttons beyond the 9th one to prevent overflow */
-.theme-modern-light .st-page-btn:nth-child(n + 10):not(.active) {
-  display: none;
-}
-
-/* Always show active button and adjacent buttons */
-.theme-modern-light .st-page-btn.active,
-.theme-modern-light .st-page-btn.active + .st-page-btn,
-.theme-modern-light .st-page-btn:has(+ .st-page-btn.active) {
-  display: inline-flex;
-}
-
 /* Next/Prev buttons */
 .theme-modern-light .st-next-prev-btn {
   padding: 6px 8px;

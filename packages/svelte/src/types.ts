@@ -3,6 +3,7 @@ import type {
   SimpleTableProps,
   SimpleTableConfig,
   HeaderObject,
+  Row,
   TableAPI,
   CellRendererProps,
   HeaderRendererProps,
@@ -40,6 +41,23 @@ export type SvelteLoadingStateRenderer = Component<LoadingStateRendererProps>;
 export type SvelteErrorStateRenderer = Component<ErrorStateRendererProps>;
 export type SvelteEmptyStateRenderer = Component<EmptyStateRendererProps>;
 
+// ─── Icon overrides ───────────────────────────────────────────────────────────
+export type SvelteIconElement = Component<any>;
+
+export interface SvelteIconsConfig {
+  drag?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  expand?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  filter?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  headerCollapse?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  headerExpand?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  next?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  prev?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  sortDown?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  sortUp?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  pinnedLeftIcon?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+  pinnedRightIcon?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
+}
+
 // ─── Column editor config override ───────────────────────────────────────────
 export interface SvelteColumnEditorConfig
   extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
@@ -48,33 +66,33 @@ export interface SvelteColumnEditorConfig
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
+/**
+ * Column definition for `defaultHeaders`: core column metadata with Svelte-only
+ * renderer fields. For trees from `simple-table-core`, use `defaultHeadersFromCore` /
+ * `mapToSvelteHeaderObjects`.
+ */
 export interface SvelteHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
   cellRenderer?: SvelteCellRenderer;
   headerRenderer?: SvelteHeaderRenderer;
   children?: SvelteHeaderObject[];
-  nestedTable?: Omit<SimpleTableSvelteProps, "rows">;
+  nestedTable?: Omit<
+    SimpleTableSvelteProps,
+    | "rows"
+    | "loadingStateRenderer"
+    | "errorStateRenderer"
+    | "emptyStateRenderer"
+    | "tableEmptyStateRenderer"
+  >;
 }
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
-// Mirrors SimpleTableProps with Svelte-specific overrides.
-// `tableRef` is omitted — consumers use Svelte's bind:this directive instead:
-//   <SimpleTable bind:this={tableRef} ... />
-//   then: tableRef.getAPI().sort(...)
+// Mirrors SimpleTableProps with Svelte-specific overrides. Use `bind:this` on the
+// table component and `getAPI()` for the imperative TableAPI.
 export interface SimpleTableSvelteProps
   extends Omit<
     SimpleTableProps,
-    | "tableRef"
-    | "allowAnimations"
-    | "expandIcon"
-    | "filterIcon"
-    | "headerCollapseIcon"
-    | "headerExpandIcon"
-    | "nextIcon"
-    | "prevIcon"
-    | "sortDownIcon"
-    | "sortUpIcon"
-    | "columnEditorText"
+    | "rows"
     | "defaultHeaders"
     | "footerRenderer"
     | "emptyStateRenderer"
@@ -86,6 +104,8 @@ export interface SimpleTableSvelteProps
     | "icons"
   > {
   defaultHeaders: SvelteHeaderObject[];
+  /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
+  rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: SvelteFooterRenderer;
   loadingStateRenderer?: SvelteLoadingStateRenderer;
   errorStateRenderer?: SvelteErrorStateRenderer;
@@ -93,6 +113,7 @@ export interface SimpleTableSvelteProps
   tableEmptyStateRenderer?: HTMLElement | string | null;
   headerDropdown?: SvelteHeaderDropdown;
   columnEditorConfig?: SvelteColumnEditorConfig;
+  icons?: SvelteIconsConfig;
 }
 
 // Re-export vanilla prop types that consumers still need directly

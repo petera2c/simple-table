@@ -1,7 +1,7 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject, CellClickProps } from "simple-table-core";
-import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "@simple-table/examples-shared";
-import type { ProjectTask } from "@simple-table/examples-shared";
+import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
+import type { ProjectTask } from "./cell-clicking.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderCellClickingDemo(

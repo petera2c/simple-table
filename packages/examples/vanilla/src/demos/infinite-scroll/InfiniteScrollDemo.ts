@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, Row } from "simple-table-core";
-import { infiniteScrollConfig, generateInfiniteScrollData } from "@simple-table/examples-shared";
+import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
 import "simple-table-core/styles.css";
 
 const MAX_ROWS = 200;

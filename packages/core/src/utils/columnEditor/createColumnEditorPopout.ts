@@ -235,8 +235,9 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   };
 
   const setExpandedHeaders = (newHeaders: Set<string>) => {
+    const previousExpandedHeaders = expandedHeaders;
     expandedHeaders = newHeaders;
-    render();
+    render(previousExpandedHeaders);
   };
 
   const updateSeparatorVisibility = () => {
@@ -309,6 +310,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     panelSection: PanelSection,
     label: string | null,
     targetContainer: HTMLElement,
+    previousExpandedHeaders?: ReadonlySet<string>,
   ) => {
     if (sectionHeaders.length === 0) return;
 
@@ -336,7 +338,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     const hasChildren = doesAnyHeaderHaveChildren(sectionHeaders);
 
     flattenedHeaders.forEach((flatItem) => {
-      const rowFragment = createColumnEditorRow({
+      const rowResult = createColumnEditorRow({
         allHeaders: headers,
         clearHoverSeparator,
         depth: flatItem.depth,
@@ -360,25 +362,27 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
         setHeaders,
         onColumnVisibilityChange,
         onColumnOrderChange,
+        previousExpandedHeaders,
       });
 
-      listEl.appendChild(rowFragment);
+      listEl.appendChild(rowResult.fragment);
+      rowResult.scheduleExpandIconAnimation?.();
     });
   };
 
-  const render = () => {
+  const render = (previousExpandedHeaders?: ReadonlySet<string>) => {
     listsContainer.innerHTML = "";
 
     const allowColumnPinning = columnEditorConfig.allowColumnPinning !== false;
     const { pinnedLeft, unpinned, pinnedRight } = partitionRootHeadersByPin(headers);
 
     if (allowColumnPinning) {
-      renderSection(pinnedLeft, "left", "Pinned Left", listsContainer);
-      renderSection(unpinned, "main", null, listsContainer);
-      renderSection(pinnedRight, "right", "Pinned Right", listsContainer);
+      renderSection(pinnedLeft, "left", "Pinned Left", listsContainer, previousExpandedHeaders);
+      renderSection(unpinned, "main", null, listsContainer, previousExpandedHeaders);
+      renderSection(pinnedRight, "right", "Pinned Right", listsContainer, previousExpandedHeaders);
     } else {
       const allHeaders = [...pinnedLeft, ...unpinned, ...pinnedRight];
-      renderSection(allHeaders, "main", null, listsContainer);
+      renderSection(allHeaders, "main", null, listsContainer, previousExpandedHeaders);
     }
   };
 

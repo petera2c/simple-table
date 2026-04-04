@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, TableFilterState } from "simple-table-core";
-import { externalFilterConfig, matchesFilter } from "@simple-table/examples-shared";
+import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderExternalFilterDemo(

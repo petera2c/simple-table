@@ -1,11 +1,11 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
 import type { Theme, HeaderObject } from "@simple-table/solid";
-import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
+import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ColumnResizingDemo(props: { height?: string | number; theme?: Theme }) {
-  const [headers, setHeaders] = createSignal<HeaderObject[]>([...columnResizingHeaders]);
+  const [headers, setHeaders] = createSignal(defaultHeadersFromCore([...columnResizingHeaders]));
   const [saveMessage, setSaveMessage] = createSignal("");
 
   let messageTimer: ReturnType<typeof setTimeout> | undefined;
@@ -22,7 +22,9 @@ export default function ColumnResizingDemo(props: { height?: string | number; th
       const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
       if (saved) {
         const widthMap = JSON.parse(saved) as Record<string, number | string | undefined>;
-        setHeaders(columnResizingHeaders.map((h) => ({ ...h, width: widthMap[h.accessor] ?? h.width })));
+        setHeaders(
+          defaultHeadersFromCore(columnResizingHeaders.map((h) => ({ ...h, width: widthMap[h.accessor] ?? h.width }))),
+        );
       }
     } catch {
       /* ignore */
@@ -38,7 +40,7 @@ export default function ColumnResizingDemo(props: { height?: string | number; th
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
       localStorage.setItem(COLUMN_RESIZING_STORAGE_KEY, JSON.stringify(widthMap));
-      setHeaders(updatedHeaders);
+      setHeaders(defaultHeadersFromCore(updatedHeaders));
       setSaveMessage("Column widths saved!");
       clearMessageTimer();
       messageTimer = setTimeout(() => setSaveMessage(""), 2000);

@@ -1,7 +1,7 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject, CellRenderer } from "simple-table-core";
-import { cellRendererConfig } from "@simple-table/examples-shared";
-import type { CellRendererEmployee } from "@simple-table/examples-shared";
+import { cellRendererConfig } from "./cell-renderer.demo-data";
+import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "simple-table-core/styles.css";
 
 const html = (str: string): Node => {

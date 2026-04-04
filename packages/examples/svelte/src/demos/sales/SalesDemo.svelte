@@ -1,8 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "@simple-table/svelte";
-  import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-  import type { SalesRow } from "@simple-table/examples-shared";
+  import { salesConfig, getSalesThemeColors } from "./sales.demo-data";
+  import type { SalesRow } from "./sales.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();

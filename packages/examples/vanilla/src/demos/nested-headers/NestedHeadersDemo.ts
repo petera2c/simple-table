@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { nestedHeadersConfig } from "@simple-table/examples-shared";
+import { nestedHeadersConfig } from "./nested-headers.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderNestedHeadersDemo(

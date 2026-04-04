@@ -24,14 +24,12 @@ import { VanillaIconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 
 export interface SimpleTableConfig {
-  allowAnimations?: boolean;
   autoExpandColumns?: boolean;
   canExpandRowGroup?: (row: Row) => boolean;
   cellUpdateFlash?: boolean;
   className?: string;
   columnBorders?: boolean;
   columnEditorConfig?: ColumnEditorConfig;
-  columnEditorText?: string;
   columnReordering?: boolean;
   columnResizing?: boolean;
   copyHeadersToClipboard?: boolean;

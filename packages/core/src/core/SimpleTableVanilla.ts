@@ -21,7 +21,6 @@ import AriaAnnouncementManager from "../hooks/ariaAnnouncements";
 
 import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
-import { checkDeprecatedProps } from "../utils/deprecatedPropsWarnings";
 import { deepClone } from "../utils/generalUtils";
 
 import {
@@ -105,8 +104,6 @@ export class SimpleTableVanilla {
   constructor(container: HTMLElement, config: SimpleTableConfig) {
     this.container = container;
     this.config = config;
-
-    checkDeprecatedProps(config);
 
     this.customTheme = TableInitializer.mergeCustomTheme(config);
     this.mergedColumnEditorConfig =
@@ -518,6 +515,7 @@ export class SimpleTableVanilla {
       getCollapsedRows: () => this.collapsedRows,
       getCollapsedHeaders: () => this.collapsedHeaders,
       getExpandedRows: () => this.expandedRows,
+      getHeaders: () => this.headers,
       getRowStateMap: () => this.rowStateMap,
       setColumnEditorOpen: (open: boolean) => {
         this.columnEditorOpen = open;
@@ -615,6 +613,11 @@ export class SimpleTableVanilla {
 
     this.isUpdating = false;
     this.render("update");
+  }
+
+  /** @deprecated Use {@link update} — same behavior. */
+  updateConfig(config: Partial<SimpleTableConfig>): void {
+    this.update(config);
   }
 
   destroy(): void {

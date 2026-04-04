@@ -1,7 +1,7 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
-import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-import type { SalesRow } from "@simple-table/examples-shared";
+import { salesConfig, getSalesThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
 import "simple-table-core/styles.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {

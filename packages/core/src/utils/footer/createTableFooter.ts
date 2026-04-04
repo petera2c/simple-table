@@ -1,6 +1,7 @@
 import OnNextPage from "../../types/OnNextPage";
 
 const PREV_ICON_SVG = `<svg
+  class="st-next-prev-icon"
   viewBox="0 0 24 24"
   width="24"
   height="24"
@@ -10,6 +11,7 @@ const PREV_ICON_SVG = `<svg
 </svg>`;
 
 const NEXT_ICON_SVG = `<svg
+  class="st-next-prev-icon"
   viewBox="0 0 24 24"
   width="24"
   height="24"
@@ -33,6 +35,9 @@ export interface CreateTableFooterOptions {
   /** Custom icon for next page button. */
   nextIcon?: string | HTMLElement | SVGSVGElement;
 }
+
+/** Page controls beyond this count are hidden unless current, jump-after-ellipsis, or ±1 neighbor of current. */
+const MAX_COMPACT_VISIBLE_PAGE_BUTTONS = 9;
 
 const getVisiblePages = (currentPage: number, totalPages: number): number[] => {
   if (totalPages <= 15) {
@@ -185,6 +190,8 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
 
     const visiblePages = getVisiblePages(currentPage, totalPages);
 
+    const pageButtonMetas: Array<{ button: HTMLButtonElement; page: number; afterEllipsis: boolean }> = [];
+
     visiblePages.forEach((page, index) => {
       if (page < 0) {
         const ellipsis = document.createElement("span");
@@ -193,7 +200,8 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
         paginationDiv.appendChild(ellipsis);
       } else {
         const pageBtn = document.createElement("button");
-        pageBtn.className = `st-page-btn ${currentPage === page ? "active" : ""}`;
+        const afterEllipsis = index > 0 && visiblePages[index - 1]! < 0;
+        pageBtn.className = ["st-page-btn", currentPage === page ? "active" : ""].filter(Boolean).join(" ");
         pageBtn.textContent = page.toString();
         pageBtn.setAttribute("aria-label", `Go to page ${page}`);
         if (currentPage === page) {
@@ -201,6 +209,26 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
         }
         pageBtn.addEventListener("click", () => handlePageChange(page));
         paginationDiv.appendChild(pageBtn);
+        pageButtonMetas.push({ button: pageBtn, page, afterEllipsis });
+      }
+    });
+
+    pageButtonMetas.forEach((meta, i) => {
+      const { button, page, afterEllipsis } = meta;
+      const ordinal = i + 1;
+      const isActive = currentPage === page;
+      const prev = button.previousElementSibling;
+      const next = button.nextElementSibling;
+      const nextToActive =
+        (prev !== null &&
+          prev.classList.contains("st-page-btn") &&
+          prev.classList.contains("active")) ||
+        (next !== null &&
+          next.classList.contains("st-page-btn") &&
+          next.classList.contains("active"));
+      const forceVisible = isActive || afterEllipsis || nextToActive;
+      if (ordinal > MAX_COMPACT_VISIBLE_PAGE_BUTTONS && !forceVisible) {
+        button.classList.add("st-page-btn--compact-hidden");
       }
     });
 
