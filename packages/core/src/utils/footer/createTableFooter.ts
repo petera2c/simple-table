@@ -1,6 +1,7 @@
 import OnNextPage from "../../types/OnNextPage";
 
 const PREV_ICON_SVG = `<svg
+  class="st-next-prev-icon"
   viewBox="0 0 24 24"
   width="24"
   height="24"
@@ -10,6 +11,7 @@ const PREV_ICON_SVG = `<svg
 </svg>`;
 
 const NEXT_ICON_SVG = `<svg
+  class="st-next-prev-icon"
   viewBox="0 0 24 24"
   width="24"
   height="24"

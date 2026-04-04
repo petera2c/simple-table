@@ -19,6 +19,8 @@ import {
   validateFullHeaderTreeEssentialOrder,
   PanelSection,
 } from "../pinnedColumnUtils";
+import { createAngleRightIcon } from "../../icons";
+import { updateExpandIconState } from "../bodyCell/expansion";
 
 const DRAG_ICON_SVG = `<svg
   aria-hidden="true"
@@ -33,15 +35,6 @@ const DRAG_ICON_SVG = `<svg
   <circle cx="3" cy="7" r="1.5" fill="currentColor" />
   <circle cx="8" cy="7" r="1.5" fill="currentColor" />
   <circle cx="13" cy="7" r="1.5" fill="currentColor" />
-</svg>`;
-
-const EXPAND_ICON_SVG = `<svg
-  viewBox="0 0 24 24"
-  width="24"
-  height="24"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
 </svg>`;
 
 export interface CreateColumnEditorRowOptions {
@@ -68,9 +61,17 @@ export interface CreateColumnEditorRowOptions {
   setHeaders: (headers: HeaderObject[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
   onColumnOrderChange?: (headers: HeaderObject[]) => void;
+  /** When set (e.g. after expand toggle), used with updateExpandIconState so the chevron animates like table cells. */
+  previousExpandedHeaders?: ReadonlySet<string>;
 }
 
-export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => {
+export interface CreateColumnEditorRowResult {
+  fragment: DocumentFragment;
+  /** Run after the row fragment is connected to the document (e.g. listEl.appendChild). */
+  scheduleExpandIconAnimation?: () => void;
+}
+
+export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): CreateColumnEditorRowResult => {
   const {
     allHeaders,
     clearHoverSeparator,
@@ -93,6 +94,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     setHeaders,
     onColumnVisibilityChange,
     onColumnOrderChange,
+    previousExpandedHeaders,
   } = options;
 
   const essentialAccessors: ReadonlySet<string> = options.essentialAccessors ?? new Set();
@@ -111,6 +113,8 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
 
   const isExpanded = expandedHeaders.has(header.accessor);
   const shouldExpand = forceExpanded || isExpanded;
+
+  let scheduleExpandIconAnimation: (() => void) | undefined;
 
   if (rowIndex === 0) {
     const topSeparator = document.createElement("div");
@@ -314,14 +318,49 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
     iconContainer.className = "st-header-icon-container";
 
     if (hasChildren) {
+      const wasExpandedForIcon =
+        previousExpandedHeaders !== undefined
+          ? forceExpanded || previousExpandedHeaders.has(header.accessor)
+          : shouldExpand;
+      const shouldAnimateExpandIcon =
+        !forceExpanded &&
+        previousExpandedHeaders !== undefined &&
+        wasExpandedForIcon !== shouldExpand;
+
+      const iconShowsExpanded = shouldAnimateExpandIcon ? wasExpandedForIcon : shouldExpand;
+
       const expandIcon = document.createElement("div");
       expandIcon.className = `st-collapsible-header-icon st-expand-icon-container ${
-        shouldExpand ? "expanded" : "collapsed"
+        iconShowsExpanded ? "expanded" : "collapsed"
       }`;
-      expandIcon.innerHTML = EXPAND_ICON_SVG;
+      expandIcon.setAttribute("role", "button");
+      expandIcon.setAttribute("tabindex", "0");
+      expandIcon.setAttribute("aria-expanded", String(iconShowsExpanded));
+      expandIcon.setAttribute(
+        "aria-label",
+        iconShowsExpanded ? `Collapse ${header.label} column` : `Expand ${header.label} column`,
+      );
+      expandIcon.appendChild(createAngleRightIcon("st-expand-icon"));
       expandIcon.addEventListener("click", toggleExpanded);
+      expandIcon.addEventListener("keydown", (event: Event) => {
+        const keyEvent = event as KeyboardEvent;
+        if (keyEvent.key === "Enter" || keyEvent.key === " ") {
+          keyEvent.preventDefault();
+          toggleExpanded(event);
+        }
+      });
       iconContainer.appendChild(expandIcon);
       expandIconEl = expandIcon;
+
+      if (shouldAnimateExpandIcon) {
+        scheduleExpandIconAnimation = () => {
+          updateExpandIconState(rowContainer, shouldExpand, {
+            ariaLabelWhenExpanded: `Collapse ${header.label} column`,
+            ariaLabelWhenCollapsed: `Expand ${header.label} column`,
+            syncAriaExpanded: true,
+          });
+        };
+      }
     }
 
     if (!options.columnEditorConfig.rowRenderer) {
@@ -457,5 +496,5 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions) => 
   bottomSeparator.style.opacity = hoveredSeparatorIndex === rowIndex ? "1" : "0";
   fragment.appendChild(bottomSeparator);
 
-  return fragment;
+  return { fragment, scheduleExpandIconAnimation };
 };

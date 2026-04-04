@@ -152,12 +152,28 @@ export const createExpandIcon = (
   return outerContainer;
 };
 
+export type UpdateExpandIconStateOptions = {
+  /** aria-label when the group is expanded (chevron shows collapse action). */
+  ariaLabelWhenExpanded?: string;
+  /** aria-label when the group is collapsed (chevron shows expand action). */
+  ariaLabelWhenCollapsed?: string;
+  /** When true, sets aria-expanded to match isExpanded after the toggle. */
+  syncAriaExpanded?: boolean;
+};
+
 /** Update expand/collapse icon direction on an existing cell (e.g. after expand state changes for nested grids). */
-export const updateExpandIconState = (cellElement: HTMLElement, isExpanded: boolean): void => {
+export const updateExpandIconState = (
+  cellElement: HTMLElement,
+  isExpanded: boolean,
+  options?: UpdateExpandIconStateOptions,
+): void => {
   const iconContainer = cellElement.querySelector(".st-expand-icon-container");
   if (!iconContainer || !(iconContainer instanceof HTMLElement)) return;
   const currentlyExpanded = iconContainer.classList.contains("expanded");
   if (currentlyExpanded === isExpanded) return;
+
+  const labelExpanded = options?.ariaLabelWhenExpanded ?? "Collapse row";
+  const labelCollapsed = options?.ariaLabelWhenCollapsed ?? "Expand row";
 
   // Defer class toggle so the browser paints the current state first, then we apply the new state
   // and the CSS transition runs. Use double rAF so the first paint has committed.
@@ -165,7 +181,10 @@ export const updateExpandIconState = (cellElement: HTMLElement, isExpanded: bool
     requestAnimationFrame(() => {
       iconContainer.classList.toggle("expanded", isExpanded);
       iconContainer.classList.toggle("collapsed", !isExpanded);
-      iconContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
+      iconContainer.setAttribute("aria-label", isExpanded ? labelExpanded : labelCollapsed);
+      if (options?.syncAriaExpanded) {
+        iconContainer.setAttribute("aria-expanded", String(isExpanded));
+      }
     });
   });
 };
