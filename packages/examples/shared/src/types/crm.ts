@@ -1,4 +1,4 @@
-export interface CRMLead {
+export type CRMLead = {
   id: number;
   name: string;
   title: string;
@@ -9,4 +9,4 @@ export interface CRMLead {
   emailStatus: string;
   timeAgo: string;
   list: string;
-}
+};
