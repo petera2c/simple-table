@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { valueFormatterConfig } from "@simple-table/examples-shared";
+import { valueFormatterConfig } from "./value-formatter.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderValueFormatterDemo(

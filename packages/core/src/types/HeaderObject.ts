@@ -114,14 +114,6 @@ type HeaderObject = {
     | "errorStateRenderer"
     | "emptyStateRenderer"
     | "tableEmptyStateRenderer"
-    | "expandIcon"
-    | "filterIcon"
-    | "sortUpIcon"
-    | "sortDownIcon"
-    | "nextIcon"
-    | "prevIcon"
-    | "headerCollapseIcon"
-    | "headerExpandIcon"
   >;
   pinned?: Pinned;
   quickFilterable?: boolean; // Default: true - whether column is searchable via quick filter

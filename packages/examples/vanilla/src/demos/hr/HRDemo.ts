@@ -1,7 +1,7 @@
-import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, CellChangeProps } from "simple-table-core";
-import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
-import type { HREmployee, HRTagColorKey } from "@simple-table/examples-shared";
+import { SimpleTableVanilla, asRows } from "simple-table-core";
+import type { Theme, HeaderObject, CellRenderer, CellChangeProps, CellRendererProps } from "simple-table-core";
+import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
+import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
 import "simple-table-core/styles.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
@@ -17,7 +17,7 @@ function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node
 
 function buildHRHeaders(): HeaderObject[] {
   const renderers: Record<string, CellRenderer> = {
-    fullName: ({ row, theme }) => {
+    fullName: ({ row, theme }: CellRendererProps) => {
       const c = getHRThemeColors(theme);
       const d = row as unknown as HREmployee;
       const initials = `${d.firstName?.charAt(0) || ""}${d.lastName?.charAt(0) || ""}`;
@@ -36,7 +36,7 @@ function buildHRHeaders(): HeaderObject[] {
       return el("div", { display: "flex", alignItems: "center" }, [avatar, info]);
     },
 
-    performanceScore: ({ row, theme }) => {
+    performanceScore: ({ row, theme }: CellRendererProps) => {
       const d = row as unknown as HREmployee;
       const score = d.performanceScore;
       const c = getHRThemeColors(theme);
@@ -57,7 +57,7 @@ function buildHRHeaders(): HeaderObject[] {
       return el("div", { width: "100%", display: "flex", flexDirection: "column" }, [track, label]);
     },
 
-    hireDate: ({ row, theme }) => {
+    hireDate: ({ row, theme }: CellRendererProps) => {
       const d = row as unknown as HREmployee;
       if (!d.hireDate) return "";
       const [year, month, day] = d.hireDate.split("-").map(Number);
@@ -68,19 +68,20 @@ function buildHRHeaders(): HeaderObject[] {
       ]);
     },
 
-    yearsOfService: ({ row, theme }) => {
-      if (row.yearsOfService === null) return "";
+    yearsOfService: ({ row, theme }: CellRendererProps) => {
+      const d = row as unknown as HREmployee;
+      if (d.yearsOfService === null) return "";
       const c = getHRThemeColors(theme);
-      return el("span", { color: c.gray }, [`${row.yearsOfService} yrs`]);
+      return el("span", { color: c.gray }, [`${d.yearsOfService} yrs`]);
     },
 
-    salary: ({ row, theme }) => {
+    salary: ({ row, theme }: CellRendererProps) => {
       const d = row as unknown as HREmployee;
       const c = getHRThemeColors(theme);
       return el("span", { color: c.gray }, [`$${d.salary.toLocaleString()}`]);
     },
 
-    status: ({ row, theme }) => {
+    status: ({ row, theme }: CellRendererProps) => {
       const d = row as unknown as HREmployee;
       if (!d.status) return "";
       const c = getHRThemeColors(theme);
@@ -104,7 +105,7 @@ export function renderHRDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
-  let rows = [...hrConfig.rows];
+  let rows = [...asRows(hrConfig.rows)];
   const rowHeight = 48;
   const heightNum = typeof options?.height === "number" ? options.height : 400;
   const rowsPerPage = Math.floor(heightNum / rowHeight);

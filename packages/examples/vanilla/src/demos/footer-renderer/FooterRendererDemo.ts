@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, FooterRendererProps } from "simple-table-core";
-import { footerRendererConfig } from "@simple-table/examples-shared";
+import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "simple-table-core/styles.css";
 
 function getFooterColors(theme?: Theme) {

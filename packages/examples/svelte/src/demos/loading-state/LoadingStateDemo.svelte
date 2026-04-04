@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme, Row } from "@simple-table/svelte";
   import { onMount } from "svelte";
-  import { loadingStateConfig } from "@simple-table/examples-shared";
+  import { loadingStateConfig } from "./loading-state.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -35,7 +35,7 @@
     </button>
   </div>
   <SimpleTable
-    defaultHeaders={loadingStateConfig.headers}
+    defaultHeaders={defaultHeadersFromCore(loadingStateConfig.headers)}
     rows={data}
     {isLoading}
     {height}

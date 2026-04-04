@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_TEXT,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
   buildVanillaColumnEditorRowRenderer,
-} from "@simple-table/examples-shared";
+} from "./column-editor-custom-renderer.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -23,7 +23,7 @@ const editorConfig = {
 
 <template>
   <SimpleTable
-    :default-headers="columnEditorCustomRendererConfig.headers"
+    :default-headers="defaultHeadersFromCore(columnEditorCustomRendererConfig.headers)"
     :rows="columnEditorCustomRendererConfig.rows"
     :edit-columns="true"
     :column-editor-config="editorConfig"

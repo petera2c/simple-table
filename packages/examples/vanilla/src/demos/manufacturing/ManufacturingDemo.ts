@@ -1,7 +1,7 @@
-import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer } from "simple-table-core";
-import { manufacturingConfig, getManufacturingStatusColors } from "@simple-table/examples-shared";
-import type { ManufacturingRow } from "@simple-table/examples-shared";
+import { SimpleTableVanilla, asRows } from "simple-table-core";
+import type { Theme, HeaderObject, CellRenderer, CellRendererProps } from "simple-table-core";
+import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
+import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "simple-table-core/styles.css";
 
 function hasStations(row: Record<string, unknown>): boolean {
@@ -9,7 +9,7 @@ function hasStations(row: Record<string, unknown>): boolean {
 }
 
 function getHeaders(): HeaderObject[] {
-  const productLineRenderer: CellRenderer = ({ row }) => {
+  const productLineRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     if (hasStations(row)) {
       const span = document.createElement("span");
@@ -20,7 +20,7 @@ function getHeaders(): HeaderObject[] {
     return d.productLine;
   };
 
-  const stationRenderer: CellRenderer = ({ row }) => {
+  const stationRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     if (hasStations(row)) {
       const span = document.createElement("span");
@@ -45,7 +45,7 @@ function getHeaders(): HeaderObject[] {
     return wrapper;
   };
 
-  const statusRenderer: CellRenderer = ({ row, theme }) => {
+  const statusRenderer: CellRenderer = ({ row, theme }: CellRendererProps) => {
     if (hasStations(row)) return "—";
     const d = row as unknown as ManufacturingRow;
     const status = d.status;
@@ -60,7 +60,7 @@ function getHeaders(): HeaderObject[] {
     return span;
   };
 
-  const boldParentNumberRenderer = (accessor: keyof ManufacturingRow): CellRenderer => ({ row }) => {
+  const boldParentNumberRenderer = (accessor: keyof ManufacturingRow): CellRenderer => ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     const value = d[accessor] as number;
     const div = document.createElement("div");
@@ -69,7 +69,7 @@ function getHeaders(): HeaderObject[] {
     return div;
   };
 
-  const cycletimeRenderer: CellRenderer = ({ row }) => {
+  const cycletimeRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     if (hasStations(row)) {
       const span = document.createElement("span");
@@ -80,7 +80,7 @@ function getHeaders(): HeaderObject[] {
     return String(d.cycletime);
   };
 
-  const efficiencyRenderer: CellRenderer = ({ row }) => {
+  const efficiencyRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     const eff = d.efficiency;
     const isParent = hasStations(row);
@@ -111,7 +111,7 @@ function getHeaders(): HeaderObject[] {
     return wrapper;
   };
 
-  const defectRateRenderer: CellRenderer = ({ row }) => {
+  const defectRateRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     const isParent = hasStations(row);
     const rate = d.defectRate;
@@ -122,7 +122,7 @@ function getHeaders(): HeaderObject[] {
     return span;
   };
 
-  const downtimeRenderer: CellRenderer = ({ row }) => {
+  const downtimeRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     const isParent = hasStations(row);
     const hours = d.downtime;
@@ -133,7 +133,7 @@ function getHeaders(): HeaderObject[] {
     return span;
   };
 
-  const utilizationRenderer: CellRenderer = ({ row }) => {
+  const utilizationRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     if (hasStations(row)) {
       const span = document.createElement("span");
@@ -144,7 +144,7 @@ function getHeaders(): HeaderObject[] {
     return `${d.utilization}%`;
   };
 
-  const maintenanceDateRenderer: CellRenderer = ({ row }) => {
+  const maintenanceDateRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     if (hasStations(row)) return "—";
     const d = row as unknown as ManufacturingRow;
     const [year, month, day] = d.maintenanceDate.split("-").map(Number);
@@ -202,7 +202,7 @@ export function renderManufacturingDemo(
     defaultHeaders: getHeaders(),
     height: options?.height ?? "400px",
     rowGrouping: ["stations"],
-    rows: manufacturingConfig.rows,
+    rows: asRows(manufacturingConfig.rows),
     selectableCells: true,
     theme: options?.theme,
   });

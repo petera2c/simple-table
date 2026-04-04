@@ -1,10 +1,10 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
 import type { AngularHeaderObject, CellChangeProps, HeaderObject, HeaderRenderer, Theme } from "@simple-table/angular";
-import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
-import type { SpreadsheetRow } from "@simple-table/examples-shared";
+import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
+import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import "@simple-table/angular/styles.css";
-import "../../../../shared/src/styles/spreadsheet-custom.css";
+import "./spreadsheet-custom.css";
 
 @Component({
   selector: "spreadsheet-demo",
@@ -77,14 +77,13 @@ export class SpreadsheetDemoComponent {
           aggregation: { type: "sum" },
         };
         this.additionalColumns = [...this.additionalColumns, newCol];
-        this.tableRef?.getAPI()?.updateHeaders(this.buildHeaders() as any);
       });
 
       div.appendChild(btn);
       return div;
     };
 
-    return [
+    return mapToAngularHeaderObjects([
       ...baseHeaders,
       ...this.additionalColumns,
       {
@@ -97,7 +96,7 @@ export class SpreadsheetDemoComponent {
         disableReorder: true,
         headerRenderer: addColumnHeaderRenderer as any,
       },
-    ] as AngularHeaderObject[];
+    ]);
   }
 
   onCellEdit({ accessor, newValue, row }: CellChangeProps): void {

@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { singleRowChildrenConfig } from "@simple-table/examples-shared";
+import { singleRowChildrenConfig } from "./single-row-children.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderSingleRowChildrenDemo(

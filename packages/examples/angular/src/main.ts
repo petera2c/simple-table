@@ -1,6 +1,6 @@
 import "@angular/compiler";
 import "zone.js";
-import "../../shared/src/styles/shell.css";
+import "./styles/shell.css";
 
 import { bootstrapApplication } from "@angular/platform-browser";
 import { AppComponent } from "./app.component";

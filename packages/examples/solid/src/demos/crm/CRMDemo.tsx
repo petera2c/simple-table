@@ -1,11 +1,6 @@
 import { createSignal, For } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type {
-  Theme,
-  SolidHeaderObject,
-  FooterRendererProps,
-  CellChangeProps,
-} from "@simple-table/solid";
+import type { SolidHeaderObject, FooterRendererProps, CellChangeProps } from "@simple-table/solid";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -13,10 +8,10 @@ import {
   CRM_FOOTER_COLORS_LIGHT,
   CRM_FOOTER_COLORS_DARK,
   generateVisiblePages,
-} from "@simple-table/examples-shared";
-import type { CRMLead } from "@simple-table/examples-shared";
+} from "./crm.demo-data";
+import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
 import "@simple-table/solid/styles.css";
-import "@simple-table/examples-shared/styles/crm-custom-theme.css";
+import "./crm-custom-theme.css";
 
 const EmailEnrich = (props: { colors: typeof CRM_THEME_COLORS_LIGHT }) => {
   const [isLoading, setIsLoading] = createSignal(false);
@@ -118,7 +113,7 @@ function getCRMHeaders(isDark: boolean): SolidHeaderObject[] {
   ];
 }
 
-export default function CRMDemo(props: { height?: string | number; theme?: Theme }) {
+export default function CRMDemo(props: { height?: string | number; theme?: CrmShellTheme }) {
   const isDark = () => props.theme === "custom-dark" || props.theme === "dark" || props.theme === "modern-dark";
   const [data, setData] = createSignal([...crmData]);
   const [rowsPerPage, setRowsPerPage] = createSignal(100);

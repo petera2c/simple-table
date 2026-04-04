@@ -23,8 +23,8 @@ import {
   INFRA_UPDATE_CONFIG,
   getInfraMetricColorStyles,
   getInfraStatusColors,
-} from "@simple-table/examples-shared";
-import type { InfrastructureServer } from "@simple-table/examples-shared";
+} from "./infrastructure.demo-data";
+import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     :auto-expand-columns="nestedTablesConfig.tableProps.autoExpandColumns"
-    :default-headers="nestedTablesConfig.headers"
+    :default-headers="defaultHeadersFromCore(nestedTablesConfig.headers)"
     :rows="sampleData"
     :row-grouping="nestedTablesConfig.tableProps.rowGrouping"
     :get-row-id="nestedTablesConfig.tableProps.getRowId"
@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { nestedTablesConfig, generateNestedTablesData } from "@simple-table/examples-shared";
+import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "500px" });

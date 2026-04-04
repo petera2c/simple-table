@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, FooterRendererProps } from "simple-table-core";
+import type { HeaderObject, CellRenderer, FooterRendererProps } from "simple-table-core";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -7,10 +7,10 @@ import {
   CRM_FOOTER_COLORS_LIGHT,
   CRM_FOOTER_COLORS_DARK,
   generateVisiblePages,
-} from "@simple-table/examples-shared";
-import type { CRMLead } from "@simple-table/examples-shared";
+} from "./crm.demo-data";
+import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
 import "simple-table-core/styles.css";
-import "../../../../shared/src/styles/crm-custom-theme.css";
+import "./crm-custom-theme.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, text?: string): HTMLElement {
   const e = document.createElement(tag);
@@ -470,10 +470,10 @@ function createCRMFooter(
 
 export function renderCRMDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme },
+  options?: { height?: string | number; theme?: CrmShellTheme },
 ): SimpleTableVanilla {
   const isDark =
-    options?.theme === "custom" ||
+    options?.theme === "custom-dark" ||
     options?.theme === "dark" ||
     options?.theme === "modern-dark";
   const footerColors = isDark ? CRM_FOOTER_COLORS_DARK : CRM_FOOTER_COLORS_LIGHT;

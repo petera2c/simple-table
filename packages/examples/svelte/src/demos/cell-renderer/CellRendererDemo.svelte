@@ -1,8 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject, CellRenderer } from "@simple-table/svelte";
-  import { cellRendererConfig } from "@simple-table/examples-shared";
-  import type { CellRendererEmployee } from "@simple-table/examples-shared";
+  import { cellRendererConfig } from "./cell-renderer.demo-data";
+  import type { CellRendererEmployee } from "./cell-renderer.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();

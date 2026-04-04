@@ -6,16 +6,12 @@
  * Usage: pnpm new-demo <demo-name>
  * Example: pnpm new-demo pagination
  *
- * This will create:
- *   packages/examples/shared/src/configs/<demo-name>-config.ts
+ * This will create (per framework) the same self-contained demo data module and a stub demo file:
+ *   packages/examples/<fw>/src/demos/<demo-name>/<demo-name>.demo-data.ts
  *   packages/examples/react/src/demos/<demo-name>/<PascalName>Demo.tsx
- *   packages/examples/vue/src/demos/<demo-name>/<PascalName>Demo.vue
- *   packages/examples/svelte/src/demos/<demo-name>/<PascalName>Demo.svelte
- *   packages/examples/solid/src/demos/<demo-name>/<PascalName>Demo.tsx
- *   packages/examples/angular/src/demos/<demo-name>/<kebab-name>-demo.component.ts
- *   packages/examples/vanilla/src/demos/<demo-name>/<PascalName>Demo.ts
+ *   ... (vue, svelte, solid, angular, vanilla)
  *
- * It also prints instructions for updating the registries.
+ * It also prints instructions for updating demo-list.ts in each app and registries.
  */
 
 import fs from "fs";
@@ -59,8 +55,9 @@ function writeFile(filePath, content) {
   console.log(`  CREATE: ${path.relative(ROOT, filePath)}`);
 }
 
-// --- Shared config ---
-const sharedConfig = `import type { HeaderObject } from "simple-table-core";
+// --- Per-demo data (duplicated in each framework package) ---
+const demoDataTs = `// Self-contained demo table setup for this example.
+import type { HeaderObject } from "simple-table-core";
 import type { Row } from "simple-table-core";
 
 export const ${camel}Data: Row[] = [
@@ -80,10 +77,10 @@ export const ${camel}Config = {
 `;
 
 // --- React ---
-const reactDemo = `import { SimpleTable } from "simple-table-react";
-import type { Theme } from "simple-table-react";
-import { ${camel}Config } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+const reactDemo = `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import { ${camel}Config } from "./${demoName}.demo-data";
+import "@simple-table/react/styles.css";
 
 const ${pascal}Demo = ({
   height = "400px",
@@ -94,7 +91,7 @@ const ${pascal}Demo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={${camel}Config.headers}
+      defaultHeaders={defaultHeadersFromCore(${camel}Config.headers)}
       rows={${camel}Config.rows}
       height={height}
       theme={theme}
@@ -108,7 +105,7 @@ export default ${pascal}Demo;
 // --- Vue ---
 const vueDemo = `<template>
   <SimpleTable
-    :default-headers="${camel}Config.headers"
+    :default-headers="defaultHeadersFromCore(${camel}Config.headers)"
     :rows="${camel}Config.rows"
     :height="height"
     :theme="theme"
@@ -116,10 +113,10 @@ const vueDemo = `<template>
 </template>
 
 <script setup lang="ts">
-import { SimpleTable } from "simple-table-vue";
-import type { Theme } from "simple-table-vue";
-import { ${camel}Config } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/vue";
+import type { Theme } from "@simple-table/vue";
+import { ${camel}Config } from "./${demoName}.demo-data";
+import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
@@ -129,16 +126,16 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 
 // --- Svelte ---
 const svelteDemo = `<script lang="ts">
-  import { SimpleTable } from "simple-table-svelte";
-  import type { Theme } from "simple-table-svelte";
-  import { ${camel}Config } from "@simple-table/examples-shared";
-  import "simple-table-core/styles.css";
+  import { SimpleTable, defaultHeadersFromCore } from "@simple-table/svelte";
+  import type { Theme } from "@simple-table/svelte";
+  import { ${camel}Config } from "./${demoName}.demo-data";
+  import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 </script>
 
 <SimpleTable
-  defaultHeaders={${camel}Config.headers}
+  defaultHeaders={defaultHeadersFromCore(${camel}Config.headers)}
   rows={${camel}Config.rows}
   {height}
   {theme}
@@ -146,10 +143,10 @@ const svelteDemo = `<script lang="ts">
 `;
 
 // --- Solid ---
-const solidDemo = `import { SimpleTable } from "simple-table-solid";
-import type { Theme } from "simple-table-solid";
-import { ${camel}Config } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+const solidDemo = `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
+import type { Theme } from "@simple-table/solid";
+import { ${camel}Config } from "./${demoName}.demo-data";
+import "@simple-table/solid/styles.css";
 
 export default function ${pascal}Demo(props: {
   height?: string | number;
@@ -157,7 +154,7 @@ export default function ${pascal}Demo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={${camel}Config.headers}
+      defaultHeaders={defaultHeadersFromCore(${camel}Config.headers)}
       rows={${camel}Config.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
@@ -168,11 +165,10 @@ export default function ${pascal}Demo(props: {
 
 // --- Angular ---
 const angularDemo = `import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "simple-table-angular";
-import type { AngularHeaderObject, Theme } from "simple-table-angular";
-import type { Row } from "simple-table-core";
-import { ${camel}Config } from "@simple-table/examples-shared";
-import "simple-table-core/styles.css";
+import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
+import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import { ${camel}Config } from "./${demoName}.demo-data";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "${demoName}-demo",
@@ -192,14 +188,14 @@ export class ${pascal}DemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = ${camel}Config.rows;
-  readonly headers: AngularHeaderObject[] = ${camel}Config.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(${camel}Config.headers);
 }
 `;
 
 // --- Vanilla ---
 const vanillaDemo = `import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { ${camel}Config } from "@simple-table/examples-shared";
+import { ${camel}Config } from "./${demoName}.demo-data";
 import "simple-table-core/styles.css";
 
 export function render${pascal}Demo(
@@ -218,7 +214,11 @@ export function render${pascal}Demo(
 
 console.log(`\nScaffolding demo: ${demoName} (${pascal}Demo)\n`);
 
-writeFile(path.join(EXAMPLES, "shared/src/configs", `${demoName}-config.ts`), sharedConfig);
+const frameworks = ["react", "vue", "svelte", "solid", "angular", "vanilla"];
+for (const fw of frameworks) {
+  writeFile(path.join(EXAMPLES, fw, "src/demos", demoName, `${demoName}.demo-data.ts`), demoDataTs);
+}
+
 writeFile(path.join(EXAMPLES, `react/src/demos/${demoName}/${pascal}Demo.tsx`), reactDemo);
 writeFile(path.join(EXAMPLES, `vue/src/demos/${demoName}/${pascal}Demo.vue`), vueDemo);
 writeFile(path.join(EXAMPLES, `svelte/src/demos/${demoName}/${pascal}Demo.svelte`), svelteDemo);
@@ -228,12 +228,10 @@ writeFile(path.join(EXAMPLES, `vanilla/src/demos/${demoName}/${pascal}Demo.ts`),
 
 console.log(`
 Next steps:
-  1. Edit the shared config: packages/examples/shared/src/configs/${demoName}-config.ts
-  2. Add to shared/src/configs/index.ts:
-       export { ${camel}Config, ${camel}Headers } from "./${demoName}-config";
-  3. Add to shared/src/utils/index.ts DEMO_LIST:
+  1. Flesh out ${demoName}.demo-data.ts in each framework (or copy edits across all six).
+  2. Add to src/demo-list.ts in EACH example app (packages/examples/*/src/demo-list.ts):
        { id: "${demoName}", label: "${pascal}" },
-  4. Register in each framework's entry/registry:
+  3. Register in each framework's entry/registry:
        React:   registry["${demoName}"] = () => import("./demos/${demoName}/${pascal}Demo");
        Vue:     registry["${demoName}"] = () => import("./demos/${demoName}/${pascal}Demo.vue");
        Svelte:  registry["${demoName}"] = () => import("./demos/${demoName}/${pascal}Demo.svelte");

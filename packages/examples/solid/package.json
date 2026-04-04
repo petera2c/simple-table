@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@simple-table/solid": "workspace:*",
-    "@simple-table/examples-shared": "workspace:*",
     "solid-js": "^1.0.0"
   },
   "devDependencies": {

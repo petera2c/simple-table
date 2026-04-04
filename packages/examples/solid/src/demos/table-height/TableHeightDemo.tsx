@@ -1,7 +1,7 @@
 import { createSignal, For } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
-import { tableHeightConfig } from "@simple-table/examples-shared";
+import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/solid/styles.css";
 
 const heights = ["200px", "300px", "400px"];
@@ -33,7 +33,7 @@ export default function TableHeightDemo(props: { height?: string | number; theme
         </For>
       </div>
       <SimpleTable
-        defaultHeaders={tableHeightConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(tableHeightConfig.headers)}
         rows={tableHeightConfig.rows}
         height={selectedHeight()}
         theme={props.theme}

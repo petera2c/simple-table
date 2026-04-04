@@ -73,10 +73,7 @@ export class TableInitializer {
 
   static mergeColumnEditorConfig(config: SimpleTableConfig): MergedColumnEditorConfig {
     return {
-      text:
-        config.columnEditorConfig?.text ??
-        config.columnEditorText ??
-        DEFAULT_COLUMN_EDITOR_CONFIG.text,
+      text: config.columnEditorConfig?.text ?? DEFAULT_COLUMN_EDITOR_CONFIG.text,
       searchEnabled:
         config.columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
       searchPlaceholder:

@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { rowGroupingConfig } from "@simple-table/examples-shared";
+import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderRowGroupingDemo(

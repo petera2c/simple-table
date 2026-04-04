@@ -2,8 +2,8 @@
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "@simple-table/vue";
-import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-import type { SalesRow } from "@simple-table/examples-shared";
+import { salesConfig, getSalesThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

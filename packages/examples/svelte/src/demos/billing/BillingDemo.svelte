@@ -1,8 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject, CellRenderer, Row } from "@simple-table/svelte";
-  import { billingConfig } from "@simple-table/examples-shared";
-  import type { BillingRow } from "@simple-table/examples-shared";
+  import { billingConfig } from "./billing.demo-data";
+  import type { BillingRow } from "./billing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();

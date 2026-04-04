@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { collapsibleColumnsConfig } from "@simple-table/examples-shared";
+  import { collapsibleColumnsConfig } from "./collapsible-columns.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 </script>
 
 <SimpleTable
-  defaultHeaders={collapsibleColumnsConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(collapsibleColumnsConfig.headers)}
   rows={collapsibleColumnsConfig.rows}
   columnResizing={true}
   editColumns={true}

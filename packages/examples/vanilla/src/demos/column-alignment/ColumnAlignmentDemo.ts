@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnAlignmentConfig } from "@simple-table/examples-shared";
+import { columnAlignmentConfig } from "./column-alignment.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnAlignmentDemo(

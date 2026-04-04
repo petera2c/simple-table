@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@simple-table/vue": "workspace:*",
-    "@simple-table/examples-shared": "workspace:*",
     "vue": "^3.0.0"
   },
   "devDependencies": {

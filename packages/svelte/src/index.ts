@@ -1,11 +1,19 @@
 // Component
 export { default as SimpleTable } from "./SimpleTable.svelte";
+export { asRows } from "simple-table-core";
+export {
+  defaultHeaderFromCore,
+  defaultHeadersFromCore,
+  mapToSvelteHeaderObjects,
+} from "./defaultHeadersFromCore";
 
 // Svelte-specific props and type overrides
 export type {
   SimpleTableSvelteProps,
   TableInstance,
   SvelteHeaderObject,
+  SvelteIconsConfig,
+  SvelteIconElement,
   SvelteColumnEditorConfig,
   SvelteCellRenderer,
   SvelteHeaderRenderer,
@@ -28,6 +36,7 @@ export type {
   Cell,
   CellChangeProps,
   CellClickProps,
+  CellRenderer,
   CellRendererProps,
   CellValue,
   ChartOptions,

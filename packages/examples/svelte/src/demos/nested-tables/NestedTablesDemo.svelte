@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { nestedTablesConfig, generateNestedTablesData } from "@simple-table/examples-shared";
+  import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "500px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -11,7 +11,7 @@
 
 <SimpleTable
   autoExpandColumns={nestedTablesConfig.tableProps.autoExpandColumns}
-  defaultHeaders={nestedTablesConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(nestedTablesConfig.headers)}
   rows={sampleData}
   rowGrouping={nestedTablesConfig.tableProps.rowGrouping}
   getRowId={nestedTablesConfig.tableProps.getRowId}

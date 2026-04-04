@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { liveUpdateConfig, liveUpdateData } from "@simple-table/examples-shared";
+  import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -105,7 +105,7 @@
 
 <SimpleTable
   bind:this={tableRef}
-  defaultHeaders={liveUpdateConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(liveUpdateConfig.headers)}
   rows={liveUpdateConfig.rows}
   {height}
   {theme}

@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
 import type { AngularHeaderObject, CellChangeProps, CellRenderer, Theme } from "@simple-table/angular";
-import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "@simple-table/examples-shared";
-import type { HREmployee, HRTagColorKey } from "@simple-table/examples-shared";
+import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
+import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
 import "@simple-table/angular/styles.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
@@ -97,10 +97,12 @@ function buildHRHeaders(): AngularHeaderObject[] {
     },
   };
 
-  return hrConfig.headers.map((h) => {
-    const renderer = renderers[String(h.accessor)];
-    return renderer ? { ...h, cellRenderer: renderer } : { ...h };
-  });
+  return mapToAngularHeaderObjects(
+    hrConfig.headers.map((h) => {
+      const renderer = renderers[String(h.accessor)];
+      return renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    }),
+  );
 }
 
 @Component({

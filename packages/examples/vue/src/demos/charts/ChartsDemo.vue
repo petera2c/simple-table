@@ -2,7 +2,7 @@
   <SimpleTable
     :column-reordering="chartsConfig.tableProps.columnReordering"
     :column-resizing="chartsConfig.tableProps.columnResizing"
-    :default-headers="chartsConfig.headers"
+    :default-headers="defaultHeadersFromCore(chartsConfig.headers)"
     :rows="chartsConfig.rows"
     :selectable-cells="chartsConfig.tableProps.selectableCells"
     :height="height"
@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { chartsConfig } from "@simple-table/examples-shared";
+import { chartsConfig } from "./charts.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "400px" });

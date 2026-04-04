@@ -20,7 +20,7 @@
       </button>
     </div>
     <SimpleTable
-      :default-headers="tableHeightConfig.headers"
+      :default-headers="defaultHeadersFromCore(tableHeightConfig.headers)"
       :rows="tableHeightConfig.rows"
       :height="selectedHeight"
       :theme="theme"
@@ -30,9 +30,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { tableHeightConfig } from "@simple-table/examples-shared";
+import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

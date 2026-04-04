@@ -1,7 +1,7 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "@simple-table/examples-shared";
+import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -37,19 +37,21 @@ export class ProgrammaticControlDemoComponent {
 
   statusMessage = "No status message";
   readonly rows: Row[] = programmaticControlConfig.rows;
-  readonly headers: AngularHeaderObject[] = programmaticControlConfig.headers.map((h) => {
-    if (h.accessor === "status") {
-      return {
-        ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-          const s = String(row.status);
-          const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
-          return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
-        },
-      };
-    }
-    return { ...h };
-  });
+  readonly headers: AngularHeaderObject[] = mapToAngularHeaderObjects(
+    programmaticControlConfig.headers.map((h) => {
+      if (h.accessor === "status") {
+        return {
+          ...h,
+          cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+            const s = String(row.status);
+            const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
+            return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
+          },
+        };
+      }
+      return { ...h };
+    }),
+  );
 
   sortByName(): void {
     this.tableRef.getAPI()?.applySortState({ accessor: "name", direction: "asc" });
@@ -78,7 +80,10 @@ export class ProgrammaticControlDemoComponent {
     const hdrs = api.getHeaders();
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
-    const totalValue = allRows.reduce((sum, r) => sum + (r.price as number) * (r.stock as number), 0);
+    const totalValue = allRows.reduce((sum, r) => {
+      const data = r.row as { price?: number; stock?: number };
+      return sum + (Number(data.price) || 0) * (Number(data.stock) || 0);
+    }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
       `Table Info:\n• Rows: ${allRows.length}\n• Columns: ${hdrs.length}\n• Active filters: ${Object.keys(filterState).length}\n• Sort: ${sortInfo}\n• Total inventory value: $${totalValue.toFixed(2)}`,

@@ -3,6 +3,7 @@ import type {
   SimpleTableProps,
   SimpleTableConfig,
   HeaderObject,
+  Row,
   TableAPI,
   CellRendererProps,
   HeaderRendererProps,
@@ -14,7 +15,6 @@ import type {
   ColumnEditorRowRendererProps,
   ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
-  IconsConfig,
 } from "simple-table-core";
 
 // ─── Internal instance contract ───────────────────────────────────────────────
@@ -37,6 +37,23 @@ export type AngularLoadingStateRenderer = Type<LoadingStateRendererProps>;
 export type AngularErrorStateRenderer = Type<ErrorStateRendererProps>;
 export type AngularEmptyStateRenderer = Type<EmptyStateRendererProps>;
 
+/** Per-slot icon: Angular component or vanilla element/string (pass-through). */
+export type AngularIconSlot = Type<unknown> | SVGSVGElement | HTMLElement | string;
+
+export interface AngularIconsConfig {
+  drag?: AngularIconSlot;
+  expand?: AngularIconSlot;
+  filter?: AngularIconSlot;
+  headerCollapse?: AngularIconSlot;
+  headerExpand?: AngularIconSlot;
+  next?: AngularIconSlot;
+  prev?: AngularIconSlot;
+  sortDown?: AngularIconSlot;
+  sortUp?: AngularIconSlot;
+  pinnedLeftIcon?: AngularIconSlot;
+  pinnedRightIcon?: AngularIconSlot;
+}
+
 // ─── Column editor config override ───────────────────────────────────────────
 export interface AngularColumnEditorConfig
   extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
@@ -45,33 +62,33 @@ export interface AngularColumnEditorConfig
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
+/**
+ * Column definition for `defaultHeaders`: core column metadata with Angular-only
+ * renderer fields. For trees from `simple-table-core`, use `defaultHeadersFromCore` /
+ * `mapToAngularHeaderObjects`.
+ */
 export interface AngularHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
   cellRenderer?: AngularCellRenderer;
   headerRenderer?: AngularHeaderRenderer;
   children?: AngularHeaderObject[];
-  nestedTable?: Omit<SimpleTableAngularProps, "rows">;
+  nestedTable?: Omit<
+    SimpleTableAngularProps,
+    | "rows"
+    | "loadingStateRenderer"
+    | "errorStateRenderer"
+    | "emptyStateRenderer"
+    | "tableEmptyStateRenderer"
+  >;
 }
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
-// Mirrors SimpleTableProps with Angular-specific overrides.
-// `tableRef` is omitted — consumers use Angular's @ViewChild decorator instead:
-//   @ViewChild(SimpleTableComponent) tableRef!: SimpleTableComponent;
-//   then: this.tableRef.getAPI()?.sort(...)
+// Mirrors SimpleTableProps with Angular-specific overrides. Use @ViewChild on the
+// table component and `getAPI()` for the imperative TableAPI.
 export interface SimpleTableAngularProps
   extends Omit<
     SimpleTableProps,
-    | "tableRef"
-    | "allowAnimations"
-    | "expandIcon"
-    | "filterIcon"
-    | "headerCollapseIcon"
-    | "headerExpandIcon"
-    | "nextIcon"
-    | "prevIcon"
-    | "sortDownIcon"
-    | "sortUpIcon"
-    | "columnEditorText"
+    | "rows"
     | "defaultHeaders"
     | "footerRenderer"
     | "emptyStateRenderer"
@@ -80,8 +97,11 @@ export interface SimpleTableAngularProps
     | "tableEmptyStateRenderer"
     | "headerDropdown"
     | "columnEditorConfig"
+    | "icons"
   > {
   defaultHeaders: AngularHeaderObject[];
+  /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
+  rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: AngularFooterRenderer;
   loadingStateRenderer?: AngularLoadingStateRenderer;
   errorStateRenderer?: AngularErrorStateRenderer;
@@ -89,7 +109,7 @@ export interface SimpleTableAngularProps
   tableEmptyStateRenderer?: HTMLElement | string | null;
   headerDropdown?: AngularHeaderDropdown;
   columnEditorConfig?: AngularColumnEditorConfig;
-  icons?: IconsConfig;
+  icons?: AngularIconsConfig;
 }
 
 // Re-export vanilla prop types that consumers still need directly

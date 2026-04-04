@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject } from "simple-table-core";
-import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
+import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnEditingDemo(

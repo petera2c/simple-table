@@ -1,7 +1,7 @@
-import { SimpleTable } from "@simple-table/solid";
+import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
-import { cellRendererConfig } from "@simple-table/examples-shared";
-import type { CellRendererEmployee } from "@simple-table/examples-shared";
+import { cellRendererConfig } from "./cell-renderer.demo-data";
+import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/solid/styles.css";
 
 const getInitials = (name: string) =>
@@ -142,19 +142,22 @@ const TagsCell = (props: CellRendererProps) => {
   );
 };
 
-const HEADERS: SolidHeaderObject[] = cellRendererConfig.headers.map((h) => {
-  const renderers: Record<string, (props: CellRendererProps) => any> = {
-    teamMembers: TeamCell,
-    website: WebsiteCell,
-    status: StatusCell,
-    progress: ProgressCell,
-    rating: RatingCell,
-    verified: VerifiedCell,
-    tags: TagsCell,
-  };
-  const cellRenderer = renderers[h.accessor as string];
-  return cellRenderer ? { ...h, cellRenderer } : { ...h };
-});
+const RENDERER_MAP: Record<string, (props: CellRendererProps) => unknown> = {
+  teamMembers: TeamCell,
+  website: WebsiteCell,
+  status: StatusCell,
+  progress: ProgressCell,
+  rating: RatingCell,
+  verified: VerifiedCell,
+  tags: TagsCell,
+};
+
+const HEADERS: SolidHeaderObject[] = mapToSolidHeaderObjects(
+  cellRendererConfig.headers.map((h) => {
+    const fn = RENDERER_MAP[String(h.accessor)];
+    return fn !== undefined ? { ...h, cellRenderer: fn } : h;
+  }),
+);
 
 export default function CellRendererDemo(props: { height?: string | number; theme?: Theme }) {
   return (

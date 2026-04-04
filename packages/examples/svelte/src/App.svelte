@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { DEMO_LIST } from "@simple-table/examples-shared";
+  import { DEMO_LIST } from "./demo-list";
   import { onMount } from "svelte";
 
   const params = new URLSearchParams(window.location.search);

@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { quickStartConfig } from "@simple-table/examples-shared";
+import { quickStartConfig } from "./quick-start.demo-data";
 import "@simple-table/react/styles.css";
 
 const QuickStartDemo = ({
@@ -12,7 +12,7 @@ const QuickStartDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={quickStartConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(quickStartConfig.headers)}
       rows={quickStartConfig.rows}
       height={height}
       theme={theme}

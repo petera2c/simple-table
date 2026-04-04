@@ -1,8 +1,8 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { customThemeConfig } from "@simple-table/examples-shared";
+import { customThemeConfig } from "./custom-theme.demo-data";
 import "@simple-table/react/styles.css";
-import "../../../../shared/src/styles/custom-theme.css";
+import "./custom-theme.css";
 
 const CustomThemeDemo = ({
   height = "400px",
@@ -13,7 +13,7 @@ const CustomThemeDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={customThemeConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(customThemeConfig.headers)}
       rows={customThemeConfig.rows}
       theme={theme ?? "custom"}
       customTheme={customThemeConfig.tableProps.customTheme}

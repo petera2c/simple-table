@@ -220,53 +220,24 @@ function generatePackageJson(framework, demoId, versions) {
 }
 
 function generateViteConfig(framework) {
-  const sharedAlias = `{ find: "@simple-table/examples-shared", replacement: path.resolve(__dirname, "src/shared") }`;
-
   const configs = {
     react: `import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: [
-      ${sharedAlias},
-    ],
-  },
 });`,
     vue: `import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [vue()],
-  resolve: {
-    alias: [
-      ${sharedAlias},
-    ],
-  },
 });`,
     angular: `import { defineConfig } from "vite";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   esbuild: {
     target: "es2022",
-  },
-  resolve: {
-    alias: [
-      ${sharedAlias},
-    ],
   },
   optimizeDeps: {
     include: [
@@ -279,47 +250,19 @@ export default defineConfig({
 });`,
     svelte: `import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [svelte()],
-  resolve: {
-    alias: [
-      ${sharedAlias},
-    ],
-  },
 });`,
     solid: `import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [solid()],
-  resolve: {
-    alias: [
-      ${sharedAlias},
-    ],
-  },
 });`,
     vanilla: `import { defineConfig } from "vite";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-export default defineConfig({
-  resolve: {
-    alias: [
-      ${sharedAlias},
-    ],
-  },
-});`,
+export default defineConfig({});`,
   };
 
   return configs[framework];
@@ -551,11 +494,6 @@ function generateProject(outputDir, framework, demoId, demoLabel, versions) {
     console.warn(`  Warning: demo source not found: ${demoSrcDir}`);
   }
 
-  const sharedSrc = path.join(ROOT, "packages", "examples", "shared", "src");
-  const sharedDst = path.join(projectDir, "src", "shared");
-  if (fs.existsSync(sharedSrc)) {
-    fs.cpSync(sharedSrc, sharedDst, { recursive: true });
-  }
 }
 
 function generateManifest(outputDir, demos, versions) {

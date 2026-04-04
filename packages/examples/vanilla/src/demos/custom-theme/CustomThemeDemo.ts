@@ -1,8 +1,8 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { customThemeConfig } from "@simple-table/examples-shared";
+import { customThemeConfig } from "./custom-theme.demo-data";
 import "simple-table-core/styles.css";
-import "../../../../shared/src/styles/custom-theme.css";
+import "./custom-theme.css";
 
 export function renderCustomThemeDemo(
   container: HTMLElement,

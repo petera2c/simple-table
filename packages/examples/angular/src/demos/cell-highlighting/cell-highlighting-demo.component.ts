@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { cellHighlightingConfig } from "@simple-table/examples-shared";
+import { cellHighlightingConfig } from "./cell-highlighting.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -24,7 +24,7 @@ export class CellHighlightingDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = cellHighlightingConfig.rows;
-  readonly headers: AngularHeaderObject[] = cellHighlightingConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(cellHighlightingConfig.headers);
   readonly selectableCells = cellHighlightingConfig.tableProps.selectableCells;
   readonly selectableColumns = cellHighlightingConfig.tableProps.selectableColumns;
 }

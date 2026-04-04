@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { customIconsConfig, buildVanillaCustomIcons } from "@simple-table/examples-shared";
+import { customIconsConfig, buildVanillaCustomIcons } from "./custom-icons.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderCustomIconsDemo(

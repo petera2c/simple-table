@@ -1,16 +1,16 @@
 import { useState, useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellChangeProps, HeaderObject } from "@simple-table/react";
-import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import type { Theme, ReactHeaderObject, CellChangeProps } from "@simple-table/react";
+import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
 import "@simple-table/react/styles.css";
-import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
+import "./spreadsheet-custom.css";
 
 const SpreadsheetDemo = ({ height = "400px", theme = "light" }: { height?: string | number; theme?: Theme }) => {
   const [data, setData] = useState([...spreadsheetConfig.rows]);
-  const [additionalColumns, setAdditionalColumns] = useState<HeaderObject[]>([]);
+  const [additionalColumns, setAdditionalColumns] = useState<ReactHeaderObject[]>([]);
 
   const headers = useMemo((): ReactHeaderObject[] => {
-    const baseHeaders: ReactHeaderObject[] = [...spreadsheetConfig.headers];
+    const baseHeaders = defaultHeadersFromCore(spreadsheetConfig.headers);
     return [
       ...baseHeaders,
       ...additionalColumns,
@@ -26,7 +26,7 @@ const SpreadsheetDemo = ({ height = "400px", theme = "light" }: { height?: strin
           <div style={{ display: "flex", justifyContent: "center" }}>
             <button
               onClick={() => {
-                const newCol: HeaderObject = {
+                const newCol: ReactHeaderObject = {
                   accessor: `column${baseHeaders.length + additionalColumns.length + 1}`,
                   label: `Column ${baseHeaders.length + additionalColumns.length + 1}`,
                   width: 120,

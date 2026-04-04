@@ -1,9 +1,9 @@
 import React, { Suspense, lazy, useState, useEffect, useCallback } from "react";
 import { createRoot } from "react-dom/client";
-import { DEMO_LIST } from "@simple-table/examples-shared";
+import { DEMO_LIST } from "./demo-list";
 import { registry } from "./registry";
 import type { DemoProps } from "./registry";
-import "../../shared/src/styles/shell.css";
+import "./styles/shell.css";
 
 const lazyComponents = Object.fromEntries(
   Object.entries(registry).map(([key, loader]) => [key, lazy(loader)])

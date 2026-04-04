@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, shallowRef, defineAsyncComponent, onMounted, onUnmounted } from "vue";
-import { DEMO_LIST } from "@simple-table/examples-shared";
+import { DEMO_LIST } from "./demo-list";
 
 const registry: Record<string, () => Promise<{ default: any }>> = {
   "quick-start": () => import("./demos/quick-start/QuickStartDemo.vue"),

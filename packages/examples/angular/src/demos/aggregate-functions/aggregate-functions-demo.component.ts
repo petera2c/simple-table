@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { aggregateFunctionsConfig } from "@simple-table/examples-shared";
+import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -24,6 +24,6 @@ export class AggregateFunctionsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = aggregateFunctionsConfig.rows;
-  readonly headers: AngularHeaderObject[] = aggregateFunctionsConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(aggregateFunctionsConfig.headers);
   readonly grouping = aggregateFunctionsConfig.tableProps.rowGrouping;
 }

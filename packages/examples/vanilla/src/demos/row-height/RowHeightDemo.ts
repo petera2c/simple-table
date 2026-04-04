@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { rowHeightConfig } from "@simple-table/examples-shared";
+import { rowHeightConfig } from "./row-height.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderRowHeightDemo(

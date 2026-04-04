@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     ref="tableRef"
-    :default-headers="liveUpdateConfig.headers"
+    :default-headers="defaultHeadersFromCore(liveUpdateConfig.headers)"
     :rows="liveUpdateConfig.rows"
     :height="height"
     :theme="theme"
@@ -10,9 +10,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme, TableAPI } from "@simple-table/vue";
-import { liveUpdateConfig, liveUpdateData } from "@simple-table/examples-shared";
+import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "400px" });

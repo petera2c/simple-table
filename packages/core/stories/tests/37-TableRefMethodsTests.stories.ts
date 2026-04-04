@@ -1,6 +1,6 @@
 /**
  * TABLE REF METHODS TESTS
- * Tests for tableRef / getAPI() methods: getVisibleRows, getAllRows, getHeaders,
+ * Tests for TableAPI (getAPI()) methods: getVisibleRows, getAllRows, getHeaders,
  * getSortState/applySortState, getFilterState/applyFilter/clearFilter,
  * getCurrentPage/setPage, setQuickFilter, toggleColumnEditor/applyColumnVisibility,
  * expandAll/collapseAll/getExpandedDepths.

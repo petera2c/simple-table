@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
-import type { FooterRendererProps, Row, Theme } from "@simple-table/angular";
-import { footerRendererConfig } from "@simple-table/examples-shared";
+import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
+import type { AngularHeaderObject, FooterRendererProps, Row, Theme } from "@simple-table/angular";
+import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/angular/styles.css";
 
 function getFooterColors(theme?: Theme) {
@@ -125,6 +125,6 @@ export class FooterRendererDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = footerRendererConfig.rows;
-  readonly headers = footerRendererConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(footerRendererConfig.headers);
   readonly footerFn = ((props: FooterRendererProps) => createFooter(props, this.theme)) as any;
 }

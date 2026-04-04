@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
-import { cellEditingConfig } from "@simple-table/examples-shared";
+import { cellEditingConfig } from "./cell-editing.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -22,7 +22,7 @@ export class CellEditingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = cellEditingConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(cellEditingConfig.headers);
   data = [...cellEditingConfig.rows];
 
   onCellEdit({ accessor, newValue, row }: CellChangeProps): void {

@@ -1,18 +1,18 @@
 import { createSignal, createMemo } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellChangeProps, HeaderObject } from "@simple-table/solid";
-import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
-import type { SpreadsheetRow } from "@simple-table/examples-shared";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
+import type { Theme, SolidHeaderObject, CellChangeProps } from "@simple-table/solid";
+import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
+import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import "@simple-table/solid/styles.css";
-import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
+import "./spreadsheet-custom.css";
 
 export default function SpreadsheetDemo(props: { height?: string | number; theme?: Theme }) {
   const theme = () => props.theme ?? "light";
   const [data, setData] = createSignal([...spreadsheetConfig.rows]);
-  const [additionalColumns, setAdditionalColumns] = createSignal<HeaderObject[]>([]);
+  const [additionalColumns, setAdditionalColumns] = createSignal<SolidHeaderObject[]>([]);
 
   const headers = createMemo((): SolidHeaderObject[] => {
-    const baseHeaders: SolidHeaderObject[] = [...spreadsheetConfig.headers];
+    const baseHeaders = defaultHeadersFromCore(spreadsheetConfig.headers);
     return [
       ...baseHeaders,
       ...additionalColumns(),
@@ -28,7 +28,7 @@ export default function SpreadsheetDemo(props: { height?: string | number; theme
           <div style={{ display: "flex", "justify-content": "center" }}>
             <button
               onClick={() => {
-                const newCol: HeaderObject = {
+                const newCol: SolidHeaderObject = {
                   accessor: `column${baseHeaders.length + additionalColumns().length + 1}`,
                   label: `Column ${baseHeaders.length + additionalColumns().length + 1}`,
                   width: 120,

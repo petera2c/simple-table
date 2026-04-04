@@ -1,14 +1,14 @@
 import { useRef, useEffect, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
-import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "@simple-table/examples-shared";
-import type { InfrastructureServer } from "@simple-table/examples-shared";
+import type { Theme, TableAPI, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
+import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/react/styles.css";
 
 function getHeaders(currentTheme?: Theme): ReactHeaderObject[] {
   const t = currentTheme || "light";
   return [
-    { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: ({ row: r }) => { const { serverId } = r as unknown as InfrastructureServer; return <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>{serverId}</span>; } },
+    { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: ({ row: r }: CellRendererProps) => { const { serverId } = r as unknown as InfrastructureServer; return <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>{serverId}</span>; } },
     { accessor: "serverName", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
       accessor: "performance", label: "Performance Metrics", width: 690, isSortable: false,
@@ -16,16 +16,16 @@ function getHeaders(currentTheme?: Theme): ReactHeaderObject[] {
         { accessor: "cpuHistory", label: "CPU History", width: 150, isSortable: false, filterable: false, isEditable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
         {
           accessor: "cpuUsage", label: "CPU %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number",
-          cellRenderer: ({ row: r, theme }) => { const { cpuUsage } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(cpuUsage, theme || t, "cpu"); return <div style={{ display: "flex", justifyContent: "end" }}><div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>{cpuUsage.toFixed(1)}%</div></div>; },
+          cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { cpuUsage } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(cpuUsage, theme || t, "cpu"); return <div style={{ display: "flex", justifyContent: "end" }}><div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>{cpuUsage.toFixed(1)}%</div></div>; },
         },
         {
           accessor: "memoryUsage", label: "Memory %", width: 130, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number",
-          cellRenderer: ({ row: r, theme }) => { const { memoryUsage } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(memoryUsage, theme || t, "memory"); return <div style={{ display: "flex", justifyContent: "end" }}><div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>{memoryUsage.toFixed(1)}%</div></div>; },
+          cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { memoryUsage } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(memoryUsage, theme || t, "memory"); return <div style={{ display: "flex", justifyContent: "end" }}><div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>{memoryUsage.toFixed(1)}%</div></div>; },
         },
-        { accessor: "diskUsage", label: "Disk %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: ({ row: r }) => { const { diskUsage } = r as unknown as InfrastructureServer; return `${diskUsage.toFixed(1)}%`; } },
+        { accessor: "diskUsage", label: "Disk %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: ({ row: r }: CellRendererProps) => { const { diskUsage } = r as unknown as InfrastructureServer; return `${diskUsage.toFixed(1)}%`; } },
         {
           accessor: "responseTime", label: "Response (ms)", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number",
-          cellRenderer: ({ row: r, theme }) => { const { responseTime } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(responseTime, theme || t, "response"); return <span style={{ fontWeight: "500", ...s }}>{responseTime.toFixed(1)}</span>; },
+          cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { responseTime } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(responseTime, theme || t, "response"); return <span style={{ fontWeight: "500", ...s }}>{responseTime.toFixed(1)}</span>; },
         },
       ],
     },
@@ -33,7 +33,7 @@ function getHeaders(currentTheme?: Theme): ReactHeaderObject[] {
       accessor: "status", label: "Status", width: 130, isSortable: true, filterable: true, isEditable: false, align: "center", type: "enum",
       enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
       valueGetter: ({ row }) => { const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 }; return m[String(row.status)] || 999; },
-      cellRenderer: ({ row: r, theme }) => { const { status } = r as unknown as InfrastructureServer; const s = getInfraStatusColors(status, theme || t); return <div style={{ ...s, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>{status.charAt(0).toUpperCase() + status.slice(1)}</div>; },
+      cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { status } = r as unknown as InfrastructureServer; const s = getInfraStatusColors(status, theme || t); return <div style={{ ...s, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>{status.charAt(0).toUpperCase() + status.slice(1)}</div>; },
     },
   ];
 }

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
   import {
     dynamicNestedTablesConfig,
     dynamicNestedTablesData,
     fetchDivisionsForCompany,
-  } from "@simple-table/examples-shared";
-  import type { DynamicCompany } from "@simple-table/examples-shared";
+  } from "./dynamic-nested-tables.demo-data";
+  import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "500px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -46,7 +46,7 @@
 
 <SimpleTable
   autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
-  defaultHeaders={dynamicNestedTablesConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(dynamicNestedTablesConfig.headers)}
   expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
   {height}
   rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}

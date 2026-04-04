@@ -1,12 +1,12 @@
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
-import { tooltipConfig } from "@simple-table/examples-shared";
+import { tooltipConfig } from "./tooltip.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function TooltipDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={tooltipConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(tooltipConfig.headers)}
       rows={tooltipConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

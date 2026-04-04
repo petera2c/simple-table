@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnSortingConfig } from "@simple-table/examples-shared";
+import { columnSortingConfig } from "./column-sorting.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnSortingDemo(

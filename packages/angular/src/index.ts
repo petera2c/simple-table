@@ -1,5 +1,11 @@
 // Component
 export { SimpleTableComponent } from "./lib/SimpleTableComponent";
+export { asRows } from "simple-table-core";
+export {
+  defaultHeaderFromCore,
+  defaultHeadersFromCore,
+  mapToAngularHeaderObjects,
+} from "./defaultHeadersFromCore";
 
 // Provider helper
 export { provideSimpleTable } from "./lib/provideSimpleTable";
@@ -9,6 +15,8 @@ export type {
   SimpleTableAngularProps,
   TableInstance,
   AngularHeaderObject,
+  AngularIconsConfig,
+  AngularIconSlot,
   AngularColumnEditorConfig,
   AngularCellRenderer,
   AngularHeaderRenderer,
@@ -31,6 +39,7 @@ export type {
   Cell,
   CellChangeProps,
   CellClickProps,
+  CellRenderer,
   CellRendererProps,
   CellValue,
   ChartOptions,

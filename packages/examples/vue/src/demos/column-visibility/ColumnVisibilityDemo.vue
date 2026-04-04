@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { columnVisibilityConfig } from "@simple-table/examples-shared";
+import { columnVisibilityConfig } from "./column-visibility.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -11,7 +11,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 
 <template>
   <SimpleTable
-    :default-headers="columnVisibilityConfig.headers"
+    :default-headers="defaultHeadersFromCore(columnVisibilityConfig.headers)"
     :rows="columnVisibilityConfig.rows"
     :edit-columns="columnVisibilityConfig.tableProps.editColumns"
     :column-editor-config="columnVisibilityConfig.tableProps.columnEditorConfig"

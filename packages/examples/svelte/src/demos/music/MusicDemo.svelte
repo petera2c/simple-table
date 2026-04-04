@@ -1,10 +1,10 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject, CellRenderer } from "@simple-table/svelte";
-  import { musicData, getMusicThemeColors } from "@simple-table/examples-shared";
-  import type { MusicArtist } from "@simple-table/examples-shared";
+  import { musicData, getMusicThemeColors } from "./music.demo-data";
+  import type { MusicArtist } from "./music.demo-data";
   import "@simple-table/svelte/styles.css";
-  import "@simple-table/examples-shared/styles/music-theme.css";
+  import "./music-theme.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 

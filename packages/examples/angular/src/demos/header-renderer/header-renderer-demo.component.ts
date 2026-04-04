@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
 import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
-import { headerRendererConfig } from "@simple-table/examples-shared";
+import { headerRendererConfig } from "./header-renderer.demo-data";
 import "@simple-table/angular/styles.css";
 
 type SortDir = "asc" | "desc" | null;
@@ -43,11 +43,13 @@ export class HeaderRendererDemoComponent {
   }
 
   get headers(): AngularHeaderObject[] {
-    return headerRendererConfig.headers.map((h) => ({
-      ...h,
-      isSortable: false,
-      headerRenderer: this.buildHeaderRenderer(h),
-    }));
+    return mapToAngularHeaderObjects(
+      headerRendererConfig.headers.map((h) => ({
+        ...h,
+        isSortable: false,
+        headerRenderer: this.buildHeaderRenderer(h),
+      })),
+    );
   }
 
   private buildHeaderRenderer(h: HeaderObject) {

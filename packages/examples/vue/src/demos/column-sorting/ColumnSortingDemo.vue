@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="columnSortingConfig.headers"
+    :default-headers="defaultHeadersFromCore(columnSortingConfig.headers)"
     :rows="columnSortingConfig.rows"
     :height="height"
     :theme="theme"
@@ -10,9 +10,9 @@
 </template>
 
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { columnSortingConfig } from "@simple-table/examples-shared";
+import { columnSortingConfig } from "./column-sorting.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

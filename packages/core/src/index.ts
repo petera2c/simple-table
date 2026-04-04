@@ -29,7 +29,6 @@ import type SharedTableProps from "./types/SharedTableProps";
 import type SortColumn from "./types/SortColumn";
 import type TableHeaderProps from "./types/TableHeaderProps";
 import type { TableAPI, SetHeaderRenameProps, ExportToCSVProps } from "./types/TableAPI";
-import type TableRefType from "./types/TableRefType";
 import type TableRowProps from "./types/TableRowProps";
 import type Theme from "./types/Theme";
 import type UpdateDataProps from "./types/UpdateCellProps";
@@ -81,6 +80,7 @@ import type { RowId } from "./types/RowId";
 import type { PinnedSectionsState } from "./types/PinnedSectionsState";
 
 export { SimpleTableVanilla };
+export { asRows } from "./utils/asRows";
 
 export type {
   Accessor,
@@ -149,7 +149,6 @@ export type {
   TableAPI,
   TableFilterState,
   TableHeaderProps,
-  TableRefType,
   TableRowProps,
   Theme,
   PinnedSectionsState,

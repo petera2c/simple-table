@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { rowHeightConfig } from "@simple-table/examples-shared";
+  import { rowHeightConfig } from "./row-height.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 </script>
 
 <SimpleTable
-  defaultHeaders={rowHeightConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(rowHeightConfig.headers)}
   rows={rowHeightConfig.rows}
   {height}
   {theme}

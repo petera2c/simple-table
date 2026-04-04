@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { infiniteScrollConfig, generateInfiniteScrollData } from "@simple-table/examples-shared";
+import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
 import "@simple-table/angular/styles.css";
 
 const MAX_ROWS = 200;
@@ -31,7 +31,7 @@ export class InfiniteScrollDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = infiniteScrollConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(infiniteScrollConfig.headers);
   rows: Row[] = generateInfiniteScrollData(0, 30) as Row[];
   loading = false;
   hasMore = true;

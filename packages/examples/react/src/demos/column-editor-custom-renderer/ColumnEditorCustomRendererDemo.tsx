@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, ReactColumnEditorConfig, ColumnEditorRowRendererProps } from "@simple-table/react";
-import { columnEditorCustomRendererConfig } from "@simple-table/examples-shared";
+import { columnEditorCustomRendererConfig } from "./column-editor-custom-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps) => (
@@ -46,7 +46,7 @@ const ColumnEditorCustomRendererDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={columnEditorCustomRendererConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(columnEditorCustomRendererConfig.headers)}
       rows={columnEditorCustomRendererConfig.rows}
       editColumns
       columnEditorConfig={columnEditorConfig}

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { columnWidthConfig } from "@simple-table/examples-shared";
+  import { columnWidthConfig } from "./column-width.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -21,7 +21,7 @@
 <SimpleTable
   autoExpandColumns={!isMobile}
   columnResizing={true}
-  defaultHeaders={columnWidthConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(columnWidthConfig.headers)}
   rows={columnWidthConfig.rows}
   {height}
   {theme}

@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, IconsConfig, Row, Theme } from "@simple-table/angular";
-import { customIconsConfig, buildVanillaCustomIcons } from "@simple-table/examples-shared";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
+import type { AngularHeaderObject, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
+import { customIconsConfig, buildVanillaCustomIcons } from "./custom-icons.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -23,6 +23,6 @@ export class CustomIconsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = customIconsConfig.rows;
-  readonly headers: AngularHeaderObject[] = customIconsConfig.headers;
-  readonly icons: IconsConfig = buildVanillaCustomIcons();
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(customIconsConfig.headers);
+  readonly icons: AngularIconsConfig = buildVanillaCustomIcons();
 }

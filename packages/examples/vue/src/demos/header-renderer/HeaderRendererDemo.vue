@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject, Row } from "@simple-table/vue";
-import { headerRendererConfig } from "@simple-table/examples-shared";
+import { headerRendererConfig } from "./header-renderer.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

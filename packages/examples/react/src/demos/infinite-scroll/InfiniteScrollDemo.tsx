@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, Row } from "@simple-table/react";
 import {
   infiniteScrollConfig,
   generateInfiniteScrollData,
-} from "@simple-table/examples-shared";
+} from "./infinite-scroll.demo-data";
 import "@simple-table/react/styles.css";
 
 const MAX_ROWS = 200;
@@ -46,7 +46,7 @@ const InfiniteScrollDemo = ({
         {rows.length} rows loaded{hasMore ? "" : " (all loaded)"}
       </div>
       <SimpleTable
-        defaultHeaders={infiniteScrollConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(infiniteScrollConfig.headers)}
         rows={rows}
         onLoadMore={handleLoadMore}
         isLoading={loading}

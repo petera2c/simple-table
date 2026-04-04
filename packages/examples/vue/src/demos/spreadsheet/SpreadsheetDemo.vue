@@ -2,10 +2,10 @@
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/vue";
-import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
-import type { SpreadsheetRow } from "@simple-table/examples-shared";
+import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
+import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import "@simple-table/vue/styles.css";
-import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
+import "./spreadsheet-custom.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",

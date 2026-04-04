@@ -1,8 +1,8 @@
 import { NgIf } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
 import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
-import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "@simple-table/examples-shared";
+import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -33,7 +33,7 @@ export class ColumnResizingDemoComponent implements OnInit {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnResizingData;
-  headers: AngularHeaderObject[] = [...columnResizingHeaders];
+  headers: AngularHeaderObject[] = defaultHeadersFromCore([...columnResizingHeaders]);
   saveMessage = "";
 
   handleColumnWidthChange = (updatedHeaders: HeaderObject[]) => {
@@ -41,7 +41,7 @@ export class ColumnResizingDemoComponent implements OnInit {
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
       localStorage.setItem(COLUMN_RESIZING_STORAGE_KEY, JSON.stringify(widthMap));
-      this.headers = updatedHeaders;
+      this.headers = defaultHeadersFromCore(updatedHeaders);
       this.saveMessage = "Column widths saved!";
       setTimeout(() => { this.saveMessage = ""; }, 2000);
     } catch {
@@ -55,7 +55,9 @@ export class ColumnResizingDemoComponent implements OnInit {
       const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
       if (saved) {
         const widthMap = JSON.parse(saved);
-        this.headers = columnResizingHeaders.map((h) => ({ ...h, width: widthMap[h.accessor] ?? h.width }));
+        this.headers = defaultHeadersFromCore(
+          columnResizingHeaders.map((h) => ({ ...h, width: widthMap[h.accessor] ?? h.width })),
+        );
       }
     } catch { /* ignore */ }
   }

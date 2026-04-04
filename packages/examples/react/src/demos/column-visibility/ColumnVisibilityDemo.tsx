@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { columnVisibilityConfig } from "@simple-table/examples-shared";
+import { columnVisibilityConfig } from "./column-visibility.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnVisibilityDemo = ({
@@ -12,7 +12,7 @@ const ColumnVisibilityDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={columnVisibilityConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(columnVisibilityConfig.headers)}
       rows={columnVisibilityConfig.rows}
       editColumns={columnVisibilityConfig.tableProps.editColumns}
       columnEditorConfig={columnVisibilityConfig.tableProps.columnEditorConfig}

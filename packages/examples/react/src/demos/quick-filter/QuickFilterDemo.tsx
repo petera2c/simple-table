@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, QuickFilterMode } from "@simple-table/react";
-import { quickFilterConfig } from "@simple-table/examples-shared";
+import { quickFilterConfig } from "./quick-filter.demo-data";
 import "@simple-table/react/styles.css";
 
 const QuickFilterDemo = ({
@@ -78,7 +78,7 @@ const QuickFilterDemo = ({
         </button>
       </div>
       <SimpleTable
-        defaultHeaders={quickFilterConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(quickFilterConfig.headers)}
         rows={quickFilterConfig.rows}
         height={height}
         theme={theme}

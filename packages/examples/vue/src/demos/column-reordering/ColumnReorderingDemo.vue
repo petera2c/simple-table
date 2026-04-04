@@ -13,7 +13,7 @@
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { Theme, HeaderObject } from "@simple-table/vue";
-import { columnReorderingConfig } from "@simple-table/examples-shared";
+import { columnReorderingConfig } from "./column-reordering.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

@@ -1,4 +1,4 @@
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig } from "simple-table-core";
+import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
 import type {
   SimpleTableSolidProps,
   SolidHeaderObject,
@@ -64,6 +64,7 @@ function transformHeader(header: SolidHeaderObject): HeaderObject {
 export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableConfig {
   const {
     defaultHeaders,
+    rows,
     footerRenderer,
     emptyStateRenderer,
     errorStateRenderer,
@@ -78,6 +79,7 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
+    rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
   };
 

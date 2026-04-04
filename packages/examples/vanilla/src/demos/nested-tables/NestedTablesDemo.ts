@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { nestedTablesConfig, generateNestedTablesData } from "@simple-table/examples-shared";
+import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderNestedTablesDemo(

@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
 import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
-import { cellRendererConfig } from "@simple-table/examples-shared";
-import type { CellRendererEmployee } from "@simple-table/examples-shared";
+import { cellRendererConfig } from "./cell-renderer.demo-data";
+import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/angular/styles.css";
 
 const html = (str: string): Node => {
@@ -106,8 +106,10 @@ export class CellRendererDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = cellRendererConfig.rows;
-  readonly headers: AngularHeaderObject[] = cellRendererConfig.headers.map((h) => {
-    const renderer = RENDERERS[h.accessor as string];
-    return renderer ? { ...h, cellRenderer: renderer as any } : h;
-  });
+  readonly headers: AngularHeaderObject[] = mapToAngularHeaderObjects(
+    cellRendererConfig.headers.map((h) => {
+      const renderer = RENDERERS[h.accessor as string];
+      return renderer ? { ...h, cellRenderer: renderer as any } : h;
+    }),
+  );
 }

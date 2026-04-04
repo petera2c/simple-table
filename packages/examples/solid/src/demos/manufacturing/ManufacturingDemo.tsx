@@ -1,16 +1,17 @@
-import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject } from "@simple-table/solid";
-import { manufacturingConfig, getManufacturingStatusColors } from "@simple-table/examples-shared";
-import type { ManufacturingRow } from "@simple-table/examples-shared";
+import { SimpleTable, asRows, mapToSolidHeaderObjects } from "@simple-table/solid";
+import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
+import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/solid/styles.css";
 
 function getHeaders(): SolidHeaderObject[] {
   const baseHeaders = [...manufacturingConfig.headers];
-  return baseHeaders.map((h) => {
+  return mapToSolidHeaderObjects(
+    baseHeaders.map((h) => {
     if (h.accessor === "productLine") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           return hasChildren ? <span style={{ "font-weight": "bold" }}>{d.productLine}</span> : d.productLine;
@@ -20,7 +21,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "station") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return <span style={{ color: "#6b7280" }}>{d.id}</span>;
@@ -36,7 +37,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row, theme }) => {
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return "—";
@@ -48,7 +49,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "outputRate" || h.accessor === "defectCount" || h.accessor === "energy") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const value = d[h.accessor as keyof ManufacturingRow] as number;
@@ -59,7 +60,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "cycletime") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return <span style={{ "font-weight": "bold" }}>{d.cycletime?.toFixed(1)}</span>;
@@ -70,7 +71,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "efficiency") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const color = d.efficiency >= 90 ? "#52c41a" : d.efficiency >= 75 ? "#1890ff" : "#ff4d4f";
@@ -88,7 +89,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "defectRate") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const rate = typeof d.defectRate === "number" ? d.defectRate : parseFloat(String(d.defectRate));
@@ -100,7 +101,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "downtime") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const hours = typeof d.downtime === "number" ? d.downtime : parseFloat(String(d.downtime));
@@ -112,7 +113,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "utilization") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return <span style={{ "font-weight": "bold" }}>{d.utilization?.toFixed(0)}%</span>;
@@ -123,7 +124,7 @@ function getHeaders(): SolidHeaderObject[] {
     if (h.accessor === "maintenanceDate") {
       return {
         ...h,
-        cellRenderer: ({ row }) => {
+        cellRenderer: ({ row }: CellRendererProps) => {
           const d = row as unknown as ManufacturingRow;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return "—";
@@ -149,11 +150,12 @@ function getHeaders(): SolidHeaderObject[] {
       };
     }
     return h;
-  });
+  }),
+  );
 }
 
 export default function ManufacturingDemo(props: { height?: string | number; theme?: Theme }) {
   return (
-    <SimpleTable columnResizing columnReordering defaultHeaders={getHeaders()} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={manufacturingConfig.rows} selectableCells theme={props.theme} />
+    <SimpleTable columnResizing columnReordering defaultHeaders={getHeaders()} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={asRows(manufacturingConfig.rows)} selectableCells theme={props.theme} />
   );
 }

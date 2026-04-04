@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme, CellChangeProps } from "@simple-table/svelte";
-  import { cellEditingConfig } from "@simple-table/examples-shared";
+  import { cellEditingConfig } from "./cell-editing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -15,7 +15,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={cellEditingConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(cellEditingConfig.headers)}
   rows={data}
   {height}
   {theme}

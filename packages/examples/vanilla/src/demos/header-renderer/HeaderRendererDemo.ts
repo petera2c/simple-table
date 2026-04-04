@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject, Row } from "simple-table-core";
-import { headerRendererConfig } from "@simple-table/examples-shared";
+import { headerRendererConfig } from "./header-renderer.demo-data";
 import "simple-table-core/styles.css";
 
 type SortDir = "asc" | "desc" | null;

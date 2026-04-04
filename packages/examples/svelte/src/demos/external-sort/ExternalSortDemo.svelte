@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme, SortColumn } from "@simple-table/svelte";
-  import { externalSortConfig } from "@simple-table/examples-shared";
+  import { externalSortConfig } from "./external-sort.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -32,7 +32,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={externalSortConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(externalSortConfig.headers)}
   rows={sortedRows}
   externalSortHandling={true}
   columnResizing={externalSortConfig.tableProps.columnResizing}

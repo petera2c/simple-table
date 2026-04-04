@@ -1,10 +1,10 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/svelte";
-  import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
-  import type { SpreadsheetRow } from "@simple-table/examples-shared";
+  import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
+  import type { SpreadsheetRow } from "./spreadsheet.demo-data";
   import "@simple-table/svelte/styles.css";
-  import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
+  import "./spreadsheet-custom.css";
 
   let { height = "400px", theme = "light" as Theme }: { height?: string | number; theme?: Theme } = $props();
 

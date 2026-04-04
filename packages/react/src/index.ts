@@ -1,5 +1,11 @@
 // Component
 export { default as SimpleTable } from "./SimpleTable";
+export { asRows } from "simple-table-core";
+export {
+  defaultHeaderFromCore,
+  defaultHeadersFromCore,
+  mapToReactHeaderObjects,
+} from "./defaultHeadersFromCore";
 
 // React-specific props and type overrides
 export type {

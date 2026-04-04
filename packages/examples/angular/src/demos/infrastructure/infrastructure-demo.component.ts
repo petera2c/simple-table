@@ -1,8 +1,8 @@
 import { Component, Input, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
-import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "@simple-table/examples-shared";
-import type { InfrastructureServer } from "@simple-table/examples-shared";
+import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
+import type { AngularHeaderObject, CellRenderer, Row, Theme, ValueGetterProps } from "@simple-table/angular";
+import { infrastructureData, INFRA_UPDATE_CONFIG, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
+import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/angular/styles.css";
 
 function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {
@@ -69,7 +69,7 @@ function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {
     return div;
   };
 
-  return [
+  return mapToAngularHeaderObjects([
     { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: serverIdRenderer },
     { accessor: "serverName", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
@@ -85,13 +85,13 @@ function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {
     {
       accessor: "status", label: "Status", width: 130, isSortable: true, filterable: true, isEditable: false, align: "center", type: "enum",
       enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
-      valueGetter: ({ row }) => {
+      valueGetter: ({ row }: ValueGetterProps) => {
         const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 };
         return m[String(row.status)] || 999;
       },
       cellRenderer: statusRenderer,
     },
-  ];
+  ]);
 }
 
 @Component({

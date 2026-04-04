@@ -1,8 +1,8 @@
 import { render, Dynamic } from "solid-js/web";
 import { lazy, Suspense, createSignal, Show, onMount, onCleanup } from "solid-js";
-import { DEMO_LIST } from "@simple-table/examples-shared";
+import { DEMO_LIST } from "./demo-list";
 import type { Theme } from "@simple-table/solid";
-import "../../shared/src/styles/shell.css";
+import "./styles/shell.css";
 
 const registry: Record<string, ReturnType<typeof lazy>> = {
   "quick-start": lazy(() => import("./demos/quick-start/QuickStartDemo")),

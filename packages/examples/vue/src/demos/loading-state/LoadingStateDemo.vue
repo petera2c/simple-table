@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme, Row } from "@simple-table/vue";
-import { loadingStateConfig } from "@simple-table/examples-shared";
+import { loadingStateConfig } from "./loading-state.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -38,7 +38,7 @@ onMounted(() => {
       </button>
     </div>
     <SimpleTable
-      :default-headers="loadingStateConfig.headers"
+      :default-headers="defaultHeadersFromCore(loadingStateConfig.headers)"
       :rows="data"
       :is-loading="isLoading"
       :height="props.height"

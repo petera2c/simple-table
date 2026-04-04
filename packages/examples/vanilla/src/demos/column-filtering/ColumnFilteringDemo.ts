@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnFilteringConfig } from "@simple-table/examples-shared";
+import { columnFilteringConfig } from "./column-filtering.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnFilteringDemo(

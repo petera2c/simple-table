@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme, FooterRendererProps } from "@simple-table/vue";
-import { footerRendererConfig } from "@simple-table/examples-shared";
+import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -110,7 +110,7 @@ function footerRenderer(fp: FooterRendererProps): HTMLElement {
 
 <template>
   <SimpleTable
-    :default-headers="footerRendererConfig.headers"
+    :default-headers="defaultHeadersFromCore(footerRendererConfig.headers)"
     :rows="footerRendererConfig.rows"
     :footer-renderer="footerRenderer"
     :should-paginate="true"

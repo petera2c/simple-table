@@ -1,6 +1,6 @@
-import { DEMO_LIST } from "@simple-table/examples-shared";
+import { DEMO_LIST } from "./demo-list";
 import type { Theme } from "simple-table-core";
-import "../../shared/src/styles/shell.css";
+import "./styles/shell.css";
 
 type DemoRenderer = (
   container: HTMLElement,

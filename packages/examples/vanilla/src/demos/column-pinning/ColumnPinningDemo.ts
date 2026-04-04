@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { columnPinningConfig } from "@simple-table/examples-shared";
+import { columnPinningConfig } from "./column-pinning.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderColumnPinningDemo(

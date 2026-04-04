@@ -1,12 +1,12 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
   fetchDivisionsForCompany,
-} from "@simple-table/examples-shared";
-import type { DynamicCompany } from "@simple-table/examples-shared";
+} from "./dynamic-nested-tables.demo-data";
+import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -31,7 +31,7 @@ export class DynamicNestedTablesDemoComponent {
   @Input() height: string | number = "500px";
   @Input() theme?: Theme;
 
-  headers: AngularHeaderObject[] = dynamicNestedTablesConfig.headers;
+  headers: AngularHeaderObject[] = defaultHeadersFromCore(dynamicNestedTablesConfig.headers);
   rows: DynamicCompany[] = [...dynamicNestedTablesData];
   readonly tableProps = dynamicNestedTablesConfig.tableProps;
 

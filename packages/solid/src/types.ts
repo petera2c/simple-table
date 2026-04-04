@@ -3,6 +3,7 @@ import type {
   SimpleTableProps,
   SimpleTableConfig,
   HeaderObject,
+  Row,
   TableAPI,
   CellRendererProps,
   HeaderRendererProps,
@@ -63,32 +64,33 @@ export interface SolidColumnEditorConfig
 }
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
+/**
+ * Column definition for `defaultHeaders`: core column metadata with Solid-only
+ * renderer fields. For trees from `simple-table-core`, use `defaultHeadersFromCore` /
+ * `mapToSolidHeaderObjects`.
+ */
 export interface SolidHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
   cellRenderer?: SolidCellRenderer;
   headerRenderer?: SolidHeaderRenderer;
   children?: SolidHeaderObject[];
-  nestedTable?: Omit<SimpleTableSolidProps, "rows">;
+  nestedTable?: Omit<
+    SimpleTableSolidProps,
+    | "rows"
+    | "loadingStateRenderer"
+    | "errorStateRenderer"
+    | "emptyStateRenderer"
+    | "tableEmptyStateRenderer"
+  >;
 }
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
-// Mirrors SimpleTableProps with Solid-specific overrides.
-// `tableRef` is omitted — consumers pass a `ref` prop directly to SimpleTable,
-// which Solid treats as a plain callback/setter.
+// Mirrors SimpleTableProps with Solid-specific overrides. Pass `ref` to receive
+// the TableAPI once mounted (callback ref).
 export interface SimpleTableSolidProps
   extends Omit<
     SimpleTableProps,
-    | "tableRef"
-    | "allowAnimations"
-    | "expandIcon"
-    | "filterIcon"
-    | "headerCollapseIcon"
-    | "headerExpandIcon"
-    | "nextIcon"
-    | "prevIcon"
-    | "sortDownIcon"
-    | "sortUpIcon"
-    | "columnEditorText"
+    | "rows"
     | "defaultHeaders"
     | "footerRenderer"
     | "emptyStateRenderer"
@@ -100,6 +102,8 @@ export interface SimpleTableSolidProps
     | "icons"
   > {
   defaultHeaders: SolidHeaderObject[];
+  /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
+  rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: SolidFooterRenderer;
   loadingStateRenderer?: SolidLoadingStateRenderer;
   errorStateRenderer?: SolidErrorStateRenderer;

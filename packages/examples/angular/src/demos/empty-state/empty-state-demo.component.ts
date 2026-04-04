@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { emptyStateConfig, buildEmptyStateElement } from "@simple-table/examples-shared";
+import { emptyStateConfig, buildEmptyStateElement } from "./empty-state.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -23,6 +23,6 @@ export class EmptyStateDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = emptyStateConfig.rows;
-  readonly headers: AngularHeaderObject[] = emptyStateConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(emptyStateConfig.headers);
   readonly emptyStateEl = buildEmptyStateElement();
 }

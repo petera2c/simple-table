@@ -1,9 +1,9 @@
-import { SimpleTableVanilla } from "simple-table-core";
+import { SimpleTableVanilla, asRows } from "simple-table-core";
 import type { Theme, HeaderObject, CellChangeProps } from "simple-table-core";
-import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
-import type { SpreadsheetRow } from "@simple-table/examples-shared";
+import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
+import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import "simple-table-core/styles.css";
-import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
+import "./spreadsheet-custom.css";
 
 export function renderSpreadsheetDemo(
   container: HTMLElement,
@@ -13,7 +13,7 @@ export function renderSpreadsheetDemo(
   wrapper.className = "spreadsheet-container";
   container.appendChild(wrapper);
 
-  let rows = [...spreadsheetConfig.rows];
+  let sheetRows: SpreadsheetRow[] = [...spreadsheetConfig.rows];
   let additionalColumns: HeaderObject[] = [];
 
   function buildHeaders(): HeaderObject[] {
@@ -72,7 +72,7 @@ export function renderSpreadsheetDemo(
 
   const table = new SimpleTableVanilla(wrapper, {
     defaultHeaders: buildHeaders(),
-    rows,
+    rows: asRows(sheetRows),
     height: options?.height ?? "400px",
     theme: options?.theme,
     columnBorders: true,
@@ -85,13 +85,13 @@ export function renderSpreadsheetDemo(
     useOddEvenRowBackground: true,
     customTheme: { rowHeight: 22 },
     onCellEdit: ({ accessor, newValue, row }: CellChangeProps) => {
-      rows = rows.map((item) => {
+      sheetRows = sheetRows.map((item) => {
         if (item.id === row.id) {
-          return recalculateAmortization(item as SpreadsheetRow, accessor, newValue as string | number);
+          return recalculateAmortization(item, accessor, newValue as string | number);
         }
         return item;
       });
-      table.update({ rows });
+      table.update({ rows: asRows(sheetRows) });
     },
   });
   return table;

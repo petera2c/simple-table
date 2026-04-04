@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
 import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
-import { columnVisibilityConfig } from "@simple-table/examples-shared";
+import { columnVisibilityConfig } from "./column-visibility.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -24,6 +24,6 @@ export class ColumnVisibilityDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnVisibilityConfig.rows;
-  readonly headers: AngularHeaderObject[] = columnVisibilityConfig.headers;
+  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(columnVisibilityConfig.headers);
   readonly tableProps = columnVisibilityConfig.tableProps;
 }
