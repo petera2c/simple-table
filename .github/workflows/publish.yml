@@ -57,8 +57,9 @@ jobs:
 
       - name: "[core] Install Playwright"
         if: steps.core-check.outputs.changed == 'true'
+        working-directory: packages/core
         run: |
-          npx playwright install --with-deps chromium
+          pnpm exec playwright install --with-deps chromium
           npm install -g concurrently http-server wait-on
 
       - name: "[core] Serve Storybook and run tests"

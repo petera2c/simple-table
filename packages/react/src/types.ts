@@ -6,16 +6,57 @@ import type {
   TableAPI,
   Row,
   CellRendererProps,
-  HeaderRendererProps,
-  FooterRendererProps,
+  HeaderRendererProps as VanillaHeaderRendererProps,
+  FooterRendererProps as VanillaFooterRendererProps,
   LoadingStateRendererProps,
   ErrorStateRendererProps,
   EmptyStateRendererProps,
-  HeaderDropdownProps,
-  ColumnEditorRowRendererProps,
+  HeaderDropdownProps as VanillaHeaderDropdownProps,
+  ColumnEditorRowRendererProps as VanillaColumnEditorRowRendererProps,
   ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
 } from "simple-table-core";
+
+// ─── Renderer prop overrides (React slots are nodes, not DOM IconElement) ─────
+/** Passed to React `headerRenderer` / `headerDropdown`; slots are React nodes. */
+export interface HeaderRendererComponents {
+  sortIcon?: React.ReactNode;
+  filterIcon?: React.ReactNode;
+  collapseIcon?: React.ReactNode;
+  labelContent?: React.ReactNode;
+}
+
+export type HeaderRendererProps = Omit<VanillaHeaderRendererProps, "components"> & {
+  components?: HeaderRendererComponents;
+};
+
+/** Column editor row slots as React nodes (core uses `IconElement` / `HTMLElement`). */
+export interface ColumnEditorRowRendererComponents {
+  expandIcon?: React.ReactNode;
+  checkbox?: React.ReactNode;
+  dragIcon?: React.ReactNode;
+  labelContent?: React.ReactNode;
+  pinIcon?: React.ReactNode;
+}
+
+export type ColumnEditorRowRendererProps = Omit<
+  VanillaColumnEditorRowRendererProps,
+  "components"
+> & {
+  components: ColumnEditorRowRendererComponents;
+};
+
+export type FooterRendererProps = Omit<
+  VanillaFooterRendererProps,
+  "nextIcon" | "prevIcon"
+> & {
+  nextIcon?: React.ReactNode;
+  prevIcon?: React.ReactNode;
+};
+
+export type HeaderDropdownProps = Omit<VanillaHeaderDropdownProps, "components"> & {
+  components?: HeaderRendererComponents;
+};
 
 // ─── Internal instance contract ───────────────────────────────────────────────
 // Used to type the internal ref inside SimpleTable without coupling to the
@@ -155,12 +196,8 @@ export interface SimpleTableReactProps extends Omit<
 // Re-export vanilla prop types that consumers still need directly
 export type {
   CellRendererProps,
-  HeaderRendererProps,
-  FooterRendererProps,
   LoadingStateRendererProps,
   ErrorStateRendererProps,
   EmptyStateRendererProps,
-  HeaderDropdownProps,
-  ColumnEditorRowRendererProps,
   ColumnEditorCustomRendererProps,
 };
