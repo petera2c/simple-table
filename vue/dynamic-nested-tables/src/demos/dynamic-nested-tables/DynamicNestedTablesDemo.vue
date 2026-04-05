@@ -1,0 +1,60 @@
+<template>
+  <SimpleTable
+    :auto-expand-columns="dynamicNestedTablesConfig.tableProps.autoExpandColumns"
+    :default-headers="defaultHeadersFromCore(dynamicNestedTablesConfig.headers)"
+    :expand-all="dynamicNestedTablesConfig.tableProps.expandAll"
+    :height="height"
+    :row-grouping="dynamicNestedTablesConfig.tableProps.rowGrouping"
+    :get-row-id="dynamicNestedTablesConfig.tableProps.getRowId"
+    :rows="rows"
+    :on-row-group-expand="handleCompanyExpand"
+    :theme="theme"
+  />
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
+import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
+import {
+  dynamicNestedTablesConfig,
+  dynamicNestedTablesData,
+  fetchDivisionsForCompany,
+} from "./dynamic-nested-tables.demo-data";
+import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
+import "@simple-table/vue/styles.css";
+
+withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "500px" });
+
+const rows = ref<DynamicCompany[]>([...dynamicNestedTablesData]);
+
+async function handleCompanyExpand({
+  row,
+  groupingKey,
+  isExpanded,
+  rowIndexPath,
+  setLoading,
+  setError,
+  setEmpty,
+}: OnRowGroupExpandProps) {
+  if (!isExpanded) return;
+  try {
+    if (groupingKey === "divisions") {
+      const company = row as DynamicCompany;
+      if (company.divisions && company.divisions.length > 0) return;
+      setLoading(true);
+      const divisions = await fetchDivisionsForCompany(company.id);
+      if (divisions.length === 0) {
+        setEmpty(true, "No divisions found for this company");
+        return;
+      }
+      const newRows = [...rows.value];
+      newRows[rowIndexPath[0]] = { ...newRows[rowIndexPath[0]], divisions };
+      rows.value = newRows;
+    }
+  } catch (error) {
+    setLoading(false);
+    setError(error instanceof Error ? error.message : "Failed to load divisions");
+  }
+}
+</script>

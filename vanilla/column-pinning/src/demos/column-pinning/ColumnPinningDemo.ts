@@ -1,0 +1,18 @@
+import { SimpleTableVanilla } from "simple-table-core";
+import type { Theme } from "simple-table-core";
+import { columnPinningConfig } from "./column-pinning.demo-data";
+import "simple-table-core/styles.css";
+
+export function renderColumnPinningDemo(
+  container: HTMLElement,
+  options?: { height?: string | number; theme?: Theme }
+): SimpleTableVanilla {
+  const table = new SimpleTableVanilla(container, {
+    defaultHeaders: columnPinningConfig.headers,
+    rows: columnPinningConfig.rows,
+    height: options?.height ?? "400px",
+    theme: options?.theme,
+    columnResizing: columnPinningConfig.tableProps.columnResizing,
+  });
+  return table;
+}
