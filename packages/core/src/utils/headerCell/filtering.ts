@@ -117,9 +117,9 @@ export const createFilterIcon = (
           }
         },
         open: true,
-        overflow: "auto",
         positioning: "fixed",
         maxWidth: 280,
+        allowDescendantOverflow: true,
       });
     } else {
       if (dropdownInstance) {

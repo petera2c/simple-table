@@ -1494,6 +1494,19 @@ input {
   cursor: default;
 }
 
+/* Filter popover (and similar): nested .st-dropdown-content menus must not be clipped by the shell.
+   overflow:auto + max-height on the parent creates a scrollport that clips absolutely positioned
+   children (operator CustomSelect, date picker, etc.). */
+.st-dropdown-content.st-dropdown-content--allow-descendant-overflow {
+  overflow: visible;
+  max-height: none;
+}
+
+/* Nested filter UI panels (absolute) stack above the fixed filter shell */
+.st-filter-container .st-dropdown-content {
+  z-index: 101;
+}
+
 /* Position variants — vertical offset comes from JS (React Dropdown parity: +4px only) */
 .st-dropdown-bottom-left,
 .st-dropdown-bottom-right,

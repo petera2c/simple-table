@@ -19,6 +19,12 @@ export interface CreateDropdownOptions {
   width?: number;
   maxWidth?: number;
   positioning?: "fixed" | "absolute";
+  /**
+   * When true, this panel does not clip overflowing descendants (e.g. nested operator menus inside
+   * the filter popover). Uses overflow: visible and drops max-height on the shell — see
+   * `.st-dropdown-content--allow-descendant-overflow` in base.css.
+   */
+  allowDescendantOverflow?: boolean;
 }
 
 const resolveTableRoot = (el?: HTMLElement | null): HTMLElement | null =>
@@ -36,12 +42,23 @@ export const createDropdown = (options: CreateDropdownOptions) => {
     width,
     maxWidth,
     positioning = "fixed",
+    allowDescendantOverflow = false,
   } = options;
+
+  let allowDescendantOverflowFlag = allowDescendantOverflow;
+
+  const descendantOverflowClass = "st-dropdown-content--allow-descendant-overflow";
+
+  const placementClassSuffix = () =>
+    allowDescendantOverflowFlag ? ` ${descendantOverflowClass}` : "";
 
   const dropdownElement = document.createElement("div");
   dropdownElement.className = "st-dropdown-content";
+  if (allowDescendantOverflowFlag) {
+    dropdownElement.classList.add(descendantOverflowClass);
+  }
   dropdownElement.style.position = positioning;
-  dropdownElement.style.overflow = overflow;
+  dropdownElement.style.overflow = allowDescendantOverflowFlag ? "visible" : overflow;
   if (width) {
     dropdownElement.style.width = `${width}px`;
   }
@@ -160,7 +177,7 @@ export const createDropdown = (options: CreateDropdownOptions) => {
         }
       }
 
-      dropdownElement.className = `st-dropdown-content st-dropdown-${verticalPosition}-${horizontalPosition}`;
+      dropdownElement.className = `st-dropdown-content st-dropdown-${verticalPosition}-${horizontalPosition}${placementClassSuffix()}`;
       dropdownElement.style.visibility = "visible";
     });
   };
@@ -242,7 +259,12 @@ export const createDropdown = (options: CreateDropdownOptions) => {
     }
     if (newOptions.overflow !== undefined) {
       overflow = newOptions.overflow;
-      dropdownElement.style.overflow = overflow;
+      dropdownElement.style.overflow = allowDescendantOverflowFlag ? "visible" : overflow;
+    }
+    if (newOptions.allowDescendantOverflow !== undefined) {
+      allowDescendantOverflowFlag = newOptions.allowDescendantOverflow;
+      dropdownElement.classList.toggle(descendantOverflowClass, allowDescendantOverflowFlag);
+      dropdownElement.style.overflow = allowDescendantOverflowFlag ? "visible" : overflow;
     }
   };
 
