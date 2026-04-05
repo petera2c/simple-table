@@ -15,8 +15,6 @@ import { updateColumnWidthsInDOM } from "../resizeUtils/domUpdates";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener, throttle } from "./eventTracking";
 
-const DOUBLE_TAP_MS = 320;
-
 const getStyleRoot = (context: HeaderRenderContext): ParentNode | null => {
   const main = context.mainBodyRef?.current;
   if (!main) return null;
@@ -32,23 +30,15 @@ export const createResizeHandle = (
   const isSelectionColumn =
     header.isSelectionColumn && context.enableRowSelection;
 
-  if (!columnResizing || isSelectionColumn) return null;
-
-  const dragDisabled =
-    Boolean(
-      isLastMainAutoExpandColumn &&
-        context.autoExpandColumns &&
-        !context.pinned,
-    );
+  if (!columnResizing || isSelectionColumn || isLastMainAutoExpandColumn) {
+    return null;
+  }
 
   const resizeContainer = document.createElement("div");
   resizeContainer.className = "st-header-resize-handle-container";
   resizeContainer.setAttribute("role", "separator");
   resizeContainer.setAttribute("aria-label", `Resize ${header.label} column`);
   resizeContainer.setAttribute("aria-orientation", "vertical");
-  if (dragDisabled) {
-    resizeContainer.setAttribute("data-st-autofit-only", "true");
-  }
 
   const resizeHandle = document.createElement("div");
   resizeHandle.className = "st-header-resize-handle";
@@ -130,102 +120,71 @@ export const createResizeHandle = (
     performAutoFit();
   };
 
-  if (!dragDisabled) {
-    const handleMouseDown = (event: MouseEvent) => {
-      if (event.detail >= 2) {
-        event.preventDefault();
-        runAutoFitDebounced();
-        return;
-      }
-      const startWidth = document.getElementById(
-        getCellId({ accessor: header.accessor, rowId: "header" }),
-      )?.offsetWidth;
+  const handleMouseDown = (event: MouseEvent) => {
+    if (event.detail >= 2) {
+      event.preventDefault();
+      runAutoFitDebounced();
+      return;
+    }
+    const startWidth = document.getElementById(
+      getCellId({ accessor: header.accessor, rowId: "header" }),
+    )?.offsetWidth;
 
-      throttle(() => {
-        handleResizeStart({
-          autoExpandColumns: context.autoExpandColumns,
-          collapsedHeaders: context.collapsedHeaders,
-          containerWidth: context.containerWidth,
-          event: event,
-          forceUpdate: context.forceUpdate,
-          header,
-          headers: context.headers,
-          mainBodyRef: context.mainBodyRef,
-          onColumnWidthChange: context.onColumnWidthChange,
-          pinnedLeftRef: context.pinnedLeftRef,
-          pinnedRightRef: context.pinnedRightRef,
-          reverse: context.reverse,
-          setHeaders: context.setHeaders,
-          setIsResizing: context.setIsResizing,
-          startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
-        });
-      }, 10);
-    };
+    throttle(() => {
+      handleResizeStart({
+        autoExpandColumns: context.autoExpandColumns,
+        collapsedHeaders: context.collapsedHeaders,
+        containerWidth: context.containerWidth,
+        event: event,
+        forceUpdate: context.forceUpdate,
+        header,
+        headers: context.headers,
+        mainBodyRef: context.mainBodyRef,
+        onColumnWidthChange: context.onColumnWidthChange,
+        pinnedLeftRef: context.pinnedLeftRef,
+        pinnedRightRef: context.pinnedRightRef,
+        reverse: context.reverse,
+        setHeaders: context.setHeaders,
+        setIsResizing: context.setIsResizing,
+        startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
+      });
+    }, 10);
+  };
 
-    addTrackedEventListener(
-      resizeContainer,
-      "mousedown",
-      handleMouseDown as EventListener,
-    );
+  addTrackedEventListener(
+    resizeContainer,
+    "mousedown",
+    handleMouseDown as EventListener,
+  );
 
-    const handleTouchStart = (event: Event) => {
-      const touchEvent = event as globalThis.TouchEvent;
-      const startWidth = document.getElementById(
-        getCellId({ accessor: header.accessor, rowId: "header" }),
-      )?.offsetWidth;
+  const handleTouchStart = (event: Event) => {
+    const touchEvent = event as globalThis.TouchEvent;
+    const startWidth = document.getElementById(
+      getCellId({ accessor: header.accessor, rowId: "header" }),
+    )?.offsetWidth;
 
-      throttle(() => {
-        handleResizeStart({
-          autoExpandColumns: context.autoExpandColumns,
-          collapsedHeaders: context.collapsedHeaders,
-          containerWidth: context.containerWidth,
-          event: touchEvent as any,
-          forceUpdate: context.forceUpdate,
-          header,
-          headers: context.headers,
-          mainBodyRef: context.mainBodyRef,
-          onColumnWidthChange: context.onColumnWidthChange,
-          pinnedLeftRef: context.pinnedLeftRef,
-          pinnedRightRef: context.pinnedRightRef,
-          reverse: context.reverse,
-          setHeaders: context.setHeaders,
-          setIsResizing: context.setIsResizing,
-          startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
-        });
-      }, 10);
-    };
+    throttle(() => {
+      handleResizeStart({
+        autoExpandColumns: context.autoExpandColumns,
+        collapsedHeaders: context.collapsedHeaders,
+        containerWidth: context.containerWidth,
+        event: touchEvent as any,
+        forceUpdate: context.forceUpdate,
+        header,
+        headers: context.headers,
+        mainBodyRef: context.mainBodyRef,
+        onColumnWidthChange: context.onColumnWidthChange,
+        pinnedLeftRef: context.pinnedLeftRef,
+        pinnedRightRef: context.pinnedRightRef,
+        reverse: context.reverse,
+        setHeaders: context.setHeaders,
+        setIsResizing: context.setIsResizing,
+        startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
+      });
+    }, 10);
+  };
 
-    addTrackedEventListener(resizeContainer, "touchstart", handleTouchStart);
-  } else {
-    const handleAutofitOnlyMouseDown = (event: MouseEvent) => {
-      if (event.detail >= 2) {
-        event.preventDefault();
-        runAutoFitDebounced();
-      }
-    };
-    addTrackedEventListener(
-      resizeContainer,
-      "mousedown",
-      handleAutofitOnlyMouseDown as EventListener,
-    );
-
-    let lastTouchEndTime = 0;
-    addTrackedEventListener(
-      resizeContainer,
-      "touchend",
-      ((e: TouchEvent) => {
-        const now = Date.now();
-        if (now - lastTouchEndTime < DOUBLE_TAP_MS) {
-          lastTouchEndTime = 0;
-          e.preventDefault();
-          runAutoFitDebounced();
-        } else {
-          lastTouchEndTime = now;
-        }
-      }) as EventListener,
-      { passive: false },
-    );
-  }
+  addTrackedEventListener(resizeContainer, "touchstart", handleTouchStart);
 
   addTrackedEventListener(
     resizeContainer,

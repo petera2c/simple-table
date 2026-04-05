@@ -89,7 +89,7 @@ export const calculateHeaderCellClasses = (
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : "",
     isHeaderSelected ? "st-header-selected" : "",
     hasHighlightedCell && !isHeaderSelected ? "st-header-has-highlighted-cell" : "",
-    isLastMainAutoExpandColumn && !context.columnResizing ? "st-no-resize" : "",
+    isLastMainAutoExpandColumn ? "st-no-resize" : "",
   ]
     .filter(Boolean)
     .join(" ");

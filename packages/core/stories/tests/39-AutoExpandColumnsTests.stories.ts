@@ -2369,9 +2369,9 @@ export const AutoExpandDoubleClickResizePinned = {
   },
 };
 
-/** Last main column: double-click-only handle (no drag) still auto-fits under autoExpand. */
-export const AutoExpandDoubleClickLastMainColumnAutoFit = {
-  parameters: { tags: ["auto-expand-double-click-last-main"] },
+/** Last main column under autoExpand: no resize handle; prior column still has a handle. */
+export const AutoExpandLastMainColumnNoResizeHandle = {
+  parameters: { tags: ["auto-expand-last-main-no-handle"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "title", label: "Title", width: 520, type: "string" },
@@ -2403,18 +2403,11 @@ export const AutoExpandDoubleClickLastMainColumnAutoFit = {
     await waitForTable();
     const notesHeader = findHeaderCellByLabel(canvasElement, "Notes");
     expect(notesHeader).toBeTruthy();
-    expect(notesHeader!.querySelector("[data-st-autofit-only]")).toBeTruthy();
-    const handle = notesHeader!.querySelector<HTMLElement>(
-      ".st-header-resize-handle-container",
-    );
-    expect(handle).toBeTruthy();
-    const wBefore = notesHeader!.getBoundingClientRect().width;
-    handle!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
-    await new Promise((r) => setTimeout(r, 450));
-    const notesAfter = findHeaderCellByLabel(canvasElement, "Notes");
-    expect(notesAfter).toBeTruthy();
-    const wAfter = notesAfter!.getBoundingClientRect().width;
-    expect(wAfter).toBeGreaterThan(wBefore + 12);
+    expect(notesHeader!.querySelector(".st-header-resize-handle-container")).toBeFalsy();
+    expect(notesHeader!.className).toContain("st-no-resize");
+    const titleHeader = findHeaderCellByLabel(canvasElement, "Title");
+    expect(titleHeader).toBeTruthy();
+    expect(titleHeader!.querySelector(".st-header-resize-handle-container")).toBeTruthy();
   },
 };
 
