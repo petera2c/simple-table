@@ -106,6 +106,7 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
     children: optionsContainer,
     containerRef,
     mainBodyRef,
+    anchorElement: trigger,
     onClose: () => {
       setOpen(false);
     },

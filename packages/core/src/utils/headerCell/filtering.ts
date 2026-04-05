@@ -107,6 +107,7 @@ export const createFilterIcon = (
         children: filterDropdownInstance.element,
         containerRef: containerElement,
         mainBodyRef: containerElement,
+        anchorElement: iconContainer,
         onClose: () => {
           isFilterDropdownOpen = false;
           iconContainer.setAttribute("aria-expanded", "false");
@@ -118,10 +119,8 @@ export const createFilterIcon = (
         open: true,
         overflow: "auto",
         positioning: "fixed",
-        width: 280,
+        maxWidth: 280,
       });
-
-      iconContainer.appendChild(dropdownInstance.element);
     } else {
       if (dropdownInstance) {
         dropdownInstance.destroy();

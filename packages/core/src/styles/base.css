@@ -1494,21 +1494,12 @@ input {
   cursor: default;
 }
 
-/* Position variants */
-.st-dropdown-bottom-left {
-  margin-top: 4px;
-}
-
-.st-dropdown-bottom-right {
-  margin-top: 4px;
-}
-
-.st-dropdown-top-left {
-  margin-bottom: 4px;
-}
-
+/* Position variants — vertical offset comes from JS (React Dropdown parity: +4px only) */
+.st-dropdown-bottom-left,
+.st-dropdown-bottom-right,
+.st-dropdown-top-left,
 .st-dropdown-top-right {
-  margin-bottom: 4px;
+  margin: 0;
 }
 
 /* Dropdown items */

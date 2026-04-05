@@ -156,6 +156,7 @@ export const createDateFilter = (options: CreateDateFilterOptions) => {
       children: picker.element,
       containerRef,
       mainBodyRef,
+      anchorElement: input,
       onClose: () => {
         isOpen = false;
       },
