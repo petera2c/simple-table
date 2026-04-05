@@ -31,6 +31,8 @@ export class DimensionManager {
   private subscribers: Set<StateChangeCallback> = new Set();
   private resizeObserver: ResizeObserver | null = null;
   private rafId: number | null = null;
+  /** Set when applyContainerWidthSync updates state before any subscriber exists. */
+  private initialNotifyPending = false;
 
   constructor(config: DimensionManagerConfig) {
     this.config = config;
@@ -154,11 +156,15 @@ export class DimensionManager {
       this.rafId = requestAnimationFrame(() => {
         this.rafId = null;
         const newWidth = containerElement.clientWidth;
-        if (newWidth !== this.state.containerWidth) {
+        const widthChanged = newWidth !== this.state.containerWidth;
+        if (widthChanged) {
           this.state = {
             ...this.state,
             containerWidth: newWidth,
           };
+        }
+        if (widthChanged || this.initialNotifyPending) {
+          this.initialNotifyPending = false;
           this.notifySubscribers();
         }
       });
@@ -181,7 +187,10 @@ export class DimensionManager {
         ...this.state,
         containerWidth: w,
       };
-      this.notifySubscribers();
+      // Mark pending so the first ResizeObserver rAF delivers a notification
+      // even when the width hasn't changed (no subscribers exist yet to hear
+      // notifySubscribers here, and the RO would otherwise skip the duplicate).
+      this.initialNotifyPending = true;
     }
   }
 
@@ -228,19 +237,7 @@ export class DimensionManager {
 
   subscribe(callback: StateChangeCallback): () => void {
     this.subscribers.add(callback);
-    // Constructor-time applyContainerWidthSync may call notifySubscribers() before
-    // any listener exists, so that first width update is dropped. Replay current
-    // state once — but defer to a microtask so SimpleTableVanilla.setupManagers()
-    // can finish (e.g. RowSelectionManager) before the first dimension-driven
-    // render; a synchronous callback here cached a body context with a null
-    // rowSelectionManager closure (same hash as later renders with count 0).
-    let unsubscribed = false;
-    queueMicrotask(() => {
-      if (unsubscribed || !this.subscribers.has(callback)) return;
-      callback(this.state);
-    });
     return () => {
-      unsubscribed = true;
       this.subscribers.delete(callback);
     };
   }
