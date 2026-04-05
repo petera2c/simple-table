@@ -378,7 +378,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
     if (allowColumnPinning) {
       renderSection(pinnedLeft, "left", "Pinned Left", listsContainer, previousExpandedHeaders);
-      renderSection(unpinned, "main", null, listsContainer, previousExpandedHeaders);
+      renderSection(unpinned, "main", "Main", listsContainer, previousExpandedHeaders);
       renderSection(pinnedRight, "right", "Pinned Right", listsContainer, previousExpandedHeaders);
     } else {
       const allHeaders = [...pinnedLeft, ...unpinned, ...pinnedRight];

@@ -144,7 +144,11 @@ export function rebuildHeadersFromPinnedState(
   ];
 }
 
-/** Move a root column to another pin section (append within target section). */
+/**
+ * Move a root column to another pin section.
+ * Appends within left/right targets. For `main`, left-pinned columns are inserted at the
+ * start of main; right-pinned (and other) columns are inserted at the end of main.
+ */
 export function moveRootColumnPinSide(
   headers: HeaderObject[],
   accessor: Accessor,
@@ -168,6 +172,7 @@ export function moveRootColumnPinSide(
 
   if (target === "left") left.push(accessor);
   else if (target === "right") right.push(accessor);
+  else if (header.pinned === "left") main.unshift(accessor);
   else main.push(accessor);
 
   return rebuildHeadersFromPinnedState(

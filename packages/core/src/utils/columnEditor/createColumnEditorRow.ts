@@ -441,6 +441,14 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
     if (allowColumnPinning && depth === 0) {
       const pinGroup = document.createElement("div");
       pinGroup.className = "st-column-pin-side-group";
+      // Same as checkbox: row is draggable; stop mousedown/dragstart so L/R clicks register.
+      pinGroup.addEventListener("mousedown", (e: MouseEvent) => {
+        e.stopPropagation();
+      });
+      pinGroup.addEventListener("dragstart", (e: DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
       if (pinnedSide) {
         const pinnedMark = document.createElement("div");
@@ -462,6 +470,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
       } else {
         if (canPinLeft) {
           const pinLeftBtn = document.createElement("button");
+          pinLeftBtn.type = "button";
           pinLeftBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
           pinLeftBtn.textContent = "L";
           pinLeftBtn.title = "Pin column to left";
@@ -474,6 +483,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
         if (canPinRight) {
           const pinRightBtn = document.createElement("button");
+          pinRightBtn.type = "button";
           pinRightBtn.className = "st-column-pin-btn st-column-pin-side st-column-pin-side-option";
           pinRightBtn.textContent = "R";
           pinRightBtn.title = "Pin column to right";
