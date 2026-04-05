@@ -146,6 +146,7 @@ export const BasicRowSelection = {
 };
 
 export const SelectAllFunctionality = {
+  tags: ["row-selection-select-all-only"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80 },

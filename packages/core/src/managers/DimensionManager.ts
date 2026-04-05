@@ -228,12 +228,19 @@ export class DimensionManager {
 
   subscribe(callback: StateChangeCallback): () => void {
     this.subscribers.add(callback);
-    // Apply the current state immediately. Synchronous width measurement in the
-    // constructor can call notifySubscribers() before any listener is registered,
-    // so the first layout update would otherwise be dropped and the table would
-    // never render (empty header/body) until a later resize.
-    callback(this.state);
+    // Constructor-time applyContainerWidthSync may call notifySubscribers() before
+    // any listener exists, so that first width update is dropped. Replay current
+    // state once — but defer to a microtask so SimpleTableVanilla.setupManagers()
+    // can finish (e.g. RowSelectionManager) before the first dimension-driven
+    // render; a synchronous callback here cached a body context with a null
+    // rowSelectionManager closure (same hash as later renders with count 0).
+    let unsubscribed = false;
+    queueMicrotask(() => {
+      if (unsubscribed || !this.subscribers.has(callback)) return;
+      callback(this.state);
+    });
     return () => {
+      unsubscribed = true;
       this.subscribers.delete(callback);
     };
   }
