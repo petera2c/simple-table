@@ -420,10 +420,14 @@ input {
 }
 
 /* Cell-level row background classes (for absolute positioned cells) */
-.st-cell.st-cell-even-row {
+.st-cell.st-cell-even-row:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   background-color: var(--st-even-row-background-color);
 }
-.st-cell.st-cell-odd-row {
+.st-cell.st-cell-odd-row:not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   background-color: var(--st-odd-row-background-color);
 }
 .st-cell.st-cell-even-row .st-cell-content {
