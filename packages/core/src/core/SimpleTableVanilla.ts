@@ -199,6 +199,7 @@ export class SimpleTableVanilla {
     // Initialize SelectionManager with empty tableRows (will be updated during render)
     this.selectionManager = new SelectionManager({
       selectableCells: this.config.selectableCells ?? false,
+      selectableColumns: this.config.selectableColumns ?? false,
       headers: this.headers,
       tableRows: [],
       onCellEdit: this.config.onCellEdit,
@@ -609,6 +610,12 @@ export class SimpleTableVanilla {
       if (this.selectionManager) {
         this.selectionManager.updateConfig({ customTheme: this.customTheme });
       }
+    }
+
+    if (config.selectableColumns !== undefined && this.selectionManager) {
+      this.selectionManager.updateConfig({
+        selectableColumns: this.config.selectableColumns ?? false,
+      });
     }
 
     this.isUpdating = false;

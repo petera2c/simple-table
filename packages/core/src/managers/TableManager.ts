@@ -143,6 +143,7 @@ export class TableManager {
 
     const selectionConfig: SelectionManagerConfig = {
       selectableCells: config.selectableCells || false,
+      selectableColumns: config.selectableColumns ?? false,
       headers: config.headers,
       tableRows: [],
       onCellEdit: config.onCellEdit,
@@ -252,6 +253,13 @@ export class TableManager {
     if (config.collapsedHeaders !== undefined) {
       this.columnManager.updateConfig({ collapsedHeaders: config.collapsedHeaders });
       this.selectionManager.updateConfig({ collapsedHeaders: config.collapsedHeaders });
+    }
+
+    if (config.selectableColumns !== undefined || config.selectableCells !== undefined) {
+      this.selectionManager.updateConfig({
+        selectableColumns: this.config.selectableColumns ?? false,
+        selectableCells: this.config.selectableCells ?? false,
+      });
     }
 
     this.notifySubscribers();

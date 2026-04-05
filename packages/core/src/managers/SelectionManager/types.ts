@@ -9,6 +9,8 @@ export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
 
 export interface SelectionManagerConfig {
   selectableCells: boolean;
+  /** When true, header cells use column / cell-selection highlight classes (must match table `selectableColumns`). */
+  selectableColumns?: boolean;
   headers: HeaderObject[];
   tableRows: TableRowType[];
   onCellEdit?: (props: any) => void;

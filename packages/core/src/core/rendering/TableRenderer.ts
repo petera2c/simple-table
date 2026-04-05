@@ -381,6 +381,7 @@ export class TableRenderer {
           tableRows: processedResult.currentTableRows,
           headers: deps.effectiveHeaders,
           collapsedHeaders: deps.collapsedHeaders,
+          selectableColumns: deps.config.selectableColumns ?? false,
         },
         { positionOnlyBody: deps.positionOnlyBody },
       );

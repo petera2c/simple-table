@@ -17,6 +17,7 @@ import {
   handleAutoScroll as handleAutoScrollUtil,
   calculateNearestCell as calculateNearestCellUtil,
 } from "./mouseUtils";
+import { getHeaderLeafIndices, flattenAllHeaders } from "../../utils/headerUtils";
 
 export type { SelectionManagerConfig } from "./types";
 export { createSetString } from "./types";
@@ -926,6 +927,82 @@ export class SelectionManager {
     "st-selected-right-border",
   ] as const;
 
+  private static readonly HEADER_SELECTION_CLASSES = [
+    "st-header-selected",
+    "st-header-has-highlighted-cell",
+  ] as const;
+
+  /**
+   * Keep column header highlight in sync with cell/column selection during drag.
+   * Body cells are patched here; headers normally update only on full render.
+   */
+  private syncHeaderSelectionClasses(): void {
+    if (!this.config.selectableColumns) return;
+
+    const root = this.config.tableRoot ?? document;
+    const headerCells = root.querySelectorAll(".st-header-cell");
+
+    const byAccessor = new Map<string, HeaderObject>();
+    for (const h of flattenAllHeaders(this.config.headers)) {
+      byAccessor.set(String(h.accessor), h);
+    }
+
+    for (let i = 0; i < headerCells.length; i++) {
+      const el = headerCells[i];
+      if (!(el instanceof HTMLElement)) continue;
+
+      const accessor = el.getAttribute("data-accessor");
+      const ariaCol = el.getAttribute("aria-colindex");
+      if (!accessor || !ariaCol) continue;
+
+      const colIndex = parseInt(ariaCol, 10) - 1;
+      if (colIndex < 0 || Number.isNaN(colIndex)) continue;
+
+      const header = byAccessor.get(accessor);
+      if (!header) continue;
+
+      const isSelectionColumn =
+        Boolean(header.isSelectionColumn) && Boolean(this.config.enableRowSelection);
+      if (isSelectionColumn) {
+        for (const cls of SelectionManager.HEADER_SELECTION_CLASSES) {
+          el.classList.remove(cls);
+        }
+        continue;
+      }
+
+      const leafIndices = getHeaderLeafIndices(header, colIndex);
+      const isHeaderSelected = leafIndices.some((c) => this.selectedColumns.has(c));
+      const hasHighlighted =
+        !isHeaderSelected &&
+        leafIndices.some((c) => this.columnsWithSelectedCells.has(c));
+
+      if (isHeaderSelected) {
+        el.classList.add("st-header-selected");
+        el.classList.remove("st-header-has-highlighted-cell");
+      } else if (hasHighlighted) {
+        el.classList.add("st-header-has-highlighted-cell");
+        el.classList.remove("st-header-selected");
+      } else {
+        for (const cls of SelectionManager.HEADER_SELECTION_CLASSES) {
+          el.classList.remove(cls);
+        }
+      }
+    }
+  }
+
+  private clearHeaderSelectionHighlightClasses(): void {
+    if (!this.config.selectableColumns) return;
+    const root = this.config.tableRoot ?? document;
+    const headerCells = root.querySelectorAll(".st-header-cell");
+    for (let i = 0; i < headerCells.length; i++) {
+      const el = headerCells[i];
+      if (!(el instanceof HTMLElement)) continue;
+      for (const cls of SelectionManager.HEADER_SELECTION_CLASSES) {
+        el.classList.remove(cls);
+      }
+    }
+  }
+
   /**
    * Apply selection classes to all currently rendered cells. Used after drag ends
    * so that the DOM (which may have been replaced during scroll) reflects selection.
@@ -955,6 +1032,7 @@ export class SelectionManager {
           cellElement.setAttribute("tabindex", "-1");
         }
       }
+      this.clearHeaderSelectionHighlightClasses();
       return;
     }
 
@@ -1020,6 +1098,8 @@ export class SelectionManager {
         }
       }
     }
+
+    this.syncHeaderSelectionClasses();
   }
 
   /**
