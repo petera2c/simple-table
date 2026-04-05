@@ -5,6 +5,7 @@ export interface CreateFilterActionsOptions {
   showClear: boolean;
 }
 
+/** Matches React FilterActions: `st-filter-button-apply`, `st-filter-button-clear`, `st-filter-button-disabled`. */
 export const createFilterActions = (options: CreateFilterActionsOptions) => {
   let { onApply, onClear, canApply, showClear } = options;
 
@@ -12,23 +13,41 @@ export const createFilterActions = (options: CreateFilterActionsOptions) => {
   container.className = "st-filter-actions";
 
   const applyBtn = document.createElement("button");
-  applyBtn.className = "st-filter-button st-filter-apply";
+  applyBtn.type = "button";
+  applyBtn.tabIndex = 0;
   applyBtn.textContent = "Apply";
-  applyBtn.disabled = !canApply;
-  applyBtn.addEventListener("click", onApply);
+
+  const syncApplyButton = () => {
+    applyBtn.disabled = !canApply;
+    applyBtn.className = `st-filter-button st-filter-button-apply${!canApply ? " st-filter-button-disabled" : ""}`.trim();
+  };
+  syncApplyButton();
+
+  const handleApplyClick = () => {
+    onApply();
+  };
+  applyBtn.addEventListener("click", handleApplyClick);
 
   container.appendChild(applyBtn);
 
   let clearBtn: HTMLButtonElement | null = null;
 
+  const handleClearClick = () => {
+    onClear?.();
+  };
+
   const renderClearButton = () => {
-    if (showClear && !clearBtn) {
+    const shouldShow = showClear && !!onClear;
+    if (shouldShow && !clearBtn) {
       clearBtn = document.createElement("button");
-      clearBtn.className = "st-filter-button st-filter-clear";
+      clearBtn.type = "button";
+      clearBtn.tabIndex = 0;
+      clearBtn.className = "st-filter-button st-filter-button-clear";
       clearBtn.textContent = "Clear";
-      clearBtn.addEventListener("click", () => onClear?.());
+      clearBtn.addEventListener("click", handleClearClick);
       container.appendChild(clearBtn);
-    } else if (!showClear && clearBtn) {
+    } else if (!shouldShow && clearBtn) {
+      clearBtn.removeEventListener("click", handleClearClick);
       clearBtn.remove();
       clearBtn = null;
     }
@@ -39,7 +58,7 @@ export const createFilterActions = (options: CreateFilterActionsOptions) => {
   const update = (newOptions: Partial<CreateFilterActionsOptions>) => {
     if (newOptions.canApply !== undefined) {
       canApply = newOptions.canApply;
-      applyBtn.disabled = !canApply;
+      syncApplyButton();
     }
     if (newOptions.showClear !== undefined) {
       showClear = newOptions.showClear;
@@ -50,13 +69,14 @@ export const createFilterActions = (options: CreateFilterActionsOptions) => {
     }
     if (newOptions.onClear !== undefined) {
       onClear = newOptions.onClear;
+      renderClearButton();
     }
   };
 
   const destroy = () => {
-    applyBtn.removeEventListener("click", onApply);
-    if (clearBtn && onClear) {
-      clearBtn.removeEventListener("click", onClear);
+    applyBtn.removeEventListener("click", handleApplyClick);
+    if (clearBtn) {
+      clearBtn.removeEventListener("click", handleClearClick);
     }
     container.remove();
   };
