@@ -160,16 +160,15 @@ export class TableRenderer {
       selectedRowCount: headerSelectedRowCount,
       filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
-      ...(deps.config.selectableColumns && deps.selectionManager
-        ? {
-            selectedColumns: deps.selectionManager.getSelectedColumns(),
-            columnsWithSelectedCells:
-              deps.selectionManager.getColumnsWithSelectedCells(),
-          }
-        : {
-            selectedColumns: new Set<number>(),
-            columnsWithSelectedCells: new Set<number>(),
-          }),
+      selectedColumns:
+        deps.config.selectableColumns && deps.selectionManager
+          ? deps.selectionManager.getSelectedColumns()
+          : new Set<number>(),
+      columnsWithSelectedCells:
+        deps.selectionManager &&
+        (deps.config.selectableCells || deps.config.selectableColumns)
+          ? deps.selectionManager.getColumnsWithSelectedCells()
+          : new Set<number>(),
       sort: sortState?.sort ?? null,
       autoExpandColumns: deps.config.autoExpandColumns ?? false,
       essentialAccessors: deps.essentialAccessors,

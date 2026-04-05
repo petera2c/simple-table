@@ -9,7 +9,11 @@ export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
 
 export interface SelectionManagerConfig {
   selectableCells: boolean;
-  /** When true, header cells use column / cell-selection highlight classes (must match table `selectableColumns`). */
+  /**
+   * When true, column header click selects columns (`st-header-selected` on headers).
+   * Cell-in-column header tint (`st-header-has-highlighted-cell`) also applies when `selectableCells` is true
+   * even if this is false.
+   */
   selectableColumns?: boolean;
   headers: HeaderObject[];
   tableRows: TableRowType[];

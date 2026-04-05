@@ -612,9 +612,14 @@ export class SimpleTableVanilla {
       }
     }
 
-    if (config.selectableColumns !== undefined && this.selectionManager) {
+    if (
+      (config.selectableColumns !== undefined ||
+        config.selectableCells !== undefined) &&
+      this.selectionManager
+    ) {
       this.selectionManager.updateConfig({
         selectableColumns: this.config.selectableColumns ?? false,
+        selectableCells: this.config.selectableCells ?? false,
       });
     }
 
