@@ -45,10 +45,7 @@ import type CellClickProps from "./types/CellClickProps";
 import type CellRendererProps from "./types/CellRendererProps";
 import type { CellRenderer } from "./types/CellRendererProps";
 import type HeaderRendererProps from "./types/HeaderRendererProps";
-import type {
-  HeaderRenderer,
-  HeaderRendererComponents,
-} from "./types/HeaderRendererProps";
+import type { HeaderRenderer, HeaderRendererComponents } from "./types/HeaderRendererProps";
 import type ColumnEditorRowRendererProps from "./types/ColumnEditorRowRendererProps";
 import type {
   ColumnEditorRowRenderer,
