@@ -1,105 +1,93 @@
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
 import HeaderObject from "../../types/HeaderObject";
 import { getCellId } from "../cellUtils";
-import { calculateHeaderContentWidth } from "../headerWidthUtils";
+import { calculateHeaderContentWidth, removeAllFractionalWidths } from "../headerWidthUtils";
 import {
   getHeaderIndexPath,
   getSiblingArray,
   setSiblingArray,
 } from "../../managers/DragHandlerManager";
-import { handleResizeStart } from "../resizeUtils";
+import {
+  applyColumnAutoFitWithAutoExpand,
+  handleResizeStart,
+} from "../resizeUtils";
+import { updateColumnWidthsInDOM } from "../resizeUtils/domUpdates";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener, throttle } from "./eventTracking";
+
+const DOUBLE_TAP_MS = 320;
+
+const getStyleRoot = (context: HeaderRenderContext): ParentNode | null => {
+  const main = context.mainBodyRef?.current;
+  if (!main) return null;
+  return main.closest(".simple-table-root") ?? main;
+};
 
 export const createResizeHandle = (
   header: HeaderObject,
   context: HeaderRenderContext,
-  isLastHeader: boolean,
+  isLastMainAutoExpandColumn: boolean,
 ): HTMLElement | null => {
   const { columnResizing } = context;
   const isSelectionColumn =
     header.isSelectionColumn && context.enableRowSelection;
 
-  if (!columnResizing || isSelectionColumn || isLastHeader) return null;
+  if (!columnResizing || isSelectionColumn) return null;
+
+  const dragDisabled =
+    Boolean(
+      isLastMainAutoExpandColumn &&
+        context.autoExpandColumns &&
+        !context.pinned,
+    );
 
   const resizeContainer = document.createElement("div");
   resizeContainer.className = "st-header-resize-handle-container";
   resizeContainer.setAttribute("role", "separator");
   resizeContainer.setAttribute("aria-label", `Resize ${header.label} column`);
   resizeContainer.setAttribute("aria-orientation", "vertical");
+  if (dragDisabled) {
+    resizeContainer.setAttribute("data-st-autofit-only", "true");
+  }
 
   const resizeHandle = document.createElement("div");
   resizeHandle.className = "st-header-resize-handle";
   resizeContainer.appendChild(resizeHandle);
 
-  const handleMouseDown = (event: MouseEvent) => {
-    const startWidth = document.getElementById(
-      getCellId({ accessor: header.accessor, rowId: "header" }),
-    )?.offsetWidth;
+  const measureOptions = (leafHeader: HeaderObject) => ({
+    rows: context.rows,
+    header: leafHeader,
+    maxWidth: 500,
+    sampleSize: 50,
+    styleRoot: getStyleRoot(context),
+  });
 
-    throttle(() => {
-      handleResizeStart({
-        autoExpandColumns: context.autoExpandColumns,
-        collapsedHeaders: context.collapsedHeaders,
-        containerWidth: context.containerWidth,
-        event: event,
-        forceUpdate: context.forceUpdate,
+  const performAutoFit = () => {
+    const headerCell = document.getElementById(
+      getCellId({ accessor: header.accessor, rowId: "header" }),
+    );
+
+    if (context.autoExpandColumns) {
+      applyColumnAutoFitWithAutoExpand({
         header,
         headers: context.headers,
-        mainBodyRef: context.mainBodyRef,
-        onColumnWidthChange: context.onColumnWidthChange,
-        pinnedLeftRef: context.pinnedLeftRef,
-        pinnedRightRef: context.pinnedRightRef,
-        reverse: context.reverse,
-        setHeaders: context.setHeaders,
-        setIsResizing: context.setIsResizing,
-        startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
-      });
-    }, 10);
-  };
-
-  addTrackedEventListener(
-    resizeContainer,
-    "mousedown",
-    handleMouseDown as EventListener,
-  );
-
-  const handleTouchStart = (event: Event) => {
-    const touchEvent = event as globalThis.TouchEvent;
-    const startWidth = document.getElementById(
-      getCellId({ accessor: header.accessor, rowId: "header" }),
-    )?.offsetWidth;
-
-    throttle(() => {
-      handleResizeStart({
-        autoExpandColumns: context.autoExpandColumns,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
-        event: touchEvent as any,
-        forceUpdate: context.forceUpdate,
-        header,
-        headers: context.headers,
         mainBodyRef: context.mainBodyRef,
-        onColumnWidthChange: context.onColumnWidthChange,
-        pinnedLeftRef: context.pinnedLeftRef,
-        pinnedRightRef: context.pinnedRightRef,
         reverse: context.reverse,
-        setHeaders: context.setHeaders,
-        setIsResizing: context.setIsResizing,
-        startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
+        headerCellElement: headerCell,
+        getTargetLeafWidth: (leafHeader) =>
+          calculateHeaderContentWidth(leafHeader.accessor, measureOptions(leafHeader)),
       });
-    }, 10);
-  };
+      const next = [...context.headers];
+      context.setHeaders(next);
+      if (context.onColumnWidthChange) {
+        context.onColumnWidthChange(next);
+      }
+      return;
+    }
 
-  addTrackedEventListener(resizeContainer, "touchstart", handleTouchStart);
-
-  const handleDoubleClick = () => {
-    const contentWidth = calculateHeaderContentWidth(header.accessor, {
-      rows: context.rows,
-      header,
-      maxWidth: 500,
-      sampleSize: 50,
-    });
+    const contentWidth = calculateHeaderContentWidth(header.accessor, measureOptions(header));
 
     const path = getHeaderIndexPath(context.headers, header.accessor);
     if (!path) return;
@@ -116,6 +104,17 @@ export const createResizeHandle = (
       path,
       updatedSiblings,
     );
+
+    updatedHeaders.forEach((h) => removeAllFractionalWidths(h));
+
+    const pathLeaf = updatedSiblings[headerIndex];
+    const override = new Map<string, number>();
+    if (pathLeaf && typeof pathLeaf.width === "number") {
+      override.set(String(pathLeaf.accessor), pathLeaf.width);
+    }
+
+    updateColumnWidthsInDOM(updatedHeaders, context.collapsedHeaders as Set<string>, override);
+
     context.setHeaders(updatedHeaders);
 
     if (context.onColumnWidthChange) {
@@ -123,10 +122,115 @@ export const createResizeHandle = (
     }
   };
 
+  let lastAutoFitAt = 0;
+  const runAutoFitDebounced = () => {
+    const now = Date.now();
+    if (now - lastAutoFitAt < 120) return;
+    lastAutoFitAt = now;
+    performAutoFit();
+  };
+
+  if (!dragDisabled) {
+    const handleMouseDown = (event: MouseEvent) => {
+      if (event.detail >= 2) {
+        event.preventDefault();
+        runAutoFitDebounced();
+        return;
+      }
+      const startWidth = document.getElementById(
+        getCellId({ accessor: header.accessor, rowId: "header" }),
+      )?.offsetWidth;
+
+      throttle(() => {
+        handleResizeStart({
+          autoExpandColumns: context.autoExpandColumns,
+          collapsedHeaders: context.collapsedHeaders,
+          containerWidth: context.containerWidth,
+          event: event,
+          forceUpdate: context.forceUpdate,
+          header,
+          headers: context.headers,
+          mainBodyRef: context.mainBodyRef,
+          onColumnWidthChange: context.onColumnWidthChange,
+          pinnedLeftRef: context.pinnedLeftRef,
+          pinnedRightRef: context.pinnedRightRef,
+          reverse: context.reverse,
+          setHeaders: context.setHeaders,
+          setIsResizing: context.setIsResizing,
+          startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
+        });
+      }, 10);
+    };
+
+    addTrackedEventListener(
+      resizeContainer,
+      "mousedown",
+      handleMouseDown as EventListener,
+    );
+
+    const handleTouchStart = (event: Event) => {
+      const touchEvent = event as globalThis.TouchEvent;
+      const startWidth = document.getElementById(
+        getCellId({ accessor: header.accessor, rowId: "header" }),
+      )?.offsetWidth;
+
+      throttle(() => {
+        handleResizeStart({
+          autoExpandColumns: context.autoExpandColumns,
+          collapsedHeaders: context.collapsedHeaders,
+          containerWidth: context.containerWidth,
+          event: touchEvent as any,
+          forceUpdate: context.forceUpdate,
+          header,
+          headers: context.headers,
+          mainBodyRef: context.mainBodyRef,
+          onColumnWidthChange: context.onColumnWidthChange,
+          pinnedLeftRef: context.pinnedLeftRef,
+          pinnedRightRef: context.pinnedRightRef,
+          reverse: context.reverse,
+          setHeaders: context.setHeaders,
+          setIsResizing: context.setIsResizing,
+          startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
+        });
+      }, 10);
+    };
+
+    addTrackedEventListener(resizeContainer, "touchstart", handleTouchStart);
+  } else {
+    const handleAutofitOnlyMouseDown = (event: MouseEvent) => {
+      if (event.detail >= 2) {
+        event.preventDefault();
+        runAutoFitDebounced();
+      }
+    };
+    addTrackedEventListener(
+      resizeContainer,
+      "mousedown",
+      handleAutofitOnlyMouseDown as EventListener,
+    );
+
+    let lastTouchEndTime = 0;
+    addTrackedEventListener(
+      resizeContainer,
+      "touchend",
+      ((e: TouchEvent) => {
+        const now = Date.now();
+        if (now - lastTouchEndTime < DOUBLE_TAP_MS) {
+          lastTouchEndTime = 0;
+          e.preventDefault();
+          runAutoFitDebounced();
+        } else {
+          lastTouchEndTime = now;
+        }
+      }) as EventListener,
+      { passive: false },
+    );
+  }
+
   addTrackedEventListener(
     resizeContainer,
     "dblclick",
-    handleDoubleClick as EventListener,
+    runAutoFitDebounced as EventListener,
   );
 
   return resizeContainer;

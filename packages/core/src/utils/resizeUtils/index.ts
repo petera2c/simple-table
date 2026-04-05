@@ -1,4 +1,5 @@
 import type HeaderObject from "../../types/HeaderObject";
+import type { Accessor } from "../../types/HeaderObject";
 import type { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import {
   findLeafHeaders,
@@ -364,4 +365,197 @@ export const handleResizeStart = ({
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   }
+};
+
+export type ApplyColumnAutoFitWithAutoExpandParams = {
+  collapsedHeaders: Set<Accessor>;
+  containerWidth: number;
+  getTargetLeafWidth: (leafHeader: HeaderObject) => number;
+  header: HeaderObject;
+  headerCellElement: HTMLElement | null;
+  headers: HeaderObject[];
+  mainBodyRef: HandleResizeStartProps["mainBodyRef"];
+  reverse: boolean;
+};
+
+/**
+ * Apply a one-shot "fit to content" width for a column while preserving autoExpand
+ * compensation (same redistribution rules as dragging the resize handle).
+ */
+export const applyColumnAutoFitWithAutoExpand = ({
+  header,
+  headers,
+  collapsedHeaders,
+  containerWidth,
+  mainBodyRef,
+  reverse,
+  headerCellElement,
+  getTargetLeafWidth,
+}: ApplyColumnAutoFitWithAutoExpandParams): void => {
+  if (!header || header.hide) return;
+
+  const effectiveContainerWidth = resolveContainerWidthForResize(
+    containerWidth,
+    mainBodyRef,
+  );
+
+  const rootPinned = getRootPinned(header, headers);
+
+  const isParentHeader = Boolean(header.children && header.children.length > 0);
+  let childrenToResize: HeaderObject[];
+  if (isParentHeader) {
+    const visibleChildren = findLeafHeaders(header, collapsedHeaders);
+    childrenToResize = visibleChildren.length > 0 ? visibleChildren : [header];
+  } else {
+    childrenToResize = [header];
+  }
+
+  const initialWidthsMap = new Map<string, number>();
+  let sectionWidth = 0;
+  let initialMainAvailable = 0;
+
+  const sectionHeaders = headers.filter((h) => h.pinned === rootPinned);
+  const sectionLeafHeaders = getAllVisibleLeafHeaders(
+    sectionHeaders,
+    collapsedHeaders,
+  );
+  sectionLeafHeaders.forEach((h) => {
+    const width = getHeaderWidthInPixels(h);
+    initialWidthsMap.set(h.accessor as string, width);
+  });
+
+  if (effectiveContainerWidth > 0) {
+    const { leftWidth, rightWidth, mainWidth } = recalculateAllSectionWidths({
+      headers,
+      containerWidth: effectiveContainerWidth,
+      collapsedHeaders,
+    });
+
+    if (rootPinned === "left") {
+      sectionWidth = leftWidth;
+    } else if (rootPinned === "right") {
+      sectionWidth = rightWidth;
+    } else {
+      sectionWidth = mainWidth;
+    }
+
+    initialMainAvailable = effectiveContainerWidth - leftWidth - rightWidth;
+  }
+
+  let isBoundaryResize = false;
+  const mainInitialWidths = new Map<string, number>();
+  let mainLeafHeaders: HeaderObject[] = [];
+
+  if (rootPinned && effectiveContainerWidth > 0) {
+    const sectionLeafs = getAllVisibleLeafHeaders(
+      headers.filter((h) => h.pinned === rootPinned),
+      collapsedHeaders,
+    );
+
+    if (sectionLeafs.length > 0) {
+      let atBoundary = false;
+
+      if (childrenToResize.length > 1) {
+        const firstIdx = sectionLeafs.findIndex(
+          (h) => h.accessor === childrenToResize[0].accessor,
+        );
+        const lastIdx = sectionLeafs.findIndex(
+          (h) =>
+            h.accessor ===
+            childrenToResize[childrenToResize.length - 1].accessor,
+        );
+        atBoundary =
+          (rootPinned === "left" && lastIdx === sectionLeafs.length - 1) ||
+          (rootPinned === "right" && firstIdx === 0);
+      } else {
+        const target = childrenToResize[0] || header;
+        const idx = sectionLeafs.findIndex((h) => h.accessor === target.accessor);
+        atBoundary =
+          (rootPinned === "left" && idx === sectionLeafs.length - 1) ||
+          (rootPinned === "right" && idx === 0);
+      }
+
+      if (atBoundary) {
+        isBoundaryResize = true;
+        const mainHeaders = headers.filter((h) => !h.pinned);
+        mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
+        mainLeafHeaders.forEach((h) => {
+          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h));
+        });
+      }
+    }
+  }
+
+  const targetTotal = childrenToResize.reduce(
+    (sum, h) => sum + getTargetLeafWidth(h),
+    0,
+  );
+
+  const startWidth =
+    headerCellElement?.offsetWidth ??
+    childrenToResize.reduce((sum, h) => sum + getHeaderWidthInPixels(h), 0);
+
+  const headerToResize =
+    childrenToResize.length > 0
+      ? childrenToResize[childrenToResize.length - 1]
+      : header;
+
+  const delta = targetTotal - startWidth;
+
+  handleResizeWithAutoExpand({
+    childrenToResize,
+    collapsedHeaders,
+    containerWidth: effectiveContainerWidth,
+    delta,
+    headers,
+    initialWidthsMap,
+    isParentResize: childrenToResize.length > 1,
+    resizedHeader: headerToResize,
+    reverse,
+    rootPinned,
+    sectionHeaders,
+    sectionWidth,
+    startWidth,
+  });
+
+  if (isBoundaryResize && mainLeafHeaders.length > 0) {
+    const childDelta = childrenToResize.reduce((sum, h) => {
+      const initW = initialWidthsMap.get(h.accessor as string) || 0;
+      const newW = typeof h.width === "number" ? h.width : initW;
+      return sum + (newW - initW);
+    }, 0);
+
+    const newMainAvailable = Math.max(0, initialMainAvailable - childDelta);
+    const initialMainTotal = Array.from(mainInitialWidths.values()).reduce(
+      (a, b) => a + b,
+      0,
+    );
+
+    if (newMainAvailable > 0 && initialMainTotal > 0) {
+      const scale = newMainAvailable / initialMainTotal;
+      let acc = 0;
+      mainLeafHeaders.forEach((h, i) => {
+        const initW = mainInitialWidths.get(h.accessor as string) || 100;
+        if (i === mainLeafHeaders.length - 1) {
+          h.width = newMainAvailable - acc;
+        } else {
+          h.width = Math.round(initW * scale);
+          acc += h.width as number;
+        }
+      });
+    }
+  }
+
+  const overrideWidths = new Map<string, number>();
+  childrenToResize.forEach((h) => {
+    if (typeof h.width === "number")
+      overrideWidths.set(h.accessor as string, h.width);
+  });
+  if (isBoundaryResize) {
+    mainLeafHeaders.forEach((h) => {
+      if (typeof h.width === "number")
+        overrideWidths.set(h.accessor as string, h.width);
+    });
+  }
+  updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths);
 };

@@ -79,17 +79,21 @@ export const renderHeaderCells = (
 
   // Batch create new cells using DocumentFragment
   const fragment = document.createDocumentFragment();
-  const cellsToCreate: Array<{ cell: AbsoluteCell; cellId: string; isLastHeader: boolean }> = [];
+  const cellsToCreate: Array<{
+    cell: AbsoluteCell;
+    cellId: string;
+    isLastMainAutoExpandColumn: boolean;
+  }> = [];
 
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: "header" });
-    const isLastHeader = Boolean(
+    const isLastMainAutoExpandColumn = Boolean(
       context.autoExpandColumns && !context.pinned && cell.colIndex === lastHeaderIndex,
     );
 
     if (!renderedCells.has(cellId)) {
-      cellsToCreate.push({ cell, cellId, isLastHeader });
+      cellsToCreate.push({ cell, cellId, isLastMainAutoExpandColumn });
     } else {
       // Use cached position to detect change (avoid DOM reads / layout thrash)
       const cellElement = renderedCells.get(cellId)!;
@@ -124,7 +128,11 @@ export const renderHeaderCells = (
       }
 
       // Update classes when context changes (e.g. column selection → st-header-selected)
-      const newClassNames = calculateHeaderCellClasses(cell, context, isLastHeader);
+      const newClassNames = calculateHeaderCellClasses(
+        cell,
+        context,
+        isLastMainAutoExpandColumn,
+      );
       if (cellElement.className !== newClassNames) {
         cellElement.className = newClassNames;
       }
@@ -138,8 +146,12 @@ export const renderHeaderCells = (
   });
 
   // Second pass: batch create new cells (seed position cache so next update doesn't read DOM)
-  cellsToCreate.forEach(({ cell, cellId, isLastHeader }) => {
-    const cellElement = createHeaderCellElement(cell, context, isLastHeader);
+  cellsToCreate.forEach(({ cell, cellId, isLastMainAutoExpandColumn }) => {
+    const cellElement = createHeaderCellElement(
+      cell,
+      context,
+      isLastMainAutoExpandColumn,
+    );
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
     positionCache.set(cellId, {

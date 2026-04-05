@@ -2292,16 +2292,16 @@ export const AutoExpandResizeDualPinnedMaxClamp = {
 export const AutoExpandDoubleClickResizePinned = {
   parameters: { tags: ["auto-expand-double-click-resize-pinned"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headersNarrowEmail: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
-      { accessor: "name", label: "Name", width: 200, pinned: "left", type: "string" },
-      { accessor: "email", label: "Email", width: 170, type: "string" },
+      { accessor: "name", label: "Name", width: 320, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 55, type: "string" },
       { accessor: "department", label: "Department", width: 140, type: "string" },
       { accessor: "position", label: "Position", width: 130, type: "string" },
       { accessor: "salary", label: "Salary", width: 100, pinned: "right", type: "number" },
       { accessor: "projects", label: "Projects", width: 80, pinned: "right", type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+    const { wrapper } = renderVanillaTable(headersNarrowEmail, createEmployeeData(), {
       getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
       height: "400px",
       autoExpandColumns: true,
@@ -2317,8 +2317,9 @@ export const AutoExpandDoubleClickResizePinned = {
     // Double-click on the pinned "Name" resize handle
     const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
     expect(nameHeader).toBeTruthy();
+    const nameWidthBefore = nameHeader!.getBoundingClientRect().width;
     const resizeHandle = nameHeader!.querySelector<HTMLElement>(
-      ".st-header-resize-handle",
+      ".st-header-resize-handle-container",
     );
     expect(resizeHandle).toBeTruthy();
     resizeHandle!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
@@ -2333,17 +2334,27 @@ export const AutoExpandDoubleClickResizePinned = {
       expect(Number.isNaN(w)).toBe(false);
     });
 
-    // Double-click on a main section column too
+    const nameAfterFirst = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameAfterFirst).toBeTruthy();
+    const nameWidthAfterFirst = nameAfterFirst!.getBoundingClientRect().width;
+    expect(nameWidthAfterFirst).toBeLessThan(nameWidthBefore - 8);
+
+    // Double-click on a main section column too (Email deliberately too narrow)
     const emailHeader = findHeaderCellByLabel(canvasElement, "Email");
     if (emailHeader) {
       const emailResize = emailHeader.querySelector<HTMLElement>(
-        ".st-header-resize-handle",
+        ".st-header-resize-handle-container",
       );
       if (emailResize) {
+        const emailWBefore = emailHeader.getBoundingClientRect().width;
         emailResize.dispatchEvent(
           new MouseEvent("dblclick", { bubbles: true }),
         );
         await new Promise((r) => setTimeout(r, 400));
+        const emailAfter = findHeaderCellByLabel(canvasElement, "Email");
+        expect(emailAfter).toBeTruthy();
+        const emailWAfter = emailAfter!.getBoundingClientRect().width;
+        expect(emailWAfter).toBeGreaterThan(emailWBefore + 8);
       }
     }
 
@@ -2355,6 +2366,55 @@ export const AutoExpandDoubleClickResizePinned = {
       expect(w).toBeGreaterThan(0);
       expect(Number.isNaN(w)).toBe(false);
     });
+  },
+};
+
+/** Last main column: double-click-only handle (no drag) still auto-fits under autoExpand. */
+export const AutoExpandDoubleClickLastMainColumnAutoFit = {
+  parameters: { tags: ["auto-expand-double-click-last-main"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "title", label: "Title", width: 520, type: "string" },
+      { accessor: "notes", label: "Notes", width: 72, type: "string" },
+    ];
+    const rows: Row[] = [
+      {
+        id: 1,
+        title: "A",
+        notes: "This is a much longer note that needs more horizontal space than seventy pixels",
+      },
+      {
+        id: 2,
+        title: "B",
+        notes: "Another lengthy notes field used for column width measurement",
+      },
+    ];
+    const { wrapper } = renderVanillaTable(headers, rows, {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "300px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "920px";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const notesHeader = findHeaderCellByLabel(canvasElement, "Notes");
+    expect(notesHeader).toBeTruthy();
+    expect(notesHeader!.querySelector("[data-st-autofit-only]")).toBeTruthy();
+    const handle = notesHeader!.querySelector<HTMLElement>(
+      ".st-header-resize-handle-container",
+    );
+    expect(handle).toBeTruthy();
+    const wBefore = notesHeader!.getBoundingClientRect().width;
+    handle!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 450));
+    const notesAfter = findHeaderCellByLabel(canvasElement, "Notes");
+    expect(notesAfter).toBeTruthy();
+    const wAfter = notesAfter!.getBoundingClientRect().width;
+    expect(wAfter).toBeGreaterThan(wBefore + 12);
   },
 };
 
