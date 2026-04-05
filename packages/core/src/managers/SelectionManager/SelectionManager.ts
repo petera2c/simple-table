@@ -1094,7 +1094,9 @@ export class SelectionManager {
         const isActiveInsideCell =
           activeElement && cellElement.contains(activeElement);
         if (!isActiveInsideCell) {
-          cellElement.focus();
+          // Prevent the browser from scrolling the body container to show the anchor;
+          // that fights drag auto-scroll at the bottom and causes scroll jitter.
+          cellElement.focus({ preventScroll: true });
         }
       }
     }
@@ -1427,7 +1429,11 @@ export class SelectionManager {
    * Handle auto-scrolling when dragging near edges
    */
   private handleAutoScroll(clientX: number, clientY: number): void {
-    handleAutoScrollUtil(clientX, clientY);
+    handleAutoScrollUtil(
+      clientX,
+      clientY,
+      this.config.tableRoot ?? document,
+    );
   }
 
   /**

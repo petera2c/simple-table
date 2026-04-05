@@ -139,35 +139,61 @@ export function getCellFromMousePosition(
 
 /**
  * Handle auto-scrolling when dragging near table edges.
+ * @param root - Table root (e.g. `.simple-table-root`); limits queries to this instance.
  */
-export function handleAutoScroll(clientX: number, clientY: number): void {
-  const tableContainer = document.querySelector(".st-body-container");
+export function handleAutoScroll(
+  clientX: number,
+  clientY: number,
+  root: Document | HTMLElement = document,
+): void {
+  const tableContainer = root.querySelector(".st-body-container");
   if (!tableContainer) return;
 
   const rect = tableContainer.getBoundingClientRect();
   const scrollMargin = 50;
   const scrollSpeed = 10;
 
+  const maxScrollTop = Math.max(
+    0,
+    tableContainer.scrollHeight - tableContainer.clientHeight,
+  );
+
   if (clientY < rect.top + scrollMargin) {
     const distance = Math.max(0, rect.top - clientY);
     const speedMultiplier = Math.min(3, 1 + distance / 100);
-    tableContainer.scrollTop -= scrollSpeed * speedMultiplier;
+    tableContainer.scrollTop = Math.max(
+      0,
+      tableContainer.scrollTop - scrollSpeed * speedMultiplier,
+    );
   } else if (clientY > rect.bottom - scrollMargin) {
     const distance = Math.max(0, clientY - rect.bottom);
     const speedMultiplier = Math.min(3, 1 + distance / 100);
-    tableContainer.scrollTop += scrollSpeed * speedMultiplier;
+    tableContainer.scrollTop = Math.min(
+      maxScrollTop,
+      tableContainer.scrollTop + scrollSpeed * speedMultiplier,
+    );
   }
 
-  const mainBody = document.querySelector(".st-body-main");
+  const mainBody = root.querySelector(".st-body-main");
   if (mainBody) {
+    const maxScrollLeft = Math.max(
+      0,
+      mainBody.scrollWidth - mainBody.clientWidth,
+    );
     if (clientX < rect.left + scrollMargin) {
       const distance = Math.max(0, rect.left - clientX);
       const speedMultiplier = Math.min(3, 1 + distance / 100);
-      mainBody.scrollLeft -= scrollSpeed * speedMultiplier;
+      mainBody.scrollLeft = Math.max(
+        0,
+        mainBody.scrollLeft - scrollSpeed * speedMultiplier,
+      );
     } else if (clientX > rect.right - scrollMargin) {
       const distance = Math.max(0, clientX - rect.right);
       const speedMultiplier = Math.min(3, 1 + distance / 100);
-      mainBody.scrollLeft += scrollSpeed * speedMultiplier;
+      mainBody.scrollLeft = Math.min(
+        maxScrollLeft,
+        mainBody.scrollLeft + scrollSpeed * speedMultiplier,
+      );
     }
   }
 }

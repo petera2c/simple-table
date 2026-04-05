@@ -228,6 +228,11 @@ export class DimensionManager {
 
   subscribe(callback: StateChangeCallback): () => void {
     this.subscribers.add(callback);
+    // Apply the current state immediately. Synchronous width measurement in the
+    // constructor can call notifySubscribers() before any listener is registered,
+    // so the first layout update would otherwise be dropped and the table would
+    // never render (empty header/body) until a later resize.
+    callback(this.state);
     return () => {
       this.subscribers.delete(callback);
     };
