@@ -5,7 +5,7 @@
  * - White backgrounds with minimal color variation
  * - Hover states instead of alternating row colors
  * - Generous padding (12px) for better readability
- * - Rounded corners (8px) for a softer appearance
+ * - Rounded corners (4px) for a clean, compact appearance
  * - Modern blue accent (#3b82f6) for interactive elements
  * - High contrast text (#111827) for accessibility
  * - Lightweight visual hierarchy
@@ -14,7 +14,7 @@
  */
 .theme-modern-light {
   /* Layout/Structure variables - Tighter, more compact */
-  --st-border-radius: 8px;
+  --st-border-radius: 4px;
   --st-cell-padding: 12px;
 
   /* Spacing variables - Reduced for cleaner look */
@@ -205,7 +205,7 @@
 
 /* Cleaner pagination buttons - more compact */
 .theme-modern-light .st-page-btn {
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
   color: #374151;
@@ -229,7 +229,7 @@
 /* Next/Prev buttons */
 .theme-modern-light .st-next-prev-btn {
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   transition: all 0.15s ease;
   margin-left: 4px;
   flex-shrink: 0;

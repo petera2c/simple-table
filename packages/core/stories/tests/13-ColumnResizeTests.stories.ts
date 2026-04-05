@@ -281,6 +281,7 @@ export const OnColumnWidthChangeCallbackFires = {
 // ============================================================================
 
 export const DoubleClickResizeHandleAutoFit = {
+  parameters: { tags: ["column-resize-double-click-autofit"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 300, type: "number" },
@@ -298,17 +299,35 @@ export const DoubleClickResizeHandleAutoFit = {
     const idHeader = findHeaderCellByLabel(canvasElement, "ID");
     expect(idHeader).toBeTruthy();
 
-    const resizeHandle = idHeader!.querySelector<HTMLElement>(".st-header-resize-handle");
+    const resizeHandle = idHeader!.querySelector<HTMLElement>(".st-header-resize-handle-container");
     expect(resizeHandle).toBeTruthy();
 
-    // Dispatch dblclick on resize handle — verifies no errors are thrown
+    const initialWidth = idHeader!.getBoundingClientRect().width;
+
     resizeHandle!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
     await new Promise((r) => setTimeout(r, 400));
 
-    // After a double-click the table re-renders and creates new DOM nodes.
-    // The old element references may be detached, so verify by querying the live DOM.
-    const headerStillPresent = canvasElement.querySelector(".st-header-cell") !== null;
-    expect(headerStillPresent).toBe(true);
+    const idAfter = findHeaderCellByLabel(canvasElement, "ID");
+    expect(idAfter).toBeTruthy();
+    const finalWidth = idAfter!.getBoundingClientRect().width;
+
+    // ID was 300px; numeric ids and header fit in far less — auto-fit must shrink the column.
+    expect(finalWidth).toBeLessThan(initialWidth - 15);
+
+    const storeHeader = findHeaderCellByLabel(canvasElement, "Store Name");
+    expect(storeHeader).toBeTruthy();
+    const storeResize = storeHeader!.querySelector<HTMLElement>(
+      ".st-header-resize-handle-container",
+    );
+    expect(storeResize).toBeTruthy();
+    const storeInitial = storeHeader!.getBoundingClientRect().width;
+    storeResize!.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 400));
+    const storeAfter = findHeaderCellByLabel(canvasElement, "Store Name");
+    expect(storeAfter).toBeTruthy();
+    const storeFinal = storeAfter!.getBoundingClientRect().width;
+    // Store Name started at 100px; row values are long store names — expect meaningful growth.
+    expect(storeFinal).toBeGreaterThan(storeInitial + 10);
   },
 };
 

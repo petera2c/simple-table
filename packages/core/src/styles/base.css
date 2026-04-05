@@ -1494,21 +1494,25 @@ input {
   cursor: default;
 }
 
-/* Position variants */
-.st-dropdown-bottom-left {
-  margin-top: 4px;
+/* Filter popover (and similar): nested .st-dropdown-content menus must not be clipped by the shell.
+   overflow:auto + max-height on the parent creates a scrollport that clips absolutely positioned
+   children (operator CustomSelect, date picker, etc.). */
+.st-dropdown-content.st-dropdown-content--allow-descendant-overflow {
+  overflow: visible;
+  max-height: none;
 }
 
-.st-dropdown-bottom-right {
-  margin-top: 4px;
+/* Nested filter UI panels (absolute) stack above the fixed filter shell */
+.st-filter-container .st-dropdown-content {
+  z-index: 101;
 }
 
-.st-dropdown-top-left {
-  margin-bottom: 4px;
-}
-
+/* Position variants — vertical offset comes from JS (React Dropdown parity: +4px only) */
+.st-dropdown-bottom-left,
+.st-dropdown-bottom-right,
+.st-dropdown-top-left,
 .st-dropdown-top-right {
-  margin-bottom: 4px;
+  margin: 0;
 }
 
 /* Dropdown items */
@@ -1768,12 +1772,19 @@ input {
   font-size: 0.9em;
   font-weight: 500;
   font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
   transition: background-color var(--st-transition-duration)
     var(--st-transition-ease);
 }
+/* Keyboard only — avoids a stuck ring after mouse click (especially on bordered Clear) */
 .st-filter-button:focus {
+  outline: none;
+}
+
+.st-filter-button:focus-visible {
   outline: 2px solid var(--st-focus-ring-color);
-  outline-offset: -2px;
+  outline-offset: 2px;
 }
 
 /* Apply Button */
@@ -1825,6 +1836,9 @@ input {
   justify-content: space-between;
   gap: var(--st-spacing-medium);
   outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: left;
   transition: border-color var(--st-transition-duration)
     var(--st-transition-ease);
 }
@@ -1924,6 +1938,12 @@ input {
   overflow: auto;
 }
 
+/* Enum rows: left-align checkbox + label (full-width row); default .st-checkbox-label is centered */
+.st-enum-filter-options .st-checkbox-label {
+  justify-content: flex-start;
+  width: 100%;
+}
+
 /* Select All checkbox styling */
 .st-enum-select-all {
   padding-bottom: var(--st-spacing-small);
@@ -1946,6 +1966,13 @@ input {
   font-size: 0.9em;
   color: var(--st-cell-color);
   user-select: none;
+}
+
+.st-enum-filter-options .st-enum-option-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* No results message */

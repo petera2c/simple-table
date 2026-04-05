@@ -333,9 +333,13 @@ export const calculateHeaderContentWidth = (
     header?: HeaderObject; // Header object for valueFormatter/valueGetter
     maxWidth?: number; // Maximum width (default: 500px)
     sampleSize?: number; // Number of rows to sample (default: 50)
+    /** Scope `.st-cell-content` font/padding sampling to this table instance */
+    styleRoot?: ParentNode | null;
   },
 ): number => {
-  const { rows, header, maxWidth = 500, sampleSize = 50 } = options || {};
+  const { rows, header, maxWidth = 500, sampleSize = 50, styleRoot } =
+    options || {};
+  const domQueryRoot: ParentNode = styleRoot ?? document;
   // Get the header cell element from the DOM
   const headerCellElement = document.getElementById(getCellId({ accessor, rowId: "header" }));
 
@@ -449,7 +453,9 @@ export const calculateHeaderContentWidth = (
     // Copy font styles from a sample cell content span
     let cellPaddingLeft = 0;
     let cellPaddingRight = 0;
-    const sampleCellContent = document.querySelector(".st-cell-content") as HTMLElement;
+    const sampleCellContent = domQueryRoot.querySelector(
+      ".st-cell-content",
+    ) as HTMLElement | null;
     if (sampleCellContent) {
       const cellStyle = window.getComputedStyle(sampleCellContent);
       tempDiv.style.font = cellStyle.font;
@@ -520,5 +526,5 @@ export const calculateHeaderContentWidth = (
   // Add a small buffer to account for rounding and browser rendering differences
   const buffer = 2;
 
-  return optimalWidth + buffer;
+  return Math.max(optimalWidth + buffer, MIN_COLUMN_WIDTH);
 };

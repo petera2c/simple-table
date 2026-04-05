@@ -166,6 +166,23 @@ export class DimensionManager {
 
     this.resizeObserver = new ResizeObserver(updateContainerWidth);
     this.resizeObserver.observe(containerElement);
+
+    // Width updates from RO are deferred to rAF above; without a synchronous read,
+    // state stays 0 until the next frame (breaks autoExpand resize and stale header
+    // context). Reading here is outside the RO callback, so Chromium RO loop issues
+    // do not apply.
+    this.applyContainerWidthSync(containerElement);
+  }
+
+  private applyContainerWidthSync(containerElement: HTMLElement): void {
+    const w = containerElement.clientWidth;
+    if (w > 0 && w !== this.state.containerWidth) {
+      this.state = {
+        ...this.state,
+        containerWidth: w,
+      };
+      this.notifySubscribers();
+    }
   }
 
   updateConfig(config: Partial<DimensionManagerConfig>): void {

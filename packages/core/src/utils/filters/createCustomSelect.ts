@@ -64,11 +64,14 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
   const selectedOption = selectOptions.find((opt) => opt.value === value);
   valueSpan.textContent = selectedOption ? selectedOption.label : placeholder;
 
-  const arrowSpan = document.createElement("span");
-  arrowSpan.innerHTML = SELECT_ICON_SVG;
+  // Match React CustomSelect: SVG is a direct child of the trigger so `.st-custom-select-arrow`
+  // is the flex item (flex-shrink, rotate) — not an unstyled wrapper span.
+  const iconTemplate = document.createElement("template");
+  iconTemplate.innerHTML = SELECT_ICON_SVG.trim();
+  const arrowIcon = iconTemplate.content.firstElementChild as SVGElement;
 
   trigger.appendChild(valueSpan);
-  trigger.appendChild(arrowSpan);
+  trigger.appendChild(arrowIcon);
   container.appendChild(trigger);
 
   const optionsContainer = document.createElement("div");
@@ -106,6 +109,7 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
     children: optionsContainer,
     containerRef,
     mainBodyRef,
+    anchorElement: trigger,
     onClose: () => {
       setOpen(false);
     },
@@ -116,7 +120,14 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
 
   container.appendChild(dropdown.element);
 
+  const syncValueFromSelection = (optionValue: string) => {
+    value = optionValue;
+    const opt = selectOptions.find((o) => o.value === value);
+    valueSpan.textContent = opt ? opt.label : placeholder;
+  };
+
   const handleOptionClick = (optionValue: string) => {
+    syncValueFromSelection(optionValue);
     onChange(optionValue);
     setOpen(false);
     focusedIndex = -1;
@@ -152,7 +163,9 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
       case "Enter":
         event.preventDefault();
         if (focusedIndex >= 0) {
-          onChange(selectOptions[focusedIndex].value);
+          const v = selectOptions[focusedIndex].value;
+          syncValueFromSelection(v);
+          onChange(v);
           setOpen(false);
           focusedIndex = -1;
           renderOptions();

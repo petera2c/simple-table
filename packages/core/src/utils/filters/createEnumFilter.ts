@@ -57,8 +57,9 @@ export const createEnumFilter = (options: CreateEnumFilterOptions) => {
   selectAllLabel.className = "st-enum-option-label st-enum-select-all-label";
   selectAllLabel.textContent = "Select All";
 
+  // Match React EnumFilter: label text is a child of <label class="st-checkbox-label">, not a sibling.
+  selectAllCheckbox.element.appendChild(selectAllLabel);
   selectAllContainer.appendChild(selectAllCheckbox.element);
-  selectAllContainer.appendChild(selectAllLabel);
   optionsContainer.appendChild(selectAllContainer);
 
   let searchContainer: HTMLElement | null = null;
@@ -111,8 +112,6 @@ export const createEnumFilter = (options: CreateEnumFilterOptions) => {
       optionCheckboxesContainer.appendChild(noResults);
     } else {
       filteredOptions.forEach((option) => {
-        const optionContainer = document.createElement("div");
-
         const checkbox = createCheckbox({
           checked: selectedValues.includes(option.value),
           onChange: () => {
@@ -132,13 +131,12 @@ export const createEnumFilter = (options: CreateEnumFilterOptions) => {
         const label = document.createElement("span");
         label.className = "st-enum-option-label";
         label.textContent = option.label;
+        checkbox.element.appendChild(label);
 
-        optionContainer.appendChild(checkbox.element);
-        optionContainer.appendChild(label);
-        optionCheckboxesContainer.appendChild(optionContainer);
+        optionCheckboxesContainer.appendChild(checkbox.element);
 
         optionCheckboxes.push({
-          container: optionContainer,
+          container: checkbox.element,
           checkbox,
           value: option.value,
         });
