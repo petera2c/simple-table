@@ -1,3 +1,4 @@
+import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 
 export interface DOMElements {
@@ -60,6 +61,11 @@ export class DOMManager {
 
     const content = document.createElement("div");
     content.className = "st-content";
+    // Match RenderOrchestrator so DimensionManager's first clientWidth read (before any render)
+    // already excludes the column editor strip when editColumns is on.
+    content.style.width = config.editColumns
+      ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
+      : "100%";
 
     const headerContainer = document.createElement("div");
     headerContainer.className = "st-header-container";

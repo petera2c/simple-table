@@ -14,6 +14,26 @@ import { handleParentHeaderResize } from "./parentHeaderResize";
 import { handleResizeWithAutoExpand } from "./autoExpandResize";
 
 /**
+ * Header resize handlers may capture an old `containerWidth` (e.g. 0) from when the
+ * cell was created. When the manager still reports 0, read the grid viewport from
+ * the DOM, scoped via mainBodyRef to this table instance.
+ */
+const resolveContainerWidthForResize = (
+  fromContext: number,
+  mainBodyRef: HandleResizeStartProps["mainBodyRef"],
+): number => {
+  if (fromContext > 0) return fromContext;
+  const main = mainBodyRef?.current;
+  if (!main) return 0;
+  const root = main.closest(".simple-table-root");
+  const bodyContainer = root?.querySelector(".st-body-container");
+  if (bodyContainer instanceof HTMLElement) {
+    return bodyContainer.clientWidth;
+  }
+  return main.clientWidth;
+};
+
+/**
  * Handler for when resize dragging starts
  */
 export const handleResizeStart = ({
@@ -23,6 +43,7 @@ export const handleResizeStart = ({
   event,
   header,
   headers,
+  mainBodyRef,
   onColumnWidthChange,
   reverse = false,
   setHeaders,
@@ -34,6 +55,11 @@ export const handleResizeStart = ({
   const isTouchEvent = "touches" in event;
 
   if (!header || header.hide) return;
+
+  const effectiveContainerWidth = resolveContainerWidthForResize(
+    containerWidth,
+    mainBodyRef,
+  );
 
   // Set resizing state to true
   setIsResizing(true);
@@ -74,11 +100,11 @@ export const handleResizeStart = ({
       initialWidthsMap.set(h.accessor as string, width);
     });
 
-    // Calculate widths of pinned sections using the passed containerWidth
-    if (containerWidth > 0) {
+    // Calculate widths of pinned sections using the effective container width
+    if (effectiveContainerWidth > 0) {
       const { leftWidth, rightWidth, mainWidth } = recalculateAllSectionWidths({
         headers,
-        containerWidth,
+        containerWidth: effectiveContainerWidth,
         collapsedHeaders,
       });
 
@@ -92,7 +118,7 @@ export const handleResizeStart = ({
         sectionWidth = mainWidth;
       }
 
-      initialMainAvailable = containerWidth - leftWidth - rightWidth;
+      initialMainAvailable = effectiveContainerWidth - leftWidth - rightWidth;
     }
   }
 
@@ -103,7 +129,7 @@ export const handleResizeStart = ({
   const mainInitialWidths = new Map<string, number>();
   let mainLeafHeaders: HeaderObject[] = [];
 
-  if (autoExpandColumns && rootPinned && containerWidth > 0) {
+  if (autoExpandColumns && rootPinned && effectiveContainerWidth > 0) {
     const sectionLeafs = getAllVisibleLeafHeaders(
       headers.filter((h) => h.pinned === rootPinned),
       collapsedHeaders,
@@ -160,7 +186,7 @@ export const handleResizeStart = ({
       handleResizeWithAutoExpand({
         childrenToResize,
         collapsedHeaders,
-        containerWidth,
+        containerWidth: effectiveContainerWidth,
         delta,
         headers,
         initialWidthsMap,
