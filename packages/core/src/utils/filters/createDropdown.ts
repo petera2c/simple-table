@@ -214,6 +214,13 @@ export const createDropdown = (options: CreateDropdownOptions) => {
     }
   };
 
+  /** React Dropdown only ran outside logic on Enter for keydown; running on every key broke nested menus. */
+  const handleOutsideKeydown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleClickOutside(event);
+    }
+  };
+
   const setOpen = (newOpen: boolean) => {
     open = newOpen;
     if (open) {
@@ -221,13 +228,13 @@ export const createDropdown = (options: CreateDropdownOptions) => {
       calculatePosition();
       window.addEventListener("scroll", handleScroll, true);
       document.addEventListener("mousedown", handleClickOutside, true);
-      document.addEventListener("keydown", handleClickOutside, true);
+      document.addEventListener("keydown", handleOutsideKeydown, true);
       document.addEventListener("keydown", handleEscKey);
     } else {
       dropdownElement.style.display = "none";
       window.removeEventListener("scroll", handleScroll, true);
       document.removeEventListener("mousedown", handleClickOutside, true);
-      document.removeEventListener("keydown", handleClickOutside, true);
+      document.removeEventListener("keydown", handleOutsideKeydown, true);
       document.removeEventListener("keydown", handleEscKey);
     }
   };

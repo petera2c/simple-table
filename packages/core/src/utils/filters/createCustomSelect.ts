@@ -120,7 +120,14 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
 
   container.appendChild(dropdown.element);
 
+  const syncValueFromSelection = (optionValue: string) => {
+    value = optionValue;
+    const opt = selectOptions.find((o) => o.value === value);
+    valueSpan.textContent = opt ? opt.label : placeholder;
+  };
+
   const handleOptionClick = (optionValue: string) => {
+    syncValueFromSelection(optionValue);
     onChange(optionValue);
     setOpen(false);
     focusedIndex = -1;
@@ -156,7 +163,9 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
       case "Enter":
         event.preventDefault();
         if (focusedIndex >= 0) {
-          onChange(selectOptions[focusedIndex].value);
+          const v = selectOptions[focusedIndex].value;
+          syncValueFromSelection(v);
+          onChange(v);
           setOpen(false);
           focusedIndex = -1;
           renderOptions();
