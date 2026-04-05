@@ -134,3 +134,23 @@ export const validateCellContent = (
   const cellContent = cell.querySelector(".st-cell-content");
   expect(cellContent?.textContent?.trim()).toBe(expectedValue);
 };
+
+/** Pinned panes should be document-ordered: left → main → right in header and body (when present). */
+export const expectPinnedSectionsDomOrder = (root: HTMLElement): void => {
+  const follows = (a: Element, b: Element) =>
+    (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+
+  const headerRoot = root.querySelector(".st-header-container");
+  const hLeft = headerRoot?.querySelector(".st-header-pinned-left");
+  const hMain = headerRoot?.querySelector(".st-header-main");
+  const hRight = headerRoot?.querySelector(".st-header-pinned-right");
+  if (hLeft && hMain) expect(follows(hLeft, hMain)).toBe(true);
+  if (hMain && hRight) expect(follows(hMain, hRight)).toBe(true);
+
+  const bodyRoot = root.querySelector(".st-body-container");
+  const bLeft = bodyRoot?.querySelector(".st-body-pinned-left");
+  const bMain = bodyRoot?.querySelector(".st-body-main");
+  const bRight = bodyRoot?.querySelector(".st-body-pinned-right");
+  if (bLeft && bMain) expect(follows(bLeft, bMain)).toBe(true);
+  if (bMain && bRight) expect(follows(bMain, bRight)).toBe(true);
+};

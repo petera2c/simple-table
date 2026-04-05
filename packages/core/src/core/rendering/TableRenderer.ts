@@ -297,9 +297,9 @@ export class TableRenderer {
       });
       deps.pinnedLeftHeaderRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
-      if (!container.contains(leftSection)) {
-        container.appendChild(leftSection);
-      }
+      // Always append (appendChild moves existing nodes) so order stays left → main → right
+      // when pinned-left appears after a frame with only main (avoids [main, left] in DOM).
+      container.appendChild(leftSection as HTMLElement);
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("left");
     }
@@ -316,9 +316,7 @@ export class TableRenderer {
       });
       deps.mainHeaderRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
-      if (!container.contains(mainSection)) {
-        container.appendChild(mainSection);
-      }
+      container.appendChild(mainSection as HTMLElement);
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("main");
     }
@@ -336,9 +334,7 @@ export class TableRenderer {
       });
       deps.pinnedRightHeaderRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
-      if (!container.contains(rightSection)) {
-        container.appendChild(rightSection);
-      }
+      container.appendChild(rightSection as HTMLElement);
     }
 
     // Remove any orphaned sections (like React unmounting components)
@@ -540,9 +536,7 @@ export class TableRenderer {
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
-      if (!container.contains(leftSection)) {
-        container.appendChild(leftSection);
-      }
+      container.appendChild(leftSection as HTMLElement);
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("left");
     }
@@ -565,9 +559,7 @@ export class TableRenderer {
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
-      if (!container.contains(mainSection)) {
-        container.appendChild(mainSection);
-      }
+      container.appendChild(mainSection as HTMLElement);
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("main");
     }
@@ -591,9 +583,7 @@ export class TableRenderer {
       });
       deps.pinnedRightRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
-      if (!container.contains(rightSection)) {
-        container.appendChild(rightSection);
-      }
+      container.appendChild(rightSection as HTMLElement);
     }
 
     // Render sticky parents if enabled
@@ -795,14 +785,12 @@ export class TableRenderer {
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
-        contextHeaders: deps.headers,
         essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
             this.columnEditorInstance.update({
               headers: newHeaders,
-              contextHeaders: newHeaders,
             });
           }
           deps.onRender();
@@ -822,14 +810,12 @@ export class TableRenderer {
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
-        contextHeaders: deps.headers,
         essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
             this.columnEditorInstance.update({
               headers: newHeaders,
-              contextHeaders: newHeaders,
             });
           }
           deps.onRender();
@@ -871,7 +857,10 @@ export class TableRenderer {
     // If not scrollable, remove existing scrollbar if present
     if (!isScrollable) {
       if (this.horizontalScrollbarRef.current) {
-        cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current);
+        cleanupHorizontalScrollbar(
+          this.horizontalScrollbarRef.current,
+          deps.sectionScrollController,
+        );
         this.horizontalScrollbarRef.current = null;
       }
       if (this.scrollbarTimeoutId !== null) {
@@ -881,7 +870,6 @@ export class TableRenderer {
       return;
     }
 
-    // If scrollbar already exists, keep it (like React keeping component mounted)
     if (
       this.horizontalScrollbarRef.current &&
       wrapperContainer.contains(this.horizontalScrollbarRef.current)

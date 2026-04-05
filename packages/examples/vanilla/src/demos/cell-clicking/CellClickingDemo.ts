@@ -1,6 +1,10 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject, CellClickProps } from "simple-table-core";
-import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
+import {
+  cellClickingHeaders,
+  cellClickingData,
+  CELL_CLICKING_STATUSES,
+} from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "simple-table-core/styles.css";
 
@@ -19,7 +23,8 @@ export function renderCellClickingDemo(
   wrapper.appendChild(banner);
 
   const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000";
+  overlay.style.cssText =
+    "position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000";
   wrapper.appendChild(overlay);
 
   const tableContainer = document.createElement("div");
@@ -30,37 +35,67 @@ export function renderCellClickingDemo(
 
   const headers: HeaderObject[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
-      return { ...h, cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const p = String(row.priority);
-        const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
-        const el = document.createElement("span");
-        Object.assign(el.style, { color, fontWeight: "bold", cursor: "pointer" });
-        el.title = "Click to filter by priority";
-        el.textContent = p;
-        return el;
-      }};
+      return {
+        ...h,
+        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+          const p = String(row.priority);
+          const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
+          const el = document.createElement("span");
+          Object.assign(el.style, { color, fontWeight: "bold", cursor: "pointer" });
+          el.title = "Click to filter by priority";
+          el.textContent = p;
+          return el;
+        },
+      };
     }
     if (h.accessor === "status") {
-      return { ...h, cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const s = String(row.status);
-        const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
-        const c = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
-        const el = document.createElement("span");
-        Object.assign(el.style, { background: bg, color: c, padding: "4px 8px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold", cursor: "pointer" });
-        el.title = "Click to change status";
-        el.textContent = s;
-        return el;
-      }};
+      return {
+        ...h,
+        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+          const s = String(row.status);
+          const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
+          const c = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
+          const el = document.createElement("span");
+          Object.assign(el.style, {
+            background: bg,
+            color: c,
+            padding: "4px 8px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            cursor: "pointer",
+          });
+          el.title = "Click to change status";
+          el.textContent = s;
+          return el;
+        },
+      };
     }
     if (h.accessor === "details") {
-      return { ...h, cellRenderer: () => {
-        const btn = document.createElement("button");
-        Object.assign(btn.style, { background: "#3b82f6", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" });
-        btn.textContent = "View Details";
-        btn.addEventListener("mouseover", () => { btn.style.backgroundColor = "#2563eb"; });
-        btn.addEventListener("mouseout", () => { btn.style.backgroundColor = "#3b82f6"; });
-        return btn;
-      }};
+      return {
+        ...h,
+        cellRenderer: () => {
+          const btn = document.createElement("button");
+          Object.assign(btn.style, {
+            background: "#3b82f6",
+            color: "white",
+            border: "none",
+            padding: "6px 12px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "12px",
+            fontWeight: "bold",
+          });
+          btn.textContent = "View Details";
+          btn.addEventListener("mouseover", () => {
+            btn.style.backgroundColor = "#2563eb";
+          });
+          btn.addEventListener("mouseout", () => {
+            btn.style.backgroundColor = "#3b82f6";
+          });
+          return btn;
+        },
+      };
     }
     return { ...h };
   });
@@ -76,7 +111,9 @@ export function renderCellClickingDemo(
       <button style="margin-top:16px;background:#3b82f6;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:bold" id="close-modal">Close</button>
     </div>`;
     overlay.style.display = "flex";
-    overlay.querySelector("#close-modal")?.addEventListener("click", () => { overlay.style.display = "none"; });
+    overlay.querySelector("#close-modal")?.addEventListener("click", () => {
+      overlay.style.display = "none";
+    });
   }
 
   function updateBanner(msg: string) {
@@ -99,9 +136,6 @@ export function renderCellClickingDemo(
           table.update({ rows });
           break;
         case "status": {
-          // #region agent log
-          fetch('http://127.0.0.1:7670/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d1567'},body:JSON.stringify({sessionId:'4d1567',runId:'post-fix',location:'CellClickingDemo.ts:status',message:'status click',data:{value,typeofValue:typeof value,taskId:task.id,taskStatus:task.status,rowsLength:rows.length,rowFromRows:rows.find((r)=>r.id===task.id)?.status},timestamp:Date.now(),hypothesisId:'H2-H3'})}).catch(()=>{});
-          // #endregion
           const idx = CELL_CLICKING_STATUSES.indexOf(String(value));
           const next = CELL_CLICKING_STATUSES[(idx + 1) % CELL_CLICKING_STATUSES.length];
           rows = rows.map((t) => (t.id === task.id ? { ...t, status: next } : t));

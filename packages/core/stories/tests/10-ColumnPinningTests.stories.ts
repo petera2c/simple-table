@@ -5,7 +5,7 @@
 
 import { HeaderObject, Row, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
-import { waitForTable } from "./testUtils";
+import { expectPinnedSectionsDomOrder, waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -138,6 +138,16 @@ export const BothLeftAndRightPinned = {
     expect(getFlexShrink(headerSections.right)).toBe("0");
     expect(hasBorder(headerSections.left, "right")).toBe(true);
     expect(hasBorder(headerSections.right, "left")).toBe(true);
+    expectPinnedSectionsDomOrder(canvasElement);
+  },
+};
+
+/** Document order of pinned header/body sections: left before main before right. */
+export const PinnedSectionsDomOrder = {
+  ...BothLeftAndRightPinned,
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    expectPinnedSectionsDomOrder(canvasElement);
   },
 };
 
@@ -442,5 +452,6 @@ export const ApplyPinnedStateMoveColumn = {
     expect(leftSection).toBeTruthy();
     const leftCells = leftSection?.querySelectorAll(".st-header-cell");
     expect(leftCells?.length).toBeGreaterThan(0);
+    expectPinnedSectionsDomOrder(canvasElement);
   },
 };

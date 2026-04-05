@@ -13,7 +13,6 @@ export interface CreateColumnEditorPopoutOptions {
   searchPlaceholder: string;
   searchFunction?: ColumnEditorSearchFunction;
   columnEditorConfig: ColumnEditorConfig;
-  contextHeaders: HeaderObject[];
   essentialAccessors?: ReadonlySet<string>;
   setHeaders: (headers: HeaderObject[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
@@ -143,7 +142,6 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     searchPlaceholder,
     searchFunction,
     columnEditorConfig,
-    contextHeaders,
     essentialAccessors,
     setHeaders,
     onColumnVisibilityChange,
@@ -358,7 +356,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
         setHoveredSeparatorIndex,
         columnEditorConfig,
         essentialAccessors: essentialAccessors ?? new Set(),
-        headers: contextHeaders,
+        headers,
         setHeaders,
         onColumnVisibilityChange,
         onColumnOrderChange,
@@ -407,7 +405,6 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     if (newOptions.searchPlaceholder !== undefined)
       searchPlaceholder = newOptions.searchPlaceholder;
     if (newOptions.searchFunction !== undefined) searchFunction = newOptions.searchFunction;
-    if (newOptions.contextHeaders !== undefined) contextHeaders = newOptions.contextHeaders;
     if (newOptions.essentialAccessors !== undefined) essentialAccessors = newOptions.essentialAccessors;
     if (newOptions.setHeaders !== undefined) setHeaders = newOptions.setHeaders;
     if (newOptions.onColumnVisibilityChange !== undefined)

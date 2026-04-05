@@ -13,7 +13,6 @@ export interface CreateColumnEditorOptions {
   searchPlaceholder: string;
   searchFunction?: ColumnEditorSearchFunction;
   columnEditorConfig: ColumnEditorConfig;
-  contextHeaders: HeaderObject[];
   essentialAccessors?: ReadonlySet<string>;
   resetColumns?: () => void;
   setHeaders: (headers: HeaderObject[]) => void;
@@ -32,7 +31,6 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     searchPlaceholder,
     searchFunction,
     columnEditorConfig,
-    contextHeaders,
     essentialAccessors,
     resetColumns,
     setHeaders,
@@ -71,7 +69,6 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     searchPlaceholder,
     searchFunction,
     columnEditorConfig,
-    contextHeaders,
     essentialAccessors,
     resetColumns,
     setHeaders,
@@ -113,7 +110,6 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
         searchPlaceholder: newOptions.searchPlaceholder,
         searchFunction: newOptions.searchFunction,
         columnEditorConfig: newOptions.columnEditorConfig,
-        contextHeaders: newOptions.contextHeaders,
         essentialAccessors: newOptions.essentialAccessors,
         resetColumns: newOptions.resetColumns,
         setHeaders: newOptions.setHeaders,
