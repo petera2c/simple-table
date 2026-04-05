@@ -3,7 +3,11 @@
 
 import { getCellId } from "./cellUtils";
 import { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
-import { getRenderedCells, getHeaderPositionCache } from "./headerCell/eventTracking";
+import {
+  getRenderedCells,
+  getHeaderPositionCache,
+  removeFloatingHeaderTooltips,
+} from "./headerCell/eventTracking";
 import {
   createHeaderCellElement,
   calculateHeaderCellClasses,
@@ -69,13 +73,18 @@ export const renderHeaderCells = (
   const positionCache = getHeaderPositionCache(container);
 
   // Remove cells that are no longer visible (and from position cache)
+  let removedAnyHeaderCell = false;
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
       positionCache.delete(cellId);
       element.remove();
       renderedCells.delete(cellId);
+      removedAnyHeaderCell = true;
     }
   });
+  if (removedAnyHeaderCell) {
+    removeFloatingHeaderTooltips(container);
+  }
 
   // Batch create new cells using DocumentFragment
   const fragment = document.createDocumentFragment();

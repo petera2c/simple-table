@@ -90,6 +90,13 @@ export const addTrackedEventListener = (
   elementListenersMap.get(element)!.push({ event, handler, options });
 };
 
+/** Header tooltips are portaled under .simple-table-root; remove them when header DOM is torn down
+ *  without pointer leave (e.g. sort/filter invalidates context cache and removes header cells). */
+export const removeFloatingHeaderTooltips = (fromElement: HTMLElement) => {
+  const root = fromElement.closest(".simple-table-root");
+  root?.querySelectorAll(".st-tooltip").forEach((el) => el.remove());
+};
+
 export const cleanupHeaderCellRendering = (container?: HTMLElement) => {
   // No longer need to clean up all listeners globally
   // Event listeners are now tracked per element via WeakMap
@@ -105,5 +112,6 @@ export const cleanupHeaderCellRendering = (container?: HTMLElement) => {
     });
     renderedCells.clear();
     getHeaderPositionCache(container).clear();
+    removeFloatingHeaderTooltips(container);
   }
 };

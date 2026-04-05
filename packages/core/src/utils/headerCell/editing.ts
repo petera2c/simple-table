@@ -97,8 +97,11 @@ export const createLabelContent = (
     
     const showTooltip = () => {
       tooltipTimeout = setTimeout(() => {
+        if (!labelTextSpan.isConnected) {
+          return;
+        }
         const rect = labelTextSpan.getBoundingClientRect();
-        
+
         if (rect.width > 0 && rect.height > 0) {
           tooltipElement = document.createElement("div");
           tooltipElement.className = "st-tooltip";
