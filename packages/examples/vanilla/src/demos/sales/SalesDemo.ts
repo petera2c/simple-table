@@ -1,8 +1,13 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
-import { salesConfig, getSalesThemeColors } from "./sales.demo-data";
-import type { SalesRow } from "./sales.demo-data";
+import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "simple-table-core/styles.css";
+
+function formatTableHeight(height?: string | number | null): string {
+  if (height == null) return "70dvh";
+  if (typeof height === "number") return `${height}px`;
+  return height;
+}
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
   const e = document.createElement(tag);
@@ -20,13 +25,15 @@ function buildSalesRenderers(): Record<string, CellRenderer> {
     dealValue: ({ row, theme }) => {
       if (row.dealValue === "—") return "—";
       const d = row as unknown as SalesRow;
-      const c = getSalesThemeColors(theme);
-      let color = c.gray;
+      const c = getThemeColors(theme);
+      let textColor = c.gray;
       let fontWeight = "normal";
-      if (d.dealValue > 100000) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-      else if (d.dealValue > 50000) color = c.successMedium;
-      else if (d.dealValue > 10000) color = c.successLow;
-      return el("span", { color, fontWeight }, [
+      if (d.dealValue > 100000) {
+        textColor = c.success.high.color;
+        fontWeight = c.success.high.fontWeight;
+      } else if (d.dealValue > 50000) textColor = c.success.medium;
+      else if (d.dealValue > 10000) textColor = c.success.low;
+      return el("span", { color: textColor, fontWeight }, [
         `$${d.dealValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       ]);
     },
@@ -35,17 +42,25 @@ function buildSalesRenderers(): Record<string, CellRenderer> {
       if (row.isWon === "—") return "—";
       const d = row as unknown as SalesRow;
       const s = d.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
-      return el("span", {
-        backgroundColor: s.bg, color: s.text,
-        padding: "0 7px", fontSize: "12px", lineHeight: "20px",
-        borderRadius: "2px", display: "inline-block",
-      }, [d.isWon ? "Won" : "Lost"]);
+      return el(
+        "span",
+        {
+          backgroundColor: s.bg,
+          color: s.text,
+          padding: "0 7px",
+          fontSize: "12px",
+          lineHeight: "20px",
+          borderRadius: "2px",
+          display: "inline-block",
+        },
+        [d.isWon ? "Won" : "Lost"],
+      );
     },
 
     commission: ({ row, theme }) => {
       if (row.commission === "—") return "—";
       const d = row as unknown as SalesRow;
-      const c = getSalesThemeColors(theme);
+      const c = getThemeColors(theme);
       if (d.commission === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
       return `$${d.commission.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     },
@@ -53,25 +68,35 @@ function buildSalesRenderers(): Record<string, CellRenderer> {
     profitMargin: ({ row, theme }) => {
       if (row.profitMargin === "—") return "—";
       const d = row as unknown as SalesRow;
-      const c = getSalesThemeColors(theme);
+      const c = getThemeColors(theme);
       let color = c.gray;
       let fontWeight = "normal";
-      if (d.profitMargin >= 0.7) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-      else if (d.profitMargin >= 0.5) color = c.successMedium;
-      else if (d.profitMargin >= 0.4) color = c.successLow;
+      if (d.profitMargin >= 0.7) {
+        color = c.success.high.color;
+        fontWeight = c.success.high.fontWeight;
+      } else if (d.profitMargin >= 0.5) color = c.success.medium;
+      else if (d.profitMargin >= 0.4) color = c.success.low;
       else if (d.profitMargin >= 0.3) color = c.info;
       else color = c.warning;
-      const barColor = d.profitMargin >= 0.5 ? c.progressHigh : d.profitMargin >= 0.3 ? c.progressMedium : c.progressLow;
+      const barColor =
+        d.profitMargin >= 0.5 ? c.progressColors.high : d.profitMargin >= 0.3 ? c.progressColors.medium : c.progressColors.low;
 
       const pctSpan = el("span", { color, fontWeight }, [`${(d.profitMargin * 100).toFixed(1)}%`]);
       const track = el("div", {
-        backgroundColor: "#f5f5f5", height: "6px", width: "100%",
-        borderRadius: "100px", overflow: "hidden",
+        backgroundColor: "#f5f5f5",
+        height: "6px",
+        width: "100%",
+        borderRadius: "100px",
+        overflow: "hidden",
       });
-      track.appendChild(el("div", {
-        height: "100%", width: `${d.profitMargin * 100}%`,
-        backgroundColor: barColor, borderRadius: "100px",
-      }));
+      track.appendChild(
+        el("div", {
+          height: "100%",
+          width: `${d.profitMargin * 100}%`,
+          backgroundColor: barColor,
+          borderRadius: "100px",
+        }),
+      );
       const barWrap = el("div", { marginLeft: "8px", width: "48px" }, [track]);
 
       return el("div", { display: "flex", alignItems: "center", justifyContent: "flex-end" }, [pctSpan, barWrap]);
@@ -80,13 +105,15 @@ function buildSalesRenderers(): Record<string, CellRenderer> {
     dealProfit: ({ row, theme }) => {
       if (row.dealProfit === "—") return "—";
       const d = row as unknown as SalesRow;
-      const c = getSalesThemeColors(theme);
+      const c = getThemeColors(theme);
       if (d.dealProfit === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
       let color = c.gray;
       let fontWeight = "normal";
-      if (d.dealProfit > 50000) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-      else if (d.dealProfit > 20000) color = c.successMedium;
-      else if (d.dealProfit > 10000) color = c.successLow;
+      if (d.dealProfit > 50000) {
+        color = c.success.high.color;
+        fontWeight = c.success.high.fontWeight;
+      } else if (d.dealProfit > 20000) color = c.success.medium;
+      else if (d.dealProfit > 10000) color = c.success.low;
       return el("span", { color, fontWeight }, [
         `$${d.dealProfit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       ]);
@@ -96,7 +123,7 @@ function buildSalesRenderers(): Record<string, CellRenderer> {
 
 function buildSalesHeaders(): HeaderObject[] {
   const renderers = buildSalesRenderers();
-  const headers: HeaderObject[] = JSON.parse(JSON.stringify(salesConfig.headers));
+  const headers: HeaderObject[] = JSON.parse(JSON.stringify(salesHeadersCore));
 
   const applyRenderers = (hdrs: HeaderObject[]) => {
     for (const h of hdrs) {
@@ -111,16 +138,28 @@ function buildSalesHeaders(): HeaderObject[] {
 
 export function renderSalesDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme },
+  options?: { height?: string | number | null; theme?: Theme },
 ): SimpleTableVanilla {
-  let rows: Row[] = salesConfig.rows.map((r) => ({ ...r }));
+  let rows: Row[] = salesSampleRows.map((r) => ({ ...r })) as Row[];
+  let isMobile = window.innerWidth < 768;
 
-  const table = new SimpleTableVanilla(container, {
+  let table!: SimpleTableVanilla;
+
+  const onResize = () => {
+    const next = window.innerWidth < 768;
+    if (next !== isMobile) {
+      isMobile = next;
+      table.update({ autoExpandColumns: !isMobile });
+    }
+  };
+  window.addEventListener("resize", onResize);
+
+  table = new SimpleTableVanilla(container, {
     defaultHeaders: buildSalesHeaders(),
     rows,
-    height: options?.height ?? "400px",
+    height: formatTableHeight(options?.height),
     theme: options?.theme,
-    autoExpandColumns: true,
+    autoExpandColumns: !isMobile,
     editColumns: true,
     selectableCells: true,
     columnResizing: true,
@@ -128,9 +167,18 @@ export function renderSalesDemo(
     initialSortColumn: "dealValue",
     initialSortDirection: "desc",
     onCellEdit: ({ accessor, newValue, row }: CellChangeProps) => {
-      rows = rows.map((item) => item.id === row.id ? { ...item, [accessor]: newValue } : item) as Row[];
+      rows = rows.map((item) =>
+        item.id === row.id ? { ...item, [accessor]: newValue } : item,
+      ) as Row[];
       table.update({ rows });
     },
   });
+
+  const originalDestroy = table.destroy.bind(table);
+  (table as { destroy: () => void }).destroy = () => {
+    window.removeEventListener("resize", onResize);
+    originalDestroy();
+  };
+
   return table;
 }

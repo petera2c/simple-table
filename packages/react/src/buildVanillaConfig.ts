@@ -8,6 +8,7 @@ import type {
 } from "./types";
 import {
   wrapReactRenderer,
+  wrapReactRendererIntoFragment,
   wrapReactNode,
   reactNodeToHtmlString,
   isReactComponent,
@@ -49,7 +50,9 @@ function transformHeader(header: ReactHeaderObject): HeaderObject {
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
-    transformed.cellRenderer = wrapReactRenderer(cellRenderer as ComponentType<object>) as any;
+    transformed.cellRenderer = wrapReactRendererIntoFragment(
+      cellRenderer as ComponentType<object>,
+    ) as any;
   }
 
   if (headerRenderer) {

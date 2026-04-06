@@ -1,4 +1,5 @@
-import type { HeaderObject, ValueGetterProps } from "@simple-table/angular";
+import type { ReactHeaderObject, CellRendererProps, ValueGetterProps } from "@simple-table/react";
+import type { CSSProperties, ReactNode } from "react";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
 type ThemePalette = {
@@ -10,7 +11,7 @@ type ThemePalette = {
   progressColors: { high: string; medium: string; low: string };
 };
 
-export function getThemeColors(theme?: string): ThemePalette {
+function getThemeColors(theme?: string): ThemePalette {
   const themes: Record<string, ThemePalette> = {
     "modern-light": {
       gray: "#374151",
@@ -112,62 +113,124 @@ export function getThemeColors(theme?: string): ThemePalette {
   return themes[theme ?? ""] ?? themes["modern-light"];
 }
 
-export interface SalesInboundRow {
-  id: string;
-  repName: string;
-  dealSize: number;
-  isWon: boolean;
-  profitMargin: number;
-  closeDate: string;
-  category: string;
-}
-
-export interface SalesRow extends SalesInboundRow {
-  dealValue: number;
-  commission: number;
-  dealProfit: number;
-}
-
-function processSalesData(salesData: SalesInboundRow[]): SalesRow[] {
-  return salesData.map((sale) => {
-    const dealValue = sale.dealSize / sale.profitMargin;
-    const commission = dealValue * 0.1;
-    const dealProfit = sale.dealSize - commission;
-    return {
-      ...sale,
-      dealValue: parseFloat(dealValue.toFixed(2)),
-      commission: parseFloat(commission.toFixed(2)),
-      dealProfit: parseFloat(dealProfit.toFixed(2)),
+const Tag = ({
+  children,
+  color,
+  className,
+}: {
+  children: ReactNode;
+  color?: string;
+  className?: string;
+}) => {
+  const getColorStyles = (c?: string) => {
+    const colors: Record<string, { bg: string; text: string }> = {
+      success: { bg: "#f6ffed", text: "#2a6a0d" },
+      error: { bg: "#fff1f0", text: "#a8071a" },
+      green: { bg: "#f6ffed", text: "#2a6a0d" },
+      blue: { bg: "#e6f7ff", text: "#0050b3" },
+      red: { bg: "#fff1f0", text: "#a8071a" },
+      orange: { bg: "#fff7e6", text: "#ad4e00" },
+      purple: { bg: "#f9f0ff", text: "#391085" },
+      default: { bg: "#f0f0f0", text: "rgba(0, 0, 0, 0.85)" },
     };
-  });
-}
+    return colors[c || "default"];
+  };
 
-const SALES_SAMPLE_INBOUND: SalesInboundRow[] = [
-  { id: "SALE-0", repName: "Sophie Dubois", dealSize: 27430.48, isWon: true, profitMargin: 0.49, closeDate: "2026-02-08", category: "Support" },
-  { id: "SALE-1", repName: "Akira Tanaka", dealSize: 16112.14, isWon: false, profitMargin: 0.31, closeDate: "2026-01-25", category: "Training" },
-  { id: "SALE-2", repName: "Thomas Müller", dealSize: 523.99, isWon: true, profitMargin: 0.56, closeDate: "2026-01-20", category: "Training" },
-  { id: "SALE-3", repName: "Valentina Diaz", dealSize: 373.94, isWon: true, profitMargin: 0.61, closeDate: "2026-03-06", category: "Services" },
-  { id: "SALE-4", repName: "Isabella Fernandez", dealSize: 5955.97, isWon: true, profitMargin: 0.31, closeDate: "2026-01-12", category: "Software" },
-  { id: "SALE-5", repName: "Emily Davis", dealSize: 126.47, isWon: true, profitMargin: 0.69, closeDate: "2026-02-13", category: "Services" },
-  { id: "SALE-6", repName: "Olivia Bennett", dealSize: 128.85, isWon: false, profitMargin: 0.42, closeDate: "2026-03-01", category: "Hardware" },
-  { id: "SALE-7", repName: "Marcus Webb", dealSize: 89200.0, isWon: true, profitMargin: 0.55, closeDate: "2026-02-28", category: "Software" },
-  { id: "SALE-8", repName: "Nina Kowalski", dealSize: 42000.0, isWon: true, profitMargin: 0.48, closeDate: "2026-01-18", category: "Consulting" },
-  { id: "SALE-9", repName: "James Okafor", dealSize: 125000.0, isWon: true, profitMargin: 0.72, closeDate: "2026-03-15", category: "Software" },
-  { id: "SALE-10", repName: "Elena Rossi", dealSize: 9800.0, isWon: false, profitMargin: 0.35, closeDate: "2026-02-02", category: "Hardware" },
-  { id: "SALE-11", repName: "Chen Wei", dealSize: 156000.0, isWon: true, profitMargin: 0.68, closeDate: "2026-03-10", category: "Software" },
-  { id: "SALE-12", repName: "Priya Sharma", dealSize: 22400.0, isWon: true, profitMargin: 0.44, closeDate: "2026-01-30", category: "Services" },
-  { id: "SALE-13", repName: "Lars Hansen", dealSize: 51200.0, isWon: true, profitMargin: 0.52, closeDate: "2026-02-20", category: "Consulting" },
-  { id: "SALE-14", repName: "Amélie Laurent", dealSize: 3100.0, isWon: true, profitMargin: 0.28, closeDate: "2026-03-22", category: "Training" },
-  { id: "SALE-15", repName: "Diego Alvarez", dealSize: 67800.0, isWon: false, profitMargin: 0.5, closeDate: "2026-02-11", category: "Hardware" },
-  { id: "SALE-16", repName: "Fatima Al-Farsi", dealSize: 18900.0, isWon: true, profitMargin: 0.63, closeDate: "2026-03-03", category: "Support" },
-  { id: "SALE-17", repName: "Henrik Berg", dealSize: 94500.0, isWon: true, profitMargin: 0.58, closeDate: "2026-01-08", category: "Software" },
-  { id: "SALE-18", repName: "Yuki Sato", dealSize: 7600.0, isWon: false, profitMargin: 0.33, closeDate: "2026-02-25", category: "Services" },
-  { id: "SALE-19", repName: "Grace O'Malley", dealSize: 203500.0, isWon: true, profitMargin: 0.71, closeDate: "2026-03-18", category: "Software" },
-];
+  const { bg, text } = getColorStyles(color);
 
-export const salesSampleRows: SalesRow[] = processSalesData(SALES_SAMPLE_INBOUND);
+  return (
+    <span
+      style={{
+        backgroundColor: bg,
+        color: text,
+        padding: "0 7px",
+        fontSize: "12px",
+        lineHeight: "20px",
+        borderRadius: "2px",
+        display: "inline-block",
+      }}
+      className={className}
+    >
+      {children}
+    </span>
+  );
+};
 
-export const salesHeadersCore: HeaderObject[] = [
+const Progress = ({
+  percent,
+  size,
+  showInfo = true,
+  strokeColor,
+  status,
+}: {
+  percent: number;
+  size?: string;
+  showInfo?: boolean;
+  strokeColor?: string;
+  status?: "success" | "normal" | "exception";
+}) => {
+  const getColorByStatus = (s?: string) => {
+    switch (s) {
+      case "success":
+        return "#52c41a";
+      case "exception":
+        return "#ff4d4f";
+      case "normal":
+      default:
+        return "#1890ff";
+    }
+  };
+
+  const barHeight = size === "small" ? 6 : 8;
+  const color = strokeColor || getColorByStatus(status);
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        minWidth: 0,
+        position: "relative",
+        marginRight: showInfo ? "50px" : "0",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          backgroundColor: "#f5f5f5",
+          height: `${barHeight}px`,
+          borderRadius: "100px",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${percent}%`,
+            backgroundColor: color,
+            borderRadius: "100px",
+          }}
+        />
+      </div>
+      {showInfo && (
+        <span
+          style={{
+            flexShrink: 0,
+            marginLeft: "8px",
+            fontSize: "14px",
+            color: "rgba(0, 0, 0, 0.65)",
+          }}
+        >
+          {`${percent}%`}
+        </span>
+      )}
+    </div>
+  );
+};
+
+export const SALES_HEADERS: ReactHeaderObject[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
@@ -214,6 +277,26 @@ export const salesHeadersCore: HeaderObject[] = [
         align: "right",
         type: "number",
         tooltip: "The value of the deal in dollars",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.dealValue === "—") return "—";
+          const value = row.dealValue as number;
+          const colors = getThemeColors(theme);
+
+          let valueStyle: CSSProperties = { color: colors.gray };
+          if (value > 100000) valueStyle = colors.success.high;
+          else if (value > 50000) valueStyle = { color: colors.success.medium };
+          else if (value > 10000) valueStyle = { color: colors.success.low };
+
+          return (
+            <span style={valueStyle}>
+              $
+              {value.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          );
+        },
       },
       {
         accessor: "isWon",
@@ -225,6 +308,15 @@ export const salesHeadersCore: HeaderObject[] = [
         align: "center",
         type: "boolean",
         tooltip: "Whether the deal was won or lost",
+        cellRenderer: ({ row }: CellRendererProps) => {
+          if (row.isWon === "—") return "—";
+          const isWon = row.isWon as boolean;
+          return (
+            <Tag color={isWon ? "success" : "error"} className="py-1 px-2">
+              {isWon ? "Won" : "Lost"}
+            </Tag>
+          );
+        },
       },
       {
         accessor: "closeDate",
@@ -266,6 +358,18 @@ export const salesHeadersCore: HeaderObject[] = [
         align: "right",
         type: "number",
         tooltip: "The commission earned from the deal in dollars",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.commission === "—") return "—";
+          const value = row.commission as number;
+          const colors = getThemeColors(theme);
+
+          if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
+
+          return `$${value.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+        },
       },
       {
         accessor: "profitMargin",
@@ -277,6 +381,38 @@ export const salesHeadersCore: HeaderObject[] = [
         align: "right",
         type: "number",
         tooltip: "The profit margin of the deal",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.profitMargin === "—") return "—";
+          const value = row.profitMargin as number;
+          const colors = getThemeColors(theme);
+
+          let colorStyle: CSSProperties = { color: colors.gray };
+          if (value >= 0.7) colorStyle = colors.success.high;
+          else if (value >= 0.5) colorStyle = { color: colors.success.medium };
+          else if (value >= 0.4) colorStyle = { color: colors.success.low };
+          else if (value >= 0.3) colorStyle = { color: colors.info };
+          else colorStyle = { color: colors.warning };
+
+          return (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              <span style={colorStyle}>{(value * 100).toFixed(1)}%</span>
+              <div style={{ marginLeft: "8px", width: "48px" }}>
+                <Progress
+                  percent={value * 100}
+                  size="small"
+                  showInfo={false}
+                  strokeColor={
+                    value >= 0.5
+                      ? colors.progressColors.high
+                      : value >= 0.3
+                        ? colors.progressColors.medium
+                        : colors.progressColors.low
+                  }
+                />
+              </div>
+            </div>
+          );
+        },
         valueFormatter: ({ value }) => {
           if (value === "—") return "—";
           return `${((value as number) * 100).toFixed(1)}%`;
@@ -297,6 +433,28 @@ export const salesHeadersCore: HeaderObject[] = [
         align: "right",
         type: "number",
         tooltip: "The profit of the deal in dollars",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.dealProfit === "—") return "—";
+          const value = row.dealProfit as number;
+          const colors = getThemeColors(theme);
+
+          if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
+
+          let profitStyle: CSSProperties = { color: colors.gray };
+          if (value > 50000) profitStyle = colors.success.high;
+          else if (value > 20000) profitStyle = { color: colors.success.medium };
+          else if (value > 10000) profitStyle = { color: colors.success.low };
+
+          return (
+            <span style={profitStyle}>
+              $
+              {value.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          );
+        },
       },
       {
         accessor: "category",

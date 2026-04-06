@@ -1,20 +1,62 @@
 import React from "react";
+import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
+
+/**
+ * After assigning innerHTML from renderToStaticMarkup, drop the temporary host
+ * when markup produced exactly one element root (no extra wrapper in the tree).
+ */
+function unwrapStaticMarkupHost(container: HTMLDivElement): HTMLElement {
+  const meaningful = Array.from(container.childNodes).filter(
+    (n) =>
+      n.nodeType !== Node.TEXT_NODE ||
+      (n.textContent != null && n.textContent.trim() !== ""),
+  );
+  if (meaningful.length === 1 && meaningful[0] instanceof HTMLElement) {
+    container.removeChild(meaningful[0]);
+    return meaningful[0];
+  }
+  return container;
+}
 
 /**
  * Wraps a React component into a function that returns an HTMLElement, matching
  * the vanilla renderer contract expected by simple-table-core.
  *
- * Uses renderToStaticMarkup for synchronous rendering that is safe to call from
- * any context (including inside useEffect) without triggering React 18's
- * "flushSync was called from inside a lifecycle method" warning.
+ * Uses `createRoot` so event handlers work (same idea as Vue/Svelte/Solid adapters).
+ * When core replaces or clears that DOM, the root is detached like other adapters.
  */
 export function wrapReactRenderer<P extends object>(
-  Component: React.ComponentType<P>
+  Component: React.ComponentType<P>,
 ): (props: P) => HTMLElement {
   return (props: P): HTMLElement => {
     const container = document.createElement("div");
-    container.innerHTML = renderToStaticMarkup(<Component {...(props as any)} />);
+    const root = createRoot(container);
+    flushSync(() => {
+      root.render(<Component {...(props as any)} />);
+    });
+    return container;
+  };
+}
+
+/**
+ * Like wrapReactRenderer but uses `display: contents` so layout is unchanged
+ * when core appends this node (no extra box vs a plain div).
+ * flushSync ensures the tree is committed before the host is returned — required
+ * when vanilla renders cells from a React effect, where a deferred nested root
+ * would otherwise yield an empty container.
+ */
+export function wrapReactRendererIntoFragment<P extends object>(
+  Component: React.ComponentType<P>,
+): (props: P) => HTMLElement {
+  return (props: P): HTMLElement => {
+    const container = document.createElement("div");
+    container.style.display = "contents";
+    const root = createRoot(container);
+    flushSync(() => {
+      root.render(<Component {...(props as any)} />);
+    });
     return container;
   };
 }
@@ -26,7 +68,7 @@ export function wrapReactRenderer<P extends object>(
 export function wrapReactNode(node: React.ReactNode): HTMLElement {
   const container = document.createElement("div");
   container.innerHTML = renderToStaticMarkup(<>{node}</>);
-  return container;
+  return unwrapStaticMarkupHost(container);
 }
 
 /**
