@@ -192,6 +192,7 @@ export class TableRenderer {
           deps.filterManager.clearFilter(accessor);
         }
       },
+      getHeaders: () => deps.getHeaders(),
       handleSelectAll: (checked: boolean) => {
         deps.rowSelectionManager?.handleSelectAll(checked);
       },

@@ -38,6 +38,8 @@ export interface HeaderRenderContext {
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearFilter: (accessor: Accessor) => void;
   handleSelectAll?: (checked: boolean) => void;
+  /** Live header tree from table state (avoids stale `headers` snapshot in long-lived handlers). */
+  getHeaders: () => HeaderObject[];
   headerHeight: number;
   headerRegistry?: Map<string, { setEditing: (editing: boolean) => void }>;
   headers: HeaderObject[];

@@ -8,6 +8,7 @@ import {
   getHeaderSection,
 } from "../../managers/DragHandlerManager";
 import { validateFullHeaderTreeEssentialOrder } from "../pinnedColumnUtils";
+import { deepClone } from "../../utils/generalUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
 import { HeaderRenderContext } from "./types";
 import { createEditableInput } from "./editing";
@@ -149,7 +150,7 @@ export const attachDragHandlers = (
     setTimeout(() => {
       context.setHeaders((prev) => [...prev]);
       if (context.onColumnOrderChange) {
-        context.onColumnOrderChange(context.headers);
+        context.onColumnOrderChange(deepClone(context.getHeaders()));
       }
     }, 10);
   };
