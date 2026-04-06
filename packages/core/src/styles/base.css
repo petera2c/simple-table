@@ -1253,6 +1253,14 @@ input {
   align-items: center;
 }
 
+.st-collapsible-header-icon.st-expand-icon-container.expanded {
+  transform: rotate(180deg);
+}
+
+.st-collapsible-header-icon.st-expand-icon-container.collapsed {
+  transform: rotate(0deg);
+}
+
 .st-nested-headers {
   display: flex;
   flex-direction: column;

@@ -17,7 +17,7 @@ export const createCollapseIcon = (header: HeaderObject, context: HeaderRenderCo
   const isCollapsed = currentSet.has(header.accessor);
 
   const iconContainer = document.createElement("div");
-  iconContainer.className = `st-icon-container st-expand-icon-container ${
+  iconContainer.className = `st-icon-container st-collapsible-header-icon st-expand-icon-container ${
     isCollapsed ? "collapsed" : "expanded"
   }`;
   iconContainer.setAttribute("role", "button");

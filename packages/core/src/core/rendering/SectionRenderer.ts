@@ -526,8 +526,12 @@ export class SectionRenderer {
           return width;
         }
 
-        // Parent with children - process children first, then add parent cell
+        // Parent with children - process children first, then add parent cell.
+        // colIndex must be the first leaf index under this group: getHeaderLeafIndices
+        // and column-highlight logic assume parent headers start at their first child's index.
+        // (Using the post-children colIndex wrongly made the next sibling's first leaf match this group.)
         const parentLeft = currentLeft;
+        const groupStartColIndex = colIndex;
         let totalChildrenWidth = 0;
         visibleChildren.forEach((child) => {
           totalChildrenWidth += processHeader(child, depth + 1, header);
@@ -540,10 +544,9 @@ export class SectionRenderer {
           top: depth * headerHeight,
           width: totalChildrenWidth,
           height: headerHeight,
-          colIndex,
+          colIndex: groupStartColIndex,
           parentHeader,
         });
-        colIndex++;
 
         return totalChildrenWidth;
       } else {

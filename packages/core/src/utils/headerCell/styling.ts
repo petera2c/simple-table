@@ -258,8 +258,9 @@ export const createHeaderCellElement = (
 
 export const getLastHeaderIndex = (absoluteCells: AbsoluteCell[]): number => {
   if (absoluteCells.length === 0) return -1;
-  const lastCell = absoluteCells[absoluteCells.length - 1];
-  return lastCell.colIndex;
+  // With grouped headers, the last array entry is often a parent cell whose colIndex is the
+  // group's start, not the rightmost leaf — use the maximum leaf index present.
+  return Math.max(...absoluteCells.map((c) => c.colIndex));
 };
 
 // Update an existing header cell element with current state
