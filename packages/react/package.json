@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/react",
-  "version": "3.0.0-beta.24",
+  "version": "3.0.0-beta.25",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/react/src/index.d.ts",

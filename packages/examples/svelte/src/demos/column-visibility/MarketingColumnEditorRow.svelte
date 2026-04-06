@@ -1,0 +1,51 @@
+<script lang="ts">
+  import type { ColumnEditorRowRendererProps } from "@simple-table/svelte";
+
+  let props: ColumnEditorRowRendererProps = $props();
+
+  let anchor: HTMLDivElement | undefined = $state();
+
+  function appendMarketingColumnEditorSlot(parent: HTMLElement, slot: string | Node | undefined): void {
+    if (slot == null) return;
+    if (typeof slot === "string") {
+      parent.appendChild(document.createTextNode(slot));
+    } else {
+      parent.appendChild(slot);
+    }
+  }
+
+  /** Svelte examples-only copy of the marketing column-editor row layout. */
+  function buildMarketingStyleColumnEditorRow(rootProps: ColumnEditorRowRendererProps): HTMLElement {
+    const { components } = rootProps;
+    const outer = document.createElement("div");
+    outer.style.width = "100%";
+    outer.style.display = "flex";
+    outer.style.alignItems = "center";
+    outer.style.justifyContent = "space-between";
+    outer.style.gap = "8px";
+    outer.style.paddingRight = "8px";
+
+    const left = document.createElement("div");
+    left.style.display = "flex";
+    left.style.alignItems = "center";
+    left.style.gap = "8px";
+    appendMarketingColumnEditorSlot(left, components.expandIcon as Node | string | undefined);
+    appendMarketingColumnEditorSlot(left, components.checkbox as Node | string | undefined);
+    appendMarketingColumnEditorSlot(left, components.labelContent as Node | string | undefined);
+    outer.appendChild(left);
+
+    const right = document.createElement("div");
+    appendMarketingColumnEditorSlot(right, components.dragIcon as Node | string | undefined);
+    outer.appendChild(right);
+
+    return outer;
+  }
+
+  $effect(() => {
+    const el = anchor;
+    if (!el) return;
+    el.replaceChildren(buildMarketingStyleColumnEditorRow(props));
+  });
+</script>
+
+<div bind:this={anchor} style="display: contents"></div>

@@ -15,7 +15,21 @@ export interface CreateRowSeparatorOptions {
   heightOffsets?: HeightOffsets;
   customTheme?: CustomTheme;
   isSticky?: boolean;
+  /** Same px width as the body/sticky section (`SectionRenderer` / sticky pane); omit to use 100%. */
+  sectionWidthPx?: number;
 }
+
+/** Keep separator width in sync with section layout (resize, pinned width changes). */
+export const applyRowSeparatorSectionWidth = (
+  separator: HTMLElement,
+  sectionWidthPx?: number,
+): void => {
+  separator.style.left = "0";
+  separator.style.width =
+    typeof sectionWidthPx === "number" && sectionWidthPx >= 0
+      ? `${sectionWidthPx}px`
+      : "100%";
+};
 
 // Create a row separator element
 export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElement => {
@@ -26,6 +40,7 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
     heightOffsets,
     customTheme = DEFAULT_CUSTOM_THEME,
     isSticky = false,
+    sectionWidthPx,
   } = options;
 
   const separator = document.createElement("div");
@@ -36,13 +51,11 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
     ? position
     : calculateSeparatorTopPosition({ position, rowHeight, heightOffsets, customTheme });
 
-  // Full-width line; parent section has fixed width
-  separator.style.width = "100%";
+  applyRowSeparatorSectionWidth(separator, sectionWidthPx);
 
   if (isSticky) {
     separator.style.position = "absolute";
     separator.style.top = "0";
-    separator.style.left = "0";
     separator.style.transform = `translateY(${topPosition}px)`;
   } else {
     separator.style.transform = `translate3d(0, ${topPosition}px, 0)`;

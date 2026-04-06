@@ -245,6 +245,13 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     currentLeft += width;
   });
 
+  const sectionWidthPxForSeparator =
+    pinned && typeof width === "number"
+      ? width
+      : typeof cellRenderContext.mainSectionContainerWidth === "number"
+        ? cellRenderContext.mainSectionContainerWidth
+        : undefined;
+
   // Render sticky rows with actual cells
   stickyParents.forEach((tableRow, stickyIndex) => {
     // Only apply offset to this row if it's at or after the offsetStartIndex
@@ -307,6 +314,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
       heightOffsets,
       customTheme,
       isSticky: true,
+      sectionWidthPx: sectionWidthPxForSeparator,
     });
 
     section.appendChild(separator);

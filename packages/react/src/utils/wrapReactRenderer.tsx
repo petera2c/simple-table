@@ -2,6 +2,11 @@ import React from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
+import type {
+  ColumnEditorCustomRendererProps as VanillaColumnEditorCustomRendererProps,
+  ColumnEditorRowRendererProps as VanillaColumnEditorRowRendererProps,
+} from "simple-table-core";
+import { domSlotToReactNode, mapColumnEditorRowComponentsForReact } from "./ImperativeDomSlot";
 
 /**
  * After assigning innerHTML from renderToStaticMarkup, drop the temporary host
@@ -35,6 +40,50 @@ export function wrapReactRenderer<P extends object>(
     const root = createRoot(container);
     flushSync(() => {
       root.render(<Component {...(props as any)} />);
+    });
+    return container;
+  };
+}
+
+/**
+ * Like {@link wrapReactRenderer} for column editor rows: core passes `components.*` as
+ * live DOM nodes; this maps them to React hosts so consumers can use normal JSX.
+ */
+export function wrapReactColumnEditorRowRenderer(
+  Component: React.ComponentType<object>,
+): (props: VanillaColumnEditorRowRendererProps) => HTMLElement {
+  return (props: VanillaColumnEditorRowRendererProps): HTMLElement => {
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    const reactProps = {
+      ...props,
+      components: mapColumnEditorRowComponentsForReact(props.components),
+    };
+    flushSync(() => {
+      root.render(<Component {...(reactProps as any)} />);
+    });
+    return container;
+  };
+}
+
+/**
+ * Maps `searchSection` / `listSection` / `resetSection` HTMLElement slots for
+ * `columnEditorConfig.customRenderer` the same way as row slots.
+ */
+export function wrapReactColumnEditorCustomRenderer(
+  Component: React.ComponentType<object>,
+): (props: VanillaColumnEditorCustomRendererProps) => HTMLElement {
+  return (props: VanillaColumnEditorCustomRendererProps): HTMLElement => {
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    const reactProps = {
+      ...props,
+      searchSection: props.searchSection ? domSlotToReactNode(props.searchSection) : null,
+      listSection: domSlotToReactNode(props.listSection),
+      resetSection: props.resetSection ? domSlotToReactNode(props.resetSection) : null,
+    };
+    flushSync(() => {
+      root.render(<Component {...(reactProps as any)} />);
     });
     return container;
   };

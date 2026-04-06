@@ -13,7 +13,10 @@ import {
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
 import { isRowExpanded } from "./rowUtils";
-import { createRowSeparator } from "./rowSeparatorRenderer";
+import {
+  applyRowSeparatorSectionWidth,
+  createRowSeparator,
+} from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
@@ -70,6 +73,7 @@ const getVisibleBodyCells = (
 interface SeparatorMetadata {
   position: number;
   displayStrongBorder: boolean;
+  sectionWidthPx?: number;
 }
 
 const separatorMetadataMap = new WeakMap<
@@ -103,6 +107,16 @@ const renderRowSeparators = (
 ): void => {
   // Get separator metadata cache
   const separatorMetadata = getSeparatorMetadata(container);
+
+  const sectionWidthPx = ((): number | undefined => {
+    const w = context.pinned
+      ? (context.containerWidth ?? container.clientWidth ?? 0)
+      : (context.mainSectionContainerWidth ??
+        context.containerWidth ??
+        container.clientWidth ??
+        0);
+    return w > 0 ? w : undefined;
+  })();
 
   let boundariesFromRows: RowBoundaryFromRows[] = [];
 
@@ -171,6 +185,7 @@ const renderRowSeparators = (
         heightOffsets: context.heightOffsets,
         customTheme: context.customTheme,
         isSticky: false,
+        sectionWidthPx,
       });
 
       container.appendChild(separator);
@@ -180,6 +195,7 @@ const renderRowSeparators = (
       separatorMetadata.set(rowIndex, {
         position,
         displayStrongBorder,
+        sectionWidthPx,
       });
     } else {
       // Update existing separator only if something changed
@@ -188,9 +204,12 @@ const renderRowSeparators = (
       const needsUpdate =
         !cachedMetadata ||
         cachedMetadata.position !== position ||
-        cachedMetadata.displayStrongBorder !== displayStrongBorder;
+        cachedMetadata.displayStrongBorder !== displayStrongBorder ||
+        cachedMetadata.sectionWidthPx !== sectionWidthPx;
 
       if (needsUpdate) {
+        applyRowSeparatorSectionWidth(separator, sectionWidthPx);
+
         // Update class if strong border state changed
         if (cachedMetadata?.displayStrongBorder !== displayStrongBorder) {
           if (displayStrongBorder) {
@@ -215,6 +234,7 @@ const renderRowSeparators = (
         separatorMetadata.set(rowIndex, {
           position,
           displayStrongBorder,
+          sectionWidthPx,
         });
       }
     }

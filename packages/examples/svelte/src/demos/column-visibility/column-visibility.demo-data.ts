@@ -1,7 +1,6 @@
 // Self-contained demo table setup for this example.
 import type { HeaderObject, Row } from "@simple-table/svelte";
 
-
 export const columnVisibilityData: Row[] = [
   { id: 1, firstName: "Alice", lastName: "Johnson", email: "alice@example.com", phone: "555-0101", role: "Engineer", department: "Engineering", location: "NYC", startDate: "2021-03-15" },
   { id: 2, firstName: "Bob", lastName: "Martinez", email: "bob@example.com", phone: "555-0102", role: "Designer", department: "Design", location: "LA", startDate: "2022-07-22" },
@@ -17,7 +16,7 @@ export const columnVisibilityHeaders: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "firstName", label: "First Name", width: 120, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, type: "string" },
-  { accessor: "email", label: "Email", width: 200, type: "string" },
+  { accessor: "email", label: "Email", width: 200, type: "string", hide: true },
   { accessor: "phone", label: "Phone", width: 120, type: "string", hide: true },
   { accessor: "role", label: "Role", width: 130, type: "string" },
   { accessor: "department", label: "Department", width: 140, type: "string" },
@@ -35,7 +34,8 @@ export const columnVisibilityConfig = {
   headers: columnVisibilityHeaders,
   rows: columnVisibilityData,
   tableProps: {
-    editColumns: true,
+    editColumns: true as const,
+    editColumnsInitOpen: true as const,
     columnEditorConfig: {
       text: "Manage Columns",
       searchEnabled: true,

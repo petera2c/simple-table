@@ -1,6 +1,26 @@
-// Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/vue";
+// Self-contained demo table setup for this example (aligned with simple-table-marketing column visibility demo).
+import type { ColumnVisibilityState, HeaderObject, Row } from "@simple-table/vue";
 
+export const COLUMN_VISIBILITY_DEMO_STORAGE_KEY = "columnVisibilityDemo";
+
+export function loadColumnVisibilityDemoSaved(): ColumnVisibilityState {
+  if (typeof window === "undefined") return {};
+  try {
+    const saved = localStorage.getItem(COLUMN_VISIBILITY_DEMO_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveColumnVisibilityDemoState(state: ColumnVisibilityState): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(COLUMN_VISIBILITY_DEMO_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    /* ignore */
+  }
+}
 
 export const columnVisibilityData: Row[] = [
   { id: 1, firstName: "Alice", lastName: "Johnson", email: "alice@example.com", phone: "555-0101", role: "Engineer", department: "Engineering", location: "NYC", startDate: "2021-03-15" },
@@ -31,11 +51,24 @@ export const columnVisibilityHeaders: HeaderObject[] = [
   },
 ];
 
+export function getColumnVisibilityDemoHeaders(
+  savedVisibility: ColumnVisibilityState = loadColumnVisibilityDemoSaved(),
+): HeaderObject[] {
+  return columnVisibilityHeaders.map((header) => ({
+    ...header,
+    hide:
+      savedVisibility[header.accessor] === false ||
+      (savedVisibility[header.accessor] === undefined && header.accessor === "email") ||
+      (savedVisibility[header.accessor] === undefined && header.hide === true),
+  }));
+}
+
 export const columnVisibilityConfig = {
   headers: columnVisibilityHeaders,
   rows: columnVisibilityData,
   tableProps: {
-    editColumns: true,
+    editColumns: true as const,
+    editColumnsInitOpen: true as const,
     columnEditorConfig: {
       text: "Manage Columns",
       searchEnabled: true,

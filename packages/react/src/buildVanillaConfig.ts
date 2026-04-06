@@ -9,6 +9,8 @@ import type {
 import {
   wrapReactRenderer,
   wrapReactRendererIntoFragment,
+  wrapReactColumnEditorRowRenderer,
+  wrapReactColumnEditorCustomRenderer,
   wrapReactNode,
   reactNodeToHtmlString,
   isReactComponent,
@@ -36,10 +38,16 @@ function transformColumnEditorConfig(config: ReactColumnEditorConfig): ColumnEdi
   return {
     ...rest,
     ...(rowRenderer
-      ? { rowRenderer: wrapReactRenderer(rowRenderer as ComponentType<object>) as any }
+      ? {
+          rowRenderer: wrapReactColumnEditorRowRenderer(rowRenderer as ComponentType<object>) as any,
+        }
       : {}),
     ...(customRenderer
-      ? { customRenderer: wrapReactRenderer(customRenderer as ComponentType<object>) as any }
+      ? {
+          customRenderer: wrapReactColumnEditorCustomRenderer(
+            customRenderer as ComponentType<object>,
+          ) as any,
+        }
       : {}),
   };
 }

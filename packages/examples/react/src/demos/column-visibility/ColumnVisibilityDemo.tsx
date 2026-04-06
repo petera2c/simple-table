@@ -1,6 +1,17 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
-import { columnVisibilityConfig } from "./column-visibility.demo-data";
+import {
+  SimpleTable,
+  defaultHeadersFromCore,
+  type ColumnEditorRowRendererProps,
+  type ColumnVisibilityState,
+  type Theme,
+} from "@simple-table/react";
+import { useMemo, useCallback } from "react";
+import {
+  columnVisibilityConfig,
+  getColumnVisibilityDemoHeaders,
+  loadColumnVisibilityDemoSaved,
+  saveColumnVisibilityDemoState,
+} from "./column-visibility.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnVisibilityDemo = ({
@@ -10,14 +21,46 @@ const ColumnVisibilityDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
+  const headers = useMemo(
+    () => defaultHeadersFromCore(getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved())),
+    [],
+  );
+
+  const onColumnVisibilityChange = useCallback((state: ColumnVisibilityState) => {
+    saveColumnVisibilityDemoState(state);
+  }, []);
+
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(columnVisibilityConfig.headers)}
+      defaultHeaders={headers}
       rows={columnVisibilityConfig.rows}
-      editColumns={columnVisibilityConfig.tableProps.editColumns}
-      columnEditorConfig={columnVisibilityConfig.tableProps.columnEditorConfig}
+      editColumns
+      editColumnsInitOpen
       height={height}
       theme={theme}
+      onColumnVisibilityChange={onColumnVisibilityChange}
+      columnEditorConfig={{
+        ...columnVisibilityConfig.tableProps.columnEditorConfig,
+        rowRenderer: ({ components }: ColumnEditorRowRendererProps) => (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "8px",
+              paddingRight: "8px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {components?.expandIcon}
+              {components?.checkbox}
+              {components?.labelContent}
+            </div>
+            <div>{components?.dragIcon}</div>
+          </div>
+        ),
+      }}
     />
   );
 };
