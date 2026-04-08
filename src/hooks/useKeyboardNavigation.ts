@@ -6,7 +6,8 @@ import { rowIdToString } from "../utils/rowUtils";
 
 interface UseKeyboardNavigationProps {
   selectableCells: boolean;
-  initialFocusedCell: Cell | null;
+  initialFocusedCellRef: React.MutableRefObject<Cell | null>;
+  selectedCellsRef: React.MutableRefObject<Set<string>>;
   tableRows: TableRowType[];
   leafHeaders: HeaderObject[];
   selectSingleCell: (cell: Cell) => void;
@@ -19,7 +20,6 @@ interface UseKeyboardNavigationProps {
   deleteSelectedCells: () => void;
   startCell: React.MutableRefObject<Cell | null>;
   enableRowSelection?: boolean;
-  selectedCells: Set<string>;
 }
 
 /**
@@ -29,13 +29,13 @@ export const useKeyboardNavigation = ({
   copyToClipboard,
   deleteSelectedCells,
   enableRowSelection = false,
-  initialFocusedCell,
+  initialFocusedCellRef,
   leafHeaders,
   pasteFromClipboard,
   selectCellRange,
   selectSingleCell,
   selectableCells,
-  selectedCells,
+  selectedCellsRef,
   setLastSelectedColumnIndex,
   setSelectedCells,
   setSelectedColumns,
@@ -46,11 +46,12 @@ export const useKeyboardNavigation = ({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!selectableCells) return;
 
+      const focusedCell = initialFocusedCellRef.current;
       // We will navigate based on the initial focused cell
-      if (!initialFocusedCell) return;
+      if (!focusedCell) return;
 
       // If no cells are actually selected, don't intercept keyboard events
-      if (selectedCells.size === 0) return;
+      if (selectedCellsRef.current.size === 0) return;
 
       // Don't intercept if user is typing in a form element
       const activeElement = document.activeElement;
@@ -63,7 +64,7 @@ export const useKeyboardNavigation = ({
         return;
       }
 
-      let { rowIndex, colIndex, rowId } = initialFocusedCell;
+      let { rowIndex, colIndex, rowId } = focusedCell;
       // Copy functionality
       if ((event.ctrlKey || event.metaKey) && event.key === "c") {
         copyToClipboard();
@@ -88,6 +89,7 @@ export const useKeyboardNavigation = ({
             newSelectedCells.add(`${row}-${colIndex}-${rowId}`);
           }
         }
+        selectedCellsRef.current = newSelectedCells;
         setSelectedCells(newSelectedCells);
         setSelectedColumns(new Set());
         setLastSelectedColumnIndex(null);
@@ -166,7 +168,9 @@ export const useKeyboardNavigation = ({
         event.preventDefault();
         handlePageDown(event, rowIndex, colIndex);
       } else if (event.key === "Escape") {
-        setSelectedCells(new Set());
+        const empty = new Set<string>();
+        selectedCellsRef.current = empty;
+        setSelectedCells(empty);
         setSelectedColumns(new Set());
         setLastSelectedColumnIndex(null);
         startCell.current = null;
@@ -181,7 +185,7 @@ export const useKeyboardNavigation = ({
     ) => {
       if (event.shiftKey) {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         let targetRow = rowIndex - 1;
@@ -223,7 +227,7 @@ export const useKeyboardNavigation = ({
     ) => {
       if (event.shiftKey) {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         let targetRow = rowIndex + 1;
@@ -265,7 +269,7 @@ export const useKeyboardNavigation = ({
     ) => {
       if (event.shiftKey && event.key === "ArrowLeft") {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         let targetCol = colIndex - 1;
@@ -322,7 +326,7 @@ export const useKeyboardNavigation = ({
 
       if (event.shiftKey && event.key === "ArrowRight") {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         let targetCol = colIndex + 1;
@@ -361,7 +365,7 @@ export const useKeyboardNavigation = ({
     const handleHome = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
       if (event.shiftKey) {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         let targetRow = rowIndex;
@@ -396,7 +400,7 @@ export const useKeyboardNavigation = ({
     const handleEnd = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
       if (event.shiftKey) {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         let targetRow = rowIndex;
@@ -434,7 +438,7 @@ export const useKeyboardNavigation = ({
 
       if (event.shiftKey) {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         const targetTableRow = tableRows[targetRow];
@@ -456,7 +460,7 @@ export const useKeyboardNavigation = ({
 
       if (event.shiftKey) {
         if (!startCell.current) {
-          startCell.current = initialFocusedCell!;
+          startCell.current = initialFocusedCellRef.current!;
         }
 
         const targetTableRow = tableRows[targetRow];
@@ -478,12 +482,12 @@ export const useKeyboardNavigation = ({
     };
   }, [
     selectableCells,
-    initialFocusedCell,
+    initialFocusedCellRef,
+    selectedCellsRef,
     tableRows,
     leafHeaders,
     selectSingleCell,
     selectCellRange,
-    selectedCells,
     setSelectedCells,
     setSelectedColumns,
     setLastSelectedColumnIndex,

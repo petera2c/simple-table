@@ -50,6 +50,12 @@ const useSelection = ({
   const [isSelectingState, setIsSelectingState] = useState(false);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
+  /** Latest focus + selection for keydown/clipboard before the next commit. */
+  const initialFocusedCellRef = useRef<Cell | null>(null);
+  const selectedCellsRef = useRef<Set<string>>(new Set());
+
+  initialFocusedCellRef.current = initialFocusedCell;
+  selectedCellsRef.current = selectedCells;
 
   // Derived state for efficient lookups
   const columnsWithSelectedCells = useMemo(() => {
@@ -100,10 +106,11 @@ const useSelection = ({
 
   // Clipboard operations
   const copyToClipboard = useCallback(() => {
-    if (selectedCells.size === 0) return;
+    const cells = selectedCellsRef.current;
+    if (cells.size === 0) return;
 
     const text = copySelectedCellsToClipboard(
-      selectedCells,
+      cells,
       leafHeaders,
       tableRows,
       copyHeadersToClipboard,
@@ -111,12 +118,13 @@ const useSelection = ({
     navigator.clipboard.writeText(text);
 
     // Trigger copy flash effect
-    setCopyFlashCells(new Set(selectedCells));
+    setCopyFlashCells(new Set(cells));
     setTimeout(() => setCopyFlashCells(new Set()), 800);
-  }, [selectedCells, leafHeaders, tableRows, copyHeadersToClipboard]);
+  }, [leafHeaders, tableRows, copyHeadersToClipboard]);
 
   const pasteFromClipboard = useCallback(async () => {
-    if (!initialFocusedCell) return;
+    const focused = initialFocusedCellRef.current;
+    if (!focused) return;
 
     try {
       const clipboardText = await navigator.clipboard.readText();
@@ -124,7 +132,7 @@ const useSelection = ({
 
       const { updatedCells, warningCells } = pasteClipboardDataToCells(
         clipboardText,
-        initialFocusedCell,
+        focused,
         leafHeaders,
         tableRows,
         onCellEdit,
@@ -143,13 +151,14 @@ const useSelection = ({
     } catch (error) {
       console.warn("Failed to paste from clipboard:", error);
     }
-  }, [initialFocusedCell, leafHeaders, tableRows, onCellEdit, cellRegistry]);
+  }, [leafHeaders, tableRows, onCellEdit, cellRegistry]);
 
   const deleteSelectedCells = useCallback(() => {
-    if (selectedCells.size === 0) return;
+    const cells = selectedCellsRef.current;
+    if (cells.size === 0) return;
 
     const { deletedCells, warningCells } = deleteSelectedCellsContent(
-      selectedCells,
+      cells,
       leafHeaders,
       tableRows,
       onCellEdit,
@@ -165,7 +174,7 @@ const useSelection = ({
       setWarningFlashCells(warningCells);
       setTimeout(() => setWarningFlashCells(new Set()), 800);
     }
-  }, [selectedCells, leafHeaders, tableRows, onCellEdit, cellRegistry]);
+  }, [leafHeaders, tableRows, onCellEdit, cellRegistry]);
 
   // Selection operations
   const selectCellRange = useCallback(
@@ -192,6 +201,8 @@ const useSelection = ({
 
       setSelectedColumns(new Set());
       setLastSelectedColumnIndex(null);
+      selectedCellsRef.current = newSelectedCells;
+      initialFocusedCellRef.current = endCell;
       setSelectedCells(newSelectedCells);
       setInitialFocusedCell(endCell);
 
@@ -216,7 +227,10 @@ const useSelection = ({
 
         setSelectedColumns(new Set());
         setLastSelectedColumnIndex(null);
-        setSelectedCells(new Set([cellId]));
+        const next = new Set([cellId]);
+        selectedCellsRef.current = next;
+        initialFocusedCellRef.current = cell;
+        setSelectedCells(next);
         setInitialFocusedCell(cell);
 
         // Scroll the cell into view
@@ -227,6 +241,8 @@ const useSelection = ({
   );
 
   const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
+    selectedCellsRef.current = new Set();
+    initialFocusedCellRef.current = null;
     setSelectedCells(new Set());
     setInitialFocusedCell(null);
 
@@ -244,12 +260,12 @@ const useSelection = ({
   // Keyboard navigation
   useKeyboardNavigation({
     selectableCells,
-    initialFocusedCell,
+    initialFocusedCellRef,
+    selectedCellsRef,
     tableRows,
     leafHeaders,
     selectSingleCell,
     selectCellRange,
-    selectedCells,
     setSelectedCells,
     setSelectedColumns,
     setLastSelectedColumnIndex,
@@ -297,6 +313,7 @@ const useSelection = ({
         }
       }
 
+      selectedCellsRef.current = newSelectedCells;
       setSelectedCells(newSelectedCells);
     },
     [tableRows, enableRowSelection],
@@ -411,12 +428,17 @@ const useSelection = ({
     setIsSelectingState(true);
     startCell.current = { rowIndex, colIndex, rowId };
 
+    const cellId = createSetString({ colIndex, rowIndex, rowId });
+    const initialSet = new Set([cellId]);
+    const initialCell = { rowIndex, colIndex, rowId };
+    selectedCellsRef.current = initialSet;
+    initialFocusedCellRef.current = initialCell;
+
     setTimeout(() => {
       setSelectedColumns(new Set());
       setLastSelectedColumnIndex(null);
-      const cellId = createSetString({ colIndex, rowIndex, rowId });
-      setSelectedCells(new Set([cellId]));
-      setInitialFocusedCell({ rowIndex, colIndex, rowId });
+      setSelectedCells(initialSet);
+      setInitialFocusedCell(initialCell);
     }, 0);
 
     let currentMouseX: number | null = null;
