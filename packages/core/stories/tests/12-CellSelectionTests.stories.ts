@@ -5,7 +5,7 @@
 
 import { HeaderObject } from "../../src/index";
 import { expect } from "@storybook/test";
-import { waitForTable, getCellsForRow } from "./testUtils";
+import { waitForTable, getCellsForRow, getUniqueRowIndices } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -568,10 +568,16 @@ export const SelectionFirstCellAfterScroll = {
     // Scroll to bottom
     bodyContainer.scrollTop =
       bodyContainer.scrollHeight - bodyContainer.clientHeight;
-    await new Promise((r) => setTimeout(r, 150));
+    await new Promise((r) => setTimeout(r, 200));
+
+    // Virtualized DOM: use last two *rendered* row indices (not logical 0/1).
+    const visibleRows = getUniqueRowIndices(bodyContainer);
+    expect(visibleRows.length).toBeGreaterThanOrEqual(2);
+    const rowNearBottom = visibleRows[visibleRows.length - 2]!;
+    const rowAtBottom = visibleRows[visibleRows.length - 1]!;
 
     // Drag-select 4 cells (2x2) in the visible area at the bottom
-    await selectCellRange(canvasElement, 0, 0, 1, 1);
+    await selectCellRange(canvasElement, rowNearBottom, 0, rowAtBottom, 1);
     await new Promise((r) => setTimeout(r, 100));
 
     expect(getSelectedCellCount(canvasElement)).toBeGreaterThanOrEqual(4);
