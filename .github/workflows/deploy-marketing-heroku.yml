@@ -19,28 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           ref: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
-
-      - name: Check if marketing-relevant package version changed
-        id: relevant-version
-        if: github.event_name == 'workflow_run'
-        run: |
-          set -euo pipefail
-          any_changed=false
-          for rel in apps/marketing packages/core packages/react; do
-            pkg="${rel}/package.json"
-            CURRENT=$(node -e "console.log(require('./${rel}/package.json').version)")
-            git checkout HEAD~1 -- "$pkg" 2>/dev/null || true
-            PREVIOUS=$(node -e "try { console.log(require('./${rel}/package.json').version) } catch { console.log('0.0.0') }")
-            git checkout HEAD -- "$pkg"
-            if [ "$CURRENT" != "$PREVIOUS" ]; then
-              any_changed=true
-              echo "Version bump in ${rel}: ${PREVIOUS} -> ${CURRENT}"
-              break
-            fi
-          done
-          echo "any_changed=${any_changed}" >> "$GITHUB_OUTPUT"
 
       - name: Push to Heroku
         env:
@@ -49,10 +28,6 @@ jobs:
           HEROKU_GIT_BRANCH: ${{ vars.HEROKU_GIT_BRANCH }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "workflow_run" ] && [ "${{ steps.relevant-version.outputs.any_changed }}" != "true" ]; then
-            echo "::notice title=Heroku::Skipping deploy: version unchanged in apps/marketing, packages/core, and packages/react."
-            exit 0
-          fi
           if [ -z "${HEROKU_API_KEY:-}" ] || [ -z "${HEROKU_APP_NAME:-}" ]; then
             echo "::notice title=Heroku::Skipping deploy: set repository secrets HEROKU_API_KEY and HEROKU_APP_NAME."
             exit 0
