@@ -935,6 +935,9 @@ export class SectionRenderer {
       });
     } else if (type === "context") {
       this.contextCache.clear();
+      // Recompute absolute header layout from current effectiveHeaders; otherwise
+      // cached AbsoluteCell.header refs drift from live objects (sort/resize bug).
+      this.headerCellsCache.clear();
       // Clear header rendered elements so sort indicators etc. update.
       // Do NOT clear body rendered elements: renderBodyCells will update existing cells
       // in place (e.g. selection classes, expand icon state) so expand icon can animate.
