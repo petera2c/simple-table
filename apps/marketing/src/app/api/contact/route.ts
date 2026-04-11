@@ -1,10 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resendClient: Resend | null | undefined;
+
+function getResend(): Resend | null {
+  if (resendClient !== undefined) {
+    return resendClient;
+  }
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    resendClient = null;
+    return null;
+  }
+  resendClient = new Resend(key);
+  return resendClient;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const resend = getResend();
+    if (!resend) {
+      return NextResponse.json({ error: "Contact form is not configured" }, { status: 503 });
+    }
+
     const body = await request.json();
     const { name, email, company, message } = body;
 
