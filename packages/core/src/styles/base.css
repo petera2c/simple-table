@@ -1011,7 +1011,10 @@ input {
   border-left: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-column-editor-text-color);
   flex-shrink: 0;
-  height: 100%;
+  /* Row flex with .st-content: stretch to its height; height:100% is auto when root height is indefinite. */
+  align-self: stretch;
+  height: auto;
+  min-height: 0;
 }
 
 .st-column-editor-text {

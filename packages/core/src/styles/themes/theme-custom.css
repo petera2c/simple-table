@@ -1,0 +1,253 @@
+/* theme="custom" baseline — same tokens as modern-light so the grid is never
+ * missing CSS variables. Structural rules below use var(--st-*) (not hardcoded
+ * light colors) so inline tokens from a theme builder survive higher specificity.
+ */
+.theme-custom {
+  /* Layout/Structure variables - Tighter, more compact */
+  --st-border-radius: 4px;
+  --st-cell-padding: 12px;
+
+  /* Spacing variables - Reduced for cleaner look */
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+
+  /* Scrollbar variables - Minimal */
+  --st-scrollbar-bg-color: #fafafa;
+  --st-scrollbar-thumb-color: #d1d5db;
+  --st-scrollbar-width: thin;
+
+  /* Base/Structural colors - Very subtle borders */
+  --st-border-color: #f3f4f6;
+  --st-footer-background-color: var(--st-white);
+  --st-last-group-row-separator-border-color: #e5e7eb;
+
+  /* Row colors - Clean white background, subtle hover */
+  --st-odd-row-background-color: var(--st-white);
+  --st-even-row-background-color: var(--st-white);
+  --st-hover-row-background-color: #f9fafb;
+  --st-selected-row-background-color: #eff6ff;
+
+  /* Column colors - No alternating columns by default */
+  --st-odd-column-background-color: var(--st-white);
+  --st-even-column-background-color: var(--st-white);
+
+  /* Header colors - Minimal, clean header */
+  --st-header-background-color: var(--st-white);
+  --st-sub-header-background-color: #fafafa;
+  --st-header-label-color: #111827;
+  --st-header-icon-color: #6b7280;
+
+  /* Cell colors - Clean, high contrast text */
+  --st-cell-color: #111827;
+  --st-cell-odd-row-color: #374151;
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --st-sub-cell-background-color: #f9fafb;
+  --st-sub-cell-hover-background-color: #f3f4f6;
+
+  /* Selection colors - Subtle blue tint */
+  --st-selected-cell-background-color: #dbeafe;
+  --st-selected-first-cell-background-color: #eff6ff;
+  --st-selected-cell-color: #111827;
+  --st-selected-first-cell-color: #111827;
+  --st-selected-sub-cell-background-color: #bfdbfe;
+  --st-selected-sub-cell-color: #111827;
+  --st-dragging-background-color: #f3f4f6;
+  --st-dragging-sub-header-background-color: #e5e7eb;
+
+  /* Interactive element colors */
+  --st-resize-handle-color: #e5e7eb;
+  --st-resize-handle-selected-color: #3b82f6;
+
+  /* Border colors - Modern blue accent */
+  --st-selected-border-color: #3b82f6;
+  --st-editable-cell-focus-border-color: #3b82f6;
+  --st-focus-ring-color: #3b82f6;
+
+  /* Button colors - Clean, minimal */
+  --st-button-hover-background-color: #f3f4f6;
+  --st-button-active-background-color: #3b82f6;
+  --st-next-prev-btn-color: #6b7280;
+  --st-next-prev-btn-disabled-color: #d1d5db;
+  --st-page-btn-color: #6b7280;
+  --st-page-btn-hover-background-color: #f3f4f6;
+
+  /* Checkbox colors */
+  --st-checkbox-checked-background-color: #3b82f6;
+  --st-checkbox-checked-border-color: #3b82f6;
+  --st-checkbox-border-color: #d1d5db;
+
+  /* Column editor colors */
+  --st-column-editor-background-color: var(--st-white);
+  --st-column-editor-popout-background-color: var(--st-white);
+  --st-column-editor-text-color: #6b7280;
+
+  /* Form element colors */
+  --st-datepicker-weekday-color: #6b7280;
+  --st-datepicker-other-month-color: #d1d5db;
+  --st-filter-button-disabled-background-color: #f3f4f6;
+  --st-filter-button-disabled-text-color: #9ca3af;
+
+  /* Flash/Animation colors */
+  --st-cell-flash-color: #dbeafe;
+  --st-copy-flash-color: #3b82f6;
+  --st-warning-flash-color: #fca5a5;
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: #1f2937;
+  --st-tooltip-text-color: var(--st-white);
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 6px 10px;
+  --st-tooltip-font-size: 12px;
+  --st-tooltip-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: #3b82f6;
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+  --st-header-highlight-indicator-color: #dbeafe;
+  --st-selection-highlight-indicator-color: #f3f4f6;
+
+  /* Utility colors */
+  --st-loading-skeleton-bg-color: #f3f4f6;
+  --st-chart-color: #3b82f6;
+  --st-chart-fill-color: #dbeafe;
+
+  /* Drag and drop colors */
+  --st-drag-separator-color: #3b82f6;
+
+  /* Body background for state rows */
+  --st-body-background-color: var(--st-white);
+}
+
+/* Custom theme structural overrides — colors from tokens only */
+.theme-custom .st-wrapper {
+  border: var(--st-border-width) solid var(--st-border-color);
+}
+
+/* Subtle header border */
+.theme-custom .st-header-pinned-left,
+.theme-custom .st-header-main,
+.theme-custom .st-header-pinned-right {
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
+/* Remove heavy borders on pinned sections */
+.theme-custom .st-header-pinned-left,
+.theme-custom .st-body-pinned-left {
+  border-right: var(--st-border-width) solid var(--st-border-color);
+}
+
+.theme-custom .st-header-pinned-right,
+.theme-custom .st-body-pinned-right {
+  border-left: var(--st-border-width) solid var(--st-border-color);
+}
+
+/* Cleaner row separators */
+.theme-custom .st-row-separator {
+  background-color: var(--st-hover-row-background-color);
+}
+
+/* Lighter header cell styling */
+.theme-custom .st-header-cell {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--st-header-icon-color);
+}
+
+/* Cleaner cell text */
+.theme-custom .st-cell-content {
+  font-size: 14px;
+  color: var(--st-cell-color);
+}
+
+/* Subtle hover effect */
+.theme-custom .st-row.hovered {
+  transition: background-color 0.15s ease;
+}
+
+/* Footer uses the same tokens as the rest of the table (not forced light) */
+.theme-custom .st-footer {
+  border-top: var(--st-border-width) solid var(--st-border-color);
+  background-color: var(--st-footer-background-color);
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+/* Footer text styling */
+.theme-custom .st-footer-results-text {
+  color: var(--st-cell-color);
+  font-size: 14px;
+}
+
+/* Footer pagination container - hide extra buttons on smaller screens */
+.theme-custom .st-footer-pagination {
+  gap: 2px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+/* Pagination ellipsis */
+.theme-custom .st-page-ellipsis {
+  color: var(--st-page-btn-color);
+  font-weight: 400;
+  padding: 0 4px;
+}
+
+/* Cleaner pagination buttons - more compact */
+.theme-custom .st-page-btn {
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--st-page-btn-color);
+  padding: 6px 8px;
+  min-width: 36px;
+  transition: all 0.15s ease;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.theme-custom .st-page-btn:hover {
+  background-color: var(--st-page-btn-hover-background-color);
+}
+
+.theme-custom .st-page-btn.active {
+  background-color: var(--st-button-active-background-color);
+  color: var(--st-header-selected-label-color);
+  font-weight: 600;
+}
+
+/* Next/Prev buttons */
+.theme-custom .st-next-prev-btn {
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.theme-custom .st-next-prev-btn:not(.disabled):hover {
+  background-color: var(--st-page-btn-hover-background-color);
+}
+
+/* Modern scrollbar */
+.theme-custom .st-horizontal-scrollbar-container {
+  border-top: var(--st-border-width) solid var(--st-border-color);
+  background-color: var(--st-scrollbar-bg-color);
+}
+
+/* Cleaner group headers */
+.theme-custom .st-group-header {
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+  font-weight: 500;
+}
+
+/* Modern checkbox styling */
+.theme-custom .st-checkbox-custom {
+  border-radius: 4px;
+  border: 1.5px solid var(--st-checkbox-border-color);
+}
+
+.theme-custom .st-checkbox-custom.st-checked {
+  background-color: var(--st-checkbox-checked-background-color);
+  border-color: var(--st-checkbox-checked-border-color);
+}
