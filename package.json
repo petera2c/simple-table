@@ -2,6 +2,9 @@
   "name": "simple-table-monorepo",
   "private": true,
   "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "install:all": "pnpm install",
     "build": "turbo run build --filter=!simple-table-marketing",
@@ -30,7 +33,8 @@
     "generate-stackblitz": "node scripts/generate-stackblitz.mjs",
     "generate-stackblitz:test": "node scripts/generate-stackblitz.mjs --demos quick-start,live-update,crm",
     "start:core": "turbo run start --filter=simple-table-core",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "heroku-postbuild": "pnpm run build:marketing"
   },
   "devDependencies": {
     "turbo": "latest"
