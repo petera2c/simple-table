@@ -5,14 +5,15 @@
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
-  let selectedTheme: Theme = $state(theme ?? "light");
+  let userThemePick = $state<Theme | undefined>(undefined);
+  const selectedTheme: Theme = $derived(userThemePick ?? theme ?? "light");
 </script>
 
 <div>
   <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px">
     {#each AVAILABLE_THEMES as t}
       <button
-        onclick={() => (selectedTheme = t.value)}
+        onclick={() => (userThemePick = t.value)}
         style="padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; border: {selectedTheme === t.value ? '2px solid #3b82f6' : '1px solid #d1d5db'}; background: {selectedTheme === t.value ? '#eff6ff' : '#fff'}; color: {selectedTheme === t.value ? '#1d4ed8' : '#374151'}; font-weight: {selectedTheme === t.value ? 600 : 400}"
       >
         {t.label}

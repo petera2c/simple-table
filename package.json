@@ -27,7 +27,7 @@
     "dev:examples-solid": "pnpm --filter=examples-solid dev",
     "dev:examples-angular": "pnpm --filter=examples-angular dev",
     "dev:examples-vanilla": "pnpm --filter=examples-vanilla dev",
-    "build:examples": "pnpm --filter=examples-react --filter=examples-vue --filter=examples-svelte --filter=examples-solid --filter=examples-angular --filter=examples-vanilla build",
+    "build:examples": "turbo run build --filter=examples-react --filter=examples-vue --filter=examples-svelte --filter=examples-solid --filter=examples-angular --filter=examples-vanilla",
     "new-demo": "node scripts/new-demo.mjs",
     "verify-examples": "node scripts/verify-examples.mjs",
     "generate-stackblitz": "node scripts/generate-stackblitz.mjs",
