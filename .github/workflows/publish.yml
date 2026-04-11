@@ -12,7 +12,32 @@ permissions:
   contents: write
 
 jobs:
+  verify-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify demo parity across frameworks
+        run: node scripts/verify-examples.mjs
+
+      - name: Build all example apps
+        run: pnpm run build:examples
+
   publish:
+    needs: verify-examples
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

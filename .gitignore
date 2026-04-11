@@ -3,6 +3,8 @@
 # dependencies
 node_modules
 **/node_modules
+# Monorepo uses pnpm only; npm lockfile breaks Heroku Node buildpack
+package-lock.json
 /.pnp
 /.playwright-browsers
 /.cursor
