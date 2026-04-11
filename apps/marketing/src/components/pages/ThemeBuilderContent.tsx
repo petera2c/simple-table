@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Button, Input } from "antd";
 import PageWrapper from "@/components/PageWrapper";
 import type { Color } from "antd/es/color-picker";
@@ -381,9 +381,30 @@ export default function ThemeBuilderContent() {
   // Track user changes that apply to all themes
   const [userChanges, setUserChanges] = useState<Partial<ThemeConfig>>({});
 
-  // Non-CSS variable states (these are props passed directly to the table component)
-  const [rowHeight, setRowHeight] = useState<number>(ROW_HEIGHT);
-  const [headerHeight, setHeaderHeight] = useState<number>(HEADER_HEIGHT);
+  // Non-CSS props: keep raw strings so the user can clear the field while editing; derive
+  // positive pixel values for the table (last valid number while input is empty/invalid).
+  const [rowHeightInput, setRowHeightInput] = useState(String(ROW_HEIGHT));
+  const [headerHeightInput, setHeaderHeightInput] = useState(String(HEADER_HEIGHT));
+  const lastValidRowHeightRef = useRef(ROW_HEIGHT);
+  const lastValidHeaderHeightRef = useRef(HEADER_HEIGHT);
+
+  const rowHeight = useMemo(() => {
+    const n = parseInt(rowHeightInput, 10);
+    if (!isNaN(n) && n > 0) {
+      lastValidRowHeightRef.current = n;
+      return n;
+    }
+    return lastValidRowHeightRef.current;
+  }, [rowHeightInput]);
+
+  const headerHeight = useMemo(() => {
+    const n = parseInt(headerHeightInput, 10);
+    if (!isNaN(n) && n > 0) {
+      lastValidHeaderHeightRef.current = n;
+      return n;
+    }
+    return lastValidHeaderHeightRef.current;
+  }, [headerHeightInput]);
 
   // The current theme is a combination of the default theme for the current mode + user changes
   const [theme, setTheme] = useState<ThemeConfig>(
@@ -437,18 +458,12 @@ export default function ThemeBuilderContent() {
       if (value !== null) {
         // Special handling for non-CSS variable props
         if (key === "rowHeight") {
-          const numValue = typeof value === "number" ? value : parseInt(value, 10);
-          if (!isNaN(numValue) && numValue > 0) {
-            setRowHeight(numValue);
-          }
+          setRowHeightInput(typeof value === "number" ? String(value) : value);
           return;
         }
 
         if (key === "headerHeight") {
-          const numValue = typeof value === "number" ? value : parseInt(value, 10);
-          if (!isNaN(numValue) && numValue > 0) {
-            setHeaderHeight(numValue);
-          }
+          setHeaderHeightInput(typeof value === "number" ? String(value) : value);
           return;
         }
 
@@ -463,8 +478,10 @@ export default function ThemeBuilderContent() {
     // Clear all user changes, search, and reset non-CSS props
     setUserChanges({});
     setSearchQuery("");
-    setRowHeight(ROW_HEIGHT);
-    setHeaderHeight(HEADER_HEIGHT);
+    setRowHeightInput(String(ROW_HEIGHT));
+    setHeaderHeightInput(String(HEADER_HEIGHT));
+    lastValidRowHeightRef.current = ROW_HEIGHT;
+    lastValidHeaderHeightRef.current = HEADER_HEIGHT;
   };
 
   const generateCSS = (): string => {
@@ -1129,10 +1146,10 @@ export default function ThemeBuilderContent() {
     // Check if any fields in this config have been modified
     const hasModifications = config.fields.some((field) => {
       if (field.key === "rowHeight") {
-        return rowHeight !== ROW_HEIGHT;
+        return rowHeightInput !== String(ROW_HEIGHT);
       }
       if (field.key === "headerHeight") {
-        return headerHeight !== HEADER_HEIGHT;
+        return headerHeightInput !== String(HEADER_HEIGHT);
       }
       return userChanges[field.key as keyof ThemeConfig] !== undefined;
     });
@@ -1155,7 +1172,7 @@ export default function ThemeBuilderContent() {
                 <ThemeInput
                   key={index}
                   label={field.label || shortenLabel(field.key.toString())}
-                  value={rowHeight}
+                  value={rowHeightInput}
                   onChange={(value) => handleValueChange(field.key)(value)}
                   tooltip={field.tooltip}
                 />
@@ -1166,7 +1183,7 @@ export default function ThemeBuilderContent() {
                 <ThemeInput
                   key={index}
                   label={field.label || shortenLabel(field.key.toString())}
-                  value={headerHeight}
+                  value={headerHeightInput}
                   onChange={(value) => handleValueChange(field.key)(value)}
                   tooltip={field.tooltip}
                 />
@@ -1273,8 +1290,8 @@ export default function ThemeBuilderContent() {
   // Count modifications (including non-CSS props if changed)
   const modificationCount =
     Object.keys(userChanges).length +
-    (rowHeight !== ROW_HEIGHT ? 1 : 0) +
-    (headerHeight !== HEADER_HEIGHT ? 1 : 0);
+    (rowHeightInput !== String(ROW_HEIGHT) ? 1 : 0) +
+    (headerHeightInput !== String(HEADER_HEIGHT) ? 1 : 0);
 
   // Create footer content
   const footerContent = (

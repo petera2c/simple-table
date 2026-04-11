@@ -53,3 +53,11 @@ export const DEFAULT_CUSTOM_THEME: CustomTheme = {
 
   selectionColumnWidth: 42,
 };
+
+/** Shallow value equality — used to skip layout work when React passes a new `customTheme` object with the same numbers. */
+export function areCustomThemesEqual(a: CustomTheme, b: CustomTheme): boolean {
+  for (const key of Object.keys(DEFAULT_CUSTOM_THEME) as (keyof CustomTheme)[]) {
+    if (a[key] !== b[key]) return false;
+  }
+  return true;
+}

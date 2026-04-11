@@ -1,0 +1,44 @@
+name: Deploy marketing to Heroku
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "apps/marketing/**"
+      - "packages/core/**"
+      - "packages/react/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+      - "Procfile"
+  workflow_dispatch:
+
+concurrency:
+  group: heroku-marketing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          HEROKU_GIT_BRANCH: ${{ vars.HEROKU_GIT_BRANCH }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HEROKU_API_KEY:-}" ] || [ -z "${HEROKU_APP_NAME:-}" ]; then
+            echo "::notice title=Heroku::Skipping deploy: set repository secrets HEROKU_API_KEY and HEROKU_APP_NAME."
+            exit 0
+          fi
+          BRANCH="${HEROKU_GIT_BRANCH:-main}"
+          git remote remove heroku 2>/dev/null || true
+          git remote add heroku "https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git"
+          git push -f heroku "HEAD:refs/heads/${BRANCH}"
