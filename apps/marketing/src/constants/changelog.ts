@@ -12,7 +12,7 @@ export interface ChangelogEntry {
 }
 
 export const v3_0_0: ChangelogEntry = {
-  version: "3.0.0",
+  version: "3.0.1",
   date: "2026-03-29",
   title: "Framework Adapters & Column Virtualization",
   titleLink: "/migrations/v3",
@@ -26,8 +26,7 @@ export const v3_0_0: ChangelogEntry = {
     },
     {
       type: "breaking",
-      description:
-        "simple-table-core is now plain JS — no framework components exported",
+      description: "simple-table-core is now plain JS — no framework components exported",
     },
     {
       type: "feature",
