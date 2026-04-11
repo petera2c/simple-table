@@ -1,31 +1,26 @@
 name: Deploy marketing to Heroku
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Publish to npm"]
+    types: [completed]
     branches: [main, master]
-    paths:
-      - "apps/marketing/**"
-      - "packages/core/**"
-      - "packages/react/**"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "turbo.json"
-      - "Procfile"
   workflow_dispatch:
 
 concurrency:
-  group: heroku-marketing-${{ github.ref }}
+  group: heroku-marketing-${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
 
       - name: Push to Heroku
         env:
