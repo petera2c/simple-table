@@ -15,6 +15,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Heroku rejects pushes from shallow clones ("shallow update not allowed").
+          fetch-depth: 0
 
       - name: Push to Heroku
         env:
