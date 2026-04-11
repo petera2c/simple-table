@@ -4,6 +4,21 @@ import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "./buildVanillaConfig";
 import type { SimpleTableReactProps, TableInstance } from "./types";
 
+/** Top-level referential equality; avoids pushing duplicate `update` when parent re-renders with a new props object. */
+function shallowTablePropsChanged(
+  prev: SimpleTableReactProps,
+  next: SimpleTableReactProps,
+): boolean {
+  const keys = new Set([
+    ...Object.keys(prev as object),
+    ...Object.keys(next as object),
+  ]) as Set<keyof SimpleTableReactProps>;
+  for (const key of keys) {
+    if (prev[key] !== next[key]) return true;
+  }
+  return false;
+}
+
 /**
  * SimpleTable — React adapter for simple-table-core.
  *
@@ -38,6 +53,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
     const syncedDefaultHeadersRef = useRef<SimpleTableReactProps["defaultHeaders"] | undefined>(
       undefined,
     );
+    const lastSyncedPropsRef = useRef<SimpleTableReactProps | null>(null);
 
     // forwardRef omits `ref` from props at the type level; cast it back so
     // buildVanillaConfig receives the complete SimpleTableReactProps shape.
@@ -78,6 +94,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
           instance.destroy();
           instanceRef.current = null;
           syncedDefaultHeadersRef.current = undefined;
+          lastSyncedPropsRef.current = null;
           if (ref && typeof ref !== "function") {
             ref.current = null;
           }
@@ -86,12 +103,20 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Sync prop changes to the vanilla instance after every render (deferred like mount).
+    // Sync prop changes to the vanilla instance (deferred like mount).
     // When `defaultHeaders` keeps the same reference, omit it so core does not
     // reset internal header state (widths, reorder results). New reference = new columns.
     useLayoutEffect(() => {
       const instance = instanceRef.current;
       if (!instance) return;
+
+      if (
+        lastSyncedPropsRef.current !== null &&
+        !shallowTablePropsChanged(lastSyncedPropsRef.current, reactProps)
+      ) {
+        return;
+      }
+      lastSyncedPropsRef.current = reactProps;
 
       const fullConfig = buildVanillaConfig(reactProps);
 
@@ -107,7 +132,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
         const { defaultHeaders: _headers, ...rest } = fullConfig;
         instance.update(rest as Partial<SimpleTableConfig>);
       });
-    });
+    }, [reactProps]);
 
     return <div ref={containerRef} />;
   },

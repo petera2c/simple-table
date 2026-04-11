@@ -7,6 +7,7 @@ import SortColumn, { SortDirection } from "../../types/SortColumn";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
 import { CustomTheme } from "../../types/CustomTheme";
 import UpdateDataProps from "../../types/UpdateCellProps";
+import type CellValue from "../../types/CellValue";
 import { SetHeaderRenameProps, ExportToCSVProps } from "../../types/TableAPI";
 import RowState from "../../types/RowState";
 import Cell from "../../types/Cell";
@@ -76,6 +77,40 @@ export class TableAPIImpl {
       });
     };
 
+    /** Coalesce many `updateData` calls in one turn (e.g. live metrics) into one DOM pass. */
+    const pendingUpdateDataByKey = new Map<string, CellValue>();
+    let updateDataFlushScheduled = false;
+
+    const flushPendingUpdateData = () => {
+      updateDataFlushScheduled = false;
+      if (pendingUpdateDataByKey.size === 0) return;
+
+      let needsFullRender = false;
+      pendingUpdateDataByKey.forEach((_value, key) => {
+        if (!context.cellRegistry?.get(key)) {
+          needsFullRender = true;
+        }
+      });
+
+      if (needsFullRender) {
+        pendingUpdateDataByKey.clear();
+        context.onRender();
+        return;
+      }
+
+      pendingUpdateDataByKey.forEach((value, key) => {
+        const entry = context.cellRegistry!.get(key)!;
+        entry.updateContent(value);
+      });
+      pendingUpdateDataByKey.clear();
+    };
+
+    const scheduleUpdateDataFlush = () => {
+      if (updateDataFlushScheduled) return;
+      updateDataFlushScheduled = true;
+      queueMicrotask(flushPendingUpdateData);
+    };
+
     return {
       updateData: (props: UpdateDataProps) => {
         const { rowIndex, accessor, newValue } = props;
@@ -96,12 +131,8 @@ export class TableAPIImpl {
               ]
             : [rowIndex];
           const key = `${rowIdArray.join("-")}-${accessor}`;
-          const entry = context.cellRegistry?.get(key);
-          if (entry) {
-            entry.updateContent(newValue);
-          } else {
-            context.onRender();
-          }
+          pendingUpdateDataByKey.set(key, newValue);
+          scheduleUpdateDataFlush();
         }
       },
 

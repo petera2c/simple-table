@@ -3,7 +3,7 @@ import { CustomTheme } from "../../types/CustomTheme";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
-import { DimensionManager } from "../../managers/DimensionManager";
+import { DimensionManager, type DimensionManagerState } from "../../managers/DimensionManager";
 import { ScrollManager } from "../../managers/ScrollManager";
 import type { SectionScrollController } from "../../managers/SectionScrollController";
 import { SortManager } from "../../managers/SortManager";
@@ -145,36 +145,38 @@ export class RenderOrchestrator {
     return normalizeHeaderWidths(processedHeaders);
   }
 
-  render(
-    elements: {
-      bodyContainer: HTMLElement;
-      content: HTMLElement;
-      contentWrapper: HTMLElement;
-      footerContainer: HTMLElement;
-      headerContainer: HTMLElement;
-      rootElement: HTMLElement;
-      wrapperContainer: HTMLElement;
-    },
-    refs: {
-      mainBodyRef: { current: HTMLDivElement | null };
-      tableBodyContainerRef: { current: HTMLDivElement | null };
-    },
+  /**
+   * Warms flattened/processed row caches so imperative APIs (e.g. getVisibleRows) are
+   * correct before the first ResizeObserver-driven render, without mutating the DOM.
+   */
+  primeLastProcessedResult(context: RenderContext, state: RenderState): void {
+    const snapshot = this.buildRowModelSnapshot(context, state);
+    if (!snapshot) return;
+    this.lastProcessedResult = snapshot.processedResult;
+    context.rowSelectionManager?.updateConfig({
+      tableRows: snapshot.processedResult.currentTableRows,
+    });
+  }
+
+  private buildRowModelSnapshot(
     context: RenderContext,
     state: RenderState,
-    mergedColumnEditorConfig: MergedColumnEditorConfig,
-  ): void {
-    // Invalidate caches when headers or rows change (by reference)
+  ): {
+    dimensionState: DimensionManagerState;
+    containerWidth: number;
+    effectiveHeaders: HeaderObject[];
+    calculatedHeaderHeight: number;
+    maxHeaderDepth: number;
+    flattenResult: FlattenRowsResult;
+    processedResult: ProcessRowsResult;
+  } | null {
     if (this.lastHeadersRef !== context.headers) {
       this.invalidateCache("header");
       this.invalidateCache("context");
       this.lastHeadersRef = context.headers;
     }
 
-    if (!context.dimensionManager) return;
-
-    // Capture horizontal scroll at start so we can reapply after header/body render (DOM updates can reset it)
-    const savedScrollLeft =
-      context.mainBodyRef?.current?.scrollLeft ?? context.mainHeaderRef?.current?.scrollLeft ?? 0;
+    if (!context.dimensionManager) return null;
 
     const dimensionState = context.dimensionManager.getState();
 
@@ -187,8 +189,6 @@ export class RenderOrchestrator {
       containerWidth,
     );
 
-    // Calculate pinned section widths from un-scaled headers first so auto-scale
-    // knows exactly how much space is available for the main section.
     const { leftWidth: pinnedLeftWidth, rightWidth: pinnedRightWidth } =
       recalculateAllSectionWidths({
         headers: effectiveHeaders,
@@ -207,65 +207,17 @@ export class RenderOrchestrator {
       });
     }
 
-    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
-      recalculateAllSectionWidths({
-        headers: effectiveHeaders,
-        containerWidth,
-        collapsedHeaders: context.collapsedHeaders,
-      });
-
-    const mainSectionContainerWidth = containerWidth - leftWidth - rightWidth;
-
-    // Match main: maxHeight overrides height for the container; when maxHeight is set, height prop is ignored
-    const normalizeHeight = (v: string | number) => (typeof v === "number" ? `${v}px` : v);
-    const rootStyle = elements.rootElement.style;
-    // Never assign style.cssText on the root: consumers (e.g. theme builders) set
-    // --st-* tokens via setProperty; a full cssText replace would wipe them every render.
-    if (context.config.maxHeight) {
-      const normalizedMax = normalizeHeight(context.config.maxHeight);
-      rootStyle.maxHeight = normalizedMax;
-      rootStyle.height =
-        dimensionState.contentHeight === undefined ? "auto" : normalizedMax;
-    } else {
-      rootStyle.removeProperty("max-height");
-      if (context.config.height) {
-        rootStyle.height = normalizeHeight(context.config.height);
-      } else {
-        rootStyle.removeProperty("height");
-      }
-    }
-
-    const { customTheme } = context;
-    rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
-    rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
-    rootStyle.setProperty(
-      "--st-editor-width",
-      `${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px`,
-    );
-    rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
-    rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
-
-    const columnResizing = context.config.columnResizing ?? false;
-    elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
-    elements.content.style.width = context.config.editColumns
-      ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
-      : "100%";
-
     let effectiveRows = context.localRows;
 
-    // Use sorted rows from SortManager (which already includes filtering)
-    // The FilterManager updates the SortManager's input rows when filters change
     if (context.sortManager) {
       effectiveRows = context.sortManager.getSortedRows();
     } else if (context.filterManager) {
-      // Fallback: if no sort manager but filter manager exists, use filtered rows
       effectiveRows = context.filterManager.getFilteredRows();
     }
 
-    // Invalidate body and context cache when effective rows change (includes sorting/filtering)
     if (this.lastRowsRef !== effectiveRows) {
       this.invalidateCache("body");
-      this.invalidateCache("context"); // Also invalidate context to update sort indicators
+      this.invalidateCache("context");
       this.lastRowsRef = effectiveRows;
     }
 
@@ -277,11 +229,9 @@ export class RenderOrchestrator {
       effectiveRows = Array.from({ length: rowsToShow }, () => ({}));
     }
 
-    // Check if we can use cached flattened rows
     const sortState = context.sortManager?.getState();
     const filterState = context.filterManager?.getState();
 
-    // Serialize sort and filter state for cache comparison
     const sortKey = sortState?.sort
       ? `${sortState.sort.key.accessor}-${sortState.sort.direction}`
       : "none";
@@ -303,14 +253,13 @@ export class RenderOrchestrator {
 
     let aggregatedRows: Row[];
     let quickFilteredRows: Row[];
-    let flattenResult: any;
+    let flattenResult: FlattenRowsResult;
 
     if (canUseCache && this.flattenedRowsCache) {
       aggregatedRows = this.flattenedRowsCache.aggregatedRows;
       quickFilteredRows = this.flattenedRowsCache.quickFilteredRows;
       flattenResult = this.flattenedRowsCache.flattenResult;
     } else {
-      // SortManager already returns aggregated rows, so only aggregate if no SortManager
       aggregatedRows = context.sortManager
         ? effectiveRows
         : calculateAggregatedRows({
@@ -342,7 +291,6 @@ export class RenderOrchestrator {
         customTheme: context.customTheme,
       });
 
-      // Cache the result
       this.flattenedRowsCache = {
         aggregatedRows,
         quickFilteredRows,
@@ -392,11 +340,100 @@ export class RenderOrchestrator {
       enableStickyParents: context.config.enableStickyParents ?? false,
       rowGrouping: context.config.rowGrouping,
     });
+
+    return {
+      dimensionState,
+      containerWidth,
+      effectiveHeaders,
+      calculatedHeaderHeight,
+      maxHeaderDepth,
+      flattenResult,
+      processedResult,
+    };
+  }
+
+  render(
+    elements: {
+      bodyContainer: HTMLElement;
+      content: HTMLElement;
+      contentWrapper: HTMLElement;
+      footerContainer: HTMLElement;
+      headerContainer: HTMLElement;
+      rootElement: HTMLElement;
+      wrapperContainer: HTMLElement;
+    },
+    refs: {
+      mainBodyRef: { current: HTMLDivElement | null };
+      tableBodyContainerRef: { current: HTMLDivElement | null };
+    },
+    context: RenderContext,
+    state: RenderState,
+    mergedColumnEditorConfig: MergedColumnEditorConfig,
+  ): void {
+    const savedScrollLeft =
+      context.mainBodyRef?.current?.scrollLeft ?? context.mainHeaderRef?.current?.scrollLeft ?? 0;
+
+    const snapshot = this.buildRowModelSnapshot(context, state);
+    if (!snapshot) return;
+
+    const {
+      dimensionState,
+      containerWidth,
+      effectiveHeaders,
+      calculatedHeaderHeight,
+      maxHeaderDepth,
+      flattenResult,
+      processedResult,
+    } = snapshot;
     this.lastProcessedResult = processedResult;
 
     context.rowSelectionManager?.updateConfig({
       tableRows: processedResult.currentTableRows,
     });
+
+    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
+      recalculateAllSectionWidths({
+        headers: effectiveHeaders,
+        containerWidth,
+        collapsedHeaders: context.collapsedHeaders,
+      });
+
+    const mainSectionContainerWidth = containerWidth - leftWidth - rightWidth;
+
+    // Match main: maxHeight overrides height for the container; when maxHeight is set, height prop is ignored
+    const normalizeHeight = (v: string | number) => (typeof v === "number" ? `${v}px` : v);
+    const rootStyle = elements.rootElement.style;
+    // Never assign style.cssText on the root: consumers (e.g. theme builders) set
+    // --st-* tokens via setProperty; a full cssText replace would wipe them every render.
+    if (context.config.maxHeight) {
+      const normalizedMax = normalizeHeight(context.config.maxHeight);
+      rootStyle.maxHeight = normalizedMax;
+      rootStyle.height =
+        dimensionState.contentHeight === undefined ? "auto" : normalizedMax;
+    } else {
+      rootStyle.removeProperty("max-height");
+      if (context.config.height) {
+        rootStyle.height = normalizeHeight(context.config.height);
+      } else {
+        rootStyle.removeProperty("height");
+      }
+    }
+
+    const { customTheme } = context;
+    rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
+    rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
+    rootStyle.setProperty(
+      "--st-editor-width",
+      `${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px`,
+    );
+    rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
+    rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
+
+    const columnResizing = context.config.columnResizing ?? false;
+    elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
+    elements.content.style.width = context.config.editColumns
+      ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
+      : "100%";
 
     this.renderHeader(
       elements.headerContainer,

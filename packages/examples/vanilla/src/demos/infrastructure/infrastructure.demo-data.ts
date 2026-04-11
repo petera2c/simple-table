@@ -187,11 +187,6 @@ export const infrastructureHeaders: HeaderObject[] = [
   },
 ];
 
-export const INFRA_UPDATE_CONFIG = {
-  minInterval: 300,
-  maxInterval: 1000,
-};
-
 export function getInfraMetricColorStyles(
   value: number,
   theme: string,

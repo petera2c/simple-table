@@ -9,6 +9,24 @@ import type {
 import { domSlotToReactNode, mapColumnEditorRowComponentsForReact } from "./ImperativeDomSlot";
 
 /**
+ * Nested `createRoot` renders use `flushSync` so the host has real DOM before
+ * simple-table-core appends it. `flushSync` must not run while React is already
+ * in a lifecycle commit (e.g. `useEffect` / `flushPassiveEffects`). Scheduling
+ * one microtask runs the commit after the caller stack unwinds, which clears
+ * that warning while still completing before paint in normal browser scheduling.
+ */
+function scheduleNestedRootCommit(
+  root: ReturnType<typeof createRoot>,
+  element: React.ReactElement,
+): void {
+  queueMicrotask(() => {
+    flushSync(() => {
+      root.render(element);
+    });
+  });
+}
+
+/**
  * After assigning innerHTML from renderToStaticMarkup, drop the temporary host
  * when markup produced exactly one element root (no extra wrapper in the tree).
  */
@@ -38,9 +56,7 @@ export function wrapReactRenderer<P extends object>(
   return (props: P): HTMLElement => {
     const container = document.createElement("div");
     const root = createRoot(container);
-    flushSync(() => {
-      root.render(<Component {...(props as any)} />);
-    });
+    scheduleNestedRootCommit(root, <Component {...(props as any)} />);
     return container;
   };
 }
@@ -59,9 +75,7 @@ export function wrapReactColumnEditorRowRenderer(
       ...props,
       components: mapColumnEditorRowComponentsForReact(props.components),
     };
-    flushSync(() => {
-      root.render(<Component {...(reactProps as any)} />);
-    });
+    scheduleNestedRootCommit(root, <Component {...(reactProps as any)} />);
     return container;
   };
 }
@@ -82,9 +96,7 @@ export function wrapReactColumnEditorCustomRenderer(
       listSection: domSlotToReactNode(props.listSection),
       resetSection: props.resetSection ? domSlotToReactNode(props.resetSection) : null,
     };
-    flushSync(() => {
-      root.render(<Component {...(reactProps as any)} />);
-    });
+    scheduleNestedRootCommit(root, <Component {...(reactProps as any)} />);
     return container;
   };
 }
@@ -92,9 +104,7 @@ export function wrapReactColumnEditorCustomRenderer(
 /**
  * Like wrapReactRenderer but uses `display: contents` so layout is unchanged
  * when core appends this node (no extra box vs a plain div).
- * flushSync ensures the tree is committed before the host is returned — required
- * when vanilla renders cells from a React effect, where a deferred nested root
- * would otherwise yield an empty container.
+ * Commit scheduling matches {@link wrapReactRenderer} (microtask + flushSync).
  */
 export function wrapReactRendererIntoFragment<P extends object>(
   Component: React.ComponentType<P>,
@@ -103,9 +113,7 @@ export function wrapReactRendererIntoFragment<P extends object>(
     const container = document.createElement("div");
     container.style.display = "contents";
     const root = createRoot(container);
-    flushSync(() => {
-      root.render(<Component {...(props as any)} />);
-    });
+    scheduleNestedRootCommit(root, <Component {...(props as any)} />);
     return container;
   };
 }
@@ -124,8 +132,8 @@ export function wrapReactNode(node: React.ReactNode): HTMLElement {
  * Converts a ReactNode to an HTML string using server-side static rendering.
  * Used for icon props where the vanilla table expects a string | HTMLElement | SVGSVGElement.
  * Uses renderToStaticMarkup so it works synchronously from any context — including
- * inside a useEffect — unlike createRoot + flushSync which silently produces empty
- * output when called during React 18's passive effects phase.
+ * inside a useEffect — unlike createRoot alone without a follow-up commit, which
+ * can yield empty output when React defers the nested root.
  */
 export function reactNodeToHtmlString(node: React.ReactNode): string {
   return renderToStaticMarkup(<>{node}</>);
