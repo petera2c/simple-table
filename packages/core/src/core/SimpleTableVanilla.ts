@@ -265,10 +265,6 @@ export class SimpleTableVanilla {
       infiniteScrollThreshold: 200,
     });
 
-    this.scrollManager.subscribe(() => {
-      this.render("scrollManager");
-    });
-
     this.sectionScrollController = new SectionScrollController({
       onMainSectionScrollLeft: (scrollLeft) => {
         const refs = this.domManager.getRefs();
