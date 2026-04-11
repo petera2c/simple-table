@@ -1,0 +1,55 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#F8FAFC" rx="24"/>
+  
+  <!-- Grid pattern background -->
+  <g opacity="0.1">
+    <line x1="0" y1="157.5" x2="1200" y2="157.5" stroke="#64748B" stroke-width="1"/>
+    <line x1="0" y1="315" x2="1200" y2="315" stroke="#64748B" stroke-width="1"/>
+    <line x1="0" y1="472.5" x2="1200" y2="472.5" stroke="#64748B" stroke-width="1"/>
+    <line x1="300" y1="0" x2="300" y2="630" stroke="#64748B" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="#64748B" stroke-width="1"/>
+    <line x1="900" y1="0" x2="900" y2="630" stroke="#64748B" stroke-width="1"/>
+  </g>
+  
+  <!-- Main table icon -->
+  <g transform="translate(400, 75)">
+    <!-- Table structure -->
+    <rect x="0" y="0" width="400" height="80" rx="8" fill="#3B82F6" opacity="0.15" stroke="#3B82F6" stroke-width="3"/>
+    <rect x="0" y="90" width="400" height="70" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <rect x="0" y="170" width="400" height="70" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <rect x="0" y="250" width="400" height="70" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    
+    <!-- Column dividers -->
+    <line x1="133" y1="0" x2="133" y2="320" stroke="#CBD5E1" stroke-width="2"/>
+    <line x1="267" y1="0" x2="267" y2="320" stroke="#CBD5E1" stroke-width="2"/>
+    
+    <!-- Header highlight -->
+    <line x1="20" y1="35" x2="113" y2="35" stroke="#3B82F6" stroke-width="6" stroke-linecap="round"/>
+    <line x1="153" y1="35" x2="247" y2="35" stroke="#3B82F6" stroke-width="6" stroke-linecap="round"/>
+    <line x1="287" y1="35" x2="380" y2="35" stroke="#3B82F6" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- Row data indicators -->
+    <circle cx="67" cy="125" r="8" fill="#10B981"/>
+    <circle cx="200" cy="125" r="8" fill="#10B981"/>
+    <circle cx="333" cy="125" r="8" fill="#10B981"/>
+    
+    <circle cx="67" cy="205" r="8" fill="#8B5CF6"/>
+    <circle cx="200" cy="205" r="8" fill="#8B5CF6"/>
+    <circle cx="333" cy="205" r="8" fill="#8B5CF6"/>
+    
+    <circle cx="67" cy="285" r="8" fill="#F59E0B"/>
+    <circle cx="200" cy="285" r="8" fill="#F59E0B"/>
+    <circle cx="333" cy="285" r="8" fill="#F59E0B"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="500" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#0F172A" text-anchor="middle">
+    Simple Table
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="400" fill="#64748B" text-anchor="middle">
+    Modern React Table Library
+  </text>
+</svg>

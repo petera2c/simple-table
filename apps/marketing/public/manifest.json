@@ -1,0 +1,16 @@
+{
+  "name": "Simple Table",
+  "short_name": "Simple Table",
+  "description": "The Best React Table Component for Business Applications",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

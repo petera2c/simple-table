@@ -86,7 +86,9 @@ export default {
 
     isDev && ignoreCss,
 
-    del({ targets: "dist/*" }),
+    // In watch mode, do not delete dist/ on every rebuild — Next reads those files
+    // and would briefly see an empty package. Production keeps a clean dist/.
+    !isDev && del({ targets: "dist/*" }),
     peerDepsExternal(),
     resolve(),
 
@@ -104,7 +106,7 @@ export default {
       },
     }),
 
-    !isDev && {
+    {
       name: "copy-core-styles",
       writeBundle() {
         const src = path.resolve(__dirname, "../core/dist/styles.css");

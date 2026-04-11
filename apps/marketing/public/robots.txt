@@ -1,0 +1,43 @@
+User-agent: *
+Allow: /
+Allow: /docs/
+Allow: /examples/
+Allow: /theme-builder/
+Allow: /blog/
+Allow: /comparisons/
+Allow: /pricing/
+Allow: /legal/
+
+# AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Bard
+Allow: /
+
+User-agent: BingBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.simple-table.com/sitemap.xml
+# Disallow admin or private areas if they exist
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /node_modules/ 

@@ -1,0 +1,35 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="400" fill="#F8FAFC" rx="32"/>
+  
+  <!-- Main table icon -->
+  <g transform="translate(50, 75)">
+    <!-- Table structure -->
+    <rect x="0" y="0" width="300" height="60" rx="6" fill="#3B82F6" opacity="0.15" stroke="#3B82F6" stroke-width="3"/>
+    <rect x="0" y="70" width="300" height="53" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <rect x="0" y="133" width="300" height="53" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <rect x="0" y="196" width="300" height="53" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    
+    <!-- Column dividers -->
+    <line x1="100" y1="0" x2="100" y2="249" stroke="#CBD5E1" stroke-width="2"/>
+    <line x1="200" y1="0" x2="200" y2="249" stroke="#CBD5E1" stroke-width="2"/>
+    
+    <!-- Header highlight -->
+    <line x1="15" y1="27" x2="85" y2="27" stroke="#3B82F6" stroke-width="5" stroke-linecap="round"/>
+    <line x1="115" y1="27" x2="185" y2="27" stroke="#3B82F6" stroke-width="5" stroke-linecap="round"/>
+    <line x1="215" y1="27" x2="285" y2="27" stroke="#3B82F6" stroke-width="5" stroke-linecap="round"/>
+    
+    <!-- Row data indicators -->
+    <circle cx="50" cy="96.5" r="6" fill="#10B981"/>
+    <circle cx="150" cy="96.5" r="6" fill="#10B981"/>
+    <circle cx="250" cy="96.5" r="6" fill="#10B981"/>
+    
+    <circle cx="50" cy="159.5" r="6" fill="#8B5CF6"/>
+    <circle cx="150" cy="159.5" r="6" fill="#8B5CF6"/>
+    <circle cx="250" cy="159.5" r="6" fill="#8B5CF6"/>
+    
+    <circle cx="50" cy="222.5" r="6" fill="#F59E0B"/>
+    <circle cx="150" cy="222.5" r="6" fill="#F59E0B"/>
+    <circle cx="250" cy="222.5" r="6" fill="#F59E0B"/>
+  </g>
+</svg>
