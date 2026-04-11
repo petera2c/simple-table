@@ -23,7 +23,12 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyOneMetricUpdate(api: TableAPI, server: Row, actualRowIndex: number, slot: MetricSlot) {
+function applyOneMetricUpdate(
+  api: TableAPI,
+  server: Row,
+  actualRowIndex: number,
+  slot: MetricSlot,
+) {
   switch (slot) {
     case 0: {
       const currentCpu = server.cpuUsage as number;

@@ -344,6 +344,16 @@ export class SimpleTableVanilla {
     }
 
     this.setupEventListeners();
+
+    // DimensionManager defers its first subscriber notification to the next frame
+    // (ResizeObserver + rAF). Prime row caches only (no DOM) so imperative callers
+    // (e.g. getVisibleRows right after mount) do not fall back to the full flattened list.
+    if (this.dimensionManager) {
+      this.renderOrchestrator.primeLastProcessedResult(
+        this.getRenderContext(),
+        this.getRenderState(),
+      );
+    }
   }
 
   private setupEventListeners(): void {
