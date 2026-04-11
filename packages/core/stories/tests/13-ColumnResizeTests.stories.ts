@@ -358,6 +358,55 @@ const createEmployeeData = () => [
   { id: 3, name: "Charlie Brown", email: "charlie@example.com", department: "Engineering", salary: 140000 },
 ];
 
+/** Bottom horizontal track left segment should stay aligned with the pinned-left body width. */
+export const PinnedResizeSyncsHorizontalScrollbar = {
+  parameters: { tags: ["pinned-resize-h-scrollbar"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 160, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 280, type: "string" },
+      { accessor: "department", label: "Department", width: 200, type: "string" },
+      { accessor: "salary", label: "Salary", width: 160, type: "number" },
+    ];
+    const { wrapper, tableContainer } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      columnResizing: true,
+    });
+    tableContainer.style.width = "380px";
+    tableContainer.style.maxWidth = "100%";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const hBarLeft = canvasElement.querySelector(
+      ".st-horizontal-scrollbar-left",
+    ) as HTMLElement | null;
+    const pinnedBody = canvasElement.querySelector(".st-body-pinned-left") as HTMLElement | null;
+    expect(hBarLeft).toBeTruthy();
+    expect(pinnedBody).toBeTruthy();
+
+    const parsePx = (el: HTMLElement) => parseFloat(window.getComputedStyle(el).width);
+
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+    await resizeColumn(nameHeader!, 55, () => findHeaderCellByLabel(canvasElement, "Name"));
+
+    const hBarLeftAfter = canvasElement.querySelector(
+      ".st-horizontal-scrollbar-left",
+    ) as HTMLElement | null;
+    const pinnedBodyAfter = canvasElement.querySelector(
+      ".st-body-pinned-left",
+    ) as HTMLElement | null;
+    expect(hBarLeftAfter).toBeTruthy();
+    expect(pinnedBodyAfter).toBeTruthy();
+
+    const barW = parsePx(hBarLeftAfter!);
+    const pinW = parsePx(pinnedBodyAfter!);
+    expect(Math.abs(barW - pinW)).toBeLessThan(4);
+  },
+};
+
 export const ResizeLeftPinnedColumn = {
   render: () => {
     const headers: HeaderObject[] = [
