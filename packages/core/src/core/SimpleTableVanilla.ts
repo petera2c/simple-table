@@ -2,7 +2,7 @@ import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { TableAPI } from "../types/TableAPI";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
-import { CustomTheme } from "../types/CustomTheme";
+import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
 import RowState from "../types/RowState";
 
 import { AutoScaleManager } from "../managers/AutoScaleManager";
@@ -600,9 +600,34 @@ export class SimpleTableVanilla {
     }
 
     if (config.customTheme !== undefined) {
+      const previousTheme = this.customTheme;
       this.customTheme = TableInitializer.mergeCustomTheme(this.config);
-      if (this.selectionManager) {
-        this.selectionManager.updateConfig({ customTheme: this.customTheme });
+
+      if (!areCustomThemesEqual(previousTheme, this.customTheme)) {
+        if (this.selectionManager) {
+          this.selectionManager.updateConfig({
+            customTheme: this.customTheme,
+            rowHeight: this.customTheme.rowHeight,
+          });
+        }
+
+        this.dimensionManager?.updateConfig({
+          headerHeight: this.customTheme.headerHeight,
+          rowHeight: this.customTheme.rowHeight,
+          footerHeight:
+            (this.config.shouldPaginate || this.config.footerRenderer) && !this.config.hideFooter
+              ? this.customTheme.footerHeight
+              : undefined,
+        });
+
+        if (
+          this.config.shouldPaginate &&
+          previousTheme.rowHeight !== this.customTheme.rowHeight
+        ) {
+          this.currentPage = 1;
+        }
+
+        this.renderOrchestrator.invalidateCache("all");
       }
     }
 

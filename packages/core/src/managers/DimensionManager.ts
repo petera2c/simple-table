@@ -230,6 +230,22 @@ export class DimensionManager {
       needsUpdate = true;
     }
 
+    // Row / header / footer pixel sizes affect header band height and scroll viewport math.
+    if (
+      config.rowHeight !== undefined ||
+      config.headerHeight !== undefined ||
+      config.footerHeight !== undefined
+    ) {
+      const calculatedHeaderHeight = this.calculateHeaderHeight(this.state.maxHeaderDepth);
+      const contentHeight = this.calculateContentHeight();
+      this.state = {
+        ...this.state,
+        calculatedHeaderHeight,
+        contentHeight,
+      };
+      needsUpdate = true;
+    }
+
     if (needsUpdate) {
       this.notifySubscribers();
     }
