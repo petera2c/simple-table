@@ -561,10 +561,19 @@ export class SimpleTableVanilla {
 
   update(config: Partial<SimpleTableConfig>): void {
     this.isUpdating = true;
+
+    // React (and other hosts) may call update on every render with the same `rows`
+    // reference. Skipping the copy + index rebuild avoids O(n) work and repeated
+    // manager churn when nothing actually changed.
+    const prevRowsSource = this.config.rows;
+    const rowsPayload = config.rows;
+    const rowsReferenceChanged =
+      rowsPayload !== undefined && rowsPayload !== prevRowsSource;
+
     this.config = { ...this.config, ...config };
 
-    if (config.rows !== undefined) {
-      this.localRows = [...config.rows];
+    if (rowsReferenceChanged) {
+      this.localRows = [...rowsPayload!];
       this.rebuildRowIndexMap();
 
       if (this.filterManager) {
