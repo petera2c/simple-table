@@ -644,8 +644,8 @@ useEffect(() => {
     name: "onColumnSelect",
     required: false,
     description:
-      "Callback when a column is selected/clicked. Provides the complete HeaderObject of the selected column.",
-    type: "(header: HeaderObject) => void",
+      "Callback when a column is selected/clicked. With `@simple-table/react`, receives `ReactHeaderObject`. Angular, Svelte, and Solid adapters use `AngularHeaderObject`, `SvelteHeaderObject`, and `SolidHeaderObject` respectively.",
+    type: "(header: ReactHeaderObject) => void",
     link: "#header-object",
     example: `onColumnSelect={(header) => {
   console.log('Column selected:', header.label);
@@ -667,8 +667,8 @@ useEffect(() => {
     name: "onHeaderEdit",
     required: false,
     description:
-      "Callback when a header is edited. Receives the HeaderObject and the new label value.",
-    type: "(header: HeaderObject, newLabel: string) => void",
+      "Callback when a header is edited. With `@simple-table/react`, receives `ReactHeaderObject` and the new label. Angular, Svelte, and Solid adapters use `HeaderObject` from `simple-table-core`.",
+    type: "(header: ReactHeaderObject, newLabel: string) => void",
     link: "#header-object",
     example: `onHeaderEdit={(header, newLabel) => {
   console.log('Header edited:', { header, newLabel });
@@ -685,8 +685,8 @@ useEffect(() => {
     name: "onColumnOrderChange",
     required: false,
     description:
-      "Callback when column order changes (through drag and drop reordering). Receives the new headers array in the updated order.",
-    type: "(newHeaders: HeaderObject[]) => void",
+      "Callback when column order changes (through drag and drop reordering). With `@simple-table/react`, receives `ReactHeaderObject[]`. Angular, Svelte, and Solid adapters use `AngularHeaderObject[]`, `SvelteHeaderObject[]`, and `SolidHeaderObject[]` respectively.",
+    type: "(newHeaders: ReactHeaderObject[]) => void",
     link: "#header-object",
     example: `onColumnOrderChange={(newHeaders) => {
   console.log('Column order changed:', newHeaders);
@@ -718,8 +718,8 @@ useEffect(() => {
     name: "onColumnWidthChange",
     required: false,
     description:
-      "Callback triggered when column widths change through user resizing or double-click auto-sizing. Receives the updated headers array with new width values. Perfect for persisting user column width preferences to localStorage or a backend.",
-    type: "(headers: HeaderObject[]) => void",
+      "Callback triggered when column widths change through user resizing or double-click auto-sizing. With `@simple-table/react`, receives `ReactHeaderObject[]`. Angular, Svelte, and Solid adapters use `AngularHeaderObject[]`, `SvelteHeaderObject[]`, and `SolidHeaderObject[]` respectively. Useful for persisting column width preferences.",
+    type: "(headers: ReactHeaderObject[]) => void",
     link: "/docs/column-resizing",
     example: `onColumnWidthChange={(headers) => {
   console.log('Column widths changed:', headers);

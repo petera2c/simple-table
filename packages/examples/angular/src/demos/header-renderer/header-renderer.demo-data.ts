@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 
 export const headerRendererData: Row[] = [
@@ -13,7 +13,7 @@ export const headerRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering" },
 ];
 
-export const headerRendererHeaders: HeaderObject[] = [
+export const headerRendererHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", isSortable: true },
   { accessor: "name", label: "Employee Name", width: 180, type: "string", isSortable: true },
   { accessor: "email", label: "Email Address", width: 200, type: "string" },

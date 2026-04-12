@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
   import { manufacturingConfig } from "./manufacturing.demo-data";
   import MfgProductLineCell from "./MfgProductLineCell.svelte";
   import MfgStationCell from "./MfgStationCell.svelte";
@@ -31,7 +31,7 @@
     maintenanceDate: MfgMaintenanceDateCell,
   };
 
-  const headers = $derived.by((): HeaderObject[] =>
+  const headers = $derived.by((): SvelteHeaderObject[] =>
     manufacturingConfig.headers.map((h) => {
       const cellRenderer = rendererMap[h.accessor as string];
       return cellRenderer ? { ...h, cellRenderer } : { ...h };

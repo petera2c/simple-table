@@ -26,16 +26,23 @@ export interface TableInstance {
 }
 
 // ─── Renderer overrides ───────────────────────────────────────────────────────
-// Angular components are typed as `Type<T>` (the class constructor).
-export type AngularCellRenderer = Type<CellRendererProps>;
-export type AngularHeaderRenderer = Type<HeaderRendererProps>;
-export type AngularFooterRenderer = Type<FooterRendererProps>;
-export type AngularHeaderDropdown = Type<HeaderDropdownProps>;
-export type AngularColumnEditorRowRenderer = Type<ColumnEditorRowRendererProps>;
-export type AngularColumnEditorCustomRenderer = Type<ColumnEditorCustomRendererProps>;
-export type AngularLoadingStateRenderer = Type<LoadingStateRendererProps>;
-export type AngularErrorStateRenderer = Type<ErrorStateRendererProps>;
-export type AngularEmptyStateRenderer = Type<EmptyStateRendererProps>;
+/**
+ * Angular table slots are component class refs (`Type<unknown>`), not `Type<SomeProps>`.
+ * `Type<CellRendererProps>` would mean `new () => CellRendererProps`, but cell components
+ * construct decorated classes whose instances are not structurally `CellRendererProps`
+ * even though the adapter binds those values via `@Input()` at runtime. The concrete
+ * input contract for each slot remains the matching `*RendererProps` type from
+ * `simple-table-core` (re-exported below).
+ */
+export type AngularCellRenderer = Type<unknown>;
+export type AngularHeaderRenderer = Type<unknown>;
+export type AngularFooterRenderer = Type<unknown>;
+export type AngularHeaderDropdown = Type<unknown>;
+export type AngularColumnEditorRowRenderer = Type<unknown>;
+export type AngularColumnEditorCustomRenderer = Type<unknown>;
+export type AngularLoadingStateRenderer = Type<unknown>;
+export type AngularErrorStateRenderer = Type<unknown>;
+export type AngularEmptyStateRenderer = Type<unknown>;
 
 /** Per-slot icon: Angular component or vanilla element/string (pass-through). */
 export type AngularIconSlot = Type<unknown> | SVGSVGElement | HTMLElement | string;
@@ -97,10 +104,18 @@ export interface SimpleTableAngularProps
     | "headerDropdown"
     | "columnEditorConfig"
     | "icons"
+    | "onColumnOrderChange"
+    | "onColumnWidthChange"
+    | "onHeaderEdit"
+    | "onColumnSelect"
   > {
   defaultHeaders: ReadonlyArray<HeaderObject | AngularHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
+  onColumnOrderChange?: (newHeaders: AngularHeaderObject[]) => void;
+  onColumnWidthChange?: (headers: AngularHeaderObject[]) => void;
+  onHeaderEdit?: (header: AngularHeaderObject, newLabel: string) => void;
+  onColumnSelect?: (header: AngularHeaderObject) => void;
   footerRenderer?: AngularFooterRenderer;
   loadingStateRenderer?: AngularLoadingStateRenderer;
   errorStateRenderer?: AngularErrorStateRenderer;

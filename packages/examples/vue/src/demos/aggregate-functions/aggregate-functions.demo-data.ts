@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/vue";
+import type { VueHeaderObject } from "@simple-table/vue";
 
 
-export const aggregateFunctionsHeaders: HeaderObject[] = [
+export const aggregateFunctionsHeaders: VueHeaderObject[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

@@ -28,9 +28,9 @@ const COLUMN_SELECTION_PROPS: PropInfo[] = [
     name: "onColumnSelect",
     required: false,
     description:
-      "Callback function triggered when a column is selected. Receives the HeaderObject of the selected column.",
-    type: "(header: HeaderObject) => void",
-    example: `const handleColumnSelect = (header: HeaderObject) => {
+      "Callback function triggered when a column is selected. With `@simple-table/react`, receives `ReactHeaderObject`. Angular, Svelte, and Solid adapters use `AngularHeaderObject`, `SvelteHeaderObject`, and `SolidHeaderObject` respectively.",
+    type: "(header: ReactHeaderObject) => void",
+    example: `const handleColumnSelect = (header: ReactHeaderObject) => {
   console.log('Selected column:', header.label);
   console.log('Column accessor:', header.accessor);
   console.log('Column type:', header.type);

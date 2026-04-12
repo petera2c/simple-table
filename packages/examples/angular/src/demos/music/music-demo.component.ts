@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent, asRows } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularHeaderObject, Theme } from "@simple-table/angular";
 import { musicData, musicHeaders } from "./music.demo-data";
 import { MusicArtistCellComponent } from "./music-artist-cell.component";
 import { MusicArtistTypeCellComponent } from "./music-artist-type-cell.component";
@@ -15,7 +15,7 @@ import { MusicRatioCellComponent } from "./music-ratio-cell.component";
 import "@simple-table/angular/styles.css";
 import "./music-theme.css";
 
-const RENDERERS: Record<string, unknown> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   artistName: MusicArtistCellComponent,
   artistType: MusicArtistTypeCellComponent,
   followers: MusicFollowersCellComponent,
@@ -40,12 +40,12 @@ const RENDERERS: Record<string, unknown> = {
 };
 
 function applyMusicCellRenderers(hdrs: AngularHeaderObject[]): AngularHeaderObject[] {
-  return hdrs.map((h) => {
+  return hdrs.map((h): AngularHeaderObject => {
     const acc = String(h.accessor);
     const next: AngularHeaderObject = { ...h };
-    const R = RENDERERS[acc];
-    if (R) next.cellRenderer = R as AngularHeaderObject["cellRenderer"];
-    if (h.children) next.children = applyMusicCellRenderers(h.children as AngularHeaderObject[]);
+    const cellRenderer = RENDERERS[acc];
+    if (cellRenderer) next.cellRenderer = cellRenderer;
+    if (h.children) next.children = applyMusicCellRenderers(h.children);
     return next;
   });
 }
@@ -75,6 +75,6 @@ export class MusicDemoComponent {
 
   readonly rows = asRows([...musicData]);
   readonly headers: AngularHeaderObject[] = applyMusicCellRenderers(
-    JSON.parse(JSON.stringify(musicHeaders)) as AngularHeaderObject[],
+    structuredClone(musicHeaders) as AngularHeaderObject[],
   );
 }

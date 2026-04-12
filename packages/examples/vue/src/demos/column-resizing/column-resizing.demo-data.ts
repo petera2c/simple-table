@@ -1,10 +1,10 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/vue";
+import type { VueHeaderObject } from "@simple-table/vue";
 
 
 export const COLUMN_RESIZING_STORAGE_KEY = "columnResizingDemo_widths";
 
-export const columnResizingHeaders: HeaderObject[] = [
+export const columnResizingHeaders: VueHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "First Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "age", label: "Age", width: "1fr", minWidth: 50, type: "string" },

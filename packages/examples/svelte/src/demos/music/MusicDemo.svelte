@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject, CellRenderer } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject, CellRenderer } from "@simple-table/svelte";
   import { musicData, musicHeaders } from "./music.demo-data";
   import "@simple-table/svelte/styles.css";
   import "./music-theme.css";
@@ -41,21 +41,21 @@
     reachFollowersRatio: MusicRatioCell,
   };
 
-  function applyMusicCellRenderers(hdrs: HeaderObject[]): HeaderObject[] {
+  function applyMusicCellRenderers(hdrs: SvelteHeaderObject[]): SvelteHeaderObject[] {
     return hdrs.map((h) => {
       const acc = String(h.accessor);
-      const next: HeaderObject = { ...h };
+      const next: SvelteHeaderObject = { ...h };
       if (acc === "rank") next.pinned = "left";
       if (acc === "artistName") next.pinned = "left";
       const R = renderers[acc];
       if (R) next.cellRenderer = R as CellRenderer;
-      if (h.children) next.children = applyMusicCellRenderers(h.children as HeaderObject[]);
+      if (h.children) next.children = applyMusicCellRenderers(h.children as SvelteHeaderObject[]);
       return next;
     });
   }
 
   const headers = $derived(
-    applyMusicCellRenderers(JSON.parse(JSON.stringify(musicHeaders)) as HeaderObject[]),
+    applyMusicCellRenderers(JSON.parse(JSON.stringify(musicHeaders)) as SvelteHeaderObject[]),
   );
 </script>
 

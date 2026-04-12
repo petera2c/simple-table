@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/vue";
+import type { VueHeaderObject } from "@simple-table/vue";
 
 
-export const quickFilterHeaders: HeaderObject[] = [
+export const quickFilterHeaders: VueHeaderObject[] = [
   { accessor: "name", label: "Employee Name", width: 180, type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 140, type: "string" },

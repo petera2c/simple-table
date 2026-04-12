@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 
-export const columnAlignmentHeaders: HeaderObject[] = [
+export const columnAlignmentHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", align: "center", type: "string" },
   { accessor: "score", label: "Score", width: 120, align: "right", type: "number" },

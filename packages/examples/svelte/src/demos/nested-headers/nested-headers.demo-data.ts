@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 
-export const nestedHeadersHeaders: HeaderObject[] = [
+export const nestedHeadersHeaders: SvelteHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", isSortable: true, type: "string" },
   {

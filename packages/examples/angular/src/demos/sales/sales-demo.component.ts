@@ -1,6 +1,12 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellChangeProps, HeaderObject, Row, Theme } from "@simple-table/angular";
+import type {
+  AngularCellRenderer,
+  AngularHeaderObject,
+  CellChangeProps,
+  Row,
+  Theme,
+} from "@simple-table/angular";
 import { salesHeadersCore, salesSampleRows } from "./sales.demo-data";
 import { SalesCommissionCellComponent } from "./sales-commission-cell.component";
 import { SalesDealProfitCellComponent } from "./sales-deal-profit-cell.component";
@@ -15,7 +21,7 @@ function formatTableHeight(height?: string | number | null): string {
   return height;
 }
 
-const RENDERERS: Record<string, unknown> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   dealValue: SalesDealValueCellComponent,
   isWon: SalesIsWonCellComponent,
   commission: SalesCommissionCellComponent,
@@ -23,12 +29,15 @@ const RENDERERS: Record<string, unknown> = {
   dealProfit: SalesDealProfitCellComponent,
 };
 
-function applyCellComponents(hdrs: HeaderObject[]): AngularHeaderObject[] {
-  return hdrs.map((h) => ({
-    ...h,
-    ...(RENDERERS[h.accessor as string] ? { cellRenderer: RENDERERS[h.accessor as string] } : {}),
-    ...(h.children ? { children: applyCellComponents(h.children as HeaderObject[]) } : {}),
-  })) as AngularHeaderObject[];
+function applyCellComponents(hdrs: AngularHeaderObject[]): AngularHeaderObject[] {
+  return hdrs.map((h): AngularHeaderObject => {
+    const cellRenderer = RENDERERS[String(h.accessor)];
+    return {
+      ...h,
+      ...(cellRenderer ? { cellRenderer } : {}),
+      ...(h.children ? { children: applyCellComponents(h.children) } : {}),
+    };
+  });
 }
 
 @Component({
@@ -57,7 +66,7 @@ export class SalesDemoComponent implements OnInit, OnDestroy {
   @Input() theme?: Theme;
 
   readonly headers: AngularHeaderObject[] = applyCellComponents(
-    JSON.parse(JSON.stringify(salesHeadersCore)) as HeaderObject[],
+    structuredClone(salesHeadersCore) as AngularHeaderObject[],
   );
   data: Row[] = salesSampleRows.map((r) => ({ ...r })) as Row[];
   isMobile = false;

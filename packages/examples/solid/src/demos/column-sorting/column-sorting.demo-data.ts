@@ -1,6 +1,6 @@
 // Self-contained demo table setup for this example.
 import type { Row } from "@simple-table/solid";
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 
 export const COLUMN_SORTING_DATA: Row[] = [
@@ -103,7 +103,7 @@ export const COLUMN_SORTING_DATA: Row[] = [
 ];
 
 
-export const columnSortingHeaders: HeaderObject[] = [
+export const columnSortingHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   { accessor: "name", label: "Name", width: 180, isSortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, isSortable: true, type: "number" },

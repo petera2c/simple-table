@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 
-export const cellEditingHeaders: HeaderObject[] = [
+export const cellEditingHeaders: SvelteHeaderObject[] = [
   { accessor: "firstName", label: "First Name", width: "1fr", minWidth: 100, isEditable: true, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, isEditable: true, type: "string" },
   { accessor: "role", label: "Role", width: 120, isEditable: true, type: "enum", enumOptions: [

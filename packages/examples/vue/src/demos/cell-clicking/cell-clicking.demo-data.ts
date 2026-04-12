@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/vue";
+import type { VueHeaderObject, Row } from "@simple-table/vue";
 
 
 export type ProjectTask = {
@@ -27,7 +27,7 @@ export const cellClickingData: ProjectTask[] = [
   { id: 1008, task: "Database migration scripts", assignee: "River Jackson", priority: "Low", status: "Not Started", dueDate: "2024-02-28", estimatedHours: 8, completedHours: 0, details: "Create migration scripts for database schema updates" },
 ];
 
-export const cellClickingHeaders: HeaderObject[] = [
+export const cellClickingHeaders: VueHeaderObject[] = [
   { accessor: "id", label: "Task ID", width: 80, isSortable: true, type: "number" },
   { accessor: "task", label: "Task Name", minWidth: 150, width: "1fr", isSortable: true, type: "string" },
   { accessor: "assignee", label: "Assignee", width: 120, isSortable: true, type: "string" },

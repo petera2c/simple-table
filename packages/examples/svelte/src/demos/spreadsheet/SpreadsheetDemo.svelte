@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject, CellChangeProps } from "@simple-table/svelte";
   import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
   import type { SpreadsheetRow } from "./spreadsheet.demo-data";
   import { setSpreadsheetAddColumnHandler } from "./spreadsheet-add-header-handler";
@@ -11,13 +11,13 @@
   let { height = "400px", theme = "light" as Theme }: { height?: string | number; theme?: Theme } = $props();
 
   let data = $state([...spreadsheetConfig.rows]);
-  let additionalColumns = $state<HeaderObject[]>([]);
+  let additionalColumns = $state<SvelteHeaderObject[]>([]);
   let tableRef: any;
 
   $effect.pre(() => {
     setSpreadsheetAddColumnHandler(() => {
       const totalCols = spreadsheetConfig.headers.length + additionalColumns.length;
-      const newCol: HeaderObject = {
+      const newCol: SvelteHeaderObject = {
         accessor: `column${totalCols + 1}`,
         label: `Column ${totalCols + 1}`,
         width: 120,
@@ -31,8 +31,8 @@
     });
   });
 
-  const headers = $derived.by((): HeaderObject[] => {
-    const baseHeaders: HeaderObject[] = [...spreadsheetConfig.headers];
+  const headers = $derived.by((): SvelteHeaderObject[] => {
+    const baseHeaders: SvelteHeaderObject[] = [...spreadsheetConfig.headers];
     return [
       ...baseHeaders,
       ...additionalColumns,

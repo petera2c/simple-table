@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 
 export interface DynamicCompany extends Row {
@@ -56,7 +56,7 @@ export const dynamicNestedTablesData: DynamicCompany[] = [
   { id: "comp-15", companyName: "EnergyFlow Systems", industry: "Energy", revenue: "$560M", employees: 1800 },
 ];
 
-export const dynamicNestedTablesDivisionHeaders: HeaderObject[] = [
+export const dynamicNestedTablesDivisionHeaders: AngularHeaderObject[] = [
   { accessor: "divisionName", label: "Division", width: 200 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -64,7 +64,7 @@ export const dynamicNestedTablesDivisionHeaders: HeaderObject[] = [
   { accessor: "location", label: "Location", width: 180 },
 ];
 
-export const dynamicNestedTablesCompanyHeaders: HeaderObject[] = [
+export const dynamicNestedTablesCompanyHeaders: AngularHeaderObject[] = [
   {
     accessor: "companyName",
     label: "Company",

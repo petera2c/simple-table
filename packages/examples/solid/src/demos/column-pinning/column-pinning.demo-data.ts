@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 
-export const columnPinningHeaders: HeaderObject[] = [
+export const columnPinningHeaders: SolidHeaderObject[] = [
   { accessor: "name", label: "Name", width: 132, pinned: "left", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
   { accessor: "role", label: "Role", width: 150, type: "string" },

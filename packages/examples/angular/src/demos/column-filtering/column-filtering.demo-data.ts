@@ -1,6 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "@simple-table/angular";
-import type { HeaderObject } from "@simple-table/angular";
+import type { Row, AngularHeaderObject } from "@simple-table/angular";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -148,7 +147,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: HeaderObject[] = [
+export const columnFilteringHeaders: AngularHeaderObject[] = [
   {
     accessor: "id",
     label: "ID",

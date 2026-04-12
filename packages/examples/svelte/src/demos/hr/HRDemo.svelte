@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject, CellChangeProps } from "@simple-table/svelte";
   import { hrConfig } from "./hr.demo-data";
   import HrFullNameCell from "./HrFullNameCell.svelte";
   import HrPerformanceCell from "./HrPerformanceCell.svelte";

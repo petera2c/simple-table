@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 
-export const rowGroupingHeaders: HeaderObject[] = [
+export const rowGroupingHeaders: SvelteHeaderObject[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },

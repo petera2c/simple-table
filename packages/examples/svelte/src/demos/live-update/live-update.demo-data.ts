@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 
-export const liveUpdateHeaders: HeaderObject[] = [
+export const liveUpdateHeaders: SvelteHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {

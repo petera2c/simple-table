@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example (aligned with simple-table-marketing column visibility demo).
-import type { ColumnVisibilityState, HeaderObject, Row } from "@simple-table/solid";
+import type { ColumnVisibilityState, SolidHeaderObject, Row } from "@simple-table/solid";
 
 export const COLUMN_VISIBILITY_DEMO_STORAGE_KEY = "columnVisibilityDemo";
 
@@ -113,7 +113,7 @@ export const columnVisibilityData: Row[] = [
   },
 ];
 
-export const columnVisibilityHeaders: HeaderObject[] = [
+export const columnVisibilityHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "firstName", label: "First Name", width: 120, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, type: "string" },
@@ -138,7 +138,7 @@ export const columnVisibilityHeaders: HeaderObject[] = [
 
 export function getColumnVisibilityDemoHeaders(
   savedVisibility: ColumnVisibilityState = loadColumnVisibilityDemoSaved(),
-): HeaderObject[] {
+): SolidHeaderObject[] {
   return columnVisibilityHeaders.map((header) => ({
     ...header,
     hide:

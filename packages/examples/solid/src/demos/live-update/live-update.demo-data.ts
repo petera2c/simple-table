@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 
-export const liveUpdateHeaders: HeaderObject[] = [
+export const liveUpdateHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {

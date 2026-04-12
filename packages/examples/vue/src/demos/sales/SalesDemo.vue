@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, h, type VNodeChild } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject, CellRendererProps, CellChangeProps, Row } from "@simple-table/vue";
+import type { Theme, VueHeaderObject, CellRendererProps, CellChangeProps, Row } from "@simple-table/vue";
 import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -126,12 +126,12 @@ const salesRenderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
 };
 
 function applyRenderers(
-  hdrs: readonly HeaderObject[],
+  hdrs: readonly VueHeaderObject[],
   map: Record<string, (p: CellRendererProps) => VNodeChild>,
-): HeaderObject[] {
+): VueHeaderObject[] {
   return hdrs.map((h) => {
     const renderer = map[h.accessor as string];
-    const clone: HeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    const clone: VueHeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
     if (h.children) {
       clone.children = applyRenderers(h.children, map);
     }

@@ -1,6 +1,6 @@
 // Self-contained demo table setup for this example.
 import type { Row } from "@simple-table/solid";
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 
 export const QUICK_START_DATA: Row[] = [
@@ -103,7 +103,7 @@ export const QUICK_START_DATA: Row[] = [
 ];
 
 
-export const quickStartHeaders: HeaderObject[] = [
+export const quickStartHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   {
     accessor: "name",

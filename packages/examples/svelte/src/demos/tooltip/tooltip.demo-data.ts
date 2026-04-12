@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
 
 
 export const tooltipData: Row[] = [
@@ -20,7 +20,7 @@ export const tooltipData: Row[] = [
   { id: 15, productName: "Corsair K95 RGB Platinum", category: "Peripherals", price: 199.99, stock: 16, rating: 4.5, lastUpdated: "2024-02-18" },
 ];
 
-export const tooltipHeaders: HeaderObject[] = [
+export const tooltipHeaders: SvelteHeaderObject[] = [
   { accessor: "productName", label: "Product", width: 200, isSortable: true, tooltip: "Complete product name including model specifications and key features" },
   { accessor: "category", label: "Category", width: 150, isSortable: true, filterable: true, tooltip: "Product classification: Laptops, Displays, or Peripherals for easy filtering" },
   {

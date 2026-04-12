@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject } from "@simple-table/vue";
+import type { Theme, VueHeaderObject } from "@simple-table/vue";
 import { columnReorderingConfig } from "./column-reordering.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -20,9 +20,9 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const headers = ref<HeaderObject[]>([...columnReorderingConfig.headers]);
+const headers = ref<VueHeaderObject[]>([...columnReorderingConfig.headers]);
 
-const handleColumnOrderChange = (newHeaders: HeaderObject[]) => {
+const handleColumnOrderChange = (newHeaders: VueHeaderObject[]) => {
   headers.value = newHeaders;
 };
 </script>

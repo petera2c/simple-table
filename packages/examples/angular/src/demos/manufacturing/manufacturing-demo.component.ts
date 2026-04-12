@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent, asRows } from "@simple-table/angular";
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularHeaderObject, Theme } from "@simple-table/angular";
 import { manufacturingConfig } from "./manufacturing.demo-data";
 import {
   MfgCycletimeCellComponent,
@@ -16,7 +16,7 @@ import {
 } from "./manufacturing-cell-components";
 import "@simple-table/angular/styles.css";
 
-const RENDERERS: Record<string, unknown> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   productLine: MfgProductLineCellComponent,
   station: MfgStationCellComponent,
   status: MfgStatusCellComponent,
@@ -32,9 +32,9 @@ const RENDERERS: Record<string, unknown> = {
 };
 
 function getHeaders(): AngularHeaderObject[] {
-  return manufacturingConfig.headers.map((h) => {
-    const R = RENDERERS[String(h.accessor)];
-    return R ? { ...h, cellRenderer: R } : { ...h };
+  return manufacturingConfig.headers.map((h): AngularHeaderObject => {
+    const cellRenderer = RENDERERS[String(h.accessor)];
+    return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
 }
 

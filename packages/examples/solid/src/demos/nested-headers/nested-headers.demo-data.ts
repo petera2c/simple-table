@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 
-export const nestedHeadersHeaders: HeaderObject[] = [
+export const nestedHeadersHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", isSortable: true, type: "string" },
   {

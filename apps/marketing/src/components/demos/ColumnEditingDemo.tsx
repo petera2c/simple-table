@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { HeaderObject, ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Sample data
@@ -171,7 +171,7 @@ const ColumnEditingDemo = ({
     [additionalColumns],
   );
 
-  const handleHeaderEdit = (header: HeaderObject, newLabel: string) => {
+  const handleHeaderEdit = (header: ReactHeaderObject, newLabel: string) => {
     setLastAction(`Renamed column "${header.label}" to: ${newLabel}`);
   };
 

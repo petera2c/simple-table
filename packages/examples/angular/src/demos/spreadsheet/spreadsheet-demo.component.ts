@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellChangeProps, HeaderObject, Theme } from "@simple-table/angular";
+import type { AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
 import { recalculateAmortization, spreadsheetConfig } from "./spreadsheet.demo-data";
 import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import { setSpreadsheetAddColumnHandler } from "./spreadsheet-add-column-bridge";
@@ -40,14 +40,14 @@ export class SpreadsheetDemoComponent implements OnInit, OnDestroy {
   @Input() theme?: Theme;
 
   data = [...spreadsheetConfig.rows];
-  additionalColumns: HeaderObject[] = [];
+  additionalColumns: AngularHeaderObject[] = [];
 
   constructor(private readonly cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     setSpreadsheetAddColumnHandler(() => {
       const totalCols = spreadsheetConfig.headers.length + this.additionalColumns.length;
-      const newCol: HeaderObject = {
+      const newCol: AngularHeaderObject = {
         accessor: `column${totalCols + 1}`,
         label: `Column ${totalCols + 1}`,
         width: 120,
@@ -86,7 +86,11 @@ export class SpreadsheetDemoComponent implements OnInit, OnDestroy {
   onCellEdit({ accessor, newValue, row }: CellChangeProps): void {
     this.data = this.data.map((item) => {
       if (item.id === row.id) {
-        return recalculateAmortization(item as SpreadsheetRow, accessor, newValue as string | number);
+        return recalculateAmortization(
+          item as SpreadsheetRow,
+          accessor,
+          newValue as string | number,
+        );
       }
       return item;
     });

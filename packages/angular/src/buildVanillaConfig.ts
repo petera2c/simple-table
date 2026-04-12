@@ -24,6 +24,10 @@ export function buildVanillaConfig(
     headerDropdown,
     columnEditorConfig,
     icons,
+    onColumnOrderChange,
+    onColumnWidthChange,
+    onHeaderEdit,
+    onColumnSelect,
     ...rest
   } = config;
 
@@ -86,6 +90,30 @@ export function buildVanillaConfig(
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
+    ...(onColumnOrderChange
+      ? {
+          onColumnOrderChange: (headers: HeaderObject[]) =>
+            onColumnOrderChange(headers as unknown as AngularHeaderObject[]),
+        }
+      : {}),
+    ...(onColumnWidthChange
+      ? {
+          onColumnWidthChange: (headers: HeaderObject[]) =>
+            onColumnWidthChange(headers as unknown as AngularHeaderObject[]),
+        }
+      : {}),
+    ...(onHeaderEdit
+      ? {
+          onHeaderEdit: (header: HeaderObject, newLabel: string) =>
+            onHeaderEdit(header as unknown as AngularHeaderObject, newLabel),
+        }
+      : {}),
+    ...(onColumnSelect
+      ? {
+          onColumnSelect: (header: HeaderObject) =>
+            onColumnSelect(header as unknown as AngularHeaderObject),
+        }
+      : {}),
   };
 
   if (footerRenderer !== undefined) {

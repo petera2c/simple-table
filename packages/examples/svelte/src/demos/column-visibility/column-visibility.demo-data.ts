@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
 
 export const columnVisibilityData: Row[] = [
   { id: 1, firstName: "Alice", lastName: "Johnson", email: "alice@example.com", phone: "555-0101", role: "Engineer", department: "Engineering", location: "NYC", startDate: "2021-03-15" },
@@ -12,7 +12,7 @@ export const columnVisibilityData: Row[] = [
   { id: 8, firstName: "Henry", lastName: "Patel", email: "henry@example.com", phone: "555-0108", role: "Lead", department: "Engineering", location: "DEN", startDate: "2018-05-20" },
 ];
 
-export const columnVisibilityHeaders: HeaderObject[] = [
+export const columnVisibilityHeaders: SvelteHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "firstName", label: "First Name", width: 120, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, type: "string" },

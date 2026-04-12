@@ -2,7 +2,7 @@
 import { ref, computed, h, defineComponent } from "vue";
 import type { Component } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { HeaderObject, CellChangeProps, CellRendererProps, FooterRendererProps } from "@simple-table/vue";
+import type { VueHeaderObject, CellChangeProps, CellRendererProps, FooterRendererProps } from "@simple-table/vue";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -347,7 +347,7 @@ const CrmFooter = defineComponent({
   },
 });
 
-const headers = computed((): HeaderObject[] => {
+const headers = computed((): VueHeaderObject[] => {
   const colors = isDark.value ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
 
   return [

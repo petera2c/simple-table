@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject, TableAPI, Row, CellValue } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject, TableAPI, Row, CellValue } from "@simple-table/svelte";
   import { onMount } from "svelte";
   import { infrastructureData } from "./infrastructure.demo-data";
   import InfraServerIdCell from "./InfraServerIdCell.svelte";
@@ -127,7 +127,7 @@
   let tableRef: any;
 
   const headers = $derived.by(
-    (): HeaderObject[] => [
+    (): SvelteHeaderObject[] => [
       {
         accessor: "serverId",
         align: "left",

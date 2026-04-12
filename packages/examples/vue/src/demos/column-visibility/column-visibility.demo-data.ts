@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example (aligned with simple-table-marketing column visibility demo).
-import type { ColumnVisibilityState, HeaderObject, Row } from "@simple-table/vue";
+import type { ColumnVisibilityState, VueHeaderObject, Row } from "@simple-table/vue";
 
 export const COLUMN_VISIBILITY_DEMO_STORAGE_KEY = "columnVisibilityDemo";
 
@@ -33,7 +33,7 @@ export const columnVisibilityData: Row[] = [
   { id: 8, firstName: "Henry", lastName: "Patel", email: "henry@example.com", phone: "555-0108", role: "Lead", department: "Engineering", location: "DEN", startDate: "2018-05-20" },
 ];
 
-export const columnVisibilityHeaders: HeaderObject[] = [
+export const columnVisibilityHeaders: VueHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "firstName", label: "First Name", width: 120, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, type: "string" },
@@ -53,7 +53,7 @@ export const columnVisibilityHeaders: HeaderObject[] = [
 
 export function getColumnVisibilityDemoHeaders(
   savedVisibility: ColumnVisibilityState = loadColumnVisibilityDemoSaved(),
-): HeaderObject[] {
+): VueHeaderObject[] {
   return columnVisibilityHeaders.map((header) => ({
     ...header,
     hide:

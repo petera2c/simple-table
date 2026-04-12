@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Theme } from "@simple-table/svelte";
+import type { SvelteHeaderObject, Theme } from "@simple-table/svelte";
 
 export type CrmShellTheme = Theme | "custom-light" | "custom-dark";
 
@@ -42,7 +42,7 @@ export function generateCRMData(count: number = 100): CRMLead[] {
 
 export const crmData = generateCRMData(100);
 
-export const crmHeaders: HeaderObject[] = [
+export const crmHeaders: SvelteHeaderObject[] = [
   {
     accessor: "name",
     label: "CONTACT",

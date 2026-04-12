@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/vue";
+import type { VueHeaderObject } from "@simple-table/vue";
 
 
-export const columnWidthHeaders: HeaderObject[] = [
+export const columnWidthHeaders: VueHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "email", label: "Email", width: "1fr", minWidth: 180, type: "string" },

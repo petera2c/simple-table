@@ -74,6 +74,10 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
     columnEditorConfig,
     icons,
     ref: _ref,
+    onColumnOrderChange,
+    onColumnWidthChange,
+    onHeaderEdit,
+    onColumnSelect,
     ...rest
   } = config;
 
@@ -81,6 +85,30 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
+    ...(onColumnOrderChange
+      ? {
+          onColumnOrderChange: (headers: HeaderObject[]) =>
+            onColumnOrderChange(headers as unknown as SolidHeaderObject[]),
+        }
+      : {}),
+    ...(onColumnWidthChange
+      ? {
+          onColumnWidthChange: (headers: HeaderObject[]) =>
+            onColumnWidthChange(headers as unknown as SolidHeaderObject[]),
+        }
+      : {}),
+    ...(onHeaderEdit
+      ? {
+          onHeaderEdit: (header: HeaderObject, newLabel: string) =>
+            onHeaderEdit(header as unknown as SolidHeaderObject, newLabel),
+        }
+      : {}),
+    ...(onColumnSelect
+      ? {
+          onColumnSelect: (header: HeaderObject) =>
+            onColumnSelect(header as unknown as SolidHeaderObject),
+        }
+      : {}),
   };
 
   if (footerRenderer !== undefined) {

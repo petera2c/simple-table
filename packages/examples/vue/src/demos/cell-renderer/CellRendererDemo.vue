@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueHeaderObject, CellRendererProps } from "@simple-table/vue";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/vue/styles.css";

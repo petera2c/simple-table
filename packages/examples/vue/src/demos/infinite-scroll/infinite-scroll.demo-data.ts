@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/vue";
+import type { VueHeaderObject, Row } from "@simple-table/vue";
 
 
 const FIRST_NAMES = ["Elena", "Kai", "Amara", "Santiago", "Priya", "Magnus", "Zara", "Luca", "Sarah", "Olumide", "Isabella", "Dmitri"];
@@ -23,7 +23,7 @@ export function generateInfiniteScrollData(startIndex: number, count: number): R
   return rows;
 }
 
-export const infiniteScrollHeaders: HeaderObject[] = [
+export const infiniteScrollHeaders: VueHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120 },
   { accessor: "email", label: "Email", width: 250 },

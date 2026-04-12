@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 export interface SpreadsheetRow {
   id: number;
@@ -44,7 +44,7 @@ export function generateSpreadsheetData(count: number = 100): SpreadsheetRow[] {
 
 export const spreadsheetData = generateSpreadsheetData(100);
 
-export const spreadsheetHeaders: HeaderObject[] = [
+export const spreadsheetHeaders: SvelteHeaderObject[] = [
   { accessor: "principal", label: "Principal", width: "1fr", minWidth: 100, align: "right", isEditable: true, type: "number", aggregation: { type: "sum" } },
   { accessor: "interestRate", label: "Interest Rate %", width: "1fr", minWidth: 110, align: "right", isEditable: true, type: "number", aggregation: { type: "average" } },
   { accessor: "monthlyPayment", label: "Monthly Payment", width: "1fr", minWidth: 120, align: "right", isEditable: true, type: "number", aggregation: { type: "sum" } },

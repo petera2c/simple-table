@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 export interface ManufacturingRow {
   id: string;
@@ -83,7 +83,7 @@ export function generateManufacturingData(count: number = 8): ManufacturingRow[]
 
 export const manufacturingData = generateManufacturingData(8);
 
-export const manufacturingHeaders: HeaderObject[] = [
+export const manufacturingHeaders: SolidHeaderObject[] = [
   { accessor: "productLine", label: "Production Line", width: 180, expandable: true, isSortable: true, isEditable: false, align: "left", type: "string" },
   { accessor: "station", label: "Workstation", width: 150, isSortable: true, isEditable: false, align: "left", type: "string" },
   { accessor: "machineType", label: "Machine Type", width: 150, isSortable: true, isEditable: false, align: "left", type: "string" },

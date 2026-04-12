@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, TableFilterState } from "@simple-table/vue";
+import type { VueHeaderObject, TableFilterState } from "@simple-table/vue";
 
 
 type CellValue = string | number | boolean | null | undefined;
@@ -90,7 +90,7 @@ export const externalFilterData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps", active: true, location: "Moscow" },
 ];
 
-export const externalFilterHeaders: HeaderObject[] = [
+export const externalFilterHeaders: VueHeaderObject[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, filterable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, filterable: true, type: "number" },
   {

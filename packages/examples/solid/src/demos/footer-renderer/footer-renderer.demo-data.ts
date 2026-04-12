@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/solid";
+import type { SolidHeaderObject, Row } from "@simple-table/solid";
 
 
-export const footerRendererHeaders: HeaderObject[] = [
+export const footerRendererHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product Name", width: 220, type: "string" },
   { accessor: "category", label: "Category", width: 150, type: "string" },

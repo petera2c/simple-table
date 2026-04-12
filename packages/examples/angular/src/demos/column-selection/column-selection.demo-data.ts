@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 
-export const columnSelectionHeaders: HeaderObject[] = [
+export const columnSelectionHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 120, width: "1fr", isSortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },

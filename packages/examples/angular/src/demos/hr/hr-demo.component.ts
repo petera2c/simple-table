@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
 import { hrConfig } from "./hr.demo-data";
 import { HrFullNameCellComponent } from "./hr-full-name-cell.component";
 import { HrHireDateCellComponent } from "./hr-hire-date-cell.component";
@@ -10,7 +10,7 @@ import { HrStatusCellComponent } from "./hr-status-cell.component";
 import { HrYearsCellComponent } from "./hr-years-cell.component";
 import "@simple-table/angular/styles.css";
 
-const RENDERERS: Record<string, unknown> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   fullName: HrFullNameCellComponent,
   performanceScore: HrPerformanceCellComponent,
   hireDate: HrHireDateCellComponent,
@@ -20,9 +20,9 @@ const RENDERERS: Record<string, unknown> = {
 };
 
 function buildHRHeaders(): AngularHeaderObject[] {
-  return hrConfig.headers.map((h) => {
-    const R = RENDERERS[String(h.accessor)];
-    return R ? { ...h, cellRenderer: R } : { ...h };
+  return hrConfig.headers.map((h): AngularHeaderObject => {
+    const cellRenderer = RENDERERS[String(h.accessor)];
+    return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
 }
 

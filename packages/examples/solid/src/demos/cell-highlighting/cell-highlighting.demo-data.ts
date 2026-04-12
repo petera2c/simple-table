@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 
-export const cellHighlightingHeaders: HeaderObject[] = [
+export const cellHighlightingHeaders: SolidHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 80, width: "1fr", isSortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },

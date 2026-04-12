@@ -1,6 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "@simple-table/svelte";
-import type { HeaderObject } from "@simple-table/svelte";
+import type { Row, SvelteHeaderObject } from "@simple-table/svelte";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -148,7 +147,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: HeaderObject[] = [
+export const columnFilteringHeaders: SvelteHeaderObject[] = [
   {
     accessor: "id",
     label: "ID",

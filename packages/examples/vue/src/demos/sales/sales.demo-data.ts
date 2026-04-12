@@ -1,4 +1,4 @@
-import type { HeaderObject, ValueGetterProps } from "@simple-table/vue";
+import type { VueHeaderObject, ValueGetterProps } from "@simple-table/vue";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
 type ThemePalette = {
@@ -167,7 +167,7 @@ const SALES_SAMPLE_INBOUND: SalesInboundRow[] = [
 
 export const salesSampleRows: SalesRow[] = processSalesData(SALES_SAMPLE_INBOUND);
 
-export const salesHeadersCore: HeaderObject[] = [
+export const salesHeadersCore: VueHeaderObject[] = [
   {
     accessor: "repName",
     label: "Sales Representative",

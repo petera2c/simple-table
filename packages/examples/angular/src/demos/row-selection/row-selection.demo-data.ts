@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 
 export type LibraryBook = {
@@ -31,7 +31,7 @@ export const rowSelectionData: LibraryBook[] = [
   { id: 1012, isbn: "978-0593229439", title: "Climate Solutions for Tomorrow", author: "Dr. Hassan Al-Rashid", genre: "Environmental Science", yearPublished: 2022, pages: 398, rating: 4.8, status: "Available", librarySection: "Science" },
 ];
 
-export const rowSelectionHeaders: HeaderObject[] = [
+export const rowSelectionHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "Book ID", width: 80, isSortable: true, type: "number" },
   { accessor: "isbn", label: "ISBN", width: 120, isSortable: true, type: "string" },
   { accessor: "title", label: "Title", minWidth: 150, width: "1fr", isSortable: true, type: "string" },

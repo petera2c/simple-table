@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 export interface MusicArtist {
   id: number;
@@ -153,7 +153,7 @@ export function generateMusicData(count: number = 50): MusicArtist[] {
 
 export const musicData = generateMusicData(50);
 
-export const musicHeaders: HeaderObject[] = [
+export const musicHeaders: AngularHeaderObject[] = [
   { accessor: "rank", label: "#", width: 60, isSortable: true, isEditable: false, align: "center", type: "number", pinned: "left" },
   { accessor: "artistName", label: "Artist", width: 330, isSortable: true, isEditable: false, align: "left", type: "string", pinned: "left" },
   { accessor: "artistType", label: "Identity", width: 280, isSortable: false, isEditable: false, align: "left", type: "string" },

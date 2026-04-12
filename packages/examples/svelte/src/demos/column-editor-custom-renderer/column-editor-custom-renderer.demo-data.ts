@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
 
 export const columnEditorCustomRendererData: Row[] = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Engineer", salary: 125000, department: "Engineering", status: "active" },
@@ -12,7 +12,7 @@ export const columnEditorCustomRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering", status: "active" },
 ];
 
-export const columnEditorCustomRendererHeaders: HeaderObject[] = [
+export const columnEditorCustomRendererHeaders: SvelteHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },

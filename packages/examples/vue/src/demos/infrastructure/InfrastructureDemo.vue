@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, HeaderObject, CellRendererProps, Row, CellValue } from "@simple-table/vue";
+import type { Theme, TableAPI, VueHeaderObject, CellRendererProps, Row, CellValue } from "@simple-table/vue";
 import {
   infrastructureConfig,
   infrastructureData,
@@ -144,18 +144,18 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 
 function applyRenderers(
-  hdrs: readonly HeaderObject[],
+  hdrs: readonly VueHeaderObject[],
   map: Record<string, (p: CellRendererProps) => unknown>,
-): HeaderObject[] {
+): VueHeaderObject[] {
   return hdrs.map((h) => {
     const renderer = map[h.accessor as string];
-    const clone: HeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    const clone: VueHeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
     if (h.children) clone.children = applyRenderers(h.children, map);
     return clone;
   });
 }
 
-const headers = computed((): HeaderObject[] => {
+const headers = computed((): VueHeaderObject[] => {
   const t = props.theme || "light";
 
   const serverIdRenderer = ({ row }: CellRendererProps) => {

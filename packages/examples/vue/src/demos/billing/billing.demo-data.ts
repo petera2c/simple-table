@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/vue";
+import type { VueHeaderObject } from "@simple-table/vue";
 
 export interface BillingRow {
   id: string | number;
@@ -85,8 +85,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): HeaderObject[] {
-  const headers: HeaderObject[] = [];
+function generateMonthHeaders(): VueHeaderObject[] {
+  const headers: VueHeaderObject[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -136,7 +136,7 @@ function generateMonthHeaders(): HeaderObject[] {
   return headers;
 }
 
-export const billingHeaders: HeaderObject[] = [
+export const billingHeaders: VueHeaderObject[] = [
   {
     accessor: "name",
     label: "Name",

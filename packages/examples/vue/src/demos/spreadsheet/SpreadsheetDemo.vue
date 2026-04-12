@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/vue";
+import type { Theme, VueHeaderObject, CellChangeProps } from "@simple-table/vue";
 import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
 import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import "@simple-table/vue/styles.css";
@@ -12,10 +12,10 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 });
 
 const data = ref([...spreadsheetConfig.rows]);
-const additionalColumns = ref<HeaderObject[]>([]);
+const additionalColumns = ref<VueHeaderObject[]>([]);
 
-const headers = computed((): HeaderObject[] => {
-  const baseHeaders: HeaderObject[] = [...spreadsheetConfig.headers];
+const headers = computed((): VueHeaderObject[] => {
+  const baseHeaders: VueHeaderObject[] = [...spreadsheetConfig.headers];
   return [
     ...baseHeaders,
     ...additionalColumns.value,
@@ -45,7 +45,7 @@ const headers = computed((): HeaderObject[] => {
               },
               onClick: () => {
                 const totalCols = spreadsheetConfig.headers.length + additionalColumns.value.length;
-                const newCol: HeaderObject = {
+                const newCol: VueHeaderObject = {
                   accessor: `column${totalCols + 1}`,
                   label: `Column ${totalCols + 1}`,
                   width: 120,

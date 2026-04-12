@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 
 export const singleRowChildrenData = [
@@ -16,7 +16,7 @@ export const singleRowChildrenData = [
   { id: 11, studentId: "STU-2024-011", studentName: "Keiko Tanaka", gradeLevel: "12th Grade", overallGPA: 3.9, mathGrade: 94, scienceGrade: 93, englishGrade: 96, historyGrade: 92 },
 ];
 
-export const singleRowChildrenHeaders: HeaderObject[] = [
+export const singleRowChildrenHeaders: SvelteHeaderObject[] = [
   { accessor: "studentId", label: "Student ID", width: 160, isSortable: true, type: "string" },
   { accessor: "gradeLevel", label: "Grade Level", width: 150, isSortable: true, type: "string" },
   {

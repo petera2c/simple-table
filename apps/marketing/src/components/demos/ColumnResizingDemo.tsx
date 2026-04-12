@@ -1,5 +1,5 @@
 import { SimpleTable } from "@simple-table/react";
-import type { HeaderObject, ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactHeaderObject, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import { useState, useEffect } from "react";
 
@@ -144,7 +144,7 @@ const ColumnResizingDemo = ({
   }, []);
 
   // Handle column width changes
-  const handleColumnWidthChange = (updatedHeaders: HeaderObject[]) => {
+  const handleColumnWidthChange = (updatedHeaders: ReactHeaderObject[]) => {
     try {
       // Extract widths into a simple object
       const widthMap = updatedHeaders.reduce(
@@ -159,7 +159,7 @@ const ColumnResizingDemo = ({
       localStorage.setItem(STORAGE_KEY, JSON.stringify(widthMap));
 
       // Update headers state
-      setHeaders(updatedHeaders as ReactHeaderObject[]);
+      setHeaders(updatedHeaders);
 
       // Show save confirmation
       setSaveMessage("Column widths saved! ✓");

@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueHeaderObject, CellRendererProps } from "@simple-table/vue";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/vue/styles.css";
@@ -35,7 +35,7 @@ const nameRenderer = ({ row }: CellRendererProps) => {
   return d.name;
 };
 
-const headers: HeaderObject[] = billingConfig.headers.map((h) => {
+const headers: VueHeaderObject[] = billingConfig.headers.map((h) => {
   if (h.accessor === "name") return { ...h, cellRenderer: nameRenderer };
   return { ...h };
 });

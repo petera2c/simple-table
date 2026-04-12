@@ -1,13 +1,13 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
   import { columnReorderingConfig } from "./column-reordering.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
-  let headers: HeaderObject[] = $state([...columnReorderingConfig.headers]);
+  let headers: SvelteHeaderObject[] = $state([...columnReorderingConfig.headers]);
 
-  function handleColumnOrderChange(newHeaders: HeaderObject[]) {
+  function handleColumnOrderChange(newHeaders: SvelteHeaderObject[]) {
     headers = newHeaders;
   }
 </script>

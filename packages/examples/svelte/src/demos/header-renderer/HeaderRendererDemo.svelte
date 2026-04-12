@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
   import { headerRendererConfig } from "./header-renderer.demo-data";
   import HeaderSortableHeader from "./HeaderSortableHeader.svelte";
   import { headerDemoSortAccessor, headerDemoSortDirection } from "./header-sort-store";

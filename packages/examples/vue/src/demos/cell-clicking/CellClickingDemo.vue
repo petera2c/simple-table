@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject, CellClickProps, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueHeaderObject, CellClickProps, CellRendererProps } from "@simple-table/vue";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/vue/styles.css";
@@ -14,7 +14,7 @@ const clickInfo = ref("");
 const selectedTask = ref<ProjectTask | null>(null);
 const rows = ref<ProjectTask[]>([...cellClickingData]);
 
-const headers: HeaderObject[] = cellClickingHeaders.map((col) => {
+const headers: VueHeaderObject[] = cellClickingHeaders.map((col) => {
   if (col.accessor === "priority") {
     return {
       ...col,

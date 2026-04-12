@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { HeaderObject, CellChangeProps } from "@simple-table/svelte";
+  import type { SvelteHeaderObject, CellChangeProps } from "@simple-table/svelte";
   import { crmData } from "./crm.demo-data";
   import type { CrmShellTheme } from "./crm.demo-data";
   import { syncCrmDemoPalette, crmRowsPerPage } from "./crm-demo-stores";
@@ -29,7 +29,7 @@
   });
 
   const headers = $derived.by(
-    (): HeaderObject[] => [
+    (): SvelteHeaderObject[] => [
       {
         accessor: "name",
         label: "CONTACT",

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
   import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -8,7 +8,7 @@
 
   let tableRef: any;
 
-  const headers: HeaderObject[] = csvExportHeaders.map((h) => {
+  const headers: SvelteHeaderObject[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,

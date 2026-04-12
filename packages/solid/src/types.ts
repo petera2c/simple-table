@@ -99,10 +99,18 @@ export interface SimpleTableSolidProps
     | "headerDropdown"
     | "columnEditorConfig"
     | "icons"
+    | "onColumnOrderChange"
+    | "onColumnWidthChange"
+    | "onHeaderEdit"
+    | "onColumnSelect"
   > {
   defaultHeaders: ReadonlyArray<HeaderObject | SolidHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
+  onColumnOrderChange?: (newHeaders: SolidHeaderObject[]) => void;
+  onColumnWidthChange?: (headers: SolidHeaderObject[]) => void;
+  onHeaderEdit?: (header: SolidHeaderObject, newLabel: string) => void;
+  onColumnSelect?: (header: SolidHeaderObject) => void;
   footerRenderer?: SolidFooterRenderer;
   loadingStateRenderer?: SolidLoadingStateRenderer;
   errorStateRenderer?: SolidErrorStateRenderer;

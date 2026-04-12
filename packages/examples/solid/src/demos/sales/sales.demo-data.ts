@@ -1,4 +1,4 @@
-import type { HeaderObject, ValueGetterProps } from "@simple-table/solid";
+import type { SolidHeaderObject, ValueGetterProps } from "@simple-table/solid";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
 type ThemePalette = {
@@ -167,7 +167,7 @@ const SALES_SAMPLE_INBOUND: SalesInboundRow[] = [
 
 export const salesSampleRows: SalesRow[] = processSalesData(SALES_SAMPLE_INBOUND);
 
-export const salesHeadersCore: HeaderObject[] = [
+export const salesHeadersCore: SolidHeaderObject[] = [
   {
     accessor: "repName",
     label: "Sales Representative",

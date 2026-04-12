@@ -1,6 +1,6 @@
 // Self-contained demo table setup for this example.
 import type { Row } from "@simple-table/svelte";
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 
 export const QUICK_START_DATA: Row[] = [
@@ -103,7 +103,7 @@ export const QUICK_START_DATA: Row[] = [
 ];
 
 
-export const quickStartHeaders: HeaderObject[] = [
+export const quickStartHeaders: SvelteHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   {
     accessor: "name",

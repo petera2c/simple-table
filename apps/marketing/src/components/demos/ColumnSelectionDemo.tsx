@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { HeaderObject, ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactHeaderObject, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers
@@ -129,8 +129,8 @@ const ColumnSelectionDemo = ({
 }) => {
   const [selectedColumn, setSelectedColumn] = useState<ReactHeaderObject | null>(null);
 
-  const handleColumnSelect = (header: HeaderObject) => {
-    setSelectedColumn(header as ReactHeaderObject);
+  const handleColumnSelect = (header: ReactHeaderObject) => {
+    setSelectedColumn(header);
   };
 
   return (

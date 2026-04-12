@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject, CellChangeProps, Row } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject, CellChangeProps, Row } from "@simple-table/svelte";
   import { salesHeadersCore, salesSampleRows } from "./sales.demo-data";
   import SalesDealValueCell from "./SalesDealValueCell.svelte";
   import SalesIsWonCell from "./SalesIsWonCell.svelte";
@@ -26,16 +26,16 @@
     dealProfit: SalesDealProfitCell,
   };
 
-  function applyCellComponents(hdrs: HeaderObject[]): HeaderObject[] {
+  function applyCellComponents(hdrs: SvelteHeaderObject[]): SvelteHeaderObject[] {
     return hdrs.map((h) => ({
       ...h,
       ...(renderers[h.accessor as string] ? { cellRenderer: renderers[h.accessor as string] } : {}),
-      ...(h.children ? { children: applyCellComponents(h.children as HeaderObject[]) } : {}),
+      ...(h.children ? { children: applyCellComponents(h.children as SvelteHeaderObject[]) } : {}),
     }));
   }
 
   const headers = $derived(
-    applyCellComponents(JSON.parse(JSON.stringify(salesHeadersCore)) as HeaderObject[]),
+    applyCellComponents(JSON.parse(JSON.stringify(salesHeadersCore)) as SvelteHeaderObject[]),
   );
 
   let data = $state<Row[]>(salesSampleRows.map((r) => ({ ...r })) as Row[]);

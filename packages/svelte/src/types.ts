@@ -101,10 +101,18 @@ export interface SimpleTableSvelteProps
     | "headerDropdown"
     | "columnEditorConfig"
     | "icons"
+    | "onColumnOrderChange"
+    | "onColumnWidthChange"
+    | "onHeaderEdit"
+    | "onColumnSelect"
   > {
   defaultHeaders: ReadonlyArray<HeaderObject | SvelteHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
+  onColumnOrderChange?: (newHeaders: SvelteHeaderObject[]) => void;
+  onColumnWidthChange?: (headers: SvelteHeaderObject[]) => void;
+  onHeaderEdit?: (header: SvelteHeaderObject, newLabel: string) => void;
+  onColumnSelect?: (header: SvelteHeaderObject) => void;
   footerRenderer?: SvelteFooterRenderer;
   loadingStateRenderer?: SvelteLoadingStateRenderer;
   errorStateRenderer?: SvelteErrorStateRenderer;

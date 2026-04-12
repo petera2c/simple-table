@@ -1,6 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "@simple-table/vue";
-import type { HeaderObject } from "@simple-table/vue";
+import type { Row, VueHeaderObject } from "@simple-table/vue";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -148,7 +147,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: HeaderObject[] = [
+export const columnFilteringHeaders: VueHeaderObject[] = [
   {
     accessor: "id",
     label: "ID",

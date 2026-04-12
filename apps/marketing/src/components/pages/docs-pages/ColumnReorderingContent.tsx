@@ -26,8 +26,8 @@ const COLUMN_REORDERING_PROPS: PropInfo[] = [
     name: "onColumnOrderChange",
     required: false,
     description:
-      "Callback function that fires when column order changes. Receives the new header configuration as parameter.",
-    type: "(newHeaders: HeaderObject[]) => void",
+      "Callback function that fires when column order changes. With `@simple-table/react`, receives `ReactHeaderObject[]`. Angular, Svelte, and Solid adapters use `AngularHeaderObject[]`, `SvelteHeaderObject[]`, and `SolidHeaderObject[]` respectively.",
+    type: "(newHeaders: ReactHeaderObject[]) => void",
     example: `<SimpleTable
   columnReordering={true}
   onColumnOrderChange={(newHeaders) => {

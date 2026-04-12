@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/solid";
+import type { SolidHeaderObject, Row } from "@simple-table/solid";
 
 export interface InfrastructureServer {
   id: number;
@@ -75,7 +75,7 @@ export function generateInfrastructureData(count: number = 50): Row[] {
 
 export const infrastructureData = generateInfrastructureData(50);
 
-export const infrastructureHeaders: HeaderObject[] = [
+export const infrastructureHeaders: SolidHeaderObject[] = [
   {
     accessor: "serverId",
     align: "left",

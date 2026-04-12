@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import { CrProgressCellComponent } from "./cr-progress-cell.component";
 import { CrRatingCellComponent } from "./cr-rating-cell.component";
@@ -11,7 +11,7 @@ import { CrVerifiedCellComponent } from "./cr-verified-cell.component";
 import { CrWebsiteCellComponent } from "./cr-website-cell.component";
 import "@simple-table/angular/styles.css";
 
-const RENDERERS: Record<string, unknown> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   teamMembers: CrTeamMembersCellComponent,
   website: CrWebsiteCellComponent,
   status: CrStatusCellComponent,
@@ -41,8 +41,8 @@ export class CellRendererDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = cellRendererConfig.rows;
-  readonly headers: AngularHeaderObject[] = cellRendererConfig.headers.map((h) => {
-    const R = RENDERERS[h.accessor as string];
-    return R ? { ...h, cellRenderer: R } : h;
+  readonly headers: AngularHeaderObject[] = cellRendererConfig.headers.map((h): AngularHeaderObject => {
+    const cellRenderer = RENDERERS[String(h.accessor)];
+    return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
 }

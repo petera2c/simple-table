@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/svelte";
+import type { SvelteHeaderObject } from "@simple-table/svelte";
 
 
 export const externalSortData = [
@@ -17,7 +17,7 @@ export const externalSortData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps" },
 ];
 
-export const externalSortHeaders: HeaderObject[] = [
+export const externalSortHeaders: SvelteHeaderObject[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, isSortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, isSortable: true, type: "number" },
   { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },

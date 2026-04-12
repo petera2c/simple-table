@@ -40,7 +40,7 @@ export const v3_0_0: ChangelogEntry = {
 };
 
 export const v3_0_4: ChangelogEntry = {
-  version: "3.0.4",
+  version: "3.0.5",
   date: "2026-04-12",
   title: "Bug fixes",
   description: "Bug fixes.",

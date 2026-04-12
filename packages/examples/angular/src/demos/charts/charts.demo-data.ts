@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 
 const generateTrendData = (baseValue: number, volatility: number, length: number = 12): number[] => {
@@ -28,7 +28,7 @@ export const chartsData = [
   { id: 12, product: "Smart Home Hub", category: "Electronics", monthlySales: generateTrendData(100, 25, 12), dailyViews: generateTrendData(400, 80, 30), quarterlyRevenue: [35000, 38000, 42000, 45000], weeklyOrders: [15, 18, 22, 19, 21, 24, 27], rating: 4.6 },
 ];
 
-export const chartsHeaders: HeaderObject[] = [
+export const chartsHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 70, isSortable: true, type: "number" },
   { accessor: "product", label: "Product", width: 180, isSortable: true, type: "string" },
   { accessor: "category", label: "Category", width: 120, isSortable: true, type: "string" },

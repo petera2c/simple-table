@@ -43,10 +43,10 @@ const COLUMN_EDITING_PROPS: PropInfo[] = [
     name: "onHeaderEdit",
     required: false,
     description:
-      "Callback function triggered when a column header is edited. Receives the header index and new label value.",
-    type: "(headerIndex: number, newLabel: string) => void",
-    example: `const handleHeaderEdit = (headerIndex: number, newLabel: string) => {
-  console.log('Header edited:', { headerIndex, newLabel });
+      "Callback function triggered when a column header is edited. With `@simple-table/react`, receives `ReactHeaderObject` and the new label. Angular, Svelte, and Solid adapters use `AngularHeaderObject`, `SvelteHeaderObject`, and `SolidHeaderObject` respectively.",
+    type: "(header: ReactHeaderObject, newLabel: string) => void",
+    example: `const handleHeaderEdit = (header: ReactHeaderObject, newLabel: string) => {
+  console.log('Header edited:', { header, newLabel });
   // Update your headers state here
 };
 

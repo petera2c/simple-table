@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/vue";
+import type { VueHeaderObject } from "@simple-table/vue";
 
 
-export const columnSelectionHeaders: HeaderObject[] = [
+export const columnSelectionHeaders: VueHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 120, width: "1fr", isSortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },

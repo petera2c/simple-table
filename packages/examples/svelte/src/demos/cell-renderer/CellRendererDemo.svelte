@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
   import { cellRendererConfig } from "./cell-renderer.demo-data";
   import CrTeamMembersCell from "./CrTeamMembersCell.svelte";
   import CrWebsiteCell from "./CrWebsiteCell.svelte";
@@ -23,7 +23,7 @@
     tags: CrTagsCell,
   };
 
-  const headers: HeaderObject[] = cellRendererConfig.headers.map((h) => {
+  const headers: SvelteHeaderObject[] = cellRendererConfig.headers.map((h) => {
     const cellRenderer = RENDERERS[h.accessor as string];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });

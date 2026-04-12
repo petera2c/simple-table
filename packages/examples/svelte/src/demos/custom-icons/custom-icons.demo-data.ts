@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
 
 export const customIconsData: Row[] = [
   { id: 1, name: "Alpha Release", version: "1.0.0", status: "released", downloads: 15420, date: "2024-01-15" },
@@ -12,7 +12,7 @@ export const customIconsData: Row[] = [
   { id: 8, name: "Next Release", version: "2.2.0", status: "planned", downloads: 0, date: "2025-01-20" },
 ];
 
-export const customIconsHeaders: HeaderObject[] = [
+export const customIconsHeaders: SvelteHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", isSortable: true },
   { accessor: "name", label: "Release", width: 170, type: "string", isSortable: true },
   { accessor: "version", label: "Version", width: 100, type: "string", isSortable: true },

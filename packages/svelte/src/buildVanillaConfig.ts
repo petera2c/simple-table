@@ -82,6 +82,10 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
     columnEditorConfig,
     icons,
     tableEmptyStateRenderer,
+    onColumnOrderChange,
+    onColumnWidthChange,
+    onHeaderEdit,
+    onColumnSelect,
     ...rest
   } = config;
 
@@ -89,6 +93,30 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
+    ...(onColumnOrderChange
+      ? {
+          onColumnOrderChange: (headers: HeaderObject[]) =>
+            onColumnOrderChange(headers as unknown as SvelteHeaderObject[]),
+        }
+      : {}),
+    ...(onColumnWidthChange
+      ? {
+          onColumnWidthChange: (headers: HeaderObject[]) =>
+            onColumnWidthChange(headers as unknown as SvelteHeaderObject[]),
+        }
+      : {}),
+    ...(onHeaderEdit
+      ? {
+          onHeaderEdit: (header: HeaderObject, newLabel: string) =>
+            onHeaderEdit(header as unknown as SvelteHeaderObject, newLabel),
+        }
+      : {}),
+    ...(onColumnSelect
+      ? {
+          onColumnSelect: (header: HeaderObject) =>
+            onColumnSelect(header as unknown as SvelteHeaderObject),
+        }
+      : {}),
   };
 
   if (tableEmptyStateRenderer !== undefined) {

@@ -1,5 +1,6 @@
 import { createSignal, createMemo } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, HeaderObject, SolidHeaderObject } from "@simple-table/solid";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, SolidHeaderObject } from "@simple-table/solid";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/solid/styles.css";
 

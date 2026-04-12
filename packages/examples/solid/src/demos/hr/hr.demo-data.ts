@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/solid";
+import type { SolidHeaderObject } from "@simple-table/solid";
 
 export interface HREmployee {
   id: number;
@@ -55,7 +55,7 @@ export function generateHRData(count: number = 100): HREmployee[] {
 
 export const hrData = generateHRData(100);
 
-export const hrHeaders: HeaderObject[] = [
+export const hrHeaders: SolidHeaderObject[] = [
   { accessor: "fullName", label: "Employee", width: 220, isSortable: true, isEditable: false, align: "left", pinned: "left", type: "string" },
   {
     accessor: "performanceScore", label: "Performance", width: 160, isSortable: true, isEditable: true, align: "center", type: "number",
