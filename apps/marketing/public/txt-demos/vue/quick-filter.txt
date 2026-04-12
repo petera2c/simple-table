@@ -55,7 +55,7 @@
       </button>
     </div>
     <SimpleTable
-      :default-headers="quickFilterConfig.headers"
+      :default-headers="defaultHeadersFromCore(quickFilterConfig.headers)"
       :rows="quickFilterConfig.rows"
       :height="height"
       :theme="theme"
@@ -66,10 +66,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { QuickFilterMode } from "simple-table-core";
-import { quickFilterConfig } from "@simple-table/examples-shared";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
+import type { Theme, QuickFilterMode } from "@simple-table/vue";
+import { quickFilterConfig } from "./quick-filter.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="columnPinningConfig.headers"
+    :default-headers="defaultHeadersFromCore(columnPinningConfig.headers)"
     :rows="columnPinningConfig.rows"
     :height="height"
     :theme="theme"
@@ -9,9 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { columnPinningConfig } from "@simple-table/examples-shared";
+import { columnPinningConfig } from "./column-pinning.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

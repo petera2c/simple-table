@@ -1,8 +1,7 @@
 import { useState, useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
-import type { HeaderObject } from "simple-table-core";
-import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import type { Theme, ReactHeaderObject, HeaderObject } from "@simple-table/react";
+import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnEditingDemo = ({
@@ -16,7 +15,7 @@ const ColumnEditingDemo = ({
   const [lastAdded, setLastAdded] = useState("");
 
   const headers: ReactHeaderObject[] = useMemo(
-    () => [...columnEditingHeaders, ...additionalColumns],
+    () => [...defaultHeadersFromCore(columnEditingHeaders), ...additionalColumns],
     [additionalColumns],
   );
 

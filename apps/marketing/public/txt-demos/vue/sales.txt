@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
-import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-import type { SalesRow } from "@simple-table/examples-shared";
+import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "@simple-table/vue";
+import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "@simple-table/vue/styles.css";
 
-withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
-  height: "400px",
+const props = withDefaults(defineProps<{ height?: string | number | null; theme?: Theme }>(), {
+  height: undefined,
 });
+
+function formatTableHeight(height?: string | number | null): string {
+  if (height == null) return "70dvh";
+  if (typeof height === "number") return `${height}px`;
+  return height;
+}
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
   const e = document.createElement(tag);
@@ -25,14 +29,15 @@ function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node
 const salesRenderers: Record<string, CellRenderer> = {
   dealValue: ({ row, theme }) => {
     if (row.dealValue === "—") return "—";
-    const d = row as unknown as SalesRow;
-    const value = d.dealValue;
-    const c = getSalesThemeColors(theme);
-    let color = c.gray;
+    const value = (row as unknown as SalesRow).dealValue;
+    const colors = getThemeColors(theme);
+    let color = colors.gray;
     let fontWeight = "normal";
-    if (value > 100000) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-    else if (value > 50000) color = c.successMedium;
-    else if (value > 10000) color = c.successLow;
+    if (value > 100000) {
+      color = colors.success.high.color;
+      fontWeight = colors.success.high.fontWeight;
+    } else if (value > 50000) color = colors.success.medium;
+    else if (value > 10000) color = colors.success.low;
     return el("span", { color, fontWeight }, [
       `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     ]);
@@ -41,47 +46,62 @@ const salesRenderers: Record<string, CellRenderer> = {
   isWon: ({ row }) => {
     if (row.isWon === "—") return "—";
     const d = row as unknown as SalesRow;
-    const isWon = d.isWon;
-    const s = isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
-    return el("span", {
-      backgroundColor: s.bg, color: s.text,
-      padding: "0 7px", fontSize: "12px", lineHeight: "20px",
-      borderRadius: "2px", display: "inline-block",
-    }, [isWon ? "Won" : "Lost"]);
+    const s = d.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
+    return el(
+      "span",
+      {
+        backgroundColor: s.bg,
+        color: s.text,
+        padding: "0 7px",
+        fontSize: "12px",
+        lineHeight: "20px",
+        borderRadius: "2px",
+        display: "inline-block",
+      },
+      [d.isWon ? "Won" : "Lost"],
+    );
   },
 
   commission: ({ row, theme }) => {
     if (row.commission === "—") return "—";
-    const d = row as unknown as SalesRow;
-    const value = d.commission;
-    const c = getSalesThemeColors(theme);
-    if (value === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
+    const value = (row as unknown as SalesRow).commission;
+    const colors = getThemeColors(theme);
+    if (value === 0) return el("span", { color: colors.grayMuted }, ["$0.00"]);
     return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   },
 
   profitMargin: ({ row, theme }) => {
     if (row.profitMargin === "—") return "—";
-    const d = row as unknown as SalesRow;
-    const value = d.profitMargin;
-    const c = getSalesThemeColors(theme);
-    let color = c.gray;
+    const value = (row as unknown as SalesRow).profitMargin;
+    const colors = getThemeColors(theme);
+    let color = colors.gray;
     let fontWeight = "normal";
-    if (value >= 0.7) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-    else if (value >= 0.5) color = c.successMedium;
-    else if (value >= 0.4) color = c.successLow;
-    else if (value >= 0.3) color = c.info;
-    else color = c.warning;
-    const barColor = value >= 0.5 ? c.progressHigh : value >= 0.3 ? c.progressMedium : c.progressLow;
+    if (value >= 0.7) {
+      color = colors.success.high.color;
+      fontWeight = colors.success.high.fontWeight;
+    } else if (value >= 0.5) color = colors.success.medium;
+    else if (value >= 0.4) color = colors.success.low;
+    else if (value >= 0.3) color = colors.info;
+    else color = colors.warning;
+    const barColor =
+      value >= 0.5 ? colors.progressColors.high : value >= 0.3 ? colors.progressColors.medium : colors.progressColors.low;
 
     const pctSpan = el("span", { color, fontWeight }, [`${(value * 100).toFixed(1)}%`]);
     const track = el("div", {
-      backgroundColor: "#f5f5f5", height: "6px", width: "100%",
-      borderRadius: "100px", overflow: "hidden",
+      backgroundColor: "#f5f5f5",
+      height: "6px",
+      width: "100%",
+      borderRadius: "100px",
+      overflow: "hidden",
     });
-    track.appendChild(el("div", {
-      height: "100%", width: `${value * 100}%`,
-      backgroundColor: barColor, borderRadius: "100px",
-    }));
+    track.appendChild(
+      el("div", {
+        height: "100%",
+        width: `${value * 100}%`,
+        backgroundColor: barColor,
+        borderRadius: "100px",
+      }),
+    );
     const barWrap = el("div", { marginLeft: "8px", width: "48px" }, [track]);
 
     return el("div", { display: "flex", alignItems: "center", justifyContent: "flex-end" }, [pctSpan, barWrap]);
@@ -89,15 +109,16 @@ const salesRenderers: Record<string, CellRenderer> = {
 
   dealProfit: ({ row, theme }) => {
     if (row.dealProfit === "—") return "—";
-    const d = row as unknown as SalesRow;
-    const value = d.dealProfit;
-    const c = getSalesThemeColors(theme);
-    if (value === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
-    let color = c.gray;
+    const value = (row as unknown as SalesRow).dealProfit;
+    const colors = getThemeColors(theme);
+    if (value === 0) return el("span", { color: colors.grayMuted }, ["$0.00"]);
+    let color = colors.gray;
     let fontWeight = "normal";
-    if (value > 50000) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-    else if (value > 20000) color = c.successMedium;
-    else if (value > 10000) color = c.successLow;
+    if (value > 50000) {
+      color = colors.success.high.color;
+      fontWeight = colors.success.high.fontWeight;
+    } else if (value > 20000) color = colors.success.medium;
+    else if (value > 10000) color = colors.success.low;
     return el("span", { color, fontWeight }, [
       `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     ]);
@@ -115,9 +136,23 @@ function applyRenderers(hdrs: readonly HeaderObject[], map: Record<string, CellR
   });
 }
 
-const headers = applyRenderers(salesConfig.headers, salesRenderers);
+const headers = applyRenderers(salesHeadersCore, salesRenderers);
 
-const data = ref<Row[]>(salesConfig.rows.map((r) => ({ ...r })));
+const data = ref<Row[]>((salesSampleRows.map((r) => ({ ...r })) as Row[]));
+const isMobile = ref(false);
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768;
+};
+
+onMounted(() => {
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkMobile);
+});
 
 const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
   data.value = data.value.map((item) =>
@@ -130,9 +165,9 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
   <SimpleTable
     :default-headers="headers"
     :rows="data"
-    :height="height"
-    :theme="theme"
-    :auto-expand-columns="true"
+    :height="formatTableHeight(props.height)"
+    :theme="props.theme"
+    :auto-expand-columns="!isMobile"
     :edit-columns="true"
     :selectable-cells="true"
     :column-resizing="true"

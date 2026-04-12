@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { chartsConfig } from "@simple-table/examples-shared";
+import { chartsConfig } from "./charts.demo-data";
 import "@simple-table/react/styles.css";
 
 const ChartsDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
@@ -8,7 +8,7 @@ const ChartsDemo = ({ height = "400px", theme }: { height?: string | number; the
     <SimpleTable
       columnReordering={chartsConfig.tableProps.columnReordering}
       columnResizing={chartsConfig.tableProps.columnResizing}
-      defaultHeaders={chartsConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(chartsConfig.headers)}
       rows={chartsConfig.rows}
       selectableCells={chartsConfig.tableProps.selectableCells}
       height={height}

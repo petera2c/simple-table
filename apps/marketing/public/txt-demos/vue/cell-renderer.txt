@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer } from "simple-table-core";
-import { cellRendererConfig } from "@simple-table/examples-shared";
-import type { CellRendererEmployee } from "@simple-table/examples-shared";
+import type { Theme, HeaderObject, CellRenderer } from "@simple-table/vue";
+import { cellRendererConfig } from "./cell-renderer.demo-data";
+import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

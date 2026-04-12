@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="aggregateFunctionsConfig.headers"
+    :default-headers="defaultHeadersFromCore(aggregateFunctionsConfig.headers)"
     :rows="aggregateFunctionsConfig.rows"
     :row-grouping="aggregateFunctionsConfig.tableProps.rowGrouping"
     :column-resizing="true"
@@ -10,9 +10,9 @@
 </template>
 
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { aggregateFunctionsConfig } from "@simple-table/examples-shared";
+import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

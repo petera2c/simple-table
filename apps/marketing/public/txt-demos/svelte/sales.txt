@@ -1,14 +1,17 @@
 <script lang="ts">
+  import { onMount, onDestroy } from "svelte";
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
-  import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-  import type { SalesRow } from "@simple-table/examples-shared";
+  import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "@simple-table/svelte";
+  import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
   import "@simple-table/svelte/styles.css";
 
-  let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
+  let { height, theme }: { height?: string | number | null; theme?: Theme } = $props();
 
-  let data = $state(salesConfig.rows.map((r) => ({ ...r })) as Row[]);
+  function formatTableHeight(h?: string | number | null): string {
+    if (h == null) return "70dvh";
+    if (typeof h === "number") return `${h}px`;
+    return h;
+  }
 
   function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
     const e = document.createElement(tag);
@@ -26,12 +29,14 @@
       dealValue: ({ row, theme: cellTheme }) => {
         if (row.dealValue === "—") return "—";
         const d = row as unknown as SalesRow;
-        const c = getSalesThemeColors(cellTheme);
-        let color = c.gray;
+        const colors = getThemeColors(cellTheme);
+        let color = colors.gray;
         let fontWeight = "normal";
-        if (d.dealValue > 100000) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-        else if (d.dealValue > 50000) color = c.successMedium;
-        else if (d.dealValue > 10000) color = c.successLow;
+        if (d.dealValue > 100000) {
+          color = colors.success.high.color;
+          fontWeight = colors.success.high.fontWeight;
+        } else if (d.dealValue > 50000) color = colors.success.medium;
+        else if (d.dealValue > 10000) color = colors.success.low;
         return el("span", { color, fontWeight }, [
           `$${d.dealValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         ]);
@@ -40,46 +45,66 @@
       isWon: ({ row }) => {
         if (row.isWon === "—") return "—";
         const d = row as unknown as SalesRow;
-        const isWon = d.isWon;
-        const s = isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
-        return el("span", {
-          backgroundColor: s.bg, color: s.text,
-          padding: "0 7px", fontSize: "12px", lineHeight: "20px",
-          borderRadius: "2px", display: "inline-block",
-        }, [isWon ? "Won" : "Lost"]);
+        const s = d.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
+        return el(
+          "span",
+          {
+            backgroundColor: s.bg,
+            color: s.text,
+            padding: "0 7px",
+            fontSize: "12px",
+            lineHeight: "20px",
+            borderRadius: "2px",
+            display: "inline-block",
+          },
+          [d.isWon ? "Won" : "Lost"],
+        );
       },
 
       commission: ({ row, theme: cellTheme }) => {
         if (row.commission === "—") return "—";
         const d = row as unknown as SalesRow;
-        const value = d.commission;
-        const c = getSalesThemeColors(cellTheme);
-        if (value === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
-        return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const colors = getThemeColors(cellTheme);
+        if (d.commission === 0) return el("span", { color: colors.grayMuted }, ["$0.00"]);
+        return `$${d.commission.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       },
 
       profitMargin: ({ row, theme: cellTheme }) => {
         if (row.profitMargin === "—") return "—";
         const d = row as unknown as SalesRow;
-        const c = getSalesThemeColors(cellTheme);
-        let color = c.gray;
+        const colors = getThemeColors(cellTheme);
+        let color = colors.gray;
         let fontWeight = "normal";
-        if (d.profitMargin >= 0.7) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-        else if (d.profitMargin >= 0.5) color = c.successMedium;
-        else if (d.profitMargin >= 0.4) color = c.successLow;
-        else if (d.profitMargin >= 0.3) color = c.info;
-        else color = c.warning;
-        const barColor = d.profitMargin >= 0.5 ? c.progressHigh : d.profitMargin >= 0.3 ? c.progressMedium : c.progressLow;
+        if (d.profitMargin >= 0.7) {
+          color = colors.success.high.color;
+          fontWeight = colors.success.high.fontWeight;
+        } else if (d.profitMargin >= 0.5) color = colors.success.medium;
+        else if (d.profitMargin >= 0.4) color = colors.success.low;
+        else if (d.profitMargin >= 0.3) color = colors.info;
+        else color = colors.warning;
+        const barColor =
+          d.profitMargin >= 0.5
+            ? colors.progressColors.high
+            : d.profitMargin >= 0.3
+              ? colors.progressColors.medium
+              : colors.progressColors.low;
 
         const pctSpan = el("span", { color, fontWeight }, [`${(d.profitMargin * 100).toFixed(1)}%`]);
         const track = el("div", {
-          backgroundColor: "#f5f5f5", height: "6px", width: "100%",
-          borderRadius: "100px", overflow: "hidden",
+          backgroundColor: "#f5f5f5",
+          height: "6px",
+          width: "100%",
+          borderRadius: "100px",
+          overflow: "hidden",
         });
-        track.appendChild(el("div", {
-          height: "100%", width: `${d.profitMargin * 100}%`,
-          backgroundColor: barColor, borderRadius: "100px",
-        }));
+        track.appendChild(
+          el("div", {
+            height: "100%",
+            width: `${d.profitMargin * 100}%`,
+            backgroundColor: barColor,
+            borderRadius: "100px",
+          }),
+        );
         const barWrap = el("div", { marginLeft: "8px", width: "48px" }, [track]);
 
         return el("div", { display: "flex", alignItems: "center", justifyContent: "flex-end" }, [pctSpan, barWrap]);
@@ -88,13 +113,15 @@
       dealProfit: ({ row, theme: cellTheme }) => {
         if (row.dealProfit === "—") return "—";
         const d = row as unknown as SalesRow;
-        const c = getSalesThemeColors(cellTheme);
-        if (d.dealProfit === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
-        let color = c.gray;
+        const colors = getThemeColors(cellTheme);
+        if (d.dealProfit === 0) return el("span", { color: colors.grayMuted }, ["$0.00"]);
+        let color = colors.gray;
         let fontWeight = "normal";
-        if (d.dealProfit > 50000) { color = c.successHigh.color; fontWeight = c.successHigh.fontWeight; }
-        else if (d.dealProfit > 20000) color = c.successMedium;
-        else if (d.dealProfit > 10000) color = c.successLow;
+        if (d.dealProfit > 50000) {
+          color = colors.success.high.color;
+          fontWeight = colors.success.high.fontWeight;
+        } else if (d.dealProfit > 20000) color = colors.success.medium;
+        else if (d.dealProfit > 10000) color = colors.success.low;
         return el("span", { color, fontWeight }, [
           `$${d.dealProfit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         ]);
@@ -104,7 +131,7 @@
 
   function buildSalesHeaders(): HeaderObject[] {
     const renderers = buildSalesRenderers();
-    const headers: HeaderObject[] = JSON.parse(JSON.stringify(salesConfig.headers));
+    const headers: HeaderObject[] = JSON.parse(JSON.stringify(salesHeadersCore));
 
     const applyRenderers = (hdrs: HeaderObject[]) => {
       for (const h of hdrs) {
@@ -117,17 +144,35 @@
     return headers;
   }
 
+  let data = $state<Row[]>(salesSampleRows.map((r) => ({ ...r })) as Row[]);
+  let isMobile = $state(false);
+
+  const headers = buildSalesHeaders();
+
+  function checkMobile() {
+    isMobile = window.innerWidth < 768;
+  }
+
+  onMount(() => {
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener("resize", checkMobile);
+  });
+
   function handleCellEdit({ accessor, newValue, row }: CellChangeProps) {
-    data = data.map((item) => item.id === row.id ? { ...item, [accessor]: newValue } : item) as Row[];
+    data = data.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)) as Row[];
   }
 </script>
 
 <SimpleTable
-  defaultHeaders={buildSalesHeaders()}
+  defaultHeaders={headers}
   rows={data}
-  {height}
+  height={formatTableHeight(height)}
   {theme}
-  autoExpandColumns={true}
+  autoExpandColumns={!isMobile}
   editColumns={true}
   selectableCells={true}
   columnResizing={true}

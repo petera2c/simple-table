@@ -1,13 +1,12 @@
 import { useState, useCallback } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
-import type { OnRowGroupExpandProps } from "simple-table-core";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
   fetchDivisionsForCompany,
-} from "@simple-table/examples-shared";
-import type { DynamicCompany } from "@simple-table/examples-shared";
+} from "./dynamic-nested-tables.demo-data";
+import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
 import "@simple-table/react/styles.css";
 
 const DynamicNestedTablesDemo = ({ height = "500px", theme }: { height?: string | number; theme?: Theme }) => {
@@ -44,7 +43,7 @@ const DynamicNestedTablesDemo = ({ height = "500px", theme }: { height?: string 
   return (
     <SimpleTable
       autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={dynamicNestedTablesConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(dynamicNestedTablesConfig.headers)}
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
       height={height}
       rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}

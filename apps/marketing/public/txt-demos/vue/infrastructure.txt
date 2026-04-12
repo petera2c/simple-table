@@ -16,17 +16,126 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer, Row } from "simple-table-core";
+import type { Theme, TableAPI, HeaderObject, CellRenderer, Row, CellValue } from "@simple-table/vue";
 import {
   infrastructureConfig,
   infrastructureData,
-  INFRA_UPDATE_CONFIG,
   getInfraMetricColorStyles,
   getInfraStatusColors,
-} from "@simple-table/examples-shared";
-import type { InfrastructureServer } from "@simple-table/examples-shared";
+} from "./infrastructure.demo-data";
+import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/vue/styles.css";
+
+const INFRA_TICK_MS = 20;
+const INFRA_ROWS_PER_TICK = 4;
+type InfraMetricSlot = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = copy[i]!;
+    copy[i] = copy[j]!;
+    copy[j] = t;
+  }
+  return copy.slice(0, Math.min(n, copy.length));
+}
+
+function infraApplyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
+  for (const accessor of Object.keys(patch)) {
+    const newValue = patch[accessor];
+    if (newValue === undefined) continue;
+    api.updateData({ accessor, rowIndex, newValue: newValue as CellValue });
+  }
+}
+
+function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Row> | null {
+  switch (slot) {
+    case 0: {
+      const currentCpu = row.cpuUsage as number;
+      if (typeof currentCpu !== "number") return null;
+      const cpuChange = (Math.random() - 0.5) * 8;
+      const newCpu = Math.min(100, Math.max(0, currentCpu + cpuChange));
+      const newCpuRounded = Math.round(newCpu * 10) / 10;
+      const currentHistory = row.cpuHistory as number[];
+      if (Array.isArray(currentHistory) && currentHistory.length > 0) {
+        return { cpuUsage: newCpuRounded, cpuHistory: [...currentHistory.slice(1), newCpuRounded] };
+      }
+      return { cpuUsage: newCpuRounded };
+    }
+    case 1: {
+      const currentMemory = row.memoryUsage as number;
+      if (typeof currentMemory !== "number") return null;
+      const memoryChange = (Math.random() - 0.5) * 5;
+      const newMemory = Math.min(100, Math.max(0, currentMemory + memoryChange));
+      return { memoryUsage: Math.round(newMemory * 10) / 10 };
+    }
+    case 2: {
+      const currentNetIn = row.networkIn as number;
+      if (typeof currentNetIn !== "number") return null;
+      const netChange = (Math.random() - 0.5) * 100;
+      return { networkIn: Math.round(Math.max(0, currentNetIn + netChange) * 100) / 100 };
+    }
+    case 3: {
+      const currentNetOut = row.networkOut as number;
+      if (typeof currentNetOut !== "number") return null;
+      const netChange = (Math.random() - 0.5) * 60;
+      return { networkOut: Math.round(Math.max(0, currentNetOut + netChange) * 100) / 100 };
+    }
+    case 4: {
+      const currentResponseTime = row.responseTime as number;
+      if (typeof currentResponseTime !== "number") return null;
+      const responseChange = (Math.random() - 0.5) * 100;
+      return { responseTime: Math.round(Math.max(10, currentResponseTime + responseChange) * 10) / 10 };
+    }
+    case 5: {
+      const currentConnections = row.activeConnections as number;
+      if (typeof currentConnections !== "number") return null;
+      const connectionChange = Math.floor((Math.random() - 0.5) * 500);
+      return { activeConnections: Math.max(0, currentConnections + connectionChange) };
+    }
+    case 6: {
+      const currentRequests = row.requestsPerSec as number;
+      if (typeof currentRequests !== "number") return null;
+      const requestChange = Math.floor((Math.random() - 0.5) * 2000);
+      return { requestsPerSec: Math.max(0, currentRequests + requestChange) };
+    }
+    default:
+      return null;
+  }
+}
+
+function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, rows: Row[]): () => void {
+  let isActive = true;
+  const idToIndex = new Map<string, number>();
+  for (let i = 0; i < rows.length; i++) {
+    idToIndex.set(String(rows[i]!.id), i);
+  }
+  const tick = () => {
+    if (!isActive) return;
+    const api = getApi();
+    if (!api) return;
+    const visible = api.getVisibleRows();
+    if (!visible.length) return;
+    const picks = infraPickRandomSubset(visible, INFRA_ROWS_PER_TICK);
+    let usedCpuSparkline = false;
+    for (const vr of picks) {
+      const idx = idToIndex.get(String(vr.row.id));
+      if (idx === undefined) continue;
+      let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
+      if (slot === 0 && usedCpuSparkline) slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
+      if (slot === 0) usedCpuSparkline = true;
+      const patch = infraComputeMetricPatch(vr.row, slot);
+      if (patch) infraApplyRowPatch(api, idx, patch);
+    }
+  };
+  tick();
+  const intervalId = setInterval(tick, INFRA_TICK_MS);
+  return () => {
+    isActive = false;
+    clearInterval(intervalId);
+  };
+}
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
@@ -117,84 +226,16 @@ const headers = computed((): HeaderObject[] => {
   });
 });
 
-const currentData = JSON.parse(JSON.stringify(infrastructureData));
-const timerMap = new Map<string, ReturnType<typeof setTimeout>>();
-let isActive = true;
-let syncInt: ReturnType<typeof setInterval> | null = null;
-
-const createRowTimer = (rowId: string) => {
-  const scheduleUpdate = () => {
-    if (!isActive) return;
-    const interval = INFRA_UPDATE_CONFIG.minInterval + Math.random() * (INFRA_UPDATE_CONFIG.maxInterval - INFRA_UPDATE_CONFIG.minInterval);
-    const timerId = setTimeout(() => {
-      if (!isActive) return;
-      const api = tableRef.value?.getAPI();
-      if (!api) return;
-      const idx = currentData.findIndex((r: Row) => r.id === rowId);
-      if (idx === -1) return;
-      const server = currentData[idx] as InfrastructureServer;
-
-      const cpu = server.cpuUsage;
-      if (typeof cpu === "number") {
-        const newCpu = Math.round(Math.min(100, Math.max(0, cpu + (Math.random() - 0.5) * 8)) * 10) / 10;
-        currentData[idx].cpuUsage = newCpu;
-        api.updateData({ accessor: "cpuUsage", rowIndex: idx, newValue: newCpu });
-        const hist = server.cpuHistory;
-        if (Array.isArray(hist) && hist.length > 0) {
-          const updated = [...hist.slice(1), newCpu];
-          currentData[idx].cpuHistory = updated;
-          api.updateData({ accessor: "cpuHistory", rowIndex: idx, newValue: updated });
-        }
-      }
-      if (Math.random() < 0.4) {
-        const mem = server.memoryUsage;
-        if (typeof mem === "number") {
-          const n = Math.round(Math.min(100, Math.max(0, mem + (Math.random() - 0.5) * 5)) * 10) / 10;
-          currentData[idx].memoryUsage = n;
-          api.updateData({ accessor: "memoryUsage", rowIndex: idx, newValue: n });
-        }
-      }
-      if (Math.random() < 0.5) {
-        const rt = server.responseTime;
-        if (typeof rt === "number") {
-          const n = Math.round(Math.max(10, rt + (Math.random() - 0.5) * 100) * 10) / 10;
-          currentData[idx].responseTime = n;
-          api.updateData({ accessor: "responseTime", rowIndex: idx, newValue: n });
-        }
-      }
-      scheduleUpdate();
-    }, interval);
-    timerMap.set(rowId, timerId);
-  };
-  scheduleUpdate();
-};
-
-const syncTimers = () => {
-  const api = tableRef.value?.getAPI();
-  if (!api) return;
-  const visibleRows = api.getVisibleRows();
-  const visibleIds = new Set(visibleRows.map((vr) => String(vr.row.id)));
-  timerMap.forEach((tid, rid) => {
-    if (!visibleIds.has(rid)) {
-      clearTimeout(tid);
-      timerMap.delete(rid);
-    }
-  });
-  visibleRows.forEach((vr) => {
-    const rid = String(vr.row.id);
-    if (!timerMap.has(rid)) createRowTimer(rid);
-  });
-};
+let stopLiveUpdates: (() => void) | undefined;
 
 onMounted(() => {
-  syncTimers();
-  syncInt = setInterval(syncTimers, 500);
+  stopLiveUpdates = startInfraDemoLiveUpdates(
+    () => tableRef.value?.getAPI() ?? null,
+    infrastructureData,
+  );
 });
 
 onUnmounted(() => {
-  isActive = false;
-  if (syncInt) clearInterval(syncInt);
-  timerMap.forEach((t) => clearTimeout(t));
-  timerMap.clear();
+  stopLiveUpdates?.();
 });
 </script>

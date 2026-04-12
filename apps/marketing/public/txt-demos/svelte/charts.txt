@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { chartsConfig } from "@simple-table/examples-shared";
+  import { chartsConfig } from "./charts.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -10,7 +10,7 @@
 <SimpleTable
   columnReordering={chartsConfig.tableProps.columnReordering}
   columnResizing={chartsConfig.tableProps.columnResizing}
-  defaultHeaders={chartsConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(chartsConfig.headers)}
   rows={chartsConfig.rows}
   selectableCells={chartsConfig.tableProps.selectableCells}
   {height}

@@ -1,8 +1,9 @@
+// CustomThemeDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import { customThemeConfig } from "@simple-table/examples-shared";
+import { customThemeConfig } from "./custom-theme.demo-data";
 import "simple-table-core/styles.css";
-import "../../../../shared/src/styles/custom-theme.css";
+import "./custom-theme.css";
 
 export function renderCustomThemeDemo(
   container: HTMLElement,
@@ -19,3 +20,147 @@ export function renderCustomThemeDemo(
   });
   return table;
 }
+
+
+// custom-theme.css
+.theme-custom {
+  --st-border-radius: 8px;
+  --st-cell-padding: 12px;
+
+  --st-spacing-small: 6px;
+  --st-spacing-medium: 10px;
+
+  --st-scrollbar-bg-color: var(--st-stone-100);
+  --st-scrollbar-thumb-color: var(--st-violet-500);
+
+  --st-border-color: var(--st-stone-200);
+  --st-odd-row-background-color: var(--st-amber-50);
+  --st-even-row-background-color: var(--st-amber-100);
+  --st-odd-column-background-color: var(--st-amber-50);
+  --st-even-column-background-color: var(--st-white);
+  --st-hover-row-background-color: var(--st-amber-200);
+  --st-selected-row-background-color: var(--st-violet-50);
+  --st-header-background-color: var(--st-violet-600);
+  --st-header-label-color: var(--st-white);
+  --st-header-icon-color: var(--st-white);
+  --st-dragging-background-color: var(--st-violet-50);
+  --st-selected-cell-background-color: var(--st-violet-50);
+  --st-selected-first-cell-background-color: var(--st-violet-100);
+  --st-footer-background-color: var(--st-stone-100);
+  --st-cell-color: var(--st-stone-700);
+  --st-cell-odd-row-color: var(--st-stone-700);
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.1),
+    0 2px 4px -1px rgba(124, 58, 237, 0.06);
+  --st-selected-cell-color: var(--st-violet-800);
+  --st-selected-first-cell-color: var(--st-violet-800);
+  --st-resize-handle-color: var(--st-violet-400);
+  --st-resize-handle-selected-color: var(--st-white);
+  --st-separator-border-color: var(--st-stone-200);
+  --st-last-group-row-separator-border-color: var(--st-stone-300);
+
+  --st-selected-border-color: var(--st-violet-500);
+  --st-editable-cell-focus-border-color: var(--st-violet-500);
+
+  --st-checkbox-checked-background-color: var(--st-violet-500);
+  --st-checkbox-checked-border-color: var(--st-violet-600);
+  --st-column-editor-background-color: var(--st-white);
+  --st-column-editor-popout-background-color: var(--st-white);
+  --st-button-hover-background-color: var(--st-violet-50);
+  --st-button-active-background-color: var(--st-violet-600);
+  --st-cell-flash-color: var(--st-violet-200);
+  --st-copy-flash-color: var(--st-violet-500);
+  --st-warning-flash-color: var(--st-red-300);
+
+  --st-header-selected-background-color: var(--st-violet-700);
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+
+  --st-header-highlight-indicator-color: var(--st-stone-300);
+  --st-selection-highlight-indicator-color: var(--st-stone-300);
+
+  --st-next-prev-btn-color: var(--st-stone-600);
+  --st-next-prev-btn-disabled-color: var(--st-stone-400);
+
+  --st-page-btn-color: var(--st-stone-600);
+  --st-page-btn-hover-background-color: var(--st-amber-100);
+
+  --st-column-editor-text-color: var(--st-stone-500);
+
+  --st-checkbox-border-color: var(--st-stone-300);
+
+  --st-dropdown-group-label-color: var(--st-stone-500);
+
+  --st-datepicker-weekday-color: var(--st-stone-500);
+  --st-datepicker-other-month-color: var(--st-stone-400);
+
+  --st-filter-button-disabled-background-color: var(--st-stone-300);
+  --st-filter-button-disabled-text-color: var(--st-stone-500);
+
+  --st-sub-header-background-color: var(--st-violet-500);
+  --st-sub-cell-background-color: var(--st-amber-75);
+  --st-sub-cell-hover-background-color: var(--st-amber-100);
+  --st-dragging-sub-header-background-color: var(--st-violet-300);
+  --st-selected-sub-cell-background-color: var(--st-violet-100);
+  --st-selected-sub-cell-color: var(--st-violet-900);
+
+  --st-chart-color: var(--st-violet-500);
+  --st-chart-fill-color: var(--st-violet-300);
+
+  --st-drag-separator-color: var(--st-violet-500);
+}
+
+.theme-custom .st-header-label {
+  font-weight: 600 !important;
+  letter-spacing: 0.025em !important;
+}
+
+
+// custom-theme.demo-data.ts
+// Self-contained demo table setup for this example.
+import type { HeaderObject, Row } from "simple-table-core";
+
+
+export const customThemeData: Row[] = [
+  { id: 1, name: "Alice Johnson", phone: "2125551234", email: "alice@corp.com", city: "New York", status: "active" },
+  { id: 2, name: "Bob Martinez", phone: "3105559876", email: "bob@corp.com", city: "Los Angeles", status: "active" },
+  { id: 3, name: "Clara Chen", phone: "4155553210", email: "clara@corp.com", city: "San Francisco", status: "inactive" },
+  { id: 4, name: "David Kim", phone: "3125557654", email: "david@corp.com", city: "Chicago", status: "active" },
+  { id: 5, name: "Elena Rossi", phone: "6175554321", email: "elena@corp.com", city: "Boston", status: "active" },
+  { id: 6, name: "Frank Müller", phone: "2065558765", email: "frank@corp.com", city: "Seattle", status: "inactive" },
+  { id: 7, name: "Grace Park", phone: "5125552468", email: "grace@corp.com", city: "Austin", status: "active" },
+  { id: 8, name: "Henry Patel", phone: "3035551357", email: "henry@corp.com", city: "Denver", status: "active" },
+];
+
+function formatPhone(raw: string): string {
+  if (raw.length === 10) {
+    return `(${raw.slice(0, 3)}) ${raw.slice(3, 6)}-${raw.slice(6)}`;
+  }
+  return raw;
+}
+
+export const customThemeHeaders: HeaderObject[] = [
+  { accessor: "id", label: "ID", width: 60, type: "number" },
+  { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
+  {
+    accessor: "phone",
+    label: "Phone",
+    width: 150,
+    type: "string",
+    valueFormatter: ({ value }) => formatPhone(value as string),
+  },
+  { accessor: "email", label: "Email", width: 180, type: "string" },
+  { accessor: "city", label: "City", width: 140, type: "string", isSortable: true },
+  { accessor: "status", label: "Status", width: 100, type: "string" },
+];
+
+export const customThemeConfig = {
+  headers: customThemeHeaders,
+  rows: customThemeData,
+  tableProps: {
+    theme: "custom" as const,
+    customTheme: {
+      rowHeight: 40,
+      headerHeight: 44,
+    },
+  },
+} as const;

@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { columnFilteringConfig } from "@simple-table/examples-shared";
+  import { columnFilteringConfig } from "./column-filtering.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 </script>
 
 <SimpleTable
-  defaultHeaders={columnFilteringConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(columnFilteringConfig.headers)}
   rows={columnFilteringConfig.rows}
   {height}
   {theme}

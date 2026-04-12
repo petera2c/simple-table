@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, FooterRendererProps } from "@simple-table/react";
-import { footerRendererConfig } from "@simple-table/examples-shared";
+import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 function getFooterColors(theme?: Theme) {
@@ -45,7 +45,7 @@ const FooterRendererDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={footerRendererConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(footerRendererConfig.headers)}
       rows={footerRendererConfig.rows}
       shouldPaginate={true}
       rowsPerPage={10}

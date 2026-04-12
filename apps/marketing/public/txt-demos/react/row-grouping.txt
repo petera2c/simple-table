@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme, TableAPI } from "@simple-table/react";
-import { rowGroupingConfig } from "@simple-table/examples-shared";
+import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/react/styles.css";
 
 const btnStyle = (color: string) => ({
@@ -54,7 +54,7 @@ const RowGroupingDemo = ({
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={rowGroupingConfig.headers}
+        defaultHeaders={defaultHeadersFromCore(rowGroupingConfig.headers)}
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
         enableStickyParents={rowGroupingConfig.tableProps.enableStickyParents}

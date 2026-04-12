@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
-import type { CellChangeProps } from "simple-table-core";
-import { cellEditingConfig } from "@simple-table/examples-shared";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import type { Theme, CellChangeProps } from "@simple-table/react";
+import { cellEditingConfig } from "./cell-editing.demo-data";
 import "@simple-table/react/styles.css";
 
 const CellEditingDemo = ({
@@ -24,7 +23,7 @@ const CellEditingDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={cellEditingConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(cellEditingConfig.headers)}
       rows={data}
       height={height}
       theme={theme}

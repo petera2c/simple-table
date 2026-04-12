@@ -1,114 +1,545 @@
+// SalesDemo.tsx
 import { useState, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
-import type { CellChangeProps } from "simple-table-core";
-import { salesConfig, getSalesThemeColors } from "@simple-table/examples-shared";
-import type { SalesRow } from "@simple-table/examples-shared";
+import type { Theme, CellChangeProps } from "@simple-table/react";
+import { salesSampleRows, type SalesRow } from "./sales.demo-data";
+import { SALES_HEADERS } from "./sales-headers";
 import "@simple-table/react/styles.css";
 
-function getHeaders(): ReactHeaderObject[] {
-  const headers: ReactHeaderObject[] = JSON.parse(JSON.stringify(salesConfig.headers));
-
-  const addRenderers = (hdrs: ReactHeaderObject[]) => {
-    for (const h of hdrs) {
-      if (h.accessor === "dealValue") {
-        h.cellRenderer = ({ row: r, theme }) => {
-          const d = r as unknown as SalesRow;
-          const c = getSalesThemeColors(theme);
-          let style: React.CSSProperties = { color: c.gray };
-          if (d.dealValue > 100000) style = c.successHigh;
-          else if (d.dealValue > 50000) style = { color: c.successMedium };
-          else if (d.dealValue > 10000) style = { color: c.successLow };
-          return (
-            <span style={style}>
-              ${d.dealValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          );
-        };
-      }
-      if (h.accessor === "isWon") {
-        h.cellRenderer = ({ row: r }) => {
-          const d = r as unknown as SalesRow;
-          const s = d.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
-          return (
-            <span style={{ backgroundColor: s.bg, color: s.text, padding: "0 7px", fontSize: "12px", lineHeight: "20px", borderRadius: "2px", display: "inline-block" }}>
-              {d.isWon ? "Won" : "Lost"}
-            </span>
-          );
-        };
-      }
-      if (h.accessor === "commission") {
-        h.cellRenderer = ({ row: r, theme }) => {
-          const d = r as unknown as SalesRow;
-          const c = getSalesThemeColors(theme);
-          if (d.commission === 0) return <span style={{ color: c.grayMuted }}>$0.00</span>;
-          return `$${d.commission.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        };
-      }
-      if (h.accessor === "profitMargin") {
-        h.cellRenderer = ({ row: r, theme }) => {
-          const d = r as unknown as SalesRow;
-          const c = getSalesThemeColors(theme);
-          let colorStyle: React.CSSProperties = { color: c.gray };
-          if (d.profitMargin >= 0.7) colorStyle = c.successHigh;
-          else if (d.profitMargin >= 0.5) colorStyle = { color: c.successMedium };
-          else if (d.profitMargin >= 0.4) colorStyle = { color: c.successLow };
-          else if (d.profitMargin >= 0.3) colorStyle = { color: c.info };
-          else colorStyle = { color: c.warning };
-          const barColor = d.profitMargin >= 0.5 ? c.progressHigh : d.profitMargin >= 0.3 ? c.progressMedium : c.progressLow;
-          return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-              <span style={colorStyle}>{(d.profitMargin * 100).toFixed(1)}%</span>
-              <div style={{ marginLeft: "8px", width: "48px" }}>
-                <div style={{ backgroundColor: "#f5f5f5", height: "6px", width: "100%", borderRadius: "100px", overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${d.profitMargin * 100}%`, backgroundColor: barColor, borderRadius: "100px" }} />
-                </div>
-              </div>
-            </div>
-          );
-        };
-      }
-      if (h.accessor === "dealProfit") {
-        h.cellRenderer = ({ row: r, theme }) => {
-          const d = r as unknown as SalesRow;
-          const c = getSalesThemeColors(theme);
-          if (d.dealProfit === 0) return <span style={{ color: c.grayMuted }}>$0.00</span>;
-          let style: React.CSSProperties = { color: c.gray };
-          if (d.dealProfit > 50000) style = c.successHigh;
-          else if (d.dealProfit > 20000) style = { color: c.successMedium };
-          else if (d.dealProfit > 10000) style = { color: c.successLow };
-          return (
-            <span style={style}>
-              ${d.dealProfit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          );
-        };
-      }
-      if (h.children) addRenderers(h.children as ReactHeaderObject[]);
-    }
-  };
-  addRenderers(headers);
-  return headers;
+function formatTableHeight(height?: string | number | null): string {
+  if (height == null) return "70dvh";
+  if (typeof height === "number") return `${height}px`;
+  return height;
 }
 
-const SalesDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
-  const [data, setData] = useState([...salesConfig.rows]);
+const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?: Theme }) => {
+  const [data, setData] = useState<SalesRow[]>(() => salesSampleRows.map((r) => ({ ...r })));
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
-    setData((prev) => prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)));
+    setData((prev) =>
+      prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)),
+    );
   };
 
   return (
-    <SimpleTable autoExpandColumns={!isMobile} columnResizing columnReordering defaultHeaders={getHeaders()} editColumns height={height} initialSortColumn="dealValue" initialSortDirection="desc" onCellEdit={handleCellEdit} rows={data} selectableCells theme={theme} />
+    <SimpleTable
+      autoExpandColumns={!isMobile}
+      columnResizing
+      columnReordering
+      defaultHeaders={SALES_HEADERS}
+      editColumns
+      height={formatTableHeight(height)}
+      initialSortColumn="dealValue"
+      initialSortDirection="desc"
+      onCellEdit={handleCellEdit}
+      rows={data}
+      selectableCells
+      theme={theme}
+    />
   );
 };
 
 export default SalesDemo;
+
+
+// sales-headers.tsx
+import type { ReactHeaderObject, CellRendererProps, ValueGetterProps } from "@simple-table/react";
+import type { CSSProperties, ReactNode } from "react";
+
+type SuccessHighStyle = { color: string; fontWeight: "bold" };
+type ThemePalette = {
+  gray: string;
+  grayMuted: string;
+  success: { high: SuccessHighStyle; medium: string; low: string };
+  info: string;
+  warning: string;
+  progressColors: { high: string; medium: string; low: string };
+};
+
+function getThemeColors(theme?: string): ThemePalette {
+  const themes: Record<string, ThemePalette> = {
+    "modern-light": {
+      gray: "#374151",
+      grayMuted: "#9ca3af",
+      success: {
+        high: { color: "#15803d", fontWeight: "bold" },
+        medium: "#16a34a",
+        low: "#22c55e",
+      },
+      info: "#3b82f6",
+      warning: "#ca8a04",
+      progressColors: { high: "#10B981", medium: "#3B82F6", low: "#D97706" },
+    },
+    light: {
+      gray: "#374151",
+      grayMuted: "#9ca3af",
+      success: {
+        high: { color: "#15803d", fontWeight: "bold" },
+        medium: "#16a34a",
+        low: "#22c55e",
+      },
+      info: "#3b82f6",
+      warning: "#ca8a04",
+      progressColors: { high: "#10B981", medium: "#3B82F6", low: "#D97706" },
+    },
+    "modern-dark": {
+      gray: "#f3f4f6",
+      grayMuted: "#f3f4f6",
+      success: {
+        high: { color: "#86efac", fontWeight: "bold" },
+        medium: "#4ade80",
+        low: "#22c55e",
+      },
+      info: "#60a5fa",
+      warning: "#facc15",
+      progressColors: { high: "#34D399", medium: "#60A5FA", low: "#FBBF24" },
+    },
+    dark: {
+      gray: "#f3f4f6",
+      grayMuted: "#f3f4f6",
+      success: {
+        high: { color: "#86efac", fontWeight: "bold" },
+        medium: "#4ade80",
+        low: "#22c55e",
+      },
+      info: "#60a5fa",
+      warning: "#facc15",
+      progressColors: { high: "#34D399", medium: "#60A5FA", low: "#FBBF24" },
+    },
+    sky: {
+      gray: "#334155",
+      grayMuted: "#94a3b8",
+      success: {
+        high: { color: "#0369a1", fontWeight: "bold" },
+        medium: "#0284c7",
+        low: "#0ea5e9",
+      },
+      info: "#06b6d4",
+      warning: "#f59e0b",
+      progressColors: { high: "#0EA5E9", medium: "#06B6D4", low: "#F59E0B" },
+    },
+    violet: {
+      gray: "#374151",
+      grayMuted: "#9ca3af",
+      success: {
+        high: { color: "#059669", fontWeight: "bold" },
+        medium: "#65a30d",
+        low: "#22c55e",
+      },
+      info: "#8b5cf6",
+      warning: "#f97316",
+      progressColors: { high: "#10B981", medium: "#8B5CF6", low: "#F97316" },
+    },
+    neutral: {
+      gray: "#1f2937",
+      grayMuted: "#9ca3af",
+      success: {
+        high: { color: "#1f2937", fontWeight: "bold" },
+        medium: "#374151",
+        low: "#4b5563",
+      },
+      info: "#6b7280",
+      warning: "#6b7280",
+      progressColors: { high: "#6B7280", medium: "#9CA3AF", low: "#D1D5DB" },
+    },
+    custom: {
+      gray: "#9ca3af",
+      grayMuted: "#e5e7eb",
+      success: {
+        high: { color: "#15803d", fontWeight: "bold" },
+        medium: "#16a34a",
+        low: "#22c55e",
+      },
+      info: "#3b82f6",
+      warning: "#ca8a04",
+      progressColors: { high: "#10B981", medium: "#3B82F6", low: "#D97706" },
+    },
+  };
+  return themes[theme ?? ""] ?? themes["modern-light"];
+}
+
+const Tag = ({
+  children,
+  color,
+  className,
+}: {
+  children: ReactNode;
+  color?: string;
+  className?: string;
+}) => {
+  const getColorStyles = (c?: string) => {
+    const colors: Record<string, { bg: string; text: string }> = {
+      success: { bg: "#f6ffed", text: "#2a6a0d" },
+      error: { bg: "#fff1f0", text: "#a8071a" },
+      green: { bg: "#f6ffed", text: "#2a6a0d" },
+      blue: { bg: "#e6f7ff", text: "#0050b3" },
+      red: { bg: "#fff1f0", text: "#a8071a" },
+      orange: { bg: "#fff7e6", text: "#ad4e00" },
+      purple: { bg: "#f9f0ff", text: "#391085" },
+      default: { bg: "#f0f0f0", text: "rgba(0, 0, 0, 0.85)" },
+    };
+    return colors[c || "default"];
+  };
+
+  const { bg, text } = getColorStyles(color);
+
+  return (
+    <span
+      style={{
+        backgroundColor: bg,
+        color: text,
+        padding: "0 7px",
+        fontSize: "12px",
+        lineHeight: "20px",
+        borderRadius: "2px",
+        display: "inline-block",
+      }}
+      className={className}
+    >
+      {children}
+    </span>
+  );
+};
+
+const Progress = ({
+  percent,
+  size,
+  showInfo = true,
+  strokeColor,
+  status,
+}: {
+  percent: number;
+  size?: string;
+  showInfo?: boolean;
+  strokeColor?: string;
+  status?: "success" | "normal" | "exception";
+}) => {
+  const getColorByStatus = (s?: string) => {
+    switch (s) {
+      case "success":
+        return "#52c41a";
+      case "exception":
+        return "#ff4d4f";
+      case "normal":
+      default:
+        return "#1890ff";
+    }
+  };
+
+  const barHeight = size === "small" ? 6 : 8;
+  const color = strokeColor || getColorByStatus(status);
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        minWidth: 0,
+        position: "relative",
+        marginRight: showInfo ? "50px" : "0",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          backgroundColor: "#f5f5f5",
+          height: `${barHeight}px`,
+          borderRadius: "100px",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${percent}%`,
+            backgroundColor: color,
+            borderRadius: "100px",
+          }}
+        />
+      </div>
+      {showInfo && (
+        <span
+          style={{
+            flexShrink: 0,
+            marginLeft: "8px",
+            fontSize: "14px",
+            color: "rgba(0, 0, 0, 0.65)",
+          }}
+        >
+          {`${percent}%`}
+        </span>
+      )}
+    </div>
+  );
+};
+
+export const SALES_HEADERS: ReactHeaderObject[] = [
+  {
+    accessor: "repName",
+    label: "Sales Representative",
+    width: "2fr",
+    minWidth: 200,
+    isSortable: true,
+    isEditable: true,
+    type: "string",
+    tooltip: "Name of the sales representative",
+  },
+  {
+    accessor: "salesMetrics",
+    label: "Sales Metrics",
+    width: 600,
+    isSortable: false,
+    children: [
+      {
+        accessor: "dealSize",
+        label: "Deal Size",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "right",
+        type: "number",
+        tooltip: "The size of the deal in dollars",
+        valueFormatter: ({ value }) => {
+          if (value === "—") return "—";
+          return `$${(value as number).toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+        },
+        useFormattedValueForClipboard: true,
+        useFormattedValueForCSV: true,
+      },
+      {
+        accessor: "dealValue",
+        label: "Deal Value",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "right",
+        type: "number",
+        tooltip: "The value of the deal in dollars",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.dealValue === "—") return "—";
+          const value = row.dealValue as number;
+          const colors = getThemeColors(theme);
+
+          let valueStyle: CSSProperties = { color: colors.gray };
+          if (value > 100000) valueStyle = colors.success.high;
+          else if (value > 50000) valueStyle = { color: colors.success.medium };
+          else if (value > 10000) valueStyle = { color: colors.success.low };
+
+          return (
+            <span style={valueStyle}>
+              $
+              {value.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          );
+        },
+      },
+      {
+        accessor: "isWon",
+        label: "Status",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "center",
+        type: "boolean",
+        tooltip: "Whether the deal was won or lost",
+        cellRenderer: ({ row }: CellRendererProps) => {
+          if (row.isWon === "—") return "—";
+          const isWon = row.isWon as boolean;
+          return (
+            <Tag color={isWon ? "success" : "error"} className="py-1 px-2">
+              {isWon ? "Won" : "Lost"}
+            </Tag>
+          );
+        },
+      },
+      {
+        accessor: "closeDate",
+        label: "Close Date",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "center",
+        type: "date",
+        tooltip: "The date the deal was closed",
+        valueFormatter: ({ value }) => {
+          if (!value) return "—";
+          const [year, month, day] = (value as string).split("-").map(Number);
+          const date = new Date(year, month - 1, day);
+          return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
+        },
+      },
+    ],
+  },
+  {
+    accessor: "financialMetrics",
+    label: "Financial Metrics",
+    width: "1fr",
+    minWidth: 140,
+    isSortable: false,
+    children: [
+      {
+        accessor: "commission",
+        label: "Commission",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "right",
+        type: "number",
+        tooltip: "The commission earned from the deal in dollars",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.commission === "—") return "—";
+          const value = row.commission as number;
+          const colors = getThemeColors(theme);
+
+          if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
+
+          return `$${value.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+        },
+      },
+      {
+        accessor: "profitMargin",
+        label: "Profit Margin",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "right",
+        type: "number",
+        tooltip: "The profit margin of the deal",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.profitMargin === "—") return "—";
+          const value = row.profitMargin as number;
+          const colors = getThemeColors(theme);
+
+          let colorStyle: CSSProperties = { color: colors.gray };
+          if (value >= 0.7) colorStyle = colors.success.high;
+          else if (value >= 0.5) colorStyle = { color: colors.success.medium };
+          else if (value >= 0.4) colorStyle = { color: colors.success.low };
+          else if (value >= 0.3) colorStyle = { color: colors.info };
+          else colorStyle = { color: colors.warning };
+
+          return (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              <span style={colorStyle}>{(value * 100).toFixed(1)}%</span>
+              <div style={{ marginLeft: "8px", width: "48px" }}>
+                <Progress
+                  percent={value * 100}
+                  size="small"
+                  showInfo={false}
+                  strokeColor={
+                    value >= 0.5
+                      ? colors.progressColors.high
+                      : value >= 0.3
+                        ? colors.progressColors.medium
+                        : colors.progressColors.low
+                  }
+                />
+              </div>
+            </div>
+          );
+        },
+        valueFormatter: ({ value }) => {
+          if (value === "—") return "—";
+          return `${((value as number) * 100).toFixed(1)}%`;
+        },
+        useFormattedValueForClipboard: true,
+        exportValueGetter: ({ value }) => {
+          if (value === "—") return "—";
+          return `${Math.round((value as number) * 100)}%`;
+        },
+      },
+      {
+        accessor: "dealProfit",
+        label: "Deal Profit",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "right",
+        type: "number",
+        tooltip: "The profit of the deal in dollars",
+        cellRenderer: ({ row, theme }: CellRendererProps) => {
+          if (row.dealProfit === "—") return "—";
+          const value = row.dealProfit as number;
+          const colors = getThemeColors(theme);
+
+          if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
+
+          let profitStyle: CSSProperties = { color: colors.gray };
+          if (value > 50000) profitStyle = colors.success.high;
+          else if (value > 20000) profitStyle = { color: colors.success.medium };
+          else if (value > 10000) profitStyle = { color: colors.success.low };
+
+          return (
+            <span style={profitStyle}>
+              $
+              {value.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          );
+        },
+      },
+      {
+        accessor: "category",
+        label: "Category",
+        width: "1fr",
+        minWidth: 140,
+        isSortable: true,
+        isEditable: true,
+        align: "center",
+        type: "enum",
+        tooltip: "The category of the deal",
+        enumOptions: [
+          { label: "Software", value: "Software" },
+          { label: "Hardware", value: "Hardware" },
+          { label: "Services", value: "Services" },
+          { label: "Consulting", value: "Consulting" },
+          { label: "Training", value: "Training" },
+          { label: "Support", value: "Support" },
+        ],
+        valueGetter: ({ row }: ValueGetterProps) => {
+          const category = row.category as string;
+          const priorityMap: Record<string, number> = {
+            Software: 1,
+            Consulting: 2,
+            Services: 3,
+            Hardware: 4,
+            Training: 5,
+            Support: 6,
+          };
+          return priorityMap[category] || 999;
+        },
+      },
+    ],
+  },
+];

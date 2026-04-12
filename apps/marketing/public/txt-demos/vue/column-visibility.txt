@@ -1,21 +1,98 @@
+// ColumnVisibilityDemo.vue
 <script setup lang="ts">
-import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import { columnVisibilityConfig } from "@simple-table/examples-shared";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/vue";
+import type { ColumnVisibilityState, Theme } from "@simple-table/vue";
+import MarketingColumnEditorRow from "./MarketingColumnEditorRow.vue";
+import {
+  columnVisibilityConfig,
+  getColumnVisibilityDemoHeaders,
+  loadColumnVisibilityDemoSaved,
+  saveColumnVisibilityDemoState,
+} from "./column-visibility.demo-data";
 import "@simple-table/vue/styles.css";
 
-withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
+const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+const defaultHeaders = defaultHeadersFromCore(getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved()));
+
+const columnEditorConfig = {
+  ...columnVisibilityConfig.tableProps.columnEditorConfig,
+  rowRenderer: MarketingColumnEditorRow,
+};
+
+function onColumnVisibilityChange(state: ColumnVisibilityState) {
+  saveColumnVisibilityDemoState(state);
+}
 </script>
 
 <template>
   <SimpleTable
-    :default-headers="columnVisibilityConfig.headers"
+    :default-headers="defaultHeaders"
     :rows="columnVisibilityConfig.rows"
     :edit-columns="columnVisibilityConfig.tableProps.editColumns"
-    :column-editor-config="columnVisibilityConfig.tableProps.columnEditorConfig"
-    :height="height"
-    :theme="theme"
+    :edit-columns-init-open="columnVisibilityConfig.tableProps.editColumnsInitOpen"
+    :column-editor-config="columnEditorConfig"
+    :height="props.height"
+    :theme="props.theme"
+    :on-column-visibility-change="onColumnVisibilityChange"
   />
+</template>
+
+
+// MarketingColumnEditorRow.vue
+<script setup lang="ts">
+import type { ColumnEditorRowRendererProps } from "@simple-table/vue";
+import { ref, watchEffect } from "vue";
+
+const props = defineProps<ColumnEditorRowRendererProps>();
+
+const anchorRef = ref<HTMLDivElement | null>(null);
+
+function appendMarketingColumnEditorSlot(parent: HTMLElement, slot: string | Node | undefined): void {
+  if (slot == null) return;
+  if (typeof slot === "string") {
+    parent.appendChild(document.createTextNode(slot));
+  } else {
+    parent.appendChild(slot);
+  }
+}
+
+/** Vue examples-only copy of the marketing column-editor row layout. */
+function buildMarketingStyleColumnEditorRow(rootProps: ColumnEditorRowRendererProps): HTMLElement {
+  const { components } = rootProps;
+  const outer = document.createElement("div");
+  outer.style.width = "100%";
+  outer.style.display = "flex";
+  outer.style.alignItems = "center";
+  outer.style.justifyContent = "space-between";
+  outer.style.gap = "8px";
+  outer.style.paddingRight = "8px";
+
+  const left = document.createElement("div");
+  left.style.display = "flex";
+  left.style.alignItems = "center";
+  left.style.gap = "8px";
+  appendMarketingColumnEditorSlot(left, components.expandIcon as Node | string | undefined);
+  appendMarketingColumnEditorSlot(left, components.checkbox as Node | string | undefined);
+  appendMarketingColumnEditorSlot(left, components.labelContent as Node | string | undefined);
+  outer.appendChild(left);
+
+  const right = document.createElement("div");
+  appendMarketingColumnEditorSlot(right, components.dragIcon as Node | string | undefined);
+  outer.appendChild(right);
+
+  return outer;
+}
+
+watchEffect(() => {
+  const el = anchorRef.value;
+  if (!el) return;
+  el.replaceChildren(buildMarketingStyleColumnEditorRow(props));
+});
+</script>
+
+<template>
+  <div ref="anchorRef" style="display: contents" />
 </template>

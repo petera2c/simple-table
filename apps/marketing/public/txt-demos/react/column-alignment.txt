@@ -1,6 +1,6 @@
-import { SimpleTable } from "@simple-table/react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { columnAlignmentConfig } from "@simple-table/examples-shared";
+import { columnAlignmentConfig } from "./column-alignment.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnAlignmentDemo = ({
@@ -12,7 +12,7 @@ const ColumnAlignmentDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={columnAlignmentConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(columnAlignmentConfig.headers)}
       rows={columnAlignmentConfig.rows}
       height={height}
       theme={theme}

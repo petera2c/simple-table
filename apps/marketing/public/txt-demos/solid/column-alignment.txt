@@ -1,12 +1,12 @@
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
-import { columnAlignmentConfig } from "@simple-table/examples-shared";
+import { columnAlignmentConfig } from "./column-alignment.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ColumnAlignmentDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={columnAlignmentConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(columnAlignmentConfig.headers)}
       rows={columnAlignmentConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

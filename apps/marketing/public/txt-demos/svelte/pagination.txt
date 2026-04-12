@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SimpleTable } from "@simple-table/svelte";
+  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "@simple-table/examples-shared";
+  import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height, theme }: { height?: string | number; theme?: Theme } = $props();
@@ -29,7 +29,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={paginationConfig.headers}
+  defaultHeaders={defaultHeadersFromCore(paginationConfig.headers)}
   height={height ?? "auto"}
   {isLoading}
   {onNextPage}

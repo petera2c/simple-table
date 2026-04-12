@@ -10,7 +10,7 @@
     </div>
     <SimpleTable
       ref="tableRef"
-      :default-headers="rowGroupingConfig.headers"
+      :default-headers="defaultHeadersFromCore(rowGroupingConfig.headers)"
       :rows="rowGroupingConfig.rows"
       :row-grouping="rowGroupingConfig.tableProps.rowGrouping"
       :enable-sticky-parents="true"
@@ -24,9 +24,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme, TableAPI } from "@simple-table/vue";
-import { rowGroupingConfig } from "@simple-table/examples-shared";
+import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

@@ -1,11 +1,11 @@
+// SpreadsheetDemo.svelte
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject, CellChangeProps } from "simple-table-core";
-  import { spreadsheetConfig, recalculateAmortization } from "@simple-table/examples-shared";
-  import type { SpreadsheetRow } from "@simple-table/examples-shared";
+  import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/svelte";
+  import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
+  import type { SpreadsheetRow } from "./spreadsheet.demo-data";
   import "@simple-table/svelte/styles.css";
-  import "@simple-table/examples-shared/styles/spreadsheet-custom.css";
+  import "./spreadsheet-custom.css";
 
   let { height = "400px", theme = "light" as Theme }: { height?: string | number; theme?: Theme } = $props();
 
@@ -95,3 +95,34 @@
     useOddEvenRowBackground={true}
   />
 </div>
+
+
+// spreadsheet-custom.css
+.spreadsheet-container .st-cell-content {
+  font-size: 13px !important;
+}
+
+.spreadsheet-container .st-header-label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.spreadsheet-container .simple-table-cell {
+  padding: 4px 8px !important;
+}
+
+.spreadsheet-container .simple-table {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+}
+
+.spreadsheet-container .st-header-resize-handle {
+  height: 10px !important;
+}
+
+.spreadsheet-container .st-checkbox-custom {
+  min-height: 14px !important;
+  min-width: 14px !important;
+  max-height: 14px !important;
+  max-width: 14px !important;
+}

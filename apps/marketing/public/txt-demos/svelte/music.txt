@@ -1,11 +1,11 @@
+// MusicDemo.svelte
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
-  import type { HeaderObject, CellRenderer } from "simple-table-core";
-  import { musicData, getMusicThemeColors } from "@simple-table/examples-shared";
-  import type { MusicArtist } from "@simple-table/examples-shared";
+  import type { Theme, HeaderObject, CellRenderer } from "@simple-table/svelte";
+  import { musicData, getMusicThemeColors } from "./music.demo-data";
+  import type { MusicArtist } from "./music.demo-data";
   import "@simple-table/svelte/styles.css";
-  import "@simple-table/examples-shared/styles/music-theme.css";
+  import "./music-theme.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
@@ -216,3 +216,19 @@
     customTheme={{ headerHeight: 30, rowHeight: 85 }}
   />
 </div>
+
+
+// music-theme.css
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+.music-theme-container * {
+  font-family: "Inter";
+}
+
+.music-theme-container .st-header-label-text {
+  font-weight: 500;
+  font-size: 12px;
+}
+.music-theme-container .st-cell-content {
+  font-size: 12px;
+}

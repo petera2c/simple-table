@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
-import { nestedTablesConfig, generateNestedTablesData } from "@simple-table/examples-shared";
+import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function NestedTablesDemo(props: { height?: string | number; theme?: Theme }) {
@@ -10,7 +10,7 @@ export default function NestedTablesDemo(props: { height?: string | number; them
   return (
     <SimpleTable
       autoExpandColumns={nestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={nestedTablesConfig.headers}
+      defaultHeaders={defaultHeadersFromCore(nestedTablesConfig.headers)}
       rows={sampleData()}
       rowGrouping={nestedTablesConfig.tableProps.rowGrouping}
       getRowId={nestedTablesConfig.tableProps.getRowId}

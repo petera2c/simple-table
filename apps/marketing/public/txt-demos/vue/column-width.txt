@@ -2,7 +2,7 @@
   <SimpleTable
     :auto-expand-columns="!isMobile"
     :column-resizing="true"
-    :default-headers="columnWidthConfig.headers"
+    :default-headers="defaultHeadersFromCore(columnWidthConfig.headers)"
     :height="height"
     :rows="columnWidthConfig.rows"
     :theme="theme"
@@ -11,9 +11,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { columnWidthConfig } from "@simple-table/examples-shared";
+import { columnWidthConfig } from "./column-width.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {

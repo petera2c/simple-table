@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="paginationConfig.headers"
+    :default-headers="defaultHeadersFromCore(paginationConfig.headers)"
     :height="height ?? 'auto'"
     :is-loading="isLoading"
     :on-next-page="onNextPage"
@@ -13,9 +13,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { SimpleTable } from "@simple-table/vue";
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
 import type { Theme } from "@simple-table/vue";
-import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "@simple-table/examples-shared";
+import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {});

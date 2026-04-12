@@ -1,5 +1,6 @@
+// CRMDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, FooterRendererProps } from "simple-table-core";
+import type { HeaderObject, CellRenderer, FooterRendererProps } from "simple-table-core";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -7,10 +8,10 @@ import {
   CRM_FOOTER_COLORS_LIGHT,
   CRM_FOOTER_COLORS_DARK,
   generateVisiblePages,
-} from "@simple-table/examples-shared";
-import type { CRMLead } from "@simple-table/examples-shared";
+} from "./crm.demo-data";
+import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
 import "simple-table-core/styles.css";
-import "../../../../shared/src/styles/crm-custom-theme.css";
+import "./crm-custom-theme.css";
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, text?: string): HTMLElement {
   const e = document.createElement(tag);
@@ -20,18 +21,22 @@ function el(tag: string, styles?: Partial<CSSStyleDeclaration>, text?: string): 
 }
 
 function createEmailEnrich(colors: typeof CRM_THEME_COLORS_LIGHT): HTMLElement {
-  const wrapper = el("span", {
-    cursor: "pointer",
-    alignItems: "center",
-    columnGap: "6px",
-    borderRadius: "9999px",
-    backgroundColor: "color-mix(in oklab, oklch(62.3% .214 259.815) 10%, transparent)",
-    paddingInline: "8px",
-    paddingBlock: "4px",
-    fontSize: "12px",
-    fontWeight: "500",
-    color: colors.tagText,
-  }, "Enrich");
+  const wrapper = el(
+    "span",
+    {
+      cursor: "pointer",
+      alignItems: "center",
+      columnGap: "6px",
+      borderRadius: "9999px",
+      backgroundColor: "color-mix(in oklab, oklch(62.3% .214 259.815) 10%, transparent)",
+      paddingInline: "8px",
+      paddingBlock: "4px",
+      fontSize: "12px",
+      fontWeight: "500",
+      color: colors.tagText,
+    },
+    "Enrich",
+  );
 
   let isLoading = false;
   let email: string | null = null;
@@ -86,10 +91,28 @@ function createFitButtons(colors: typeof CRM_THEME_COLORS_LIGHT): HTMLElement {
     color: colors.buttonText,
   };
 
-  const buttons: Array<{ key: string; label: string; activeBg: string; normalBg: string; radius?: Partial<CSSStyleDeclaration> }> = [
-    { key: "fit", label: "✓", activeBg: "oklch(62.7% .194 149.214)", normalBg: "oklch(92.5% .084 155.995)", radius: { borderTopLeftRadius: "6px", borderBottomLeftRadius: "6px" } },
+  const buttons: Array<{
+    key: string;
+    label: string;
+    activeBg: string;
+    normalBg: string;
+    radius?: Partial<CSSStyleDeclaration>;
+  }> = [
+    {
+      key: "fit",
+      label: "✓",
+      activeBg: "oklch(62.7% .194 149.214)",
+      normalBg: "oklch(92.5% .084 155.995)",
+      radius: { borderTopLeftRadius: "6px", borderBottomLeftRadius: "6px" },
+    },
     { key: "partial", label: "?", activeBg: colors.buttonHoverBg, normalBg: colors.buttonBg },
-    { key: "no", label: "X", activeBg: "oklch(64.6% .222 41.116)", normalBg: "oklch(90.1% .076 70.697)", radius: { borderTopRightRadius: "6px", borderBottomRightRadius: "6px" } },
+    {
+      key: "no",
+      label: "X",
+      activeBg: "oklch(64.6% .222 41.116)",
+      normalBg: "oklch(90.1% .076 70.697)",
+      radius: { borderTopRightRadius: "6px", borderBottomRightRadius: "6px" },
+    },
   ];
 
   const btnEls: HTMLButtonElement[] = [];
@@ -101,7 +124,8 @@ function createFitButtons(colors: typeof CRM_THEME_COLORS_LIGHT): HTMLElement {
     btn.addEventListener("click", () => {
       selected = selected === b.key ? null : b.key;
       btnEls.forEach((be, i) => {
-        be.style.backgroundColor = selected === buttons[i].key ? buttons[i].activeBg : buttons[i].normalBg;
+        be.style.backgroundColor =
+          selected === buttons[i].key ? buttons[i].activeBg : buttons[i].normalBg;
       });
     });
     btnEls.push(btn);
@@ -116,18 +140,37 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
 
   const contactRenderer: CellRenderer = ({ row }) => {
     const d = row as unknown as CRMLead;
-    const initials = d.name.split(" ").map((n) => n[0]).join("").toUpperCase();
+    const initials = d.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
 
     const wrapper = el("div", { display: "flex", alignItems: "center", gap: "12px" });
-    const avatar = el("div", {
-      width: "40px", height: "40px", borderRadius: "50%",
-      background: "linear-gradient(to right, oklch(75% .183 55.934), oklch(70.4% .191 22.216))",
-      color: "white", display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: "12px", fontWeight: "600", flexShrink: "0",
-    }, initials);
+    const avatar = el(
+      "div",
+      {
+        width: "40px",
+        height: "40px",
+        borderRadius: "50%",
+        background: "linear-gradient(to right, oklch(75% .183 55.934), oklch(70.4% .191 22.216))",
+        color: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "12px",
+        fontWeight: "600",
+        flexShrink: "0",
+      },
+      initials,
+    );
 
     const info = el("div", { display: "flex", flexDirection: "column", gap: "2px" });
-    const nameEl = el("span", { cursor: "pointer", fontSize: "14px", fontWeight: "600", color: colors.link }, d.name);
+    const nameEl = el(
+      "span",
+      { cursor: "pointer", fontSize: "14px", fontWeight: "600", color: colors.link },
+      d.name,
+    );
     const titleEl = el("div", { fontSize: "12px", color: colors.textSecondary }, d.title);
     const companyEl = el("div", { fontSize: "12px", color: colors.textSecondary });
     const atSign = el("span", { fontSize: "12px", color: colors.textTertiary }, "@");
@@ -142,9 +185,17 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
   const signalRenderer: CellRenderer = ({ row }) => {
     const d = row as unknown as CRMLead;
     const wrapper = el("div");
-    const line1 = el("div", { color: colors.textSecondary, marginBottom: "4px", fontSize: "0.875rem" });
+    const line1 = el("div", {
+      color: colors.textSecondary,
+      marginBottom: "4px",
+      fontSize: "0.875rem",
+    });
     line1.textContent = "🧠 Just engaged with a ";
-    const link = el("a", { color: "#0077b5", textDecoration: "underline", cursor: "pointer" }, "post");
+    const link = el(
+      "a",
+      { color: "#0077b5", textDecoration: "underline", cursor: "pointer" },
+      "post",
+    );
     (link as HTMLAnchorElement).href = "#";
     link.addEventListener("click", (e) => e.preventDefault());
     line1.appendChild(link);
@@ -170,7 +221,17 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
 
   const listRenderer: CellRenderer = ({ row }) => {
     const d = row as unknown as CRMLead;
-    const link = el("a", { cursor: "pointer", fontSize: "0.875rem", color: colors.link, textDecoration: "none", fontWeight: "600" }, d.list);
+    const link = el(
+      "a",
+      {
+        cursor: "pointer",
+        fontSize: "0.875rem",
+        color: colors.link,
+        textDecoration: "none",
+        fontWeight: "600",
+      },
+      d.list,
+    );
     (link as HTMLAnchorElement).href = "#";
     link.addEventListener("click", (e) => e.preventDefault());
     return link;
@@ -179,42 +240,143 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
   const fitRenderer: CellRenderer = () => createFitButtons(colors);
 
   const contactNowRenderer: CellRenderer = () => {
-    const link = el("a", { cursor: "pointer", fontSize: "0.875rem", color: colors.link, textDecoration: "none", fontWeight: "600" }, "Contact Now");
+    const link = el(
+      "a",
+      {
+        cursor: "pointer",
+        fontSize: "0.875rem",
+        color: colors.link,
+        textDecoration: "none",
+        fontWeight: "600",
+      },
+      "Contact Now",
+    );
     (link as HTMLAnchorElement).href = "#";
     link.addEventListener("click", (e) => e.preventDefault());
     return link;
   };
 
   return [
-    { accessor: "name", label: "CONTACT", width: "2fr", minWidth: 290, isSortable: true, isEditable: true, type: "string", cellRenderer: contactRenderer },
-    { accessor: "signal", label: "SIGNAL", width: "3fr", minWidth: 340, isSortable: true, isEditable: true, type: "string", cellRenderer: signalRenderer },
-    { accessor: "aiScore", label: "AI SCORE", width: "1fr", minWidth: 100, isSortable: true, align: "center", type: "number", cellRenderer: aiScoreRenderer },
     {
-      accessor: "emailStatus", label: "EMAIL", width: "1.5fr", minWidth: 210, isSortable: true, align: "center", type: "enum",
-      enumOptions: [{ label: "Enrich", value: "Enrich" }, { label: "Verified", value: "Verified" }, { label: "Pending", value: "Pending" }, { label: "Bounced", value: "Bounced" }],
+      accessor: "name",
+      label: "CONTACT",
+      width: "2fr",
+      minWidth: 290,
+      isSortable: true,
+      isEditable: true,
+      type: "string",
+      cellRenderer: contactRenderer,
+    },
+    {
+      accessor: "signal",
+      label: "SIGNAL",
+      width: "3fr",
+      minWidth: 340,
+      isSortable: true,
+      isEditable: true,
+      type: "string",
+      cellRenderer: signalRenderer,
+    },
+    {
+      accessor: "aiScore",
+      label: "AI SCORE",
+      width: "1fr",
+      minWidth: 100,
+      isSortable: true,
+      align: "center",
+      type: "number",
+      cellRenderer: aiScoreRenderer,
+    },
+    {
+      accessor: "emailStatus",
+      label: "EMAIL",
+      width: "1.5fr",
+      minWidth: 210,
+      isSortable: true,
+      align: "center",
+      type: "enum",
+      enumOptions: [
+        { label: "Enrich", value: "Enrich" },
+        { label: "Verified", value: "Verified" },
+        { label: "Pending", value: "Pending" },
+        { label: "Bounced", value: "Bounced" },
+      ],
       cellRenderer: emailRenderer,
     },
-    { accessor: "timeAgo", label: "IMPORT", width: "1fr", minWidth: 100, isSortable: true, align: "center", type: "string", cellRenderer: timeAgoRenderer },
     {
-      accessor: "list", label: "LIST", width: "1.2fr", minWidth: 160, isSortable: true, align: "center", type: "enum",
-      enumOptions: [{ label: "Leads", value: "Leads" }, { label: "Hot Leads", value: "Hot Leads" }, { label: "Warm Leads", value: "Warm Leads" }, { label: "Cold Leads", value: "Cold Leads" }, { label: "Enterprise", value: "Enterprise" }, { label: "SMB", value: "SMB" }, { label: "Nurture", value: "Nurture" }],
+      accessor: "timeAgo",
+      label: "IMPORT",
+      width: "1fr",
+      minWidth: 100,
+      isSortable: true,
+      align: "center",
+      type: "string",
+      cellRenderer: timeAgoRenderer,
+    },
+    {
+      accessor: "list",
+      label: "LIST",
+      width: "1.2fr",
+      minWidth: 160,
+      isSortable: true,
+      align: "center",
+      type: "enum",
+      enumOptions: [
+        { label: "Leads", value: "Leads" },
+        { label: "Hot Leads", value: "Hot Leads" },
+        { label: "Warm Leads", value: "Warm Leads" },
+        { label: "Cold Leads", value: "Cold Leads" },
+        { label: "Enterprise", value: "Enterprise" },
+        { label: "SMB", value: "SMB" },
+        { label: "Nurture", value: "Nurture" },
+      ],
       valueGetter: ({ row }) => {
         const list = String(row.list);
-        const m: Record<string, number> = { "Hot Leads": 1, "Warm Leads": 2, Enterprise: 3, Leads: 4, SMB: 5, "Cold Leads": 6, Nurture: 7 };
+        const m: Record<string, number> = {
+          "Hot Leads": 1,
+          "Warm Leads": 2,
+          Enterprise: 3,
+          Leads: 4,
+          SMB: 5,
+          "Cold Leads": 6,
+          Nurture: 7,
+        };
         return m[list] || 999;
       },
       cellRenderer: listRenderer,
     },
-    { accessor: "_fit", label: "Fit", width: "1fr", align: "center", minWidth: 120, cellRenderer: fitRenderer },
-    { accessor: "_contactNow", label: "", width: "1.2fr", minWidth: 160, cellRenderer: contactNowRenderer },
+    {
+      accessor: "_fit",
+      label: "Fit",
+      width: "1fr",
+      align: "center",
+      minWidth: 120,
+      cellRenderer: fitRenderer,
+    },
+    {
+      accessor: "_contactNow",
+      label: "",
+      width: "1.2fr",
+      minWidth: 160,
+      cellRenderer: contactNowRenderer,
+    },
   ];
 }
 
-function createCRMFooter(props: FooterRendererProps, footerColors: typeof CRM_FOOTER_COLORS_LIGHT, rowsPerPage: number, onRowsPerPageChange: (n: number) => void): HTMLElement {
+function createCRMFooter(
+  props: FooterRendererProps,
+  footerColors: typeof CRM_FOOTER_COLORS_LIGHT,
+  rowsPerPage: number,
+  onRowsPerPageChange: (n: number) => void,
+): HTMLElement {
   const c = footerColors;
   const wrapper = el("div", {
-    display: "flex", alignItems: "center", justifyContent: "space-between",
-    padding: "12px 16px", borderTop: `1px solid ${c.border}`, backgroundColor: c.bg,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "12px 16px",
+    borderTop: `1px solid ${c.border}`,
+    backgroundColor: c.bg,
   });
 
   const info = el("p", { fontSize: "14px", color: c.text, margin: "0" });
@@ -228,8 +390,13 @@ function createCRMFooter(props: FooterRendererProps, footerColors: typeof CRM_FO
 
   const select = document.createElement("select");
   Object.assign(select.style, {
-    border: `1px solid ${c.inputBorder}`, borderRadius: "6px", padding: "4px 8px",
-    fontSize: "14px", backgroundColor: c.inputBg, color: c.text, cursor: "pointer",
+    border: `1px solid ${c.inputBorder}`,
+    borderRadius: "6px",
+    padding: "4px 8px",
+    fontSize: "14px",
+    backgroundColor: c.inputBg,
+    color: c.text,
+    cursor: "pointer",
   });
   for (const opt of [25, 50, 100, 200, 10000]) {
     const option = document.createElement("option");
@@ -246,16 +413,26 @@ function createCRMFooter(props: FooterRendererProps, footerColors: typeof CRM_FO
   perPageContainer.appendChild(el("span", { fontSize: "14px", color: c.text }, "per page"));
   right.appendChild(perPageContainer);
 
-  const nav = el("nav", { display: "inline-flex", borderRadius: "6px", boxShadow: "0 1px 2px 0 rgba(0,0,0,0.05)" });
+  const nav = el("nav", {
+    display: "inline-flex",
+    borderRadius: "6px",
+    boxShadow: "0 1px 2px 0 rgba(0,0,0,0.05)",
+  });
 
   const makePageBtn = (label: string, onClick: () => void, disabled: boolean, active = false) => {
     const btn = document.createElement("button");
     btn.textContent = label;
     Object.assign(btn.style, {
-      display: "inline-flex", alignItems: "center", padding: "8px",
-      border: `1px solid ${c.buttonBorder}`, backgroundColor: active ? c.activeBg : c.buttonBg,
-      fontSize: "14px", fontWeight: "500", color: active ? c.activeText : disabled ? c.buttonText : c.text,
-      cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? "0.5" : "1",
+      display: "inline-flex",
+      alignItems: "center",
+      padding: "8px",
+      border: `1px solid ${c.buttonBorder}`,
+      backgroundColor: active ? c.activeBg : c.buttonBg,
+      fontSize: "14px",
+      fontWeight: "500",
+      color: active ? c.activeText : disabled ? c.buttonText : c.text,
+      cursor: disabled ? "not-allowed" : "pointer",
+      opacity: disabled ? "0.5" : "1",
     });
     btn.disabled = disabled;
     if (!disabled) btn.addEventListener("click", onClick);
@@ -268,14 +445,23 @@ function createCRMFooter(props: FooterRendererProps, footerColors: typeof CRM_FO
 
   const visiblePages = generateVisiblePages(props.currentPage, props.totalPages);
   for (const page of visiblePages) {
-    const btn = makePageBtn(String(page), () => props.onPageChange(page), false, page === props.currentPage);
+    const btn = makePageBtn(
+      String(page),
+      () => props.onPageChange(page),
+      false,
+      page === props.currentPage,
+    );
     btn.style.padding = "8px 16px";
     btn.style.marginLeft = "-1px";
     nav.appendChild(btn);
   }
 
   const nextBtn = makePageBtn("›", () => props.onNextPage(), !props.hasNextPage);
-  Object.assign(nextBtn.style, { borderTopRightRadius: "6px", borderBottomRightRadius: "6px", marginLeft: "-1px" });
+  Object.assign(nextBtn.style, {
+    borderTopRightRadius: "6px",
+    borderBottomRightRadius: "6px",
+    marginLeft: "-1px",
+  });
   nav.appendChild(nextBtn);
 
   right.appendChild(nav);
@@ -285,9 +471,12 @@ function createCRMFooter(props: FooterRendererProps, footerColors: typeof CRM_FO
 
 export function renderCRMDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme },
+  options?: { height?: string | number; theme?: CrmShellTheme },
 ): SimpleTableVanilla {
-  const isDark = options?.theme === "custom-dark" || options?.theme === "dark" || options?.theme === "modern-dark";
+  const isDark =
+    options?.theme === "custom-dark" ||
+    options?.theme === "dark" ||
+    options?.theme === "modern-dark";
   const footerColors = isDark ? CRM_FOOTER_COLORS_DARK : CRM_FOOTER_COLORS_LIGHT;
 
   const themeContainer = el("div");
@@ -310,9 +499,353 @@ export function renderCRMDemo(
     footerRenderer: (props) =>
       createCRMFooter(props, footerColors, rowsPerPage, (newVal) => {
         rowsPerPage = newVal;
-        table.getAPI().setRowsPerPage(newVal);
+        table.update({ rowsPerPage: newVal });
       }),
   });
 
   return table;
 }
+
+
+// crm-custom-theme.css
+@import url("https://fonts.googleapis.com/css2?family=BBH+Sans+Hegarty&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+
+.custom-theme-container .st-wrapper {
+  border-radius: 0;
+}
+.custom-theme-container .st-header-label-text {
+  font-size: 12px;
+}
+
+.custom-theme-container * {
+  font-family: Plus Jakarta Sans, sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+.custom-theme-container .st-header-resize-handle {
+  height: 100%;
+  width: 4px;
+}
+.custom-theme-container.theme-custom-light {
+  --st-border-radius: 4px;
+  --st-cell-padding: 12px;
+  --st-spacing-small: 6px;
+  --st-spacing-medium: 10px;
+  --st-scrollbar-bg-color: #f1f5f9;
+  --st-scrollbar-thumb-color: #cbd5e1;
+  --st-border-color: none;
+  --st-odd-row-background-color: white;
+  --st-even-row-background-color: white;
+  --st-odd-column-background-color: white;
+  --st-even-column-background-color: oklch(98.5% 0.002 247.839);
+  --st-hover-row-background-color: oklch(96.7% 0.003 264.542);
+  --st-selected-row-background-color: oklch(96.7% 0.003 264.542);
+  --st-header-background-color: rgb(249 250 251);
+  --st-header-label-color: oklch(55.1% 0.027 264.364);
+  --st-header-icon-color: oklch(55.1% 0.027 264.364);
+  --st-dragging-background-color: oklch(96.7% 0.003 264.542);
+  --st-selected-cell-background-color: oklch(96.7% 0.003 264.542);
+  --st-selected-first-cell-background-color: oklch(92.8% 0.006 264.531);
+  --st-footer-background-color: oklch(98.5% 0.002 247.839);
+  --st-cell-color: oklch(37.3% 0.034 259.733);
+  --st-cell-odd-row-color: oklch(37.3% 0.034 259.733);
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(106, 114, 130, 0.1),
+    0 2px 4px -1px rgba(106, 114, 130, 0.06);
+  --st-selected-cell-color: oklch(27.8% 0.033 256.848);
+  --st-selected-first-cell-color: oklch(27.8% 0.033 256.848);
+  --st-resize-handle-color: oklch(96.7% 0.003 264.542);
+  --st-separator-border-color: oklch(92.8% 0.006 264.531);
+  --st-last-group-row-separator-border-color: oklch(87.2% 0.01 258.338);
+  --st-selected-border-color: #6a7282;
+  --st-editable-cell-focus-border-color: #6a7282;
+  --st-checkbox-checked-background-color: #6a7282;
+  --st-checkbox-checked-border-color: #6a7282;
+  --st-column-editor-background-color: white;
+  --st-column-editor-popout-background-color: white;
+  --st-button-hover-background-color: oklch(96.7% 0.003 264.542);
+  --st-button-active-background-color: #6a7282;
+  --st-cell-flash-color: oklch(92.8% 0.006 264.531);
+  --st-copy-flash-color: #6a7282;
+  --st-warning-flash-color: oklch(80.8% 0.114 19.571);
+  --st-header-selected-background-color: #6a7282;
+  --st-header-selected-label-color: #6a7282;
+  --st-header-selected-icon-color: #6a7282;
+  --st-header-highlight-indicator-color: oklch(87.2% 0.01 258.338);
+  --st-selection-highlight-indicator-color: oklch(87.2% 0.01 258.338);
+  --st-drag-separator-color: #6a7282;
+  --st-next-prev-btn-color: oklch(44.6% 0.03 256.802);
+  --st-next-prev-btn-disabled-color: oklch(70.7% 0.022 261.325);
+  --st-page-btn-color: oklch(44.6% 0.03 256.802);
+  --st-page-btn-hover-background-color: oklch(96.7% 0.003 264.542);
+  --st-column-editor-text-color: oklch(55.1% 0.027 264.364);
+  --st-checkbox-border-color: oklch(87.2% 0.01 258.338);
+  --st-dropdown-group-label-color: oklch(55.1% 0.027 264.364);
+  --st-datepicker-weekday-color: oklch(55.1% 0.027 264.364);
+  --st-datepicker-other-month-color: oklch(70.7% 0.022 261.325);
+  --st-filter-button-disabled-background-color: oklch(87.2% 0.01 258.338);
+  --st-filter-button-disabled-text-color: oklch(55.1% 0.027 264.364);
+}
+
+.custom-theme-container.theme-custom-light .st-wrapper {
+  background-color: white;
+}
+
+.custom-theme-container.theme-custom-light .st-header-resize-handle {
+  background-color: oklch(96.7% 0.003 264.542);
+}
+
+.custom-theme-container.theme-custom-dark {
+  --st-border-radius: 4px;
+  --st-cell-padding: 12px;
+  --st-spacing-small: 6px;
+  --st-spacing-medium: 10px;
+  --st-scrollbar-bg-color: #1e293b;
+  --st-scrollbar-thumb-color: #475569;
+  --st-border-color: none;
+  --st-odd-row-background-color: #0f172a;
+  --st-even-row-background-color: #0f172a;
+  --st-odd-column-background-color: #0f172a;
+  --st-even-column-background-color: #1e293b;
+  --st-hover-row-background-color: #1e293b;
+  --st-selected-row-background-color: #1e293b;
+  --st-header-background-color: #0a0f1a;
+  --st-header-label-color: #94a3b8;
+  --st-header-icon-color: #94a3b8;
+  --st-dragging-background-color: #1e293b;
+  --st-selected-cell-background-color: #1e293b;
+  --st-selected-first-cell-background-color: #334155;
+  --st-footer-background-color: #0f172a;
+  --st-cell-color: #cbd5e1;
+  --st-cell-odd-row-color: #cbd5e1;
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --st-selected-cell-color: #e2e8f0;
+  --st-selected-first-cell-color: #e2e8f0;
+  --st-resize-handle-color: #1e293b;
+  --st-separator-border-color: #334155;
+  --st-last-group-row-separator-border-color: #475569;
+  --st-selected-border-color: #94a3b8;
+  --st-editable-cell-focus-border-color: #94a3b8;
+  --st-checkbox-checked-background-color: #94a3b8;
+  --st-checkbox-checked-border-color: #94a3b8;
+  --st-column-editor-background-color: #1e293b;
+  --st-column-editor-popout-background-color: #1e293b;
+  --st-button-hover-background-color: #334155;
+  --st-button-active-background-color: #94a3b8;
+  --st-cell-flash-color: #334155;
+  --st-copy-flash-color: #94a3b8;
+  --st-warning-flash-color: #ef4444;
+  --st-header-selected-background-color: #94a3b8;
+  --st-header-selected-label-color: #94a3b8;
+  --st-header-selected-icon-color: #94a3b8;
+  --st-header-highlight-indicator-color: #475569;
+  --st-selection-highlight-indicator-color: #475569;
+  --st-drag-separator-color: #94a3b8;
+  --st-next-prev-btn-color: #cbd5e1;
+  --st-next-prev-btn-disabled-color: #64748b;
+  --st-page-btn-color: #cbd5e1;
+  --st-page-btn-hover-background-color: #334155;
+  --st-column-editor-text-color: #94a3b8;
+  --st-checkbox-border-color: #475569;
+  --st-dropdown-group-label-color: #94a3b8;
+  --st-datepicker-weekday-color: #94a3b8;
+  --st-datepicker-other-month-color: #64748b;
+  --st-filter-button-disabled-background-color: #334155;
+  --st-filter-button-disabled-text-color: #64748b;
+}
+
+.custom-theme-container.theme-custom-dark .st-wrapper {
+  background-color: #0f172a;
+}
+
+.custom-theme-container.theme-custom-dark .st-header-resize-handle {
+  background-color: #475569;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+// crm.demo-data.ts
+// Self-contained demo table setup for this example.
+import type { HeaderObject, Theme } from "simple-table-core";
+
+export type CrmShellTheme = Theme | "custom-light" | "custom-dark";
+
+export type CRMLead = {
+  id: number;
+  name: string;
+  title: string;
+  company: string;
+  linkedin: boolean;
+  signal: string;
+  aiScore: number;
+  emailStatus: string;
+  timeAgo: string;
+  list: string;
+};
+
+
+const FIRST_NAMES = ["Emma", "Liam", "Sophia", "Noah", "Olivia", "James", "Ava", "William", "Isabella", "Oliver", "Mia", "Benjamin", "Charlotte", "Elijah", "Amelia", "Lucas", "Harper", "Mason", "Evelyn", "Logan"];
+const LAST_NAMES = ["Chen", "Rodriguez", "Kim", "Thompson", "Martinez", "Anderson", "Taylor", "Brown", "Wilson", "Johnson", "Lee", "Garcia", "Davis", "Miller", "Moore", "Jackson", "White", "Harris", "Martin", "Clark"];
+const TITLES = ["VP of Engineering", "Head of Marketing", "CTO", "Product Manager", "Director of Sales", "CEO", "CFO", "Head of Operations", "Engineering Manager", "Growth Lead", "CMO", "Head of Product", "Director of Engineering", "VP of Sales", "Head of Design"];
+const COMPANIES = ["TechCorp", "InnovateLabs", "CloudBase", "DataFlow", "NexGen", "Quantum AI", "CyberPulse", "MetaVision", "ByteForge", "CodeStream", "PixelPerfect", "LogicGate", "CircuitMind", "NetSphere", "DigiCore"];
+const SIGNALS = ["cloud infrastructure", "enterprise SaaS", "AI/ML tools", "developer platform", "security solutions", "data analytics", "API management", "DevOps automation", "microservices", "serverless computing"];
+const LISTS = ["Hot Leads", "Warm Leads", "Cold Leads", "Enterprise", "SMB", "Leads", "Nurture"];
+const TIME_AGOS = ["2 min ago", "5 min ago", "15 min ago", "1 hour ago", "3 hours ago", "6 hours ago", "1 day ago", "2 days ago", "3 days ago", "1 week ago"];
+
+export function generateCRMData(count: number = 100): CRMLead[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    name: `${FIRST_NAMES[i % FIRST_NAMES.length]} ${LAST_NAMES[i % LAST_NAMES.length]}`,
+    title: TITLES[i % TITLES.length],
+    company: COMPANIES[i % COMPANIES.length],
+    linkedin: i % 3 !== 0,
+    signal: SIGNALS[i % SIGNALS.length],
+    aiScore: Math.min(5, Math.max(1, Math.floor(Math.random() * 5) + 1)),
+    emailStatus: ["Enrich", "Verified", "Pending", "Bounced"][i % 4],
+    timeAgo: TIME_AGOS[i % TIME_AGOS.length],
+    list: LISTS[i % LISTS.length],
+  }));
+}
+
+export const crmData = generateCRMData(100);
+
+export const crmHeaders: HeaderObject[] = [
+  {
+    accessor: "name",
+    label: "CONTACT",
+    width: "2fr",
+    minWidth: 290,
+    isSortable: true,
+    isEditable: true,
+    type: "string",
+  },
+  {
+    accessor: "signal",
+    label: "SIGNAL",
+    width: "3fr",
+    minWidth: 340,
+    isSortable: true,
+    isEditable: true,
+    type: "string",
+  },
+  {
+    accessor: "aiScore",
+    label: "AI SCORE",
+    width: "1fr",
+    minWidth: 100,
+    isSortable: true,
+    align: "center",
+    type: "number",
+  },
+  {
+    accessor: "emailStatus",
+    label: "EMAIL",
+    width: "1.5fr",
+    minWidth: 210,
+    isSortable: true,
+    align: "center",
+    type: "enum",
+    enumOptions: [
+      { label: "Enrich", value: "Enrich" },
+      { label: "Verified", value: "Verified" },
+      { label: "Pending", value: "Pending" },
+      { label: "Bounced", value: "Bounced" },
+    ],
+  },
+  {
+    accessor: "timeAgo",
+    label: "IMPORT",
+    width: "1fr",
+    minWidth: 100,
+    isSortable: true,
+    align: "center",
+    type: "string",
+  },
+  {
+    accessor: "list",
+    label: "LIST",
+    width: "1.2fr",
+    minWidth: 160,
+    isSortable: true,
+    align: "center",
+    type: "enum",
+    enumOptions: [
+      { label: "Leads", value: "Leads" },
+      { label: "Hot Leads", value: "Hot Leads" },
+      { label: "Warm Leads", value: "Warm Leads" },
+      { label: "Cold Leads", value: "Cold Leads" },
+      { label: "Enterprise", value: "Enterprise" },
+      { label: "SMB", value: "SMB" },
+      { label: "Nurture", value: "Nurture" },
+    ],
+    valueGetter: ({ row }) => {
+      const priorityMap: Record<string, number> = {
+        "Hot Leads": 1, "Warm Leads": 2, Enterprise: 3, Leads: 4, SMB: 5, "Cold Leads": 6, Nurture: 7,
+      };
+      return priorityMap[String(row.list)] || 999;
+    },
+  },
+  {
+    accessor: "_fit",
+    label: "Fit",
+    width: "1fr",
+    align: "center",
+    minWidth: 120,
+  },
+  {
+    accessor: "_contactNow",
+    label: "",
+    width: "1.2fr",
+    minWidth: 160,
+  },
+];
+
+export const CRM_FOOTER_COLORS_LIGHT = {
+  bg: "white", border: "#e5e7eb", text: "#374151", textBold: "#374151",
+  inputBg: "white", inputBorder: "#d1d5db", buttonBg: "white", buttonBorder: "#d1d5db",
+  buttonText: "#6b7280", activeBg: "#fff7ed", activeText: "#ea580c",
+};
+
+export const CRM_FOOTER_COLORS_DARK = {
+  bg: "#0f172a", border: "#334155", text: "#cbd5e1", textBold: "#e2e8f0",
+  inputBg: "#1e293b", inputBorder: "#475569", buttonBg: "#1e293b", buttonBorder: "#475569",
+  buttonText: "#cbd5e1", activeBg: "#334155", activeText: "#ea580c",
+};
+
+export function generateVisiblePages(currentPage: number, totalPages: number): number[] {
+  const maxVisible = 5;
+  if (totalPages <= maxVisible) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  let start = currentPage - 2;
+  let end = currentPage + 2;
+  if (start < 1) { start = 1; end = Math.min(maxVisible, totalPages); }
+  if (end > totalPages) { end = totalPages; start = Math.max(1, totalPages - maxVisible + 1); }
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+export const CRM_THEME_COLORS_LIGHT = {
+  text: "oklch(21% .034 264.665)", textSecondary: "oklch(44.6% .03 256.802)",
+  textTertiary: "oklch(55.1% .027 264.364)", link: "oklch(64.6% .222 41.116)",
+  accent: "#ea580c", bg: "white", tagBg: "oklch(96.7% .003 264.542)",
+  tagText: "oklch(21% .034 264.665)", buttonBg: "oklch(92.8% .006 264.531)",
+  buttonText: "oklch(70.7% .022 261.325)", buttonHoverBg: "oklch(87.2% .01 258.338)",
+};
+
+export const CRM_THEME_COLORS_DARK = {
+  text: "#cbd5e1", textSecondary: "#94a3b8", textTertiary: "#64748b",
+  link: "#60a5fa", accent: "#ea580c", bg: "#0f172a", tagBg: "#1e293b",
+  tagText: "#cbd5e1", buttonBg: "#1e293b", buttonText: "#cbd5e1", buttonHoverBg: "#334155",
+};
+
+export const crmConfig = {
+  headers: crmHeaders,
+  rows: crmData,
+} as const;

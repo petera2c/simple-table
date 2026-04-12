@@ -5,8 +5,9 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const CORE_REPO = join(__dirname, "../../simple-table-core");
-const EXAMPLES_BASE = join(CORE_REPO, "packages/examples");
+// apps/marketing/scripts -> monorepo root
+const MONOREPO_ROOT = join(__dirname, "../../..");
+const EXAMPLES_BASE = join(MONOREPO_ROOT, "packages/examples");
 const OUTPUT_DIR = join(__dirname, "../public/txt-demos");
 
 const FRAMEWORKS = ["react", "vue", "angular", "svelte", "solid", "vanilla"];
@@ -66,11 +67,11 @@ async function copyToTxt() {
   try {
     if (
       await fs
-        .stat(CORE_REPO)
+        .stat(EXAMPLES_BASE)
         .then(() => false)
         .catch(() => true)
     ) {
-      console.warn(`Core repo not found at ${CORE_REPO}, skipping copy-to-txt`);
+      console.warn(`Examples tree not found at ${EXAMPLES_BASE}, skipping copy-to-txt`);
       return;
     }
 

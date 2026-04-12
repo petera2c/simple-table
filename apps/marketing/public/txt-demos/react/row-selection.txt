@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, RowSelectionChangeProps } from "@simple-table/react";
-import { rowSelectionConfig, rowSelectionData } from "@simple-table/examples-shared";
-import type { LibraryBook } from "@simple-table/examples-shared";
+import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
+import type { Theme, ReactHeaderObject, CellRendererProps, RowSelectionChangeProps } from "@simple-table/react";
+import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
+import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/react/styles.css";
 
 const RowSelectionDemo = ({
@@ -16,21 +16,21 @@ const RowSelectionDemo = ({
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      rowSelectionConfig.headers.map((h) => {
+      mapToReactHeaderObjects(rowSelectionConfig.headers.map((h) => {
         if (h.accessor === "status") {
           return {
             ...h,
-            cellRenderer: ({ row }) => {
+            cellRenderer: ({ row }: CellRendererProps) => {
               const s = String(row.status);
               const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
               return (
                 <span style={{ color, fontWeight: "bold" }}>{s}</span>
               );
             },
-          } as ReactHeaderObject;
+          };
         }
-        return { ...h } as ReactHeaderObject;
-      }),
+        return h;
+      })),
     [],
   );
 

@@ -1,9 +1,10 @@
+// MusicDemo.tsx
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SolidHeaderObject, TableAPI } from "@simple-table/solid";
-import { musicData, getMusicThemeColors } from "@simple-table/examples-shared";
-import type { MusicArtist } from "@simple-table/examples-shared";
+import { musicData, getMusicThemeColors } from "./music.demo-data";
+import type { MusicArtist } from "./music.demo-data";
 import "@simple-table/solid/styles.css";
-import "@simple-table/examples-shared/styles/music-theme.css";
+import "./music-theme.css";
 
 const Tag = (props: { children: any; color?: string; theme?: string }) => {
   const c = () => getMusicThemeColors(props.theme);
@@ -47,7 +48,7 @@ function getMusicHeaders(): SolidHeaderObject[] {
         let hash = 0; for (let i = 0; i < d.artistName.length; i++) hash = d.artistName.charCodeAt(i) + ((hash << 5) - hash);
         return (
           <div style={{ display: "flex", "align-items": "center", gap: "12px" }}>
-            <div style={{ width: "40px", height: "40px", "border-radius": "50%", "background-color": `hsl(${hash % 360}, 65%, 55%)`, display: "flex", "align-items": "center", "justify-content": "center", color: "white", "font-size": "16px", "shrink": "0" }}>{d.artistName.charAt(0).toUpperCase()}</div>
+            <div style={{ width: "40px", height: "40px", "border-radius": "50%", "background-color": `hsl(${hash % 360}, 65%, 55%)`, display: "flex", "align-items": "center", "justify-content": "center", color: "white", "font-size": "16px", "flex-shrink": "0" }}>{d.artistName.charAt(0).toUpperCase()}</div>
             <div style={{ display: "flex", "flex-direction": "column", gap: "6px", flex: "1" }}>
               <span style={{ "font-weight": "500", "font-size": "14px", color: c.gray }}>{d.artistName}</span>
               <div style={{ display: "flex", gap: "6px", "flex-wrap": "wrap" }}>
@@ -113,4 +114,20 @@ export default function MusicDemo(props: { height?: string | number; theme?: The
       <SimpleTable columnReordering columnResizing customTheme={{ headerHeight: 30, rowHeight: 85 }} defaultHeaders={getMusicHeaders()} height={props.height ?? "400px"} ref={(api) => (tableRef = api)} rows={musicData} selectableCells theme={props.theme} />
     </div>
   );
+}
+
+
+// music-theme.css
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+.music-theme-container * {
+  font-family: "Inter";
+}
+
+.music-theme-container .st-header-label-text {
+  font-weight: 500;
+  font-size: 12px;
+}
+.music-theme-container .st-cell-content {
+  font-size: 12px;
 }

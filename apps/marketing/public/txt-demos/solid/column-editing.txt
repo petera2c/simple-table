@@ -1,22 +1,21 @@
 import { createSignal, createMemo } from "solid-js";
-import { SimpleTable } from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
-import type { HeaderObject } from "simple-table-core";
-import { columnEditingData, columnEditingHeaders } from "@simple-table/examples-shared";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
+import type { Theme, HeaderObject, SolidHeaderObject } from "@simple-table/solid";
+import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ColumnEditingDemo(props: { height?: string | number; theme?: Theme }) {
-  const [additionalColumns, setAdditionalColumns] = createSignal<HeaderObject[]>([]);
+  const [additionalColumns, setAdditionalColumns] = createSignal<SolidHeaderObject[]>([]);
   const [lastAdded, setLastAdded] = createSignal("");
 
   const addColumn = () => {
     const n = additionalColumns().length + 1;
-    const col: HeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: SolidHeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     setAdditionalColumns([...additionalColumns(), col]);
     setLastAdded(col.label);
   };
 
-  const headers = createMemo(() => [...columnEditingHeaders, ...additionalColumns()]);
+  const headers = createMemo(() => [...defaultHeadersFromCore(columnEditingHeaders), ...additionalColumns()]);
 
   return (
     <div>

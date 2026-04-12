@@ -1,12 +1,12 @@
+// MusicDemo.vue
 <script setup lang="ts">
 import { computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
-import type { HeaderObject, CellRenderer } from "simple-table-core";
-import { musicConfig, getMusicThemeColors } from "@simple-table/examples-shared";
-import type { MusicArtist } from "@simple-table/examples-shared";
+import type { Theme, HeaderObject, CellRenderer } from "@simple-table/vue";
+import { musicConfig, getMusicThemeColors } from "./music.demo-data";
+import type { MusicArtist } from "./music.demo-data";
 import "@simple-table/vue/styles.css";
-import "@simple-table/examples-shared/styles/music-theme.css";
+import "./music-theme.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
@@ -217,3 +217,19 @@ const headers = computed(() => {
     />
   </div>
 </template>
+
+
+// music-theme.css
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+.music-theme-container * {
+  font-family: "Inter";
+}
+
+.music-theme-container .st-header-label-text {
+  font-weight: 500;
+  font-size: 12px;
+}
+.music-theme-container .st-cell-content {
+  font-size: 12px;
+}

@@ -1,11 +1,18 @@
+// CRMDemo.tsx
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, FooterRendererProps } from "@simple-table/react";
-import type { CellChangeProps } from "simple-table-core";
-import { crmData, CRM_THEME_COLORS_LIGHT, CRM_THEME_COLORS_DARK, CRM_FOOTER_COLORS_LIGHT, CRM_FOOTER_COLORS_DARK, generateVisiblePages } from "@simple-table/examples-shared";
-import type { CRMLead } from "@simple-table/examples-shared";
+import type { ReactHeaderObject, FooterRendererProps, CellChangeProps, CellRendererProps } from "@simple-table/react";
+import {
+  crmData,
+  CRM_THEME_COLORS_LIGHT,
+  CRM_THEME_COLORS_DARK,
+  CRM_FOOTER_COLORS_LIGHT,
+  CRM_FOOTER_COLORS_DARK,
+  generateVisiblePages,
+} from "./crm.demo-data";
+import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
 import "@simple-table/react/styles.css";
-import "@simple-table/examples-shared/styles/crm-custom-theme.css";
+import "./crm-custom-theme.css";
 
 const EmailEnrich = ({ colors }: { colors: typeof CRM_THEME_COLORS_LIGHT }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +68,7 @@ function getCRMHeaders(isDark: boolean): ReactHeaderObject[] {
   return [
     {
       accessor: "name", label: "CONTACT", width: "2fr", minWidth: 290, isSortable: true, isEditable: true, type: "string",
-      cellRenderer: ({ row: r }) => {
+      cellRenderer: ({ row: r }: CellRendererProps) => {
         const { name, title, company } = r as unknown as CRMLead;
         const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase();
         return (
@@ -78,7 +85,7 @@ function getCRMHeaders(isDark: boolean): ReactHeaderObject[] {
     },
     {
       accessor: "signal", label: "SIGNAL", width: "3fr", minWidth: 340, isSortable: true, isEditable: true, type: "string",
-      cellRenderer: ({ row: r }) => {
+      cellRenderer: ({ row: r }: CellRendererProps) => {
         const { signal } = r as unknown as CRMLead;
         return (
           <div>
@@ -90,7 +97,7 @@ function getCRMHeaders(isDark: boolean): ReactHeaderObject[] {
     },
     {
       accessor: "aiScore", label: "AI SCORE", width: "1fr", minWidth: 100, isSortable: true, align: "center", type: "number",
-      cellRenderer: ({ row: r }) => {
+      cellRenderer: ({ row: r }: CellRendererProps) => {
         const { aiScore } = r as unknown as CRMLead;
         return <div style={{ fontSize: "0.875rem" }}>{"🔥".repeat(aiScore)}</div>;
       },
@@ -102,7 +109,7 @@ function getCRMHeaders(isDark: boolean): ReactHeaderObject[] {
     },
     {
       accessor: "timeAgo", label: "IMPORT", width: "1fr", minWidth: 100, isSortable: true, align: "center", type: "string",
-      cellRenderer: ({ row: r }) => {
+      cellRenderer: ({ row: r }: CellRendererProps) => {
         const { timeAgo } = r as unknown as CRMLead;
         return <div style={{ fontSize: "13px", color: colors.textSecondary }}>{timeAgo}</div>;
       },
@@ -111,7 +118,7 @@ function getCRMHeaders(isDark: boolean): ReactHeaderObject[] {
       accessor: "list", label: "LIST", width: "1.2fr", minWidth: 160, isSortable: true, align: "center", type: "enum",
       enumOptions: [{ label: "Leads", value: "Leads" }, { label: "Hot Leads", value: "Hot Leads" }, { label: "Warm Leads", value: "Warm Leads" }, { label: "Cold Leads", value: "Cold Leads" }, { label: "Enterprise", value: "Enterprise" }, { label: "SMB", value: "SMB" }, { label: "Nurture", value: "Nurture" }],
       valueGetter: ({ row }) => { const m: Record<string, number> = { "Hot Leads": 1, "Warm Leads": 2, Enterprise: 3, Leads: 4, SMB: 5, "Cold Leads": 6, Nurture: 7 }; return m[String(row.list)] || 999; },
-      cellRenderer: ({ row: r }) => {
+      cellRenderer: ({ row: r }: CellRendererProps) => {
         const { list } = r as unknown as CRMLead;
         return <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", fontSize: "0.875rem", color: colors.link, textDecoration: "none", fontWeight: "600" }}>{list}</a>;
       },
@@ -121,7 +128,7 @@ function getCRMHeaders(isDark: boolean): ReactHeaderObject[] {
   ];
 }
 
-const CRMDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
+const CRMDemo = ({ height = "400px", theme }: { height?: string | number; theme?: CrmShellTheme }) => {
   const isDark = theme === "custom-dark" || theme === "dark" || theme === "modern-dark";
   const [data, setData] = useState([...crmData]);
   const [rowsPerPage, setRowsPerPage] = useState(100);
@@ -176,3 +183,167 @@ const CRMDemo = ({ height = "400px", theme }: { height?: string | number; theme?
 };
 
 export default CRMDemo;
+
+
+// crm-custom-theme.css
+@import url("https://fonts.googleapis.com/css2?family=BBH+Sans+Hegarty&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+
+.custom-theme-container .st-wrapper {
+  border-radius: 0;
+}
+.custom-theme-container .st-header-label-text {
+  font-size: 12px;
+}
+
+.custom-theme-container * {
+  font-family: Plus Jakarta Sans, sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+.custom-theme-container .st-header-resize-handle {
+  height: 100%;
+  width: 4px;
+}
+.custom-theme-container.theme-custom-light {
+  --st-border-radius: 4px;
+  --st-cell-padding: 12px;
+  --st-spacing-small: 6px;
+  --st-spacing-medium: 10px;
+  --st-scrollbar-bg-color: #f1f5f9;
+  --st-scrollbar-thumb-color: #cbd5e1;
+  --st-border-color: none;
+  --st-odd-row-background-color: white;
+  --st-even-row-background-color: white;
+  --st-odd-column-background-color: white;
+  --st-even-column-background-color: oklch(98.5% 0.002 247.839);
+  --st-hover-row-background-color: oklch(96.7% 0.003 264.542);
+  --st-selected-row-background-color: oklch(96.7% 0.003 264.542);
+  --st-header-background-color: rgb(249 250 251);
+  --st-header-label-color: oklch(55.1% 0.027 264.364);
+  --st-header-icon-color: oklch(55.1% 0.027 264.364);
+  --st-dragging-background-color: oklch(96.7% 0.003 264.542);
+  --st-selected-cell-background-color: oklch(96.7% 0.003 264.542);
+  --st-selected-first-cell-background-color: oklch(92.8% 0.006 264.531);
+  --st-footer-background-color: oklch(98.5% 0.002 247.839);
+  --st-cell-color: oklch(37.3% 0.034 259.733);
+  --st-cell-odd-row-color: oklch(37.3% 0.034 259.733);
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(106, 114, 130, 0.1),
+    0 2px 4px -1px rgba(106, 114, 130, 0.06);
+  --st-selected-cell-color: oklch(27.8% 0.033 256.848);
+  --st-selected-first-cell-color: oklch(27.8% 0.033 256.848);
+  --st-resize-handle-color: oklch(96.7% 0.003 264.542);
+  --st-separator-border-color: oklch(92.8% 0.006 264.531);
+  --st-last-group-row-separator-border-color: oklch(87.2% 0.01 258.338);
+  --st-selected-border-color: #6a7282;
+  --st-editable-cell-focus-border-color: #6a7282;
+  --st-checkbox-checked-background-color: #6a7282;
+  --st-checkbox-checked-border-color: #6a7282;
+  --st-column-editor-background-color: white;
+  --st-column-editor-popout-background-color: white;
+  --st-button-hover-background-color: oklch(96.7% 0.003 264.542);
+  --st-button-active-background-color: #6a7282;
+  --st-cell-flash-color: oklch(92.8% 0.006 264.531);
+  --st-copy-flash-color: #6a7282;
+  --st-warning-flash-color: oklch(80.8% 0.114 19.571);
+  --st-header-selected-background-color: #6a7282;
+  --st-header-selected-label-color: #6a7282;
+  --st-header-selected-icon-color: #6a7282;
+  --st-header-highlight-indicator-color: oklch(87.2% 0.01 258.338);
+  --st-selection-highlight-indicator-color: oklch(87.2% 0.01 258.338);
+  --st-drag-separator-color: #6a7282;
+  --st-next-prev-btn-color: oklch(44.6% 0.03 256.802);
+  --st-next-prev-btn-disabled-color: oklch(70.7% 0.022 261.325);
+  --st-page-btn-color: oklch(44.6% 0.03 256.802);
+  --st-page-btn-hover-background-color: oklch(96.7% 0.003 264.542);
+  --st-column-editor-text-color: oklch(55.1% 0.027 264.364);
+  --st-checkbox-border-color: oklch(87.2% 0.01 258.338);
+  --st-dropdown-group-label-color: oklch(55.1% 0.027 264.364);
+  --st-datepicker-weekday-color: oklch(55.1% 0.027 264.364);
+  --st-datepicker-other-month-color: oklch(70.7% 0.022 261.325);
+  --st-filter-button-disabled-background-color: oklch(87.2% 0.01 258.338);
+  --st-filter-button-disabled-text-color: oklch(55.1% 0.027 264.364);
+}
+
+.custom-theme-container.theme-custom-light .st-wrapper {
+  background-color: white;
+}
+
+.custom-theme-container.theme-custom-light .st-header-resize-handle {
+  background-color: oklch(96.7% 0.003 264.542);
+}
+
+.custom-theme-container.theme-custom-dark {
+  --st-border-radius: 4px;
+  --st-cell-padding: 12px;
+  --st-spacing-small: 6px;
+  --st-spacing-medium: 10px;
+  --st-scrollbar-bg-color: #1e293b;
+  --st-scrollbar-thumb-color: #475569;
+  --st-border-color: none;
+  --st-odd-row-background-color: #0f172a;
+  --st-even-row-background-color: #0f172a;
+  --st-odd-column-background-color: #0f172a;
+  --st-even-column-background-color: #1e293b;
+  --st-hover-row-background-color: #1e293b;
+  --st-selected-row-background-color: #1e293b;
+  --st-header-background-color: #0a0f1a;
+  --st-header-label-color: #94a3b8;
+  --st-header-icon-color: #94a3b8;
+  --st-dragging-background-color: #1e293b;
+  --st-selected-cell-background-color: #1e293b;
+  --st-selected-first-cell-background-color: #334155;
+  --st-footer-background-color: #0f172a;
+  --st-cell-color: #cbd5e1;
+  --st-cell-odd-row-color: #cbd5e1;
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --st-selected-cell-color: #e2e8f0;
+  --st-selected-first-cell-color: #e2e8f0;
+  --st-resize-handle-color: #1e293b;
+  --st-separator-border-color: #334155;
+  --st-last-group-row-separator-border-color: #475569;
+  --st-selected-border-color: #94a3b8;
+  --st-editable-cell-focus-border-color: #94a3b8;
+  --st-checkbox-checked-background-color: #94a3b8;
+  --st-checkbox-checked-border-color: #94a3b8;
+  --st-column-editor-background-color: #1e293b;
+  --st-column-editor-popout-background-color: #1e293b;
+  --st-button-hover-background-color: #334155;
+  --st-button-active-background-color: #94a3b8;
+  --st-cell-flash-color: #334155;
+  --st-copy-flash-color: #94a3b8;
+  --st-warning-flash-color: #ef4444;
+  --st-header-selected-background-color: #94a3b8;
+  --st-header-selected-label-color: #94a3b8;
+  --st-header-selected-icon-color: #94a3b8;
+  --st-header-highlight-indicator-color: #475569;
+  --st-selection-highlight-indicator-color: #475569;
+  --st-drag-separator-color: #94a3b8;
+  --st-next-prev-btn-color: #cbd5e1;
+  --st-next-prev-btn-disabled-color: #64748b;
+  --st-page-btn-color: #cbd5e1;
+  --st-page-btn-hover-background-color: #334155;
+  --st-column-editor-text-color: #94a3b8;
+  --st-checkbox-border-color: #475569;
+  --st-dropdown-group-label-color: #94a3b8;
+  --st-datepicker-weekday-color: #94a3b8;
+  --st-datepicker-other-month-color: #64748b;
+  --st-filter-button-disabled-background-color: #334155;
+  --st-filter-button-disabled-text-color: #64748b;
+}
+
+.custom-theme-container.theme-custom-dark .st-wrapper {
+  background-color: #0f172a;
+}
+
+.custom-theme-container.theme-custom-dark .st-header-resize-handle {
+  background-color: #475569;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
