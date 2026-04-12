@@ -4,6 +4,7 @@ import { DEFAULT_SHOW_WHEN } from "../../types/HeaderObject";
 import { findLeafHeaders, getHeaderWidthInPixels } from "../headerWidthUtils";
 import { findParentHeader } from "../collapseUtils";
 import { getCellId } from "../cellUtils";
+import { syncHorizontalScrollbarLayout } from "../horizontalScrollbarRenderer";
 import { recalculateAllSectionWidths } from "./sectionWidths";
 
 /**
@@ -150,13 +151,20 @@ export const updateColumnWidthsInDOM = (
   // During resize drag, pinned section width is only set on full render. Reuse the same logic as
   // TableRenderer: recalculateAllSectionWidths then apply to section DOM (header + body).
   // Header sections do not use display:grid (see base.css), so we only need to update width.
-  const tableContainer = document.querySelector(".st-body-container") as HTMLElement | null;
+  const tableContainer = document.querySelector(".st-body-container") as HTMLDivElement | null;
   const containerWidth = tableContainer?.clientWidth ?? 0;
-  const { leftWidth, rightWidth } = recalculateAllSectionWidths({
+  const sectionWidths = recalculateAllSectionWidths({
     headers,
     containerWidth: containerWidth > 0 ? containerWidth : undefined,
     collapsedHeaders: collapsedHeaders as Set<string> | undefined,
   });
+  const {
+    leftWidth,
+    rightWidth,
+    mainWidth,
+    leftContentWidth,
+    rightContentWidth,
+  } = sectionWidths;
 
   if (leftWidth > 0) {
     const leftHeaderSection = document.querySelector(
@@ -173,5 +181,29 @@ export const updateColumnWidthsInDOM = (
     const rightBodySection = document.querySelector(".st-body-pinned-right") as HTMLElement | null;
     if (rightHeaderSection) rightHeaderSection.style.width = `${rightWidth}px`;
     if (rightBodySection) rightBodySection.style.width = `${rightWidth}px`;
+  }
+
+  const root = tableContainer?.closest(".simple-table-root");
+  const hScroll = root?.querySelector(
+    ".st-horizontal-scrollbar-container",
+  ) as HTMLElement | null;
+  const mainBody = root?.querySelector(".st-body-main") as HTMLDivElement | null;
+  const editColumns = Boolean(root?.querySelector(".st-column-editor"));
+  if (
+    hScroll &&
+    mainBody &&
+    tableContainer &&
+    mainBody.scrollWidth - mainBody.clientWidth > 1
+  ) {
+    syncHorizontalScrollbarLayout(hScroll, {
+      mainBodyRef: mainBody,
+      mainBodyWidth: mainWidth,
+      pinnedLeftWidth: leftWidth,
+      pinnedRightWidth: rightWidth,
+      pinnedLeftContentWidth: leftContentWidth,
+      pinnedRightContentWidth: rightContentWidth,
+      tableBodyContainerRef: tableContainer,
+      editColumns,
+    });
   }
 };

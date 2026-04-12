@@ -19,6 +19,7 @@
     "build:marketing": "turbo run build --filter=simple-table-marketing",
     "watch:react-adapter": "pnpm --filter @simple-table/react run preview",
     "dev:marketing": "turbo run dev --filter=simple-table-marketing",
+    "dev:marketing:watch": "sh -c 'pnpm --filter @simple-table/react run preview & pnpm --filter simple-table-marketing run dev & wait'",
     "dev": "turbo run preview --parallel",
     "dev:examples": "pnpm --filter=examples-react --filter=examples-vue --filter=examples-svelte --filter=examples-solid --filter=examples-angular --filter=examples-vanilla dev",
     "dev:examples-react": "pnpm --filter=examples-react dev",

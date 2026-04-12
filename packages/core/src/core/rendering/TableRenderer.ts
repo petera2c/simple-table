@@ -10,6 +10,7 @@ import { createColumnEditor } from "../../utils/columnEditor/createColumnEditor"
 import {
   createHorizontalScrollbar,
   cleanupHorizontalScrollbar,
+  syncHorizontalScrollbarLayout,
 } from "../../utils/horizontalScrollbarRenderer";
 import {
   createStickyParentsContainer,
@@ -874,6 +875,18 @@ export class TableRenderer {
       this.horizontalScrollbarRef.current &&
       wrapperContainer.contains(this.horizontalScrollbarRef.current)
     ) {
+      const sb = this.horizontalScrollbarRef.current;
+      syncHorizontalScrollbarLayout(sb, {
+        mainBodyRef: deps.mainBodyRef.current,
+        mainBodyWidth,
+        pinnedLeftWidth,
+        pinnedRightWidth,
+        pinnedLeftContentWidth,
+        pinnedRightContentWidth,
+        tableBodyContainerRef,
+        editColumns: deps.config.editColumns ?? false,
+        sectionScrollController: deps.sectionScrollController ?? undefined,
+      });
       return;
     }
 
@@ -898,6 +911,18 @@ export class TableRenderer {
         this.horizontalScrollbarRef.current &&
         wrapperContainer.contains(this.horizontalScrollbarRef.current)
       ) {
+        const existing = this.horizontalScrollbarRef.current;
+        syncHorizontalScrollbarLayout(existing, {
+          mainBodyRef: deps.mainBodyRef.current,
+          mainBodyWidth,
+          pinnedLeftWidth,
+          pinnedRightWidth,
+          pinnedLeftContentWidth,
+          pinnedRightContentWidth,
+          tableBodyContainerRef,
+          editColumns: deps.config.editColumns ?? false,
+          sectionScrollController: deps.sectionScrollController ?? undefined,
+        });
         this.scrollbarTimeoutId = null;
         return;
       }

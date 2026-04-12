@@ -9,10 +9,9 @@ function shallowTablePropsChanged(
   prev: SimpleTableReactProps,
   next: SimpleTableReactProps,
 ): boolean {
-  const keys = new Set([
-    ...Object.keys(prev as object),
-    ...Object.keys(next as object),
-  ]) as Set<keyof SimpleTableReactProps>;
+  const keys = new Set([...Object.keys(prev as object), ...Object.keys(next as object)]) as Set<
+    keyof SimpleTableReactProps
+  >;
   for (const key of keys) {
     if (prev[key] !== next[key]) return true;
   }
