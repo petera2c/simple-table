@@ -42,6 +42,9 @@ interface Plan {
   backgroundColor: string;
 }
 
+/** One line under the price on every tier (keeps long copy out of the body paragraph). */
+const PLAN_CAPACITY_NOTE = "Unlimited users";
+
 const PricingContent: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -54,7 +57,7 @@ const PricingContent: React.FC = () => {
         price: "$0",
         billingCycle: "forever",
         description:
-          "Perfect for fun projects, bootstrapped startups, and companies with zero revenue. Any revenue requires a paid plan (Pro or Enterprise). Unlimited users per product license.",
+          "Side projects and pre-revenue teams. Generating revenue? Use Pro or Enterprise.",
         features: [
           { text: "Full library access", included: true, highlight: true },
           { text: "All features included", included: true, highlight: true },
@@ -79,7 +82,7 @@ const PricingContent: React.FC = () => {
         originalPrice: isAnnual ? "$1,020" : undefined,
         billingCycle: isAnnual ? "per year" : "per month",
         description:
-          "For companies with any revenue. Enhanced support and priority access to new features. Unlimited users per product license.",
+          "For any revenue-generating company. Priority support and production bug coverage.",
         features: [
           { text: "Priority email & Discord support", included: true, highlight: true },
           { text: "Bug support for production issues", included: true, highlight: true },
@@ -103,7 +106,7 @@ const PricingContent: React.FC = () => {
         originalPrice: isAnnual ? "$4,200" : undefined,
         billingCycle: isAnnual ? "per year" : "per month",
         description:
-          "For teams that need support beyond standard Pro. Dedicated support and direct access to the developers who build Simple Table. Unlimited users per product license.",
+          "Hands-on support beyond Pro: faster responses, direct access to core developers, and prioritized feature requests.",
         features: [
           { text: "Premium support with faster response times", included: true, highlight: true },
           { text: "Direct access to core developers", included: true, highlight: true },
@@ -259,9 +262,9 @@ const PricingContent: React.FC = () => {
           initial="hidden"
           animate="visible"
         >
-          {plans.map((plan, index) => (
+          {plans.map((plan) => (
             <motion.div
-              key={index}
+              key={plan.name}
               className={`relative flex h-full flex-col rounded-xl p-6 shadow-lg border-2 bg-white dark:bg-gray-800 ${plan.borderColor}`}
               variants={itemVariants}
             >
@@ -278,35 +281,28 @@ const PricingContent: React.FC = () => {
                 {plan.subtitle}
               </p>
 
-              <div className="mb-4 shrink-0">
-                <div className="flex items-baseline gap-2">
+              <div className="mb-3 shrink-0">
+                <div className="flex min-h-[3.25rem] flex-wrap items-baseline gap-x-2 gap-y-1">
                   <span className="text-4xl font-bold text-gray-800 dark:text-white">
                     {plan.price}
                   </span>
-                  {plan.originalPrice && (
-                    <span className="text-lg text-gray-500 dark:text-gray-400 line-through">
+                  {plan.originalPrice ? (
+                    <span className="text-lg text-gray-500 line-through dark:text-gray-400">
                       {plan.originalPrice}
                     </span>
-                  )}
+                  ) : null}
                   <span className="text-gray-600 dark:text-gray-400">/{plan.billingCycle}</span>
                 </div>
+                <p className="mt-1 text-xs leading-snug text-gray-500 dark:text-gray-400">
+                  {PLAN_CAPACITY_NOTE}
+                </p>
               </div>
 
-              <p className="mb-4 min-h-[4.5rem] shrink-0 text-sm text-gray-600 dark:text-gray-300">
+              <p className="mb-4 line-clamp-3 shrink-0 text-sm text-gray-600 dark:text-gray-300">
                 {plan.description}
               </p>
 
-              <Button
-                type={plan.ctaVariant}
-                size="large"
-                className="mb-4 h-10 w-full shrink-0"
-                onClick={() => handleGetStarted(plan.name)}
-              >
-                <FontAwesomeIcon icon={ctaIconForPlan(plan.name)} className="mr-2" />
-                {plan.cta}
-              </Button>
-
-              <div className="flex flex-1 flex-col gap-2">
+              <div className="mb-4 flex min-h-0 flex-1 flex-col gap-2">
                 {plan.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className="flex shrink-0 items-center gap-3">
                     <div
@@ -330,6 +326,16 @@ const PricingContent: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              <Button
+                type={plan.ctaVariant}
+                size="large"
+                className="mb-4 h-10 w-full shrink-0"
+                onClick={() => handleGetStarted(plan.name)}
+              >
+                <FontAwesomeIcon icon={ctaIconForPlan(plan.name)} className="mr-2" />
+                {plan.cta}
+              </Button>
 
               <div className="mt-4 shrink-0 border-t border-gray-200 pt-4 dark:border-gray-700">
                 <a
@@ -446,11 +452,11 @@ const PricingContent: React.FC = () => {
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
             Ready to Build Amazing Tables?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="mb-8 text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Join thousands of developers who trust Simple Table for their data visualization needs.
             No per-user fees - one license covers unlimited users per product.
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
+          <div className="flex justify-center">
             <Button
               type="primary"
               size="large"
@@ -459,19 +465,6 @@ const PricingContent: React.FC = () => {
             >
               <FontAwesomeIcon icon={faRocket} className="mr-2" />
               Start Free Today
-            </Button>
-            <Button size="large" onClick={() => handleGetStarted("PRO")} className="h-12 px-8">
-              <FontAwesomeIcon icon={faCrown} className="mr-2" />
-              Upgrade to PRO
-            </Button>
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => handleGetStarted("ENTERPRISE")}
-              className="h-12 px-8"
-            >
-              <FontAwesomeIcon icon={faBuilding} className="mr-2" />
-              Start Enterprise Plan
             </Button>
           </div>
         </motion.section>
