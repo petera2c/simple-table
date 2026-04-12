@@ -120,8 +120,7 @@ function generateIndexHtml(framework, demoLabel) {
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-      #root,
-      #app {
+      #root {
         padding: 24px;
       }
       app-root {
@@ -408,7 +407,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     vue: { main: `import { createApp } from "vue";
 import App from "./App.vue";
 
-createApp(App).mount("#app");`,
+const el = document.getElementById("app")!;
+el.style.padding = "24px";
+createApp(App).mount(el);`,
       app: `<template>
   <Demo height="500px" />
 </template>
@@ -439,8 +440,10 @@ bootstrapApplication(AppComponent, {
     svelte: `import { mount } from "svelte";
 import Demo from "./demos/${demoId}/${pascal}Demo.svelte";
 
+const el = document.getElementById("app")!;
+el.style.padding = "24px";
 mount(Demo, {
-  target: document.getElementById("app")!,
+  target: el,
   props: { height: "500px" },
 });`,
 

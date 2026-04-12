@@ -12,7 +12,7 @@ export interface ChangelogEntry {
 }
 
 export const v3_0_0: ChangelogEntry = {
-  version: "3.0.1",
+  version: "3.0.0",
   date: "2026-03-29",
   title: "Framework Adapters & Column Virtualization",
   titleLink: "/migrations/v3",
