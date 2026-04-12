@@ -26,11 +26,11 @@ export interface PackageInfo {
 // Simple Table
 export const SIMPLE_TABLE_INFO: PackageInfo = {
   name: "Simple Table",
-  npmPackage: "@simple-table/react",
+  npmPackage: "simple-table-core",
   version: "2.2.7",
-  bundleSizeMinGzip: "42 kB",
-  bundleSizeMinGzipKB: 42,
-  bundlePhobiaUrl: "https://bundlephobia.com/package/@simple-table/react",
+  bundleSizeMinGzip: "62.4 kB",
+  bundleSizeMinGzipKB: 62.4,
+  bundlePhobiaUrl: "https://bundlephobia.com/package/simple-table-core",
   pricing: {
     free: false,
     cost: "$0-$850/year",

@@ -132,13 +132,19 @@ Simple, transparent pricing that never changes based on your revenue or team siz
 
 **$0/forever**
 
-Perfect for fun projects, bootstrapped startups, and pre-revenue companies. Unlimited users per product license with full access to all core features, built-in themes, TypeScript support, and MIT License for commercial use.
+For side projects and pre-revenue teams. Unlimited users per product license with full access to all core features, built-in themes, TypeScript support, and the MIT License for **zero-revenue** companies only. If your company generates revenue, use Pro or Enterprise.
 
 ### PRO - For Growing Businesses
 
-**$85/month**
+**$85/month** or **$850/year** (about 17% less than twelve monthly payments)
 
-Enhanced support and priority access to new features. Unlimited users per product license with priority email & Discord support, direct developer access, feature request prioritization, and custom implementation guidance.
+For revenue-generating companies: priority email and Discord support, bug support for production issues, and the commercial EULA. Unlimited users per product license.
+
+### ENTERPRISE - For teams that need hands-on support
+
+**$350/month** or **$3,500/year** (about 17% less than twelve monthly payments)
+
+Premium support with faster response times, direct access to core developers, feature request prioritization, and the commercial EULA. Unlimited users per product license.
 
 **[View Detailed Pricing](https://www.simple-table.com/pricing)**
 
@@ -153,9 +159,9 @@ Join our growing community to ask questions or share feedback:
 
 **Dual Licensed:**
 
-- **Free Tier**: MIT License for individuals, startups, and pre-revenue companies - see [LICENSE](LICENSE) file
-- **Pro Tier**: Proprietary license for commercial use by revenue-generating companies - see [EULA.txt](EULA.txt) for complete terms
+- **Free Tier**: MIT License for zero-revenue individuals, startups, and organizations — see [LICENSE](LICENSE)
+- **Pro and Enterprise**: Commercial EULA for revenue-generating companies — see [EULA.txt](EULA.txt)
 
-By using Simple Table, you agree to the terms in [EULA.txt](EULA.txt).
+By using Simple Table, you agree to the terms in [EULA.txt](EULA.txt) where applicable.
 
 **[View Detailed Pricing & Licensing](https://www.simple-table.com/pricing)**

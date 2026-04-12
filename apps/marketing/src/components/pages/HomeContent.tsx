@@ -22,6 +22,7 @@ import { useFramework, FRAMEWORKS, FRAMEWORK_LABELS } from "@/providers/Framewor
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import FrameworkIcon from "@/components/FrameworkIcon";
 import { SIMPLE_TABLE_INFO, AG_GRID_TOTAL_SIZE } from "@/constants/packageInfo";
+import { FRAMEWORK_REQUIREMENTS } from "@/constants/strings/technical";
 import ContactModal from "@/components/ContactModal";
 import { mapWebsiteThemeToTableTheme } from "@/utils/themeMapper";
 
@@ -75,7 +76,7 @@ export default function HomeContent() {
         name: "What is Simple Table?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Simple Table is a lightweight JavaScript data grid and table library that's only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} in size. It works with React, Vue, Angular, Svelte, Solid, and vanilla TypeScript, providing comprehensive features like cell editing, column management, sorting, filtering, and full TypeScript support.`,
+          text: `Simple Table is a lightweight JavaScript data grid and table library that's only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} in size. It works with React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript (simple-table-core), providing comprehensive features like cell editing, column management, sorting, filtering, and full TypeScript support.`,
         },
       },
       {
@@ -164,7 +165,7 @@ export default function HomeContent() {
         description: "For revenue-generating businesses with priority support",
       },
     ],
-    description: `Simple Table is a lightweight JavaScript data grid with adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. Only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} in size, production-ready with 30+ features including cell editing, column management, sorting, filtering, and full TypeScript support.`,
+    description: `Simple Table is a lightweight JavaScript data grid with first-class npm packages: @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, and simple-table-core for vanilla JavaScript or TypeScript. Only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} in size, production-ready with 30+ features including cell editing, column management, sorting, filtering, and full TypeScript support.`,
     url: "https://www.simple-table.com",
     downloadUrl: "https://www.npmjs.com/package/@simple-table/react",
     softwareVersion: SIMPLE_TABLE_INFO.version,
@@ -173,9 +174,19 @@ export default function HomeContent() {
       name: "Simple Table",
       url: "https://www.simple-table.com",
     },
+    softwareRequirements: `React ${FRAMEWORK_REQUIREMENTS.react}; Vue ${FRAMEWORK_REQUIREMENTS.vue}; Angular ${FRAMEWORK_REQUIREMENTS.angular}; Svelte ${FRAMEWORK_REQUIREMENTS.svelte}; Solid ${FRAMEWORK_REQUIREMENTS.solid}; ${FRAMEWORK_REQUIREMENTS.vanilla}.`,
+    featureList: [
+      "React adapter (@simple-table/react)",
+      "Vue adapter (@simple-table/vue)",
+      "Angular adapter (@simple-table/angular)",
+      "Svelte adapter (@simple-table/svelte)",
+      "Solid adapter (@simple-table/solid)",
+      "Vanilla JavaScript / TypeScript (simple-table-core)",
+    ],
     sameAs: [
       "https://github.com/petera2c/simple-table",
       "https://www.npmjs.com/package/@simple-table/react",
+      "https://www.npmjs.com/package/simple-table-core",
       "https://github.com/brillout/awesome-react-components",
     ],
   };

@@ -2,6 +2,19 @@
 
 import React from "react";
 import { SIMPLE_TABLE_INFO, AG_GRID_TOTAL_SIZE } from "@/constants/packageInfo";
+import { FRAMEWORK_INSTALL_COMMANDS } from "@/constants/strings/technical";
+import type { Framework } from "@/providers/FrameworkProvider";
+
+const FRAMEWORK_ORDER: Framework[] = ["react", "vue", "angular", "svelte", "solid", "vanilla"];
+
+const NPM_PACKAGE_BY_FRAMEWORK: Record<Framework, string> = {
+  react: "@simple-table/react",
+  vue: "@simple-table/vue",
+  angular: "@simple-table/angular",
+  svelte: "@simple-table/svelte",
+  solid: "@simple-table/solid",
+  vanilla: "simple-table-core",
+};
 
 interface AIVisibilityEnhancerProps {
   pageType: "home" | "docs" | "blog" | "comparison";
@@ -46,13 +59,17 @@ export default function AIVisibilityEnhancer({ pageType }: AIVisibilityEnhancerP
   ];
 
   // Add technical specifications for AI understanding
+  const npmPackagesLine = FRAMEWORK_ORDER.map(
+    (fw) => `${NPM_PACKAGE_BY_FRAMEWORK[fw]}: ${FRAMEWORK_INSTALL_COMMANDS[fw].npm}`,
+  ).join("; ");
+
   const technicalSpecs = {
     bundleSize: SIMPLE_TABLE_INFO.bundleSizeMinGzip,
-    framework: "React, Vue, Angular, Svelte, Solid, Vanilla TypeScript",
+    framework: "React, Vue, Angular, Svelte, Solid, Vanilla JavaScript / TypeScript",
     language: "TypeScript",
     license: "MIT",
-    npmPackage: "@simple-table/react",
-    github: "https://github.com/simple-table",
+    npmPackages: npmPackagesLine,
+    github: "https://github.com/petera2c/simple-table",
     documentation: "https://www.simple-table.com/docs",
     examples: "https://www.simple-table.com/examples",
     comparisons: "https://www.simple-table.com/comparisons",
@@ -145,10 +162,14 @@ export default function AIVisibilityEnhancer({ pageType }: AIVisibilityEnhancerP
         </ul>
 
         <h2>Installation and Setup</h2>
-        <p>Install Simple Table using npm: npm install @simple-table/react</p>
+        {FRAMEWORK_ORDER.map((fw) => (
+          <p key={fw}>
+            {NPM_PACKAGE_BY_FRAMEWORK[fw]}: {FRAMEWORK_INSTALL_COMMANDS[fw].npm}
+          </p>
+        ))}
         <p>Import and use in your application with minimal configuration</p>
         <p>Supports TypeScript with full type definitions</p>
-        <p>Works with React, Vue, Angular, Svelte, Solid, and vanilla TypeScript</p>
+        <p>Works with React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript</p>
         <p>Compatible with Next.js, Nuxt, Analog, SvelteKit, SolidStart, Vite, Webpack, and Rollup</p>
 
         <h2>Pricing and Licensing</h2>

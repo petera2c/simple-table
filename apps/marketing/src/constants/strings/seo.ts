@@ -54,29 +54,29 @@ export const SEO_STRINGS = {
     url: "https://www.simple-table.com",
     name: "Simple Table",
     title: "Simple Table: JavaScript Data Grid & Table Library | Free Plan Available",
-    description: `Simple Table: A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. Build responsive datagrids with sorting, filtering, editing, and full TypeScript support. Free plan available! The lightweight alternative to AG Grid, TanStack Table, and Handsontable.`,
+    description: `Simple Table: A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript (simple-table-core). Build responsive datagrids with sorting, filtering, editing, and full TypeScript support. Free plan available! The lightweight alternative to AG Grid, TanStack Table, and Handsontable.`,
     defaultKeywords:
-      "simple-table, simple-table-core, javascript data grid, typescript table, react data grid, react table, vue data grid, angular data grid, svelte table, solid table, data-grid, datagrid, data table, table, grid, spreadsheet, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid, best data grid library",
+      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, javascript data grid, typescript data grid, typescript table, react data grid, react table, vue 3 datagrid, vue data grid, nuxt data table, angular data grid, svelte data grid, sveltekit data grid, solidjs table, solid table, vanilla js data grid, vanilla typescript table, multi-framework data grid, data-grid, datagrid, data table, table, grid, spreadsheet, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid, best data grid library",
     creator: "@simpletable",
     ogImage: {
       url: "https://www.simple-table.com/og-image.png",
       width: 1200,
       height: 630,
-      alt: "Simple Table - Lightweight JavaScript Data Grid",
+      alt: "Simple Table - Multi-framework JavaScript data grid (React, Vue, Angular, Svelte, Solid, vanilla)",
     },
   },
   home: {
     title: "Simple Table: JavaScript Data Grid & Table Library | Free Plan Available",
-    description: `Simple Table: A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. Build responsive datagrids with sorting, filtering, editing, and full TypeScript support. Free plan available! The lightweight alternative to AG Grid, TanStack Table, and Handsontable.`,
+    description: `Simple Table: A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript (simple-table-core). Build responsive datagrids with sorting, filtering, editing, and full TypeScript support. Free plan available! The lightweight alternative to AG Grid, TanStack Table, and Handsontable.`,
     keywords:
-      "simple-table, simple-table-core, javascript data grid, typescript table, react data grid, react table, vue data grid, angular data grid, svelte table, solid table, data-grid, datagrid, data table, table, grid, spreadsheet, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid, best data grid library",
+      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, javascript data grid, typescript data grid, typescript table, react data grid, react table, vue 3 datagrid, vue data grid, nuxt data table, angular data grid, svelte data grid, sveltekit data grid, solidjs table, solid table, vanilla js data grid, multi-framework data grid, data-grid, datagrid, data table, table, grid, spreadsheet, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid, best data grid library",
   },
   blog: {
-    title: "React Table Blog: Tutorials, Comparisons & Best Practices",
+    title: "Data Grid Blog: Tutorials, Comparisons & Best Practices",
     description:
-      "React table tutorials, library comparisons, and best practices. Learn about Simple Table, AG Grid alternatives, TanStack Table, and building responsive data grids with TypeScript.",
+      "Data grid and table tutorials, library comparisons, and best practices for React and beyond. Topics include Simple Table, AG Grid alternatives, TanStack Table, bundle size, accessibility, and responsive JavaScript grids with TypeScript.",
     keywords:
-      "react table blog, react table tutorial, simple-table, react-table, react-grid, data-grid, datagrid, react data grid, table, spreadsheet, typescript table, data visualization, ag grid alternative, best react table",
+      "data grid blog, javascript data grid, react table blog, react table tutorial, simple-table, vue data grid, angular data grid, svelte table, solid table, react-table, react-grid, data-grid, datagrid, react data grid, table, spreadsheet, typescript table, data visualization, ag grid alternative, best react table, multi-framework table",
   },
   blogPosts: {
     replicatingGojiberryUI: {
@@ -950,9 +950,9 @@ export const SEO_STRINGS = {
   },
   installation: {
     title: "Install Simple Table: Data Grid Setup Guide",
-    description: `Install Simple Table in your project in minutes. A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript with npm setup.`,
+    description: `Install Simple Table in your project in minutes. A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid with npm packages for React (@simple-table/react), Vue (@simple-table/vue), Angular (@simple-table/angular), Svelte (@simple-table/svelte), Solid (@simple-table/solid), and vanilla JS or TypeScript (simple-table-core).`,
     keywords:
-      "simple-table, simple-table-core, data-grid, datagrid, data table, installation, npm setup, typescript table, javascript data grid, react data grid, vue data grid, angular data grid",
+      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, data-grid, datagrid, data table, installation, npm setup, typescript table, javascript data grid, vue 3 datagrid, nuxt table, sveltekit grid, angular data grid, solidjs table, vanilla js data grid, react data grid",
   },
   customIcons: {
     title: "Custom Icons in Simple Table Data Grid",
@@ -984,16 +984,16 @@ export const SEO_STRINGS = {
   },
   quickStart: {
     title: "Data Grid Quick Start: Build Your First Table in 5 Minutes",
-    description: `Get started with Simple Table in 5 minutes. A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. Easy setup guide for beginners.`,
+    description: `Get started with Simple Table in 5 minutes. A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript using @simple-table/* packages or simple-table-core.`,
     keywords:
-      "data grid quick start, table tutorial, simple-table, simple-table-core, data-grid, datagrid, data table, quick start, typescript table, setup guide, javascript data grid, react data grid, vue data grid",
+      "data grid quick start, table tutorial, simple-table, simple-table-core, @simple-table/react, @simple-table/vue, data-grid, datagrid, data table, quick start, typescript table, setup guide, javascript data grid, react data grid, vue data grid, angular data grid, svelte data grid, solid table, vanilla js grid",
   },
   apiReference: {
     title: "Simple Table API Reference: Data Grid Props",
     description:
-      "Complete API reference for Simple Table props and HeaderObject configuration. All data grid props for datagrids and data tables with TypeScript support.",
+      "Complete API reference for Simple Table props and HeaderObject configuration for React, Vue, Angular, Svelte, Solid, and vanilla adapters. All data grid props for datagrids and data tables with TypeScript support.",
     keywords:
-      "simple-table, simple-table-core, data-grid, datagrid, data table, api reference, props reference, typescript table, documentation, javascript data grid",
+      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, data-grid, datagrid, data table, api reference, props reference, typescript table, documentation, javascript data grid, multi-framework data grid",
   },
   aggregateFunctions: {
     title: "Aggregate Functions in Simple Table Data Grid",
@@ -1219,9 +1219,9 @@ export const SEO_STRINGS = {
   pricing: {
     title: "Simple Table Pricing 2025: Free, Pro & Enterprise | AG Grid Alternative",
     description:
-      "Simple Table pricing: FREE for zero-revenue use. Pro $85/mo or $850/yr. Enterprise $350/mo or $3,500/yr with premium support and direct developer access. No per-user fees. React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
+      "Simple Table pricing: FREE for zero-revenue use. Pro $85/mo or $850/yr. Enterprise $350/mo or $3,500/yr with premium support and direct developer access. No per-user fees. React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript.",
     keywords:
-      "simple-table pricing, free data grid, data grid pricing, data grid cost, simple table pro, free table library, data grid plans, ag grid pricing alternative, ag grid cost comparison, javascript data grid pricing",
+      "simple-table pricing, free data grid, data grid pricing, data grid cost, simple table pro, free table library, data grid plans, ag grid pricing alternative, ag grid cost comparison, javascript data grid pricing, multi-framework data grid",
   },
   changelog: {
     title: "Changelog - Simple Table Updates & Release Notes",

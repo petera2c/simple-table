@@ -33,4 +33,4 @@ npm install @simple-table/svelte
 
 ## License
 
-Dual licensed — MIT for individuals & startups, proprietary Pro tier for revenue-generating companies. See [LICENSE](LICENSE) and [EULA.txt](../../EULA.txt) for details.
+Dual licensed — MIT for zero-revenue individuals and startups; Pro and Enterprise (commercial EULA) for revenue-generating companies. See [LICENSE](LICENSE), [EULA.txt](../../EULA.txt), and [pricing](https://www.simple-table.com/pricing).
