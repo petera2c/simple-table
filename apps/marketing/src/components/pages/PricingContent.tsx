@@ -18,6 +18,7 @@ import { Button } from "antd";
 import { useMemo, useState } from "react";
 import { openStripeCheckout } from "@/utils/stripe";
 import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
+import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import ContactModal from "@/components/ContactModal";
 
 interface PlanFeature {
@@ -54,7 +55,7 @@ const PricingContent: React.FC = () => {
       {
         name: "FREE",
         subtitle: "For Individuals & Startups",
-        price: "$0",
+        price: SIMPLE_TABLE_PRICING.freeDisplay,
         billingCycle: "forever",
         description:
           "Side projects and pre-revenue teams. Generating revenue? Use Pro or Enterprise.",
@@ -78,8 +79,8 @@ const PricingContent: React.FC = () => {
       {
         name: "PRO",
         subtitle: "For Growing Businesses",
-        price: isAnnual ? "$850" : "$85",
-        originalPrice: isAnnual ? "$1,020" : undefined,
+        price: isAnnual ? SIMPLE_TABLE_PRICING.proAnnual : SIMPLE_TABLE_PRICING.proMonthly,
+        originalPrice: isAnnual ? SIMPLE_TABLE_PRICING.proAnnualStrikethrough : undefined,
         billingCycle: isAnnual ? "per year" : "per month",
         description:
           "For any revenue-generating company. Priority support and production bug coverage.",
@@ -102,8 +103,12 @@ const PricingContent: React.FC = () => {
       {
         name: "ENTERPRISE",
         subtitle: "For teams that need hands-on support",
-        price: isAnnual ? "$3,500" : "$350",
-        originalPrice: isAnnual ? "$4,200" : undefined,
+        price: isAnnual
+          ? SIMPLE_TABLE_PRICING.enterpriseAnnual
+          : SIMPLE_TABLE_PRICING.enterpriseMonthly,
+        originalPrice: isAnnual
+          ? SIMPLE_TABLE_PRICING.enterpriseAnnualStrikethrough
+          : undefined,
         billingCycle: isAnnual ? "per year" : "per month",
         description:
           "Hands-on support beyond Pro: faster responses, direct access to core developers, and prioritized feature requests.",

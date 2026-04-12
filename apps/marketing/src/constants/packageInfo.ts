@@ -3,6 +3,8 @@
  * Single source of truth for bundle sizes, pricing, and URLs
  */
 
+import { SIMPLE_TABLE_ANNUAL_COST_RANGE } from "@/constants/simpleTablePricing";
+
 export interface PackageInfo {
   name: string;
   npmPackage: string;
@@ -33,7 +35,7 @@ export const SIMPLE_TABLE_INFO: PackageInfo = {
   bundlePhobiaUrl: "https://bundlephobia.com/package/simple-table-core",
   pricing: {
     free: false,
-    cost: "$0-$850/year",
+    cost: SIMPLE_TABLE_ANNUAL_COST_RANGE,
     hasFreeTier: true,
   },
   officialWebsite: "https://www.simple-table.com",
@@ -311,6 +313,9 @@ export function getPricingString(packageInfo: PackageInfo): string {
   }
   if (packageInfo.pricing.paidTier) {
     return `$${packageInfo.pricing.paidTier.pricePerDeveloperPerYear}/developer/year`;
+  }
+  if (packageInfo.pricing.cost) {
+    return packageInfo.pricing.cost;
   }
   return "Unknown";
 }

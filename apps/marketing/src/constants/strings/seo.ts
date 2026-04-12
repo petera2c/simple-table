@@ -1217,7 +1217,7 @@ export const SEO_STRINGS = {
     },
   },
   pricing: {
-    title: "Simple Table Pricing 2025: Free, Pro & Enterprise | AG Grid Alternative",
+    title: "Simple Table Pricing 2026: Free, Pro & Enterprise | AG Grid Alternative",
     description:
       "Simple Table pricing: FREE for zero-revenue use. Pro $85/mo or $850/yr. Enterprise $350/mo or $3,500/yr with premium support and direct developer access. No per-user fees. React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript.",
     keywords:

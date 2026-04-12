@@ -21,6 +21,7 @@ import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
 import { SIMPLE_TABLE_INFO, SMART_GRID_INFO } from "@/constants/packageInfo";
+import { SIMPLE_TABLE_ANNUAL_COST_RANGE } from "@/constants/simpleTablePricing";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -319,8 +320,8 @@ export default function SmartGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>Initial cost:</strong> $0-$850/year (vs $1,499 for Smart Grid Team
-                      License)
+                      <strong>Initial cost:</strong> {SIMPLE_TABLE_ANNUAL_COST_RANGE} (vs $1,499 for
+                      Smart Grid Team License)
                     </span>
                   </li>
                   <li className="flex items-start gap-2">

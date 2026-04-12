@@ -19,6 +19,7 @@ import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
 import { SIMPLE_TABLE_INFO, DEVEXTREME_GRID_INFO } from "@/constants/packageInfo";
+import { SIMPLE_TABLE_ANNUAL_COST_RANGE, SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -160,7 +161,9 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <td className="p-3 text-red-600 dark:text-red-400 font-bold">
                       Commercial ($899/year)
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400">Free or $850/year</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">
+                      {`MIT free tier; paid ${SIMPLE_TABLE_PRICING.proAnnual}–${SIMPLE_TABLE_PRICING.enterpriseAnnual}/yr (annual)`}
+                    </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
@@ -168,7 +171,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     </td>
                     <td className="p-3 text-red-600 dark:text-red-400">$4,495/year (5 devs)</td>
                     <td className="p-3 text-green-600 dark:text-green-400 font-bold">
-                      $0-$850/year
+                      {SIMPLE_TABLE_ANNUAL_COST_RANGE}
                     </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
