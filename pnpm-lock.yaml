@@ -479,6 +479,9 @@ importers:
       rollup-plugin-typescript2:
         specifier: ^0.37.0
         version: 0.37.0(rollup@2.80.0)(typescript@4.9.5)
+      tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
       typescript:
         specifier: ^4.9.5
         version: 4.9.5

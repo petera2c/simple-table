@@ -63,7 +63,6 @@ const registry: Record<string, ReturnType<typeof lazy>> = {
   manufacturing: lazy(() => import("./demos/manufacturing/ManufacturingDemo")),
   hr: lazy(() => import("./demos/hr/HRDemo")),
   sales: lazy(() => import("./demos/sales/SalesDemo")),
-  spreadsheet: lazy(() => import("./demos/spreadsheet/SpreadsheetDemo")),
 };
 
 function App() {

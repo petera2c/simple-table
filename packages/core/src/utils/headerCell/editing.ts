@@ -93,7 +93,7 @@ export const createLabelContent = (
     // Do not set native title - we show a custom .st-tooltip div instead.
     // Setting both would show two tooltips (browser default + our styled one).
     let tooltipElement: HTMLElement | null = null;
-    let tooltipTimeout: NodeJS.Timeout | null = null;
+    let tooltipTimeout: ReturnType<typeof setTimeout> | null = null;
     
     const showTooltip = () => {
       tooltipTimeout = setTimeout(() => {

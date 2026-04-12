@@ -402,7 +402,7 @@ const Header = () => {
             <div className="flex items-center">
               <Link
                 href="/"
-                className="flex items-center text-xl font-bold text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
+                className="flex items-center text-xl font-bold text-gray-800 dark:!text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
               >
                 <FontAwesomeIcon
                   icon={faTable}

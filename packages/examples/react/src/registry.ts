@@ -64,5 +64,4 @@ export const registry: DemoRegistry = {
   "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo"),
   "hr": () => import("./demos/hr/HRDemo"),
   "sales": () => import("./demos/sales/SalesDemo"),
-  "spreadsheet": () => import("./demos/spreadsheet/SpreadsheetDemo"),
 };

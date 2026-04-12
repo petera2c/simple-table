@@ -165,10 +165,6 @@ import {
   quickFilterExampleDefaults,
 } from "./examples/QuickFilterExample";
 import { renderSalesExample, salesExampleDefaults } from "./examples/sales-example/SalesExample";
-import {
-  renderSpreadsheetExample,
-  spreadsheetExampleDefaults,
-} from "./examples/spreadsheet/SpreadsheetExample";
 
 const meta: Meta = {
   title: "Docs & Examples",
@@ -577,18 +573,6 @@ export const ServerSidePagination: StoryObj = {
   render: (args) => renderServerSidePaginationExample(args),
   parameters: {
     docs: { description: { story: "Server-side pagination with page/fetch from API." } },
-  },
-};
-export const Spreadsheet: StoryObj = {
-  ...storyArgs(spreadsheetExampleDefaults),
-  render: (args) => renderSpreadsheetExample(args),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Loan-style spreadsheet: editable numeric cells, amortization recalculation when principal, rate, or payment changes, and “Add column” from the header.",
-      },
-    },
   },
 };
 export const Theming: StoryObj = {

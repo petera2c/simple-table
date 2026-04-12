@@ -58,7 +58,6 @@ import { BillingDemoComponent } from "./demos/billing/billing-demo.component";
 import { ManufacturingDemoComponent } from "./demos/manufacturing/manufacturing-demo.component";
 import { HRDemoComponent } from "./demos/hr/hr-demo.component";
 import { SalesDemoComponent } from "./demos/sales/sales-demo.component";
-import { SpreadsheetDemoComponent } from "./demos/spreadsheet/spreadsheet-demo.component";
 
 const REGISTRY: Record<string, any> = {
   "quick-start": QuickStartDemoComponent,
@@ -113,7 +112,6 @@ const REGISTRY: Record<string, any> = {
   "manufacturing": ManufacturingDemoComponent,
   "hr": HRDemoComponent,
   "sales": SalesDemoComponent,
-  "spreadsheet": SpreadsheetDemoComponent,
 };
 
 @Component({
@@ -172,7 +170,6 @@ const REGISTRY: Record<string, any> = {
     ManufacturingDemoComponent,
     HRDemoComponent,
     SalesDemoComponent,
-    SpreadsheetDemoComponent,
   ],
   template: `
     <div class="examples-shell">

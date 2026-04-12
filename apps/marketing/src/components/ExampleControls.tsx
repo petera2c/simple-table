@@ -10,7 +10,6 @@ import {
   faServer,
   faMusic,
   faUserTie,
-  faTable,
 } from "@fortawesome/free-solid-svg-icons";
 import ThemeSelector from "@/components/ThemeSelector";
 import type { Theme } from "@simple-table/react";
@@ -60,12 +59,6 @@ const examples = [
     label: "Sales",
     path: "/examples/sales",
     icon: faChartLine,
-  },
-  {
-    id: "spreadsheet",
-    label: "Spreadsheet",
-    path: "/examples/spreadsheet",
-    icon: faTable,
   },
 ];
 

@@ -1101,13 +1101,6 @@ export const SEO_STRINGS = {
       keywords:
         "simple-table, data-grid, datagrid, data table, sales pipeline, sales dashboard, revenue table, sales metrics, responsive table, javascript data grid",
     },
-    spreadsheet: {
-      title: "Spreadsheet Table with Cell Editing & Formulas",
-      description:
-        "Build an Excel-like spreadsheet with Simple Table. A JavaScript data grid with cell editing, keyboard navigation, copy-paste, and spreadsheet capabilities using a responsive datagrid.",
-      keywords:
-        "simple-table, data-grid, datagrid, data table, spreadsheet table, excel-like table, cell editing, keyboard navigation, copy-paste, responsive table, javascript data grid",
-    },
   },
   liveUpdates: {
     title: "Live Updates in Simple Table Data Grid",

@@ -55,7 +55,6 @@ const registry: Record<string, () => Promise<{ default: any }>> = {
   "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo.vue"),
   "hr": () => import("./demos/hr/HRDemo.vue"),
   "sales": () => import("./demos/sales/SalesDemo.vue"),
-  "spreadsheet": () => import("./demos/spreadsheet/SpreadsheetDemo.vue"),
 };
 
 const params = new URLSearchParams(window.location.search);

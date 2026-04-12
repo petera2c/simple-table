@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/src/index.d.ts",
@@ -100,8 +100,6 @@
     "data-table",
     "data table",
     "grid",
-    "table",
-    "spreadsheet",
-    "spreadsheet-table"
+    "table"
   ]
 }

@@ -61,7 +61,6 @@
     "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo.svelte"),
     "hr": () => import("./demos/hr/HRDemo.svelte"),
     "sales": () => import("./demos/sales/SalesDemo.svelte"),
-    "spreadsheet": () => import("./demos/spreadsheet/SpreadsheetDemo.svelte"),
   };
 
   let loader = $derived(registry[activeDemo]);

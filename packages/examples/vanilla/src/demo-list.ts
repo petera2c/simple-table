@@ -51,7 +51,6 @@ export const DEMO_LIST = [
   { id: "manufacturing", label: "Manufacturing" },
   { id: "hr", label: "HR" },
   { id: "sales", label: "Sales" },
-  { id: "spreadsheet", label: "Spreadsheet" },
 ] as const;
 
 export type DemoId = (typeof DEMO_LIST)[number]["id"];

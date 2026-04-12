@@ -219,10 +219,6 @@ const registry: Record<
     import("./demos/sales/SalesDemo").then((m) => ({
       render: m.renderSalesDemo,
     })),
-  spreadsheet: () =>
-    import("./demos/spreadsheet/SpreadsheetDemo").then((m) => ({
-      render: m.renderSpreadsheetDemo,
-    })),
 };
 
 const params = new URLSearchParams(window.location.search);

@@ -6,7 +6,7 @@
  */
 export class AriaAnnouncementManager {
   private announcement: string = "";
-  private timeoutId: NodeJS.Timeout | null = null;
+  private timeoutId: ReturnType<typeof setTimeout> | null = null;
   private observers: Set<(message: string) => void> = new Set();
 
   /**
