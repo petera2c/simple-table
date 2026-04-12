@@ -85,22 +85,11 @@ export class TableAPIImpl {
       updateDataFlushScheduled = false;
       if (pendingUpdateDataByKey.size === 0) return;
 
-      let needsFullRender = false;
-      pendingUpdateDataByKey.forEach((_value, key) => {
-        if (!context.cellRegistry?.get(key)) {
-          needsFullRender = true;
-        }
-      });
-
-      if (needsFullRender) {
-        pendingUpdateDataByKey.clear();
-        context.onRender();
-        return;
-      }
-
       pendingUpdateDataByKey.forEach((value, key) => {
-        const entry = context.cellRegistry!.get(key)!;
-        entry.updateContent(value);
+        const entry = context.cellRegistry?.get(key);
+        if (entry) {
+          entry.updateContent(value);
+        }
       });
       pendingUpdateDataByKey.clear();
     };
