@@ -1,0 +1,5 @@
+import { renderDynamicNestedTablesDemo } from "./demos/dynamic-nested-tables/DynamicNestedTablesDemo";
+
+const container = document.getElementById("root")!;
+const instance = renderDynamicNestedTablesDemo(container, { height: "500px" });
+if (instance?.mount) instance.mount();

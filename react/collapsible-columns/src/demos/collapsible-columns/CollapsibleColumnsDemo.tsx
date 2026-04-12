@@ -1,0 +1,27 @@
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import { collapsibleColumnsConfig } from "./collapsible-columns.demo-data";
+import "@simple-table/react/styles.css";
+
+const CollapsibleColumnsDemo = ({
+  height = "400px",
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
+  return (
+    <SimpleTable
+      defaultHeaders={defaultHeadersFromCore(collapsibleColumnsConfig.headers)}
+      rows={collapsibleColumnsConfig.rows}
+      columnResizing
+      editColumns
+      selectableCells
+      columnReordering
+      height={height}
+      theme={theme}
+    />
+  );
+};
+
+export default CollapsibleColumnsDemo;

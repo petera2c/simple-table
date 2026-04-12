@@ -1,0 +1,38 @@
+import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
+import type { Theme } from "@simple-table/solid";
+import { emptyStateConfig } from "./empty-state.demo-data";
+import "@simple-table/solid/styles.css";
+
+const EmptyIcon = () => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7" />
+    <path d="M16 3H8L3 7h18l-5-4z" />
+    <line x1="10" y1="12" x2="14" y2="12" />
+  </svg>
+);
+
+export default function EmptyStateDemo(props: { height?: string | number; theme?: Theme }) {
+  return (
+    <SimpleTable
+      defaultHeaders={defaultHeadersFromCore(emptyStateConfig.headers)}
+      rows={emptyStateConfig.rows}
+      height={props.height ?? "400px"}
+      theme={props.theme}
+      tableEmptyStateRenderer={
+        <div style={{
+          display: "flex",
+          "flex-direction": "column",
+          "align-items": "center",
+          "justify-content": "center",
+          padding: "48px 24px",
+          color: "#64748b",
+          gap: "12px",
+        }}>
+          <EmptyIcon />
+          <div style={{ "font-size": "16px", "font-weight": "600" }}>No data available</div>
+          <div style={{ "font-size": "13px" }}>Try adjusting your filters or adding new records.</div>
+        </div>
+      }
+    />
+  );
+}

@@ -1,0 +1,35 @@
+import { useState, useEffect } from "react";
+import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import { columnWidthConfig } from "./column-width.demo-data";
+import "@simple-table/react/styles.css";
+
+const ColumnWidthDemo = ({
+  height = "400px",
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  return (
+    <SimpleTable
+      autoExpandColumns={!isMobile}
+      columnResizing
+      defaultHeaders={defaultHeadersFromCore(columnWidthConfig.headers)}
+      height={height}
+      rows={columnWidthConfig.rows}
+      theme={theme}
+    />
+  );
+};
+
+export default ColumnWidthDemo;
