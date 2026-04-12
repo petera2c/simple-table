@@ -1,11 +1,13 @@
+// ColumnEditorCustomRendererDemo.vue
 <script setup lang="ts">
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme } from "@simple-table/vue";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_TEXT,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
-  buildVanillaColumnEditorRowRenderer,
 } from "./column-editor-custom-renderer.demo-data";
+import ColumnEditorCustomRow from "./ColumnEditorCustomRow.vue";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -16,7 +18,7 @@ const editorConfig = {
   text: COLUMN_EDITOR_TEXT,
   searchEnabled: true,
   searchPlaceholder: COLUMN_EDITOR_SEARCH_PLACEHOLDER,
-  rowRenderer: buildVanillaColumnEditorRowRenderer,
+  rowRenderer: ColumnEditorCustomRow,
 };
 </script>
 
@@ -30,3 +32,52 @@ const editorConfig = {
     :theme="props.theme"
   />
 </template>
+
+
+// ColumnEditorCustomRow.vue
+<script lang="ts">
+import { defineComponent, h } from "vue";
+import type { ColumnEditorRowRendererProps } from "@simple-table/vue";
+
+export default defineComponent({
+  name: "ColumnEditorCustomRow",
+  props: {
+    header: { type: Object, required: true },
+    components: { type: Object, required: true },
+  },
+  setup(props: ColumnEditorRowRendererProps) {
+    return () =>
+      h(
+        "div",
+        {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "6px 8px",
+            borderRadius: "6px",
+            background: "#f8fafc",
+            marginBottom: "4px",
+          },
+        },
+        [
+          props.components.checkbox != null
+            ? h("span", null, [props.components.checkbox as object])
+            : null,
+          h(
+            "span",
+            { style: { flex: "1", fontSize: "13px", fontWeight: "500" } },
+            props.header.label,
+          ),
+          props.components.dragIcon != null
+            ? h(
+                "span",
+                { style: { cursor: "grab", opacity: "0.5" } },
+                [props.components.dragIcon as object],
+              )
+            : null,
+        ].filter(Boolean),
+      );
+  },
+});
+</script>

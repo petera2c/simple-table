@@ -1,9 +1,97 @@
+// cell-click-details-cell.component.ts
+import { Component } from "@angular/core";
+
+@Component({
+  standalone: true,
+  selector: "demo-cell-click-details",
+  template: `
+    <button
+      type="button"
+      style="background:#3b82f6;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold;"
+    >
+      View Details
+    </button>
+  `,
+})
+export class CellClickDetailsCellComponent {}
+
+
+// cell-click-priority-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cell-click-priority",
+  template: `
+    <span [style.color]="color" style="font-weight:bold;cursor:pointer;" title="Click to filter by priority">{{ priority }}</span>
+  `,
+})
+export class CellClickPriorityCellComponent {
+  @Input({ required: true }) row!: Row;
+
+  get priority(): string {
+    return String((this.row as Record<string, unknown>)["priority"]);
+  }
+
+  get color(): string {
+    const p = this.priority;
+    if (p === "High") return "#ef4444";
+    if (p === "Medium") return "#f59e0b";
+    return "#10b981";
+  }
+}
+
+
+// cell-click-status-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cell-click-status",
+  template: `
+    <span
+      [style.background]="bg"
+      [style.color]="fg"
+      style="padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold;cursor:pointer;"
+      title="Click to change status"
+      >{{ status }}</span>
+  `,
+})
+export class CellClickStatusCellComponent {
+  @Input({ required: true }) row!: Row;
+
+  get status(): string {
+    return String((this.row as Record<string, unknown>)["status"]);
+  }
+
+  get bg(): string {
+    const s = this.status;
+    if (s === "Completed") return "#dcfce7";
+    if (s === "In Progress") return "#fef3c7";
+    return "#fee2e2";
+  }
+
+  get fg(): string {
+    const s = this.status;
+    if (s === "Completed") return "#166534";
+    if (s === "In Progress") return "#92400e";
+    return "#991b1b";
+  }
+}
+
+
 // cell-clicking-demo.component.ts
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellClickProps, Theme } from "@simple-table/angular";
-import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularHeaderObject, CellClickProps, Theme } from "@simple-table/angular";
+import { cellClickingData, cellClickingHeaders, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
+import { CellClickDetailsCellComponent } from "./cell-click-details-cell.component";
+import { CellClickPriorityCellComponent } from "./cell-click-priority-cell.component";
+import { CellClickStatusCellComponent } from "./cell-click-status-cell.component";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -48,39 +136,19 @@ export class CellClickingDemoComponent {
   selectedTask: ProjectTask | null = null;
   rows: ProjectTask[] = [...cellClickingData];
 
-  get isDark() { return this.theme === "modern-dark" || this.theme === "dark"; }
+  get isDark() {
+    return this.theme === "modern-dark" || this.theme === "dark";
+  }
 
-  headers: AngularHeaderObject[] = cellClickingHeaders.map((h) => {
+  readonly headers: AngularHeaderObject[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
-      return { ...h, cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const p = String(row.priority);
-        const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
-        const el = document.createElement("span");
-        Object.assign(el.style, { color, fontWeight: "bold", cursor: "pointer" });
-        el.title = "Click to filter by priority";
-        el.textContent = p;
-        return el;
-      }};
+      return { ...h, cellRenderer: CellClickPriorityCellComponent };
     }
     if (h.accessor === "status") {
-      return { ...h, cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const s = String(row.status);
-        const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
-        const c = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
-        const el = document.createElement("span");
-        Object.assign(el.style, { background: bg, color: c, padding: "4px 8px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold", cursor: "pointer" });
-        el.title = "Click to change status";
-        el.textContent = s;
-        return el;
-      }};
+      return { ...h, cellRenderer: CellClickStatusCellComponent };
     }
     if (h.accessor === "details") {
-      return { ...h, cellRenderer: () => {
-        const btn = document.createElement("button");
-        Object.assign(btn.style, { background: "#3b82f6", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" });
-        btn.textContent = "View Details";
-        return btn;
-      }};
+      return { ...h, cellRenderer: CellClickDetailsCellComponent };
     }
     return { ...h };
   });
@@ -124,7 +192,7 @@ export class CellClickingDemoComponent {
 
 // cell-clicking.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 
 export type ProjectTask = {
@@ -152,7 +220,7 @@ export const cellClickingData: ProjectTask[] = [
   { id: 1008, task: "Database migration scripts", assignee: "River Jackson", priority: "Low", status: "Not Started", dueDate: "2024-02-28", estimatedHours: 8, completedHours: 0, details: "Create migration scripts for database schema updates" },
 ];
 
-export const cellClickingHeaders: HeaderObject[] = [
+export const cellClickingHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "Task ID", width: 80, isSortable: true, type: "number" },
   { accessor: "task", label: "Task Name", minWidth: 150, width: "1fr", isSortable: true, type: "string" },
   { accessor: "assignee", label: "Assignee", width: 120, isSortable: true, type: "string" },

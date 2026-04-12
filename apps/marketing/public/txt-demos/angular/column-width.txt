@@ -42,10 +42,10 @@ export class ColumnWidthDemoComponent implements OnInit, OnDestroy {
 
 // column-width.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 
-export const columnWidthHeaders: HeaderObject[] = [
+export const columnWidthHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "email", label: "Email", width: "1fr", minWidth: 180, type: "string" },

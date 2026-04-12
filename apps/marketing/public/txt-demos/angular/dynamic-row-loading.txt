@@ -90,7 +90,7 @@ export class DynamicRowLoadingDemoComponent {
 
 // dynamic-row-loading.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 
 export interface DynamicRegion extends Row {
@@ -128,7 +128,7 @@ export interface DynamicProduct extends Row {
   lastUpdate: string;
 }
 
-export const dynamicRowLoadingHeaders: HeaderObject[] = [
+export const dynamicRowLoadingHeaders: AngularHeaderObject[] = [
   { accessor: "name", label: "Name", width: 280, expandable: true, type: "string", pinned: "left" },
   { accessor: "type", label: "Type", width: 100, type: "string" },
   {

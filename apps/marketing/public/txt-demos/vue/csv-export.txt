@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, HeaderObject } from "@simple-table/vue";
+import type { Theme, TableAPI, VueHeaderObject } from "@simple-table/vue";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -30,7 +30,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 
-const headers: HeaderObject[] = csvExportHeaders.map((h) => {
+const headers: VueHeaderObject[] = csvExportHeaders.map((h) => {
   if (h.accessor === "actions") {
     return {
       ...h,

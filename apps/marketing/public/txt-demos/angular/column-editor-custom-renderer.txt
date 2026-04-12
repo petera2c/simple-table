@@ -1,12 +1,13 @@
 // column-editor-custom-renderer-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, ColumnEditorConfig, Row, Theme } from "@simple-table/angular";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularColumnEditorConfig, AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import {
   columnEditorCustomRendererConfig,
-  COLUMN_EDITOR_TEXT,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
-  buildVanillaColumnEditorRowRenderer,
+  COLUMN_EDITOR_TEXT,
 } from "./column-editor-custom-renderer.demo-data";
+import { ColumnEditorCustomRowComponent } from "./column-editor-custom-row.component";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -30,18 +31,18 @@ export class ColumnEditorCustomRendererDemoComponent {
 
   readonly rows: Row[] = columnEditorCustomRendererConfig.rows;
   readonly headers: AngularHeaderObject[] = columnEditorCustomRendererConfig.headers;
-  readonly editorConfig: ColumnEditorConfig = {
+  readonly editorConfig: AngularColumnEditorConfig = {
     text: COLUMN_EDITOR_TEXT,
     searchEnabled: true,
     searchPlaceholder: COLUMN_EDITOR_SEARCH_PLACEHOLDER,
-    rowRenderer: buildVanillaColumnEditorRowRenderer,
+    rowRenderer: ColumnEditorCustomRowComponent,
   };
 }
 
 
 // column-editor-custom-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row, ColumnEditorRowRendererProps } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 
 export const columnEditorCustomRendererData: Row[] = [
@@ -55,7 +56,7 @@ export const columnEditorCustomRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering", status: "active" },
 ];
 
-export const columnEditorCustomRendererHeaders: HeaderObject[] = [
+export const columnEditorCustomRendererHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -83,43 +84,69 @@ export const columnEditorCustomRendererConfig = {
 export const COLUMN_EDITOR_TEXT = "Manage Columns";
 export const COLUMN_EDITOR_SEARCH_PLACEHOLDER = "Search columns…";
 
-export function buildVanillaColumnEditorRowRenderer(props: ColumnEditorRowRendererProps): HTMLElement {
-  const row = document.createElement("div");
-  Object.assign(row.style, {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "6px 8px",
-    borderRadius: "6px",
-    background: "#f8fafc",
-    marginBottom: "4px",
-  });
 
-  if (props.components.checkbox) {
-    const span = document.createElement("span");
-    if (typeof props.components.checkbox === "string") {
-      span.innerHTML = props.components.checkbox;
-    } else {
-      span.appendChild(props.components.checkbox as Node);
-    }
-    row.appendChild(span);
+// column-editor-custom-row.component.ts
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  ViewChild,
+} from "@angular/core";
+import type { ColumnEditorRowRendererProps } from "@simple-table/angular";
+
+function attach(slot: unknown, host: HTMLElement | undefined): void {
+  if (!host) return;
+  host.replaceChildren();
+  if (slot == null) return;
+  if (typeof slot === "string") {
+    host.textContent = slot;
+  } else if (slot instanceof Node) {
+    host.appendChild(slot);
+  }
+}
+
+@Component({
+  standalone: true,
+  selector: "demo-column-editor-custom-row",
+  template: `
+    <div
+      style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;background:#f8fafc;margin-bottom:4px;"
+    >
+      @if (components.checkbox) {
+        <span #checkboxHost></span>
+      }
+      <span style="flex:1;font-size:13px;font-weight:500;">{{ header.label }}</span>
+      @if (components.dragIcon) {
+        <span #dragHost style="cursor:grab;opacity:0.5;"></span>
+      }
+    </div>
+  `,
+})
+export class ColumnEditorCustomRowComponent implements AfterViewInit, OnChanges {
+  @Input({ required: true }) header!: ColumnEditorRowRendererProps["header"];
+  @Input({ required: true }) components!: ColumnEditorRowRendererProps["components"];
+  @Input() accessor?: ColumnEditorRowRendererProps["accessor"];
+  @Input() panelSection?: ColumnEditorRowRendererProps["panelSection"];
+  @Input() isEssential?: ColumnEditorRowRendererProps["isEssential"];
+  @Input() canToggleVisibility?: ColumnEditorRowRendererProps["canToggleVisibility"];
+  @Input() allowColumnPinning?: ColumnEditorRowRendererProps["allowColumnPinning"];
+  @Input() pinControl?: ColumnEditorRowRendererProps["pinControl"];
+
+  @ViewChild("checkboxHost") checkboxRef?: ElementRef<HTMLSpanElement>;
+  @ViewChild("dragHost") dragRef?: ElementRef<HTMLSpanElement>;
+
+  ngAfterViewInit(): void {
+    this.syncSlots();
   }
 
-  const label = document.createElement("span");
-  Object.assign(label.style, { flex: "1", fontSize: "13px", fontWeight: "500" });
-  label.textContent = props.header.label;
-  row.appendChild(label);
-
-  if (props.components.dragIcon) {
-    const span = document.createElement("span");
-    Object.assign(span.style, { cursor: "grab", opacity: "0.5" });
-    if (typeof props.components.dragIcon === "string") {
-      span.innerHTML = props.components.dragIcon;
-    } else {
-      span.appendChild(props.components.dragIcon as Node);
-    }
-    row.appendChild(span);
+  ngOnChanges(): void {
+    this.syncSlots();
   }
 
-  return row;
+  private syncSlots(): void {
+    attach(this.components.checkbox, this.checkboxRef?.nativeElement);
+    attach(this.components.dragIcon, this.dragRef?.nativeElement);
+  }
 }

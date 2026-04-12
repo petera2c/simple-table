@@ -1,7 +1,16 @@
 // custom-icons-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
-import { customIconsConfig, buildVanillaCustomIcons } from "./custom-icons.demo-data";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularHeaderObject, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
+import { customIconsConfig } from "./custom-icons.demo-data";
+import {
+  DemoExpandIconComponent,
+  DemoFilterIconComponent,
+  DemoNextIconComponent,
+  DemoPrevIconComponent,
+  DemoSortDownIconComponent,
+  DemoSortUpIconComponent,
+} from "./table-icons.components";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -24,13 +33,20 @@ export class CustomIconsDemoComponent {
 
   readonly rows: Row[] = customIconsConfig.rows;
   readonly headers: AngularHeaderObject[] = customIconsConfig.headers;
-  readonly icons: AngularIconsConfig = buildVanillaCustomIcons();
+  readonly icons: AngularIconsConfig = {
+    sortUp: DemoSortUpIconComponent,
+    sortDown: DemoSortDownIconComponent,
+    filter: DemoFilterIconComponent,
+    expand: DemoExpandIconComponent,
+    next: DemoNextIconComponent,
+    prev: DemoPrevIconComponent,
+  };
 }
 
 
 // custom-icons.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 
 export const customIconsData: Row[] = [
@@ -44,7 +60,7 @@ export const customIconsData: Row[] = [
   { id: 8, name: "Next Release", version: "2.2.0", status: "planned", downloads: 0, date: "2025-01-20" },
 ];
 
-export const customIconsHeaders: HeaderObject[] = [
+export const customIconsHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", isSortable: true },
   { accessor: "name", label: "Release", width: 170, type: "string", isSortable: true },
   { accessor: "version", label: "Version", width: 100, type: "string", isSortable: true },
@@ -72,38 +88,72 @@ export const customIconsConfig = {
   rows: customIconsData,
 } as const;
 
-export function createSvgIcon(pathD: string, color = "#3b82f6", size = 14): SVGSVGElement {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("width", String(size));
-  svg.setAttribute("height", String(size));
-  svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("fill", "none");
-  svg.setAttribute("stroke", color);
-  svg.setAttribute("stroke-width", "2.5");
-  svg.setAttribute("stroke-linecap", "round");
-  svg.setAttribute("stroke-linejoin", "round");
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", pathD);
-  svg.appendChild(path);
-  return svg;
-}
 
-export const ICON_PATHS = {
-  sortUp: "M12 19V5M5 12l7-7 7 7",
-  sortDown: "M12 5v14M19 12l-7 7-7-7",
-  filter: "M3 4h18l-7 8.5V18l-4 2V12.5L3 4z",
-  expand: "M9 5l7 7-7 7",
-  next: "M9 5l7 7-7 7",
-  prev: "M15 19l-7-7 7-7",
-} as const;
+// table-icons.components.ts
+import { Component } from "@angular/core";
 
-export function buildVanillaCustomIcons() {
-  return {
-    sortUp: createSvgIcon(ICON_PATHS.sortUp, "#6366f1"),
-    sortDown: createSvgIcon(ICON_PATHS.sortDown, "#6366f1"),
-    filter: createSvgIcon(ICON_PATHS.filter, "#8b5cf6"),
-    expand: createSvgIcon(ICON_PATHS.expand, "#6366f1"),
-    next: createSvgIcon(ICON_PATHS.next, "#2563eb"),
-    prev: createSvgIcon(ICON_PATHS.prev, "#2563eb"),
-  };
-}
+@Component({
+  standalone: true,
+  selector: "demo-icon-sort-up",
+  template: `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+  `,
+})
+export class DemoSortUpIconComponent {}
+
+@Component({
+  standalone: true,
+  selector: "demo-icon-sort-down",
+  template: `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14M19 12l-7 7-7-7" />
+    </svg>
+  `,
+})
+export class DemoSortDownIconComponent {}
+
+@Component({
+  standalone: true,
+  selector: "demo-icon-filter",
+  template: `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 4h18l-7 8.5V18l-4 2V12.5L3 4z" />
+    </svg>
+  `,
+})
+export class DemoFilterIconComponent {}
+
+@Component({
+  standalone: true,
+  selector: "demo-icon-expand",
+  template: `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  `,
+})
+export class DemoExpandIconComponent {}
+
+@Component({
+  standalone: true,
+  selector: "demo-icon-next",
+  template: `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  `,
+})
+export class DemoNextIconComponent {}
+
+@Component({
+  standalone: true,
+  selector: "demo-icon-prev",
+  template: `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 19l-7-7 7-7" />
+    </svg>
+  `,
+})
+export class DemoPrevIconComponent {}

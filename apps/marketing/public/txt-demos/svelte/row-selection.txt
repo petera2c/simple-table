@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, RowSelectionChangeProps, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, RowSelectionChangeProps, SvelteHeaderObject } from "@simple-table/svelte";
   import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
   import type { LibraryBook } from "./row-selection.demo-data";
   import "@simple-table/svelte/styles.css";
@@ -15,7 +15,7 @@
       : "None",
   );
 
-  const headers: HeaderObject[] = rowSelectionConfig.headers.map((h) => {
+  const headers: SvelteHeaderObject[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,

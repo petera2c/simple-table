@@ -30,10 +30,10 @@ export class RowHeightDemoComponent {
 
 // row-height.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 
-export const rowHeightHeaders: HeaderObject[] = [
+export const rowHeightHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 100, type: "string" },

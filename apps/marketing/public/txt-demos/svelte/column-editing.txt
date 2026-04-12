@@ -1,22 +1,22 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
   import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let additionalColumns: HeaderObject[] = $state([]);
+  let additionalColumns: SvelteHeaderObject[] = $state([]);
   let lastAdded = $state("");
 
   function addColumn() {
     const n = additionalColumns.length + 1;
-    const col: HeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: SvelteHeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     additionalColumns = [...additionalColumns, col];
     lastAdded = col.label;
   }
 
-  function handleHeaderEdit(_header: HeaderObject, newLabel: string) {
+  function handleHeaderEdit(_header: SvelteHeaderObject, newLabel: string) {
     lastAdded = `Renamed to: ${newLabel}`;
   }
 

@@ -1,89 +1,25 @@
 // cell-renderer-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
-import type { CellRendererEmployee } from "./cell-renderer.demo-data";
+import { CrProgressCellComponent } from "./cr-progress-cell.component";
+import { CrRatingCellComponent } from "./cr-rating-cell.component";
+import { CrStatusCellComponent } from "./cr-status-cell.component";
+import { CrTagsCellComponent } from "./cr-tags-cell.component";
+import { CrTeamMembersCellComponent } from "./cr-team-members-cell.component";
+import { CrVerifiedCellComponent } from "./cr-verified-cell.component";
+import { CrWebsiteCellComponent } from "./cr-website-cell.component";
 import "@simple-table/angular/styles.css";
 
-const html = (str: string): Node => {
-  const t = document.createElement("template");
-  t.innerHTML = str.trim();
-  return t.content;
-};
-
-const getInitials = (name: string) =>
-  name.split(" ").map((n) => n[0]).join("").toUpperCase();
-
-const RENDERERS: Record<string, CellRenderer> = {
-  teamMembers: ({ row }) => {
-    const members = (row as CellRendererEmployee).teamMembers;
-    return html(
-      `<div style="display:flex;align-items:center;gap:6px">${members
-        .map(
-          (m) =>
-            `<div style="display:flex;align-items:center;gap:4px"><div style="width:24px;height:24px;border-radius:50%;background:#DBEAFE;color:#1E40AF;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0">${getInitials(m.name)}</div><span style="font-size:13px;white-space:nowrap">${m.name}</span></div>`,
-        )
-        .join("")}</div>`,
-    );
-  },
-
-  website: ({ value }) => {
-    const url = String(value);
-    return html(
-      `<span>🌐 <a href="https://${url}" target="_blank" rel="noopener noreferrer" style="color:#2563EB;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${url}</a></span>`,
-    );
-  },
-
-  status: ({ value }) => {
-    const status = String(value);
-    const map: Record<string, { icon: string; color: string }> = {
-      active: { icon: "✓", color: "#10B981" },
-      inactive: { icon: "✕", color: "#EF4444" },
-      pending: { icon: "!", color: "#F59E0B" },
-    };
-    const { icon, color } = map[status] ?? { icon: "?", color: "#6b7280" };
-    return html(
-      `<span style="color:${color};font-weight:600;text-transform:capitalize">${icon} ${status}</span>`,
-    );
-  },
-
-  progress: ({ value }) => {
-    const pct = Number(value) || 0;
-    const color = pct < 30 ? "#EF4444" : pct < 70 ? "#F59E0B" : "#10B981";
-    return html(
-      `<div><div style="font-size:12px;margin-bottom:2px">${pct}%</div><div style="height:10px;background:#E5E7EB;border-radius:5px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${color};border-radius:5px;transition:width 0.3s"></div></div></div>`,
-    );
-  },
-
-  rating: ({ value }) => {
-    const rating = Number(value) || 0;
-    const full = Math.floor(rating);
-    const hasHalf = rating % 1 >= 0.25;
-    const empty = 5 - full - (hasHalf ? 1 : 0);
-    const halfStar = hasHalf ? '<span style="opacity:0.5">★</span>' : "";
-    return html(
-      `<span style="display:flex;align-items:center;gap:4px"><span style="color:#F59E0B;letter-spacing:1px">${"★".repeat(full)}${halfStar}${"☆".repeat(Math.max(0, empty))}</span><span style="font-size:12px;color:#6b7280">${rating}</span></span>`,
-    );
-  },
-
-  verified: ({ value }) => {
-    const yes = Boolean(value);
-    return html(
-      `<span style="color:${yes ? "#10B981" : "#EF4444"};font-weight:600">${yes ? "✓ Yes" : "✕ No"}</span>`,
-    );
-  },
-
-  tags: ({ value }) => {
-    const tags = Array.isArray(value) ? (value as string[]) : [];
-    return html(
-      `<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden">${tags
-        .map(
-          (tag) =>
-            `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500;background:#DBEAFE;color:#1E40AF;white-space:nowrap">${tag}</span>`,
-        )
-        .join("")}</div>`,
-    );
-  },
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
+  teamMembers: CrTeamMembersCellComponent,
+  website: CrWebsiteCellComponent,
+  status: CrStatusCellComponent,
+  progress: CrProgressCellComponent,
+  rating: CrRatingCellComponent,
+  verified: CrVerifiedCellComponent,
+  tags: CrTagsCellComponent,
 };
 
 @Component({
@@ -106,16 +42,16 @@ export class CellRendererDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = cellRendererConfig.rows;
-  readonly headers: AngularHeaderObject[] = cellRendererConfig.headers.map((h) => {
-    const renderer = RENDERERS[h.accessor as string];
-    return renderer ? { ...h, cellRenderer: renderer as any } : h;
+  readonly headers: AngularHeaderObject[] = cellRendererConfig.headers.map((h): AngularHeaderObject => {
+    const cellRenderer = RENDERERS[String(h.accessor)];
+    return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
 }
 
 
 // cell-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 
 export type CellRendererEmployee = {
@@ -145,7 +81,7 @@ export const cellRendererData: CellRendererEmployee[] = [
   { id: 12, name: "Atlas Johnson", website: "atlasjohnson.brand", status: "inactive", progress: 28, rating: 3.6, verified: false, tags: ["Brand Design", "Graphic Design"], teamMembers: [{ name: "Uma Patel", role: "Graphic Designer" }] },
 ];
 
-export const cellRendererHeaders: HeaderObject[] = [
+export const cellRendererHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "teamMembers", label: "Team", width: 280, type: "string" },
@@ -165,3 +101,226 @@ export const cellRendererConfig = {
     customTheme: { rowHeight: 48 },
   },
 } as const;
+
+
+// cr-progress-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { CellValue } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cr-progress",
+  template: `
+    <div>
+      <div style="font-size:12px;margin-bottom:2px;">{{ pct }}%</div>
+      <div style="height:10px;background:#E5E7EB;border-radius:5px;overflow:hidden;">
+        <div [style.width.%]="pct" [style.background]="barColor" style="height:100%;border-radius:5px;transition:width 0.3s;"></div>
+      </div>
+    </div>
+  `,
+})
+export class CrProgressCellComponent {
+  @Input() value!: CellValue;
+
+  get pct(): number {
+    return Number(this.value) || 0;
+  }
+
+  get barColor(): string {
+    const n = this.pct;
+    if (n < 30) return "#EF4444";
+    if (n < 70) return "#F59E0B";
+    return "#10B981";
+  }
+}
+
+
+// cr-rating-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { CellValue } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cr-rating",
+  template: `
+    <span style="display:flex;align-items:center;gap:4px;">
+      <span style="color:#F59E0B;letter-spacing:1px;">
+        @for (_ of repeat(fullCount); track $index) {
+          ★
+        }
+        @if (hasHalf) {
+          <span style="opacity:0.5;">★</span>
+        }
+        @for (_ of repeat(emptyCount); track $index) {
+          ☆
+        }
+      </span>
+      <span style="font-size:12px;color:#6b7280;">{{ rating }}</span>
+    </span>
+  `,
+})
+export class CrRatingCellComponent {
+  @Input() value!: CellValue;
+
+  get rating(): number {
+    return Number(this.value) || 0;
+  }
+
+  get fullCount(): number {
+    return Math.floor(this.rating);
+  }
+
+  get hasHalf(): boolean {
+    return this.rating % 1 >= 0.25;
+  }
+
+  get emptyCount(): number {
+    return Math.max(0, 5 - this.fullCount - (this.hasHalf ? 1 : 0));
+  }
+
+  repeat(n: number): number[] {
+    return Array.from({ length: n }, (_, i) => i);
+  }
+}
+
+
+// cr-status-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { CellValue } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cr-status",
+  template: `
+    <span [style.color]="meta.color" style="font-weight:600;text-transform:capitalize;">{{ meta.icon }} {{ status }}</span>
+  `,
+})
+export class CrStatusCellComponent {
+  @Input() value!: CellValue;
+
+  get status(): string {
+    return String(this.value);
+  }
+
+  get meta(): { icon: string; color: string } {
+    const map: Record<string, { icon: string; color: string }> = {
+      active: { icon: "✓", color: "#10B981" },
+      inactive: { icon: "✕", color: "#EF4444" },
+      pending: { icon: "!", color: "#F59E0B" },
+    };
+    return map[this.status] ?? { icon: "?", color: "#6b7280" };
+  }
+}
+
+
+// cr-tags-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { CellValue } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cr-tags",
+  template: `
+    <div style="display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden;">
+      @for (tag of tags; track tag) {
+        <span
+          style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500;background:#DBEAFE;color:#1E40AF;white-space:nowrap;"
+          >{{ tag }}</span>
+      }
+    </div>
+  `,
+})
+export class CrTagsCellComponent {
+  @Input() value!: CellValue;
+
+  get tags(): string[] {
+    return Array.isArray(this.value) ? (this.value as string[]) : [];
+  }
+}
+
+
+// cr-team-members-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row } from "@simple-table/angular";
+import type { CellRendererEmployee } from "./cell-renderer.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-cr-team-members",
+  template: `
+    <div style="display:flex;align-items:center;gap:6px;">
+      @for (m of members; track m.name) {
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div
+            style="width:24px;height:24px;border-radius:50%;background:#DBEAFE;color:#1E40AF;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;"
+          >
+            {{ initials(m.name) }}
+          </div>
+          <span style="font-size:13px;white-space:nowrap;">{{ m.name }}</span>
+        </div>
+      }
+    </div>
+  `,
+})
+export class CrTeamMembersCellComponent {
+  @Input({ required: true }) row!: Row;
+
+  get members(): { name: string; role: string }[] {
+    return (this.row as unknown as CellRendererEmployee).teamMembers;
+  }
+
+  initials(name: string): string {
+    return name.split(" ").map((n) => n[0]).join("").toUpperCase();
+  }
+}
+
+
+// cr-verified-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { CellValue } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cr-verified",
+  template: `
+    <span [style.color]="yes ? '#10B981' : '#EF4444'" style="font-weight:600;">{{ yes ? "✓ Yes" : "✕ No" }}</span>
+  `,
+})
+export class CrVerifiedCellComponent {
+  @Input() value!: CellValue;
+
+  get yes(): boolean {
+    return Boolean(this.value);
+  }
+}
+
+
+// cr-website-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { CellValue } from "@simple-table/angular";
+
+@Component({
+  standalone: true,
+  selector: "demo-cr-website",
+  template: `
+    <span>🌐 <a class="crw" [href]="'https://' + url" target="_blank" rel="noopener noreferrer">{{ url }}</a></span>
+  `,
+  styles: [
+    `
+      .crw {
+        color: #2563eb;
+        text-decoration: none;
+      }
+      .crw:hover {
+        text-decoration: underline;
+      }
+    `,
+  ],
+})
+export class CrWebsiteCellComponent {
+  @Input() value!: CellValue;
+
+  get url(): string {
+    return String(this.value);
+  }
+}

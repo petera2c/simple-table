@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject } from "@simple-table/vue";
+import type { Theme, VueHeaderObject } from "@simple-table/vue";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -34,14 +34,14 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const additionalColumns = ref<HeaderObject[]>([]);
+const additionalColumns = ref<VueHeaderObject[]>([]);
 const lastAdded = ref("");
 
 const headers = computed(() => [...columnEditingHeaders, ...additionalColumns.value]);
 
 function addColumn() {
   const n = additionalColumns.value.length + 1;
-  const col: HeaderObject = {
+  const col: VueHeaderObject = {
     accessor: `custom-${n}`,
     label: `Custom ${n}`,
     width: 120,
@@ -51,7 +51,7 @@ function addColumn() {
   lastAdded.value = col.label;
 }
 
-function handleHeaderEdit(_header: HeaderObject, newLabel: string) {
+function handleHeaderEdit(_header: VueHeaderObject, newLabel: string) {
   lastAdded.value = `Renamed to: ${newLabel}`;
 }
 </script>

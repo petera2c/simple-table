@@ -14,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, HeaderObject, CellRenderer, Row, CellValue } from "@simple-table/vue";
+import type { Theme, TableAPI, VueHeaderObject, CellRendererProps, Row, CellValue } from "@simple-table/vue";
 import {
   infrastructureConfig,
   infrastructureData,
@@ -143,77 +143,108 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 
-function applyRenderers(hdrs: readonly HeaderObject[], map: Record<string, CellRenderer>): HeaderObject[] {
+function applyRenderers(
+  hdrs: readonly VueHeaderObject[],
+  map: Record<string, (p: CellRendererProps) => unknown>,
+): VueHeaderObject[] {
   return hdrs.map((h) => {
     const renderer = map[h.accessor as string];
-    const clone: HeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    const clone: VueHeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
     if (h.children) clone.children = applyRenderers(h.children, map);
     return clone;
   });
 }
 
-const headers = computed((): HeaderObject[] => {
+const headers = computed((): VueHeaderObject[] => {
   const t = props.theme || "light";
 
-  const serverIdRenderer: CellRenderer = ({ row }) => {
+  const serverIdRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as InfrastructureServer;
-    const span = document.createElement("span");
-    Object.assign(span.style, { fontFamily: "monospace", fontSize: "0.85rem" });
-    span.textContent = d.serverId;
-    return span;
+    return h("span", { style: { fontFamily: "monospace", fontSize: "0.85rem" } }, d.serverId);
   };
 
-  const cpuRenderer: CellRenderer = ({ row, theme }) => {
+  const cpuRenderer = ({ row, theme }: CellRendererProps) => {
     const d = row as unknown as InfrastructureServer;
     const cpu = d.cpuUsage;
     const s = getInfraMetricColorStyles(cpu, theme || t, "cpu");
-    const outer = document.createElement("div");
-    outer.style.display = "flex";
-    outer.style.justifyContent = "end";
-    const badge = document.createElement("div");
-    Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-    badge.textContent = `${cpu.toFixed(1)}%`;
-    outer.appendChild(badge);
-    return outer;
+    return h("div", { style: { display: "flex", justifyContent: "end" } }, [
+      h(
+        "div",
+        {
+          style: {
+            padding: "3px 6px",
+            borderRadius: "3px",
+            fontWeight: "600",
+            fontSize: "0.8rem",
+            color: s.color,
+            backgroundColor: s.backgroundColor ?? "",
+          },
+        },
+        `${cpu.toFixed(1)}%`,
+      ),
+    ]);
   };
 
-  const memoryRenderer: CellRenderer = ({ row, theme }) => {
+  const memoryRenderer = ({ row, theme }: CellRendererProps) => {
     const d = row as unknown as InfrastructureServer;
     const mem = d.memoryUsage;
     const s = getInfraMetricColorStyles(mem, theme || t, "memory");
-    const outer = document.createElement("div");
-    outer.style.display = "flex";
-    outer.style.justifyContent = "end";
-    const badge = document.createElement("div");
-    Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-    badge.textContent = `${mem.toFixed(1)}%`;
-    outer.appendChild(badge);
-    return outer;
+    return h("div", { style: { display: "flex", justifyContent: "end" } }, [
+      h(
+        "div",
+        {
+          style: {
+            padding: "3px 6px",
+            borderRadius: "3px",
+            fontWeight: "600",
+            fontSize: "0.8rem",
+            color: s.color,
+            backgroundColor: s.backgroundColor ?? "",
+          },
+        },
+        `${mem.toFixed(1)}%`,
+      ),
+    ]);
   };
 
-  const diskRenderer: CellRenderer = ({ row }) => {
+  const diskRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as InfrastructureServer;
     return `${d.diskUsage.toFixed(1)}%`;
   };
 
-  const responseRenderer: CellRenderer = ({ row, theme }) => {
+  const responseRenderer = ({ row, theme }: CellRendererProps) => {
     const d = row as unknown as InfrastructureServer;
     const rt = d.responseTime;
     const s = getInfraMetricColorStyles(rt, theme || t, "response");
-    const span = document.createElement("span");
-    Object.assign(span.style, { fontWeight: "500", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-    span.textContent = rt.toFixed(1);
-    return span;
+    return h(
+      "span",
+      {
+        style: {
+          fontWeight: "500",
+          color: s.color,
+          backgroundColor: s.backgroundColor ?? "",
+        },
+      },
+      rt.toFixed(1),
+    );
   };
 
-  const statusRenderer: CellRenderer = ({ row, theme }) => {
+  const statusRenderer = ({ row, theme }: CellRendererProps) => {
     const d = row as unknown as InfrastructureServer;
     const status = d.status;
     const s = getInfraStatusColors(status, theme || t);
-    const div = document.createElement("div");
-    Object.assign(div.style, { ...s, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" });
-    div.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-    return div;
+    return h(
+      "div",
+      {
+        style: {
+          ...s,
+          padding: "4px 8px",
+          borderRadius: "4px",
+          fontSize: "0.75rem",
+        },
+      },
+      status.charAt(0).toUpperCase() + status.slice(1),
+    );
   };
 
   return applyRenderers(infrastructureConfig.headers, {

@@ -1,105 +1,29 @@
 // hr-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellChangeProps, CellRenderer, Theme } from "@simple-table/angular";
-import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
-import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
+import { hrConfig } from "./hr.demo-data";
+import { HrFullNameCellComponent } from "./hr-full-name-cell.component";
+import { HrHireDateCellComponent } from "./hr-hire-date-cell.component";
+import { HrPerformanceCellComponent } from "./hr-performance-cell.component";
+import { HrSalaryCellComponent } from "./hr-salary-cell.component";
+import { HrStatusCellComponent } from "./hr-status-cell.component";
+import { HrYearsCellComponent } from "./hr-years-cell.component";
 import "@simple-table/angular/styles.css";
 
-function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
-  const e = document.createElement(tag);
-  if (styles) Object.assign(e.style, styles);
-  if (children) {
-    for (const c of children) {
-      e.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
-    }
-  }
-  return e;
-}
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
+  fullName: HrFullNameCellComponent,
+  performanceScore: HrPerformanceCellComponent,
+  hireDate: HrHireDateCellComponent,
+  yearsOfService: HrYearsCellComponent,
+  salary: HrSalaryCellComponent,
+  status: HrStatusCellComponent,
+};
 
 function buildHRHeaders(): AngularHeaderObject[] {
-  const renderers: Record<string, CellRenderer> = {
-    fullName: ({ row, theme }) => {
-      const d = row as unknown as HREmployee;
-      const c = getHRThemeColors(theme);
-      const initials = `${d.firstName?.charAt(0) || ""}${d.lastName?.charAt(0) || ""}`;
-
-      const avatar = el("div", {
-        width: "24px", height: "24px", borderRadius: "50%",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        backgroundColor: c.avatarBg, color: c.avatarText, fontSize: "12px",
-      }, [initials]);
-
-      const info = el("div", { marginLeft: "8px" }, [
-        el("div", {}, [d.fullName]),
-        el("div", { fontSize: "12px", color: c.grayMuted }, [d.position]),
-      ]);
-
-      return el("div", { display: "flex", alignItems: "center" }, [avatar, info]);
-    },
-
-    performanceScore: ({ row, theme }) => {
-      const d = row as unknown as HREmployee;
-      const score = d.performanceScore;
-      const c = getHRThemeColors(theme);
-      const color = score >= 90 ? c.progressSuccess : score >= 65 ? c.progressNormal : c.progressException;
-
-      const track = el("div", {
-        backgroundColor: c.progressBg, height: "6px", width: "100%",
-        borderRadius: "100px", overflow: "hidden",
-      });
-      track.appendChild(el("div", {
-        height: "100%", width: `${score}%`, backgroundColor: color, borderRadius: "100px",
-      }));
-
-      const label = el("div", {
-        fontSize: "12px", textAlign: "center", marginTop: "4px", color: c.gray,
-      }, [`${score}/100`]);
-
-      return el("div", { width: "100%", display: "flex", flexDirection: "column" }, [track, label]);
-    },
-
-    hireDate: ({ row, theme }) => {
-      const d = row as unknown as HREmployee;
-      if (!d.hireDate) return "";
-      const [year, month, day] = d.hireDate.split("-").map(Number);
-      const date = new Date(year, month - 1, day);
-      const c = getHRThemeColors(theme);
-      return el("span", { color: c.gray }, [
-        date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      ]);
-    },
-
-    yearsOfService: ({ row, theme }) => {
-      const d = row as unknown as HREmployee;
-      if (d.yearsOfService === null) return "";
-      const c = getHRThemeColors(theme);
-      return el("span", { color: c.gray }, [`${d.yearsOfService} yrs`]);
-    },
-
-    salary: ({ row, theme }) => {
-      const d = row as unknown as HREmployee;
-      const c = getHRThemeColors(theme);
-      return el("span", { color: c.gray }, [`$${d.salary.toLocaleString()}`]);
-    },
-
-    status: ({ row, theme }) => {
-      const d = row as unknown as HREmployee;
-      if (!d.status) return "";
-      const status = d.status;
-      const c = getHRThemeColors(theme);
-      const colorKey: HRTagColorKey = HR_STATUS_COLOR_MAP[status] || "default";
-      const tagColors = c.tagColors[colorKey] || c.tagColors.default;
-      return el("span", {
-        backgroundColor: tagColors.bg, color: tagColors.text,
-        padding: "0 7px", fontSize: "12px", lineHeight: "20px",
-        borderRadius: "2px", display: "inline-block",
-      }, [status]);
-    },
-  };
-
-  return hrConfig.headers.map((h) => {
-    const renderer = renderers[String(h.accessor)];
-    return renderer ? { ...h, cellRenderer: renderer } : { ...h };
+  return hrConfig.headers.map((h): AngularHeaderObject => {
+    const cellRenderer = RENDERERS[String(h.accessor)];
+    return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
 }
 
@@ -136,16 +60,242 @@ export class HRDemoComponent {
   }
 
   onCellEdit({ accessor, newValue, row }: CellChangeProps): void {
-    this.data = this.data.map((item) =>
-      item.id === row.id ? { ...item, [accessor]: newValue } : item,
-    );
+    this.data = this.data.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item));
+  }
+}
+
+
+// hr-full-name-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getHRThemeColors } from "./hr.demo-data";
+import type { HREmployee } from "./hr.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-hr-full-name",
+  template: `
+    <div style="display:flex;align-items:center;">
+      <div
+        style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;"
+        [style.background-color]="c.avatarBg"
+        [style.color]="c.avatarText"
+      >
+        {{ initials }}
+      </div>
+      <div style="margin-left:8px;">
+        <div>{{ d.fullName }}</div>
+        <div style="font-size:12px;" [style.color]="c.grayMuted">{{ d.position }}</div>
+      </div>
+    </div>
+  `,
+})
+export class HrFullNameCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): HREmployee {
+    return this.row as unknown as HREmployee;
+  }
+
+  get c(): Record<string, string> {
+    return getHRThemeColors(this.theme);
+  }
+
+  get initials(): string {
+    return `${this.d.firstName?.charAt(0) || ""}${this.d.lastName?.charAt(0) || ""}`;
+  }
+}
+
+
+// hr-hire-date-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getHRThemeColors } from "./hr.demo-data";
+import type { HREmployee } from "./hr.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-hr-hire-date",
+  template: `
+    @if (d.hireDate) {
+      <span [style.color]="c.gray">{{ formatted }}</span>
+    }
+  `,
+})
+export class HrHireDateCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): HREmployee {
+    return this.row as unknown as HREmployee;
+  }
+
+  get c(): Record<string, string> {
+    return getHRThemeColors(this.theme);
+  }
+
+  get formatted(): string {
+    const raw = this.d.hireDate;
+    if (!raw) return "";
+    const [year, month, day] = raw.split("-").map(Number);
+    const date = new Date(year!, month! - 1, day!);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+}
+
+
+// hr-performance-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getHRThemeColors } from "./hr.demo-data";
+import type { HREmployee } from "./hr.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-hr-performance",
+  template: `
+    <div style="width:100%;display:flex;flex-direction:column;">
+      <div
+        style="height:6px;width:100%;border-radius:100px;overflow:hidden;"
+        [style.background-color]="c.progressBg"
+      >
+        <div
+          style="height:100%;border-radius:100px;"
+          [style.width.%]="score"
+          [style.background-color]="barColor"
+        ></div>
+      </div>
+      <div style="font-size:12px;text-align:center;margin-top:4px;" [style.color]="c.gray">{{ score }}/100</div>
+    </div>
+  `,
+})
+export class HrPerformanceCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): HREmployee {
+    return this.row as unknown as HREmployee;
+  }
+
+  get score(): number {
+    return this.d.performanceScore;
+  }
+
+  get c(): ReturnType<typeof getHRThemeColors> {
+    return getHRThemeColors(this.theme);
+  }
+
+  get barColor(): string {
+    const s = this.score;
+    const colors = this.c;
+    if (s >= 90) return colors.progressSuccess;
+    if (s >= 65) return colors.progressNormal;
+    return colors.progressException;
+  }
+}
+
+
+// hr-salary-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getHRThemeColors } from "./hr.demo-data";
+import type { HREmployee } from "./hr.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-hr-salary",
+  template: `<span [style.color]="c.gray">{{ display }}</span>`,
+})
+export class HrSalaryCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): HREmployee {
+    return this.row as unknown as HREmployee;
+  }
+
+  get c(): Record<string, string> {
+    return getHRThemeColors(this.theme);
+  }
+
+  get display(): string {
+    return `$${this.d.salary.toLocaleString()}`;
+  }
+}
+
+
+// hr-status-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
+import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-hr-status",
+  template: `
+    @if (d.status) {
+      <span
+        style="padding:0 7px;font-size:12px;line-height:20px;border-radius:2px;display:inline-block;"
+        [style.background-color]="tagColors.bg"
+        [style.color]="tagColors.text"
+        >{{ d.status }}</span>
+    }
+  `,
+})
+export class HrStatusCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): HREmployee {
+    return this.row as unknown as HREmployee;
+  }
+
+  get c(): ReturnType<typeof getHRThemeColors> {
+    return getHRThemeColors(this.theme);
+  }
+
+  get tagColors(): { bg: string; text: string } {
+    const status = this.d.status || "";
+    const key: HRTagColorKey = HR_STATUS_COLOR_MAP[status] || "default";
+    return this.c.tagColors[key] || this.c.tagColors.default;
+  }
+}
+
+
+// hr-years-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getHRThemeColors } from "./hr.demo-data";
+import type { HREmployee } from "./hr.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-hr-years",
+  template: `
+    @if (d.yearsOfService !== null) {
+      <span [style.color]="c.gray">{{ d.yearsOfService }} yrs</span>
+    }
+  `,
+})
+export class HrYearsCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): HREmployee {
+    return this.row as unknown as HREmployee;
+  }
+
+  get c(): Record<string, string> {
+    return getHRThemeColors(this.theme);
   }
 }
 
 
 // hr.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 export interface HREmployee {
   id: number;
@@ -201,7 +351,7 @@ export function generateHRData(count: number = 100): HREmployee[] {
 
 export const hrData = generateHRData(100);
 
-export const hrHeaders: HeaderObject[] = [
+export const hrHeaders: AngularHeaderObject[] = [
   { accessor: "fullName", label: "Employee", width: 220, isSortable: true, isEditable: false, align: "left", pinned: "left", type: "string" },
   {
     accessor: "performanceScore", label: "Performance", width: 160, isSortable: true, isEditable: true, align: "center", type: "number",

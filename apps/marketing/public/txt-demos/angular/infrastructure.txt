@@ -1,23 +1,324 @@
-// infrastructure-demo.component.ts
-import { Component, Input, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type {
-  AngularHeaderObject,
-  CellRenderer,
-  CellValue,
-  Row,
-  TableAPI,
-  Theme,
-  ValueGetterProps,
-} from "@simple-table/angular";
-import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
+// infrastructure-cell-components.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-infra-server-id",
+  template: `<span style="font-family:monospace;font-size:0.85rem;">{{ d.serverId }}</span>`,
+})
+export class InfraServerIdCellComponent {
+  @Input({ required: true }) row!: Row;
+
+  get d(): InfrastructureServer {
+    return this.row as unknown as InfrastructureServer;
+  }
+}
+
+@Component({
+  standalone: true,
+  selector: "demo-infra-cpu",
+  template: `
+    <div style="display:flex;justify-content:end;">
+      <div
+        style="padding:3px 6px;border-radius:3px;font-weight:600;font-size:0.8rem;"
+        [style.color]="styles.color"
+        [style.background-color]="styles.backgroundColor || 'transparent'"
+      >
+        {{ d.cpuUsage.toFixed(1) }}%
+      </div>
+    </div>
+  `,
+})
+export class InfraCpuCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): InfrastructureServer {
+    return this.row as unknown as InfrastructureServer;
+  }
+
+  get styles(): ReturnType<typeof getInfraMetricColorStyles> {
+    return getInfraMetricColorStyles(this.d.cpuUsage, this.theme || "light", "cpu");
+  }
+}
+
+@Component({
+  standalone: true,
+  selector: "demo-infra-memory",
+  template: `
+    <div style="display:flex;justify-content:end;">
+      <div
+        style="padding:3px 6px;border-radius:3px;font-weight:600;font-size:0.8rem;"
+        [style.color]="styles.color"
+        [style.background-color]="styles.backgroundColor || 'transparent'"
+      >
+        {{ d.memoryUsage.toFixed(1) }}%
+      </div>
+    </div>
+  `,
+})
+export class InfraMemoryCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): InfrastructureServer {
+    return this.row as unknown as InfrastructureServer;
+  }
+
+  get styles(): ReturnType<typeof getInfraMetricColorStyles> {
+    return getInfraMetricColorStyles(this.d.memoryUsage, this.theme || "light", "memory");
+  }
+}
+
+@Component({
+  standalone: true,
+  selector: "demo-infra-disk",
+  template: `{{ d.diskUsage.toFixed(1) }}%`,
+})
+export class InfraDiskCellComponent {
+  @Input({ required: true }) row!: Row;
+
+  get d(): InfrastructureServer {
+    return this.row as unknown as InfrastructureServer;
+  }
+}
+
+@Component({
+  standalone: true,
+  selector: "demo-infra-response",
+  template: `
+    <span
+      style="font-weight:500;"
+      [style.color]="styles.color"
+      [style.background-color]="styles.backgroundColor || 'transparent'"
+      >{{ d.responseTime.toFixed(1) }}</span>
+  `,
+})
+export class InfraResponseCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): InfrastructureServer {
+    return this.row as unknown as InfrastructureServer;
+  }
+
+  get styles(): ReturnType<typeof getInfraMetricColorStyles> {
+    return getInfraMetricColorStyles(this.d.responseTime, this.theme || "light", "response");
+  }
+}
+
+@Component({
+  standalone: true,
+  selector: "demo-infra-status",
+  template: `
+    <div
+      style="padding:4px 8px;border-radius:4px;font-size:0.75rem;"
+      [style.color]="styles.color"
+      [style.background-color]="styles.backgroundColor"
+    >
+      {{ label }}
+    </div>
+  `,
+})
+export class InfraStatusCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): InfrastructureServer {
+    return this.row as unknown as InfrastructureServer;
+  }
+
+  get styles(): ReturnType<typeof getInfraStatusColors> {
+    return getInfraStatusColors(this.d.status, this.theme || "light");
+  }
+
+  get label(): string {
+    const s = this.d.status;
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+}
+
+
+// infrastructure-demo.component.ts
+import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from "@angular/core";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularHeaderObject, Row, Theme, ValueGetterProps } from "@simple-table/angular";
+import { infrastructureData } from "./infrastructure.demo-data";
+import {
+  InfraCpuCellComponent,
+  InfraDiskCellComponent,
+  InfraMemoryCellComponent,
+  InfraResponseCellComponent,
+  InfraServerIdCellComponent,
+  InfraStatusCellComponent,
+} from "./infrastructure-cell-components";
+import { startInfraDemoLiveUpdates } from "./infrastructure-live-updates";
 import "@simple-table/angular/styles.css";
+
+function getHeaders(theme?: Theme): AngularHeaderObject[] {
+  return [
+    {
+      accessor: "serverId",
+      align: "left",
+      filterable: true,
+      isEditable: false,
+      isSortable: true,
+      label: "Server ID",
+      minWidth: 180,
+      pinned: "left",
+      type: "string",
+      width: "1.2fr",
+      cellRenderer: InfraServerIdCellComponent,
+    },
+    {
+      accessor: "serverName",
+      align: "left",
+      filterable: true,
+      isEditable: false,
+      isSortable: true,
+      label: "Name",
+      minWidth: 200,
+      type: "string",
+      width: "1.5fr",
+    },
+    {
+      accessor: "performance",
+      label: "Performance Metrics",
+      width: 690,
+      isSortable: false,
+      children: [
+        {
+          accessor: "cpuHistory",
+          label: "CPU History",
+          width: 150,
+          isSortable: false,
+          filterable: false,
+          isEditable: false,
+          align: "center",
+          type: "lineAreaChart",
+          tooltip: "CPU usage over the last 30 intervals",
+        },
+        {
+          accessor: "cpuUsage",
+          label: "CPU %",
+          width: 120,
+          isSortable: true,
+          filterable: true,
+          isEditable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraCpuCellComponent,
+        },
+        {
+          accessor: "memoryUsage",
+          label: "Memory %",
+          width: 130,
+          isSortable: true,
+          filterable: true,
+          isEditable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraMemoryCellComponent,
+        },
+        {
+          accessor: "diskUsage",
+          label: "Disk %",
+          width: 120,
+          isSortable: true,
+          filterable: true,
+          isEditable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraDiskCellComponent,
+        },
+        {
+          accessor: "responseTime",
+          label: "Response (ms)",
+          width: 120,
+          isSortable: true,
+          filterable: true,
+          isEditable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraResponseCellComponent,
+        },
+      ],
+    },
+    {
+      accessor: "status",
+      label: "Status",
+      width: 130,
+      isSortable: true,
+      filterable: true,
+      isEditable: false,
+      align: "center",
+      type: "enum",
+      enumOptions: [
+        { label: "Online", value: "online" },
+        { label: "Warning", value: "warning" },
+        { label: "Critical", value: "critical" },
+        { label: "Maintenance", value: "maintenance" },
+        { label: "Offline", value: "offline" },
+      ],
+      valueGetter: ({ row }: ValueGetterProps) => {
+        const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 };
+        return m[String(row.status)] || 999;
+      },
+      cellRenderer: InfraStatusCellComponent,
+    },
+  ];
+}
+
+@Component({
+  selector: "infrastructure-demo",
+  standalone: true,
+  imports: [SimpleTableComponent],
+  template: `
+    <simple-table
+      #simpleTable
+      [autoExpandColumns]="true"
+      [columnReordering]="true"
+      [columnResizing]="true"
+      [defaultHeaders]="headers"
+      [editColumns]="true"
+      [height]="height"
+      [rows]="rows"
+      [selectableCells]="true"
+      [theme]="theme"
+    ></simple-table>
+  `,
+})
+export class InfrastructureDemoComponent implements AfterViewInit, OnDestroy {
+  @ViewChild("simpleTable") tableRef!: SimpleTableComponent;
+  @Input() height: string | number = "400px";
+  @Input() theme?: Theme;
+
+  readonly rows: Row[] = infrastructureData;
+  readonly headers: AngularHeaderObject[] = getHeaders();
+
+  private cleanupFn?: () => void;
+
+  ngAfterViewInit(): void {
+    this.cleanupFn = startInfraDemoLiveUpdates(() => this.tableRef?.getAPI() ?? null, this.rows);
+  }
+
+  ngOnDestroy(): void {
+    this.cleanupFn?.();
+  }
+}
+
+
+// infrastructure-live-updates.ts
+import type { CellValue, Row, TableAPI } from "@simple-table/angular";
 
 const INFRA_TICK_MS = 20;
 const INFRA_ROWS_PER_TICK = 4;
 type InfraMetricSlot = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
+export function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -28,7 +329,7 @@ function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function infraApplyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
+export function infraApplyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
   for (const accessor of Object.keys(patch)) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
@@ -36,7 +337,7 @@ function infraApplyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>
   }
 }
 
-function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Row> | null {
+export function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Row> | null {
   switch (slot) {
     case 0: {
       const currentCpu = row.cpuUsage as number;
@@ -92,7 +393,7 @@ function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Row> 
   }
 }
 
-function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, rows: Row[]): () => void {
+export function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, rows: Row[]): () => void {
   let isActive = true;
   const idToIndex = new Map<string, number>();
   for (let i = 0; i < rows.length; i++) {
@@ -124,142 +425,10 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, ro
   };
 }
 
-function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {
-  const t = currentTheme || "light";
-
-  const serverIdRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as InfrastructureServer;
-    const span = document.createElement("span");
-    Object.assign(span.style, { fontFamily: "monospace", fontSize: "0.85rem" });
-    span.textContent = d.serverId;
-    return span;
-  };
-
-  const cpuRenderer: CellRenderer = ({ row, theme }) => {
-    const d = row as unknown as InfrastructureServer;
-    const cpu = d.cpuUsage;
-    const s = getInfraMetricColorStyles(cpu, theme || t, "cpu");
-    const outer = document.createElement("div");
-    outer.style.display = "flex";
-    outer.style.justifyContent = "end";
-    const badge = document.createElement("div");
-    Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-    badge.textContent = `${cpu.toFixed(1)}%`;
-    outer.appendChild(badge);
-    return outer;
-  };
-
-  const memoryRenderer: CellRenderer = ({ row, theme }) => {
-    const d = row as unknown as InfrastructureServer;
-    const mem = d.memoryUsage;
-    const s = getInfraMetricColorStyles(mem, theme || t, "memory");
-    const outer = document.createElement("div");
-    outer.style.display = "flex";
-    outer.style.justifyContent = "end";
-    const badge = document.createElement("div");
-    Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-    badge.textContent = `${mem.toFixed(1)}%`;
-    outer.appendChild(badge);
-    return outer;
-  };
-
-  const diskRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as InfrastructureServer;
-    return `${d.diskUsage.toFixed(1)}%`;
-  };
-
-  const responseRenderer: CellRenderer = ({ row, theme }) => {
-    const d = row as unknown as InfrastructureServer;
-    const rt = d.responseTime;
-    const s = getInfraMetricColorStyles(rt, theme || t, "response");
-    const span = document.createElement("span");
-    Object.assign(span.style, { fontWeight: "500", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-    span.textContent = rt.toFixed(1);
-    return span;
-  };
-
-  const statusRenderer: CellRenderer = ({ row, theme }) => {
-    const d = row as unknown as InfrastructureServer;
-    const status = d.status;
-    const s = getInfraStatusColors(status, theme || t);
-    const div = document.createElement("div");
-    Object.assign(div.style, { color: s.color, backgroundColor: s.backgroundColor, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" });
-    div.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-    return div;
-  };
-
-  return [
-    { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: serverIdRenderer },
-    { accessor: "serverName", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
-    {
-      accessor: "performance", label: "Performance Metrics", width: 690, isSortable: false,
-      children: [
-        { accessor: "cpuHistory", label: "CPU History", width: 150, isSortable: false, filterable: false, isEditable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
-        { accessor: "cpuUsage", label: "CPU %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: cpuRenderer },
-        { accessor: "memoryUsage", label: "Memory %", width: 130, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: memoryRenderer },
-        { accessor: "diskUsage", label: "Disk %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: diskRenderer },
-        { accessor: "responseTime", label: "Response (ms)", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: responseRenderer },
-      ],
-    },
-    {
-      accessor: "status", label: "Status", width: 130, isSortable: true, filterable: true, isEditable: false, align: "center", type: "enum",
-      enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
-      valueGetter: ({ row }: ValueGetterProps) => {
-        const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 };
-        return m[String(row.status)] || 999;
-      },
-      cellRenderer: statusRenderer,
-    },
-  ];
-}
-
-@Component({
-  selector: "infrastructure-demo",
-  standalone: true,
-  imports: [SimpleTableComponent],
-  template: `
-    <simple-table
-      #simpleTable
-      [autoExpandColumns]="true"
-      [columnReordering]="true"
-      [columnResizing]="true"
-      [defaultHeaders]="headers"
-      [editColumns]="true"
-      [height]="height"
-      [rows]="rows"
-      [selectableCells]="true"
-      [theme]="theme"
-    ></simple-table>
-  `,
-})
-export class InfrastructureDemoComponent implements AfterViewInit, OnDestroy {
-  @ViewChild("simpleTable") tableRef!: SimpleTableComponent;
-  @Input() height: string | number = "400px";
-  @Input() theme?: Theme;
-
-  readonly headers: AngularHeaderObject[] = getHeaders();
-  readonly rows: Row[] = infrastructureData;
-
-  private cleanupFn?: () => void;
-
-  ngAfterViewInit(): void {
-    const api = this.tableRef.getAPI();
-    if (!api) return;
-
-    this.headers.splice(0, this.headers.length, ...getHeaders(this.theme));
-
-    this.cleanupFn = startInfraDemoLiveUpdates(() => this.tableRef?.getAPI() ?? null, this.rows);
-  }
-
-  ngOnDestroy(): void {
-    this.cleanupFn?.();
-  }
-}
-
 
 // infrastructure.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 export interface InfrastructureServer {
   id: number;
@@ -335,7 +504,7 @@ export function generateInfrastructureData(count: number = 50): Row[] {
 
 export const infrastructureData = generateInfrastructureData(50);
 
-export const infrastructureHeaders: HeaderObject[] = [
+export const infrastructureHeaders: AngularHeaderObject[] = [
   {
     accessor: "serverId",
     align: "left",

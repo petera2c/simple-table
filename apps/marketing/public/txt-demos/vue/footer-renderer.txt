@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import {SimpleTable} from "@simple-table/vue";import type { Theme, FooterRendererProps } from "@simple-table/vue";
+import { defineComponent, h } from "vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, FooterRendererProps } from "@simple-table/vue";
 import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -47,71 +49,82 @@ function getFooterColors(theme?: Theme) {
   }
 }
 
-function footerRenderer(fp: FooterRendererProps): HTMLElement {
-  const c = getFooterColors(props.theme);
-
-  const wrapper = document.createElement("div");
-  Object.assign(wrapper.style, {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "16px 20px",
-    backgroundColor: c.background,
-    borderTop: `2px solid ${c.border}`,
-  });
-
-  const info = document.createElement("span");
-  Object.assign(info.style, { fontSize: "14px", fontWeight: "600", color: c.text });
-  info.textContent = `Showing ${fp.startRow}–${fp.endRow} of ${fp.totalRows} items`;
-  wrapper.appendChild(info);
-
-  const controls = document.createElement("div");
-  Object.assign(controls.style, { display: "flex", alignItems: "center", gap: "8px" });
-
-  function makeBtn(label: string, onClick: () => void, disabled: boolean, active = false) {
-    const btn = document.createElement("button");
-    btn.textContent = label;
-    Object.assign(btn.style, {
-      padding: "8px 16px",
-      fontSize: "14px",
-      fontWeight: "500",
-      color: active ? "white" : disabled ? c.buttonDisabled : c.buttonActive,
-      backgroundColor: active ? c.buttonActive : c.buttonBg,
-      border: `1px solid ${c.buttonBorder}`,
-      borderRadius: "6px",
-      cursor: disabled ? "not-allowed" : "pointer",
-      transition: "all 0.2s",
-      minWidth: "40px",
-    });
-    btn.disabled = disabled;
-    if (!disabled) btn.addEventListener("click", onClick);
-    return btn;
-  }
-
-  controls.appendChild(makeBtn("Previous", fp.onPrevPage, !fp.hasPrevPage));
-
-  const pages = document.createElement("div");
-  Object.assign(pages.style, { display: "flex", gap: "4px" });
-  for (let p = 1; p <= fp.totalPages; p++) {
-    const isActive = p === fp.currentPage;
-    const btn = makeBtn(String(p), () => fp.onPageChange(p), false, isActive);
-    btn.style.padding = "8px 12px";
-    pages.appendChild(btn);
-  }
-  controls.appendChild(pages);
-
-  controls.appendChild(makeBtn("Next", () => fp.onNextPage(), !fp.hasNextPage));
-
-  wrapper.appendChild(controls);
-  return wrapper;
-}
+const FooterBar = defineComponent({
+  name: "FooterBar",
+  setup(fp: FooterRendererProps) {
+    return () => {
+      const c = getFooterColors(props.theme);
+      const btnStyle = (disabled: boolean, active = false) => ({
+        padding: "8px 16px",
+        fontSize: "14px",
+        fontWeight: "500",
+        color: active ? "white" : disabled ? c.buttonDisabled : c.buttonActive,
+        backgroundColor: active ? c.buttonActive : c.buttonBg,
+        border: `1px solid ${c.buttonBorder}`,
+        borderRadius: "6px",
+        cursor: disabled ? ("not-allowed" as const) : ("pointer" as const),
+        transition: "all 0.2s",
+        minWidth: "40px",
+      });
+      return h(
+        "div",
+        {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px 20px",
+            backgroundColor: c.background,
+            borderTop: `2px solid ${c.border}`,
+          },
+        },
+        [
+          h(
+            "span",
+            { style: { fontSize: "14px", fontWeight: "600", color: c.text } },
+            `Showing ${fp.startRow}–${fp.endRow} of ${fp.totalRows} items`,
+          ),
+          h(
+            "div",
+            { style: { display: "flex", alignItems: "center", gap: "8px" } },
+            [
+              h("button", {
+                style: btnStyle(!fp.hasPrevPage),
+                disabled: !fp.hasPrevPage,
+                onClick: fp.onPrevPage,
+              }, "Previous"),
+              h(
+                "div",
+                { style: { display: "flex", gap: "4px" } },
+                Array.from({ length: fp.totalPages }, (_, i) => i + 1).map((page) =>
+                  h("button", {
+                    key: page,
+                    style: { ...btnStyle(false, page === fp.currentPage), padding: "8px 12px" },
+                    onClick: () => fp.onPageChange(page),
+                  }, String(page)),
+                ),
+              ),
+              h("button", {
+                style: btnStyle(!fp.hasNextPage),
+                disabled: !fp.hasNextPage,
+                onClick: () => {
+                  void fp.onNextPage();
+                },
+              }, "Next"),
+            ],
+          ),
+        ],
+      );
+    };
+  },
+});
 </script>
 
 <template>
   <SimpleTable
     :default-headers="footerRendererConfig.headers"
     :rows="footerRendererConfig.rows"
-    :footer-renderer="footerRenderer"
+    :footer-renderer="FooterBar"
     :should-paginate="true"
     :rows-per-page="10"
     :hide-footer="false"

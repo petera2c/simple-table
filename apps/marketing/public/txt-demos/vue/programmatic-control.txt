@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, HeaderObject } from "@simple-table/vue";
+import type { Theme, TableAPI, VueHeaderObject } from "@simple-table/vue";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -44,7 +44,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 const statusMessage = ref("No status message");
 
-const headers: HeaderObject[] = programmaticControlConfig.headers.map((h) => {
+const headers: VueHeaderObject[] = programmaticControlConfig.headers.map((h) => {
   if (h.accessor === "status") {
     return {
       ...h,

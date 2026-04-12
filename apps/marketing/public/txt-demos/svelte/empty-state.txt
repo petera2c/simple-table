@@ -1,17 +1,32 @@
+// EmptyStateDemo.svelte
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
-  import { emptyStateConfig, buildEmptyStateElement } from "./empty-state.demo-data";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme } from "@simple-table/svelte";
+  import { emptyStateConfig } from "./empty-state.demo-data";
+  import TableEmptyState from "./TableEmptyState.svelte";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
-
-  const emptyState = buildEmptyStateElement();
 </script>
 
 <SimpleTable
   defaultHeaders={emptyStateConfig.headers}
   rows={emptyStateConfig.rows}
-  tableEmptyStateRenderer={emptyState}
+  tableEmptyStateRenderer={TableEmptyState}
   {height}
   {theme}
 />
+
+
+// TableEmptyState.svelte
+<div
+  style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; color: #64748b; gap: 12px;"
+>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7" />
+    <path d="M16 3H8L3 7h18l-5-4z" />
+    <line x1="10" y1="12" x2="14" y2="12" />
+  </svg>
+  <div style="font-size: 16px; font-weight: 600;">No data available</div>
+  <div style="font-size: 13px;">Try adjusting your filters or adding new records.</div>
+</div>

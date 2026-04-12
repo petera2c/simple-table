@@ -1,8 +1,9 @@
 // billing-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellRenderer, Row, Theme } from "@simple-table/angular";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { billingConfig } from "./billing.demo-data";
-import type { BillingRow } from "./billing.demo-data";
+import { BillingNameCellComponent } from "./billing-name-cell.component";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -33,28 +34,48 @@ export class BillingDemoComponent {
   readonly grouping = ["invoices", "charges"];
   readonly rows: Row[] = billingConfig.rows as unknown as Row[];
 
-  readonly headers: AngularHeaderObject[] = billingConfig.headers.map((h) => {
-    if (h.accessor === "name") {
-      const nameRenderer: CellRenderer = ({ row }) => {
-        const d = row as unknown as BillingRow;
-        if (d.type === "account") {
-          const span = document.createElement("span");
-          span.style.fontWeight = "600";
-          span.textContent = d.name;
-          return span;
-        }
-        return d.name;
-      };
-      return { ...h, cellRenderer: nameRenderer };
+  readonly headers: AngularHeaderObject[] = billingConfig.headers.map((h) =>
+    h.accessor === "name" ? { ...h, cellRenderer: BillingNameCellComponent } : h,
+  );
+}
+
+
+// billing-name-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row } from "@simple-table/angular";
+import type { BillingRow } from "./billing.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-billing-name-cell",
+  template: `
+    @if (isAccount) {
+      <span style="font-weight:600;">{{ name }}</span>
+    } @else {
+      {{ name }}
     }
-    return h;
-  });
+  `,
+})
+export class BillingNameCellComponent {
+  @Input({ required: true }) row!: Row;
+
+  get d(): BillingRow {
+    return this.row as unknown as BillingRow;
+  }
+
+  get isAccount(): boolean {
+    return this.d.type === "account";
+  }
+
+  get name(): string {
+    return this.d.name;
+  }
 }
 
 
 // billing.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/angular";
+import type { AngularHeaderObject } from "@simple-table/angular";
 
 export interface BillingRow {
   id: string | number;
@@ -140,8 +161,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): HeaderObject[] {
-  const headers: HeaderObject[] = [];
+function generateMonthHeaders(): AngularHeaderObject[] {
+  const headers: AngularHeaderObject[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -191,7 +212,7 @@ function generateMonthHeaders(): HeaderObject[] {
   return headers;
 }
 
-export const billingHeaders: HeaderObject[] = [
+export const billingHeaders: AngularHeaderObject[] = [
   {
     accessor: "name",
     label: "Name",

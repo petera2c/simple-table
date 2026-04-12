@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, RowSelectionChangeProps, HeaderObject } from "@simple-table/vue";
+import type { Theme, RowSelectionChangeProps, VueHeaderObject } from "@simple-table/vue";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/vue/styles.css";
@@ -18,7 +18,7 @@ const selectedTitles = computed(() =>
     : "None",
 );
 
-const headers: HeaderObject[] = rowSelectionConfig.headers.map((h) => {
+const headers: VueHeaderObject[] = rowSelectionConfig.headers.map((h) => {
   if (h.accessor === "status") {
     return {
       ...h,

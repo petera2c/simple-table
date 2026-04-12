@@ -1,5 +1,3 @@
-import { VIRTUALIZATION_THRESHOLD } from "../consts/general-consts";
-
 export interface ContentHeightConfig {
   height?: string | number;
   maxHeight?: string | number;
@@ -72,13 +70,12 @@ export const calculateContentHeight = ({
     const actualContentHeight =
       actualHeaderHeight + totalRowCount * rowHeight + actualFooterHeight;
 
-    // If content fits within maxHeight OR row count is below threshold, disable virtualization
-    if (actualContentHeight <= maxHeightPx || totalRowCount < VIRTUALIZATION_THRESHOLD) {
+    // If content fits within maxHeight, no scrolling needed
+    if (actualContentHeight <= maxHeightPx) {
       return undefined;
     }
 
-    // Content exceeds maxHeight and we have enough rows - enable virtualization
-    // Subtract header height to get the scrollable content area height
+    // Content exceeds maxHeight - return scrollable area height
     return Math.max(0, maxHeightPx - actualHeaderHeight);
   }
 

@@ -2,7 +2,6 @@ import HeaderObject from "../types/HeaderObject";
 import {
   CSS_VAR_BORDER_WIDTH,
   DEFAULT_BORDER_WIDTH,
-  VIRTUALIZATION_THRESHOLD,
 } from "../consts/general-consts";
 
 export interface DimensionManagerConfig {
@@ -126,7 +125,7 @@ export class DimensionManager {
       const actualContentHeight =
         actualHeaderHeight + totalRowCount * rowHeight + actualFooterHeight;
 
-      if (actualContentHeight <= maxHeightPx || totalRowCount < VIRTUALIZATION_THRESHOLD) {
+      if (actualContentHeight <= maxHeightPx) {
         return undefined;
       }
 

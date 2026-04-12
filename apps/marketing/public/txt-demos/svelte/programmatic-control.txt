@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
   import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -9,7 +9,7 @@
   let tableRef: any;
   let statusMessage = $state("No status message");
 
-  const headers: HeaderObject[] = programmaticControlConfig.headers.map((h) => {
+  const headers: SvelteHeaderObject[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,

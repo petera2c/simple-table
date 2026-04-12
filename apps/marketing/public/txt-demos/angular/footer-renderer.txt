@@ -1,10 +1,17 @@
-// footer-renderer-demo.component.ts
-import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, FooterRendererProps, Row, Theme } from "@simple-table/angular";
-import { footerRendererConfig } from "./footer-renderer.demo-data";
-import "@simple-table/angular/styles.css";
+// footer-demo-theme-context.ts
+import { signal } from "@angular/core";
+import type { Theme } from "@simple-table/angular";
 
-function getFooterColors(theme?: Theme) {
+export const footerDemoThemeContext = signal<Theme | undefined>(undefined);
+
+
+// footer-pagination.component.ts
+import { Component, computed, Input } from "@angular/core";
+import type { FooterRendererProps } from "@simple-table/angular";
+import type { Theme } from "@simple-table/angular";
+import { footerDemoThemeContext } from "./footer-demo-theme-context";
+
+function palette(theme?: Theme) {
   switch (theme) {
     case "modern-dark":
     case "dark":
@@ -44,64 +51,131 @@ function getFooterColors(theme?: Theme) {
   }
 }
 
-function createFooter(props: FooterRendererProps, theme?: Theme): HTMLElement {
-  const c = getFooterColors(theme);
+@Component({
+  standalone: true,
+  selector: "demo-footer-pagination",
+  template: `
+    <div
+      style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;"
+      [style.background-color]="colors().background"
+      [style.border-top]="'2px solid ' + colors().border"
+    >
+      <span style="font-size:14px;font-weight:600;" [style.color]="colors().text">
+        Showing {{ startRow }}–{{ endRow }} of {{ totalRows }} items
+      </span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button
+          type="button"
+          [disabled]="!hasPrevPage"
+          (click)="onPrevPage()"
+          [style.padding]="'8px 16px'"
+          [style.font-size]="'14px'"
+          [style.font-weight]="'500'"
+          [style.color]="btnStylePrev().color"
+          [style.background-color]="btnStylePrev().bg"
+          [style.border]="'1px solid ' + colors().buttonBorder"
+          [style.border-radius]="'6px'"
+          [style.cursor]="hasPrevPage ? 'pointer' : 'not-allowed'"
+          [style.min-width]="'40px'"
+        >
+          Previous
+        </button>
+        <div style="display:flex;gap:4px;">
+          @for (p of pageNumbers(); track p) {
+            <button
+              type="button"
+              (click)="onPageChange(p)"
+              [style.padding]="'8px 12px'"
+              [style.font-size]="'14px'"
+              [style.font-weight]="'500'"
+              [style.color]="pageBtnStyle(p).color"
+              [style.background-color]="pageBtnStyle(p).bg"
+              [style.border]="'1px solid ' + colors().buttonBorder"
+              [style.border-radius]="'6px'"
+              style="cursor:pointer;min-width:40px;"
+            >
+              {{ p }}
+            </button>
+          }
+        </div>
+        <button
+          type="button"
+          [disabled]="!hasNextPage"
+          (click)="onNext()"
+          [style.padding]="'8px 16px'"
+          [style.font-size]="'14px'"
+          [style.font-weight]="'500'"
+          [style.color]="btnStyleNext().color"
+          [style.background-color]="btnStyleNext().bg"
+          [style.border]="'1px solid ' + colors().buttonBorder"
+          [style.border-radius]="'6px'"
+          [style.cursor]="hasNextPage ? 'pointer' : 'not-allowed'"
+          [style.min-width]="'40px'"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  `,
+})
+export class FooterPaginationComponent {
+  @Input({ required: true }) currentPage!: FooterRendererProps["currentPage"];
+  @Input({ required: true }) endRow!: FooterRendererProps["endRow"];
+  @Input({ required: true }) hasNextPage!: FooterRendererProps["hasNextPage"];
+  @Input({ required: true }) hasPrevPage!: FooterRendererProps["hasPrevPage"];
+  @Input({ required: true }) onNextPage!: FooterRendererProps["onNextPage"];
+  @Input({ required: true }) onPageChange!: FooterRendererProps["onPageChange"];
+  @Input({ required: true }) onPrevPage!: FooterRendererProps["onPrevPage"];
+  @Input({ required: true }) rowsPerPage!: FooterRendererProps["rowsPerPage"];
+  @Input({ required: true }) startRow!: FooterRendererProps["startRow"];
+  @Input({ required: true }) totalPages!: FooterRendererProps["totalPages"];
+  @Input({ required: true }) totalRows!: FooterRendererProps["totalRows"];
 
-  const wrapper = document.createElement("div");
-  Object.assign(wrapper.style, {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "16px 20px",
-    backgroundColor: c.background,
-    borderTop: `2px solid ${c.border}`,
-  });
+  readonly colors = computed(() => palette(footerDemoThemeContext()));
 
-  const info = document.createElement("span");
-  Object.assign(info.style, { fontSize: "14px", fontWeight: "600", color: c.text });
-  info.textContent = `Showing ${props.startRow}–${props.endRow} of ${props.totalRows} items`;
-  wrapper.appendChild(info);
-
-  const controls = document.createElement("div");
-  Object.assign(controls.style, { display: "flex", alignItems: "center", gap: "8px" });
-
-  function makeBtn(label: string, onClick: () => void, disabled: boolean, active = false) {
-    const btn = document.createElement("button");
-    btn.textContent = label;
-    Object.assign(btn.style, {
-      padding: "8px 16px",
-      fontSize: "14px",
-      fontWeight: "500",
-      color: active ? "white" : disabled ? c.buttonDisabled : c.buttonActive,
-      backgroundColor: active ? c.buttonActive : c.buttonBg,
-      border: `1px solid ${c.buttonBorder}`,
-      borderRadius: "6px",
-      cursor: disabled ? "not-allowed" : "pointer",
-      transition: "all 0.2s",
-      minWidth: "40px",
-    });
-    btn.disabled = disabled;
-    if (!disabled) btn.addEventListener("click", onClick);
-    return btn;
+  pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-  controls.appendChild(makeBtn("Previous", props.onPrevPage, !props.hasPrevPage));
-
-  const pages = document.createElement("div");
-  Object.assign(pages.style, { display: "flex", gap: "4px" });
-  for (let p = 1; p <= props.totalPages; p++) {
-    const isActive = p === props.currentPage;
-    const btn = makeBtn(String(p), () => props.onPageChange(p), false, isActive);
-    btn.style.padding = "8px 12px";
-    pages.appendChild(btn);
+  btnStylePrev(): { color: string; bg: string } {
+    const c = this.colors();
+    return {
+      color: !this.hasPrevPage ? c.buttonDisabled : c.buttonActive,
+      bg: c.buttonBg,
+    };
   }
-  controls.appendChild(pages);
 
-  controls.appendChild(makeBtn("Next", () => props.onNextPage(), !props.hasNextPage));
+  btnStyleNext(): { color: string; bg: string } {
+    const c = this.colors();
+    return {
+      color: !this.hasNextPage ? c.buttonDisabled : c.buttonActive,
+      bg: c.buttonBg,
+    };
+  }
 
-  wrapper.appendChild(controls);
-  return wrapper;
+  pageBtnStyle(p: number): { color: string; bg: string } {
+    const c = this.colors();
+    const active = p === this.currentPage;
+    return {
+      color: active ? "white" : c.buttonActive,
+      bg: active ? c.buttonActive : c.buttonBg,
+    };
+  }
+
+  onNext(): void {
+    void this.onNextPage();
+  }
 }
+
+
+// footer-renderer-demo.component.ts
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import { footerDemoThemeContext } from "./footer-demo-theme-context";
+import { FooterPaginationComponent } from "./footer-pagination.component";
+import { footerRendererConfig } from "./footer-renderer.demo-data";
+import "@simple-table/angular/styles.css";
 
 @Component({
   selector: "footer-renderer-demo",
@@ -111,7 +185,7 @@ function createFooter(props: FooterRendererProps, theme?: Theme): HTMLElement {
     <simple-table
       [rows]="rows"
       [defaultHeaders]="headers"
-      [footerRenderer]="footerFn"
+      [footerRenderer]="footerRenderer"
       [shouldPaginate]="true"
       [rowsPerPage]="10"
       [hideFooter]="false"
@@ -120,22 +194,36 @@ function createFooter(props: FooterRendererProps, theme?: Theme): HTMLElement {
     ></simple-table>
   `,
 })
-export class FooterRendererDemoComponent {
+export class FooterRendererDemoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
   readonly rows: Row[] = footerRendererConfig.rows;
   readonly headers: AngularHeaderObject[] = footerRendererConfig.headers;
-  readonly footerFn = ((props: FooterRendererProps) => createFooter(props, this.theme)) as any;
+  readonly footerRenderer = FooterPaginationComponent;
+
+  ngOnInit(): void {
+    footerDemoThemeContext.set(this.theme);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["theme"]) {
+      footerDemoThemeContext.set(this.theme);
+    }
+  }
+
+  ngOnDestroy(): void {
+    footerDemoThemeContext.set(undefined);
+  }
 }
 
 
 // footer-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/angular";
+import type { AngularHeaderObject, Row } from "@simple-table/angular";
 
 
-export const footerRendererHeaders: HeaderObject[] = [
+export const footerRendererHeaders: AngularHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product Name", width: 220, type: "string" },
   { accessor: "category", label: "Category", width: 150, type: "string" },

@@ -1,7 +1,151 @@
+// sales-commission-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-sales-commission",
+  template: `
+    @if (row.commission === "—") {
+      —
+    } @else if (d.commission === 0) {
+      <span [style.color]="c.grayMuted">$0.00</span>
+    } @else {
+      {{ commissionText }}
+    }
+  `,
+})
+export class SalesCommissionCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): SalesRow {
+    return this.row as unknown as SalesRow;
+  }
+
+  get c(): ReturnType<typeof getThemeColors> {
+    return getThemeColors(this.theme);
+  }
+
+  get commissionText(): string {
+    return `$${this.d.commission.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+}
+
+
+// sales-deal-profit-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-sales-deal-profit",
+  template: `
+    @if (row.dealProfit === "—") {
+      —
+    } @else if (d.dealProfit === 0) {
+      <span [style.color]="c.grayMuted">$0.00</span>
+    } @else {
+      <span [style.color]="textColor" [style.font-weight]="textWeight">{{ profitText }}</span>
+    }
+  `,
+})
+export class SalesDealProfitCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): SalesRow {
+    return this.row as unknown as SalesRow;
+  }
+
+  get c(): ReturnType<typeof getThemeColors> {
+    return getThemeColors(this.theme);
+  }
+
+  get profitText(): string {
+    return `$${(this.d.dealProfit as number).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  get textColor(): string {
+    const v = this.d.dealProfit as number;
+    const c = this.c;
+    if (v > 50000) return c.success.high.color;
+    if (v > 20000) return c.success.medium;
+    if (v > 10000) return c.success.low;
+    return c.gray;
+  }
+
+  get textWeight(): string {
+    return (this.d.dealProfit as number) > 50000 ? this.c.success.high.fontWeight : "normal";
+  }
+}
+
+
+// sales-deal-value-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-sales-deal-value",
+  template: `
+    @if (row.dealValue === "—") {
+      —
+    } @else {
+      <span [style.color]="style.color" [style.font-weight]="style.weight">{{ style.text }}</span>
+    }
+  `,
+})
+export class SalesDealValueCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): SalesRow {
+    return this.row as unknown as SalesRow;
+  }
+
+  get style(): { text: string; color: string; weight: string } {
+    if (this.row.dealValue === "—") return { text: "—", color: "", weight: "" };
+    const c = getThemeColors(this.theme);
+    const v = this.d.dealValue as number;
+    let color = c.gray;
+    let fontWeight = "normal";
+    if (v > 100000) {
+      color = c.success.high.color;
+      fontWeight = c.success.high.fontWeight;
+    } else if (v > 50000) color = c.success.medium;
+    else if (v > 10000) color = c.success.low;
+    return {
+      text: `$${v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      color,
+      weight: fontWeight,
+    };
+  }
+}
+
+
 // sales-demo.component.ts
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellChangeProps, CellRenderer, HeaderObject, Row, Theme } from "@simple-table/angular";
-import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type {
+  AngularCellRenderer,
+  AngularHeaderObject,
+  CellChangeProps,
+  Row,
+  Theme,
+} from "@simple-table/angular";
+import { salesHeadersCore, salesSampleRows } from "./sales.demo-data";
+import { SalesCommissionCellComponent } from "./sales-commission-cell.component";
+import { SalesDealProfitCellComponent } from "./sales-deal-profit-cell.component";
+import { SalesDealValueCellComponent } from "./sales-deal-value-cell.component";
+import { SalesIsWonCellComponent } from "./sales-is-won-cell.component";
+import { SalesProfitMarginCellComponent } from "./sales-profit-margin-cell.component";
 import "@simple-table/angular/styles.css";
 
 function formatTableHeight(height?: string | number | null): string {
@@ -10,131 +154,23 @@ function formatTableHeight(height?: string | number | null): string {
   return height;
 }
 
-function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
-  const e = document.createElement(tag);
-  if (styles) Object.assign(e.style, styles);
-  if (children) {
-    for (const c of children) {
-      e.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
-    }
-  }
-  return e;
-}
+const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
+  dealValue: SalesDealValueCellComponent,
+  isWon: SalesIsWonCellComponent,
+  commission: SalesCommissionCellComponent,
+  profitMargin: SalesProfitMarginCellComponent,
+  dealProfit: SalesDealProfitCellComponent,
+};
 
-function buildSalesRenderers(): Record<string, CellRenderer> {
-  return {
-    dealValue: ({ row, theme }) => {
-      if (row.dealValue === "—") return "—";
-      const d = row as unknown as SalesRow;
-      const c = getThemeColors(theme);
-      let color = c.gray;
-      let fontWeight = "normal";
-      if (d.dealValue > 100000) {
-        color = c.success.high.color;
-        fontWeight = c.success.high.fontWeight;
-      } else if (d.dealValue > 50000) color = c.success.medium;
-      else if (d.dealValue > 10000) color = c.success.low;
-      return el("span", { color, fontWeight }, [
-        `$${d.dealValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      ]);
-    },
-
-    isWon: ({ row }) => {
-      if (row.isWon === "—") return "—";
-      const d = row as unknown as SalesRow;
-      const s = d.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
-      return el(
-        "span",
-        {
-          backgroundColor: s.bg,
-          color: s.text,
-          padding: "0 7px",
-          fontSize: "12px",
-          lineHeight: "20px",
-          borderRadius: "2px",
-          display: "inline-block",
-        },
-        [d.isWon ? "Won" : "Lost"],
-      );
-    },
-
-    commission: ({ row, theme }) => {
-      if (row.commission === "—") return "—";
-      const d = row as unknown as SalesRow;
-      const c = getThemeColors(theme);
-      if (d.commission === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
-      return `$${d.commission.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    },
-
-    profitMargin: ({ row, theme }) => {
-      if (row.profitMargin === "—") return "—";
-      const d = row as unknown as SalesRow;
-      const c = getThemeColors(theme);
-      let color = c.gray;
-      let fontWeight = "normal";
-      if (d.profitMargin >= 0.7) {
-        color = c.success.high.color;
-        fontWeight = c.success.high.fontWeight;
-      } else if (d.profitMargin >= 0.5) color = c.success.medium;
-      else if (d.profitMargin >= 0.4) color = c.success.low;
-      else if (d.profitMargin >= 0.3) color = c.info;
-      else color = c.warning;
-      const barColor =
-        d.profitMargin >= 0.5 ? c.progressColors.high : d.profitMargin >= 0.3 ? c.progressColors.medium : c.progressColors.low;
-
-      const pctSpan = el("span", { color, fontWeight }, [`${(d.profitMargin * 100).toFixed(1)}%`]);
-      const track = el("div", {
-        backgroundColor: "#f5f5f5",
-        height: "6px",
-        width: "100%",
-        borderRadius: "100px",
-        overflow: "hidden",
-      });
-      track.appendChild(
-        el("div", {
-          height: "100%",
-          width: `${d.profitMargin * 100}%`,
-          backgroundColor: barColor,
-          borderRadius: "100px",
-        }),
-      );
-      const barWrap = el("div", { marginLeft: "8px", width: "48px" }, [track]);
-
-      return el("div", { display: "flex", alignItems: "center", justifyContent: "flex-end" }, [pctSpan, barWrap]);
-    },
-
-    dealProfit: ({ row, theme }) => {
-      if (row.dealProfit === "—") return "—";
-      const d = row as unknown as SalesRow;
-      const c = getThemeColors(theme);
-      if (d.dealProfit === 0) return el("span", { color: c.grayMuted }, ["$0.00"]);
-      let color = c.gray;
-      let fontWeight = "normal";
-      if (d.dealProfit > 50000) {
-        color = c.success.high.color;
-        fontWeight = c.success.high.fontWeight;
-      } else if (d.dealProfit > 20000) color = c.success.medium;
-      else if (d.dealProfit > 10000) color = c.success.low;
-      return el("span", { color, fontWeight }, [
-        `$${d.dealProfit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      ]);
-    },
-  };
-}
-
-function buildSalesHeaders(): AngularHeaderObject[] {
-  const renderers = buildSalesRenderers();
-  const headers: HeaderObject[] = JSON.parse(JSON.stringify(salesHeadersCore));
-
-  const applyRenderers = (hdrs: HeaderObject[]) => {
-    for (const h of hdrs) {
-      const renderer = renderers[String(h.accessor)];
-      if (renderer) h.cellRenderer = renderer;
-      if (h.children) applyRenderers(h.children as HeaderObject[]);
-    }
-  };
-  applyRenderers(headers);
-  return headers;
+function applyCellComponents(hdrs: AngularHeaderObject[]): AngularHeaderObject[] {
+  return hdrs.map((h): AngularHeaderObject => {
+    const cellRenderer = RENDERERS[String(h.accessor)];
+    return {
+      ...h,
+      ...(cellRenderer ? { cellRenderer } : {}),
+      ...(h.children ? { children: applyCellComponents(h.children) } : {}),
+    };
+  });
 }
 
 @Component({
@@ -162,7 +198,9 @@ export class SalesDemoComponent implements OnInit, OnDestroy {
   @Input() height: string | number | null | undefined;
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = buildSalesHeaders();
+  readonly headers: AngularHeaderObject[] = applyCellComponents(
+    structuredClone(salesHeadersCore) as AngularHeaderObject[],
+  );
   data: Row[] = salesSampleRows.map((r) => ({ ...r })) as Row[];
   isMobile = false;
 
@@ -193,8 +231,116 @@ export class SalesDemoComponent implements OnInit, OnDestroy {
 }
 
 
+// sales-is-won-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row } from "@simple-table/angular";
+import type { SalesRow } from "./sales.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-sales-is-won",
+  template: `
+    @if (row.isWon === "—") {
+      —
+    } @else {
+      <span
+        style="padding:0 7px;font-size:12px;line-height:20px;border-radius:2px;display:inline-block;"
+        [style.background-color]="pill.bg"
+        [style.color]="pill.text"
+        >{{ d.isWon ? "Won" : "Lost" }}</span>
+    }
+  `,
+})
+export class SalesIsWonCellComponent {
+  @Input({ required: true }) row!: Row;
+
+  get d(): SalesRow {
+    return this.row as unknown as SalesRow;
+  }
+
+  get pill(): { bg: string; text: string } {
+    return this.d.isWon
+      ? { bg: "#f6ffed", text: "#2a6a0d" }
+      : { bg: "#fff1f0", text: "#a8071a" };
+  }
+}
+
+
+// sales-profit-margin-cell.component.ts
+import { Component, Input } from "@angular/core";
+import type { Row, Theme } from "@simple-table/angular";
+import { getThemeColors } from "./sales.demo-data";
+import type { SalesRow } from "./sales.demo-data";
+
+@Component({
+  standalone: true,
+  selector: "demo-sales-profit-margin",
+  template: `
+    @if (row.profitMargin === "—") {
+      —
+    } @else {
+      <div style="display:flex;align-items:center;justify-content:flex-end;">
+        <span [style.color]="textColor" [style.font-weight]="textWeight">{{ pctLabel }}</span>
+        <div style="margin-left:8px;width:48px;">
+          <div style="background:#f5f5f5;height:6px;width:100%;border-radius:100px;overflow:hidden;">
+            <div
+              style="height:100%;border-radius:100px;"
+              [style.width.%]="pctWidth"
+              [style.background-color]="barColor"
+            ></div>
+          </div>
+        </div>
+      </div>
+    }
+  `,
+})
+export class SalesProfitMarginCellComponent {
+  @Input({ required: true }) row!: Row;
+  @Input() theme?: Theme;
+
+  get d(): SalesRow {
+    return this.row as unknown as SalesRow;
+  }
+
+  get c(): ReturnType<typeof getThemeColors> {
+    return getThemeColors(this.theme);
+  }
+
+  get pm(): number {
+    return this.d.profitMargin as number;
+  }
+
+  get pctLabel(): string {
+    return `${(this.pm * 100).toFixed(1)}%`;
+  }
+
+  get pctWidth(): number {
+    return this.pm * 100;
+  }
+
+  get textColor(): string {
+    const c = this.c;
+    const m = this.pm;
+    if (m >= 0.7) return c.success.high.color;
+    if (m >= 0.5) return c.success.medium;
+    if (m >= 0.4) return c.success.low;
+    if (m >= 0.3) return c.info;
+    return c.warning;
+  }
+
+  get textWeight(): string {
+    return this.pm >= 0.7 ? this.c.success.high.fontWeight : "normal";
+  }
+
+  get barColor(): string {
+    const pc = this.c.progressColors;
+    return this.pm >= 0.5 ? pc.high : this.pm >= 0.3 ? pc.medium : pc.low;
+  }
+}
+
+
 // sales.demo-data.ts
-import type { HeaderObject, ValueGetterProps } from "@simple-table/angular";
+import type { AngularHeaderObject, ValueGetterProps } from "@simple-table/angular";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
 type ThemePalette = {
@@ -363,7 +509,7 @@ const SALES_SAMPLE_INBOUND: SalesInboundRow[] = [
 
 export const salesSampleRows: SalesRow[] = processSalesData(SALES_SAMPLE_INBOUND);
 
-export const salesHeadersCore: HeaderObject[] = [
+export const salesHeadersCore: AngularHeaderObject[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
