@@ -39,6 +39,19 @@ export const v3_0_0: ChangelogEntry = {
   ],
 };
 
+export const v3_0_4: ChangelogEntry = {
+  version: "3.0.4",
+  date: "2026-04-12",
+  title: "Bug fixes",
+  description: "Bug fixes.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "Bug fixes.",
+    },
+  ],
+};
+
 export const v2_6_3: ChangelogEntry = {
   version: "2.6.3",
   date: "2026-03-28",
@@ -1554,6 +1567,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_0_4,
   v3_0_0,
   v2_6_3,
   v2_6_2,
