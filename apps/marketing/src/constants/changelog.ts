@@ -47,7 +47,7 @@ export const v3_0_4: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Bug fixes.",
+      description: "General bug fixes and improvements.",
     },
   ],
 };

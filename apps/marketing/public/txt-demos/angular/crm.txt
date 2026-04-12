@@ -41,7 +41,7 @@ import { crmCellPalette } from "./crm-demo-context";
         <span style="cursor:pointer;font-size:14px;font-weight:600;" [style.color]="palette().link">{{ d.name }}</span>
         <div style="font-size:12px;" [style.color]="palette().textSecondary">{{ d.title }}</div>
         <div style="font-size:12px;" [style.color]="palette().textSecondary">
-          <span style="font-size:12px;" [style.color]="palette().textTertiary">@</span>
+          <span style="font-size:12px;" [style.color]="palette().textTertiary">&#64;</span>
           {{ " " + d.company }}
         </div>
       </div>
