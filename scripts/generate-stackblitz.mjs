@@ -400,7 +400,7 @@ import Demo from "./demos/${demoId}/${pascal}Demo";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Demo height="500px" />
+    <Demo />
   </React.StrictMode>,
 );`,
 
@@ -411,7 +411,7 @@ const el = document.getElementById("app")!;
 el.style.padding = "24px";
 createApp(App).mount(el);`,
       app: `<template>
-  <Demo height="500px" />
+  <Demo />
 </template>
 
 <script setup lang="ts">
@@ -429,7 +429,7 @@ import { ${pascal}DemoComponent } from "./demos/${demoId}/${demoId}-demo.compone
   selector: "app-root",
   standalone: true,
   imports: [${pascal}DemoComponent],
-  template: \`<${demoId}-demo height="500px"></${demoId}-demo>\`,
+  template: \`<${demoId}-demo></${demoId}-demo>\`,
 })
 class AppComponent {}
 
@@ -444,21 +444,20 @@ const el = document.getElementById("app")!;
 el.style.padding = "24px";
 mount(Demo, {
   target: el,
-  props: { height: "500px" },
 });`,
 
     solid: `import { render } from "solid-js/web";
 import Demo from "./demos/${demoId}/${pascal}Demo";
 
 render(
-  () => <Demo height="500px" />,
+  () => <Demo />,
   document.getElementById("root")!,
 );`,
 
     vanilla: `import { render${pascal}Demo } from "./demos/${demoId}/${pascal}Demo";
 
 const container = document.getElementById("root")!;
-const instance = render${pascal}Demo(container, { height: "500px" });
+const instance = render${pascal}Demo(container, {});
 if (instance?.mount) instance.mount();`,
   };
 
