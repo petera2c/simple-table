@@ -21,7 +21,8 @@ body {
 
 .bg-grid-pattern {
   background-size: 50px 50px;
-  background-image: linear-gradient(to right, rgba(100, 116, 139, 0.05) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(100, 116, 139, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(100, 116, 139, 0.05) 1px, transparent 1px);
 }
 

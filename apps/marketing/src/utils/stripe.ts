@@ -1,21 +1,18 @@
-import { STRIPE_PAYMENT_LINKS } from "@/constants/stripe";
+import { STRIPE_ENTERPRISE_PAYMENT_LINKS, STRIPE_PAYMENT_LINKS } from "@/constants/stripe";
 
-export const redirectToCheckout = async (priceId: string, isAnnual: boolean) => {
-  try {
-    const planType = isAnnual ? "annual" : "monthly";
-    const paymentLink = STRIPE_PAYMENT_LINKS[planType];
+export type StripeCheckoutProduct = "pro" | "enterprise";
 
-    if (!paymentLink) {
-      alert(
-        `Payment link not configured for ${planType} plan. Please create Payment Links in your Stripe Dashboard first.`
-      );
-      throw new Error(`Payment link not configured for ${planType} plan`);
-    }
+export const openStripeCheckout = (product: StripeCheckoutProduct, isAnnual: boolean) => {
+  const planType = isAnnual ? "annual" : "monthly";
+  const paymentLink =
+    product === "pro" ? STRIPE_PAYMENT_LINKS[planType] : STRIPE_ENTERPRISE_PAYMENT_LINKS[planType];
 
-    // Redirect to the Payment Link
-    window.location.href = paymentLink;
-  } catch (error) {
-    console.error("Error redirecting to checkout:", error);
-    throw error;
+  if (!paymentLink) {
+    alert(
+      `Payment link not configured for ${product} ${planType} plan. Please create Payment Links in your Stripe Dashboard first.`,
+    );
+    throw new Error(`Payment link not configured for ${product} ${planType} plan`);
   }
+
+  window.open(paymentLink, "_blank", "noopener,noreferrer");
 };

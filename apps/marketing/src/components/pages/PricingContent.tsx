@@ -6,19 +6,18 @@ import PageWrapper from "@/components/PageWrapper";
 import {
   faCheck,
   faRocket,
-  faStar,
   faHeart,
   faBolt,
   faCrown,
   faGift,
   faCreditCard,
   faEnvelope,
+  faBuilding,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "antd";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { redirectToCheckout } from "@/utils/stripe";
-import { getStripePriceId, STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
+import { useMemo, useState } from "react";
+import { openStripeCheckout } from "@/utils/stripe";
+import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import ContactModal from "@/components/ContactModal";
 
 interface PlanFeature {
@@ -37,86 +36,122 @@ interface Plan {
   features: PlanFeature[];
   cta: string;
   ctaVariant: "default" | "primary";
-  popular?: boolean;
   icon: any;
   iconColor: string;
   borderColor: string;
   backgroundColor: string;
-  specialOffer?: string;
 }
 
 const PricingContent: React.FC = () => {
-  const router = useRouter();
   const [isAnnual, setIsAnnual] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
-  const plans: Plan[] = [
-    {
-      name: "FREE",
-      subtitle: "For Individuals & Startups",
-      price: "$0",
-      billingCycle: "forever",
-      description:
-        "Perfect for fun projects, bootstrapped startups, and companies with zero revenue. Any revenue requires Pro. Unlimited users per product license.",
-      features: [
-        { text: "Full library access", included: true, highlight: true },
-        { text: "All features included", included: true, highlight: true },
-        { text: "Community support", included: true, highlight: true },
-        { text: "MIT License - for zero revenue companies only", included: true, highlight: false },
-      ],
-      cta: "Get Started Free",
-      ctaVariant: "default",
-      icon: faHeart,
-      iconColor: "text-green-500",
-      borderColor: "border-green-200 dark:border-green-800",
-      backgroundColor: "bg-green-50 dark:bg-green-950",
-      specialOffer: "",
-    },
-    {
-      name: "PRO",
-      subtitle: "For Growing Businesses",
-      price: isAnnual ? "$850" : "$85",
-      originalPrice: isAnnual ? "$1,020" : undefined,
-      billingCycle: isAnnual ? "per year" : "per month",
-      description:
-        "For companies with any revenue. Enhanced support and priority access to new features. Unlimited users per product license.",
-      features: [
-        { text: "Priority email & Discord support", included: true, highlight: true },
-        { text: "Direct developer access", included: true, highlight: true },
-        { text: "Feature request prioritization", included: true, highlight: true },
-        {
-          text: "Commercial EULA - required for revenue-generating companies",
-          included: true,
-          highlight: false,
-        },
-      ],
-      cta: "Start Pro Plan",
-      ctaVariant: "primary",
-      popular: true,
-      icon: faCrown,
-      iconColor: "text-blue-500",
-      borderColor: "border-blue-200 dark:border-blue-800",
-      backgroundColor: "bg-blue-50 dark:bg-blue-950",
-      specialOffer: "50% off first year - Only 2 spots left! Use code: 50OFF",
-    },
-  ];
+  const plans: Plan[] = useMemo(
+    () => [
+      {
+        name: "FREE",
+        subtitle: "For Individuals & Startups",
+        price: "$0",
+        billingCycle: "forever",
+        description:
+          "Perfect for fun projects, bootstrapped startups, and companies with zero revenue. Any revenue requires a paid plan (Pro or Enterprise). Unlimited users per product license.",
+        features: [
+          { text: "Full library access", included: true, highlight: true },
+          { text: "All features included", included: true, highlight: true },
+          { text: "Community support", included: true, highlight: true },
+          {
+            text: "MIT License - for zero revenue companies only",
+            included: true,
+            highlight: false,
+          },
+        ],
+        cta: "Get Started Free",
+        ctaVariant: "default",
+        icon: faHeart,
+        iconColor: "text-green-500",
+        borderColor: "border-green-200 dark:border-green-800",
+        backgroundColor: "bg-green-50 dark:bg-green-950",
+      },
+      {
+        name: "PRO",
+        subtitle: "For Growing Businesses",
+        price: isAnnual ? "$850" : "$85",
+        originalPrice: isAnnual ? "$1,020" : undefined,
+        billingCycle: isAnnual ? "per year" : "per month",
+        description:
+          "For companies with any revenue. Enhanced support and priority access to new features. Unlimited users per product license.",
+        features: [
+          { text: "Priority email & Discord support", included: true, highlight: true },
+          { text: "Bug support for production issues", included: true, highlight: true },
+          {
+            text: "Commercial EULA - required for revenue-generating companies",
+            included: true,
+            highlight: false,
+          },
+        ],
+        cta: "Start Pro Plan",
+        ctaVariant: "primary",
+        icon: faCrown,
+        iconColor: "text-blue-500",
+        borderColor: "border-blue-200 dark:border-blue-800",
+        backgroundColor: "bg-blue-50 dark:bg-blue-950",
+      },
+      {
+        name: "ENTERPRISE",
+        subtitle: "For teams that need hands-on support",
+        price: isAnnual ? "$3,500" : "$350",
+        originalPrice: isAnnual ? "$4,200" : undefined,
+        billingCycle: isAnnual ? "per year" : "per month",
+        description:
+          "For teams that need support beyond standard Pro. Dedicated support and direct access to the developers who build Simple Table. Unlimited users per product license.",
+        features: [
+          { text: "Premium support with faster response times", included: true, highlight: true },
+          { text: "Direct access to core developers", included: true, highlight: true },
+          { text: "Feature request prioritization", included: true, highlight: true },
+          {
+            text: "Commercial EULA - required for revenue-generating companies",
+            included: true,
+            highlight: false,
+          },
+        ],
+        cta: "Start Enterprise Plan",
+        ctaVariant: "primary",
+        icon: faBuilding,
+        iconColor: "text-purple-500 dark:text-purple-400",
+        borderColor: "border-purple-200 dark:border-purple-800",
+        backgroundColor: "bg-purple-50 dark:bg-purple-900",
+      },
+    ],
+    [isAnnual],
+  );
 
   const handleGetStarted = async (planName: string) => {
     if (planName === "FREE") {
-      router.push("/docs/installation");
-    } else {
+      window.open("/docs/installation", "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (planName === "ENTERPRISE") {
       try {
-        // Redirect to Stripe Checkout for PRO plan
-        const priceId = getStripePriceId(isAnnual ? "annual" : "monthly");
-
-        console.log("Redirecting to checkout with:", { priceId, isAnnual });
-
-        await redirectToCheckout(priceId, isAnnual);
+        openStripeCheckout("enterprise", isAnnual);
+      } catch (error) {
+        console.error("Error starting Enterprise checkout:", error);
+        alert("There was an error starting the checkout process. Please try again.");
+      }
+      return;
+    }
+    if (planName === "PRO") {
+      try {
+        openStripeCheckout("pro", isAnnual);
       } catch (error) {
         console.error("Error starting checkout:", error);
         alert("There was an error starting the checkout process. Please try again.");
       }
     }
+  };
+
+  const ctaIconForPlan = (planName: string) => {
+    if (planName === "FREE") return faRocket;
+    return faBolt;
   };
 
   const containerVariants = {
@@ -219,7 +254,7 @@ const PricingContent: React.FC = () => {
 
         {/* Pricing Cards */}
         <motion.section
-          className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto"
+          className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -227,38 +262,23 @@ const PricingContent: React.FC = () => {
           {plans.map((plan, index) => (
             <motion.div
               key={index}
-              className={`relative bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-2 ${
-                plan.borderColor
-              } ${plan.popular ? "scale-105 shadow-2xl" : ""}`}
+              className={`relative flex h-full flex-col rounded-xl p-6 shadow-lg border-2 bg-white dark:bg-gray-800 ${plan.borderColor}`}
               variants={itemVariants}
             >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-blue-500 text-white px-6 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
-                    <FontAwesomeIcon icon={faStar} />
-                    Most Popular
-                  </span>
-                </div>
-              )}
-
-              {plan.specialOffer && (
-                <div className="absolute -top-2 -right-2">
-                  <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold animate-pulse">
-                    Limited Time
-                  </span>
-                </div>
-              )}
-
               <div
-                className={`w-12 h-12 rounded-full ${plan.backgroundColor} flex items-center justify-center mb-4`}
+                className={`mb-4 flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${plan.backgroundColor}`}
               >
                 <FontAwesomeIcon icon={plan.icon} className={`text-lg ${plan.iconColor}`} />
               </div>
 
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">{plan.name}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{plan.subtitle}</p>
+              <h3 className="mb-1 shrink-0 text-xl font-bold text-gray-800 dark:text-white">
+                {plan.name}
+              </h3>
+              <p className="mb-3 shrink-0 text-sm text-gray-600 dark:text-gray-400">
+                {plan.subtitle}
+              </p>
 
-              <div className="mb-4">
+              <div className="mb-4 shrink-0">
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-bold text-gray-800 dark:text-white">
                     {plan.price}
@@ -270,26 +290,25 @@ const PricingContent: React.FC = () => {
                   )}
                   <span className="text-gray-600 dark:text-gray-400">/{plan.billingCycle}</span>
                 </div>
-                <p className="text-sm text-red-600 dark:text-red-400 font-medium mt-2 min-h-[20px]">
-                  {plan.specialOffer}
-                </p>
               </div>
 
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
+              <p className="mb-4 min-h-[4.5rem] shrink-0 text-sm text-gray-600 dark:text-gray-300">
+                {plan.description}
+              </p>
 
               <Button
                 type={plan.ctaVariant}
                 size="large"
-                className="w-full mb-4 h-10"
+                className="mb-4 h-10 w-full shrink-0"
                 onClick={() => handleGetStarted(plan.name)}
               >
-                <FontAwesomeIcon icon={plan.name === "FREE" ? faRocket : faBolt} className="mr-2" />
+                <FontAwesomeIcon icon={ctaIconForPlan(plan.name)} className="mr-2" />
                 {plan.cta}
               </Button>
 
-              <div className="space-y-2">
+              <div className="flex flex-1 flex-col gap-2">
                 {plan.features.map((feature, featureIndex) => (
-                  <div key={featureIndex} className="flex items-center gap-3">
+                  <div key={featureIndex} className="flex shrink-0 items-center gap-3">
                     <div
                       className={`${
                         feature.included ? "text-green-500" : "text-gray-300 dark:text-gray-600"
@@ -312,7 +331,7 @@ const PricingContent: React.FC = () => {
                 ))}
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="mt-4 shrink-0 border-t border-gray-200 pt-4 dark:border-gray-700">
                 <a
                   href={plan.name === "FREE" ? "/legal/license" : "/legal/eula"}
                   target="_blank"
@@ -365,7 +384,8 @@ const PricingContent: React.FC = () => {
             <p className="text-gray-700 dark:text-gray-300 mb-2">
               The <strong>FREE plan</strong> is available only for companies, products, or
               organizations with <strong>zero revenue</strong>. If your company generates any
-              revenue whatsoever, you must upgrade to the <strong>PRO plan</strong>.
+              revenue whatsoever, you must upgrade to a <strong>paid plan</strong> (Pro or
+              Enterprise).
             </p>
             <p className="text-gray-700 dark:text-gray-300">
               For complete licensing terms, please review:
@@ -387,7 +407,7 @@ const PricingContent: React.FC = () => {
                 >
                   End-User License Agreement (EULA)
                 </a>{" "}
-                <span className="text-gray-600 dark:text-gray-400">(for PRO plan)</span>
+                <span className="text-gray-600 dark:text-gray-400">(for Pro and Enterprise)</span>
               </li>
             </ul>
           </div>
@@ -430,7 +450,7 @@ const PricingContent: React.FC = () => {
             Join thousands of developers who trust Simple Table for their data visualization needs.
             No per-user fees - one license covers unlimited users per product.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
             <Button
               type="primary"
               size="large"
@@ -443,6 +463,15 @@ const PricingContent: React.FC = () => {
             <Button size="large" onClick={() => handleGetStarted("PRO")} className="h-12 px-8">
               <FontAwesomeIcon icon={faCrown} className="mr-2" />
               Upgrade to PRO
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => handleGetStarted("ENTERPRISE")}
+              className="h-12 px-8"
+            >
+              <FontAwesomeIcon icon={faBuilding} className="mr-2" />
+              Start Enterprise Plan
             </Button>
           </div>
         </motion.section>

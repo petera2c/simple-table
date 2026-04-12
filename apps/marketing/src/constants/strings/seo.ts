@@ -1217,9 +1217,9 @@ export const SEO_STRINGS = {
     },
   },
   pricing: {
-    title: "Simple Table Pricing 2025: Free & Pro Plans | AG Grid Alternative",
+    title: "Simple Table Pricing 2025: Free, Pro & Enterprise | AG Grid Alternative",
     description:
-      "Simple Table pricing: FREE plan for individuals and startups, PRO plan for businesses ($85/mo). Transparent pricing with no per-user fees. Works with React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
+      "Simple Table pricing: FREE for zero-revenue use. Pro $85/mo or $850/yr. Enterprise $350/mo or $3,500/yr with premium support and direct developer access. No per-user fees. React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
     keywords:
       "simple-table pricing, free data grid, data grid pricing, data grid cost, simple table pro, free table library, data grid plans, ag grid pricing alternative, ag grid cost comparison, javascript data grid pricing",
   },
