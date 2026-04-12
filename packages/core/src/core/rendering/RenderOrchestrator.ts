@@ -12,7 +12,12 @@ import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
-import { processRows, ProcessRowsResult } from "../../utils/rowProcessing";
+import {
+  processRows,
+  ProcessRowsResult,
+  recomputeProcessRowsViewport,
+  type ProcessRowsScrollReuseBase,
+} from "../../utils/rowProcessing";
 import { calculateContentHeight } from "../../hooks/contentHeight";
 import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
@@ -105,6 +110,18 @@ export class RenderOrchestrator {
   private lastRowsRef: Row[] | null = null;
   private flattenedRowsCache: FlattenedRowsCache | null = null;
   private lastProcessedResult: ProcessRowsResult | null = null;
+  /** Fingerprint for skipping pagination + height-map work on vertical scroll frames. */
+  private processRowsScrollReuseKey: string | null = null;
+  private processRowsScrollReuseBase: ProcessRowsScrollReuseBase | null = null;
+  /** Last painted virtual row range on scroll-raf; when unchanged, DOM work is redundant (native scroll moves content). */
+  private lastScrollRafPaintedRange: { start: number; end: number } | null = null;
+  /** Reuse normalized headers across scroll frames when layout inputs are unchanged. */
+  private scrollRafHeadersMemo: {
+    headersRef: HeaderObject[];
+    containerWidth: number;
+    collapsedKey: string;
+    effectiveHeaders: HeaderObject[];
+  } | null = null;
 
   constructor() {
     this.tableRenderer = new TableRenderer();
@@ -123,6 +140,16 @@ export class RenderOrchestrator {
     if (!type || type === "all" || type === "body") {
       this.flattenedRowsCache = null;
       this.lastProcessedResult = null;
+    }
+    if (!type || type === "all" || type === "body" || type === "context") {
+      this.processRowsScrollReuseKey = null;
+      this.processRowsScrollReuseBase = null;
+      this.lastScrollRafPaintedRange = null;
+      this.scrollRafHeadersMemo = null;
+    }
+    if (!type || type === "all" || type === "header") {
+      this.lastScrollRafPaintedRange = null;
+      this.scrollRafHeadersMemo = null;
     }
   }
 
@@ -182,12 +209,39 @@ export class RenderOrchestrator {
 
     const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = dimensionState;
 
-    let effectiveHeaders = this.computeEffectiveHeaders(
-      context.headers,
-      context.config,
-      context.customTheme,
-      containerWidth,
-    );
+    const collapsedKey =
+      context.collapsedHeaders.size === 0
+        ? ""
+        : [...context.collapsedHeaders].map(String).sort().join("\0");
+
+    let effectiveHeaders: HeaderObject[];
+    if (
+      context.positionOnlyBody &&
+      context.config.autoExpandColumns !== true &&
+      this.scrollRafHeadersMemo &&
+      this.scrollRafHeadersMemo.headersRef === context.headers &&
+      this.scrollRafHeadersMemo.containerWidth === containerWidth &&
+      this.scrollRafHeadersMemo.collapsedKey === collapsedKey
+    ) {
+      effectiveHeaders = this.scrollRafHeadersMemo.effectiveHeaders;
+    } else {
+      effectiveHeaders = this.computeEffectiveHeaders(
+        context.headers,
+        context.config,
+        context.customTheme,
+        containerWidth,
+      );
+      if (context.config.autoExpandColumns !== true) {
+        this.scrollRafHeadersMemo = {
+          headersRef: context.headers,
+          containerWidth,
+          collapsedKey,
+          effectiveHeaders,
+        };
+      } else {
+        this.scrollRafHeadersMemo = null;
+      }
+    }
 
     const { leftWidth: pinnedLeftWidth, rightWidth: pinnedRightWidth } =
       recalculateAllSectionWidths({
@@ -323,23 +377,74 @@ export class RenderOrchestrator {
           : undefined,
     });
 
-    const processedResult = processRows({
-      flattenedRows: flattenResult.flattenedRows,
-      paginatableRows: flattenResult.paginatableRows,
-      parentEndPositions: flattenResult.parentEndPositions,
-      currentPage: state.currentPage,
-      rowsPerPage: context.config.rowsPerPage ?? 10,
-      shouldPaginate: context.config.shouldPaginate ?? false,
-      serverSidePagination: context.config.serverSidePagination ?? false,
-      contentHeight,
-      rowHeight: context.customTheme.rowHeight,
-      scrollTop: state.scrollTop,
-      scrollDirection: state.scrollDirection,
-      heightOffsets: flattenResult.heightOffsets,
-      customTheme: context.customTheme,
-      enableStickyParents: context.config.enableStickyParents ?? false,
-      rowGrouping: context.config.rowGrouping,
-    });
+    const shouldPaginate = context.config.shouldPaginate ?? false;
+    const rowsPerPage = context.config.rowsPerPage ?? 10;
+    const serverSidePagination = context.config.serverSidePagination ?? false;
+    const totalRowCountForHeight =
+      context.config.totalRowCount ?? flattenResult.paginatableRows.length;
+    const rowGroupingKey = context.config.rowGrouping?.join("\0") ?? "";
+    const heightOffsetsLen = flattenResult.heightOffsets?.length ?? 0;
+    let heightOffsetsChecksum = 0;
+    if (flattenResult.heightOffsets) {
+      for (const [, extra] of flattenResult.heightOffsets) {
+        heightOffsetsChecksum += extra;
+      }
+    }
+
+    const scrollReuseKey =
+      contentHeight === undefined
+        ? ""
+        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${context.config.enableStickyParents ?? false}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
+
+    const scrollReuseEligible =
+      Boolean(context.positionOnlyBody) &&
+      contentHeight !== undefined &&
+      this.processRowsScrollReuseKey !== null &&
+      this.processRowsScrollReuseBase !== null &&
+      this.processRowsScrollReuseKey === scrollReuseKey;
+
+    let processedResult: ProcessRowsResult;
+
+    if (scrollReuseEligible && this.processRowsScrollReuseBase) {
+      processedResult = recomputeProcessRowsViewport(this.processRowsScrollReuseBase, {
+        contentHeight,
+        rowHeight: context.customTheme.rowHeight,
+        scrollTop: state.scrollTop,
+        scrollDirection: state.scrollDirection,
+        enableStickyParents: context.config.enableStickyParents ?? false,
+        rowGrouping: context.config.rowGrouping,
+      });
+    } else {
+      processedResult = processRows({
+        flattenedRows: flattenResult.flattenedRows,
+        paginatableRows: flattenResult.paginatableRows,
+        parentEndPositions: flattenResult.parentEndPositions,
+        currentPage: state.currentPage,
+        rowsPerPage,
+        shouldPaginate,
+        serverSidePagination,
+        contentHeight,
+        rowHeight: context.customTheme.rowHeight,
+        scrollTop: state.scrollTop,
+        scrollDirection: state.scrollDirection,
+        heightOffsets: flattenResult.heightOffsets,
+        customTheme: context.customTheme,
+        enableStickyParents: context.config.enableStickyParents ?? false,
+        rowGrouping: context.config.rowGrouping,
+      });
+
+      if (contentHeight !== undefined) {
+        this.processRowsScrollReuseKey = scrollReuseKey;
+        this.processRowsScrollReuseBase = {
+          currentTableRows: processedResult.currentTableRows,
+          paginatedHeightOffsets: processedResult.paginatedHeightOffsets,
+          heightMap: processedResult.heightMap,
+        };
+      } else {
+        this.processRowsScrollReuseKey = null;
+        this.processRowsScrollReuseBase = null;
+      }
+    }
 
     return {
       dimensionState,
@@ -387,6 +492,17 @@ export class RenderOrchestrator {
     } = snapshot;
     this.lastProcessedResult = processedResult;
 
+    const verticalScrollFastPath = context.positionOnlyBody === true;
+
+    if (
+      verticalScrollFastPath &&
+      this.lastScrollRafPaintedRange !== null &&
+      processedResult.renderedStartIndex === this.lastScrollRafPaintedRange.start &&
+      processedResult.renderedEndIndex === this.lastScrollRafPaintedRange.end
+    ) {
+      return;
+    }
+
     context.rowSelectionManager?.updateConfig({
       tableRows: processedResult.currentTableRows,
     });
@@ -400,49 +516,61 @@ export class RenderOrchestrator {
 
     const mainSectionContainerWidth = containerWidth - leftWidth - rightWidth;
 
-    // Match main: maxHeight overrides height for the container; when maxHeight is set, height prop is ignored
-    const normalizeHeight = (v: string | number) => (typeof v === "number" ? `${v}px` : v);
-    const rootStyle = elements.rootElement.style;
-    // Never assign style.cssText on the root: consumers (e.g. theme builders) set
-    // --st-* tokens via setProperty; a full cssText replace would wipe them every render.
-    if (context.config.maxHeight) {
-      const normalizedMax = normalizeHeight(context.config.maxHeight);
-      rootStyle.maxHeight = normalizedMax;
-      rootStyle.height =
-        dimensionState.contentHeight === undefined ? "auto" : normalizedMax;
-    } else {
-      rootStyle.removeProperty("max-height");
-      if (context.config.height) {
-        rootStyle.height = normalizeHeight(context.config.height);
+    if (!verticalScrollFastPath) {
+      // Match main: maxHeight overrides height for the container; when maxHeight is set, height prop is ignored
+      const normalizeHeight = (v: string | number) => (typeof v === "number" ? `${v}px` : v);
+      const rootStyle = elements.rootElement.style;
+      // Never assign style.cssText on the root: consumers (e.g. theme builders) set
+      // --st-* tokens via setProperty; a full cssText replace would wipe them every render.
+      if (context.config.maxHeight) {
+        const normalizedMax = normalizeHeight(context.config.maxHeight);
+        rootStyle.maxHeight = normalizedMax;
+        rootStyle.height =
+          dimensionState.contentHeight === undefined ? "auto" : normalizedMax;
       } else {
-        rootStyle.removeProperty("height");
+        rootStyle.removeProperty("max-height");
+        if (context.config.height) {
+          rootStyle.height = normalizeHeight(context.config.height);
+        } else {
+          rootStyle.removeProperty("height");
+        }
       }
+
+      const { customTheme } = context;
+      rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
+      rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
+      rootStyle.setProperty(
+        "--st-editor-width",
+        `${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px`,
+      );
+      rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
+      rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
+
+      const columnResizing = context.config.columnResizing ?? false;
+      elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
+      elements.content.style.width = context.config.editColumns
+        ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
+        : "100%";
+
+      this.renderHeader(
+        elements.headerContainer,
+        calculatedHeaderHeight,
+        maxHeaderDepth,
+        effectiveHeaders,
+        context,
+      );
     }
 
-    const { customTheme } = context;
-    rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
-    rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
-    rootStyle.setProperty(
-      "--st-editor-width",
-      `${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px`,
-    );
-    rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
-    rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
-
-    const columnResizing = context.config.columnResizing ?? false;
-    elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
-    elements.content.style.width = context.config.editColumns
-      ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
-      : "100%";
-
-    this.renderHeader(
-      elements.headerContainer,
-      calculatedHeaderHeight,
-      maxHeaderDepth,
-      effectiveHeaders,
-      context,
-    );
     this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context);
+
+    if (verticalScrollFastPath) {
+      this.lastScrollRafPaintedRange = {
+        start: processedResult.renderedStartIndex,
+        end: processedResult.renderedEndIndex,
+      };
+    } else {
+      this.lastScrollRafPaintedRange = null;
+    }
 
     // Register header and body panes with section scroll controller, seed state from current scroll, then restore
     this.registerSectionPanes(context);
@@ -458,31 +586,33 @@ export class RenderOrchestrator {
       controller.restoreAll();
     }
 
-    this.renderFooter(
-      elements.footerContainer,
-      context.config.totalRowCount ?? flattenResult.paginatableRows.length,
-      state.currentPage,
-      effectiveHeaders,
-      context,
-    );
-    this.renderColumnEditor(
-      elements.contentWrapper,
-      state.columnEditorOpen,
-      mergedColumnEditorConfig,
-      effectiveHeaders,
-      context,
-    );
-    this.renderHorizontalScrollbar(
-      elements.wrapperContainer,
-      mainWidth,
-      leftWidth,
-      rightWidth,
-      leftContentWidth,
-      rightContentWidth,
-      refs.tableBodyContainerRef.current,
-      effectiveHeaders,
-      context,
-    );
+    if (!verticalScrollFastPath) {
+      this.renderFooter(
+        elements.footerContainer,
+        context.config.totalRowCount ?? flattenResult.paginatableRows.length,
+        state.currentPage,
+        effectiveHeaders,
+        context,
+      );
+      this.renderColumnEditor(
+        elements.contentWrapper,
+        state.columnEditorOpen,
+        mergedColumnEditorConfig,
+        effectiveHeaders,
+        context,
+      );
+      this.renderHorizontalScrollbar(
+        elements.wrapperContainer,
+        mainWidth,
+        leftWidth,
+        rightWidth,
+        leftContentWidth,
+        rightContentWidth,
+        refs.tableBodyContainerRef.current,
+        effectiveHeaders,
+        context,
+      );
+    }
   }
 
   private renderHeader(

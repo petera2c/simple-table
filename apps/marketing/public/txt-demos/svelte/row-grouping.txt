@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import { rowGroupingConfig } from "./row-grouping.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -30,7 +29,7 @@
   </div>
   <SimpleTable
     bind:this={tableRef}
-    defaultHeaders={defaultHeadersFromCore(rowGroupingConfig.headers)}
+    defaultHeaders={rowGroupingConfig.headers}
     rows={rowGroupingConfig.rows}
     rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
     enableStickyParents={true}

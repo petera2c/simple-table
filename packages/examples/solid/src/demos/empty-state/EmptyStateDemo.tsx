@@ -1,5 +1,4 @@
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
 import { emptyStateConfig } from "./empty-state.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -14,7 +13,7 @@ const EmptyIcon = () => (
 export default function EmptyStateDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(emptyStateConfig.headers)}
+      defaultHeaders={emptyStateConfig.headers}
       rows={emptyStateConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

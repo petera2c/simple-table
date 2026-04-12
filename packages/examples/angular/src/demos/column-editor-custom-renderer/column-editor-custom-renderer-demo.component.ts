@@ -1,12 +1,12 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, ColumnEditorConfig, Row, Theme } from "@simple-table/angular";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularColumnEditorConfig, AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import {
   columnEditorCustomRendererConfig,
-  COLUMN_EDITOR_TEXT,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
-  buildVanillaColumnEditorRowRenderer,
+  COLUMN_EDITOR_TEXT,
 } from "./column-editor-custom-renderer.demo-data";
+import { ColumnEditorCustomRowComponent } from "./column-editor-custom-row.component";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -29,11 +29,11 @@ export class ColumnEditorCustomRendererDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnEditorCustomRendererConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(columnEditorCustomRendererConfig.headers);
-  readonly editorConfig: ColumnEditorConfig = {
+  readonly headers: AngularHeaderObject[] = columnEditorCustomRendererConfig.headers;
+  readonly editorConfig: AngularColumnEditorConfig = {
     text: COLUMN_EDITOR_TEXT,
     searchEnabled: true,
     searchPlaceholder: COLUMN_EDITOR_SEARCH_PLACEHOLDER,
-    rowRenderer: buildVanillaColumnEditorRowRenderer,
+    rowRenderer: ColumnEditorCustomRowComponent,
   };
 }

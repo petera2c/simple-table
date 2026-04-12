@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { columnPinningConfig } from "./column-pinning.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const ColumnPinningDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(columnPinningConfig.headers)}
+      defaultHeaders={columnPinningConfig.headers}
       rows={columnPinningConfig.rows}
       height={height}
       theme={theme}

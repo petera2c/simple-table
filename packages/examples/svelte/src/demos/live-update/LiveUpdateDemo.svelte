@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -105,7 +104,7 @@
 
 <SimpleTable
   bind:this={tableRef}
-  defaultHeaders={defaultHeadersFromCore(liveUpdateConfig.headers)}
+  defaultHeaders={liveUpdateConfig.headers}
   rows={liveUpdateConfig.rows}
   {height}
   {theme}

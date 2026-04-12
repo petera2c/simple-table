@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 
 const industries = ["Technology", "Financial Services", "Healthcare", "Manufacturing", "Retail", "Energy", "Telecommunications", "Pharmaceuticals", "Automotive", "Aerospace", "Biotechnology", "E-commerce"];
@@ -41,7 +41,7 @@ const generateCompany = (companyIndex: number) => {
 
 export const generateNestedTablesData = (count: number = 25) => Array.from({ length: count }, (_, i) => generateCompany(i));
 
-export const nestedTablesDivisionHeaders: HeaderObject[] = [
+export const nestedTablesDivisionHeaders: ReactHeaderObject[] = [
   { accessor: "divisionId", label: "Division ID", width: 120 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -49,7 +49,7 @@ export const nestedTablesDivisionHeaders: HeaderObject[] = [
   { accessor: "location", label: "Location", width: "1fr" },
 ];
 
-export const nestedTablesHeaders: HeaderObject[] = [
+export const nestedTablesHeaders: ReactHeaderObject[] = [
   {
     accessor: "companyName",
     label: "Company",

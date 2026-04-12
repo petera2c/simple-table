@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { tooltipConfig } from "./tooltip.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const TooltipDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(tooltipConfig.headers)}
+      defaultHeaders={tooltipConfig.headers}
       rows={tooltipConfig.rows}
       height={height}
       theme={theme}

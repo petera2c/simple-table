@@ -20,7 +20,7 @@
       </button>
     </div>
     <SimpleTable
-      :default-headers="defaultHeadersFromCore(themesConfig.headers)"
+      :default-headers="themesConfig.headers"
       :rows="themesConfig.rows"
       :height="height"
       :theme="selectedTheme"
@@ -30,8 +30,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
 import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "@simple-table/vue/styles.css";
 

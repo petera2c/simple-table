@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, Row } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, Row } from "@simple-table/react";
 import { loadingStateConfig } from "./loading-state.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -44,7 +43,7 @@ const LoadingStateDemo = ({
         </button>
       </div>
       <SimpleTable
-        defaultHeaders={defaultHeadersFromCore(loadingStateConfig.headers)}
+        defaultHeaders={loadingStateConfig.headers}
         rows={data}
         isLoading={isLoading}
         height={height}

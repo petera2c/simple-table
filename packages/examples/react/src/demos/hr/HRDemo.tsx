@@ -1,13 +1,17 @@
 import { useMemo, useState } from "react";
-import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
-import type { Theme, CellChangeProps, CellRendererProps, ReactHeaderObject } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
+import type {
+  Theme,
+  CellChangeProps,
+  CellRendererProps,
+  ReactHeaderObject,
+} from "@simple-table/react";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
 import "@simple-table/react/styles.css";
 
 function getHeaders(): ReactHeaderObject[] {
-  return mapToReactHeaderObjects(
-    hrConfig.headers.map((h) => {
+  return hrConfig.headers.map((h) => {
     if (h.accessor === "fullName") {
       return {
         ...h,
@@ -152,8 +156,7 @@ function getHeaders(): ReactHeaderObject[] {
       };
     }
     return h;
-  }),
-  );
+  });
 }
 
 const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {

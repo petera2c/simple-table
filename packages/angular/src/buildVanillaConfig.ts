@@ -54,7 +54,7 @@ export function buildVanillaConfig(
     };
   }
 
-  function transformHeader(header: AngularHeaderObject): HeaderObject {
+  function transformHeader(header: HeaderObject | AngularHeaderObject): HeaderObject {
     const { cellRenderer, headerRenderer, children, nestedTable, ...headerRest } = header;
     const transformed: HeaderObject = { ...(headerRest as any) };
 

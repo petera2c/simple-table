@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import { tableHeightConfig } from "./table-height.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -21,7 +20,7 @@
     {/each}
   </div>
   <SimpleTable
-    defaultHeaders={defaultHeadersFromCore(tableHeightConfig.headers)}
+    defaultHeaders={tableHeightConfig.headers}
     rows={tableHeightConfig.rows}
     height={selectedHeight}
     {theme}

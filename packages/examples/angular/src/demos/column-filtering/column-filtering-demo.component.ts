@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnFilteringConfig } from "./column-filtering.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -22,5 +21,5 @@ export class ColumnFilteringDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnFilteringConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(columnFilteringConfig.headers);
+  readonly headers: AngularHeaderObject[] = columnFilteringConfig.headers;
 }

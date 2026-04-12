@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { columnSelectionConfig } from "./column-selection.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const ColumnSelectionDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(columnSelectionConfig.headers)}
+      defaultHeaders={columnSelectionConfig.headers}
       rows={columnSelectionConfig.rows}
       height={height}
       theme={theme}

@@ -15,6 +15,13 @@ export function wrapSvelteRenderer<P extends Record<string, any>>(
   };
 }
 
+/** Mount a Svelte component into a div for vanilla-only slots (e.g. table empty state). */
+export function wrapSvelteStatic(component: Component): HTMLElement {
+  const el = document.createElement("div");
+  mount(component, { target: el, props: {} });
+  return el;
+}
+
 /**
  * Converts a rendered Svelte component to an HTML string.
  * Used for icon props where vanilla expects string | HTMLElement | SVGSVGElement.

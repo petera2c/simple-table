@@ -1,24 +1,27 @@
 import { useState, useMemo } from "react";
-import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellRendererProps, CellClickProps } from "@simple-table/react";
-import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type {
+  Theme,
+  ReactHeaderObject,
+  CellRendererProps,
+  CellClickProps,
+} from "@simple-table/react";
+import {
+  cellClickingHeaders,
+  cellClickingData,
+  CELL_CLICKING_STATUSES,
+} from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/react/styles.css";
 
-const CellClickingDemo = ({
-  height,
-  theme,
-}: {
-  height?: string | number;
-  theme?: Theme;
-}) => {
+const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?: Theme }) => {
   const [clickInfo, setClickInfo] = useState("");
   const [selectedTask, setSelectedTask] = useState<ProjectTask | null>(null);
   const [rows, setRows] = useState<ProjectTask[]>([...cellClickingData]);
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      mapToReactHeaderObjects(cellClickingHeaders.map((h) => {
+      cellClickingHeaders.map((h) => {
         if (h.accessor === "priority") {
           return {
             ...h,
@@ -44,8 +47,10 @@ const CellClickingDemo = ({
             ...h,
             cellRenderer: ({ row }: CellRendererProps) => {
               const s = String(row.status);
-              const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
-              const color = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
+              const bg =
+                s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
+              const color =
+                s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
               return (
                 <span
                   style={{
@@ -88,7 +93,7 @@ const CellClickingDemo = ({
           };
         }
         return h;
-      })),
+      }),
     [],
   );
 
@@ -113,13 +118,17 @@ const CellClickingDemo = ({
         break;
       case "estimatedHours": {
         const newVal = Math.min(task.estimatedHours + 2, 40);
-        setRows((prev) => prev.map((t) => (t.id === task.id ? { ...t, estimatedHours: newVal } : t)));
+        setRows((prev) =>
+          prev.map((t) => (t.id === task.id ? { ...t, estimatedHours: newVal } : t)),
+        );
         setClickInfo(`Est. hours: ${task.estimatedHours}h → ${newVal}h`);
         break;
       }
       case "completedHours": {
         const newVal = Math.min(task.completedHours + 1, task.estimatedHours);
-        setRows((prev) => prev.map((t) => (t.id === task.id ? { ...t, completedHours: newVal } : t)));
+        setRows((prev) =>
+          prev.map((t) => (t.id === task.id ? { ...t, completedHours: newVal } : t)),
+        );
         setClickInfo(`Done hours: ${task.completedHours}h → ${newVal}h`);
         break;
       }
@@ -143,7 +152,9 @@ const CellClickingDemo = ({
           alignItems: "center",
         }}
       >
-        <strong style={{ marginRight: 8, color: isDark ? "#f9fafb" : "#1f2937" }}>Last Click:</strong>
+        <strong style={{ marginRight: 8, color: isDark ? "#f9fafb" : "#1f2937" }}>
+          Last Click:
+        </strong>
         <span style={{ color: isDark ? "#d1d5db" : "#4b5563" }}>
           {clickInfo || "Click any cell to see interaction details..."}
         </span>
@@ -170,7 +181,9 @@ const CellClickingDemo = ({
               width: "90%",
             }}
           >
-            <h3 style={{ margin: "0 0 16px", color: isDark ? "#f9fafb" : "#1f2937" }}>Task Details</h3>
+            <h3 style={{ margin: "0 0 16px", color: isDark ? "#f9fafb" : "#1f2937" }}>
+              Task Details
+            </h3>
             {(["task", "details", "assignee", "status", "priority"] as const).map((key) => (
               <p key={key} style={{ margin: "8px 0", color: isDark ? "#d1d5db" : "#4b5563" }}>
                 <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong> {selectedTask[key]}

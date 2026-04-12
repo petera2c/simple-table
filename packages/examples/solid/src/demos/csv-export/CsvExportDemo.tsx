@@ -1,38 +1,35 @@
-import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
-import type { Theme, TableAPI, SolidHeaderObject } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI, SolidHeaderObject } from "@simple-table/solid";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function CsvExportDemo(props: { height?: string | number; theme?: Theme }) {
   let tableRef: TableAPI | undefined;
 
-  const headers: SolidHeaderObject[] = mapToSolidHeaderObjects(
-    csvExportHeaders.map((h) => {
-      if (h.accessor === "actions") {
-        return {
-          ...h,
-          cellRenderer: () => (
-            <button
-              type="button"
-              style={{
-                background: "#3b82f6",
-                color: "white",
-                border: "none",
-                padding: "4px 12px",
-                "border-radius": "4px",
-                cursor: "pointer",
-                "font-size": "12px",
-                "font-weight": "bold",
-              }}
-            >
-              View
-            </button>
-          ),
-        };
-      }
-      return h;
-    }),
-  );
+  const headers: SolidHeaderObject[] = csvExportHeaders.map((h) => {
+    if (h.accessor === "actions") {
+      return {
+        ...h,
+        cellRenderer: () => (
+          <button
+            type="button"
+            style={{
+              background: "#3b82f6",
+              color: "white",
+              border: "none",
+              padding: "4px 12px",
+              "border-radius": "4px",
+              cursor: "pointer",
+              "font-size": "12px",
+              "font-weight": "bold",
+            }}
+          >
+            View
+          </button>
+        ),
+      };
+    }
+    return h;
+  });
 
   const handleExport = () => {
     tableRef?.exportToCSV();

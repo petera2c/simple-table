@@ -1,6 +1,5 @@
 import { useRef } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, TableAPI } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, TableAPI } from "@simple-table/react";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -54,7 +53,7 @@ const RowGroupingDemo = ({
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={defaultHeadersFromCore(rowGroupingConfig.headers)}
+        defaultHeaders={rowGroupingConfig.headers}
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
         enableStickyParents={rowGroupingConfig.tableProps.enableStickyParents}

@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(singleRowChildrenConfig.headers)"
+    :default-headers="singleRowChildrenConfig.headers"
     :rows="singleRowChildrenConfig.rows"
     :column-resizing="singleRowChildrenConfig.tableProps.columnResizing"
     :selectable-cells="singleRowChildrenConfig.tableProps.selectableCells"
@@ -10,8 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
 import { singleRowChildrenConfig } from "./single-row-children.demo-data";
 import "@simple-table/vue/styles.css";
 

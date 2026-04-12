@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme, Row } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme, Row } from "@simple-table/vue";
 import { loadingStateConfig } from "./loading-state.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -38,7 +37,7 @@ onMounted(() => {
       </button>
     </div>
     <SimpleTable
-      :default-headers="defaultHeadersFromCore(loadingStateConfig.headers)"
+      :default-headers="loadingStateConfig.headers"
       :rows="data"
       :is-loading="isLoading"
       :height="props.height"

@@ -1,5 +1,4 @@
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
 import { customIconsConfig } from "./custom-icons.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -39,7 +38,7 @@ const customIcons = {
 export default function CustomIconsDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(customIconsConfig.headers)}
+      defaultHeaders={customIconsConfig.headers}
       rows={customIconsConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme, CellChangeProps } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, CellChangeProps } from "@simple-table/svelte";
   import { cellEditingConfig } from "./cell-editing.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -15,7 +14,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(cellEditingConfig.headers)}
+  defaultHeaders={cellEditingConfig.headers}
   rows={data}
   {height}
   {theme}

@@ -1,17 +1,23 @@
 // SpreadsheetDemo.tsx
 import { useState, useMemo } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, CellChangeProps } from "@simple-table/react";
 import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
 import "@simple-table/react/styles.css";
 import "./spreadsheet-custom.css";
 
-const SpreadsheetDemo = ({ height = "400px", theme = "light" }: { height?: string | number; theme?: Theme }) => {
+const SpreadsheetDemo = ({
+  height = "400px",
+  theme = "light",
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
   const [data, setData] = useState([...spreadsheetConfig.rows]);
   const [additionalColumns, setAdditionalColumns] = useState<ReactHeaderObject[]>([]);
 
   const headers = useMemo((): ReactHeaderObject[] => {
-    const baseHeaders = defaultHeadersFromCore(spreadsheetConfig.headers);
+    const baseHeaders = spreadsheetConfig.headers;
     return [
       ...baseHeaders,
       ...additionalColumns,
@@ -39,7 +45,16 @@ const SpreadsheetDemo = ({ height = "400px", theme = "light" }: { height?: strin
                 };
                 setAdditionalColumns([...additionalColumns, newCol]);
               }}
-              style={{ color: "white", border: "none", padding: "4px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "11px", fontWeight: 500, whiteSpace: "nowrap" }}
+              style={{
+                color: "white",
+                border: "none",
+                padding: "4px 10px",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "11px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
             >
               + Add Column
             </button>
@@ -57,7 +72,7 @@ const SpreadsheetDemo = ({ height = "400px", theme = "light" }: { height?: strin
           return recalculateAmortization(item, accessor, val);
         }
         return item;
-      })
+      }),
     );
   };
 

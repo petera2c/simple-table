@@ -1,11 +1,6 @@
 // Component
 export { default as SimpleTable } from "./SimpleTable.svelte";
 export { asRows } from "simple-table-core";
-export {
-  defaultHeaderFromCore,
-  defaultHeadersFromCore,
-  mapToSvelteHeaderObjects,
-} from "./defaultHeadersFromCore";
 
 // Svelte-specific props and type overrides
 export type {

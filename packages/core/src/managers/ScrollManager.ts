@@ -22,6 +22,8 @@ export class ScrollManager {
   private subscribers: Set<StateChangeCallback> = new Set();
   private lastScrollTop: number = 0;
   private scrollTimeoutId: number | null = null;
+  /** Coalesce scroll-driven subscriber notifications to one rAF (avoids sync storms + reflow). */
+  private notifySubscribersRafId: number | null = null;
 
   constructor(config: ScrollManagerConfig) {
     this.config = config;
@@ -46,7 +48,17 @@ export class ScrollManager {
   }
 
   private notifySubscribers(): void {
+    if (this.subscribers.size === 0) return;
     this.subscribers.forEach((cb) => cb(this.state));
+  }
+
+  private scheduleNotifySubscribersFromScroll(): void {
+    if (this.subscribers.size === 0) return;
+    if (this.notifySubscribersRafId !== null) return;
+    this.notifySubscribersRafId = requestAnimationFrame(() => {
+      this.notifySubscribersRafId = null;
+      this.notifySubscribers();
+    });
   }
 
   handleScroll(
@@ -75,7 +87,7 @@ export class ScrollManager {
         ...this.state,
         isScrolling: false,
       };
-      this.notifySubscribers();
+      this.scheduleNotifySubscribersFromScroll();
     }, 150);
 
     if (this.config.onLoadMore && this.config.infiniteScrollThreshold) {
@@ -85,7 +97,7 @@ export class ScrollManager {
       }
     }
 
-    this.notifySubscribers();
+    this.scheduleNotifySubscribersFromScroll();
   }
 
   setScrolling(isScrolling: boolean): void {
@@ -120,6 +132,10 @@ export class ScrollManager {
     if (this.scrollTimeoutId !== null) {
       clearTimeout(this.scrollTimeoutId);
       this.scrollTimeoutId = null;
+    }
+    if (this.notifySubscribersRafId !== null) {
+      cancelAnimationFrame(this.notifySubscribersRafId);
+      this.notifySubscribersRafId = null;
     }
     this.subscribers.clear();
   }

@@ -1,6 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "@simple-table/react";
-import type { HeaderObject } from "@simple-table/react";
+import type { Row, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -148,7 +147,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: HeaderObject[] = [
+export const columnFilteringHeaders: ReactHeaderObject[] = [
   {
     accessor: "id",
     label: "ID",
@@ -192,7 +191,7 @@ export const columnFilteringHeaders: HeaderObject[] = [
     type: "number",
     isSortable: true,
     filterable: true,
-    cellRenderer: ({ row }) => {
+    cellRenderer: ({ row }: CellRendererProps) => {
       const salary = row.salary as number;
       return `$${salary.toLocaleString()}`;
     },

@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { tooltipConfig } from "./tooltip.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -25,5 +24,5 @@ export class TooltipDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = tooltipConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(tooltipConfig.headers);
+  readonly headers: AngularHeaderObject[] = tooltipConfig.headers;
 }

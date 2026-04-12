@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(externalSortConfig.headers)"
+    :default-headers="externalSortConfig.headers"
     :rows="sortedRows"
     :external-sort-handling="true"
     :column-resizing="externalSortConfig.tableProps.columnResizing"
@@ -12,8 +12,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme, SortColumn } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme, SortColumn } from "@simple-table/vue";
 import { externalSortConfig } from "./external-sort.demo-data";
 import "@simple-table/vue/styles.css";
 

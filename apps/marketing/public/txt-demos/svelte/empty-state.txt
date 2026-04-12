@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import { emptyStateConfig, buildEmptyStateElement } from "./empty-state.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -10,7 +9,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(emptyStateConfig.headers)}
+  defaultHeaders={emptyStateConfig.headers}
   rows={emptyStateConfig.rows}
   tableEmptyStateRenderer={emptyState}
   {height}

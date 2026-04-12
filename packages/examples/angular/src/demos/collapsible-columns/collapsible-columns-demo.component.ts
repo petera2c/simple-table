@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { collapsibleColumnsConfig } from "./collapsible-columns.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -26,5 +25,5 @@ export class CollapsibleColumnsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = collapsibleColumnsConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(collapsibleColumnsConfig.headers);
+  readonly headers: AngularHeaderObject[] = collapsibleColumnsConfig.headers;
 }

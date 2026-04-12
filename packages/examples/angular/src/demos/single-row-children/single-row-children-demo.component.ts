@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { singleRowChildrenConfig } from "./single-row-children.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -23,6 +22,6 @@ export class SingleRowChildrenDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(singleRowChildrenConfig.headers);
+  readonly headers: AngularHeaderObject[] = singleRowChildrenConfig.headers;
   readonly rows: Row[] = singleRowChildrenConfig.rows;
 }

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import { quickStartConfig } from "./quick-start.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -8,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(quickStartConfig.headers)}
+  defaultHeaders={quickStartConfig.headers}
   rows={quickStartConfig.rows}
   {height}
   {theme}

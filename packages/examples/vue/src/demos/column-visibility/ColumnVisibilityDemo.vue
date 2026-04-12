@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/vue";
-import type { ColumnVisibilityState, Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { ColumnVisibilityState, Theme } from "@simple-table/vue";
 import MarketingColumnEditorRow from "./MarketingColumnEditorRow.vue";
 import {
   columnVisibilityConfig,
@@ -14,7 +13,7 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
   height: "400px",
 });
 
-const defaultHeaders = defaultHeadersFromCore(getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved()));
+const defaultHeaders = getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved());
 
 const columnEditorConfig = {
   ...columnVisibilityConfig.tableProps.columnEditorConfig,

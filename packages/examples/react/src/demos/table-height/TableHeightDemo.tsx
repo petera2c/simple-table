@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -38,7 +37,7 @@ const TableHeightDemo = ({
         ))}
       </div>
       <SimpleTable
-        defaultHeaders={defaultHeadersFromCore(tableHeightConfig.headers)}
+        defaultHeaders={tableHeightConfig.headers}
         rows={tableHeightConfig.rows}
         height={selectedHeight}
         theme={theme}

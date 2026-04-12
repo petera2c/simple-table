@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, TableAPI } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, TableAPI } from "@simple-table/react";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -106,7 +105,7 @@ const LiveUpdateDemo = ({ height = "400px", theme }: { height?: string | number;
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(liveUpdateConfig.headers)}
+      defaultHeaders={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
       ref={tableRef}
       height={height}

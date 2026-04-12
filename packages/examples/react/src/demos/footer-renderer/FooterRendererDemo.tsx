@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, FooterRendererProps } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, FooterRendererProps } from "@simple-table/react";
 import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -45,7 +44,7 @@ const FooterRendererDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(footerRendererConfig.headers)}
+      defaultHeaders={footerRendererConfig.headers}
       rows={footerRendererConfig.rows}
       shouldPaginate={true}
       rowsPerPage={10}

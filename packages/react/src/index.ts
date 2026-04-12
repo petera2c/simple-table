@@ -1,11 +1,6 @@
 // Component
 export { default as SimpleTable } from "./SimpleTable";
 export { asRows } from "simple-table-core";
-export {
-  defaultHeaderFromCore,
-  defaultHeadersFromCore,
-  mapToReactHeaderObjects,
-} from "./defaultHeadersFromCore";
 
 // React-specific props and type overrides
 export type {
@@ -32,8 +27,9 @@ export type {
   HeaderDropdownProps,
 } from "./types";
 
-// Re-export all vanilla types that consumers need when building column
-// definitions, callbacks, or using the imperative ref API.
+// Re-export vanilla types for callbacks and the imperative ref API. For
+// column definitions and column-related callbacks on `SimpleTable`, use
+// `ReactHeaderObject` (exported above).
 export type {
   Accessor,
   AggregationConfig,
@@ -70,7 +66,6 @@ export type {
   GetRowId,
   GetRowIdParams,
   HeaderDropdown,
-  HeaderObject,
   HeaderRenderer,
   IconsConfig,
   LoadingStateRenderer,

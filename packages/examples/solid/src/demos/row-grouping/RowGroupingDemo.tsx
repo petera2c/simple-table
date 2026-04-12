@@ -1,5 +1,4 @@
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme, TableAPI } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI } from "@simple-table/solid";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -29,7 +28,7 @@ export default function RowGroupingDemo(props: { height?: string | number; theme
       </div>
       <SimpleTable
         ref={(api) => (tableRef = api)}
-        defaultHeaders={defaultHeadersFromCore(rowGroupingConfig.headers)}
+        defaultHeaders={rowGroupingConfig.headers}
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
         enableStickyParents={true}

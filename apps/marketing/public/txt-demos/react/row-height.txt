@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { rowHeightConfig } from "./row-height.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const RowHeightDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(rowHeightConfig.headers)}
+      defaultHeaders={rowHeightConfig.headers}
       rows={rowHeightConfig.rows}
       height={height}
       theme={theme}

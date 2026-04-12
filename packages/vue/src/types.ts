@@ -68,8 +68,8 @@ export interface VueColumnEditorConfig
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
  * Column definition for `defaultHeaders`: core column metadata with Vue-only
- * `cellRenderer` / `headerRenderer` / `children` / `nestedTable`. For trees from
- * `simple-table-core`, use `defaultHeadersFromCore` / `mapToVueHeaderObjects`.
+ * `cellRenderer` / `headerRenderer` / `children` / `nestedTable`.
+ * `defaultHeaders` also accepts plain `HeaderObject[]` from shared configs.
  */
 export interface VueHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
@@ -103,7 +103,7 @@ export interface SimpleTableVueProps
     | "columnEditorConfig"
     | "icons"
   > {
-  defaultHeaders: VueHeaderObject[];
+  defaultHeaders: ReadonlyArray<HeaderObject | VueHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: VueFooterRenderer;

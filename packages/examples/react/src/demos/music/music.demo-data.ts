@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 export interface MusicArtist {
   id: number;
@@ -153,7 +153,7 @@ export function generateMusicData(count: number = 50): MusicArtist[] {
 
 export const musicData = generateMusicData(50);
 
-export const musicHeaders: HeaderObject[] = [
+export const musicHeaders: ReactHeaderObject[] = [
   { accessor: "rank", label: "#", width: 60, isSortable: true, isEditable: false, align: "center", type: "number", pinned: "left" },
   { accessor: "artistName", label: "Artist", width: 330, isSortable: true, isEditable: false, align: "left", type: "string", pinned: "left" },
   { accessor: "artistType", label: "Identity", width: 280, isSortable: false, isEditable: false, align: "left", type: "string" },

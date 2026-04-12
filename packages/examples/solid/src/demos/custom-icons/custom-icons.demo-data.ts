@@ -40,39 +40,3 @@ export const customIconsConfig = {
   headers: customIconsHeaders,
   rows: customIconsData,
 } as const;
-
-export function createSvgIcon(pathD: string, color = "#3b82f6", size = 14): SVGSVGElement {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("width", String(size));
-  svg.setAttribute("height", String(size));
-  svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("fill", "none");
-  svg.setAttribute("stroke", color);
-  svg.setAttribute("stroke-width", "2.5");
-  svg.setAttribute("stroke-linecap", "round");
-  svg.setAttribute("stroke-linejoin", "round");
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", pathD);
-  svg.appendChild(path);
-  return svg;
-}
-
-export const ICON_PATHS = {
-  sortUp: "M12 19V5M5 12l7-7 7 7",
-  sortDown: "M12 5v14M19 12l-7 7-7-7",
-  filter: "M3 4h18l-7 8.5V18l-4 2V12.5L3 4z",
-  expand: "M9 5l7 7-7 7",
-  next: "M9 5l7 7-7 7",
-  prev: "M15 19l-7-7 7-7",
-} as const;
-
-export function buildVanillaCustomIcons() {
-  return {
-    sortUp: createSvgIcon(ICON_PATHS.sortUp, "#6366f1"),
-    sortDown: createSvgIcon(ICON_PATHS.sortDown, "#6366f1"),
-    filter: createSvgIcon(ICON_PATHS.filter, "#8b5cf6"),
-    expand: createSvgIcon(ICON_PATHS.expand, "#6366f1"),
-    next: createSvgIcon(ICON_PATHS.next, "#2563eb"),
-    prev: createSvgIcon(ICON_PATHS.prev, "#2563eb"),
-  };
-}

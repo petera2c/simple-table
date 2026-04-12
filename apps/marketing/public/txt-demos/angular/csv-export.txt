@@ -1,7 +1,6 @@
 // csv-export-demo.component.ts
 import { Component, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -34,18 +33,16 @@ export class CsvExportDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = csvExportData;
-  readonly headers: AngularHeaderObject[] = mapToAngularHeaderObjects(
-    csvExportHeaders.map((h) => {
-      if (h.accessor === "actions") {
-        return {
-          ...h,
-          cellRenderer: () =>
-            `<button style="background:#3b82f6;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold">View</button>`,
-        };
-      }
-      return { ...h };
-    }),
-  );
+  readonly headers: AngularHeaderObject[] = csvExportHeaders.map((h) => {
+    if (h.accessor === "actions") {
+      return {
+        ...h,
+        cellRenderer: () =>
+          `<button style="background:#3b82f6;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold">View</button>`,
+      };
+    }
+    return { ...h };
+  });
 
   handleExport(): void {
     this.tableRef.getAPI()?.exportToCSV();

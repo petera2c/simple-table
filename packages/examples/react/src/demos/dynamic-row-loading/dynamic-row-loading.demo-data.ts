@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/react";
+import type { ReactHeaderObject, Row } from "@simple-table/react";
 
 
 export interface DynamicRegion extends Row {
@@ -37,7 +37,7 @@ export interface DynamicProduct extends Row {
   lastUpdate: string;
 }
 
-export const dynamicRowLoadingHeaders: HeaderObject[] = [
+export const dynamicRowLoadingHeaders: ReactHeaderObject[] = [
   { accessor: "name", label: "Name", width: 280, expandable: true, type: "string", pinned: "left" },
   { accessor: "type", label: "Type", width: 100, type: "string" },
   {

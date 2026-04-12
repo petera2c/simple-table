@@ -1,5 +1,10 @@
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme, SolidColumnEditorConfig, ColumnEditorRowRendererProps } from "@simple-table/solid";
+import {
+  SimpleTable,
+  type ColumnEditorRowRendererProps,
+  type SolidColumnEditorConfig,
+  type Theme,
+} from "@simple-table/solid";
+import { createEffect } from "solid-js";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_TEXT,
@@ -7,7 +12,34 @@ import {
 } from "./column-editor-custom-renderer.demo-data";
 import "@simple-table/solid/styles.css";
 
-const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps) => (
+function attach(slot: unknown, host: HTMLElement | undefined): void {
+  if (!host) return;
+  host.replaceChildren();
+  if (slot == null) return;
+  if (typeof slot === "string") {
+    host.textContent = slot;
+  } else if (slot instanceof Node) {
+    host.appendChild(slot);
+  }
+}
+
+function SlotHost(props: { slot: () => unknown; style?: string }) {
+  let host: HTMLSpanElement | undefined;
+  createEffect(() => {
+    attach(props.slot(), host);
+  });
+  return (
+    <span
+      ref={(el) => {
+        host = el;
+        attach(props.slot(), el);
+      }}
+      style={props.style}
+    />
+  );
+}
+
+const CustomRowRenderer = (p: ColumnEditorRowRendererProps) => (
   <div
     style={{
       display: "flex",
@@ -19,15 +51,10 @@ const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps)
       "margin-bottom": "4px",
     }}
   >
-    {components.checkbox && (
-      <span innerHTML={typeof components.checkbox === "string" ? components.checkbox : ""} />
-    )}
-    <span style={{ flex: "1", "font-size": "13px", "font-weight": "500" }}>{header.label}</span>
-    {components.dragIcon && (
-      <span
-        style={{ cursor: "grab", opacity: "0.5" }}
-        innerHTML={typeof components.dragIcon === "string" ? components.dragIcon : ""}
-      />
+    {p.components.checkbox && <SlotHost slot={() => p.components.checkbox} />}
+    <span style={{ flex: "1", "font-size": "13px", "font-weight": "500" }}>{p.header.label}</span>
+    {p.components.dragIcon && (
+      <SlotHost slot={() => p.components.dragIcon} style={{ cursor: "grab", opacity: "0.5" }} />
     )}
   </div>
 );
@@ -42,7 +69,7 @@ const columnEditorConfig: SolidColumnEditorConfig = {
 export default function ColumnEditorCustomRendererDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(columnEditorCustomRendererConfig.headers)}
+      defaultHeaders={columnEditorCustomRendererConfig.headers}
       rows={columnEditorCustomRendererConfig.rows}
       editColumns
       columnEditorConfig={columnEditorConfig}

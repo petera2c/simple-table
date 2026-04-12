@@ -1,6 +1,5 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellChangeProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellChangeProps } from "@simple-table/solid";
 import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -11,7 +10,7 @@ function formatTableHeight(height?: string | number | null): string {
 }
 
 function getHeaders(): SolidHeaderObject[] {
-  const headers = defaultHeadersFromCore(JSON.parse(JSON.stringify(salesHeadersCore)));
+  const headers = JSON.parse(JSON.stringify(salesHeadersCore));
 
   const addRenderers = (hdrs: SolidHeaderObject[]) => {
     for (const h of hdrs) {

@@ -1,8 +1,10 @@
-import { Component, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type { AngularHeaderObject, CellChangeProps, HeaderObject, HeaderRenderer, Theme } from "@simple-table/angular";
-import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularHeaderObject, CellChangeProps, HeaderObject, Theme } from "@simple-table/angular";
+import { recalculateAmortization, spreadsheetConfig } from "./spreadsheet.demo-data";
 import type { SpreadsheetRow } from "./spreadsheet.demo-data";
+import { setSpreadsheetAddColumnHandler } from "./spreadsheet-add-column-bridge";
+import { SpreadsheetAddColumnHeaderComponent } from "./spreadsheet-add-column-header.component";
 import "@simple-table/angular/styles.css";
 import "./spreadsheet-custom.css";
 
@@ -32,59 +34,41 @@ import "./spreadsheet-custom.css";
     </div>
   `,
 })
-export class SpreadsheetDemoComponent {
+export class SpreadsheetDemoComponent implements OnInit, OnDestroy {
   @ViewChild("simpleTable") tableRef!: SimpleTableComponent;
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
   data = [...spreadsheetConfig.rows];
-  private additionalColumns: HeaderObject[] = [];
+  additionalColumns: HeaderObject[] = [];
 
-  get headers(): AngularHeaderObject[] {
-    return this.buildHeaders();
+  constructor(private readonly cdr: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    setSpreadsheetAddColumnHandler(() => {
+      const totalCols = spreadsheetConfig.headers.length + this.additionalColumns.length;
+      const newCol: HeaderObject = {
+        accessor: `column${totalCols + 1}`,
+        label: `Column ${totalCols + 1}`,
+        width: 120,
+        minWidth: 80,
+        type: "number",
+        align: "right",
+        isEditable: true,
+        aggregation: { type: "sum" },
+      };
+      this.additionalColumns = [...this.additionalColumns, newCol];
+      this.cdr.markForCheck();
+    });
   }
 
-  private buildHeaders(): AngularHeaderObject[] {
-    const baseHeaders: HeaderObject[] = [...spreadsheetConfig.headers];
-    const addColumnHeaderRenderer: HeaderRenderer = () => {
-      const div = document.createElement("div");
-      div.style.display = "flex";
-      div.style.justifyContent = "center";
+  ngOnDestroy(): void {
+    setSpreadsheetAddColumnHandler(null);
+  }
 
-      const btn = document.createElement("button");
-      btn.textContent = "+ Add Column";
-      Object.assign(btn.style, {
-        color: "white",
-        border: "none",
-        padding: "4px 10px",
-        borderRadius: "4px",
-        cursor: "pointer",
-        fontSize: "11px",
-        fontWeight: "500",
-        whiteSpace: "nowrap",
-      } satisfies Partial<CSSStyleDeclaration>);
-
-      btn.addEventListener("click", () => {
-        const totalCols = spreadsheetConfig.headers.length + this.additionalColumns.length;
-        const newCol: HeaderObject = {
-          accessor: `column${totalCols + 1}`,
-          label: `Column ${totalCols + 1}`,
-          width: 120,
-          minWidth: 80,
-          type: "number",
-          align: "right",
-          isEditable: true,
-          aggregation: { type: "sum" },
-        };
-        this.additionalColumns = [...this.additionalColumns, newCol];
-      });
-
-      div.appendChild(btn);
-      return div;
-    };
-
-    return mapToAngularHeaderObjects([
-      ...baseHeaders,
+  get headers(): AngularHeaderObject[] {
+    return [
+      ...spreadsheetConfig.headers,
       ...this.additionalColumns,
       {
         accessor: "actions",
@@ -94,9 +78,9 @@ export class SpreadsheetDemoComponent {
         filterable: false,
         type: "other" as const,
         disableReorder: true,
-        headerRenderer: addColumnHeaderRenderer as any,
+        headerRenderer: SpreadsheetAddColumnHeaderComponent,
       },
-    ]);
+    ];
   }
 
   onCellEdit({ accessor, newValue, row }: CellChangeProps): void {

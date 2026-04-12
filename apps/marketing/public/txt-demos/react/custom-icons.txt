@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, ReactIconsConfig } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, ReactIconsConfig } from "@simple-table/react";
 import { customIconsConfig } from "./custom-icons.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -45,7 +44,7 @@ const CustomIconsDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(customIconsConfig.headers)}
+      defaultHeaders={customIconsConfig.headers}
       rows={customIconsConfig.rows}
       icons={customIcons}
       height={height}

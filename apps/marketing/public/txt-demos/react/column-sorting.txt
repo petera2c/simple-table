@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { columnSortingConfig } from "./column-sorting.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const ColumnSortingDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(columnSortingConfig.headers)}
+      defaultHeaders={columnSortingConfig.headers}
       rows={columnSortingConfig.rows}
       height={height}
       theme={theme}

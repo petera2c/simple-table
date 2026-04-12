@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { nestedHeadersConfig } from "./nested-headers.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const NestedHeadersDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(nestedHeadersConfig.headers)}
+      defaultHeaders={nestedHeadersConfig.headers}
       rows={nestedHeadersConfig.rows}
       height={height}
       theme={theme}

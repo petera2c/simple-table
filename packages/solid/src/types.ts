@@ -66,8 +66,7 @@ export interface SolidColumnEditorConfig
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
  * Column definition for `defaultHeaders`: core column metadata with Solid-only
- * renderer fields. For trees from `simple-table-core`, use `defaultHeadersFromCore` /
- * `mapToSolidHeaderObjects`.
+ * renderer fields. `defaultHeaders` also accepts plain `HeaderObject[]` from shared configs.
  */
 export interface SolidHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
@@ -101,7 +100,7 @@ export interface SimpleTableSolidProps
     | "columnEditorConfig"
     | "icons"
   > {
-  defaultHeaders: SolidHeaderObject[];
+  defaultHeaders: ReadonlyArray<HeaderObject | SolidHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: SolidFooterRenderer;

@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 
 const CATEGORY_CODES: Record<string, string> = {
@@ -24,7 +24,7 @@ export const csvExportData = [
   { id: "db-4003", sku: "PRD-4003", product: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 201, sold: 198, revenue: 8908.02, actions: "" },
 ];
 
-export const csvExportHeaders: HeaderObject[] = [
+export const csvExportHeaders: ReactHeaderObject[] = [
   { accessor: "id", label: "Internal ID", width: 80, type: "string", excludeFromRender: true },
   { accessor: "sku", label: "SKU", width: 100, isSortable: true, type: "string" },
   { accessor: "product", label: "Product Name", minWidth: 120, width: "1fr", isSortable: true, type: "string" },

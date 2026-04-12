@@ -129,10 +129,8 @@ export interface ReactColumnEditorConfig extends Omit<
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
- * Column definition for `defaultHeaders`: same column metadata as core `HeaderObject`, but
- * `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are React-only. For column
- * defs authored against core types, import `defaultHeadersFromCore`, `defaultHeaderFromCore`, or
- * `mapToReactHeaderObjects` (after spreading core columns and adding React renderers).
+ * Column definition for `defaultHeaders`: same column metadata as core columns, but
+ * `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are React-only.
  */
 export interface ReactHeaderObject extends Omit<
   HeaderObject,
@@ -157,7 +155,7 @@ export interface ReactHeaderObject extends Omit<
 // `forwardRef<TableAPI, …>` for the imperative API.
 //
 //   Overridden to React equivalents:
-//     - defaultHeaders         → ReactHeaderObject[]
+//     - defaultHeaders         → ReadonlyArray<ReactHeaderObject>
 //     - footerRenderer         → React.ComponentType<FooterRendererProps>
 //     - loadingStateRenderer   → React.ComponentType<…> | React.ReactNode
 //     - errorStateRenderer     → React.ComponentType<…> | React.ReactNode
@@ -179,8 +177,16 @@ export interface SimpleTableReactProps extends Omit<
   | "columnEditorConfig"
   | "icons"
   | "rows"
+  | "onColumnOrderChange"
+  | "onColumnWidthChange"
+  | "onHeaderEdit"
+  | "onColumnSelect"
 > {
-  defaultHeaders: ReactHeaderObject[];
+  defaultHeaders: ReadonlyArray<ReactHeaderObject>;
+  onColumnOrderChange?: (newHeaders: ReactHeaderObject[]) => void;
+  onColumnWidthChange?: (headers: ReactHeaderObject[]) => void;
+  onHeaderEdit?: (header: ReactHeaderObject, newLabel: string) => void;
+  onColumnSelect?: (header: ReactHeaderObject) => void;
   /** Row data: any object rows (domain models) or core `Row[]`; cast to vanilla `Row[]` inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: ReactFooterRenderer;

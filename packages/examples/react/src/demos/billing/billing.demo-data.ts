@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 export interface BillingRow {
   id: string | number;
@@ -14,10 +14,27 @@ export interface BillingRow {
   [key: `revenue_${string}`]: number;
 }
 
-
-const ACCOUNT_NAMES = ["Acme Corp", "Globex Inc", "Initech", "Soylent Corp", "Umbrella LLC", "Wayne Industries", "Stark Tech", "Oscorp", "LexCorp", "Cyberdyne"];
+const ACCOUNT_NAMES = [
+  "Acme Corp",
+  "Globex Inc",
+  "Initech",
+  "Soylent Corp",
+  "Umbrella LLC",
+  "Wayne Industries",
+  "Stark Tech",
+  "Oscorp",
+  "LexCorp",
+  "Cyberdyne",
+];
 const INVOICE_PREFIXES = ["INV", "SUB", "REN"];
-const CHARGE_TYPES = ["Subscription", "API Usage", "Storage", "Support Premium", "Bandwidth", "Compute"];
+const CHARGE_TYPES = [
+  "Subscription",
+  "API Usage",
+  "Storage",
+  "Support Premium",
+  "Bandwidth",
+  "Compute",
+];
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -85,8 +102,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): HeaderObject[] {
-  const headers: HeaderObject[] = [];
+function generateMonthHeaders(): ReactHeaderObject[] {
+  const headers: ReactHeaderObject[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -136,7 +153,7 @@ function generateMonthHeaders(): HeaderObject[] {
   return headers;
 }
 
-export const billingHeaders: HeaderObject[] = [
+export const billingHeaders: ReactHeaderObject[] = [
   {
     accessor: "name",
     label: "Name",

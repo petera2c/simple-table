@@ -8,46 +8,33 @@ import {
 } from "@angular/core";
 import type { ColumnEditorRowRendererProps } from "@simple-table/angular";
 
-function appendMarketingColumnEditorSlot(parent: HTMLElement, slot: string | Node | undefined): void {
+function attach(slot: unknown, host: HTMLElement | undefined): void {
+  if (!host) return;
+  host.replaceChildren();
   if (slot == null) return;
   if (typeof slot === "string") {
-    parent.appendChild(document.createTextNode(slot));
-  } else {
-    parent.appendChild(slot);
+    host.textContent = slot;
+  } else if (slot instanceof Node) {
+    host.appendChild(slot);
   }
 }
 
-/** Angular examples-only copy of the marketing column-editor row layout. */
-function buildMarketingStyleColumnEditorRow(rootProps: ColumnEditorRowRendererProps): HTMLElement {
-  const { components } = rootProps;
-  const outer = document.createElement("div");
-  outer.style.width = "100%";
-  outer.style.display = "flex";
-  outer.style.alignItems = "center";
-  outer.style.justifyContent = "space-between";
-  outer.style.gap = "8px";
-  outer.style.paddingRight = "8px";
-
-  const left = document.createElement("div");
-  left.style.display = "flex";
-  left.style.alignItems = "center";
-  left.style.gap = "8px";
-  appendMarketingColumnEditorSlot(left, components.expandIcon as Node | string | undefined);
-  appendMarketingColumnEditorSlot(left, components.checkbox as Node | string | undefined);
-  appendMarketingColumnEditorSlot(left, components.labelContent as Node | string | undefined);
-  outer.appendChild(left);
-
-  const right = document.createElement("div");
-  appendMarketingColumnEditorSlot(right, components.dragIcon as Node | string | undefined);
-  outer.appendChild(right);
-
-  return outer;
-}
-
+/** Marketing-style column-editor row; slots are framework-provided nodes or strings. */
 @Component({
   selector: "st-examples-marketing-column-editor-row",
   standalone: true,
-  template: `<div #anchor style="display: contents"></div>`,
+  template: `
+    <div
+      style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:8px;"
+    >
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span #expandHost></span>
+        <span #checkboxHost></span>
+        <span #labelHost></span>
+      </div>
+      <span #dragHost></span>
+    </div>
+  `,
 })
 export class MarketingColumnEditorRowComponent implements AfterViewInit, OnChanges {
   @Input({ required: true }) accessor!: ColumnEditorRowRendererProps["accessor"];
@@ -59,29 +46,24 @@ export class MarketingColumnEditorRowComponent implements AfterViewInit, OnChang
   @Input() allowColumnPinning?: ColumnEditorRowRendererProps["allowColumnPinning"];
   @Input() pinControl?: ColumnEditorRowRendererProps["pinControl"];
 
-  @ViewChild("anchor", { static: false }) anchorRef?: ElementRef<HTMLDivElement>;
+  @ViewChild("expandHost") expandRef?: ElementRef<HTMLSpanElement>;
+  @ViewChild("checkboxHost") checkboxRef?: ElementRef<HTMLSpanElement>;
+  @ViewChild("labelHost") labelRef?: ElementRef<HTMLSpanElement>;
+  @ViewChild("dragHost") dragRef?: ElementRef<HTMLSpanElement>;
 
   ngAfterViewInit(): void {
-    this.syncRow();
+    this.syncSlots();
   }
 
   ngOnChanges(): void {
-    this.syncRow();
+    this.syncSlots();
   }
 
-  private syncRow(): void {
-    const host = this.anchorRef?.nativeElement;
-    if (!host) return;
-    const row = buildMarketingStyleColumnEditorRow({
-      accessor: this.accessor,
-      header: this.header,
-      components: this.components,
-      panelSection: this.panelSection,
-      isEssential: this.isEssential,
-      canToggleVisibility: this.canToggleVisibility,
-      allowColumnPinning: this.allowColumnPinning,
-      pinControl: this.pinControl,
-    });
-    host.replaceChildren(row);
+  private syncSlots(): void {
+    const c = this.components;
+    attach(c.expandIcon, this.expandRef?.nativeElement);
+    attach(c.checkbox, this.checkboxRef?.nativeElement);
+    attach(c.labelContent, this.labelRef?.nativeElement);
+    attach(c.dragIcon, this.dragRef?.nativeElement);
   }
 }

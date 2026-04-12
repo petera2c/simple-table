@@ -1,6 +1,11 @@
 import { useState, useMemo } from "react";
-import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellRendererProps, RowSelectionChangeProps } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
+import type {
+  Theme,
+  ReactHeaderObject,
+  CellRendererProps,
+  RowSelectionChangeProps,
+} from "@simple-table/react";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/react/styles.css";
@@ -16,28 +21,25 @@ const RowSelectionDemo = ({
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      mapToReactHeaderObjects(rowSelectionConfig.headers.map((h) => {
+      rowSelectionConfig.headers.map((h) => {
         if (h.accessor === "status") {
           return {
             ...h,
             cellRenderer: ({ row }: CellRendererProps) => {
               const s = String(row.status);
-              const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
-              return (
-                <span style={{ color, fontWeight: "bold" }}>{s}</span>
-              );
+              const color =
+                s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
+              return <span style={{ color, fontWeight: "bold" }}>{s}</span>;
             },
           };
         }
         return h;
-      })),
+      }),
     [],
   );
 
   const handleRowSelectionChange = (props: RowSelectionChangeProps) => {
-    const selected = rowSelectionData.filter((book) =>
-      props.selectedRows.has(String(book.id)),
-    );
+    const selected = rowSelectionData.filter((book) => props.selectedRows.has(String(book.id)));
     setSelectedBooks(selected);
   };
 
@@ -59,9 +61,7 @@ const RowSelectionDemo = ({
         </div>
         <div style={{ fontSize: 13, color: "#334155" }}>
           <strong>Selected Books: </strong>
-          {selectedBooks.length > 0
-            ? selectedBooks.map((b) => b.title).join(", ")
-            : "None"}
+          {selectedBooks.length > 0 ? selectedBooks.map((b) => b.title).join(", ") : "None"}
         </div>
       </div>
 

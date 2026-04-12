@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -31,7 +30,7 @@ export default function PaginationDemo(props: {
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(paginationConfig.headers)}
+      defaultHeaders={paginationConfig.headers}
       height={props.height ?? "auto"}
       isLoading={isLoading()}
       onNextPage={onNextPage}

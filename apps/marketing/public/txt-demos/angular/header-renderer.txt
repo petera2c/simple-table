@@ -1,7 +1,6 @@
 // header-renderer-demo.component.ts
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
 import { headerRendererConfig } from "./header-renderer.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -44,13 +43,11 @@ export class HeaderRendererDemoComponent {
   }
 
   get headers(): AngularHeaderObject[] {
-    return mapToAngularHeaderObjects(
-      headerRendererConfig.headers.map((h) => ({
-        ...h,
-        isSortable: false,
-        headerRenderer: this.buildHeaderRenderer(h),
-      })),
-    );
+    return headerRendererConfig.headers.map((h) => ({
+      ...h,
+      isSortable: false,
+      headerRenderer: this.buildHeaderRenderer(h),
+    }));
   }
 
   private buildHeaderRenderer(h: HeaderObject) {

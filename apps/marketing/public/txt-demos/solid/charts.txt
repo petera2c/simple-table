@@ -1,5 +1,4 @@
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
 import { chartsConfig } from "./charts.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -8,7 +7,7 @@ export default function ChartsDemo(props: { height?: string | number; theme?: Th
     <SimpleTable
       columnReordering={chartsConfig.tableProps.columnReordering}
       columnResizing={chartsConfig.tableProps.columnResizing}
-      defaultHeaders={defaultHeadersFromCore(chartsConfig.headers)}
+      defaultHeaders={chartsConfig.headers}
       rows={chartsConfig.rows}
       selectableCells={chartsConfig.tableProps.selectableCells}
       height={props.height ?? "400px"}

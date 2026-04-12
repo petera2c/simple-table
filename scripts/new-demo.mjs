@@ -77,7 +77,7 @@ export const ${camel}Config = {
 `;
 
 // --- React ---
-const reactDemo = `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+const reactDemo = `import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
 import { ${camel}Config } from "./${demoName}.demo-data";
 import "@simple-table/react/styles.css";
@@ -91,7 +91,7 @@ const ${pascal}Demo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(${camel}Config.headers)}
+      defaultHeaders={${camel}Config.headers}
       rows={${camel}Config.rows}
       height={height}
       theme={theme}
@@ -105,7 +105,7 @@ export default ${pascal}Demo;
 // --- Vue ---
 const vueDemo = `<template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(${camel}Config.headers)"
+    :default-headers="${camel}Config.headers"
     :rows="${camel}Config.rows"
     :height="height"
     :theme="theme"
@@ -113,8 +113,7 @@ const vueDemo = `<template>
 </template>
 
 <script setup lang="ts">
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
 import { ${camel}Config } from "./${demoName}.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -126,8 +125,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 
 // --- Svelte ---
 const svelteDemo = `<script lang="ts">
-  import { SimpleTable, defaultHeadersFromCore } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import { ${camel}Config } from "./${demoName}.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -135,7 +133,7 @@ const svelteDemo = `<script lang="ts">
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(${camel}Config.headers)}
+  defaultHeaders={${camel}Config.headers}
   rows={${camel}Config.rows}
   {height}
   {theme}
@@ -143,7 +141,7 @@ const svelteDemo = `<script lang="ts">
 `;
 
 // --- Solid ---
-const solidDemo = `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
+const solidDemo = `import { SimpleTable } from "@simple-table/solid";
 import type { Theme } from "@simple-table/solid";
 import { ${camel}Config } from "./${demoName}.demo-data";
 import "@simple-table/solid/styles.css";
@@ -154,7 +152,7 @@ export default function ${pascal}Demo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(${camel}Config.headers)}
+      defaultHeaders={${camel}Config.headers}
       rows={${camel}Config.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
@@ -165,8 +163,7 @@ export default function ${pascal}Demo(props: {
 
 // --- Angular ---
 const angularDemo = `import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { ${camel}Config } from "./${demoName}.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -188,7 +185,7 @@ export class ${pascal}DemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = ${camel}Config.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(${camel}Config.headers);
+  readonly headers: AngularHeaderObject[] = ${camel}Config.headers;
 }
 `;
 

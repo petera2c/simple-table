@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme, CellChangeProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, CellChangeProps } from "@simple-table/solid";
 import { cellEditingConfig } from "./cell-editing.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -15,7 +14,7 @@ export default function CellEditingDemo(props: { height?: string | number; theme
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(cellEditingConfig.headers)}
+      defaultHeaders={cellEditingConfig.headers}
       rows={data()}
       height={props.height ?? "400px"}
       theme={props.theme}

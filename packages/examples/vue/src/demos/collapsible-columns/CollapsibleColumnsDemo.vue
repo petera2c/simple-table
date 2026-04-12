@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(collapsibleColumnsConfig.headers)"
+    :default-headers="collapsibleColumnsConfig.headers"
     :rows="collapsibleColumnsConfig.rows"
     :column-resizing="true"
     :edit-columns="true"
@@ -12,8 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
 import { collapsibleColumnsConfig } from "./collapsible-columns.demo-data";
 import "@simple-table/vue/styles.css";
 

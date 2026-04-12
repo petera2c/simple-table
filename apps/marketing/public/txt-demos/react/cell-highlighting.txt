@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { cellHighlightingConfig } from "./cell-highlighting.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const CellHighlightingDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(cellHighlightingConfig.headers)}
+      defaultHeaders={cellHighlightingConfig.headers}
       rows={cellHighlightingConfig.rows}
       height={height}
       theme={theme}

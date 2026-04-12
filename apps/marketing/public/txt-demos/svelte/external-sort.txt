@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme, SortColumn } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, SortColumn } from "@simple-table/svelte";
   import { externalSortConfig } from "./external-sort.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -32,7 +31,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(externalSortConfig.headers)}
+  defaultHeaders={externalSortConfig.headers}
   rows={sortedRows}
   externalSortHandling={true}
   columnResizing={externalSortConfig.tableProps.columnResizing}

@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     :column-resizing="dynamicRowLoadingConfig.tableProps.columnResizing"
-    :default-headers="defaultHeadersFromCore(dynamicRowLoadingConfig.headers)"
+    :default-headers="dynamicRowLoadingConfig.headers"
     :edit-columns="dynamicRowLoadingConfig.tableProps.editColumns"
     :expand-all="dynamicRowLoadingConfig.tableProps.expandAll"
     :height="height"
@@ -17,8 +17,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,

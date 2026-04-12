@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Theme } from "@simple-table/react";
+import type { ReactHeaderObject, Theme } from "@simple-table/react";
 
 export type CrmShellTheme = Theme | "custom-light" | "custom-dark";
 
@@ -42,7 +42,7 @@ export function generateCRMData(count: number = 100): CRMLead[] {
 
 export const crmData = generateCRMData(100);
 
-export const crmHeaders: HeaderObject[] = [
+export const crmHeaders: ReactHeaderObject[] = [
   {
     accessor: "name",
     label: "CONTACT",

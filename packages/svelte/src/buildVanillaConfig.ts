@@ -5,8 +5,10 @@ import type {
   SvelteColumnEditorConfig,
   SvelteIconsConfig,
 } from "./types";
+import type { Component } from "svelte";
 import {
   wrapSvelteRenderer,
+  wrapSvelteStatic,
   svelteComponentToHtmlString,
   isSvelteComponent,
 } from "./utils/wrapSvelteRenderer";
@@ -35,7 +37,7 @@ function transformColumnEditorConfig(config: SvelteColumnEditorConfig): ColumnEd
   };
 }
 
-function transformHeader(header: SvelteHeaderObject): HeaderObject {
+function transformHeader(header: HeaderObject | SvelteHeaderObject): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
 
   const transformed: HeaderObject = { ...(rest as any) };
@@ -79,6 +81,7 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
     headerDropdown,
     columnEditorConfig,
     icons,
+    tableEmptyStateRenderer,
     ...rest
   } = config;
 
@@ -87,6 +90,19 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
   };
+
+  if (tableEmptyStateRenderer !== undefined) {
+    if (tableEmptyStateRenderer === null) {
+      vanillaConfig.tableEmptyStateRenderer = null;
+    } else if (
+      typeof tableEmptyStateRenderer === "string" ||
+      tableEmptyStateRenderer instanceof HTMLElement
+    ) {
+      vanillaConfig.tableEmptyStateRenderer = tableEmptyStateRenderer;
+    } else if (isSvelteComponent(tableEmptyStateRenderer)) {
+      vanillaConfig.tableEmptyStateRenderer = wrapSvelteStatic(tableEmptyStateRenderer as Component) as any;
+    }
+  }
 
   if (footerRenderer !== undefined) {
     if (typeof footerRenderer === "function" && footerRenderer.length >= 2) {

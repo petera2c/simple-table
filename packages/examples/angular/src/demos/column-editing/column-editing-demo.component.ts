@@ -1,7 +1,6 @@
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -43,7 +42,7 @@ export class ColumnEditingDemoComponent {
   lastAdded = "";
 
   get headers(): AngularHeaderObject[] {
-    return [...defaultHeadersFromCore(columnEditingHeaders), ...this.additionalColumns];
+    return [...columnEditingHeaders, ...this.additionalColumns];
   }
 
   addColumn() {

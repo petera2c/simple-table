@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme, Row } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme, Row } from "@simple-table/vue";
 import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -36,7 +35,7 @@ function handleLoadMore() {
   <div>
     <div style="margin-bottom: 8px; font-size: 13px; color: #666">{{ statusText }}</div>
     <SimpleTable
-      :default-headers="defaultHeadersFromCore(infiniteScrollConfig.headers)"
+      :default-headers="infiniteScrollConfig.headers"
       :rows="rows"
       :is-loading="loading"
       :on-load-more="handleLoadMore"

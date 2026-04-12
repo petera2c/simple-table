@@ -145,9 +145,15 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
   let renderedStartIndex = 0;
   let renderedEndIndex = currentTableRows.length;
   let targetVisibleRows: TableRow[];
+  let stickyParents: TableRow[];
+  let regularRows: TableRow[];
+  let partiallyVisibleRows: TableRow[];
 
   if (contentHeight === undefined) {
     targetVisibleRows = currentTableRows;
+    stickyParents = [];
+    regularRows = targetVisibleRows;
+    partiallyVisibleRows = [];
   } else {
     const viewportCalcs = getViewportCalculations({
       bufferRowCount,
@@ -161,41 +167,124 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
     targetVisibleRows = viewportCalcs.rendered.rows;
     renderedStartIndex = viewportCalcs.rendered.startIndex;
     renderedEndIndex = viewportCalcs.rendered.endIndex;
+
+    if (!enableStickyParents) {
+      stickyParents = [];
+      regularRows = targetVisibleRows;
+      partiallyVisibleRows = [];
+    } else if (rowGrouping) {
+      const stickyResult = getStickyParents(
+        currentTableRows,
+        viewportCalcs.rendered.rows,
+        viewportCalcs.fullyVisible.rows,
+        viewportCalcs.partiallyVisible.rows,
+        rowGrouping,
+      );
+      stickyParents = stickyResult.stickyParents;
+      regularRows = stickyResult.regularRows;
+      partiallyVisibleRows = viewportCalcs.partiallyVisible.rows;
+    } else {
+      stickyParents = [];
+      regularRows = viewportCalcs.rendered.rows;
+      partiallyVisibleRows = [];
+    }
   }
 
-  const { stickyParents, regularRows, partiallyVisibleRows } =
-    !enableStickyParents || contentHeight === undefined
-      ? { stickyParents: [], regularRows: targetVisibleRows, partiallyVisibleRows: [] }
-      : (() => {
-          const viewportCalcs = getViewportCalculations({
-            bufferRowCount,
-            contentHeight,
-            tableRows: currentTableRows,
-            rowHeight,
-            scrollTop,
-            scrollDirection,
-            heightMap,
-          });
+  return {
+    currentTableRows,
+    rowsToRender: targetVisibleRows,
+    renderedStartIndex,
+    renderedEndIndex,
+    stickyParents,
+    regularRows,
+    partiallyVisibleRows,
+    paginatedHeightOffsets,
+    heightMap,
+  };
+}
 
-          const stickyResult = rowGrouping
-            ? getStickyParents(
-                currentTableRows,
-                viewportCalcs.rendered.rows,
-                viewportCalcs.fullyVisible.rows,
-                viewportCalcs.partiallyVisible.rows,
-                rowGrouping,
-              )
-            : {
-                stickyParents: [],
-                regularRows: viewportCalcs.rendered.rows,
-                partiallyVisibleRows: [],
-              };
+/** Layout inputs that do not depend on scroll position (reuse across scroll-raf frames). */
+export interface ProcessRowsScrollReuseBase {
+  currentTableRows: TableRow[];
+  paginatedHeightOffsets: HeightOffsets | undefined;
+  heightMap: CumulativeHeightMap | undefined;
+}
 
-          return {
-            ...stickyResult,
-            partiallyVisibleRows: viewportCalcs.partiallyVisible.rows,
-          };
-        })();
+/**
+ * Recomputes only viewport-dependent fields when pagination, height map, and row list
+ * are unchanged (vertical scroll only). Avoids re-running applyPagination and
+ * buildCumulativeHeightMap on every scroll frame.
+ */
+export function recomputeProcessRowsViewport(
+  base: ProcessRowsScrollReuseBase,
+  config: {
+    contentHeight: number | undefined;
+    rowHeight: number;
+    scrollTop: number;
+    scrollDirection?: "up" | "down" | "none";
+    enableStickyParents: boolean;
+    rowGrouping?: Accessor[];
+  },
+): ProcessRowsResult {
+  const {
+    contentHeight,
+    rowHeight,
+    scrollDirection = "none",
+    scrollTop,
+    enableStickyParents,
+    rowGrouping,
+  } = config;
+
+  const bufferRowCount = calculateBufferRowCount(rowHeight);
+  const { currentTableRows, paginatedHeightOffsets, heightMap } = base;
+
+  let renderedStartIndex = 0;
+  let renderedEndIndex = currentTableRows.length;
+  let targetVisibleRows: TableRow[];
+  let stickyParents: TableRow[];
+  let regularRows: TableRow[];
+  let partiallyVisibleRows: TableRow[];
+
+  if (contentHeight === undefined) {
+    targetVisibleRows = currentTableRows;
+    stickyParents = [];
+    regularRows = targetVisibleRows;
+    partiallyVisibleRows = [];
+  } else {
+    const viewportCalcs = getViewportCalculations({
+      bufferRowCount,
+      contentHeight,
+      tableRows: currentTableRows,
+      rowHeight,
+      scrollTop,
+      scrollDirection,
+      heightMap,
+    });
+    targetVisibleRows = viewportCalcs.rendered.rows;
+    renderedStartIndex = viewportCalcs.rendered.startIndex;
+    renderedEndIndex = viewportCalcs.rendered.endIndex;
+
+    if (!enableStickyParents) {
+      stickyParents = [];
+      regularRows = targetVisibleRows;
+      partiallyVisibleRows = [];
+    } else if (rowGrouping) {
+      const stickyResult = getStickyParents(
+        currentTableRows,
+        viewportCalcs.rendered.rows,
+        viewportCalcs.fullyVisible.rows,
+        viewportCalcs.partiallyVisible.rows,
+        rowGrouping,
+      );
+      stickyParents = stickyResult.stickyParents;
+      regularRows = stickyResult.regularRows;
+      partiallyVisibleRows = viewportCalcs.partiallyVisible.rows;
+    } else {
+      stickyParents = [];
+      regularRows = viewportCalcs.rendered.rows;
+      partiallyVisibleRows = [];
+    }
+  }
 
   return {
     currentTableRows,

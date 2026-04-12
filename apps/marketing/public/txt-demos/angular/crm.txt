@@ -164,8 +164,7 @@
 
 // crm-demo.component.ts
 import { Component, Input, ViewChild, OnInit } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type {
+import {SimpleTableComponent} from "@simple-table/angular";import type {
   AngularHeaderObject,
   CellChangeProps,
   CellRenderer,
@@ -425,7 +424,7 @@ function getCRMHeaders(isDark: boolean): AngularHeaderObject[] {
     return link;
   };
 
-  return mapToAngularHeaderObjects([
+  return [
     {
       accessor: "name",
       label: "CONTACT",
@@ -528,7 +527,7 @@ function getCRMHeaders(isDark: boolean): AngularHeaderObject[] {
       minWidth: 160,
       cellRenderer: contactNowRenderer,
     },
-  ]);
+  ];
 }
 
 function createCRMFooter(

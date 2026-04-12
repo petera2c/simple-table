@@ -1,6 +1,5 @@
 import { createSignal, createMemo } from "solid-js";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellChangeProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellChangeProps } from "@simple-table/solid";
 import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
 import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import "@simple-table/solid/styles.css";
@@ -12,7 +11,7 @@ export default function SpreadsheetDemo(props: { height?: string | number; theme
   const [additionalColumns, setAdditionalColumns] = createSignal<SolidHeaderObject[]>([]);
 
   const headers = createMemo((): SolidHeaderObject[] => {
-    const baseHeaders = defaultHeadersFromCore(spreadsheetConfig.headers);
+    const baseHeaders = spreadsheetConfig.headers;
     return [
       ...baseHeaders,
       ...additionalColumns(),

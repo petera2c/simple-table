@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
@@ -56,7 +55,7 @@ const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | 
   return (
     <SimpleTable
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-      defaultHeaders={defaultHeadersFromCore(dynamicRowLoadingConfig.headers)}
+      defaultHeaders={dynamicRowLoadingConfig.headers}
       editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
       expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
       height={height}

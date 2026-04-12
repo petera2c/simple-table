@@ -1,6 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "@simple-table/react";
-import type { HeaderObject } from "@simple-table/react";
+import type { Row, ReactHeaderObject } from "@simple-table/react";
 
 
 export const QUICK_START_DATA: Row[] = [
@@ -103,7 +102,7 @@ export const QUICK_START_DATA: Row[] = [
 ];
 
 
-export const quickStartHeaders: HeaderObject[] = [
+export const quickStartHeaders: ReactHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
   {
     accessor: "name",

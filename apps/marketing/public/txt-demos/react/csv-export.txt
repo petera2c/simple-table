@@ -1,5 +1,5 @@
 import { useRef, useMemo } from "react";
-import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/react/styles.css";
@@ -15,7 +15,7 @@ const CsvExportDemo = ({
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      mapToReactHeaderObjects(csvExportHeaders.map((h) => {
+      csvExportHeaders.map((h) => {
         if (h.accessor === "actions") {
           return {
             ...h,
@@ -38,7 +38,7 @@ const CsvExportDemo = ({
           };
         }
         return h;
-      })),
+      }),
     [],
   );
 

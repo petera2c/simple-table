@@ -3,6 +3,8 @@
   import type { Theme, HeaderObject, CellChangeProps } from "@simple-table/svelte";
   import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
   import type { SpreadsheetRow } from "./spreadsheet.demo-data";
+  import { setSpreadsheetAddColumnHandler } from "./spreadsheet-add-header-handler";
+  import SpreadsheetAddColumnHeader from "./SpreadsheetAddColumnHeader.svelte";
   import "@simple-table/svelte/styles.css";
   import "./spreadsheet-custom.css";
 
@@ -11,6 +13,23 @@
   let data = $state([...spreadsheetConfig.rows]);
   let additionalColumns = $state<HeaderObject[]>([]);
   let tableRef: any;
+
+  $effect.pre(() => {
+    setSpreadsheetAddColumnHandler(() => {
+      const totalCols = spreadsheetConfig.headers.length + additionalColumns.length;
+      const newCol: HeaderObject = {
+        accessor: `column${totalCols + 1}`,
+        label: `Column ${totalCols + 1}`,
+        width: 120,
+        minWidth: 80,
+        type: "number",
+        align: "right",
+        isEditable: true,
+        aggregation: { type: "sum" },
+      };
+      additionalColumns = [...additionalColumns, newCol];
+    });
+  });
 
   const headers = $derived.by((): HeaderObject[] => {
     const baseHeaders: HeaderObject[] = [...spreadsheetConfig.headers];
@@ -25,42 +44,7 @@
         filterable: false,
         type: "other" as const,
         disableReorder: true,
-        headerRenderer: () => {
-          const div = document.createElement("div");
-          div.style.display = "flex";
-          div.style.justifyContent = "center";
-
-          const btn = document.createElement("button");
-          btn.textContent = "+ Add Column";
-          Object.assign(btn.style, {
-            color: "white",
-            border: "none",
-            padding: "4px 10px",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "11px",
-            fontWeight: "500",
-            whiteSpace: "nowrap",
-          } satisfies Partial<CSSStyleDeclaration>);
-
-          btn.addEventListener("click", () => {
-            const totalCols = spreadsheetConfig.headers.length + additionalColumns.length;
-            const newCol: HeaderObject = {
-              accessor: `column${totalCols + 1}`,
-              label: `Column ${totalCols + 1}`,
-              width: 120,
-              minWidth: 80,
-              type: "number",
-              align: "right",
-              isEditable: true,
-              aggregation: { type: "sum" },
-            };
-            additionalColumns = [...additionalColumns, newCol];
-          });
-
-          div.appendChild(btn);
-          return div;
-        },
+        headerRenderer: SpreadsheetAddColumnHeader,
       },
     ];
   });

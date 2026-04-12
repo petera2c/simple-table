@@ -31,8 +31,7 @@
 
 // spreadsheet-demo.component.ts
 import { Component, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type { AngularHeaderObject, CellChangeProps, HeaderObject, HeaderRenderer, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellChangeProps, HeaderObject, HeaderRenderer, Theme } from "@simple-table/angular";
 import { spreadsheetConfig, recalculateAmortization } from "./spreadsheet.demo-data";
 import type { SpreadsheetRow } from "./spreadsheet.demo-data";
 import "@simple-table/angular/styles.css";
@@ -115,7 +114,7 @@ export class SpreadsheetDemoComponent {
       return div;
     };
 
-    return mapToAngularHeaderObjects([
+    return [
       ...baseHeaders,
       ...this.additionalColumns,
       {
@@ -128,7 +127,7 @@ export class SpreadsheetDemoComponent {
         disableReorder: true,
         headerRenderer: addColumnHeaderRenderer as any,
       },
-    ]);
+    ];
   }
 
   onCellEdit({ accessor, newValue, row }: CellChangeProps): void {

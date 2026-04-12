@@ -63,12 +63,14 @@ interface BodyCellsCacheEntry {
     collapsedHeadersSize: number;
     rowHeight: number;
     heightOffsetsHash: string;
-    /** Range-based cache: when set, cache key includes these instead of rowsRef for stable key on scroll. */
-    renderedStartIndex?: number;
-    renderedEndIndex?: number;
+    /** Padded row index band over fullTableRows; reduces geometry rebuilds on small scrolls. */
+    bandStart?: number;
+    bandEnd?: number;
     fullTableRowsRef?: TableRow[];
   };
 }
+
+const BODY_CELL_BAND_PADDING = 28;
 
 interface HeaderCellsCacheEntry {
   cells: AbsoluteCell[];
@@ -273,10 +275,10 @@ export class SectionRenderer {
       renderedEndIndex,
     );
 
-    // Calculate and store the next colIndex for this section
+    const dataRowCount = rows.filter((r) => !r.nestedTable && !r.stateIndicator).length;
     const maxColIndex =
-      absoluteCells.length > 0
-        ? Math.max(...absoluteCells.map((c) => c.colIndex)) + 1
+      absoluteCells.length > 0 && dataRowCount > 0
+        ? startColIndex + absoluteCells.length / dataRowCount
         : startColIndex;
     this.nextColIndexMap.set(sectionKey, maxColIndex);
 
@@ -796,6 +798,9 @@ export class SectionRenderer {
 
     const cached = this.bodyCellsCache.get(sectionKey);
 
+    const bandCoversViewport = (bandStart: number, bandEnd: number) =>
+      bandStart <= renderedStartIndex! && bandEnd >= renderedEndIndex!;
+
     const cacheHit =
       cached &&
       cached.deps.headersHash === headersHash &&
@@ -804,21 +809,47 @@ export class SectionRenderer {
       cached.deps.heightOffsetsHash === heightOffsetsHash &&
       (useRangeCache
         ? cached.deps.fullTableRowsRef === fullTableRows &&
-          cached.deps.renderedStartIndex === renderedStartIndex &&
-          cached.deps.renderedEndIndex === renderedEndIndex
+          cached.deps.bandStart !== undefined &&
+          cached.deps.bandEnd !== undefined &&
+          bandCoversViewport(cached.deps.bandStart, cached.deps.bandEnd)
         : cached.deps.rowsRef === rows);
 
-    if (cacheHit) {
-      return cached.cells;
+    if (cacheHit && cached) {
+      if (!useRangeCache) {
+        return cached.cells;
+      }
+      const positionToVisualIndex = new Map<number, number>();
+      rows.forEach((r, i) => {
+        positionToVisualIndex.set(r.position, i);
+      });
+      const out: AbsoluteBodyCell[] = [];
+      for (const c of cached.cells) {
+        const ri = positionToVisualIndex.get(c.tableRow.position);
+        if (ri === undefined) continue;
+        if (c.rowIndex !== ri || c.isOdd !== (ri % 2 === 1)) {
+          out.push({ ...c, rowIndex: ri, isOdd: ri % 2 === 1 });
+        } else {
+          out.push(c);
+        }
+      }
+      return out;
     }
 
-    const rowsToCompute = useRangeCache
-      ? fullTableRows!.slice(renderedStartIndex!, renderedEndIndex!)
-      : rows;
+    let bandSlice: TableRow[];
+    let bandStart: number | undefined;
+    let bandEnd: number | undefined;
+    if (useRangeCache) {
+      const n = fullTableRows!.length;
+      bandStart = Math.max(0, renderedStartIndex! - BODY_CELL_BAND_PADDING);
+      bandEnd = Math.min(n, renderedEndIndex! + BODY_CELL_BAND_PADDING);
+      bandSlice = fullTableRows!.slice(bandStart, bandEnd);
+    } else {
+      bandSlice = rows;
+    }
 
     const cells = this.calculateAbsoluteBodyCells(
       headers,
-      rowsToCompute,
+      bandSlice,
       collapsedHeaders,
       rowHeight,
       heightOffsets,
@@ -830,19 +861,37 @@ export class SectionRenderer {
       cells,
       deps: {
         headersHash,
-        rowsRef: rowsToCompute,
+        rowsRef: bandSlice,
         collapsedHeadersSize: collapsedHeaders.size,
         rowHeight,
         heightOffsetsHash,
         ...(useRangeCache && {
           fullTableRowsRef: fullTableRows,
-          renderedStartIndex,
-          renderedEndIndex,
+          bandStart,
+          bandEnd,
         }),
       },
     });
 
-    return cells;
+    if (!useRangeCache) {
+      return cells;
+    }
+
+    const positionToVisualIndex = new Map<number, number>();
+    rows.forEach((r, i) => {
+      positionToVisualIndex.set(r.position, i);
+    });
+    const mapped: AbsoluteBodyCell[] = [];
+    for (const c of cells) {
+      const ri = positionToVisualIndex.get(c.tableRow.position);
+      if (ri === undefined) continue;
+      if (c.rowIndex !== ri || c.isOdd !== (ri % 2 === 1)) {
+        mapped.push({ ...c, rowIndex: ri, isOdd: ri % 2 === 1 });
+      } else {
+        mapped.push(c);
+      }
+    }
+    return mapped;
   }
 
   private getCachedHeaderCells(

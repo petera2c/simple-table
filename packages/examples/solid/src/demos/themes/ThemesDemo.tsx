@@ -1,6 +1,5 @@
 import { createSignal, For } from "solid-js";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
 import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -31,7 +30,7 @@ export default function ThemesDemo(props: { height?: string | number; theme?: Th
         </For>
       </div>
       <SimpleTable
-        defaultHeaders={defaultHeadersFromCore(themesConfig.headers)}
+        defaultHeaders={themesConfig.headers}
         rows={themesConfig.rows}
         height={props.height ?? "400px"}
         theme={selectedTheme()}

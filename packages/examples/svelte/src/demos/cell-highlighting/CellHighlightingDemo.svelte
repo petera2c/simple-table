@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import { cellHighlightingConfig } from "./cell-highlighting.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -8,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(cellHighlightingConfig.headers)}
+  defaultHeaders={cellHighlightingConfig.headers}
   rows={cellHighlightingConfig.rows}
   {height}
   {theme}

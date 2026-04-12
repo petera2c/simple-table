@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
   import {
     columnEditorCustomRendererConfig,
     COLUMN_EDITOR_TEXT,
@@ -20,7 +19,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(columnEditorCustomRendererConfig.headers)}
+  defaultHeaders={columnEditorCustomRendererConfig.headers}
   rows={columnEditorCustomRendererConfig.rows}
   editColumns={true}
   columnEditorConfig={editorConfig}

@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
@@ -35,7 +34,7 @@ export class DynamicRowLoadingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  headers: AngularHeaderObject[] = defaultHeadersFromCore(dynamicRowLoadingConfig.headers);
+  headers: AngularHeaderObject[] = dynamicRowLoadingConfig.headers;
   rows: DynamicRegion[] = generateInitialRegions();
   readonly grouping = ["stores", "products"];
   readonly getRowId = ({ row }: { row: Record<string, unknown> }) => row["id"] as string;

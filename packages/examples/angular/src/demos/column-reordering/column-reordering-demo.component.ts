@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
-import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnReorderingConfig } from "./column-reordering.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -24,9 +23,9 @@ export class ColumnReorderingDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnReorderingConfig.rows;
-  headers: AngularHeaderObject[] = defaultHeadersFromCore([...columnReorderingConfig.headers]);
+  headers: AngularHeaderObject[] = [...columnReorderingConfig.headers];
 
   onColumnOrderChange(newHeaders: HeaderObject[]): void {
-    this.headers = defaultHeadersFromCore(newHeaders);
+    this.headers = newHeaders;
   }
 }

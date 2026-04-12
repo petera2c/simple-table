@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, HeaderObject } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, ReactHeaderObject } from "@simple-table/react";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -15,7 +15,7 @@ const ColumnEditingDemo = ({
   const [lastAdded, setLastAdded] = useState("");
 
   const headers: ReactHeaderObject[] = useMemo(
-    () => [...defaultHeadersFromCore(columnEditingHeaders), ...additionalColumns],
+    () => [...columnEditingHeaders, ...additionalColumns],
     [additionalColumns],
   );
 
@@ -31,7 +31,7 @@ const ColumnEditingDemo = ({
     setLastAdded(col.label);
   };
 
-  const handleHeaderEdit = (_header: HeaderObject, newLabel: string) => {
+  const handleHeaderEdit = (_header: ReactHeaderObject, newLabel: string) => {
     setLastAdded(`Renamed to: ${newLabel}`);
   };
 
@@ -53,9 +53,7 @@ const ColumnEditingDemo = ({
           + Add Column
         </button>
         {lastAdded && (
-          <span style={{ marginLeft: 12, color: "#64748b", fontSize: 13 }}>
-            Added: {lastAdded}
-          </span>
+          <span style={{ marginLeft: 12, color: "#64748b", fontSize: 13 }}>Added: {lastAdded}</span>
         )}
       </div>
       <SimpleTable

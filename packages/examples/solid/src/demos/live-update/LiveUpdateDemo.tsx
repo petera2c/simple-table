@@ -1,6 +1,5 @@
 import { onMount, onCleanup } from "solid-js";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme, TableAPI } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI } from "@simple-table/solid";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -100,7 +99,7 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
   return (
     <SimpleTable
       ref={(api) => (tableRef = api)}
-      defaultHeaders={defaultHeadersFromCore(liveUpdateConfig.headers)}
+      defaultHeaders={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

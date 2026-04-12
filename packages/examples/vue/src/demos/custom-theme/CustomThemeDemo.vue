@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
 import { customThemeConfig } from "./custom-theme.demo-data";
 import "@simple-table/vue/styles.css";
 import "./custom-theme.css";
@@ -12,7 +11,7 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 
 <template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(customThemeConfig.headers)"
+    :default-headers="customThemeConfig.headers"
     :rows="customThemeConfig.rows"
     :theme="props.theme ?? 'custom'"
     :custom-theme="customThemeConfig.tableProps.customTheme"

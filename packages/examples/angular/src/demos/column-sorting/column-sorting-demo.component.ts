@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnSortingConfig } from "./column-sorting.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -24,7 +23,7 @@ export class ColumnSortingDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnSortingConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(columnSortingConfig.headers);
+  readonly headers: AngularHeaderObject[] = columnSortingConfig.headers;
   readonly initialSortColumn = columnSortingConfig.tableProps.initialSortColumn;
   readonly initialSortDirection = columnSortingConfig.tableProps.initialSortDirection;
 }

@@ -1,6 +1,5 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -38,7 +37,7 @@ export class RowGroupingDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = rowGroupingConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(rowGroupingConfig.headers);
+  readonly headers: AngularHeaderObject[] = rowGroupingConfig.headers;
   readonly grouping = rowGroupingConfig.tableProps.rowGrouping;
   readonly getRowId = rowGroupingConfig.tableProps.getRowId;
 

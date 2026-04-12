@@ -1,13 +1,11 @@
-import { SimpleTable, asRows, mapToSolidHeaderObjects } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable, asRows} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/solid/styles.css";
 
 function getHeaders(): SolidHeaderObject[] {
   const baseHeaders = [...manufacturingConfig.headers];
-  return mapToSolidHeaderObjects(
-    baseHeaders.map((h) => {
+  return baseHeaders.map((h) => {
     if (h.accessor === "productLine") {
       return {
         ...h,
@@ -150,8 +148,7 @@ function getHeaders(): SolidHeaderObject[] {
       };
     }
     return h;
-  }),
-  );
+  });
 }
 
 export default function ManufacturingDemo(props: { height?: string | number; theme?: Theme }) {

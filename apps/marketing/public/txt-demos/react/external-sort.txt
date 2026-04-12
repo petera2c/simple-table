@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, SortColumn } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, SortColumn } from "@simple-table/react";
 import { externalSortConfig } from "./external-sort.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -31,7 +30,7 @@ const ExternalSortDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(externalSortConfig.headers)}
+      defaultHeaders={externalSortConfig.headers}
       rows={sortedData}
       onSortChange={setSortConfig}
       externalSortHandling

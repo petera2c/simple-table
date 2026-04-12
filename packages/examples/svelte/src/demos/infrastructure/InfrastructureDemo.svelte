@@ -1,9 +1,14 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, HeaderObject, CellRenderer, TableAPI, Row, CellValue } from "@simple-table/svelte";
+  import type { Theme, HeaderObject, TableAPI, Row, CellValue } from "@simple-table/svelte";
   import { onMount } from "svelte";
-  import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
-  import type { InfrastructureServer } from "./infrastructure.demo-data";
+  import { infrastructureData } from "./infrastructure.demo-data";
+  import InfraServerIdCell from "./InfraServerIdCell.svelte";
+  import InfraCpuCell from "./InfraCpuCell.svelte";
+  import InfraMemoryCell from "./InfraMemoryCell.svelte";
+  import InfraDiskCell from "./InfraDiskCell.svelte";
+  import InfraResponseCell from "./InfraResponseCell.svelte";
+  import InfraStatusCell from "./InfraStatusCell.svelte";
   import "@simple-table/svelte/styles.css";
 
   const INFRA_TICK_MS = 20;
@@ -121,95 +126,120 @@
 
   let tableRef: any;
 
-  function getHeaders(currentTheme?: Theme): HeaderObject[] {
-    const t = currentTheme || "light";
-
-    const serverIdRenderer: CellRenderer = ({ row }) => {
-      const d = row as unknown as InfrastructureServer;
-      const span = document.createElement("span");
-      Object.assign(span.style, { fontFamily: "monospace", fontSize: "0.85rem" });
-      span.textContent = d.serverId;
-      return span;
-    };
-
-    const cpuRenderer: CellRenderer = ({ row, theme: cellTheme }) => {
-      const d = row as unknown as InfrastructureServer;
-      const cpu = d.cpuUsage;
-      const s = getInfraMetricColorStyles(cpu, cellTheme || t, "cpu");
-      const outer = document.createElement("div");
-      outer.style.display = "flex";
-      outer.style.justifyContent = "end";
-      const badge = document.createElement("div");
-      Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-      badge.textContent = `${cpu.toFixed(1)}%`;
-      outer.appendChild(badge);
-      return outer;
-    };
-
-    const memoryRenderer: CellRenderer = ({ row, theme: cellTheme }) => {
-      const d = row as unknown as InfrastructureServer;
-      const mem = d.memoryUsage;
-      const s = getInfraMetricColorStyles(mem, cellTheme || t, "memory");
-      const outer = document.createElement("div");
-      outer.style.display = "flex";
-      outer.style.justifyContent = "end";
-      const badge = document.createElement("div");
-      Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-      badge.textContent = `${mem.toFixed(1)}%`;
-      outer.appendChild(badge);
-      return outer;
-    };
-
-    const diskRenderer: CellRenderer = ({ row }) => {
-      const d = row as unknown as InfrastructureServer;
-      return `${d.diskUsage.toFixed(1)}%`;
-    };
-
-    const responseRenderer: CellRenderer = ({ row, theme: cellTheme }) => {
-      const d = row as unknown as InfrastructureServer;
-      const rt = d.responseTime;
-      const s = getInfraMetricColorStyles(rt, cellTheme || t, "response");
-      const span = document.createElement("span");
-      Object.assign(span.style, { fontWeight: "500", color: s.color, backgroundColor: s.backgroundColor ?? "" });
-      span.textContent = rt.toFixed(1);
-      return span;
-    };
-
-    const statusRenderer: CellRenderer = ({ row, theme: cellTheme }) => {
-      const d = row as unknown as InfrastructureServer;
-      const status = d.status;
-      const s = getInfraStatusColors(status, cellTheme || t);
-      const div = document.createElement("div");
-      Object.assign(div.style, { ...s, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" });
-      div.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-      return div;
-    };
-
-    return [
-      { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: serverIdRenderer },
-      { accessor: "serverName", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
+  const headers = $derived.by(
+    (): HeaderObject[] => [
       {
-        accessor: "performance", label: "Performance Metrics", width: 690, isSortable: false,
+        accessor: "serverId",
+        align: "left",
+        filterable: true,
+        isEditable: false,
+        isSortable: true,
+        label: "Server ID",
+        minWidth: 180,
+        pinned: "left",
+        type: "string",
+        width: "1.2fr",
+        cellRenderer: InfraServerIdCell,
+      },
+      {
+        accessor: "serverName",
+        align: "left",
+        filterable: true,
+        isEditable: false,
+        isSortable: true,
+        label: "Name",
+        minWidth: 200,
+        type: "string",
+        width: "1.5fr",
+      },
+      {
+        accessor: "performance",
+        label: "Performance Metrics",
+        width: 690,
+        isSortable: false,
         children: [
-          { accessor: "cpuHistory", label: "CPU History", width: 150, isSortable: false, filterable: false, isEditable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
-          { accessor: "cpuUsage", label: "CPU %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: cpuRenderer },
-          { accessor: "memoryUsage", label: "Memory %", width: 130, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: memoryRenderer },
-          { accessor: "diskUsage", label: "Disk %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: diskRenderer },
-          { accessor: "responseTime", label: "Response (ms)", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: responseRenderer },
+          {
+            accessor: "cpuHistory",
+            label: "CPU History",
+            width: 150,
+            isSortable: false,
+            filterable: false,
+            isEditable: false,
+            align: "center",
+            type: "lineAreaChart",
+            tooltip: "CPU usage over the last 30 intervals",
+          },
+          {
+            accessor: "cpuUsage",
+            label: "CPU %",
+            width: 120,
+            isSortable: true,
+            filterable: true,
+            isEditable: true,
+            align: "right",
+            type: "number",
+            cellRenderer: InfraCpuCell,
+          },
+          {
+            accessor: "memoryUsage",
+            label: "Memory %",
+            width: 130,
+            isSortable: true,
+            filterable: true,
+            isEditable: true,
+            align: "right",
+            type: "number",
+            cellRenderer: InfraMemoryCell,
+          },
+          {
+            accessor: "diskUsage",
+            label: "Disk %",
+            width: 120,
+            isSortable: true,
+            filterable: true,
+            isEditable: true,
+            align: "right",
+            type: "number",
+            cellRenderer: InfraDiskCell,
+          },
+          {
+            accessor: "responseTime",
+            label: "Response (ms)",
+            width: 120,
+            isSortable: true,
+            filterable: true,
+            isEditable: true,
+            align: "right",
+            type: "number",
+            cellRenderer: InfraResponseCell,
+          },
         ],
       },
       {
-        accessor: "status", label: "Status", width: 130, isSortable: true, filterable: true, isEditable: false, align: "center", type: "enum",
-        enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
+        accessor: "status",
+        label: "Status",
+        width: 130,
+        isSortable: true,
+        filterable: true,
+        isEditable: false,
+        align: "center",
+        type: "enum",
+        enumOptions: [
+          { label: "Online", value: "online" },
+          { label: "Warning", value: "warning" },
+          { label: "Critical", value: "critical" },
+          { label: "Maintenance", value: "maintenance" },
+          { label: "Offline", value: "offline" },
+        ],
         valueGetter: ({ row }) => {
           const s = String(row.status);
           const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 };
           return m[s] || 999;
         },
-        cellRenderer: statusRenderer,
+        cellRenderer: InfraStatusCell,
       },
-    ];
-  }
+    ],
+  );
 
   onMount(() => {
     return startInfraDemoLiveUpdates(() => tableRef?.getAPI?.() ?? null, infrastructureData);
@@ -221,7 +251,7 @@
   autoExpandColumns={true}
   columnReordering={true}
   columnResizing={true}
-  defaultHeaders={getHeaders(theme)}
+  defaultHeaders={headers}
   editColumns={true}
   {height}
   rows={infrastructureData}

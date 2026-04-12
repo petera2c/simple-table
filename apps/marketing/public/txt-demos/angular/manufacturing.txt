@@ -1,7 +1,6 @@
 // manufacturing-demo.component.ts
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects, asRows } from "@simple-table/angular";
-import type { AngularHeaderObject, CellRenderer, Theme } from "@simple-table/angular";
+import {SimpleTableComponent, asRows} from "@simple-table/angular";import type { AngularHeaderObject, CellRenderer, Theme } from "@simple-table/angular";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/angular/styles.css";
@@ -188,12 +187,10 @@ function getHeaders(): AngularHeaderObject[] {
     maintenanceDate: maintenanceDateRenderer,
   };
 
-  return mapToAngularHeaderObjects(
-    manufacturingConfig.headers.map((h) => {
-      const renderer = rendererMap[String(h.accessor)];
-      return renderer ? { ...h, cellRenderer: renderer } : { ...h };
-    }),
-  );
+  return manufacturingConfig.headers.map((h) => {
+    const renderer = rendererMap[String(h.accessor)];
+    return renderer ? { ...h, cellRenderer: renderer } : { ...h };
+  });
 }
 
 @Component({

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactHeaderObject, HeaderRendererProps } from "@simple-table/react";
 import { headerRendererConfig } from "./header-renderer.demo-data";
 import "@simple-table/react/styles.css";
@@ -28,16 +28,17 @@ const HeaderRendererDemo = ({
       const aVal = a[accessor];
       const bVal = b[accessor];
       if (aVal === bVal) return 0;
-      const cmp = typeof aVal === "number" && typeof bVal === "number"
-        ? aVal - bVal
-        : String(aVal).localeCompare(String(bVal));
+      const cmp =
+        typeof aVal === "number" && typeof bVal === "number"
+          ? aVal - bVal
+          : String(aVal).localeCompare(String(bVal));
       return direction === "asc" ? cmp : -cmp;
     });
   }, [sortState]);
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      mapToReactHeaderObjects(headerRendererConfig.headers.map((h) => ({
+      headerRendererConfig.headers.map((h) => ({
         ...h,
         isSortable: false,
         headerRenderer: ({ accessor }: HeaderRendererProps) => {
@@ -68,24 +69,15 @@ const HeaderRendererDemo = ({
               }}
             >
               <span>{h.label}</span>
-              {indicator && (
-                <span style={{ fontSize: 10, color: "#6366f1" }}>{indicator}</span>
-              )}
+              {indicator && <span style={{ fontSize: 10, color: "#6366f1" }}>{indicator}</span>}
             </div>
           );
         },
-      }))),
+      })),
     [sortState],
   );
 
-  return (
-    <SimpleTable
-      defaultHeaders={headers}
-      rows={sortedData}
-      height={height}
-      theme={theme}
-    />
-  );
+  return <SimpleTable defaultHeaders={headers} rows={sortedData} height={height} theme={theme} />;
 };
 
 export default HeaderRendererDemo;

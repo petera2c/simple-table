@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 
-export const liveUpdateHeaders: HeaderObject[] = [
+export const liveUpdateHeaders: ReactHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {

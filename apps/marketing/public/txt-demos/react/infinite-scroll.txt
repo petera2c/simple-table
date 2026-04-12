@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, Row } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme, Row } from "@simple-table/react";
 import {
   infiniteScrollConfig,
   generateInfiniteScrollData,
@@ -46,7 +45,7 @@ const InfiniteScrollDemo = ({
         {rows.length} rows loaded{hasMore ? "" : " (all loaded)"}
       </div>
       <SimpleTable
-        defaultHeaders={defaultHeadersFromCore(infiniteScrollConfig.headers)}
+        defaultHeaders={infiniteScrollConfig.headers}
         rows={rows}
         onLoadMore={handleLoadMore}
         isLoading={loading}

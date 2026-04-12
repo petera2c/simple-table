@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { nestedHeadersConfig } from "./nested-headers.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -23,6 +22,6 @@ export class NestedHeadersDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = nestedHeadersConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(nestedHeadersConfig.headers);
+  readonly headers: AngularHeaderObject[] = nestedHeadersConfig.headers;
   readonly columnResizing = nestedHeadersConfig.tableProps.columnResizing;
 }

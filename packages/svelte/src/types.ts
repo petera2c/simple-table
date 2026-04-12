@@ -68,8 +68,7 @@ export interface SvelteColumnEditorConfig
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
  * Column definition for `defaultHeaders`: core column metadata with Svelte-only
- * renderer fields. For trees from `simple-table-core`, use `defaultHeadersFromCore` /
- * `mapToSvelteHeaderObjects`.
+ * renderer fields. `defaultHeaders` also accepts plain `HeaderObject[]` from shared configs.
  */
 export interface SvelteHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
@@ -103,14 +102,15 @@ export interface SimpleTableSvelteProps
     | "columnEditorConfig"
     | "icons"
   > {
-  defaultHeaders: SvelteHeaderObject[];
+  defaultHeaders: ReadonlyArray<HeaderObject | SvelteHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: SvelteFooterRenderer;
   loadingStateRenderer?: SvelteLoadingStateRenderer;
   errorStateRenderer?: SvelteErrorStateRenderer;
   emptyStateRenderer?: SvelteEmptyStateRenderer;
-  tableEmptyStateRenderer?: HTMLElement | string | null;
+  /** Svelte component (no props) or plain markup — adapter mounts components for the vanilla table slot. */
+  tableEmptyStateRenderer?: Component | HTMLElement | string | null;
   headerDropdown?: SvelteHeaderDropdown;
   columnEditorConfig?: SvelteColumnEditorConfig;
   icons?: SvelteIconsConfig;

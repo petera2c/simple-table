@@ -36,7 +36,7 @@ function transformColumnEditorConfig(config: SolidColumnEditorConfig): ColumnEdi
   };
 }
 
-function transformHeader(header: SolidHeaderObject): HeaderObject {
+function transformHeader(header: HeaderObject | SolidHeaderObject): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
 
   const transformed: HeaderObject = { ...(rest as any) };

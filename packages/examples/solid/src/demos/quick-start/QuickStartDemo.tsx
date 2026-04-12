@@ -1,5 +1,4 @@
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
 import { quickStartConfig } from "./quick-start.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -9,7 +8,7 @@ export default function QuickStartDemo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(quickStartConfig.headers)}
+      defaultHeaders={quickStartConfig.headers}
       rows={quickStartConfig.rows}
       height={props.height ?? "300px"}
       theme={props.theme}

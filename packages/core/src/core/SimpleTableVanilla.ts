@@ -378,7 +378,11 @@ export class SimpleTableVanilla {
     this.scrollEndTimeoutId = window.setTimeout(() => {
       this.isScrolling = false;
       this.scrollEndTimeoutId = null;
-      this.render("scroll-end");
+      // Defer full render out of the timer callback so the stack stays thin (INP / long-task
+      // attribution) and the browser can apply scroll geometry before we mutate layout again.
+      requestAnimationFrame(() => {
+        this.render("scroll-end");
+      });
     }, 150);
 
     // Cancel any pending RAF
@@ -403,14 +407,18 @@ export class SimpleTableVanilla {
 
       // Use scroll manager if available
       if (this.scrollManager) {
-        const containerHeight = element.clientHeight;
-        const contentHeight = element.scrollHeight;
-        this.scrollManager.handleScroll(
-          newScrollTop,
-          element.scrollLeft,
-          containerHeight,
-          contentHeight,
-        );
+        if (this.config.onLoadMore) {
+          const containerHeight = element.clientHeight;
+          const contentHeight = element.scrollHeight;
+          this.scrollManager.handleScroll(
+            newScrollTop,
+            element.scrollLeft,
+            containerHeight,
+            contentHeight,
+          );
+        } else {
+          this.scrollManager.handleScroll(newScrollTop, element.scrollLeft, 0, 0);
+        }
       }
 
       // Trigger re-render for virtualization

@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { columnFilteringConfig } from "./column-filtering.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const ColumnFilteringDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(columnFilteringConfig.headers)}
+      defaultHeaders={columnFilteringConfig.headers}
       rows={columnFilteringConfig.rows}
       height={height}
       theme={theme}

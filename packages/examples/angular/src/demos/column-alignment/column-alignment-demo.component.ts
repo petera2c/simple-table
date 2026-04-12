@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnAlignmentConfig } from "./column-alignment.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -22,5 +21,5 @@ export class ColumnAlignmentDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnAlignmentConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(columnAlignmentConfig.headers);
+  readonly headers: AngularHeaderObject[] = columnAlignmentConfig.headers;
 }

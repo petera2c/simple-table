@@ -1,6 +1,5 @@
 import { createSignal, createMemo, Show, For } from "solid-js";
-import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellRendererProps, CellClickProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellRendererProps, CellClickProps } from "@simple-table/solid";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/solid/styles.css";
@@ -12,7 +11,7 @@ export default function CellClickingDemo(props: { height?: string | number; them
   const [selectedTask, setSelectedTask] = createSignal<ProjectTask | null>(null);
   const [rows, setRows] = createSignal<ProjectTask[]>([...cellClickingData]);
 
-  const headers: SolidHeaderObject[] = mapToSolidHeaderObjects(cellClickingHeaders.map((h) => {
+  const headers: SolidHeaderObject[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return {
         ...h,
@@ -76,7 +75,7 @@ export default function CellClickingDemo(props: { height?: string | number; them
       };
     }
     return h;
-  }));
+  });
 
   const isDark = createMemo(() => props.theme === "modern-dark" || props.theme === "dark");
 

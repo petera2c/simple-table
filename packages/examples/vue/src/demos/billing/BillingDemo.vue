@@ -16,8 +16,9 @@
 </template>
 
 <script setup lang="ts">
+import { h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject, CellRenderer } from "@simple-table/vue";
+import type { Theme, HeaderObject, CellRendererProps } from "@simple-table/vue";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/vue/styles.css";
@@ -26,13 +27,10 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const nameRenderer: CellRenderer = ({ row }) => {
+const nameRenderer = ({ row }: CellRendererProps) => {
   const d = row as unknown as BillingRow;
   if (d.type === "account") {
-    const span = document.createElement("span");
-    span.style.fontWeight = "600";
-    span.textContent = d.name;
-    return span;
+    return h("span", { style: { fontWeight: "600" } }, d.name);
   }
   return d.name;
 };

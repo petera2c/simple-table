@@ -1,5 +1,4 @@
-import { SimpleTable, asRows, defaultHeadersFromCore } from "@simple-table/solid";
-import type { Theme, SortColumn, Row } from "@simple-table/solid";
+import {SimpleTable, asRows} from "@simple-table/solid";import type { Theme, SortColumn, Row } from "@simple-table/solid";
 import { externalSortConfig } from "./external-sort.demo-data";
 import { createSignal, createMemo } from "solid-js";
 import "@simple-table/solid/styles.css";
@@ -31,7 +30,7 @@ export default function ExternalSortDemo(props: {
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(externalSortConfig.headers)}
+      defaultHeaders={externalSortConfig.headers}
       rows={sortedRows()}
       height={props.height ?? "400px"}
       theme={props.theme}

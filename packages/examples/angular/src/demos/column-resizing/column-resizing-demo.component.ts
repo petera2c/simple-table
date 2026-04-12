@@ -1,7 +1,6 @@
 import { NgIf } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
-import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
-import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, HeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -33,7 +32,7 @@ export class ColumnResizingDemoComponent implements OnInit {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnResizingData;
-  headers: AngularHeaderObject[] = defaultHeadersFromCore([...columnResizingHeaders]);
+  headers: AngularHeaderObject[] = [...columnResizingHeaders];
   saveMessage = "";
 
   handleColumnWidthChange = (updatedHeaders: HeaderObject[]) => {
@@ -41,7 +40,7 @@ export class ColumnResizingDemoComponent implements OnInit {
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
       localStorage.setItem(COLUMN_RESIZING_STORAGE_KEY, JSON.stringify(widthMap));
-      this.headers = defaultHeadersFromCore(updatedHeaders);
+      this.headers = updatedHeaders;
       this.saveMessage = "Column widths saved!";
       setTimeout(() => { this.saveMessage = ""; }, 2000);
     } catch {
@@ -54,10 +53,11 @@ export class ColumnResizingDemoComponent implements OnInit {
     try {
       const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
       if (saved) {
-        const widthMap = JSON.parse(saved);
-        this.headers = defaultHeadersFromCore(
-          columnResizingHeaders.map((h) => ({ ...h, width: widthMap[h.accessor] ?? h.width })),
-        );
+        const widthMap = JSON.parse(saved) as Record<string, number | string | undefined>;
+        this.headers = columnResizingHeaders.map((h) => ({
+          ...h,
+          width: widthMap[h.accessor] ?? h.width,
+        }));
       }
     } catch { /* ignore */ }
   }

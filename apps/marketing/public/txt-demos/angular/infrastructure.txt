@@ -1,7 +1,6 @@
 // infrastructure-demo.component.ts
 import { Component, Input, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type {
+import {SimpleTableComponent} from "@simple-table/angular";import type {
   AngularHeaderObject,
   CellRenderer,
   CellValue,
@@ -189,7 +188,7 @@ function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {
     return div;
   };
 
-  return mapToAngularHeaderObjects([
+  return [
     { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: serverIdRenderer },
     { accessor: "serverName", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
@@ -211,7 +210,7 @@ function getHeaders(currentTheme?: Theme): AngularHeaderObject[] {
       },
       cellRenderer: statusRenderer,
     },
-  ]);
+  ];
 }
 
 @Component({

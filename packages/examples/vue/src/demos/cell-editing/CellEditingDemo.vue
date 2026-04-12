@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(cellEditingConfig.headers)"
+    :default-headers="cellEditingConfig.headers"
     :rows="data"
     :height="height"
     :theme="theme"
@@ -10,8 +10,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme, CellChangeProps } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme, CellChangeProps } from "@simple-table/vue";
 import { cellEditingConfig } from "./cell-editing.demo-data";
 import "@simple-table/vue/styles.css";
 

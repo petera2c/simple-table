@@ -1,6 +1,5 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -37,21 +36,19 @@ export class ProgrammaticControlDemoComponent {
 
   statusMessage = "No status message";
   readonly rows: Row[] = programmaticControlConfig.rows;
-  readonly headers: AngularHeaderObject[] = mapToAngularHeaderObjects(
-    programmaticControlConfig.headers.map((h) => {
-      if (h.accessor === "status") {
-        return {
-          ...h,
-          cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-            const s = String(row.status);
-            const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
-            return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
-          },
-        };
-      }
-      return { ...h };
-    }),
-  );
+  readonly headers: AngularHeaderObject[] = programmaticControlConfig.headers.map((h) => {
+    if (h.accessor === "status") {
+      return {
+        ...h,
+        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+          const s = String(row.status);
+          const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
+          return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
+        },
+      };
+    }
+    return { ...h };
+  });
 
   sortByName(): void {
     this.tableRef.getAPI()?.applySortState({ accessor: "name", direction: "asc" });

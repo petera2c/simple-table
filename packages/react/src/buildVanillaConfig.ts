@@ -93,6 +93,10 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
     headerDropdown,
     columnEditorConfig,
     icons,
+    onColumnOrderChange,
+    onColumnWidthChange,
+    onHeaderEdit,
+    onColumnSelect,
     ...rest
   } = config;
 
@@ -100,6 +104,30 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
+    ...(onColumnOrderChange
+      ? {
+          onColumnOrderChange: (headers: HeaderObject[]) =>
+            onColumnOrderChange(headers as unknown as ReactHeaderObject[]),
+        }
+      : {}),
+    ...(onColumnWidthChange
+      ? {
+          onColumnWidthChange: (headers: HeaderObject[]) =>
+            onColumnWidthChange(headers as unknown as ReactHeaderObject[]),
+        }
+      : {}),
+    ...(onHeaderEdit
+      ? {
+          onHeaderEdit: (header: HeaderObject, newLabel: string) =>
+            onHeaderEdit(header as unknown as ReactHeaderObject, newLabel),
+        }
+      : {}),
+    ...(onColumnSelect
+      ? {
+          onColumnSelect: (header: HeaderObject) =>
+            onColumnSelect(header as unknown as ReactHeaderObject),
+        }
+      : {}),
   };
 
   if (footerRenderer !== undefined) {

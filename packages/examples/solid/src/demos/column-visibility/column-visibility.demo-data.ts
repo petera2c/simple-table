@@ -1,11 +1,5 @@
 // Self-contained demo table setup for this example (aligned with simple-table-marketing column visibility demo).
-import type {
-  ColumnEditorRowRenderer,
-  ColumnEditorRowRendererProps,
-  ColumnVisibilityState,
-  HeaderObject,
-  Row,
-} from "@simple-table/solid";
+import type { ColumnVisibilityState, HeaderObject, Row } from "@simple-table/solid";
 
 export const COLUMN_VISIBILITY_DEMO_STORAGE_KEY = "columnVisibilityDemo";
 
@@ -167,43 +161,3 @@ export const columnVisibilityConfig = {
     },
   },
 } as const;
-
-function appendMarketingColumnEditorSlot(
-  parent: HTMLElement,
-  slot: string | Node | undefined,
-): void {
-  if (slot == null) return;
-  if (typeof slot === "string") {
-    parent.appendChild(document.createTextNode(slot));
-  } else {
-    parent.appendChild(slot);
-  }
-}
-
-/** Solid examples-only copy of the marketing column-editor row layout. */
-export const buildMarketingStyleColumnEditorRowRenderer = (({
-  components,
-}: ColumnEditorRowRendererProps): HTMLElement => {
-  const outer = document.createElement("div");
-  outer.style.width = "100%";
-  outer.style.display = "flex";
-  outer.style.alignItems = "center";
-  outer.style.justifyContent = "space-between";
-  outer.style.gap = "8px";
-  outer.style.paddingRight = "8px";
-
-  const left = document.createElement("div");
-  left.style.display = "flex";
-  left.style.alignItems = "center";
-  left.style.gap = "8px";
-  appendMarketingColumnEditorSlot(left, components.expandIcon as Node | string | undefined);
-  appendMarketingColumnEditorSlot(left, components.checkbox as Node | string | undefined);
-  appendMarketingColumnEditorSlot(left, components.labelContent as Node | string | undefined);
-  outer.appendChild(left);
-
-  const right = document.createElement("div");
-  appendMarketingColumnEditorSlot(right, components.dragIcon as Node | string | undefined);
-  outer.appendChild(right);
-
-  return outer;
-}) satisfies ColumnEditorRowRenderer;

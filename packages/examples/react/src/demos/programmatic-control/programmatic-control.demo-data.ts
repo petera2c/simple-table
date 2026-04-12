@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 
 export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
@@ -23,7 +23,7 @@ export const programmaticControlData = [
   { id: 12, name: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 0, status: "Out of Stock" },
 ];
 
-export const programmaticControlHeaders: HeaderObject[] = [
+export const programmaticControlHeaders: ReactHeaderObject[] = [
   { accessor: "id", label: "ID", width: 70, type: "number", isSortable: true, filterable: true },
   { accessor: "name", label: "Product Name", width: "1fr", minWidth: 150, type: "string", isSortable: true, filterable: true },
   {

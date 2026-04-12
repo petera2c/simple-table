@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { emptyStateConfig } from "./empty-state.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -38,7 +37,7 @@ const EmptyStateDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(emptyStateConfig.headers)}
+      defaultHeaders={emptyStateConfig.headers}
       rows={emptyStateConfig.rows}
       tableEmptyStateRenderer={tableEmptyState}
       height={height}

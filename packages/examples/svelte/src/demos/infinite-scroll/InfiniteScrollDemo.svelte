@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme, Row } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, Row } from "@simple-table/svelte";
   import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -30,7 +29,7 @@
     {rows.length} rows loaded{hasMore ? "" : " (all loaded)"}
   </div>
   <SimpleTable
-    defaultHeaders={defaultHeadersFromCore(infiniteScrollConfig.headers)}
+    defaultHeaders={infiniteScrollConfig.headers}
     {rows}
     isLoading={loading}
     onLoadMore={handleLoadMore}

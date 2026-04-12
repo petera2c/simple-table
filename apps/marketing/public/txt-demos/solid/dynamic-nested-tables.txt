@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme, OnRowGroupExpandProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, OnRowGroupExpandProps } from "@simple-table/solid";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
@@ -47,7 +46,7 @@ export default function DynamicNestedTablesDemo(props: { height?: string | numbe
   return (
     <SimpleTable
       autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={defaultHeadersFromCore(dynamicNestedTablesConfig.headers)}
+      defaultHeaders={dynamicNestedTablesConfig.headers}
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
       height={props.height ?? "500px"}
       rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}

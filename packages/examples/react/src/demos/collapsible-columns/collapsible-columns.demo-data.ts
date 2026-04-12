@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 
 export const collapsibleColumnsData = [
@@ -20,7 +20,7 @@ export const collapsibleColumnsData = [
 const fmt = (accessor: string) => ({ row }: { row: Record<string, unknown> }) =>
   `$${((row[accessor] as number) || 0).toLocaleString()}`;
 
-const monthCol = (accessor: string, label: string): HeaderObject => ({
+const monthCol = (accessor: string, label: string): ReactHeaderObject => ({
   accessor,
   label,
   width: 100,
@@ -31,7 +31,7 @@ const monthCol = (accessor: string, label: string): HeaderObject => ({
   cellRenderer: fmt(accessor),
 });
 
-export const collapsibleColumnsHeaders: HeaderObject[] = [
+export const collapsibleColumnsHeaders: ReactHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, isSortable: true },
   { accessor: "name", label: "Sales Rep", minWidth: 150, width: "1fr", isSortable: true },
   { accessor: "region", label: "Region", width: 140, isSortable: true },

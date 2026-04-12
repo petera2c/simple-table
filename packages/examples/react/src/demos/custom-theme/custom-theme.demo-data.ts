@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/react";
+import type { ReactHeaderObject, Row } from "@simple-table/react";
 
 
 export const customThemeData: Row[] = [
@@ -20,7 +20,7 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
-export const customThemeHeaders: HeaderObject[] = [
+export const customThemeHeaders: ReactHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
   {

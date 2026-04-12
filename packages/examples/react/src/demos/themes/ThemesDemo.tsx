@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -36,7 +35,7 @@ const ThemesDemo = ({
         ))}
       </div>
       <SimpleTable
-        defaultHeaders={defaultHeadersFromCore(themesConfig.headers)}
+        defaultHeaders={themesConfig.headers}
         rows={themesConfig.rows}
         height={height}
         theme={selectedTheme}

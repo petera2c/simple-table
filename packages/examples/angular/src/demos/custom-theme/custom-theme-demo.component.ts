@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { customThemeConfig } from "./custom-theme.demo-data";
 import "@simple-table/angular/styles.css";
 import "./custom-theme.css";
@@ -26,7 +25,7 @@ export class CustomThemeDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = customThemeConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(customThemeConfig.headers);
+  readonly headers: AngularHeaderObject[] = customThemeConfig.headers;
   readonly customThemeOverrides = customThemeConfig.tableProps.customTheme;
 
   get resolvedTheme(): Theme {

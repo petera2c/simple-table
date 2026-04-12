@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme, OnRowGroupExpandProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, OnRowGroupExpandProps } from "@simple-table/solid";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
@@ -66,7 +65,7 @@ export default function DynamicRowLoadingDemo(props: { height?: string | number;
   return (
     <SimpleTable
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-      defaultHeaders={defaultHeadersFromCore(dynamicRowLoadingConfig.headers)}
+      defaultHeaders={dynamicRowLoadingConfig.headers}
       editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
       expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
       height={props.height ?? "400px"}

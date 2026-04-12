@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -10,7 +9,7 @@ const NestedTablesDemo = ({ height = "500px", theme }: { height?: string | numbe
   return (
     <SimpleTable
       autoExpandColumns={nestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={defaultHeadersFromCore(nestedTablesConfig.headers)}
+      defaultHeaders={nestedTablesConfig.headers}
       rows={sampleData}
       rowGrouping={nestedTablesConfig.tableProps.rowGrouping}
       getRowId={nestedTablesConfig.tableProps.getRowId}

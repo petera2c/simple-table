@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     :auto-expand-columns="dynamicNestedTablesConfig.tableProps.autoExpandColumns"
-    :default-headers="defaultHeadersFromCore(dynamicNestedTablesConfig.headers)"
+    :default-headers="dynamicNestedTablesConfig.headers"
     :expand-all="dynamicNestedTablesConfig.tableProps.expandAll"
     :height="height"
     :row-grouping="dynamicNestedTablesConfig.tableProps.rowGrouping"
@@ -14,8 +14,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,

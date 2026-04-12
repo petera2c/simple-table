@@ -1,13 +1,11 @@
 import { createSignal } from "solid-js";
-import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellChangeProps, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellChangeProps, CellRendererProps } from "@simple-table/solid";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
 import "@simple-table/solid/styles.css";
 
 function getHeaders(): SolidHeaderObject[] {
-  return mapToSolidHeaderObjects(
-    hrConfig.headers.map((h) => {
+  return hrConfig.headers.map((h) => {
       if (h.accessor === "fullName") {
         return {
           ...h,
@@ -158,8 +156,7 @@ function getHeaders(): SolidHeaderObject[] {
         };
       }
       return h;
-    }),
-  );
+    });
 }
 
 export default function HRDemo(props: { height?: string | number; theme?: Theme }) {

@@ -38,7 +38,7 @@ function transformColumnEditorConfig(config: VueColumnEditorConfig): ColumnEdito
   };
 }
 
-function transformHeader(header: VueHeaderObject): HeaderObject {
+function transformHeader(header: HeaderObject | VueHeaderObject): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
 
   const transformed: HeaderObject = { ...(rest as any) };

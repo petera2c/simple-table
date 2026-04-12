@@ -1,6 +1,5 @@
 import { createSignal, createMemo } from "solid-js";
-import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
-import type {
+import {SimpleTable} from "@simple-table/solid";import type {
   Theme,
   SolidHeaderObject,
   CellRendererProps,
@@ -21,7 +20,7 @@ export default function RowSelectionDemo(props: {
     return books.length > 0 ? books.map((b) => b.title).join(", ") : "None";
   });
 
-  const headers: SolidHeaderObject[] = mapToSolidHeaderObjects(rowSelectionConfig.headers.map((h) => {
+  const headers: SolidHeaderObject[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -33,7 +32,7 @@ export default function RowSelectionDemo(props: {
       };
     }
     return h;
-  }));
+  });
 
   const handleSelectionChange = (selection: RowSelectionChangeProps) => {
     const selected = rowSelectionData.filter((book) =>

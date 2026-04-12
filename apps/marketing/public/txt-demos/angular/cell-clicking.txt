@@ -1,8 +1,7 @@
 // cell-clicking-demo.component.ts
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type { AngularHeaderObject, CellClickProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellClickProps, Theme } from "@simple-table/angular";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/angular/styles.css";
@@ -51,7 +50,7 @@ export class CellClickingDemoComponent {
 
   get isDark() { return this.theme === "modern-dark" || this.theme === "dark"; }
 
-  headers: AngularHeaderObject[] = mapToAngularHeaderObjects(cellClickingHeaders.map((h) => {
+  headers: AngularHeaderObject[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return { ...h, cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
         const p = String(row.priority);
@@ -84,7 +83,7 @@ export class CellClickingDemoComponent {
       }};
     }
     return { ...h };
-  }));
+  });
 
   handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps) => {
     const task = row as ProjectTask;

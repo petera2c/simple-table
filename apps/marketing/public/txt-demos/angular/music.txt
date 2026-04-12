@@ -1,7 +1,6 @@
 // music-demo.component.ts
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, asRows, mapToAngularHeaderObjects } from "@simple-table/angular";
-import type { AngularHeaderObject, CellRenderer, CellRendererProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent, asRows} from "@simple-table/angular";import type { AngularHeaderObject, CellRenderer, CellRendererProps, Theme } from "@simple-table/angular";
 import { musicData, getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
 import "@simple-table/angular/styles.css";
@@ -156,7 +155,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     return growthMetric(val, pct, c, { isPositive: signed ? val >= 0 : true, align: "right" });
   };
 
-  return mapToAngularHeaderObjects([
+  return [
     { accessor: "rank", label: "#", width: 60, isSortable: true, isEditable: false, align: "center", type: "number", pinned: "left" },
     { accessor: "artistName", label: "Artist", width: 330, isSortable: true, isEditable: false, align: "left", type: "string", pinned: "left", cellRenderer: artistRenderer },
     { accessor: "artistType", label: "Identity", width: 280, isSortable: false, isEditable: false, align: "left", type: "string", cellRenderer: artistTypeRenderer },
@@ -199,7 +198,7 @@ function buildMusicHeaders(theme?: string): AngularHeaderObject[] {
     },
     { accessor: "conversionRate", label: "Conversion Rate", width: 150, isSortable: true, isEditable: false, align: "right", type: "number", cellRenderer: conversionRateRenderer },
     { accessor: "reachFollowersRatio", label: "Reach/Followers Ratio", width: 220, isSortable: true, isEditable: false, align: "right", type: "number", cellRenderer: ratioRenderer },
-  ]);
+  ];
 }
 
 @Component({

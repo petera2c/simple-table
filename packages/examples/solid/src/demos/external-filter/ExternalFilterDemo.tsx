@@ -1,6 +1,5 @@
 import { createSignal, createMemo } from "solid-js";
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme, TableFilterState } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, TableFilterState } from "@simple-table/solid";
 import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -20,7 +19,7 @@ export default function ExternalFilterDemo(props: { height?: string | number; th
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(externalFilterConfig.headers)}
+      defaultHeaders={externalFilterConfig.headers}
       rows={filteredData()}
       onFilterChange={setFilters}
       externalFilterHandling

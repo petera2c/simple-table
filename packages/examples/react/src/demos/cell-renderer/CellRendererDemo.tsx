@@ -1,12 +1,16 @@
 import { useMemo } from "react";
-import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, CellRendererProps, ReactHeaderObject } from "@simple-table/react";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 const getInitials = (name: string) =>
-  name.split(" ").map((n) => n[0]).join("").toUpperCase();
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
 const TeamCell = ({ row }: CellRendererProps) => {
   const members = (row as CellRendererEmployee).teamMembers;
@@ -152,23 +156,21 @@ const CellRendererDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers = useMemo(
     () =>
-      mapToReactHeaderObjects(
-        cellRendererConfig.headers.map((h) => {
-          const renderers: Record<string, React.ComponentType<CellRendererProps>> = {
-            teamMembers: TeamCell,
-            website: WebsiteCell,
-            status: StatusCell,
-            progress: ProgressCell,
-            rating: RatingCell,
-            verified: VerifiedCell,
-            tags: TagsCell,
-          };
-          const cellRenderer = renderers[h.accessor as string];
-          return cellRenderer ? { ...h, cellRenderer } : h;
-        }),
-      ),
+      cellRendererConfig.headers.map((h) => {
+        const renderers: Record<string, React.ComponentType<CellRendererProps>> = {
+          teamMembers: TeamCell,
+          website: WebsiteCell,
+          status: StatusCell,
+          progress: ProgressCell,
+          rating: RatingCell,
+          verified: VerifiedCell,
+          tags: TagsCell,
+        };
+        const cellRenderer = renderers[h.accessor as string];
+        return cellRenderer ? { ...h, cellRenderer } : h;
+      }) as ReactHeaderObject[],
     [],
   );
 

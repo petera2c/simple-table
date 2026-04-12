@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
   import {
     dynamicNestedTablesConfig,
     dynamicNestedTablesData,
@@ -46,7 +45,7 @@
 
 <SimpleTable
   autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
-  defaultHeaders={defaultHeadersFromCore(dynamicNestedTablesConfig.headers)}
+  defaultHeaders={dynamicNestedTablesConfig.headers}
   expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
   {height}
   rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}

@@ -14,7 +14,7 @@ import {
 import { SimpleTableVanilla } from "simple-table-core";
 import type { TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "../buildVanillaConfig";
-import type { SimpleTableAngularProps, TableInstance, AngularHeaderObject } from "../types";
+import type { SimpleTableAngularProps, TableInstance } from "../types";
 
 /**
  * SimpleTable — Angular adapter for simple-table-core.
@@ -36,7 +36,7 @@ import type { SimpleTableAngularProps, TableInstance, AngularHeaderObject } from
 })
 export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true }) rows!: SimpleTableAngularProps["rows"];
-  @Input({ required: true }) defaultHeaders!: AngularHeaderObject[];
+  @Input({ required: true }) defaultHeaders!: SimpleTableAngularProps["defaultHeaders"];
 
   // All optional SimpleTableAngularProps inputs
   @Input() footerRenderer?: SimpleTableAngularProps["footerRenderer"];

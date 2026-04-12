@@ -1,6 +1,5 @@
 import {
   SimpleTable,
-  defaultHeadersFromCore,
   type ColumnEditorRowRendererProps,
   type ColumnVisibilityState,
   type Theme,
@@ -22,7 +21,7 @@ const ColumnVisibilityDemo = ({
   theme?: Theme;
 }) => {
   const headers = useMemo(
-    () => defaultHeadersFromCore(getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved())),
+    () => getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved()),
     [],
   );
 

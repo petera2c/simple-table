@@ -33,7 +33,7 @@ export const FRAMEWORK_HUB_ENTRIES: FrameworkHubEntry[] = [
     stylesImport: `import "@simple-table/react/styles.css";`,
     examplesMonorepoPath: "packages/examples/react",
     featureDocsPath: "/docs/installation",
-    minimalSnippet: `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+    minimalSnippet: `import { SimpleTable } from "@simple-table/react";
 import "@simple-table/react/styles.css";`,
   },
   {
@@ -45,7 +45,7 @@ import "@simple-table/react/styles.css";`,
     stylesImport: `import "@simple-table/vue/styles.css";`,
     examplesMonorepoPath: "packages/examples/vue",
     featureDocsPath: "/docs/quick-start",
-    minimalSnippet: `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/vue";
+    minimalSnippet: `import { SimpleTable } from "@simple-table/vue";
 import "@simple-table/vue/styles.css";`,
   },
   {
@@ -57,7 +57,7 @@ import "@simple-table/vue/styles.css";`,
     stylesImport: `import "@simple-table/angular/styles.css";`,
     examplesMonorepoPath: "packages/examples/angular",
     featureDocsPath: "/docs/quick-start",
-    minimalSnippet: `import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
+    minimalSnippet: `import { SimpleTableComponent } from "@simple-table/angular";
 import "@simple-table/angular/styles.css";`,
   },
   {
@@ -69,7 +69,7 @@ import "@simple-table/angular/styles.css";`,
     stylesImport: `import "@simple-table/svelte/styles.css";`,
     examplesMonorepoPath: "packages/examples/svelte",
     featureDocsPath: "/docs/quick-start",
-    minimalSnippet: `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/svelte";
+    minimalSnippet: `import { SimpleTable } from "@simple-table/svelte";
 import "@simple-table/svelte/styles.css";`,
   },
   {
@@ -81,7 +81,7 @@ import "@simple-table/svelte/styles.css";`,
     stylesImport: `import "@simple-table/solid/styles.css";`,
     examplesMonorepoPath: "packages/examples/solid",
     featureDocsPath: "/docs/quick-start",
-    minimalSnippet: `import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
+    minimalSnippet: `import { SimpleTable } from "@simple-table/solid";
 import "@simple-table/solid/styles.css";`,
   },
   {

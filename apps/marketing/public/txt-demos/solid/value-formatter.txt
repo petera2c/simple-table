@@ -1,5 +1,4 @@
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/solid";
-import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
 import { valueFormatterConfig } from "./value-formatter.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -9,7 +8,7 @@ export default function ValueFormatterDemo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(valueFormatterConfig.headers)}
+      defaultHeaders={valueFormatterConfig.headers}
       rows={valueFormatterConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

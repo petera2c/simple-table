@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme, HeaderObject } from "@simple-table/react";
-import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, ReactHeaderObject } from "@simple-table/react";
+import {
+  columnResizingHeaders,
+  columnResizingData,
+  COLUMN_RESIZING_STORAGE_KEY,
+} from "./column-resizing.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnResizingDemo = ({
@@ -11,7 +15,7 @@ const ColumnResizingDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [headers, setHeaders] = useState(() => defaultHeadersFromCore(columnResizingHeaders));
+  const [headers, setHeaders] = useState(() => columnResizingHeaders);
   const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
@@ -20,12 +24,10 @@ const ColumnResizingDemo = ({
       if (saved) {
         const widthMap = JSON.parse(saved);
         setHeaders(
-          defaultHeadersFromCore(
-            columnResizingHeaders.map((h) => ({
-              ...h,
-              width: widthMap[h.accessor] ?? h.width,
-            })),
-          ),
+          columnResizingHeaders.map((h) => ({
+            ...h,
+            width: (widthMap as Record<string, number | string | undefined>)[h.accessor] ?? h.width,
+          })),
         );
       }
     } catch {
@@ -33,7 +35,7 @@ const ColumnResizingDemo = ({
     }
   }, []);
 
-  const handleColumnWidthChange = (updatedHeaders: HeaderObject[]) => {
+  const handleColumnWidthChange = (updatedHeaders: ReactHeaderObject[]) => {
     try {
       const widthMap = updatedHeaders.reduce(
         (acc, h) => {
@@ -43,7 +45,7 @@ const ColumnResizingDemo = ({
         {} as Record<string, number | string>,
       );
       localStorage.setItem(COLUMN_RESIZING_STORAGE_KEY, JSON.stringify(widthMap));
-      setHeaders(defaultHeadersFromCore(updatedHeaders));
+      setHeaders(updatedHeaders);
       setSaveMessage("Column widths saved!");
       setTimeout(() => setSaveMessage(""), 2000);
     } catch {

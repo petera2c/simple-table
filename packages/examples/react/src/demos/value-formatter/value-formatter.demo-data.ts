@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/react";
+import type { ReactHeaderObject, Row } from "@simple-table/react";
 
 
 export const valueFormatterData: Row[] = [
@@ -26,7 +26,7 @@ const DEPARTMENT_CODES: Record<string, string> = {
   operations: "OPS",
 };
 
-export const valueFormatterHeaders: HeaderObject[] = [
+export const valueFormatterHeaders: ReactHeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   {
     accessor: "firstName",

@@ -1,5 +1,4 @@
-import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/solid/styles.css";
@@ -152,12 +151,10 @@ const RENDERER_MAP: Record<string, (props: CellRendererProps) => unknown> = {
   tags: TagsCell,
 };
 
-const HEADERS: SolidHeaderObject[] = mapToSolidHeaderObjects(
-  cellRendererConfig.headers.map((h) => {
-    const fn = RENDERER_MAP[String(h.accessor)];
-    return fn !== undefined ? { ...h, cellRenderer: fn } : h;
-  }),
-);
+const HEADERS: SolidHeaderObject[] = cellRendererConfig.headers.map((h) => {
+  const fn = RENDERER_MAP[String(h.accessor)];
+  return fn !== undefined ? { ...h, cellRenderer: fn } : h;
+});
 
 export default function CellRendererDemo(props: { height?: string | number; theme?: Theme }) {
   return (

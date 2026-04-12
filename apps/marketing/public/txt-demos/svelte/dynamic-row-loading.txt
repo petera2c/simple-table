@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
-  import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
+  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
   import {
     dynamicRowLoadingConfig,
     generateInitialRegions,
@@ -63,7 +62,7 @@
 
 <SimpleTable
   columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-  defaultHeaders={defaultHeadersFromCore(dynamicRowLoadingConfig.headers)}
+  defaultHeaders={dynamicRowLoadingConfig.headers}
   editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
   expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
   {height}

@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(rowHeightConfig.headers)"
+    :default-headers="rowHeightConfig.headers"
     :rows="rowHeightConfig.rows"
     :height="height"
     :theme="theme"
@@ -9,8 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
 import { rowHeightConfig } from "./row-height.demo-data";
 import "@simple-table/vue/styles.css";
 

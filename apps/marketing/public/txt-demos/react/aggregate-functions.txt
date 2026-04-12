@@ -1,5 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +11,7 @@ const AggregateFunctionsDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(aggregateFunctionsConfig.headers)}
+      defaultHeaders={aggregateFunctionsConfig.headers}
       rows={aggregateFunctionsConfig.rows}
       rowGrouping={aggregateFunctionsConfig.tableProps.rowGrouping}
       columnResizing

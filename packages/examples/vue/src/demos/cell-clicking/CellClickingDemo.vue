@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, HeaderObject, CellClickProps } from "@simple-table/vue";
+import type { Theme, HeaderObject, CellClickProps, CellRendererProps } from "@simple-table/vue";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/vue/styles.css";
@@ -14,48 +14,74 @@ const clickInfo = ref("");
 const selectedTask = ref<ProjectTask | null>(null);
 const rows = ref<ProjectTask[]>([...cellClickingData]);
 
-const headers: HeaderObject[] = cellClickingHeaders.map((h) => {
-  if (h.accessor === "priority") {
+const headers: HeaderObject[] = cellClickingHeaders.map((col) => {
+  if (col.accessor === "priority") {
     return {
-      ...h,
-      cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const p = String(row.priority);
+      ...col,
+      cellRenderer: ({ row }: CellRendererProps) => {
+        const p = String((row as Record<string, unknown>).priority);
         const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
-        const el = document.createElement("span");
-        Object.assign(el.style, { color, fontWeight: "bold", cursor: "pointer" });
-        el.title = "Click to filter by priority";
-        el.textContent = p;
-        return el;
+        return h(
+          "span",
+          {
+            style: { color, fontWeight: "bold", cursor: "pointer" },
+            title: "Click to filter by priority",
+          },
+          p,
+        );
       },
     };
   }
-  if (h.accessor === "status") {
+  if (col.accessor === "status") {
     return {
-      ...h,
-      cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const s = String(row.status);
+      ...col,
+      cellRenderer: ({ row }: CellRendererProps) => {
+        const s = String((row as Record<string, unknown>).status);
         const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
         const color = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
-        const el = document.createElement("span");
-        Object.assign(el.style, { background: bg, color, padding: "4px 8px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold", cursor: "pointer" });
-        el.title = "Click to change status";
-        el.textContent = s;
-        return el;
+        return h(
+          "span",
+          {
+            style: {
+              backgroundColor: bg,
+              color,
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              cursor: "pointer",
+            },
+            title: "Click to change status",
+          },
+          s,
+        );
       },
     };
   }
-  if (h.accessor === "details") {
+  if (col.accessor === "details") {
     return {
-      ...h,
-      cellRenderer: () => {
-        const btn = document.createElement("button");
-        Object.assign(btn.style, { background: "#3b82f6", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" });
-        btn.textContent = "View Details";
-        return btn;
-      },
+      ...col,
+      cellRenderer: () =>
+        h(
+          "button",
+          {
+            style: {
+              background: "#3b82f6",
+              color: "white",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "bold",
+            },
+            title: "Click to view task details",
+          },
+          "View Details",
+        ),
     };
   }
-  return { ...h };
+  return { ...col };
 });
 
 const isDark = computed(() => props.theme === "modern-dark" || props.theme === "dark");

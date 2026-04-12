@@ -1,7 +1,6 @@
 // live-update-demo.component.ts
 import { Component, Input, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -24,7 +23,7 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(liveUpdateConfig.headers);
+  readonly headers: AngularHeaderObject[] = liveUpdateConfig.headers;
   readonly rows: Row[] = liveUpdateConfig.rows;
 
   private cleanupFn?: () => void;

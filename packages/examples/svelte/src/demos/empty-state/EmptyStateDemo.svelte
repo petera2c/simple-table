@@ -1,18 +1,17 @@
 <script lang="ts">
-  import {SimpleTable, defaultHeadersFromCore} from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
   import type { Theme } from "@simple-table/svelte";
-  import { emptyStateConfig, buildEmptyStateElement } from "./empty-state.demo-data";
+  import { emptyStateConfig } from "./empty-state.demo-data";
+  import TableEmptyState from "./TableEmptyState.svelte";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
-
-  const emptyState = buildEmptyStateElement();
 </script>
 
 <SimpleTable
-  defaultHeaders={defaultHeadersFromCore(emptyStateConfig.headers)}
+  defaultHeaders={emptyStateConfig.headers}
   rows={emptyStateConfig.rows}
-  tableEmptyStateRenderer={emptyState}
+  tableEmptyStateRenderer={TableEmptyState}
   {height}
   {theme}
 />

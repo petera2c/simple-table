@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "@simple-table/react";
+import type { ReactHeaderObject } from "@simple-table/react";
 
 
-export const aggregateFunctionsHeaders: HeaderObject[] = [
+export const aggregateFunctionsHeaders: ReactHeaderObject[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

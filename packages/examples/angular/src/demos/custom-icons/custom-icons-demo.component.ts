@@ -1,7 +1,15 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
+import { SimpleTableComponent } from "@simple-table/angular";
 import type { AngularHeaderObject, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
-import { customIconsConfig, buildVanillaCustomIcons } from "./custom-icons.demo-data";
+import { customIconsConfig } from "./custom-icons.demo-data";
+import {
+  DemoExpandIconComponent,
+  DemoFilterIconComponent,
+  DemoNextIconComponent,
+  DemoPrevIconComponent,
+  DemoSortDownIconComponent,
+  DemoSortUpIconComponent,
+} from "./table-icons.components";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -23,6 +31,13 @@ export class CustomIconsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = customIconsConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(customIconsConfig.headers);
-  readonly icons: AngularIconsConfig = buildVanillaCustomIcons();
+  readonly headers: AngularHeaderObject[] = customIconsConfig.headers;
+  readonly icons: AngularIconsConfig = {
+    sortUp: DemoSortUpIconComponent,
+    sortDown: DemoSortDownIconComponent,
+    filter: DemoFilterIconComponent,
+    expand: DemoExpandIconComponent,
+    next: DemoNextIconComponent,
+    prev: DemoPrevIconComponent,
+  };
 }

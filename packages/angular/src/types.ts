@@ -64,8 +64,7 @@ export interface AngularColumnEditorConfig
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
  * Column definition for `defaultHeaders`: core column metadata with Angular-only
- * renderer fields. For trees from `simple-table-core`, use `defaultHeadersFromCore` /
- * `mapToAngularHeaderObjects`.
+ * renderer fields. `defaultHeaders` also accepts plain `HeaderObject[]` from shared configs.
  */
 export interface AngularHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
@@ -99,7 +98,7 @@ export interface SimpleTableAngularProps
     | "columnEditorConfig"
     | "icons"
   > {
-  defaultHeaders: AngularHeaderObject[];
+  defaultHeaders: ReadonlyArray<HeaderObject | AngularHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: AngularFooterRenderer;

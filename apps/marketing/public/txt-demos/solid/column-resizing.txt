@@ -1,11 +1,10 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/solid";
-import type { Theme, HeaderObject } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, HeaderObject } from "@simple-table/solid";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ColumnResizingDemo(props: { height?: string | number; theme?: Theme }) {
-  const [headers, setHeaders] = createSignal(defaultHeadersFromCore([...columnResizingHeaders]));
+  const [headers, setHeaders] = createSignal([...columnResizingHeaders]);
   const [saveMessage, setSaveMessage] = createSignal("");
 
   let messageTimer: ReturnType<typeof setTimeout> | undefined;
@@ -23,7 +22,7 @@ export default function ColumnResizingDemo(props: { height?: string | number; th
       if (saved) {
         const widthMap = JSON.parse(saved) as Record<string, number | string | undefined>;
         setHeaders(
-          defaultHeadersFromCore(columnResizingHeaders.map((h) => ({ ...h, width: widthMap[h.accessor] ?? h.width }))),
+          columnResizingHeaders.map((h) => ({ ...h, width: widthMap[h.accessor] ?? h.width })),
         );
       }
     } catch {
@@ -40,7 +39,7 @@ export default function ColumnResizingDemo(props: { height?: string | number; th
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
       localStorage.setItem(COLUMN_RESIZING_STORAGE_KEY, JSON.stringify(widthMap));
-      setHeaders(defaultHeadersFromCore(updatedHeaders));
+      setHeaders(updatedHeaders);
       setSaveMessage("Column widths saved!");
       clearMessageTimer();
       messageTimer = setTimeout(() => setSaveMessage(""), 2000);

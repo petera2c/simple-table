@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "@simple-table/react";
+import type { ReactHeaderObject, Row } from "@simple-table/react";
 
 export interface InfrastructureServer {
   id: number;
@@ -75,7 +75,7 @@ export function generateInfrastructureData(count: number = 50): Row[] {
 
 export const infrastructureData = generateInfrastructureData(50);
 
-export const infrastructureHeaders: HeaderObject[] = [
+export const infrastructureHeaders: ReactHeaderObject[] = [
   {
     accessor: "serverId",
     align: "left",

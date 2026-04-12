@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, defaultHeadersFromCore} from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
 import { columnPinningConfig } from "./column-pinning.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -23,6 +22,6 @@ export class ColumnPinningDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnPinningConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(columnPinningConfig.headers);
+  readonly headers: AngularHeaderObject[] = columnPinningConfig.headers;
   readonly columnResizing = columnPinningConfig.tableProps.columnResizing;
 }

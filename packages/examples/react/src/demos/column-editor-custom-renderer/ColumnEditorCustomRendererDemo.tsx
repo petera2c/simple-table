@@ -1,4 +1,4 @@
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactColumnEditorConfig, ColumnEditorRowRendererProps } from "@simple-table/react";
 import { columnEditorCustomRendererConfig } from "./column-editor-custom-renderer.demo-data";
 import "@simple-table/react/styles.css";
@@ -15,17 +15,10 @@ const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps)
       marginBottom: 4,
     }}
   >
-    {components.checkbox && (
-      <span dangerouslySetInnerHTML={{ __html: typeof components.checkbox === "string" ? components.checkbox : "" }} />
-    )}
+    {components.checkbox != null && <span>{components.checkbox}</span>}
     <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{header.label}</span>
-    {components.dragIcon && (
-      <span
-        style={{ cursor: "grab", opacity: 0.5 }}
-        dangerouslySetInnerHTML={{
-          __html: typeof components.dragIcon === "string" ? components.dragIcon : "",
-        }}
-      />
+    {components.dragIcon != null && (
+      <span style={{ cursor: "grab", opacity: 0.5 }}>{components.dragIcon}</span>
     )}
   </div>
 );
@@ -46,7 +39,7 @@ const ColumnEditorCustomRendererDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(columnEditorCustomRendererConfig.headers)}
+      defaultHeaders={columnEditorCustomRendererConfig.headers}
       rows={columnEditorCustomRendererConfig.rows}
       editColumns
       columnEditorConfig={columnEditorConfig}

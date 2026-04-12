@@ -1,7 +1,10 @@
 import { useRef, useState, useMemo } from "react";
-import { SimpleTable, mapToReactHeaderObjects } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
-import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
+import {
+  programmaticControlConfig,
+  PROGRAMMATIC_CONTROL_STATUS_COLORS,
+} from "./programmatic-control.demo-data";
 import "@simple-table/react/styles.css";
 
 const ProgrammaticControlDemo = ({
@@ -16,13 +19,16 @@ const ProgrammaticControlDemo = ({
 
   const headers: ReactHeaderObject[] = useMemo(
     () =>
-      mapToReactHeaderObjects(programmaticControlConfig.headers.map((h) => {
+      programmaticControlConfig.headers.map((h) => {
         if (h.accessor === "status") {
           return {
             ...h,
             cellRenderer: ({ row }: CellRendererProps) => {
               const s = String(row.status);
-              const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
+              const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
+                bg: "#f3f4f6",
+                color: "#374151",
+              };
               return (
                 <span
                   style={{
@@ -41,7 +47,7 @@ const ProgrammaticControlDemo = ({
           };
         }
         return h;
-      })),
+      }),
     [],
   );
 
@@ -99,11 +105,21 @@ const ProgrammaticControlDemo = ({
         {statusMessage}
       </div>
       <div style={{ marginBottom: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <button onClick={handleSortByName} style={{ padding: "6px 16px" }}>Sort by Name (A-Z)</button>
-        <button onClick={handleSortByPrice} style={{ padding: "6px 16px" }}>Sort by Price (High to Low)</button>
-        <button onClick={handleFilterAvailable} style={{ padding: "6px 16px" }}>Filter: Available</button>
-        <button onClick={handleClearFilters} style={{ padding: "6px 16px" }}>Clear Filters</button>
-        <button onClick={handleGetInfo} style={{ padding: "6px 16px" }}>Get Table Info</button>
+        <button onClick={handleSortByName} style={{ padding: "6px 16px" }}>
+          Sort by Name (A-Z)
+        </button>
+        <button onClick={handleSortByPrice} style={{ padding: "6px 16px" }}>
+          Sort by Price (High to Low)
+        </button>
+        <button onClick={handleFilterAvailable} style={{ padding: "6px 16px" }}>
+          Filter: Available
+        </button>
+        <button onClick={handleClearFilters} style={{ padding: "6px 16px" }}>
+          Clear Filters
+        </button>
+        <button onClick={handleGetInfo} style={{ padding: "6px 16px" }}>
+          Get Table Info
+        </button>
       </div>
       <SimpleTable
         ref={tableRef}

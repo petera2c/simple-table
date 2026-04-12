@@ -1,6 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, defaultHeadersFromCore } from "@simple-table/angular";
-import type { AngularHeaderObject, ColumnVisibilityState, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, ColumnVisibilityState, Row, Theme } from "@simple-table/angular";
 import { columnVisibilityConfig, getColumnVisibilityDemoHeaders, loadColumnVisibilityDemoSaved, saveColumnVisibilityDemoState } from "./column-visibility.demo-data";
 import { MarketingColumnEditorRowComponent } from "./marketing-column-editor-row.component";
 import "@simple-table/angular/styles.css";
@@ -27,8 +26,8 @@ export class ColumnVisibilityDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnVisibilityConfig.rows;
-  readonly headers: AngularHeaderObject[] = defaultHeadersFromCore(
-    getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved()),
+  readonly headers: AngularHeaderObject[] = getColumnVisibilityDemoHeaders(
+    loadColumnVisibilityDemoSaved(),
   );
   readonly tableProps = columnVisibilityConfig.tableProps;
   readonly columnEditorConfig = {

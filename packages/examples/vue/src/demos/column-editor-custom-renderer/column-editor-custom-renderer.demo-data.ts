@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row, ColumnEditorRowRendererProps } from "@simple-table/vue";
+import type { HeaderObject, Row } from "@simple-table/vue";
 
 
 export const columnEditorCustomRendererData: Row[] = [
@@ -40,44 +40,3 @@ export const columnEditorCustomRendererConfig = {
 
 export const COLUMN_EDITOR_TEXT = "Manage Columns";
 export const COLUMN_EDITOR_SEARCH_PLACEHOLDER = "Search columns…";
-
-export function buildVanillaColumnEditorRowRenderer(props: ColumnEditorRowRendererProps): HTMLElement {
-  const row = document.createElement("div");
-  Object.assign(row.style, {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "6px 8px",
-    borderRadius: "6px",
-    background: "#f8fafc",
-    marginBottom: "4px",
-  });
-
-  if (props.components.checkbox) {
-    const span = document.createElement("span");
-    if (typeof props.components.checkbox === "string") {
-      span.innerHTML = props.components.checkbox;
-    } else {
-      span.appendChild(props.components.checkbox as Node);
-    }
-    row.appendChild(span);
-  }
-
-  const label = document.createElement("span");
-  Object.assign(label.style, { flex: "1", fontSize: "13px", fontWeight: "500" });
-  label.textContent = props.header.label;
-  row.appendChild(label);
-
-  if (props.components.dragIcon) {
-    const span = document.createElement("span");
-    Object.assign(span.style, { cursor: "grab", opacity: "0.5" });
-    if (typeof props.components.dragIcon === "string") {
-      span.innerHTML = props.components.dragIcon;
-    } else {
-      span.appendChild(props.components.dragIcon as Node);
-    }
-    row.appendChild(span);
-  }
-
-  return row;
-}

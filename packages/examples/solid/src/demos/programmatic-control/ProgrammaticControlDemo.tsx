@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
-import { SimpleTable, mapToSolidHeaderObjects } from "@simple-table/solid";
-import type { Theme, TableAPI, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
@@ -14,37 +13,35 @@ export default function ProgrammaticControlDemo(props: {
   let tableRef: TableAPI | undefined;
   const [statusMessage, setStatusMessage] = createSignal("No status message");
 
-  const headers: SolidHeaderObject[] = mapToSolidHeaderObjects(
-    programmaticControlConfig.headers.map((h) => {
-      if (h.accessor === "status") {
-        return {
-          ...h,
-          cellRenderer: (cr: CellRendererProps) => {
-            const s = String(cr.row.status);
-            const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
-              bg: "#f3f4f6",
-              color: "#374151",
-            };
-            return (
-              <span
-                style={{
-                  background: colors.bg,
-                  color: colors.color,
-                  padding: "4px 8px",
-                  "border-radius": "4px",
-                  "font-size": "12px",
-                  "font-weight": "bold",
-                }}
-              >
-                {s}
-              </span>
-            );
-          },
-        };
-      }
-      return h;
-    }),
-  );
+  const headers: SolidHeaderObject[] = programmaticControlConfig.headers.map((h) => {
+    if (h.accessor === "status") {
+      return {
+        ...h,
+        cellRenderer: (cr: CellRendererProps) => {
+          const s = String(cr.row.status);
+          const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
+            bg: "#f3f4f6",
+            color: "#374151",
+          };
+          return (
+            <span
+              style={{
+                background: colors.bg,
+                color: colors.color,
+                padding: "4px 8px",
+                "border-radius": "4px",
+                "font-size": "12px",
+                "font-weight": "bold",
+              }}
+            >
+              {s}
+            </span>
+          );
+        },
+      };
+    }
+    return h;
+  });
 
   const handleSortByName = () => {
     tableRef?.applySortState({ accessor: "name", direction: "asc" });

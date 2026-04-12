@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { SimpleTable, defaultHeadersFromCore } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
+import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -34,7 +33,7 @@ const PaginationDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={defaultHeadersFromCore(paginationConfig.headers)}
+      defaultHeaders={paginationConfig.headers}
       height={height ?? "auto"}
       isLoading={isLoading}
       onNextPage={onNextPage}

@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="defaultHeadersFromCore(quickStartConfig.headers)"
+    :default-headers="quickStartConfig.headers"
     :rows="quickStartConfig.rows"
     :height="height"
     :theme="theme"
@@ -11,8 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import {SimpleTable, defaultHeadersFromCore} from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
 import { quickStartConfig } from "./quick-start.demo-data";
 import "@simple-table/vue/styles.css";
 

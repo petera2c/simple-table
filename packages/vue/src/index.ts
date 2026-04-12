@@ -1,11 +1,6 @@
 // Component
 export { default as SimpleTable } from "./SimpleTable";
 export { asRows } from "simple-table-core";
-export {
-  defaultHeaderFromCore,
-  defaultHeadersFromCore,
-  mapToVueHeaderObjects,
-} from "./defaultHeadersFromCore";
 
 // Vue-specific props and type overrides
 export type {
