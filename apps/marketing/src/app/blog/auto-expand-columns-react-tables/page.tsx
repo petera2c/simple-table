@@ -44,7 +44,7 @@ export default function AutoExpandColumnsReactTablesPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900 dark:to-cyan-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-cyan-50 dark:from-blue-900 dark:to-cyan-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Auto-Expand Columns in React Tables: The Hidden Complexity Behind Seamless UX
         </h1>
@@ -991,7 +991,7 @@ useEffect(() => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Sophisticated algorithms</strong> for proportional distribution with
@@ -1001,7 +1001,7 @@ useEffect(() => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Section isolation</strong> for pinned columns with independent width
@@ -1011,7 +1011,7 @@ useEffect(() => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Smart directional logic</strong> that feels natural for every column
@@ -1021,7 +1021,7 @@ useEffect(() => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Hierarchical handling</strong> for nested headers with recursive scaling
@@ -1030,7 +1030,7 @@ useEffect(() => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Responsive constraints</strong> that prevent layout breakage on mobile
@@ -1039,7 +1039,7 @@ useEffect(() => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Performance optimization</strong> to keep interactions smooth

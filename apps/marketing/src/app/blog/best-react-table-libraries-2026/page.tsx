@@ -62,7 +62,7 @@ export default function BestReactTableLibraries2026Page() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Top React Table Libraries for 2026: Streamlining Data in Style
         </h1>
@@ -318,7 +318,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Plug-and-play essentials:</strong> Auto-sorting, fuzzy search, and
@@ -328,7 +328,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Blazing virtualization:</strong> Handles 50K+ rows like they're pocket
@@ -338,7 +338,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Style sovereignty:</strong> Zero opinions on CSS—pair it with your
@@ -348,7 +348,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Dev-friendly extras:</strong> Ironclad TypeScript, event emitters for
@@ -367,14 +367,14 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Niche deep dives (e.g., pivot tables) might need a plugin nudge.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       Ecosystem's budding, so community recipes are light but growing fast.
@@ -384,7 +384,7 @@ export default function BestReactTableLibraries2026Page() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+            <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
               <div className="flex items-center gap-2 mb-2">
                 <FontAwesomeIcon icon={faRocket} className="text-blue-500" />
                 <span className="font-medium text-blue-800 dark:text-blue-200">Prime For</span>
@@ -396,7 +396,7 @@ export default function BestReactTableLibraries2026Page() {
             </div>
 
             {/* CTA Banner */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center">
+            <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center">
               <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                 Build responsive tables effortlessly
               </h4>
@@ -437,7 +437,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Hook-driven state:</strong> Sorting, grouping, and expansions feel
@@ -447,7 +447,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Framework flex:</strong> Vue/Svelte ports mean it's future-proof
@@ -457,7 +457,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Plugin playground:</strong> Stack on virtualization or expansions like
@@ -476,7 +476,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       Styling from scratch? That's on you—great for purists, grind for deadlines.
@@ -485,7 +485,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Hooks can tangle newbies; docs help, but examples shine brighter.</span>
                   </li>
@@ -528,7 +528,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Row model mastery:</strong> Server-side ops for infinite datasets, no
@@ -538,7 +538,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Edit empire:</strong> Inline editing, drag-fills, and validations
@@ -548,7 +548,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Viz variety:</strong> Inline charts, heatmaps, and pivots in one grid.
@@ -566,14 +566,14 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Footprint's hefty; trim modules or risk bundle bloat.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Setup's a marathon—powerful, but not a sprint.</span>
                   </li>
@@ -616,7 +616,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Formula firepower:</strong> SUM, IFs, and customs compute on the fly.
@@ -625,7 +625,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Touch-tuned:</strong> Mobile drags and drops feel fluid.
@@ -634,7 +634,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Sync savvy:</strong> Hooks for real-time collab or API pulses.
@@ -652,14 +652,14 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Size creeps up with plugins; audit for lean builds.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Non-edit views lag behind—it's edit-first, display-second.</span>
                   </li>
@@ -703,7 +703,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Themed harmony:</strong> Material-UI styling out of the box with MUI's
@@ -713,7 +713,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Filter finesse:</strong> Built on TanStack Table, so you get powerful
@@ -723,7 +723,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>TanStack foundation:</strong> Leverages TanStack Table's headless
@@ -742,7 +742,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       Requires Material-UI as a dependency; adds weight if you're not already using
@@ -752,7 +752,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       Larger bundle than TanStack Table alone due to MUI components (
@@ -800,7 +800,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Render rocket:</strong> Millions of rows? Yawns.
@@ -809,7 +809,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Edit elegance:</strong> Inline tweaks with formatters galore.
@@ -818,7 +818,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Group glue:</strong> Aggregates and nests for layered insights.
@@ -836,14 +836,14 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Pageless by default—pair with a sidekick.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Polish is player-dependent; defaults are functional, not flashy.</span>
                   </li>
@@ -886,7 +886,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Scroll sorcery:</strong> Infinite feeds without DOM doom.
@@ -895,7 +895,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Size shifter:</strong> Dynamic heights keep it tidy.
@@ -904,7 +904,7 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Grid/list duality:</strong> One lib, endless layouts.
@@ -922,14 +922,14 @@ export default function BestReactTableLibraries2026Page() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Features? Bring your own—it's bones, not brains.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Curve's conceptual; virtualization vets thrive.</span>
                   </li>

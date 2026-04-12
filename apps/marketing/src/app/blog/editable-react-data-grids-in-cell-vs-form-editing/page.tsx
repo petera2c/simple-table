@@ -47,7 +47,7 @@ export default function EditableReactDataGridsPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Editable React Data Grids: In-Cell Editing vs Form-Based Editing (2026)
         </h1>
@@ -1502,7 +1502,7 @@ const handleSave = async () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center">
                 <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                   💡 Pro Tip: Start with In-Cell, Add Forms Later
                 </h4>
@@ -1536,7 +1536,7 @@ const handleSave = async () => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>In-cell editing</strong> for quick, frequent edits of simple data types
@@ -1545,7 +1545,7 @@ const handleSave = async () => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Form-based editing</strong> for complex records with validation,
@@ -1555,7 +1555,7 @@ const handleSave = async () => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Hybrid approach</strong> when you need both—quick edits for some fields,

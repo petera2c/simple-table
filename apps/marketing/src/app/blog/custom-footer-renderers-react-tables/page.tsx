@@ -50,7 +50,7 @@ export default function CustomFooterRenderersPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Custom Footer Renderers: Why Full Control Beats Feature Flags in React Tables
         </h1>
@@ -248,7 +248,7 @@ export default function CustomFooterRenderersPage() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faCheckCircle}
-                          className="text-green-500 mt-1 flex-shrink-0"
+                          className="text-green-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Quick starts:</strong> Toggle a few flags and you've got basic
@@ -258,7 +258,7 @@ export default function CustomFooterRenderersPage() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faCheckCircle}
-                          className="text-green-500 mt-1 flex-shrink-0"
+                          className="text-green-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Consistent styling:</strong> The library handles the basic look
@@ -268,7 +268,7 @@ export default function CustomFooterRenderersPage() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faCheckCircle}
-                          className="text-green-500 mt-1 flex-shrink-0"
+                          className="text-green-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Less code:</strong> No need to write your own pagination logic
@@ -286,7 +286,7 @@ export default function CustomFooterRenderersPage() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faTimesCircle}
-                          className="text-red-500 mt-1 flex-shrink-0"
+                          className="text-red-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Limited combinations:</strong> Want that one specific layout? If
@@ -296,7 +296,7 @@ export default function CustomFooterRenderersPage() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faTimesCircle}
-                          className="text-red-500 mt-1 flex-shrink-0"
+                          className="text-red-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Style surgery:</strong> Overriding the default styles often
@@ -306,7 +306,7 @@ export default function CustomFooterRenderersPage() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faTimesCircle}
-                          className="text-red-500 mt-1 flex-shrink-0"
+                          className="text-red-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Prop explosion:</strong> More features = more flags = more
@@ -397,7 +397,7 @@ function MyTable() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faCheckCircle}
-                          className="text-green-500 mt-1 flex-shrink-0"
+                          className="text-green-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Ultimate control:</strong> Every pixel is yours to command
@@ -406,7 +406,7 @@ function MyTable() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faCheckCircle}
-                          className="text-green-500 mt-1 flex-shrink-0"
+                          className="text-green-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Framework agnostic:</strong> Use any styling solution, any
@@ -416,7 +416,7 @@ function MyTable() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faCheckCircle}
-                          className="text-green-500 mt-1 flex-shrink-0"
+                          className="text-green-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Zero style conflicts:</strong> No library CSS to override
@@ -434,7 +434,7 @@ function MyTable() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faTimesCircle}
-                          className="text-red-500 mt-1 flex-shrink-0"
+                          className="text-red-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Build EVERYTHING:</strong> Table structure, headers, rows, cells,
@@ -444,7 +444,7 @@ function MyTable() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faTimesCircle}
-                          className="text-red-500 mt-1 flex-shrink-0"
+                          className="text-red-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Complexity creep:</strong> Simple tables turn into hundreds of
@@ -454,7 +454,7 @@ function MyTable() {
                       <li className="flex items-start gap-2">
                         <FontAwesomeIcon
                           icon={faTimesCircle}
-                          className="text-red-500 mt-1 flex-shrink-0"
+                          className="text-red-500 mt-1 shrink-0"
                         />
                         <span>
                           <strong>Maintenance burden:</strong> You're now maintaining table layout,
@@ -1008,7 +1008,7 @@ const MyDataTable = ({ data }) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Full design freedom</strong> without fighting with flags or overriding
@@ -1018,7 +1018,7 @@ const MyDataTable = ({ data }) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Minimal code complexity</strong> compared to building tables from
@@ -1028,7 +1028,7 @@ const MyDataTable = ({ data }) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>All table features included</strong> (sorting, filtering, selection,
@@ -1038,7 +1038,7 @@ const MyDataTable = ({ data }) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Easy to maintain</strong> because you only own the footer, not the whole

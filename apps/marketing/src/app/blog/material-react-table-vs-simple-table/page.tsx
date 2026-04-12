@@ -52,7 +52,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Material React Table vs Simple Table: Material-UI Integration vs Lightweight Grid
         </h1>
@@ -225,7 +225,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                 you're actually shipping:
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Material React Table: The Dependency Stack
                 </h3>
@@ -274,7 +274,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Complete Package
                 </h3>
@@ -498,35 +498,35 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Perfect match with MUI Button, TextField, Chip, etc.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Inherits your MUI theme automatically</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>MUI icons, tooltips, menus built-in</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>Can't use without Material-UI</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>Breaking out of Material Design is hard</span>
                     </li>
@@ -545,35 +545,35 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Works with Tailwind, CSS Modules, Styled Components, MUI</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>CSS variable customization</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Custom renderers for any component library</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Can integrate MUI components if you want</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>No design system lock-in</span>
                     </li>
@@ -685,7 +685,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You're <strong>already using Material-UI extensively</strong> (forms,
@@ -695,7 +695,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Material Design consistency</strong> is a hard requirement
@@ -704,7 +704,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Your team is <strong>already familiar</strong> with Material-UI patterns
@@ -713,7 +713,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You need <strong>TanStack Table's plugin ecosystem</strong> with Material-UI
@@ -723,14 +723,14 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>Bundle size isn't critical (internal tools, desktop-only apps)</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
+                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                     <FontAwesomeIcon icon={faCrown} className="text-green-500" />
                     Choose Simple Table When:
@@ -739,7 +739,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You're <strong>not using Material-UI</strong> and don't want to add it just
@@ -749,7 +749,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Bundle size and performance</strong> are top priorities
@@ -759,7 +759,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You want <strong>framework-agnostic tables</strong> that work with any CSS
@@ -769,7 +769,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You prefer <strong>built-in virtualization</strong> without additional
@@ -779,7 +779,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You need <strong>complete styling freedom</strong> without design system
@@ -789,7 +789,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You want <strong>zero dependencies</strong> and smallest possible bundle
@@ -900,7 +900,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                 strengths. The right choice depends entirely on your <strong>context</strong>:
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   The Simple Question
                 </h3>

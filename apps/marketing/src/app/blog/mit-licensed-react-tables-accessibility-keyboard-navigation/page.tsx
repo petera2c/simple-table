@@ -49,7 +49,7 @@ export default function AccessibilityComparisonPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           MIT-Licensed React Tables: Accessibility & Keyboard Navigation Comparison
         </h1>
@@ -161,7 +161,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Arrow keys:</strong> Navigate between cells
@@ -170,7 +170,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Tab:</strong> Move through interactive elements
@@ -179,7 +179,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Enter/Space:</strong> Activate buttons, sort columns
@@ -188,7 +188,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Home/End:</strong> Jump to first/last cell
@@ -197,7 +197,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Page Up/Down:</strong> Scroll through data
@@ -206,7 +206,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Escape:</strong> Cancel edits, close modals
@@ -225,7 +225,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>ARIA attributes:</strong> role="grid", aria-label, aria-sort
@@ -234,7 +234,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Row/column counts:</strong> Announce "Row 5 of 100"
@@ -243,7 +243,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Sort state:</strong> "Sorted ascending" announced
@@ -252,7 +252,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Cell content:</strong> All data readable by screen readers
@@ -261,7 +261,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Live regions:</strong> Dynamic updates announced
@@ -280,7 +280,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Visible focus:</strong> Clear outline on focused cell (3:1 contrast)
@@ -289,7 +289,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Color contrast:</strong> 4.5:1 for text, 3:1 for UI components
@@ -298,7 +298,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Touch targets:</strong> Minimum 44×44px for interactive elements
@@ -307,7 +307,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Hover states:</strong> Visual feedback on mouse hover
@@ -326,7 +326,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Touch-friendly:</strong> Large tap targets, swipe gestures
@@ -335,7 +335,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Responsive:</strong> Adapts to small screens gracefully
@@ -344,7 +344,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Zoom support:</strong> Works at 200% zoom without breaking
@@ -353,7 +353,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Screen rotation:</strong> Maintains functionality in
@@ -792,7 +792,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>WCAG AAA contrast:</strong> 7:1 for text (exceeds 4.5:1 requirement)
@@ -801,7 +801,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Visible focus:</strong> 3px blue outline with 3:1 contrast ratio
@@ -810,7 +810,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Touch targets:</strong> 48×48px minimum (exceeds 44px requirement)
@@ -819,7 +819,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>High contrast mode:</strong> Works in Windows High Contrast and macOS
@@ -839,7 +839,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Touch-optimized:</strong> Large tap targets, swipe to scroll
@@ -848,7 +848,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Responsive:</strong> Adapts to any screen size without horizontal
@@ -858,7 +858,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Zoom support:</strong> Works perfectly at 200% zoom
@@ -867,7 +867,7 @@ export default function AccessibilityComparisonPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-orange-500 mt-1 flex-shrink-0"
+                      className="text-orange-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>VoiceOver/TalkBack:</strong> Full mobile screen reader support
@@ -877,7 +877,7 @@ export default function AccessibilityComparisonPage() {
               </div>
             </div>
 
-            <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
+            <div className="mt-6 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                 <FontAwesomeIcon icon={faTrophy} className="text-green-500" />
                 Accessibility Testing: Simple Table Scores 100/100
@@ -967,7 +967,7 @@ export default function AccessibilityComparisonPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   Bottom Line: Choose Accessible by Default
                 </h3>

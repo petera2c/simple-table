@@ -49,7 +49,7 @@ export default function KendoReactGridVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-purple-50 to-blue-50 dark:from-purple-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           KendoReact Grid vs Simple Table: $649/year Premium vs Free Open-Source
         </h1>
@@ -246,7 +246,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                 real cost over time:
               </p>
 
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 border border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 border border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   KendoReact Pricing Breakdown
                 </h3>
@@ -306,7 +306,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Flexible Pricing
                 </h3>
@@ -314,7 +314,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>FREE:</strong> $0 for zero-revenue companies (MIT License)
@@ -323,7 +323,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>PRO:</strong> $85/month or $850/year for revenue-generating companies
@@ -332,7 +332,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>3-year savings:</strong> $7,185-$15,435 vs KendoReact (per product,
@@ -342,7 +342,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>All features included:</strong> No premium/free tiers, no paywalls
@@ -351,7 +351,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No vendor lock-in:</strong> Open-source, fork/modify anytime
@@ -560,7 +560,7 @@ export default function KendoReactGridVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-6 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+                <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-6 bg-linear-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose KendoReact When:
                   </h3>
@@ -568,7 +568,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>guaranteed support</strong> with 24-72h SLAs
@@ -577,7 +577,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>120+ components</strong> from Progress/Telerik
@@ -586,7 +586,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Require <strong>React Server Components</strong> mode
@@ -595,7 +595,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Budget allows <strong>$649-$1,199/year per developer</strong>
@@ -604,7 +604,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Enterprise compliance requires <strong>vendor accountability</strong>
@@ -613,7 +613,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                   </ul>
                 </div>
 
-                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
+                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose Simple Table When:
                   </h3>
@@ -621,7 +621,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>$0 cost</strong> (save $9,735-$17,985 over 3 years)
@@ -630,7 +630,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Only need a <strong>data grid</strong>, not full component suite
@@ -639,7 +639,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Prefer <strong>open-source freedom</strong> (no vendor lock-in)
@@ -648,7 +648,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Community support via <strong>Discord/GitHub</strong> is sufficient
@@ -657,7 +657,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Core features meet your needs (no React Server Components required)

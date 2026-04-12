@@ -107,7 +107,7 @@ export default function FeaturesSection() {
 
       {/* Advanced Column Management */}
       <motion.div
-        className="mb-16 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-blue-100 dark:border-blue-800"
+        className="mb-16 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-blue-100 dark:border-blue-800"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -190,7 +190,7 @@ export default function FeaturesSection() {
 
       {/* Customization & Theming */}
       <motion.div
-        className="mb-16 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-purple-100 dark:border-purple-800"
+        className="mb-16 bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-purple-100 dark:border-purple-800"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -276,7 +276,7 @@ export default function FeaturesSection() {
 
       {/* Performance */}
       <motion.div
-        className="mb-16 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-green-100 dark:border-green-800"
+        className="mb-16 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-green-100 dark:border-green-800"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -327,7 +327,7 @@ export default function FeaturesSection() {
 
       {/* Responsive & Mobile */}
       <motion.div
-        className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-orange-100 dark:border-orange-800"
+        className="bg-linear-to-br from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-orange-100 dark:border-orange-800"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}

@@ -43,7 +43,7 @@ export default function CustomizingDataGridsStylingEasyPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           {customizingDataGridsStylingEasyPost.title}
         </h1>
@@ -206,7 +206,7 @@ export default function CustomizingDataGridsStylingEasyPage() {
   defaultHeaders={headers}
   rows={data}
   className="rounded-xl shadow-2xl border-2 border-indigo-200"
-  headerClassName="bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+  headerClassName="bg-linear-to-r from-purple-500 to-pink-500 text-white"
   rowClassName="hover:bg-blue-50 transition-colors duration-200"
   cellClassName="border-b border-gray-100 px-4 py-3"
   theme="modern-light"

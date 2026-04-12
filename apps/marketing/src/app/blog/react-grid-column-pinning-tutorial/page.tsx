@@ -46,7 +46,7 @@ export default function ReactGridColumnPinningPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           React Grid Column Pinning: Implementation Guide & Best Practices
         </h1>
@@ -213,7 +213,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-amber-500 mt-1 flex-shrink-0"
+                        className="text-amber-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Stacking context issues:</strong> Z-index wars with other sticky
@@ -223,7 +223,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-amber-500 mt-1 flex-shrink-0"
+                        className="text-amber-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Shadow/border gaps:</strong> Visual artifacts where pinned columns
@@ -233,7 +233,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-amber-500 mt-1 flex-shrink-0"
+                        className="text-amber-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Browser inconsistencies:</strong> Different rendering behavior
@@ -243,7 +243,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-amber-500 mt-1 flex-shrink-0"
+                        className="text-amber-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Touch device quirks:</strong> Sticky columns behave unpredictably on
@@ -262,7 +262,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Tested across browsers:</strong> Works consistently in all modern
@@ -272,7 +272,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Handles edge cases:</strong> Column resizing, reordering, and
@@ -282,7 +282,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Proper shadows/borders:</strong> Visual indicators show where pinned
@@ -292,7 +292,7 @@ export default function ReactGridColumnPinningPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Mobile-optimized:</strong> Touch-friendly behavior on all devices
@@ -432,7 +432,7 @@ export default function CRMTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Left pinning:</strong> Use{" "}
@@ -445,7 +445,7 @@ export default function CRMTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Right pinning:</strong> Use{" "}
@@ -458,7 +458,7 @@ export default function CRMTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Multiple columns:</strong> You can pin multiple columns to the same
@@ -468,7 +468,7 @@ export default function CRMTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Works with other features:</strong> Pinned columns support{" "}
@@ -856,7 +856,7 @@ export default function ConfigurableTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Pin identity columns</strong> (ID, name) to the left
@@ -865,7 +865,7 @@ export default function ConfigurableTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Pin action buttons</strong> to the right for easy access
@@ -874,7 +874,7 @@ export default function ConfigurableTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Keep pinned columns narrow</strong> (200-300px total)
@@ -883,7 +883,7 @@ export default function ConfigurableTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Test on mobile</strong> and adjust pinning for small screens
@@ -892,7 +892,7 @@ export default function ConfigurableTable({ data }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Don't over-pin</strong>—aim for 1-3 columns per side maximum

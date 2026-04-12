@@ -65,7 +65,7 @@ export default function AgGridAlternativesPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           AG Grid Alternatives: 7 Best Free React Data Grids (2025)
         </h1>
@@ -228,7 +228,7 @@ export default function AgGridAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">Core Features:</strong>
@@ -242,7 +242,7 @@ export default function AgGridAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">Performance:</strong>
@@ -256,7 +256,7 @@ export default function AgGridAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">
@@ -271,7 +271,7 @@ export default function AgGridAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">Customization:</strong>
@@ -284,7 +284,7 @@ export default function AgGridAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">
@@ -299,7 +299,7 @@ export default function AgGridAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">License Freedom:</strong>
@@ -325,7 +325,7 @@ export default function AgGridAlternativesPage() {
 
         {/* 1. Simple Table */}
         <section id="simple-table">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 md:p-6 shadow-lg">
+          <div className="bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 md:p-6 shadow-lg">
             <div className="flex items-center gap-3 mb-4">
               <span className="bg-gold-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                 #1 RECOMMENDED
@@ -350,7 +350,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Small footprint:</strong> {SIMPLE_TABLE_INFO.bundleSizeMinGzip} —
@@ -360,7 +360,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Batteries included:</strong> Sorting, filtering, pagination,
@@ -370,7 +370,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Straightforward API:</strong> Intuitive prop-based configuration makes
@@ -380,7 +380,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Blazing performance:</strong> Handles 50K+ rows smoothly with built-in
@@ -390,7 +390,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Style freedom:</strong> Fully customizable with CSS variables, custom
@@ -400,7 +400,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>TypeScript-first:</strong> Comprehensive type definitions for a
@@ -410,7 +410,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>100% free:</strong> MIT licensed, no enterprise tier, no surprises
@@ -426,19 +426,19 @@ export default function AgGridAlternativesPage() {
                 </h4>
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300 mb-6">
                   <li className="flex items-start gap-2">
-                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 flex-shrink-0" />
+                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 shrink-0" />
                     <span>Startups and teams with budget constraints</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 flex-shrink-0" />
+                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 shrink-0" />
                     <span>Projects prioritizing bundle size and performance</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 flex-shrink-0" />
+                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 shrink-0" />
                     <span>Teams wanting quick setup without complexity</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 flex-shrink-0" />
+                    <FontAwesomeIcon icon={faStar} className="text-amber-500 mt-1 shrink-0" />
                     <span>Apps needing advanced features without vendor lock-in</span>
                   </li>
                 </ul>
@@ -473,7 +473,7 @@ export default function AgGridAlternativesPage() {
             </div>
 
             {/* CTA Banner */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 text-center">
+            <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 text-center">
               <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                 Need a free AG Grid alternative?
               </h4>
@@ -521,7 +521,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Headless architecture:</strong> Total control over markup and styling
@@ -530,7 +530,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Framework agnostic:</strong> Works with React, Vue, Svelte, and more
@@ -539,7 +539,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Powerful plugin system:</strong> Extensive ecosystem of plugins and
@@ -549,7 +549,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Excellent TypeScript:</strong> Rock-solid type inference
@@ -567,21 +567,21 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Steeper learning curve—you build everything from scratch</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>No built-in UI means more development time upfront</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Requires additional libraries for virtualization</span>
                   </li>
@@ -640,7 +640,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Material Design:</strong> Perfect integration with MUI projects
@@ -649,7 +649,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Feature-rich:</strong> Pre-built UI for advanced features
@@ -658,7 +658,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>TanStack foundation:</strong> Powered by TanStack Table's robust core
@@ -676,14 +676,14 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Requires Material-UI as a peer dependency</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       Larger bundle size due to MUI: {MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip}
@@ -692,7 +692,7 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Not ideal if you're not using Material Design</span>
                   </li>
@@ -725,21 +725,21 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Excel-like editing experience with keyboard support</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Built-in virtualization for excellent performance</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Simple API with good defaults</span>
                   </li>
@@ -755,14 +755,14 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>More focused on editing than display</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Less flexible for custom layouts</span>
                   </li>
@@ -796,21 +796,21 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Exceptional performance with infinite scroll</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Battle-tested and widely used</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Flexible primitives for custom implementations</span>
                   </li>
@@ -826,14 +826,14 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>No table features—you build everything</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Maintenance mode (consider react-window instead)</span>
                   </li>
@@ -866,21 +866,21 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Comprehensive feature set out of the box</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Professional, polished UI</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Excellent documentation and examples</span>
                   </li>
@@ -896,14 +896,14 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Large bundle if you only need the table</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Styling customization can be challenging</span>
                   </li>
@@ -936,21 +936,21 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Perfect for Bootstrap projects</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Good feature coverage</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Active community</span>
                   </li>
@@ -966,14 +966,14 @@ export default function AgGridAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Limited to Bootstrap styling</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Performance can lag with very large datasets</span>
                   </li>

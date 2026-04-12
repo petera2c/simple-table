@@ -65,7 +65,7 @@ function QAItem({ question, answer, icon, iconColor }: QAItemProps) {
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
         <div
-          className={`flex-shrink-0 w-10 h-10 rounded-full ${iconColor} flex items-center justify-center`}
+          className={`shrink-0 w-10 h-10 rounded-full ${iconColor} flex items-center justify-center`}
         >
           <FontAwesomeIcon icon={icon} className="text-white" />
         </div>
@@ -105,7 +105,7 @@ export default function ChartMetricCaseStudyPage() {
 
           {/* Key Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 rounded-lg p-6">
+            <div className="bg-linear-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 rounded-lg p-6">
               <div className="text-2xl font-bold text-green-700 dark:text-green-200 mb-2">
                 $19K+
               </div>
@@ -113,13 +113,13 @@ export default function ChartMetricCaseStudyPage() {
                 First-year savings vs AG Grid
               </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-lg p-6">
+            <div className="bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-lg p-6">
               <div className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-2">99%</div>
               <div className="text-sm text-blue-600 dark:text-blue-300">
                 Customization needs met
               </div>
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 rounded-lg p-6">
+            <div className="bg-linear-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 rounded-lg p-6">
               <div className="text-2xl font-bold text-purple-700 dark:text-purple-200 mb-2">
                 Highly Responsive
               </div>
@@ -274,7 +274,7 @@ export default function ChartMetricCaseStudyPage() {
             iconColor="bg-orange-500"
           />
 
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 border-2 border-blue-200 dark:border-blue-700 rounded-lg p-8 text-center">
+          <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 border-2 border-blue-200 dark:border-blue-700 rounded-lg p-8 text-center">
             <div className="text-lg font-medium text-gray-900 dark:text-white mb-4">
               Would you recommend Simple Table?
             </div>

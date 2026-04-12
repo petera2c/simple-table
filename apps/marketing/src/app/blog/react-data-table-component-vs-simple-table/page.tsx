@@ -45,7 +45,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           React Data Table Component vs Simple Table: Simplicity vs Advanced Features
         </h1>
@@ -250,7 +250,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                 Table includes advanced features React Data Table Component lacks.
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Bundle Size Breakdown
                 </h3>
@@ -264,7 +264,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        className="bg-linear-to-r from-blue-500 to-purple-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         style={{ width: "100%" }}
                       >
                         100%
@@ -280,7 +280,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
-                        className="bg-gradient-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        className="bg-linear-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         style={{ width: "45%" }}
                       >
                         45%
@@ -505,7 +505,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                 granular control over features.
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-teal-50 dark:from-blue-900/30 dark:to-teal-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-teal-50 dark:from-blue-900/30 dark:to-teal-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   React Data Table Component: Quick Setup
                 </h3>
@@ -513,7 +513,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Minimal config:</strong> Just columns array and data
@@ -522,7 +522,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Built-in theming:</strong> Light/dark themes out of the box
@@ -531,7 +531,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Props-based:</strong> Enable features via boolean props
@@ -540,7 +540,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Limited control:</strong> Hard to add features not provided
@@ -549,7 +549,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Powerful & Flexible
                 </h3>
@@ -557,7 +557,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Granular control:</strong> Enable/configure each feature independently
@@ -566,7 +566,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>State hooks:</strong> Access and control table state programmatically
@@ -575,7 +575,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Render callbacks:</strong> Full control over rendering
@@ -584,7 +584,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>TypeScript-first:</strong> Excellent type inference and autocomplete
@@ -617,7 +617,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+                <div className="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose React Data Table Component When:
                   </h3>
@@ -625,7 +625,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Building a <strong>prototype or MVP</strong> (speed over features)
@@ -634,7 +634,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>basic table features</strong> (sorting, pagination, selection)
@@ -643,7 +643,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Working with <strong>small datasets</strong> (&lt;1,000 rows)
@@ -652,7 +652,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>minimal configuration</strong> and "just works" behavior
@@ -661,14 +661,14 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>Don't need virtualization, grouping, or pinning</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
+                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose Simple Table When:
                   </h3>
@@ -676,7 +676,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Building <strong>production applications</strong> with complex requirements
@@ -685,7 +685,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>large dataset support</strong> (10k+ rows with virtualization)
@@ -694,7 +694,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Require <strong>advanced features</strong> (grouping, pinning, resizing)
@@ -703,7 +703,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>smallest bundle size</strong> (42KB vs 94KB)
@@ -712,7 +712,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>active maintenance</strong> and frequent updates
@@ -850,7 +850,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                 React Data Table Component and Simple Table serve different needs:
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   React Data Table Component: Quick & Simple
                 </h3>
@@ -864,7 +864,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Enterprise Features, Minimal Size
                 </h3>

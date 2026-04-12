@@ -46,7 +46,7 @@ export default function NestedTablesReactPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Nested Tables in React: Beyond Row Grouping with Independent Grid Structures
         </h1>
@@ -1136,7 +1136,7 @@ function CorporateHierarchy() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Use nested tables when each level needs different columns</strong>—not
@@ -1146,7 +1146,7 @@ function CorporateHierarchy() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Each nested table is a full SimpleTable instance</strong> with
@@ -1156,7 +1156,7 @@ function CorporateHierarchy() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>The architecture is complex</strong> but the API is simple—configure
@@ -1166,7 +1166,7 @@ function CorporateHierarchy() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Start with expandAll={false}</strong> for better performance, let users
@@ -1176,7 +1176,7 @@ function CorporateHierarchy() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Virtualization handles nested tables automatically</strong>—only visible

@@ -48,7 +48,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           DevExtreme React Grid vs Simple Table: $899/year Enterprise vs Free Open-Source
         </h1>
@@ -239,7 +239,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                 time:
               </p>
 
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   DevExtreme: Commercial Licensing Costs
                 </h3>
@@ -247,7 +247,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faDollarSign}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>DevExtreme Complete:</strong> $899/year per developer
@@ -256,7 +256,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faDollarSign}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>5-developer team:</strong> $4,495/year (annual cost)
@@ -265,7 +265,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faDollarSign}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>3-year cost:</strong> $13,485 for 5 developers
@@ -274,7 +274,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faDollarSign}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Renewal:</strong> ~50% of original price after first year
@@ -284,7 +284,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Includes:</strong> Tech support, updates, ThemeBuilder, CLI, 80+
@@ -294,7 +294,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>60-day money-back guarantee</strong> (risk-free trial period)
@@ -303,7 +303,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Flexible Pricing Model
                 </h3>
@@ -311,7 +311,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>FREE:</strong> $0 for zero-revenue companies (MIT License)
@@ -320,7 +320,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>PRO:</strong> $85/month or $850/year for revenue-generating companies
@@ -329,7 +329,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Per-product licensing:</strong> No per-developer fees (unlimited users
@@ -339,7 +339,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>3-year savings:</strong> $11,937 vs DevExtreme (5-dev team)
@@ -348,7 +348,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Support:</strong> Community (FREE) or Priority support (PRO)
@@ -357,7 +357,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No vendor lock-in:</strong> Open-source, migrate anytime
@@ -585,7 +585,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                 Choosing DevExtreme means committing to a commercial vendor relationship:
               </p>
 
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   DevExtreme: Commercial Vendor Lock-in
                 </h3>
@@ -593,7 +593,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Guaranteed support:</strong> SLA-backed tech support, dedicated team
@@ -602,7 +602,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Predictable updates:</strong> Regular releases, clear roadmap
@@ -611,7 +611,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Single vendor accountability:</strong> One company responsible for
@@ -621,7 +621,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Annual renewal dependency:</strong> Must renew to receive
@@ -631,7 +631,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>License management overhead:</strong> Track seats, renewals,
@@ -641,7 +641,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Migration cost:</strong> Switching away means rewriting, losing
@@ -651,7 +651,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Open-Source Freedom
                 </h3>
@@ -659,7 +659,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Zero licensing costs:</strong> No annual fees, unlimited developers
@@ -668,7 +668,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No vendor dependency:</strong> Fork, modify, or switch anytime
@@ -677,7 +677,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Community-driven:</strong> Bug fixes, features from diverse
@@ -687,7 +687,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Full source access:</strong> Inspect, debug, customize without
@@ -697,7 +697,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No guaranteed support:</strong> Community-based, no SLA
@@ -706,7 +706,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Self-service troubleshooting:</strong> Discord, GitHub issues, docs
@@ -740,7 +740,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+                <div className="border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose DevExtreme When:
                   </h3>
@@ -748,7 +748,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>guaranteed support SLAs</strong> for mission-critical apps
@@ -757,7 +757,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>80+ components</strong> from a single vendor (grid, charts,
@@ -767,7 +767,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Require <strong>enterprise features</strong> (popup editing, integrated
@@ -777,7 +777,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Budget allows <strong>$899/year per developer</strong>
@@ -786,7 +786,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Enterprise compliance requires <strong>vendor accountability</strong>
@@ -795,7 +795,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   </ul>
                 </div>
 
-                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
+                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose Simple Table When:
                   </h3>
@@ -803,7 +803,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>$0 cost</strong> (save $13,485 over 3 years for 5 developers)
@@ -812,7 +812,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Only need a <strong>data grid</strong> (not full component suite)
@@ -821,7 +821,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Prefer <strong>open-source freedom</strong> (fork, modify, no licensing)
@@ -830,7 +830,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Community support via <strong>Discord/GitHub</strong> is sufficient
@@ -839,7 +839,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Core features (virtualization, grouping, pinning) meet your needs</span>
                     </li>

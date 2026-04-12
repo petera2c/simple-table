@@ -62,7 +62,7 @@ export default function HandsontableAlternativesPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-orange-50 to-blue-50 dark:from-orange-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Handsontable Alternatives: Best Free Options for React (2025)
         </h1>
@@ -231,7 +231,7 @@ export default function HandsontableAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">
@@ -247,7 +247,7 @@ export default function HandsontableAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">Data Grid Basics:</strong>
@@ -260,7 +260,7 @@ export default function HandsontableAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">Performance:</strong>
@@ -273,7 +273,7 @@ export default function HandsontableAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">
@@ -288,7 +288,7 @@ export default function HandsontableAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">
@@ -303,7 +303,7 @@ export default function HandsontableAlternativesPage() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <div>
                     <strong className="text-gray-900 dark:text-gray-100">
@@ -331,7 +331,7 @@ export default function HandsontableAlternativesPage() {
 
         {/* 1. Simple Table */}
         <section id="simple-table">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 md:p-6 shadow-lg">
+          <div className="bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-4 md:p-6 shadow-lg">
             <div className="flex items-center gap-3 mb-4">
               <span className="bg-gold-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                 #1 BEST ALTERNATIVE
@@ -356,7 +356,7 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Truly free:</strong> MIT licensed with no commercial restrictions or
@@ -366,7 +366,7 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>4x lighter:</strong> {SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs{" "}
@@ -376,7 +376,7 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Excel-like editing:</strong> Click to edit cells, keyboard navigation,
@@ -386,7 +386,7 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Complete feature set:</strong> Sorting, filtering, virtualization, row
@@ -396,7 +396,7 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Quick setup:</strong> Get started in 15 minutes with intuitive API
@@ -405,7 +405,7 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>TypeScript-first:</strong> Excellent type definitions and developer
@@ -415,7 +415,7 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Modern React:</strong> Built for React 18+ with hooks and best
@@ -434,28 +434,28 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-amber-500 mt-1 flex-shrink-0"
+                      className="text-amber-500 mt-1 shrink-0"
                     />
                     <span>Teams migrating away from Handsontable</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-amber-500 mt-1 flex-shrink-0"
+                      className="text-amber-500 mt-1 shrink-0"
                     />
                     <span>Commercial projects needing free licensing</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-amber-500 mt-1 flex-shrink-0"
+                      className="text-amber-500 mt-1 shrink-0"
                     />
                     <span>Apps prioritizing bundle size and performance</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-amber-500 mt-1 flex-shrink-0"
+                      className="text-amber-500 mt-1 shrink-0"
                     />
                     <span>Data-heavy dashboards and admin tools</span>
                   </li>
@@ -550,7 +550,7 @@ export default function HandsontableAlternativesPage() {
             </div>
 
             {/* CTA Banner */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 text-center">
+            <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 text-center">
               <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                 Escape Handsontable's licensing nightmare
               </h4>
@@ -597,28 +597,28 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>MIT licensed and completely free</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Excel-like editing with keyboard support</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Good performance with virtualization</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Copy/paste functionality</span>
                   </li>
@@ -634,21 +634,21 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>More focused on editing than general data display</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Less flexible for custom layouts</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Smaller community than alternatives</span>
                   </li>
@@ -682,28 +682,28 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>MIT licensed and free</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Complete UI control</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Excellent TypeScript support</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Lightweight core: {TANSTACK_TABLE_INFO.bundleSizeMinGzip}</span>
                   </li>
@@ -719,28 +719,28 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Must build all UI from scratch</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>No built-in editing or spreadsheet features</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Steep learning curve</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>High development time (days to weeks)</span>
                   </li>
@@ -773,21 +773,21 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Mature and well-documented</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Basic editing in Community edition</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Enterprise features available (if you pay)</span>
                   </li>
@@ -803,21 +803,21 @@ export default function HandsontableAlternativesPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Large bundle: {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Advanced features require $999+/year per dev</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Replacing one paid solution with another</span>
                   </li>
@@ -1022,7 +1022,7 @@ export default function HandsontableAlternativesPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Freedom:</strong> MIT license with no commercial restrictions
@@ -1031,7 +1031,7 @@ export default function HandsontableAlternativesPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Performance:</strong> About 4x smaller bundle (
@@ -1041,7 +1041,7 @@ export default function HandsontableAlternativesPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Features:</strong> Everything you need for spreadsheet-like editing
@@ -1050,7 +1050,7 @@ export default function HandsontableAlternativesPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Developer Experience:</strong> Intuitive API, excellent TypeScript,
@@ -1060,7 +1060,7 @@ export default function HandsontableAlternativesPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Cost:</strong> $0 forever—save $5,000+ per year

@@ -45,7 +45,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900 dark:to-amber-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-orange-50 to-amber-50 dark:from-orange-900 dark:to-amber-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           MUI-Datatables vs Simple Table: Material-UI v4 Legacy vs Modern Standalone Grid
         </h1>
@@ -239,7 +239,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                 effectively abandoned. Here's why this matters:
               </p>
 
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   MUI-Datatables: Stuck in 2021
                 </h3>
@@ -247,7 +247,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Last publish: 3 years ago (v4.3.0, 2021)</strong>
@@ -256,7 +256,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Material-UI v4 only:</strong> No support for modern @mui/material
@@ -266,7 +266,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No security updates:</strong> Vulnerable dependencies won't be patched
@@ -275,7 +275,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No bug fixes:</strong> Issues accumulate with no resolution
@@ -284,7 +284,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>React 18+ issues:</strong> May have compatibility problems with modern
@@ -294,7 +294,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Migration path unclear:</strong> No official successor or upgrade
@@ -309,7 +309,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Active Development
                 </h3>
@@ -317,7 +317,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Actively maintained:</strong> Regular updates and bug fixes
@@ -326,7 +326,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>React 18+ compatible:</strong> Works with latest React versions
@@ -335,7 +335,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Framework-agnostic:</strong> No Material-UI dependency
@@ -344,7 +344,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Security updates:</strong> Dependencies kept current
@@ -353,7 +353,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Community support:</strong> Active GitHub, Discord community
@@ -362,7 +362,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Future-proof:</strong> Not tied to any framework version
@@ -675,7 +675,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
             </h2>
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border-2 border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border-2 border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   The Simple Answer
                 </h3>
@@ -690,7 +690,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                 </p>
               </div>
 
-              <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
+              <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                   Choose Simple Table When:
                 </h3>
@@ -698,7 +698,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       Starting a <strong>new project</strong> (any React version, any CSS framework)
@@ -707,7 +707,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       Want <strong>actively maintained</strong> code with regular updates
@@ -716,7 +716,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       Need <strong>smallest bundle size</strong> (42KB vs 88KB)
@@ -725,7 +725,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       Want <strong>zero dependencies</strong> and framework flexibility
@@ -734,7 +734,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       Need features MUI-Datatables lacks (virtualization, pinning, grouping)

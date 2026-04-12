@@ -54,7 +54,7 @@ export default function BestFreeReactDataGrid2026Page() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           {bestFreeReactDataGridPost.title}
         </h1>
@@ -592,7 +592,7 @@ export default function BestFreeReactDataGrid2026Page() {
                 you need without the complexity or cost of alternatives.
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500" />
                   <span className="font-medium text-blue-800 dark:text-blue-200">

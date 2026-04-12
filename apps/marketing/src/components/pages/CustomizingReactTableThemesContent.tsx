@@ -32,7 +32,7 @@ export default function CustomizingReactTableThemesContent() {
   return (
     <PageWrapper>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           {customizingReactTableLookPost.title}
         </h1>

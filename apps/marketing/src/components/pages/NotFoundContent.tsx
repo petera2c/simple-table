@@ -20,7 +20,7 @@ export default function NotFoundContent() {
 
   return (
     <PageWrapper>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white p-4">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-blue-50 to-white p-4">
         <div className="text-center max-w-2xl">
           {/* Animated flipping table icon */}
           <motion.div

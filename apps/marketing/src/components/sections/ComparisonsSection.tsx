@@ -65,7 +65,7 @@ export default function ComparisonsSection() {
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <div className={`h-2 bg-gradient-to-r ${comparison.color}`}></div>
+              <div className={`h-2 bg-linear-to-r ${comparison.color}`}></div>
               <div className="p-4 sm:p-5 lg:p-6">
                 <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
                   {comparison.title}

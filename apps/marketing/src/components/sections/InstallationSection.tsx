@@ -21,7 +21,7 @@ export default function InstallationSection() {
 
   return (
     <motion.section
-      className="mb-16 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-blue-950 rounded-xl p-4 sm:p-6 lg:p-8 border border-indigo-100 dark:border-indigo-800"
+      className="mb-16 bg-linear-to-br from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-blue-950 rounded-xl p-4 sm:p-6 lg:p-8 border border-indigo-100 dark:border-indigo-800"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}

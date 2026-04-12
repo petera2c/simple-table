@@ -50,7 +50,7 @@ export default function MobileCompatibilityReactTablesPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           {mobileCompatibilityReactTablesPost.title}
         </h1>
@@ -273,7 +273,7 @@ export default function MobileCompatibilityReactTablesPage() {
             <div className="space-y-4">
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <div className="shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 dark:text-blue-300 font-bold">1</span>
                   </div>
                   <div className="flex-1">
@@ -293,7 +293,7 @@ export default function MobileCompatibilityReactTablesPage() {
 
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <div className="shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 dark:text-blue-300 font-bold">2</span>
                   </div>
                   <div className="flex-1">
@@ -312,7 +312,7 @@ export default function MobileCompatibilityReactTablesPage() {
 
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <div className="shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 dark:text-blue-300 font-bold">3</span>
                   </div>
                   <div className="flex-1">
@@ -330,7 +330,7 @@ export default function MobileCompatibilityReactTablesPage() {
 
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <div className="shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 dark:text-blue-300 font-bold">4</span>
                   </div>
                   <div className="flex-1">
@@ -501,7 +501,7 @@ export default function MobileTable() {
                 best mobile experience of any React data grid library.
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500" />
                   <span className="font-medium text-blue-800 dark:text-blue-200">

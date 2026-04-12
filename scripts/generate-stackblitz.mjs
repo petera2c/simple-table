@@ -120,6 +120,14 @@ function generateIndexHtml(framework, demoLabel) {
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      #root,
+      #app {
+        padding: 24px;
+      }
+      app-root {
+        display: block;
+        padding: 24px;
+      }
     </style>
   </head>
   <body>
@@ -393,9 +401,7 @@ import Demo from "./demos/${demoId}/${pascal}Demo";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <div style={{ padding: "24px" }}>
-      <Demo height="500px" />
-    </div>
+    <Demo height="500px" />
   </React.StrictMode>,
 );`,
 
@@ -404,9 +410,7 @@ import App from "./App.vue";
 
 createApp(App).mount("#app");`,
       app: `<template>
-  <div style="padding: 24px">
-    <Demo height="500px" />
-  </div>
+  <Demo height="500px" />
 </template>
 
 <script setup lang="ts">
@@ -424,7 +428,7 @@ import { ${pascal}DemoComponent } from "./demos/${demoId}/${demoId}-demo.compone
   selector: "app-root",
   standalone: true,
   imports: [${pascal}DemoComponent],
-  template: \`<div style="padding: 24px"><${demoId}-demo height="500px"></${demoId}-demo></div>\`,
+  template: \`<${demoId}-demo height="500px"></${demoId}-demo>\`,
 })
 class AppComponent {}
 
@@ -444,19 +448,15 @@ mount(Demo, {
 import Demo from "./demos/${demoId}/${pascal}Demo";
 
 render(
-  () => (
-    <div style={{ padding: "24px" }}>
-      <Demo height="500px" />
-    </div>
-  ),
+  () => <Demo height="500px" />,
   document.getElementById("root")!,
 );`,
 
     vanilla: `import { render${pascal}Demo } from "./demos/${demoId}/${pascal}Demo";
 
 const container = document.getElementById("root")!;
-container.style.padding = "24px";
-render${pascal}Demo(container, { height: "500px" });`,
+const instance = render${pascal}Demo(container, { height: "500px" });
+if (instance?.mount) instance.mount();`,
   };
 
   return entryPoints[framework];

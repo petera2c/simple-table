@@ -62,7 +62,7 @@ export default function BundleSizeComparisonPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           React Data Grid Bundle Size Showdown: Finding the Lightest Solution (2025)
         </h1>
@@ -240,7 +240,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Fresh Create React App:</strong> Using Vite with production builds
@@ -250,7 +250,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Gzipped sizes:</strong> What users actually download (typical ~70%
@@ -260,7 +260,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Core package only:</strong> No optional plugins or dependencies unless
@@ -270,7 +270,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Latest versions:</strong> As of January 2025
@@ -279,7 +279,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Basic usage:</strong> Simple table with sorting and filtering enabled
@@ -300,7 +300,7 @@ export default function BundleSizeComparisonPage() {
 
             <div className="space-y-4">
               {/* Winner - Simple Table */}
-              <div className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
+              <div className="bg-linear-to-br from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
                   <div className="flex items-center gap-3">
                     <span className="bg-gold-500 text-white px-3 py-1 rounded-full text-sm font-bold">
@@ -622,7 +622,7 @@ export default function BundleSizeComparisonPage() {
                 Let's translate these numbers into actual user experience:
               </p>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Scenario: E-commerce Dashboard on Mobile 3G
                 </h4>
@@ -699,21 +699,21 @@ export default function BundleSizeComparisonPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Efficient virtual scrolling handles 50K+ rows</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Minimal re-renders with optimized React patterns</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Small bundle = faster parse = quicker Time to Interactive</span>
                     </li>
@@ -729,21 +729,21 @@ export default function BundleSizeComparisonPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>More code to parse and execute on every page load</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>Larger memory footprint affects low-end devices</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>Complex feature sets can slow down simple use cases</span>
                     </li>
@@ -771,7 +771,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-blue-500 mt-1 flex-shrink-0"
+                    className="text-blue-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Internal enterprise tools</strong> where users have fast connections and
@@ -781,7 +781,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-blue-500 mt-1 flex-shrink-0"
+                    className="text-blue-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Desktop-only applications</strong> with no mobile users
@@ -790,7 +790,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-blue-500 mt-1 flex-shrink-0"
+                    className="text-blue-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Lazy-loaded routes</strong> where the grid isn't on the initial bundle
@@ -799,7 +799,7 @@ export default function BundleSizeComparisonPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-blue-500 mt-1 flex-shrink-0"
+                    className="text-blue-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Extremely complex requirements</strong> that genuinely need a
@@ -916,7 +916,7 @@ export default function BundleSizeComparisonPage() {
                 lightest option isn't necessary, but when it matters, it really matters.
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-6 text-center">
+              <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-6 text-center">
                 <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                   Stop shipping bloated libraries
                 </h4>

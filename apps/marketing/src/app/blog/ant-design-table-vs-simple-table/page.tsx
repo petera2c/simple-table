@@ -47,7 +47,7 @@ export default function AntDesignTableVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Ant Design Table vs Simple Table: Component Library vs Lightweight Grid
         </h1>
@@ -206,7 +206,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                 impacts load time, especially on mobile networks.
               </p>
 
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-300 dark:border-red-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Ant Design Table: The Component Library Tax
                 </h3>
@@ -233,7 +233,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Lightweight by Design
                 </h3>
@@ -431,28 +431,28 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Matches other Ant Design components automatically</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Theme customization via Less/CSS variables</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>Hard to break out of Ant Design aesthetic</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>Requires understanding Ant Design's class structure</span>
                     </li>
@@ -472,7 +472,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Works with any CSS framework for React (Tailwind, CSS Modules, etc.)
@@ -481,21 +481,21 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Simple CSS variable customization</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Custom renderers for complete control</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>No design system lock-in</span>
                     </li>
@@ -536,7 +536,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You're <strong>already using Ant Design</strong> for other components
@@ -545,7 +545,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You want <strong>visual consistency</strong> with Ant Design ecosystem
@@ -554,7 +554,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You're building an <strong>internal admin tool</strong> where bundle size
@@ -564,7 +564,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Your team is <strong>already familiar</strong> with Ant Design patterns
@@ -582,7 +582,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You're <strong>not using Ant Design</strong> and don't want the overhead
@@ -591,7 +591,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Bundle size matters</strong> (customer-facing, mobile-first apps)
@@ -600,7 +600,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You want <strong>complete styling freedom</strong> without design system
@@ -610,7 +610,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You need <strong>native features</strong> like aggregation and row grouping
@@ -619,7 +619,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You prefer a <strong>simple, focused API</strong> over ecosystem integration
@@ -716,7 +716,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                 excellent. It's about <strong>context</strong>:
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   The Simple Question
                 </h3>

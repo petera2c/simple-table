@@ -282,7 +282,7 @@ const PricingContent: React.FC = () => {
               </p>
 
               <div className="mb-3 shrink-0">
-                <div className="flex min-h-[3.25rem] flex-wrap items-baseline gap-x-2 gap-y-1">
+                <div className="flex min-h-13 flex-wrap items-baseline gap-x-2 gap-y-1">
                   <span className="text-4xl font-bold text-gray-800 dark:text-white">
                     {plan.price}
                   </span>
@@ -443,7 +443,7 @@ const PricingContent: React.FC = () => {
         </motion.section>
         {/* Call to Action */}
         <motion.section
-          className="mt-20 text-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl p-12"
+          className="mt-20 text-center bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl p-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}

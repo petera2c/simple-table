@@ -227,7 +227,7 @@ const DocsSearch: React.FC<DocsSearchProps> = ({
 
         {/* Search Results Dropdown */}
         {isOpen && (
-          <div className="absolute top-full mt-2 w-full min-w-[400px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-96 overflow-y-auto z-[9999]">
+          <div className="absolute top-full mt-2 w-full min-w-[400px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-96 overflow-y-auto z-9999">
             {searchResults.length > 0 ? (
               searchResults.map((result, index) => (
                 <Link

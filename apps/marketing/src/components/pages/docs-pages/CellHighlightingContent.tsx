@@ -170,7 +170,7 @@ const CellHighlightingContent = () => {
         </p>
         <div className="space-y-3">
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-            <div className="grid grid-cols-[auto,1fr] gap-x-4 gap-y-3">
+            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3">
               <div className="font-mono text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-gray-800 dark:text-gray-200">
                 Shift + Arrow Keys
               </div>

@@ -47,7 +47,7 @@ export default function CustomIconsReactGridsPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Custom Icons in React Data Grids: Complete Tutorial
         </h1>
@@ -171,7 +171,7 @@ export default function CustomIconsReactGridsPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>SaaS Dashboards:</strong> Match table icons to your sidebar navigation
@@ -181,7 +181,7 @@ export default function CustomIconsReactGridsPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Financial Tools:</strong> Use distinctive sort icons that match your
@@ -191,7 +191,7 @@ export default function CustomIconsReactGridsPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>E-Commerce Admin:</strong> Align table icons with product card icons,
@@ -201,7 +201,7 @@ export default function CustomIconsReactGridsPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Enterprise Apps:</strong> Use corporate-approved icon sets that match
@@ -765,7 +765,7 @@ export default function ThemedTable({ theme = "modern", data, headers }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Choose one icon library</strong> and use it consistently throughout your
@@ -775,7 +775,7 @@ export default function ThemedTable({ theme = "modern", data, headers }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Match your brand colors</strong> and visual style
@@ -784,7 +784,7 @@ export default function ThemedTable({ theme = "modern", data, headers }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Keep icons simple</strong> and high-contrast for small sizes
@@ -793,7 +793,7 @@ export default function ThemedTable({ theme = "modern", data, headers }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Test in both light and dark mode</strong> if you support themes
@@ -802,7 +802,7 @@ export default function ThemedTable({ theme = "modern", data, headers }) {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Consider subtle animations</strong> for better interaction feedback

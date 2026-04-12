@@ -56,7 +56,7 @@ const LivePreview = ({
 
   return (
     <PageWrapper>
-      <div className="flex flex-col gap-2 w-full flex-grow">
+      <div className="flex flex-col gap-2 w-full grow">
         {titleRenderer && titleRenderer({ codeButton, sandboxButton })}
 
         <div style={{ height }}>

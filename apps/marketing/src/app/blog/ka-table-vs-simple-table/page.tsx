@@ -48,7 +48,7 @@ export default function KaTableVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           ka-table vs Simple Table: Controlled State Management vs Batteries-Included Grid
         </h1>
@@ -224,7 +224,7 @@ export default function KaTableVsSimpleTablePage() {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6">
+                <div className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                     ka-table
                   </h3>
@@ -241,7 +241,7 @@ export default function KaTableVsSimpleTablePage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
+                <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                     Simple Table
                   </h3>
@@ -301,7 +301,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Explicit control:</strong> Every change is a dispatched action
@@ -310,7 +310,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Predictable:</strong> State updates flow through kaReducer
@@ -319,7 +319,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Flexible:</strong> Intercept any action, add custom logic
@@ -328,7 +328,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Redux integration:</strong> Works seamlessly with Redux stores
@@ -337,7 +337,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>More boilerplate:</strong> dispatch, reducer, action types
@@ -346,7 +346,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Learning curve:</strong> Need to understand reducer pattern
@@ -367,7 +367,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Simple setup:</strong> Pass data and config, table handles state
@@ -376,7 +376,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Minimal boilerplate:</strong> No reducers or actions needed
@@ -385,7 +385,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Callbacks for control:</strong> onSort, onFilter, onPageChange
@@ -394,7 +394,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Custom renderers:</strong> Full UI control without state management
@@ -403,7 +403,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Less explicit:</strong> State changes happen internally
@@ -412,7 +412,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faTimesCircle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>No Redux pattern:</strong> Different paradigm than ka-table
@@ -612,7 +612,7 @@ export default function KaTableVsSimpleTablePage() {
                 controlled usage. Simple Table focuses on simplicity with internal state management.
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   ka-table: Controlled Mode Emphasis
                 </h3>
@@ -642,7 +642,7 @@ export default function KaTableVsSimpleTablePage() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Internal State with Escape Hatches
                 </h3>
@@ -690,7 +690,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You <strong>love Redux patterns</strong> and reducer-based state management
@@ -699,7 +699,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You need <strong>granular control</strong> over every state change
@@ -708,7 +708,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You want to <strong>integrate table state</strong> with a global Redux store
@@ -717,7 +717,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You need <strong>complex state synchronization</strong> across multiple
@@ -727,7 +727,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         You want <strong>time-travel debugging</strong> with Redux DevTools
@@ -736,7 +736,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-blue-500 mt-1 flex-shrink-0"
+                        className="text-blue-500 mt-1 shrink-0"
                       />
                       <span>
                         Your team is <strong>experienced with reducer patterns</strong>
@@ -754,7 +754,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You want <strong>pragmatic, batteries-included</strong> functionality
@@ -763,7 +763,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You prefer <strong>callbacks over reducers</strong> for custom behavior
@@ -772,7 +772,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You need <strong>quick setup</strong> without boilerplate
@@ -781,7 +781,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You want a <strong>smaller bundle</strong> (~18KB lighter)
@@ -790,7 +790,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You prefer <strong>custom renderers</strong> over action-based UI
@@ -800,7 +800,7 @@ export default function KaTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Your team is <strong>new to React tables</strong> or prefers simpler APIs
@@ -912,7 +912,7 @@ export default function KaTableVsSimpleTablePage() {
                 <strong>state management philosophy</strong>:
               </p>
 
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   The Core Question
                 </h3>

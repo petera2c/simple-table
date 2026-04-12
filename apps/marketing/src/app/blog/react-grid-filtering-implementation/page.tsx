@@ -48,7 +48,7 @@ export default function ReactGridFilteringPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900 dark:to-teal-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900 dark:to-teal-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           React Grid Filtering: Client-Side vs Server-Side Implementation
         </h1>
@@ -806,7 +806,7 @@ const handleFilterChange = (filters) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Use client-side filtering</strong> for datasets under 10K rows
@@ -815,7 +815,7 @@ const handleFilterChange = (filters) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Use server-side filtering</strong> for large datasets or fast initial
@@ -825,7 +825,7 @@ const handleFilterChange = (filters) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Debounce text inputs</strong> to avoid excessive API calls
@@ -834,7 +834,7 @@ const handleFilterChange = (filters) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Show active filters clearly</strong> and provide a "Clear All" button
@@ -843,7 +843,7 @@ const handleFilterChange = (filters) => {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Persist filter state</strong> in URL params for shareable filtered views

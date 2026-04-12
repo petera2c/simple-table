@@ -17,7 +17,7 @@ export default function CaseStudySection() {
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
     >
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-8 md:p-12 border border-blue-100 dark:border-blue-800 shadow-lg">
+      <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-8 md:p-12 border border-blue-100 dark:border-blue-800 shadow-lg">
         <div className="max-w-4xl mx-auto">
           {/* Quote Icon */}
           <div className="flex justify-center mb-6">

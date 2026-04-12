@@ -60,7 +60,7 @@ export default function TabulatorAlternativesReactPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900 dark:to-green-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-green-50 dark:from-blue-900 dark:to-green-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Tabulator Alternatives for React: Modern Options in 2026
         </h1>
@@ -246,7 +246,7 @@ export default function TabulatorAlternativesReactPage() {
 
             <div className="space-y-6">
               {/* Simple Table */}
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6">
+              <div className="bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="bg-gold-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                     #1 RECOMMENDED
@@ -695,7 +695,7 @@ table.setData(newData);`}
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Better React integration:</strong> Use declarative props instead of
@@ -705,7 +705,7 @@ table.setData(newData);`}
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Improved TypeScript support:</strong> Full type safety and
@@ -715,7 +715,7 @@ table.setData(newData);`}
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Smaller bundle size:</strong> Reduce your app's footprint by 50KB+
@@ -724,7 +724,7 @@ table.setData(newData);`}
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Better performance:</strong> Libraries built for React optimize for
@@ -734,7 +734,7 @@ table.setData(newData);`}
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Easier maintenance:</strong> Less imperative code, more declarative
@@ -785,7 +785,7 @@ table.setData(newData);`}
                 React's capabilities.
               </p>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                   <FontAwesomeIcon icon={faTrophy} className="text-green-500" />
                   Simple Table: The Best Tabulator Alternative for React

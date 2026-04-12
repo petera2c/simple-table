@@ -48,7 +48,7 @@ export default function RsuiteTableVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900 dark:to-red-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-orange-50 to-red-50 dark:from-orange-900 dark:to-red-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           RSuite Table vs Simple Table: Enterprise UI Suite vs Standalone Grid
         </h1>
@@ -238,7 +238,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                 This 60KB difference impacts initial page load significantly.
               </p>
 
-              <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-300 dark:border-orange-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-300 dark:border-orange-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Bundle Size Breakdown
                 </h3>
@@ -252,7 +252,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
-                        className="bg-gradient-to-r from-orange-500 to-red-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        className="bg-linear-to-r from-orange-500 to-red-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         style={{ width: "100%" }}
                       >
                         100%
@@ -268,7 +268,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
-                        className="bg-gradient-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        className="bg-linear-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         style={{ width: "41%" }}
                       >
                         41%
@@ -518,7 +518,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                 cons:
               </p>
 
-              <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-300 dark:border-orange-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-300 dark:border-orange-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   RSuite Ecosystem: Design System Integration
                 </h3>
@@ -526,7 +526,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Consistent design:</strong> Table matches RSuite buttons, forms,
@@ -536,7 +536,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Enterprise theming:</strong> Built-in light/dark themes, RTL support
@@ -545,7 +545,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Full component suite:</strong> 50+ components for complete apps
@@ -554,7 +554,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Framework lock-in:</strong> Hard to migrate away from RSuite design
@@ -564,7 +564,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Bundle overhead:</strong> Each RSuite component adds to total bundle
@@ -574,7 +574,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Styling constraints:</strong> Custom styling requires overriding
@@ -584,7 +584,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Framework-Agnostic Freedom
                 </h3>
@@ -592,7 +592,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Zero dependencies:</strong> No UI framework required
@@ -601,7 +601,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Works with any design system:</strong> Material-UI, Chakra UI,
@@ -611,7 +611,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Full styling control:</strong> CSS-in-JS via props, no framework to
@@ -621,7 +621,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Easy migration:</strong> Swap out for any other table library without
@@ -631,7 +631,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No pre-built themes:</strong> You style it from scratch (tradeoff for
@@ -665,7 +665,7 @@ export default function RsuiteTableVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="border-2 border-orange-300 dark:border-orange-700 rounded-lg p-6 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20">
+                <div className="border-2 border-orange-300 dark:border-orange-700 rounded-lg p-6 bg-linear-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose RSuite Table When:
                   </h3>
@@ -673,7 +673,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-orange-500 mt-1 flex-shrink-0"
+                        className="text-orange-500 mt-1 shrink-0"
                       />
                       <span>
                         Already using <strong>RSuite components</strong> (buttons, forms, etc.)
@@ -682,7 +682,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-orange-500 mt-1 flex-shrink-0"
+                        className="text-orange-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>design system consistency</strong> across all UI components
@@ -691,7 +691,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-orange-500 mt-1 flex-shrink-0"
+                        className="text-orange-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>cell/row spanning</strong> (colspan/rowspan) heavily
@@ -700,7 +700,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-orange-500 mt-1 flex-shrink-0"
+                        className="text-orange-500 mt-1 shrink-0"
                       />
                       <span>
                         Building <strong>enterprise apps</strong> with RTL/i18n requirements
@@ -709,14 +709,14 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-orange-500 mt-1 flex-shrink-0"
+                        className="text-orange-500 mt-1 shrink-0"
                       />
                       <span>Don't need row grouping or column reordering</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
+                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose Simple Table When:
                   </h3>
@@ -724,7 +724,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         <strong>Not using RSuite</strong> (avoid 102KB for one component)
@@ -733,7 +733,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>framework-agnostic</strong> solution (works with any design
@@ -743,7 +743,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>smallest bundle</strong> (42KB vs 102KB)
@@ -752,7 +752,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Require <strong>row grouping</strong> or <strong>column reordering</strong>
@@ -761,7 +761,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>built-in filtering</strong> and advanced features
@@ -900,7 +900,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                 you're already invested in the RSuite ecosystem:
               </p>
 
-              <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border-2 border-orange-300 dark:border-orange-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border-2 border-orange-300 dark:border-orange-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   RSuite Table: Design System Integration
                 </h3>
@@ -915,7 +915,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Framework-Agnostic Power
                 </h3>

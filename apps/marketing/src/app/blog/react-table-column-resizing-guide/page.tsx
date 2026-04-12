@@ -48,7 +48,7 @@ export default function ReactTableColumnResizingGuidePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           React Table Column Resizing: Implementation Guide & Best Libraries (2026)
         </h1>
@@ -1181,7 +1181,7 @@ export default function AGGridResizableTable({ data }) {
 
         {/* Conclusion */}
         <section id="conclusion">
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
+          <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faRocket} className="text-green-500" />
               Conclusion: Column Resizing Done Right

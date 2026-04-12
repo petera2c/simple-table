@@ -47,7 +47,7 @@ export default function ReplicatingGojiberryUIPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900 dark:to-red-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-orange-50 to-red-50 dark:from-orange-900 dark:to-red-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Replicating Gojiberry's Beautiful UI with Simple Table: The Ultimate Customization
           Showcase
@@ -585,7 +585,7 @@ export default function ReplicatingGojiberryUIPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Rich visual components:</strong> Gradient avatars, badges, icons—all
@@ -595,7 +595,7 @@ export default function ReplicatingGojiberryUIPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Full interactivity:</strong> Loading states, toggle buttons, clickable
@@ -605,7 +605,7 @@ export default function ReplicatingGojiberryUIPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Custom pagination:</strong> Styled footer with all the controls we
@@ -615,7 +615,7 @@ export default function ReplicatingGojiberryUIPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>All table features intact:</strong> Column resizing, reordering, row
@@ -625,7 +625,7 @@ export default function ReplicatingGojiberryUIPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Dark mode support:</strong> The entire theme adapts beautifully to light
@@ -634,7 +634,7 @@ export default function ReplicatingGojiberryUIPage() {
                 </li>
               </ul>
 
-              <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-6">
+              <div className="bg-linear-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-6">
                 <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">
                   See It Live
                 </h3>

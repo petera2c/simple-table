@@ -50,7 +50,7 @@ export default function TanStackVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           TanStack Table (React Table) vs Simple Table: When to Choose Headless vs
           Batteries-Included
@@ -141,28 +141,28 @@ export default function TanStackVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>Provides hooks and state management logic</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>Zero opinions about rendering or styles</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>You write all the JSX and CSS</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>Complete control over every pixel</span>
                   </li>
@@ -193,28 +193,28 @@ export default function TanStackVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>Provides a complete React component</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>Built-in UI with sensible defaults</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>Pass props, get a working table</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-purple-500 mt-1 flex-shrink-0"
+                      className="text-purple-500 mt-1 shrink-0"
                     />
                     <span>Customizable via props, themes, renderers</span>
                   </li>
@@ -513,7 +513,7 @@ export function SimpleTableExample({ data, columns }) {
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 font-bold">
                       1
                     </div>
                     <div>
@@ -527,7 +527,7 @@ export function SimpleTableExample({ data, columns }) {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 font-bold">
                       2
                     </div>
                     <div>
@@ -541,7 +541,7 @@ export function SimpleTableExample({ data, columns }) {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 font-bold">
                       3
                     </div>
                     <div>
@@ -574,7 +574,7 @@ export function SimpleTableExample({ data, columns }) {
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 font-bold">
                       1
                     </div>
                     <div>
@@ -588,7 +588,7 @@ export function SimpleTableExample({ data, columns }) {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 font-bold">
                       2
                     </div>
                     <div>
@@ -602,7 +602,7 @@ export function SimpleTableExample({ data, columns }) {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 font-bold">
                       3
                     </div>
                     <div>
@@ -627,7 +627,7 @@ export function SimpleTableExample({ data, columns }) {
               </div>
             </div>
 
-            <div className="mt-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-4">
+            <div className="mt-6 bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <FontAwesomeIcon icon={faCalculator} className="text-amber-500 mt-1 text-xl" />
                 <div>
@@ -851,7 +851,7 @@ export function SimpleTableExample({ data, columns }) {
                 </div>
               </div>
 
-              <div className="mt-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-300 dark:border-purple-700 rounded-lg p-4">
+              <div className="mt-6 bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-300 dark:border-purple-700 rounded-lg p-4">
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
                   <FontAwesomeIcon icon={faLightbulb} className="text-purple-500" />
                   The Real Question
@@ -907,7 +907,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       You need to build <strong>non-table UIs</strong> (cards, lists, kanban) with
@@ -917,7 +917,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       Your design system requires <strong>pixel-perfect custom components</strong>{" "}
@@ -927,7 +927,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       You need to support <strong>multiple frameworks</strong> (React, Vue, Svelte)
@@ -937,7 +937,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       Your team <strong>enjoys building UI</strong> and wants full creative control
@@ -946,7 +946,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>
                       You have <strong>1-2 weeks</strong> to build a polished table from scratch
@@ -956,7 +956,7 @@ export function SimpleTableExample({ data, columns }) {
               </div>
 
               {/* Choose Simple Table */}
-              <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
+              <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                   <FontAwesomeIcon icon={faCrown} className="text-green-500" />
                   Choose Simple Table When:
@@ -965,7 +965,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       You need a <strong>standard data table</strong> (which is 90% of use cases)
@@ -974,7 +974,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       You want to <strong>ship fast</strong>—hours, not weeks
@@ -983,7 +983,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       You're a <strong>small team or solo developer</strong> without time to build
@@ -993,7 +993,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Performance matters</strong>—you need the smallest bundle + built-in
@@ -1003,7 +1003,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       You want <strong>production-ready defaults</strong> with easy customization
@@ -1013,7 +1013,7 @@ export function SimpleTableExample({ data, columns }) {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       You need <strong>enterprise features</strong> (row grouping, aggregation,
@@ -1039,7 +1039,7 @@ export function SimpleTableExample({ data, columns }) {
                 Here's the honest advice based on working with both libraries in production:
               </p>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   For 90% of Projects: Start with Simple Table
                 </h3>

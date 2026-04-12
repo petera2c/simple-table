@@ -48,7 +48,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           React Table Library vs Simple Table: Headless Composability vs Batteries-Included Grid
         </h1>
@@ -237,7 +237,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                 with zero dependencies. Bundle sizes are nearly identical.
               </p>
 
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   True Bundle Size Comparison
                 </h3>
@@ -251,7 +251,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        className="bg-linear-to-r from-purple-500 to-pink-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         style={{ width: "98%" }}
                       >
                         98%
@@ -267,7 +267,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
-                        className="bg-gradient-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        className="bg-linear-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         style={{ width: "100%" }}
                       >
                         100% (baseline)
@@ -488,7 +488,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                 React Table Library and Simple Table take opposite approaches to API design:
               </p>
 
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   React Table Library: Composable Plugins
                 </h3>
@@ -496,7 +496,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Plugin-based:</strong> Import hooks for features you need (useSort,
@@ -506,7 +506,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Component composition:</strong> Build tables from primitives (Table,
@@ -516,7 +516,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Server-side first:</strong> Designed for remote data fetching patterns
@@ -525,7 +525,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>More setup code:</strong> Each feature requires hook import and wiring
@@ -534,7 +534,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Learning curve:</strong> Must understand plugin system and composition
@@ -543,7 +543,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Batteries-Included
                 </h3>
@@ -551,7 +551,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Single component:</strong> All features accessed via props (no plugins
@@ -561,7 +561,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Fast setup:</strong> Enable sorting with <code>sortable</code> prop,
@@ -571,7 +571,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Shallow learning curve:</strong> Props-based API similar to standard
@@ -581,7 +581,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Server-side support:</strong> Controlled state via callbacks for
@@ -591,7 +591,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faTimesCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Less granular control:</strong> Features are pre-integrated (tradeoff
@@ -626,7 +626,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+                <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-6 bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose React Table Library When:
                   </h3>
@@ -634,7 +634,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         You prefer <strong>headless/composable</strong> architecture (like TanStack
@@ -644,7 +644,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Already using <strong>Emotion CSS-in-JS</strong> (no extra dependency cost)
@@ -653,7 +653,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Want to <strong>cherry-pick features</strong> (only include what you use)
@@ -662,7 +662,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>
                         Building <strong>server-side data fetching patterns</strong> (pagination,
@@ -672,14 +672,14 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-purple-500 mt-1 flex-shrink-0"
+                        className="text-purple-500 mt-1 shrink-0"
                       />
                       <span>Don't need virtualization or row grouping</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
+                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose Simple Table When:
                   </h3>
@@ -687,7 +687,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         You want <strong>fast setup</strong> with minimal boilerplate
@@ -696,7 +696,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>zero dependencies</strong> (no CSS-in-JS required)
@@ -705,7 +705,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Require <strong>virtualization</strong> for large datasets (10k+ rows)
@@ -714,7 +714,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>row grouping</strong> or <strong>multi-column sort</strong>
@@ -723,7 +723,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Prefer <strong>props-based API</strong> over hook composition
@@ -862,7 +862,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                 vs 42KB) but diverge in philosophy:
               </p>
 
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border-2 border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border-2 border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   React Table Library: Headless Composability
                 </h3>
@@ -877,7 +877,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Batteries-Included Convenience
                 </h3>

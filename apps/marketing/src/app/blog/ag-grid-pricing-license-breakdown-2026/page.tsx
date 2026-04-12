@@ -53,7 +53,7 @@ export default function AgGridPricingPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           AG Grid Pricing & License Breakdown 2026: What You Actually Pay
         </h1>
@@ -548,35 +548,35 @@ export default function AgGridPricingPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>You need Excel-like features (pivot tables, complex aggregations)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>You're building internal enterprise tools (not customer-facing)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>You have a substantial software budget ($10K+/year for tools)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>Bundle size isn't critical (internal apps, desktop-first users)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>You need their specific features that no free alternative offers</span>
                     </li>
@@ -592,14 +592,14 @@ export default function AgGridPricingPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>You're a startup or small team with limited budget</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>
                         You need basic to intermediate grid features (sorting, filtering, etc.)
@@ -608,21 +608,21 @@ export default function AgGridPricingPage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>Bundle size and performance are priorities</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>You're building customer-facing applications</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 flex-shrink-0"
+                        className="text-red-500 mt-1 shrink-0"
                       />
                       <span>You want to avoid vendor lock-in</span>
                     </li>
@@ -647,7 +647,7 @@ export default function AgGridPricingPage() {
 
             <div className="space-y-6">
               {/* Simple Table */}
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6">
+              <div className="bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="bg-gold-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                     RECOMMENDED
@@ -899,7 +899,7 @@ export default function AgGridPricingPage() {
                 </div>
               </div>
 
-              <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
+              <div className="mt-6 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   Bottom Line: Start Free, Upgrade Only If Necessary
                 </h3>

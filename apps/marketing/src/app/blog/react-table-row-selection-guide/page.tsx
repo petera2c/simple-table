@@ -49,7 +49,7 @@ export default function ReactTableRowSelectionPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           React Table Row Selection: Multi-Select, Single Select, and Checkbox Implementation
         </h1>
@@ -308,7 +308,7 @@ export default function ReactTableRowSelectionPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-300 dark:border-green-700 rounded-lg p-4">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-300 dark:border-green-700 rounded-lg p-4">
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
                   <FontAwesomeIcon icon={faTrophy} className="text-green-500" />
                   Why Simple Table's Row Selection Wins
@@ -893,7 +893,7 @@ export default function ReactTableRowSelectionPage() {
                 <li>• Performance optimization for large datasets</li>
               </ul>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   The Pragmatic Choice: Use a Library
                 </h3>

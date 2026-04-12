@@ -66,7 +66,7 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
               <Tooltip title={featureTooltip}>
                 <FontAwesomeIcon
                   icon={faCircleInfo}
-                  className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0"
+                  className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 shrink-0"
                   style={{ fontSize: isMobile ? "0.75rem" : "0.875rem" }}
                 />
               </Tooltip>

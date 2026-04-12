@@ -67,7 +67,7 @@ export default function CallToActionCard({
   };
 
   return (
-    <section className="bg-gradient-to-r from-purple-800 to-violet-800 rounded-xl p-6 md:p-8 text-center shadow-lg">
+    <section className="bg-linear-to-r from-purple-800 to-violet-800 rounded-xl p-6 md:p-8 text-center shadow-lg">
       <h2 className="text-white mb-3 md:mb-4 text-xl md:text-2xl font-bold">{title}</h2>
 
       <p className="text-white text-base md:text-lg mb-4 md:mb-6">{description}</p>

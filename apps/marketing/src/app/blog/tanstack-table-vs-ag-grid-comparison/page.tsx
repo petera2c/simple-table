@@ -55,7 +55,7 @@ export default function TanStackVsAgGridPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           TanStack Table (React Table) vs AG Grid: Complete Comparison (2025)
         </h1>
@@ -221,28 +221,28 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Provides hooks and utilities for table logic</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Zero opinions about rendering or styling</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>You build the table markup yourself</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Ultimate flexibility and control</span>
                   </li>
@@ -267,28 +267,28 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Complete component with built-in UI</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Strong opinions about rendering and behavior</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Pass configuration, get a working grid</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Customization through APIs and CSS</span>
                   </li>
@@ -329,35 +329,35 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>MIT licensed—completely free</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>All features included, no tiers</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Commercial use allowed</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>No per-developer fees</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>No deployment restrictions</span>
                   </li>
@@ -426,7 +426,7 @@ export default function TanStackVsAgGridPage() {
             </h2>
 
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
+              <div className="bg-linear-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Bundle Size Comparison
                 </h3>
@@ -473,7 +473,7 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>TanStack Table:</strong> Lightweight but you need to add UI code (adds
@@ -483,7 +483,7 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faExclamationTriangle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>AG Grid:</strong> Heavy out of the box. Enterprise version adds even
@@ -493,7 +493,7 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Simple Table:</strong> Smallest complete solution. Includes UI,
@@ -737,7 +737,7 @@ export default function TanStackVsAgGridPage() {
               </div>
             </div>
 
-            <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
+            <div className="mt-6 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                 <FontAwesomeIcon icon={faCrown} className="text-green-500" />
                 Simple Table: The Middle Ground
@@ -807,35 +807,35 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>You need to ship quickly without sacrificing features</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Bundle size and performance are priorities</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>You want all features free without license fees</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>Your team prefers simple, intuitive APIs</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>You're building customer-facing applications</span>
                   </li>
@@ -856,28 +856,28 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>You need absolute control over UI and rendering</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>Your design is highly custom and non-standard</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>You want complete control and don't mind building UI components</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-blue-500 mt-1 flex-shrink-0"
+                      className="text-blue-500 mt-1 shrink-0"
                     />
                     <span>You might need to support multiple frameworks</span>
                   </li>
@@ -898,28 +898,28 @@ export default function TanStackVsAgGridPage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>You have budget for enterprise licenses ($5K+/year)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>You need Excel-parity features (pivot tables, etc.)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Internal enterprise tools where bundle size doesn't matter</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-red-500 mt-1 flex-shrink-0"
+                      className="text-red-500 mt-1 shrink-0"
                     />
                     <span>Your team is already trained on AG Grid</span>
                   </li>
@@ -952,7 +952,7 @@ export default function TanStackVsAgGridPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faExclamationTriangle}
-                    className="text-amber-500 mt-1 flex-shrink-0"
+                    className="text-amber-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>TanStack Table</strong> offers maximum flexibility and control, but
@@ -962,7 +962,7 @@ export default function TanStackVsAgGridPage() {
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faExclamationTriangle}
-                    className="text-amber-500 mt-1 flex-shrink-0"
+                    className="text-amber-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>AG Grid</strong> provides a complete solution with advanced features,
@@ -971,7 +971,7 @@ export default function TanStackVsAgGridPage() {
                 </li>
               </ul>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
+              <div className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                   <FontAwesomeIcon icon={faTrophy} className="text-green-500" />
                   Simple Table: The Sweet Spot

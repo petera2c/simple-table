@@ -99,14 +99,14 @@ export default function FAQSection() {
                 <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0"
+                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
                   />
                   <span className="flex-1 font-semibold text-gray-800 dark:text-white">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform flex-shrink-0"
+                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -175,14 +175,14 @@ export default function FAQSection() {
                 <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-purple-600 dark:text-purple-400 mt-1 flex-shrink-0"
+                    className="text-purple-600 dark:text-purple-400 mt-1 shrink-0"
                   />
                   <span className="flex-1 font-semibold text-gray-800 dark:text-white">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform flex-shrink-0"
+                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -235,14 +235,14 @@ export default function FAQSection() {
                 <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-green-600 dark:text-green-400 mt-1 flex-shrink-0"
+                    className="text-green-600 dark:text-green-400 mt-1 shrink-0"
                   />
                   <span className="flex-1 font-semibold text-gray-800 dark:text-white">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform flex-shrink-0"
+                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -326,14 +326,14 @@ export default function FAQSection() {
                 <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-orange-600 dark:text-orange-400 mt-1 flex-shrink-0"
+                    className="text-orange-600 dark:text-orange-400 mt-1 shrink-0"
                   />
                   <span className="flex-1 font-semibold text-gray-800 dark:text-white">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform flex-shrink-0"
+                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">

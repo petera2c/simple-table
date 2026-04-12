@@ -1,5 +1,5 @@
 // Do not f***ing add a use client to this file. It will break SEO metadata
-// The <main className="flex-grow">{children}</main> can not have any parent that is a client component.
+// The <main className="grow">{children}</main> can not have any parent that is a client component.
 // If you need to use a client component, use a wrapper component like PageWrapper
 
 import Header from "./Header";
@@ -18,9 +18,9 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
         <Header />
         <div
           id="main-scroll-container"
-          className="w-full flex-grow z-10 text-gray-800 dark:text-white overflow-auto"
+          className="w-full grow z-10 text-gray-800 dark:text-white overflow-auto"
         >
-          <main className="flex-grow">{children}</main>
+          <main className="grow">{children}</main>
           <Footer />
         </div>
       </div>

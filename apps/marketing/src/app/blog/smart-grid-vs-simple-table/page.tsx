@@ -50,7 +50,7 @@ export default function SmartGridVsSimpleTablePage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-900 dark:to-cyan-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-teal-50 to-cyan-50 dark:from-teal-900 dark:to-cyan-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Smart React Grid vs Simple Table: $399 Commercial vs Free Open-Source
         </h1>
@@ -244,7 +244,7 @@ export default function SmartGridVsSimpleTablePage() {
                 fees. Let's compare total cost:
               </p>
 
-              <div className="bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-900/30 dark:to-cyan-900/30 border border-teal-300 dark:border-teal-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-teal-50 to-cyan-50 dark:from-teal-900/30 dark:to-cyan-900/30 border border-teal-300 dark:border-teal-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Smart React Grid: Commercial Licensing
                 </h3>
@@ -290,7 +290,7 @@ export default function SmartGridVsSimpleTablePage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
+              <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Simple Table: Flexible Pricing
                 </h3>
@@ -298,7 +298,7 @@ export default function SmartGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>FREE:</strong> $0 for zero-revenue companies (MIT License)
@@ -307,7 +307,7 @@ export default function SmartGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>PRO:</strong> $85/month or $850/year for revenue-generating companies
@@ -316,7 +316,7 @@ export default function SmartGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Initial cost:</strong> $0-$850/year (vs $1,499 for Smart Grid Team
@@ -326,7 +326,7 @@ export default function SmartGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>Savings:</strong> $649 in year 1 vs Smart Grid (for commercial use)
@@ -335,7 +335,7 @@ export default function SmartGridVsSimpleTablePage() {
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
-                      className="text-green-500 mt-1 flex-shrink-0"
+                      className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
                       <strong>No vendor lock-in:</strong> Open-source, fork/modify anytime
@@ -551,7 +551,7 @@ export default function SmartGridVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="border-2 border-teal-300 dark:border-teal-700 rounded-lg p-6 bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20">
+                <div className="border-2 border-teal-300 dark:border-teal-700 rounded-lg p-6 bg-linear-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose Smart React Grid When:
                   </h3>
@@ -559,7 +559,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-teal-500 mt-1 flex-shrink-0"
+                        className="text-teal-500 mt-1 shrink-0"
                       />
                       <span>
                         Need <strong>AI-powered filtering</strong> for intelligent data exploration
@@ -568,7 +568,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-teal-500 mt-1 flex-shrink-0"
+                        className="text-teal-500 mt-1 shrink-0"
                       />
                       <span>
                         Building <strong>multi-framework apps</strong> (React + Vue/Angular)
@@ -577,7 +577,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-teal-500 mt-1 flex-shrink-0"
+                        className="text-teal-500 mt-1 shrink-0"
                       />
                       <span>
                         Require <strong>vendor support</strong> and guaranteed updates
@@ -586,7 +586,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-teal-500 mt-1 flex-shrink-0"
+                        className="text-teal-500 mt-1 shrink-0"
                       />
                       <span>
                         Budget allows <strong>$399/dev or $1,499/team</strong> (one-time)
@@ -595,7 +595,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-teal-500 mt-1 flex-shrink-0"
+                        className="text-teal-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>web components</strong> architecture for framework portability
@@ -604,7 +604,7 @@ export default function SmartGridVsSimpleTablePage() {
                   </ul>
                 </div>
 
-                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
+                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-6 bg-linear-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                     Choose Simple Table When:
                   </h3>
@@ -612,7 +612,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>$0 cost</strong> (save $1,499 vs Team License)
@@ -621,7 +621,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Don't need <strong>AI filtering</strong> (standard filtering is sufficient)
@@ -630,7 +630,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Prefer <strong>native React</strong> (no web components wrapper)
@@ -639,7 +639,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Want <strong>open-source freedom</strong> (no vendor lock-in)
@@ -648,7 +648,7 @@ export default function SmartGridVsSimpleTablePage() {
                     <li className="flex items-start gap-2">
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-green-500 mt-1 flex-shrink-0"
+                        className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
                         Community support via <strong>Discord/GitHub</strong> is sufficient

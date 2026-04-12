@@ -46,7 +46,7 @@ export default function ReactTreeDataHierarchicalPage() {
   return (
     <BlogLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
           Tree Data in React Tables: The Complete Guide to Hierarchical Data Display
         </h1>
@@ -973,7 +973,7 @@ rowGrouping={["subaccounts", "transactions"]}
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Structure data with nested arrays</strong> using clear property names
@@ -983,7 +983,7 @@ rowGrouping={["subaccounts", "transactions"]}
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Mark one column as expandable</strong> to show expand/collapse controls
@@ -992,7 +992,7 @@ rowGrouping={["subaccounts", "transactions"]}
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Define hierarchy with rowGrouping array</strong> to tell the table which
@@ -1002,7 +1002,7 @@ rowGrouping={["subaccounts", "transactions"]}
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Use lazy loading for large trees</strong> via{" "}
@@ -1015,7 +1015,7 @@ rowGrouping={["subaccounts", "transactions"]}
                 <li className="flex items-start gap-2">
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-green-500 mt-1 flex-shrink-0"
+                    className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
                     <strong>Start collapsed for deep hierarchies</strong> with{" "}
