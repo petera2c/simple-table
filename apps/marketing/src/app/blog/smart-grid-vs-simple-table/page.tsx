@@ -20,6 +20,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, SMART_GRID_INFO } from "@/constants/packageInfo";
 import { SIMPLE_TABLE_ANNUAL_COST_RANGE } from "@/constants/simpleTablePricing";
 import Link from "next/link";
@@ -75,6 +76,17 @@ export default function SmartGridVsSimpleTablePage() {
           Smart React Grid (by HTML Elements) costs $399-$1,499 with AI-powered filtering and
           enterprise features. Simple Table is free (MIT) at 42KB with zero dependencies. This
           comparison helps you decide if AI features and commercial support justify the cost.
+        </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
         </p>
       </section>
 
@@ -140,7 +152,7 @@ export default function SmartGridVsSimpleTablePage() {
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 This comparison explores when Smart Grid's AI features and web components
-                architecture justify the $399+ cost, and when Simple Table's free, React-native
+                architecture justify the $399+ cost, and when Simple Table's free, React-specific
                 approach provides everything you need. We'll examine pricing, features, AI
                 capabilities, and real-world scenarios.
               </p>
@@ -222,7 +234,7 @@ export default function SmartGridVsSimpleTablePage() {
                       AI features, multi-framework
                     </td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">
-                      Cost-conscious, React-native
+                      Cost-conscious, React-specific
                     </td>
                   </tr>
                 </tbody>
@@ -775,7 +787,7 @@ export default function SmartGridVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features without licensing fees"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and filtering in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for zero-revenue companies, or $850/year for commercial use. Save $649 vs Smart Grid while keeping full open-source freedom.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and filtering in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for zero-revenue companies, or $850/year for commercial use. Save $649 vs Smart Grid while keeping full open-source freedom. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

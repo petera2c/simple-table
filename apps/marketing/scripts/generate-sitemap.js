@@ -14,6 +14,10 @@ async function getNextJsRoutes() {
   const appDir = resolve(__dirname, "../src/app");
   const routes = await glob("**/page.{tsx,jsx,js,ts}", { cwd: appDir });
 
+  const frameworkHubRoutes = ["react", "vue", "angular", "svelte", "solid", "vanilla"].map(
+    (id) => `frameworks/${id}`
+  );
+
   const processedRoutes = routes
     .map((route) => {
       // Convert file path to URL path
@@ -40,7 +44,8 @@ async function getNextJsRoutes() {
     processedRoutes.unshift(""); // Add root route at the beginning
   }
 
-  return processedRoutes;
+  const merged = [...new Set([...processedRoutes, ...frameworkHubRoutes])];
+  return merged;
 }
 
 // Function to format XML with proper indentation
@@ -111,6 +116,9 @@ async function generateSitemap() {
         routeConfig.changefreq = "monthly";
       } else if (route.startsWith("docs/")) {
         routeConfig.priority = 0.8;
+        routeConfig.changefreq = "weekly";
+      } else if (route === "frameworks" || route.startsWith("frameworks/")) {
+        routeConfig.priority = 0.75;
         routeConfig.changefreq = "weekly";
       } else if (route.startsWith("examples/")) {
         routeConfig.priority = 0.7;

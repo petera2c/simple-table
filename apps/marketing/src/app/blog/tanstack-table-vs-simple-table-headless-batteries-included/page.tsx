@@ -20,6 +20,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, TANSTACK_TABLE_INFO } from "@/constants/packageInfo";
 import Link from "next/link";
 
@@ -76,6 +77,17 @@ export default function TanStackVsSimpleTablePage() {
           with Simple Table? This guide breaks down the headless vs batteries-included debate with
           real-world examples.
         </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
+        </p>
       </section>
 
       {/* Main Content */}
@@ -85,11 +97,12 @@ export default function TanStackVsSimpleTablePage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                When choosing a React data grid, you'll encounter two fundamentally different
+                When choosing a data grid for React, you'll encounter two fundamentally different
                 philosophies: <strong>headless</strong> libraries like TanStack Table (formerly
                 React Table, now v8) that provide logic without UI, and{" "}
                 <strong>batteries-included</strong> solutions like Simple Table that come with
-                everything out of the box.
+                everything out of the box. TanStack Table is React-first; Simple Table ships the same
+                ready-to-use grid through official adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT}.
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
@@ -1102,7 +1115,7 @@ export function SimpleTableExample({ data, columns }) {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the UI busywork. Start with Simple Table's FREE tier."
-        description="Get a production-ready table in hours, not weeks. Built-in virtualization, sorting, filtering, grouping, and themes—all in 28KB. FREE tier includes all core features. Optional PRO ($85/mo) for priority support. Save ~$7,600 in dev time per project vs building on TanStack from scratch."
+        description={`Get a production-ready table in hours, not weeks. Built-in virtualization, sorting, filtering, grouping, and themes. FREE tier includes all core features. Optional PRO ($85/mo) for priority support. Save ~$7,600 in dev time per project vs building on TanStack from scratch. Official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "Start Free",
           href: "/docs/installation",

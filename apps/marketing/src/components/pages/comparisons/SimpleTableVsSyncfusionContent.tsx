@@ -99,7 +99,7 @@ const SimpleVsSyncfusion = () => {
   return (
     <ComparisonLayout
       title="Simple Table vs. Syncfusion DataGrid"
-      subtitle="A comprehensive comparison of two React data grid solutions"
+      subtitle="Syncfusion's suite-bound grid vs. Simple Table's standalone multi-framework data grid"
       introText={introText}
       competitorName="Syncfusion DataGrid"
       competitorPackage="syncfusion"

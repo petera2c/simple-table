@@ -18,6 +18,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, REACT_TABLE_LIBRARY_INFO } from "@/constants/packageInfo";
 import Link from "next/link";
 
@@ -69,6 +70,17 @@ export default function ReactTableLibraryVsSimpleTablePage() {
           Emotion CSS-in-JS). Simple Table delivers built-in features with zero dependencies in
           42KB. This comparison helps you choose between headless flexibility and integrated
           convenience.
+        </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
         </p>
       </section>
 
@@ -958,7 +970,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features without the complexity"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} with zero dependencies. No CSS-in-JS required, no plugins to wire—just enable features via props and start building.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} with zero dependencies. No CSS-in-JS required, no plugins to wire—just enable features via props and start building. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

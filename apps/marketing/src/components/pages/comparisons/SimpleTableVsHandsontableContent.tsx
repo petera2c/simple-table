@@ -141,7 +141,7 @@ const SimpleTableVsHandsontableContent = () => {
   return (
     <ComparisonLayout
       title="Simple Table vs. Handsontable"
-      subtitle="A comprehensive comparison of React data grid solutions for spreadsheet-like functionality"
+      subtitle="Spreadsheet-style grids: Handsontable vs. Simple Table's multi-framework data grid"
       introText={introText}
       competitorName="Handsontable"
       competitorPackage="handsontable"

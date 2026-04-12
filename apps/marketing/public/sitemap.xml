@@ -491,6 +491,41 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.simple-table.com/frameworks</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/frameworks/angular</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/frameworks/react</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/frameworks/solid</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/frameworks/svelte</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/frameworks/vanilla</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/frameworks/vue</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.simple-table.com/legal/eula</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

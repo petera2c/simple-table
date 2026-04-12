@@ -68,15 +68,6 @@ customTheme={{
 }}`,
   },
   {
-    key: "allowAnimations",
-    name: "allowAnimations",
-    required: false,
-    description:
-      "Beta feature! This feature is not yet fully tested and may not work as expected. Use at your own risk. Flag for allowing animations throughout the table.",
-    type: "boolean",
-    example: `allowAnimations={true}`,
-  },
-  {
     key: "cellUpdateFlash",
     name: "cellUpdateFlash",
     required: false,

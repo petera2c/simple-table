@@ -18,6 +18,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, MANTINE_DATATABLE_INFO } from "@/constants/packageInfo";
 import Link from "next/link";
 
@@ -74,6 +75,17 @@ export default function MantineDatatableVsSimpleTablePage() {
           Both are MIT licensed—but which fits your project? This comparison covers bundle size,
           Mantine dependencies, and real-world use cases.
         </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
+        </p>
       </section>
 
       {/* Main Content */}
@@ -98,9 +110,10 @@ export default function MantineDatatableVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> is a standalone React data grid with zero dependencies
-                on any UI framework. It's framework-agnostic, lighter, and highly performant. You
-                get all the features without committing to Mantine UI or any design system. If
+                <strong>Simple Table</strong> has zero dependency on Mantine and official adapters
+                for {SIMPLE_TABLE_FRAMEWORKS_SHORT}. This article compares the React story; the same
+                product is available for Vue, Angular, and other stacks. You get advanced features
+                without committing to Mantine UI. If
                 you're evaluating alternatives,{" "}
                 <Link
                   href="/blog/ag-grid-alternatives-free-react-data-grids"
@@ -892,7 +905,7 @@ export default function MantineDatatableVsSimpleTablePage() {
               </div>
 
               <p className="text-gray-700 dark:text-gray-300">
-                For standalone React apps, mobile-first products, or teams avoiding design system
+                For React apps without Mantine, mobile-first products, or teams avoiding design system
                 lock-in, Simple Table's lightweight approach wins. For Mantine UI apps where
                 consistency trumps bundle size, Mantine DataTable is excellent. Both are MIT
                 licensed and production-ready—choose based on your constraints, not arbitrary
@@ -945,7 +958,7 @@ export default function MantineDatatableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Build React tables without Mantine UI overhead"
-        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—4× smaller than Mantine DataTable with dependencies. Get sorting, filtering, pagination, grouping, virtualization, and more without locking into Mantine UI.`}
+        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—4× smaller than Mantine DataTable with dependencies. Get sorting, filtering, pagination, grouping, virtualization, and more without locking into Mantine UI. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

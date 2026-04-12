@@ -17,6 +17,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, ANT_DESIGN_TABLE_INFO } from "@/constants/packageInfo";
 import Link from "next/link";
 
@@ -72,6 +73,17 @@ export default function AntDesignTableVsSimpleTablePage() {
           is a standalone, lightweight grid. Which should you choose? This comparison breaks down
           bundle size, features, and when to use each.
         </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
+        </p>
       </section>
 
       {/* Main Content */}
@@ -96,10 +108,10 @@ export default function AntDesignTableVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> is a standalone, lightweight React data grid with no
-                dependencies on design systems. It's built specifically for React, highly
-                performant, and gives you complete control over styling while keeping your bundle
-                small.
+                <strong>Simple Table</strong> is a lightweight data grid with official adapters for{" "}
+                {SIMPLE_TABLE_FRAMEWORKS_SHORT} and no dependency on Ant Design or other design
+                systems. This article compares the React path (@simple-table/react); the same
+                features are available on other stacks.
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
@@ -393,7 +405,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                   >
                     row grouping
                   </Link>
-                  . Simple Table is a standalone React library with more comprehensive features
+                  . Simple Table ships a multi-framework core with more comprehensive features
                   built-in, at 1/4 the bundle size. See the{" "}
                   <Link
                     href="/comparisons/simple-table-vs-ant-design"
@@ -739,8 +751,9 @@ export default function AntDesignTableVsSimpleTablePage() {
               </div>
 
               <p className="text-gray-700 dark:text-gray-300">
-                For most standalone React apps (especially customer-facing or mobile-first), Simple
-                Table's lightweight approach and zero dependencies make it the practical choice. For
+                For most React apps without Ant Design (especially customer-facing or mobile-first),
+                Simple Table's lightweight approach and zero UI-framework dependencies make it the
+                practical choice. For
                 Ant Design apps, stick with the ecosystem for consistency. Both libraries will serve
                 you well within their intended contexts.
               </p>
@@ -752,7 +765,7 @@ export default function AntDesignTableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Build lightweight, feature-rich tables without design system overhead"
-        description="Simple Table delivers complete data grid functionality in just 24KB—3× smaller than Ant Design Table with dependencies. Get sorting, filtering, pagination, grouping, and more without compromising on features."
+        description={`Simple Table delivers complete data grid functionality in just 24KB—3× smaller than Ant Design Table with dependencies. Get sorting, filtering, pagination, grouping, and more without compromising on features. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

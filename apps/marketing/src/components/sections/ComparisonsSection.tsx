@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 
 export default function ComparisonsSection() {
   return (
@@ -19,7 +20,8 @@ export default function ComparisonsSection() {
 
       <p className="text-lg text-center text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto">
         See how Simple Table stacks up against other popular data grid solutions. We're the
-        lightweight, free alternative to expensive enterprise solutions.
+        lightweight, free alternative to expensive enterprise solutions, with official adapters for{" "}
+        {SIMPLE_TABLE_FRAMEWORKS_SHORT}.
       </p>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

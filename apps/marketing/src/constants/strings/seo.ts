@@ -30,6 +30,7 @@ import {
   kendoreactGridVsSimpleTablePost,
   smartGridVsSimpleTablePost,
 } from "@/constants/blogPosts";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import {
   SIMPLE_TABLE_INFO,
   TANSTACK_TABLE_INFO,
@@ -636,8 +637,7 @@ export const SEO_STRINGS = {
     },
     antDesignTableVsSimpleTable: {
       title: "Ant Design Table vs Simple Table: Component Library vs Lightweight Grid",
-      description:
-        "Ant Design Table comes with the Ant Design ecosystem. Simple Table is standalone and lightweight. Compare bundle size, features, styling flexibility, and when to use each for your React app.",
+      description: `Ant Design Table comes with the Ant Design ecosystem. Simple Table is standalone and lightweight with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare bundle size, features, styling flexibility, and when to use each for your React app.`,
       keywords: [
         "ant design table",
         "antd table",
@@ -1193,19 +1193,19 @@ export const SEO_STRINGS = {
     },
     materialReact: {
       title: "Simple Table vs Material React Table: Data Grid Comparison",
-      description: `Compare Simple Table (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with Material React Table (${MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip}). Simple Table works across 6 frameworks while Material React Table is React-only. See feature differences, performance metrics, and bundle size.`,
+      description: `Compare Simple Table (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with Material React Table (${MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip}). Simple Table ships adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}; Material React Table targets the React + MUI stack. See feature differences, performance metrics, and bundle size.`,
       keywords:
         "simple-table, material-react-table, material-ui, mui-table, data-grid, datagrid, data table, grid comparison, tanstack table, typescript table, performance comparison, javascript data grid, multi-framework data grid",
     },
     antDesign: {
       title: "Ant Design Table Alternative: Simple Table vs Ant Design 2025",
-      description: `Compare Simple Table (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with Ant Design Table (${ANT_DESIGN_TABLE_INFO.bundleSizeMinGzip}). Simple Table works across 6 frameworks vs Ant Design's React-only approach. Lightweight standalone grid vs full component library.`,
+      description: `Compare Simple Table (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with Ant Design Table (${ANT_DESIGN_TABLE_INFO.bundleSizeMinGzip}). Simple Table ships adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}; Ant Design Table is built for the Ant Design + React ecosystem. Lightweight standalone grid vs full component library.`,
       keywords:
         "ant design table alternative, antd table alternative, ant design alternative, simple-table, ant-design, antd-table, data-grid, datagrid, data table, grid comparison, lightweight grid, component library, typescript table, performance comparison, javascript data grid",
     },
     syncfusion: {
       title: "Simple Table vs Syncfusion DataGrid: Data Grid Comparison",
-      description: `Compare Simple Table (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with Syncfusion DataGrid (${SYNCFUSION_GRID_INFO.bundleSizeMinGzip}). See feature differences, performance metrics, and pricing. Free vs Commercial data grid comparison with enterprise features.`,
+      description: `Compare Simple Table (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with Syncfusion DataGrid (${SYNCFUSION_GRID_INFO.bundleSizeMinGzip}). Simple Table supports ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. See feature differences, performance metrics, and pricing. Free vs Commercial data grid comparison with enterprise features.`,
       keywords:
         "simple-table, syncfusion, syncfusion-datagrid, data-grid, datagrid, data table, grid comparison, free grid, commercial grid, typescript table, performance comparison, enterprise grid, javascript data grid",
     },

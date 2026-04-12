@@ -1,3 +1,5 @@
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
+
 export interface BlogPostMetadata {
   title: string;
   description: string;
@@ -161,8 +163,7 @@ export const agGridPricing2026Post: BlogPostMetadata = {
 
 export const tanstackVsSimpleTablePost: BlogPostMetadata = {
   title: "TanStack Table vs Simple Table: When to Choose Headless vs Batteries-Included",
-  description:
-    "Should you build your own UI with TanStack Table or get started instantly with Simple Table? Real code comparisons, bundle sizes, and decision criteria for headless vs batteries-included approaches.",
+  description: `Should you build your own UI with TanStack Table or get started instantly with Simple Table? Real code comparisons, bundle sizes, and decision criteria for headless vs batteries-included approaches. Simple Table ships official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
   slug: "tanstack-table-vs-simple-table-headless-batteries-included",
   tags: ["react", "comparison", "tanstack-table", "architecture"],
   createdAt: "2025-11-22",
@@ -211,8 +212,7 @@ export const reactGridFilteringPost: BlogPostMetadata = {
 
 export const antDesignTableVsSimpleTablePost: BlogPostMetadata = {
   title: "Ant Design Table vs Simple Table: Component Library vs Lightweight Grid",
-  description:
-    "Ant Design Table comes with the Ant Design ecosystem. Simple Table is standalone and lightweight. Compare bundle size, features, styling flexibility, and when to use each for your React app.",
+  description: `Ant Design Table comes with the Ant Design ecosystem. Simple Table is standalone and lightweight with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare bundle size, features, styling flexibility, and when to use each for your React app.`,
   slug: "ant-design-table-vs-simple-table",
   tags: ["react", "comparison", "ant-design", "component-library"],
   createdAt: "2025-12-01",
@@ -231,8 +231,7 @@ export const reactTreeDataHierarchicalPost: BlogPostMetadata = {
 
 export const materialReactTableVsSimpleTablePost: BlogPostMetadata = {
   title: "Material React Table vs Simple Table: Material-UI Integration vs Lightweight Grid",
-  description:
-    "Compare Material React Table (MRT) with Simple Table. Analyze bundle size, Material-UI integration, TanStack Table foundation, and when to use each React data grid for your project.",
+  description: `Compare Material React Table (MRT) with Simple Table. Analyze bundle size, Material-UI integration, TanStack Table foundation, and when to use each in React. Simple Table also ships adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
   slug: "material-react-table-vs-simple-table",
   tags: ["react", "comparison", "material-ui", "material-react-table"],
   createdAt: "2025-12-14",
@@ -311,8 +310,7 @@ export const tabulatorAlternativesReact2026Post: BlogPostMetadata = {
 
 export const kaTableVsSimpleTablePost: BlogPostMetadata = {
   title: "ka-table vs Simple Table: Controlled State Management vs Batteries-Included Grid",
-  description:
-    "Compare ka-table's Redux-inspired controlled approach with Simple Table's batteries-included design. Detailed analysis of bundle size, features, state management patterns, and when to use each for your React app.",
+  description: `Compare ka-table's Redux-inspired controlled approach with Simple Table's batteries-included design. Detailed analysis of bundle size, features, state management patterns, and when to use each for React. Simple Table ships official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
   slug: "ka-table-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "ka-table"],
   createdAt: "2026-02-05",
@@ -321,8 +319,7 @@ export const kaTableVsSimpleTablePost: BlogPostMetadata = {
 
 export const mantineDatatableVsSimpleTablePost: BlogPostMetadata = {
   title: "Mantine DataTable vs Simple Table: Mantine UI Integration vs Standalone Grid",
-  description:
-    "Mantine DataTable brings beautiful Mantine UI styling with 95KB overhead. Simple Table is standalone at 42KB. Compare features, Mantine dependencies, customization, and when each fits your React project.",
+  description: `Mantine DataTable brings beautiful Mantine UI styling with 95KB overhead. Simple Table is standalone at 42KB with adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare features, Mantine dependencies, customization, and when each fits your React project.`,
   slug: "mantine-datatable-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "mantine"],
   createdAt: "2026-02-05",
@@ -331,8 +328,7 @@ export const mantineDatatableVsSimpleTablePost: BlogPostMetadata = {
 
 export const muiDatatablesVsSimpleTablePost: BlogPostMetadata = {
   title: "MUI-Datatables vs Simple Table: Material-UI v4 Legacy vs Modern Standalone Grid",
-  description:
-    "MUI-Datatables is a mature Material-UI table component with 88KB footprint but hasn't been updated in 3 years. Simple Table is actively maintained at 42KB. Compare features, maintenance status, and migration paths.",
+  description: `MUI-Datatables is a mature Material-UI table component with 88KB footprint but hasn't been updated in 3 years. Simple Table is actively maintained at 42KB with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare features, maintenance status, and migration paths.`,
   slug: "mui-datatables-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "material-ui"],
   createdAt: "2026-02-05",
@@ -341,8 +337,7 @@ export const muiDatatablesVsSimpleTablePost: BlogPostMetadata = {
 
 export const reactDataTableComponentVsSimpleTablePost: BlogPostMetadata = {
   title: "React Data Table Component vs Simple Table: Simplicity vs Advanced Features",
-  description:
-    "React Data Table Component offers straightforward table basics in 94KB. Simple Table delivers advanced features like virtualization, grouping, and pinning in 42KB. Compare simplicity vs power for your React data grid needs.",
+  description: `React Data Table Component offers straightforward table basics in 94KB. Simple Table delivers advanced features like virtualization, grouping, and pinning in 42KB. Compare simplicity vs power for React; Simple Table also ships ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
   slug: "react-data-table-component-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "data-table"],
   createdAt: "2026-02-05",
@@ -351,8 +346,7 @@ export const reactDataTableComponentVsSimpleTablePost: BlogPostMetadata = {
 
 export const reactTableLibraryVsSimpleTablePost: BlogPostMetadata = {
   title: "React Table Library vs Simple Table: Headless Composability vs Batteries-Included Grid",
-  description:
-    "React Table Library (by Robin Wieruch) offers plugin-based composability in 28KB + Emotion. Simple Table delivers built-in features with zero dependencies in 42KB. Compare headless flexibility vs integrated features.",
+  description: `React Table Library (by Robin Wieruch) offers plugin-based composability in 28KB + Emotion. Simple Table delivers built-in features with zero dependencies in 42KB. Compare headless flexibility vs integrated features. Simple Table ships official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
   slug: "react-table-library-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "headless"],
   createdAt: "2026-02-05",
@@ -361,8 +355,7 @@ export const reactTableLibraryVsSimpleTablePost: BlogPostMetadata = {
 
 export const rsuiteTableVsSimpleTablePost: BlogPostMetadata = {
   title: "RSuite Table vs Simple Table: Enterprise UI Suite vs Standalone Grid",
-  description:
-    "RSuite Table is part of the RSuite design system with 102KB overhead. Simple Table is framework-agnostic at 42KB. Compare UI library integration vs standalone flexibility for React data grids.",
+  description: `RSuite Table is part of the RSuite design system with 102KB overhead. Simple Table is lightweight at 42KB with first-class adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare UI library integration vs standalone flexibility for React data grids.`,
   slug: "rsuite-table-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "ui-library"],
   createdAt: "2026-02-05",
@@ -371,8 +364,7 @@ export const rsuiteTableVsSimpleTablePost: BlogPostMetadata = {
 
 export const devextremeGridVsSimpleTablePost: BlogPostMetadata = {
   title: "DevExtreme React Grid vs Simple Table: $899/year Enterprise vs Free Open-Source",
-  description:
-    "DevExtreme React Grid costs $899/year with 80+ premium components. Simple Table is free (MIT) at 42KB with zero dependencies. Compare commercial enterprise features vs open-source flexibility.",
+  description: `DevExtreme React Grid costs $899/year with 80+ premium components. Simple Table is free (MIT) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial enterprise features vs open-source flexibility.`,
   slug: "devextreme-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "commercial", "pricing"],
   createdAt: "2026-02-05",
@@ -381,8 +373,7 @@ export const devextremeGridVsSimpleTablePost: BlogPostMetadata = {
 
 export const kendoreactGridVsSimpleTablePost: BlogPostMetadata = {
   title: "KendoReact Grid vs Simple Table: $649/year Premium vs Free Open-Source",
-  description:
-    "KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ components. Simple Table is free (MIT) at 42KB. Compare commercial licensing vs open-source freedom for React data grids.",
+  description: `KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ components. Simple Table is free (MIT) at 42KB with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial licensing vs open-source freedom for React data grids.`,
   slug: "kendoreact-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "commercial", "pricing"],
   createdAt: "2026-02-05",
@@ -391,8 +382,7 @@ export const kendoreactGridVsSimpleTablePost: BlogPostMetadata = {
 
 export const smartGridVsSimpleTablePost: BlogPostMetadata = {
   title: "Smart React Grid vs Simple Table: $399 Commercial vs Free Open-Source",
-  description:
-    "Smart React Grid (HTML Elements) costs $399-$1,499 with enterprise features. Simple Table is free (MIT) at 42KB with zero dependencies. Compare commercial vs open-source React data grids.",
+  description: `Smart React Grid (HTML Elements) costs $399-$1,499 with enterprise features. Simple Table is free (MIT) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial vs open-source React data grids.`,
   slug: "smart-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "commercial", "pricing"],
   createdAt: "2026-02-05",

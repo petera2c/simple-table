@@ -2,6 +2,7 @@
 import React from "react";
 import { Typography } from "antd";
 import ComparisonLayout from "../../ComparisonLayout";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, ANT_DESIGN_TABLE_INFO } from "@/constants/packageInfo";
 
 const { Text, Link } = Typography;
@@ -38,7 +39,8 @@ const SimpleTableVsAntDesignContent = () => {
       the choice isn't just about file size—it's about architectural decisions that affect your
       entire application's performance, from initial load times to runtime memory usage. This
       comparison examines whether you can achieve both design consistency AND performance by
-      choosing Simple Table, even within Ant Design projects. We'll explore styling strategies,
+      choosing Simple Table (official adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT}), even within Ant
+      Design projects. We'll explore styling strategies,
       bundle optimization techniques, and help you determine whether Ant Design Table's framework
       integration justifies its massive overhead for your specific use case.
     </>
@@ -50,9 +52,9 @@ const SimpleTableVsAntDesignContent = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight, standalone data grid that provides essential features with minimal
-        overhead. It's ideal for projects that need a performant table component without the weight
-        of a full UI framework. With its{" "}
+        is a lightweight data grid with official adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT},
+        sharing one core engine. It's ideal for projects that need a performant table component
+        without the weight of a full UI framework. With its{" "}
         <Link
           className="text-[length:inherit]"
           href={SIMPLE_TABLE_INFO.bundlePhobiaUrl}
@@ -92,7 +94,7 @@ const SimpleTableVsAntDesignContent = () => {
   return (
     <ComparisonLayout
       title="Simple Table vs. Ant Design Table"
-      subtitle="A comprehensive comparison of lightweight vs full-featured React data grid solutions"
+      subtitle="Ant Design Table (React ecosystem) vs. Simple Table with multi-framework adapters"
       introText={introText}
       competitorName="Ant Design Table"
       competitorPackage="antDesign"

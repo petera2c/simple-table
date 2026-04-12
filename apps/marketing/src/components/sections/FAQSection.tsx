@@ -22,6 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, AG_GRID_TOTAL_SIZE } from "@/constants/packageInfo";
 import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
 import ExampleLink from "@/components/ExampleLink";
@@ -215,7 +216,7 @@ export default function FAQSection() {
               {
                 icon: faPuzzlePiece,
                 question: "What about Material-UI or Ant Design tables?",
-                answer: `Simple Table offers significantly more features than MUI or Ant Design's basic tables (column pinning, row grouping, inline editing, advanced filtering). Unlike those React-only solutions, Simple Table works across React, Vue, Angular, Svelte, Solid, and vanilla TypeScript — you're not locked into a single ecosystem. Plus, our ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} bundle won't add the overhead of entire UI libraries.`,
+                answer: `Simple Table offers significantly more features than MUI or Ant Design's basic tables (column pinning, row grouping, inline editing, advanced filtering). Official adapters cover ${SIMPLE_TABLE_FRAMEWORKS_SHORT}, so the same grid can land in more than one frontend stack. Plus, our ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} bundle won't add the overhead of entire UI libraries.`,
               },
               {
                 icon: faRocket,

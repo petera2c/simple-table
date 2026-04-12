@@ -9,6 +9,7 @@ import {
   useCallback,
   useMemo,
 } from "react";
+import { trackFrameworkSelection } from "@/lib/analytics";
 
 export const FRAMEWORKS = ["react", "vue", "angular", "svelte", "solid", "vanilla"] as const;
 export type Framework = (typeof FRAMEWORKS)[number];
@@ -50,7 +51,12 @@ export const FrameworkProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const setFramework = useCallback((fw: Framework) => {
-    setFrameworkState(fw);
+    setFrameworkState((prev) => {
+      if (prev !== fw) {
+        trackFrameworkSelection(fw);
+      }
+      return fw;
+    });
     localStorage.setItem(STORAGE_KEY, fw);
   }, []);
 

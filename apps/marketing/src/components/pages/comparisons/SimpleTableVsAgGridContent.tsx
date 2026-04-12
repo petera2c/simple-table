@@ -153,7 +153,7 @@ const SimpleVsAgGrid = () => {
   return (
     <ComparisonLayout
       title="Simple Table vs. AG Grid"
-      subtitle="A comprehensive comparison of two popular React data grid solutions"
+      subtitle="AG Grid's enterprise React story vs. Simple Table's multi-framework adapters and shared core"
       introText={introText}
       competitorName="AG Grid"
       competitorPackage="agGrid"

@@ -18,6 +18,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, RSUITE_TABLE_INFO } from "@/constants/packageInfo";
 import Link from "next/link";
 
@@ -68,6 +69,16 @@ export default function RsuiteTableVsSimpleTablePage() {
           RSuite Table is part of the RSuite enterprise UI library with 102KB overhead and design
           system integration. Simple Table is framework-agnostic at 42KB. This comparison helps you
           choose between UI suite consistency and standalone flexibility.
+        </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          Official adapters cover {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
         </p>
       </section>
 
@@ -995,7 +1006,7 @@ export default function RsuiteTableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features without the ecosystem lock-in"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—2.4× smaller than RSuite Table. Zero dependencies, works with any design system, no framework commitment required.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—2.4× smaller than RSuite Table. Zero dependencies on RSuite; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

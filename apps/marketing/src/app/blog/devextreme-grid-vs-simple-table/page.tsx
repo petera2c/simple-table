@@ -18,6 +18,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, DEVEXTREME_GRID_INFO } from "@/constants/packageInfo";
 import { SIMPLE_TABLE_ANNUAL_COST_RANGE, SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import Link from "next/link";
@@ -69,6 +70,17 @@ export default function DevExtremeGridVsSimpleTablePage() {
           DevExtreme React Grid (by DevExpress) costs $899/year with 80+ premium components and
           enterprise support. Simple Table is free (MIT) at 42KB with zero dependencies. This
           comparison helps you decide if premium features justify the annual cost.
+        </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
         </p>
       </section>
 
@@ -965,7 +977,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features without enterprise pricing"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for zero-revenue companies, or $850/year for commercial use. Save $11,937+ over 3 years vs DevExtreme while keeping open-source freedom.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for zero-revenue companies, or $850/year for commercial use. Save $11,937+ over 3 years vs DevExtreme while keeping open-source freedom. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

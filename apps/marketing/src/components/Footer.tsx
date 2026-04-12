@@ -46,6 +46,16 @@ export default function Footer() {
                     Quick Start
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/frameworks"
+                    className={`text-gray-400 hover:text-white transition-colors ${
+                      isActive("/frameworks") ? "text-white font-medium" : ""
+                    }`}
+                  >
+                    Framework setup (Vue, Angular, …)
+                  </Link>
+                </li>
               </ul>
             </div>
 

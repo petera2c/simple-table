@@ -15,6 +15,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, MUI_DATATABLES_INFO } from "@/constants/packageInfo";
 import Link from "next/link";
 
@@ -71,6 +72,17 @@ export default function MuiDatatablesVsSimpleTablePage() {
           maintained, modern, and standalone. This comparison helps you understand the risks and
           migration paths.
         </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
+        </p>
       </section>
 
       {/* Main Content */}
@@ -108,9 +120,10 @@ export default function MuiDatatablesVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> is a standalone React data grid with zero dependencies
-                on any UI framework. It's actively maintained, works with any React version, and has
-                all modern features. If you're evaluating alternatives,{" "}
+                <strong>Simple Table</strong> is actively maintained with zero dependency on
+                Material-UI and official adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT}. This guide
+                compares the React integration; the same grid ships for Vue, Angular, and more. If
+                you're evaluating alternatives,{" "}
                 <Link
                   href="/blog/ag-grid-alternatives-free-react-data-grids"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
@@ -852,7 +865,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Choose actively maintained React tables"
-        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—2× smaller than MUI-Datatables. Get sorting, filtering, pagination, grouping, virtualization, and more with active maintenance, security updates, and modern React 18+ support. No Material-UI dependency required.`}
+        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—2× smaller than MUI-Datatables. Get sorting, filtering, pagination, grouping, virtualization, and more with active maintenance and security updates. No Material-UI dependency; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

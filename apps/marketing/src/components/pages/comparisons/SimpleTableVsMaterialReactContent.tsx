@@ -2,6 +2,7 @@
 import React from "react";
 import { Typography } from "antd";
 import ComparisonLayout from "../../ComparisonLayout";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, MATERIAL_REACT_TABLE_INFO } from "@/constants/packageInfo";
 
 const { Text, Link } = Typography;
@@ -39,9 +40,9 @@ const SimpleTableVsMaterialReactContent = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight, standalone data grid that provides essential features with minimal
-        overhead. It's ideal for projects that need a performant table component without the weight
-        of a full UI framework. With its{" "}
+        is a lightweight data grid with official adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT},
+        sharing one core engine. It's ideal for projects that need a performant table component
+        without the weight of a full UI framework. With its{" "}
         <Link
           className="text-[length:inherit]"
           href={SIMPLE_TABLE_INFO.bundlePhobiaUrl}

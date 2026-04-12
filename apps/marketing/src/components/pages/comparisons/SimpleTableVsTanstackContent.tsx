@@ -3,6 +3,7 @@ import React from "react";
 import { Typography } from "antd";
 import NextLink from "next/link";
 import ComparisonLayout from "../../ComparisonLayout";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, TANSTACK_TABLE_INFO } from "@/constants/packageInfo";
 
 const { Text, Link } = Typography;
@@ -10,21 +11,21 @@ const { Text, Link } = Typography;
 const SimpleTableVsTanstackContent = () => {
   const introText = (
     <>
-      The React table ecosystem offers two distinct philosophies: ready-to-use components versus
-      headless libraries that provide logic without UI. This fundamental choice affects everything
-      from development speed to long-term maintenance. Many developers start their projects by
-      evaluating{" "}
+      When you need a data grid in React, two philosophies dominate: ready-to-use components versus
+      headless libraries that provide logic without UI. TanStack Table is React-first;{" "}
+      <Text className="text-lg text-inherit" strong>
+        Simple Table
+      </Text>{" "}
+      ships the same batteries-included grid via official adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT}
+      . This fundamental choice affects everything from development speed to long-term maintenance.
+      Many developers start their projects by evaluating{" "}
       <Text className="text-lg text-inherit" strong>
         TanStack Table (React Table)
       </Text>{" "}
       (formerly known as React Table, now at v8), the most popular headless table library, which
       provides powerful hooks and utilities but requires you to build every UI component from
-      scratch. On the other side,{" "}
-      <Text className="text-lg text-inherit" strong>
-        Simple Table
-      </Text>{" "}
-      offers a complete, production-ready solution that gets you from zero to functional data grid
-      in minutes rather than weeks. This comparison examines both approaches: the flexibility and
+      scratch. It offers a complete, production-ready solution that gets you from zero to functional
+      data grid in minutes rather than weeks. This comparison examines both approaches: the flexibility and
       control of building everything yourself versus the speed and convenience of a
       batteries-included solution. We'll help you determine which approach aligns better with your
       project timeline, team expertise, and design requirements. For a deeper dive, read our{" "}
@@ -44,9 +45,9 @@ const SimpleTableVsTanstackContent = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        provides a complete solution with pre-built UI components, ready to use out of the box. It's
-        ideal for projects that need a functional data grid quickly without building UI components
-        from scratch. With a small bundle size (
+        provides a complete solution with pre-built UI components, ready to use out of the box across{" "}
+        {SIMPLE_TABLE_FRAMEWORKS_SHORT}. It's ideal for projects that need a functional data grid
+        quickly without building UI components from scratch. With a small bundle size (
         <Link
           className="text-[length:inherit]"
           href={SIMPLE_TABLE_INFO.bundlePhobiaUrl}
@@ -116,7 +117,7 @@ const SimpleTableVsTanstackContent = () => {
   return (
     <ComparisonLayout
       title="Simple Table vs. TanStack Table"
-      subtitle="Ready-to-use solution vs. headless library approach"
+      subtitle="Batteries-included multi-framework grid vs. TanStack's headless React-first library"
       introText={introText}
       competitorName="TanStack Table"
       competitorPackage="tanstack"

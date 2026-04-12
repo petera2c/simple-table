@@ -18,6 +18,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, KA_TABLE_INFO } from "@/constants/packageInfo";
 import Link from "next/link";
 
@@ -73,6 +74,17 @@ export default function KaTableVsSimpleTablePage() {
           Simple Table offers batteries-included functionality with minimal setup. Both are MIT
           licensed and free—but they serve different developer philosophies. This comparison helps
           you choose the right fit.
+        </p>
+        <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
+          <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
+          {SIMPLE_TABLE_FRAMEWORKS_SHORT}.{" "}
+          <Link
+            href="/frameworks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Framework setup hub
+          </Link>
+          .
         </p>
       </section>
 
@@ -907,8 +919,9 @@ export default function KaTableVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                Both ka-table and Simple Table are excellent, MIT-licensed React table libraries
-                with zero dependencies. The choice comes down to your{" "}
+                Both ka-table and Simple Table are excellent, MIT-licensed options for React tables.
+                Simple Table ships the same core with official adapters for{" "}
+                {SIMPLE_TABLE_FRAMEWORKS_SHORT}. The choice comes down to your{" "}
                 <strong>state management philosophy</strong>:
               </p>
 
@@ -1006,7 +1019,7 @@ export default function KaTableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Build React tables without reducer boilerplate"
-        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—30% smaller than ka-table. Get sorting, filtering, pagination, grouping, virtualization, and more with a pragmatic, batteries-included API. No Redux patterns required.`}
+        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—30% smaller than ka-table. Get sorting, filtering, pagination, grouping, virtualization, and more with a pragmatic, batteries-included API. No Redux patterns required. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

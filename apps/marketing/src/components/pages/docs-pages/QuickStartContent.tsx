@@ -6,7 +6,11 @@ import { faRocket } from "@fortawesome/free-solid-svg-icons";
 import QuickStartDemo from "@/components/demos/QuickStartDemo";
 import PageWrapper from "@/components/PageWrapper";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
+import CodeBlock from "@/components/CodeBlock";
+import Link from "next/link";
 import { UI_STRINGS } from "@/constants/strings/ui";
+import { FRAMEWORK_INSTALL_COMMANDS } from "@/constants/strings/technical";
+import { useFramework } from "@/providers/FrameworkProvider";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 
@@ -102,6 +106,9 @@ height="100%"`,
 ];
 
 const QuickStartContent = () => {
+  const { framework } = useFramework();
+  const installCommands = FRAMEWORK_INSTALL_COMMANDS[framework];
+
   return (
     <PageWrapper>
       <motion.div
@@ -125,6 +132,28 @@ const QuickStartContent = () => {
         This guide will help you quickly set up Simple Table in your project. In just a few minutes,
         you'll have a fully functional data table.
       </motion.p>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+      >
+        Install
+      </motion.h2>
+      <motion.p
+        className="text-gray-700 dark:text-gray-300 mb-3 text-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.18 }}
+      >
+        Full install options (yarn, pnpm) are on the{" "}
+        <Link href="/docs/installation" className="text-blue-600 dark:text-blue-400 hover:underline">
+          Installation
+        </Link>{" "}
+        page.
+      </motion.p>
+      <CodeBlock className="mb-6" code={installCommands.npm} language="bash" />
 
       <motion.div
         className="mb-4"
