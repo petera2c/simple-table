@@ -324,7 +324,7 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
   height: 100%;
   width: 4px;
 }
-.custom-theme-container.theme-custom-light {
+.custom-theme-container.theme-custom-light .theme-custom {
   --st-border-radius: 4px;
   --st-cell-padding: 12px;
   --st-spacing-small: 6px;
@@ -392,7 +392,7 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
   background-color: oklch(96.7% 0.003 264.542);
 }
 
-.custom-theme-container.theme-custom-dark {
+.custom-theme-container.theme-custom-dark .theme-custom {
   --st-border-radius: 4px;
   --st-cell-padding: 12px;
   --st-spacing-small: 6px;
