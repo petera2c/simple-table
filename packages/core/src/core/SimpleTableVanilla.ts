@@ -717,9 +717,21 @@ export class SimpleTableVanilla {
       customTheme: this.customTheme,
       currentPage: this.currentPage,
       getCurrentPage: () => this.currentPage,
-      expandedRows: this.expandedRows,
-      collapsedRows: this.collapsedRows,
-      expandedDepths: this.expandedDepths,
+      get expandedRows() {
+        return thiz.expandedRows;
+      },
+      get collapsedRows() {
+        return thiz.collapsedRows;
+      },
+      get expandedDepths() {
+        return thiz.expandedDepths;
+      },
+      clearExpandedRows: () => {
+        thiz.expandedRows = new Map();
+      },
+      clearCollapsedRows: () => {
+        thiz.collapsedRows = new Map();
+      },
       rowStateMap: this.rowStateMap,
       headerRegistry: this.headerRegistry,
       cellRegistry: this.cellRegistry,

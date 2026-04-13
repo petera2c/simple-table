@@ -3,15 +3,17 @@
  * Tests for TableAPI (getAPI()) methods: getVisibleRows, getAllRows, getHeaders,
  * getSortState/applySortState, getFilterState/applyFilter/clearFilter,
  * getCurrentPage/setPage, setQuickFilter, toggleColumnEditor/applyColumnVisibility,
- * expandAll/collapseAll/getExpandedDepths.
+ * expandAll/collapseAll/getExpandedDepths, getTotalPages, resetColumns, selection API,
+ * two-level getGroupingProperty/Depth (see tagged exports).
  */
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import type Cell from "../../src/types/Cell";
+import { rowIdToString } from "../../src/utils/rowUtils";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
-import { SimpleTableVanilla } from "../../src/index";
 
 const meta: Meta = {
   title: "Tests/37 - Table Ref Methods",
@@ -433,5 +435,130 @@ export const GetGroupingPropertyAndDepth = {
 
     const depth = api.getGroupingDepth("items");
     expect(depth).toBe(0);
+  },
+};
+
+// ============================================================================
+// GET TOTAL PAGES / RESET COLUMNS / SELECTION API / TWO-LEVEL GROUPING META
+// ============================================================================
+
+export const GetTotalPagesViaAPI = {
+  tags: ["table-api-remaining"],
+  render: () => {
+    const result = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      shouldPaginate: true,
+      rowsPerPage: 2,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const api = getTable(canvasElement).getAPI();
+    expect(api.getCurrentPage()).toBe(1);
+    expect(api.getTotalPages()).toBe(3);
+    await api.setPage(3);
+    await new Promise((r) => setTimeout(r, 120));
+    expect(api.getCurrentPage()).toBe(3);
+    expect(api.getTotalPages()).toBe(3);
+  },
+};
+
+export const ResetColumnsViaAPI = {
+  tags: ["table-api-remaining"],
+  render: () => {
+    const result = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      editColumns: true,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const api = getTable(canvasElement).getAPI();
+    await api.applyColumnVisibility({ name: false });
+    await new Promise((r) => setTimeout(r, 200));
+    expect(canvasElement.querySelector('.st-cell[data-accessor="name"]')).toBeFalsy();
+    api.resetColumns();
+    await new Promise((r) => setTimeout(r, 250));
+    expect(canvasElement.querySelector('.st-cell[data-accessor="name"]')).toBeTruthy();
+  },
+};
+
+export const SelectionViaTableAPI = {
+  tags: ["table-api-remaining"],
+  render: () => {
+    const result = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      selectableCells: true,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const api = getTable(canvasElement).getAPI();
+    const visible = api.getVisibleRows();
+    expect(visible.length).toBeGreaterThanOrEqual(2);
+
+    const start: Cell = {
+      rowIndex: 0,
+      colIndex: 0,
+      rowId: rowIdToString(visible[0].rowId),
+    };
+    api.selectCell(start);
+    await new Promise((r) => setTimeout(r, 150));
+    expect(api.getSelectedCells().size).toBeGreaterThanOrEqual(1);
+
+    const end: Cell = {
+      rowIndex: 1,
+      colIndex: 1,
+      rowId: rowIdToString(visible[1].rowId),
+    };
+    api.selectCellRange(start, end);
+    await new Promise((r) => setTimeout(r, 150));
+    expect(api.getSelectedCells().size).toBeGreaterThan(1);
+
+    api.clearSelection();
+    expect(api.getSelectedCells().size).toBe(0);
+  },
+};
+
+const nestedGroupingHeaders: HeaderObject[] = [
+  { accessor: "label", label: "Label", width: 120, expandable: true, type: "string" },
+  { accessor: "n", label: "N", width: 40, type: "number" },
+];
+const nestedGroupingRows = () => [
+  {
+    id: "r1",
+    label: "Root",
+    kids: [{ id: "k1", label: "Kid", leaves: [{ id: 99, label: "Leaf", n: 1 }] }],
+  },
+];
+
+export const GetGroupingPropertyTwoLevels = {
+  tags: ["table-api-remaining"],
+  render: () => {
+    const result = renderVanillaTable(nestedGroupingHeaders, nestedGroupingRows(), {
+      getRowId: (p) => String((p.row as { id?: string | number })?.id),
+      height: "260px",
+      rowGrouping: ["kids", "leaves"],
+      expandAll: true,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const api = getTable(canvasElement).getAPI();
+    expect(api.getGroupingProperty(0)).toBe("kids");
+    expect(api.getGroupingProperty(1)).toBe("leaves");
+    expect(api.getGroupingDepth("kids")).toBe(0);
+    expect(api.getGroupingDepth("leaves")).toBe(1);
   },
 };

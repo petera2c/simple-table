@@ -29,6 +29,17 @@ const meta: Meta = {
 
 export default meta;
 
+/** Play functions cannot rely on `canvasElement === wrapper`; mirror file 37 pattern. */
+const ROW_GROUP_API_TABLE_STORY_REF_KEY = "__storybook_row_group_api_table";
+type RowGroupStoryTable = InstanceType<typeof SimpleTableVanilla>;
+const getRowGroupApiStoryTable = (): RowGroupStoryTable => {
+  const t = (globalThis as unknown as Record<string, RowGroupStoryTable | undefined>)[
+    ROW_GROUP_API_TABLE_STORY_REF_KEY
+  ];
+  if (!t) throw new Error("Story table ref not set (render must assign global ref)");
+  return t;
+};
+
 // ============================================================================
 // TEST DATA
 // ============================================================================
@@ -495,6 +506,310 @@ export const ProgrammaticDepthControl = {
     await new Promise((r) => setTimeout(r, 500));
     rowCount = getVisibleRowCount(canvasElement);
     expect(rowCount).toBe(3);
+  },
+};
+
+/** Marketing-style: collapse all then expand only depth 0 (divisions-only pattern). */
+export const ApiCollapseAllThenExpandDepth0 = {
+  tags: ["table-api-regression"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Size", width: 100, type: "number" },
+      { accessor: "role", label: "Role", width: 150 },
+    ];
+    const result = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams", "members"],
+      expandAll: true,
+      enableStickyParents: true,
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+    });
+    result.h2.textContent = "API: collapseAll then expandDepth(0) (marketing parity)";
+    (globalThis as unknown as Record<string, RowGroupStoryTable>)[ROW_GROUP_API_TABLE_STORY_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    const api = getRowGroupApiStoryTable().getAPI();
+
+    const fullCount = getVisibleRowCount(canvasElement);
+    expect(fullCount).toBeGreaterThan(3);
+    expect(canvasElement.textContent).toContain("Alice Johnson");
+
+    // Manual icon click to create per-row override before API call
+    await clickExpandIcon(canvasElement, 0);
+    expect(getVisibleRowCount(canvasElement)).toBeLessThan(fullCount);
+
+    api.collapseAll();
+    await new Promise((r) => setTimeout(r, 300));
+    expect(getVisibleRowCount(canvasElement)).toBe(3);
+    expect(canvasElement.textContent).not.toContain("Alice Johnson");
+
+    api.expandDepth(0);
+    await new Promise((r) => setTimeout(r, 300));
+    const mid = getVisibleRowCount(canvasElement);
+    expect(mid).toBeGreaterThan(3);
+    expect(mid).toBeLessThan(fullCount);
+    expect(canvasElement.textContent).toContain("Frontend Team");
+    expect(canvasElement.textContent).not.toContain("Alice Johnson");
+
+    const depths = api.getExpandedDepths();
+    expect(depths.has(0)).toBe(true);
+    expect(depths.has(1)).toBe(false);
+  },
+};
+
+/** Imperative setExpandedDepths must match DOM and getExpandedDepths for two-level grouping. */
+export const ApiSetExpandedDepthsTwoLevels = {
+  tags: ["table-api-regression"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Size", width: 100, type: "number" },
+      { accessor: "role", label: "Role", width: 150 },
+    ];
+    const result = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams", "members"],
+      expandAll: true,
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+    });
+    result.h2.textContent = "API: setExpandedDepths two-level (depth 0 only vs both)";
+    (globalThis as unknown as Record<string, RowGroupStoryTable>)[ROW_GROUP_API_TABLE_STORY_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    const api = getRowGroupApiStoryTable().getAPI();
+
+    const fullCount = getVisibleRowCount(canvasElement);
+    expect(canvasElement.textContent).toContain("Alice Johnson");
+
+    // Manual icon click to create per-row override before API call
+    await clickExpandIcon(canvasElement, 0);
+    expect(getVisibleRowCount(canvasElement)).toBeLessThan(fullCount);
+
+    api.setExpandedDepths(new Set([0]));
+    await new Promise((r) => setTimeout(r, 300));
+    let depths = api.getExpandedDepths();
+    expect([...depths].sort((a, b) => a - b)).toEqual([0]);
+    expect(canvasElement.textContent).not.toContain("Alice Johnson");
+
+    api.setExpandedDepths(new Set([0, 1]));
+    await new Promise((r) => setTimeout(r, 300));
+    depths = api.getExpandedDepths();
+    expect(depths.has(0)).toBe(true);
+    expect(depths.has(1)).toBe(true);
+    expect(canvasElement.textContent).toContain("Alice Johnson");
+
+    api.collapseAll();
+    await new Promise((r) => setTimeout(r, 300));
+    expect(getVisibleRowCount(canvasElement)).toBe(3);
+  },
+};
+
+/** After setExpandedDepths, toggleDepth(0) must not read stale manager state. */
+export const ApiToggleDepthAfterSetExpandedDepths = {
+  tags: ["table-api-regression"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Size", width: 100, type: "number" },
+      { accessor: "role", label: "Role", width: 150 },
+    ];
+    const result = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams", "members"],
+      expandAll: false,
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+    });
+    result.h2.textContent = "API: toggleDepth after setExpandedDepths";
+    (globalThis as unknown as Record<string, RowGroupStoryTable>)[ROW_GROUP_API_TABLE_STORY_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    const api = getRowGroupApiStoryTable().getAPI();
+
+    expect(getVisibleRowCount(canvasElement)).toBe(3);
+
+    // Manually expand first row via icon to create per-row override
+    await clickExpandIcon(canvasElement, 0);
+    expect(getVisibleRowCount(canvasElement)).toBeGreaterThan(3);
+
+    // API setExpandedDepths should override the manual expand
+    api.setExpandedDepths(new Set([0, 1]));
+    await new Promise((r) => setTimeout(r, 350));
+    const expandedCount = getVisibleRowCount(canvasElement);
+    expect(expandedCount).toBeGreaterThan(3);
+    expect(canvasElement.textContent).toContain("Alice Johnson");
+
+    api.toggleDepth(0);
+    await new Promise((r) => setTimeout(r, 350));
+    expect(getVisibleRowCount(canvasElement)).toBe(3);
+    expect(canvasElement.textContent).not.toContain("Alice Johnson");
+
+    api.toggleDepth(0);
+    await new Promise((r) => setTimeout(r, 350));
+    expect(getVisibleRowCount(canvasElement)).toBe(expandedCount);
+    expect(canvasElement.textContent).toContain("Alice Johnson");
+  },
+};
+
+// ============================================================================
+// MIXED: manual icon click THEN API call (catches stale per-row overrides)
+// ============================================================================
+
+/** expandAll must override a previous manual collapse. */
+export const ApiExpandAllAfterManualCollapse = {
+  tags: ["table-api-regression"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Size", width: 100, type: "number" },
+    ];
+    const result = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams"],
+      expandAll: true,
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+    });
+    (globalThis as unknown as Record<string, RowGroupStoryTable>)[ROW_GROUP_API_TABLE_STORY_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    const api = getRowGroupApiStoryTable().getAPI();
+    const fullCount = getVisibleRowCount(canvasElement);
+    expect(fullCount).toBeGreaterThan(3);
+
+    await clickExpandIcon(canvasElement, 0);
+    const afterCollapse = getVisibleRowCount(canvasElement);
+    expect(afterCollapse).toBeLessThan(fullCount);
+
+    api.expandAll();
+    await new Promise((r) => setTimeout(r, 400));
+    expect(getVisibleRowCount(canvasElement)).toBe(fullCount);
+  },
+};
+
+/** collapseAll must override a previous manual expand. */
+export const ApiCollapseAllAfterManualExpand = {
+  tags: ["table-api-regression"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Size", width: 100, type: "number" },
+    ];
+    const result = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams"],
+      expandAll: false,
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+    });
+    (globalThis as unknown as Record<string, RowGroupStoryTable>)[ROW_GROUP_API_TABLE_STORY_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    expect(getVisibleRowCount(canvasElement)).toBe(3);
+
+    await clickExpandIcon(canvasElement, 0);
+    expect(getVisibleRowCount(canvasElement)).toBeGreaterThan(3);
+
+    api_collapseAll();
+    await new Promise((r) => setTimeout(r, 400));
+    expect(getVisibleRowCount(canvasElement)).toBe(3);
+
+    function api_collapseAll() {
+      getRowGroupApiStoryTable().getAPI().collapseAll();
+    }
+  },
+};
+
+/** setExpandedDepths must re-expand a manually collapsed row. */
+export const ApiSetExpandedDepthsAfterManualToggle = {
+  tags: ["table-api-regression"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Size", width: 100, type: "number" },
+      { accessor: "role", label: "Role", width: 150 },
+    ];
+    const result = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams", "members"],
+      expandAll: true,
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+    });
+    (globalThis as unknown as Record<string, RowGroupStoryTable>)[ROW_GROUP_API_TABLE_STORY_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    const fullCount = getVisibleRowCount(canvasElement);
+    expect(fullCount).toBeGreaterThan(3);
+    expect(canvasElement.textContent).toContain("Frontend Team");
+
+    await clickExpandIcon(canvasElement, 0);
+    expect(getVisibleRowCount(canvasElement)).toBeLessThan(fullCount);
+
+    const api = getRowGroupApiStoryTable().getAPI();
+    api.setExpandedDepths(new Set([0, 1]));
+    await new Promise((r) => setTimeout(r, 400));
+    expect(getVisibleRowCount(canvasElement)).toBe(fullCount);
+    expect(canvasElement.textContent).toContain("Frontend Team");
+  },
+};
+
+/** Marketing "Only Divisions" (collapseAll + expandDepth(0)) after manual expand must not leak departments. */
+export const ApiOnlyDivisionsAfterManualExpand = {
+  tags: ["table-api-regression"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 250, expandable: true },
+      { accessor: "budget", label: "Budget", width: 150, type: "number" },
+      { accessor: "size", label: "Size", width: 100, type: "number" },
+      { accessor: "role", label: "Role", width: 150 },
+    ];
+    const result = renderVanillaTable(headers, createGroupedData(), {
+      height: "400px",
+      rowGrouping: ["teams", "members"],
+      expandAll: true,
+      enableStickyParents: true,
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+    });
+    (globalThis as unknown as Record<string, RowGroupStoryTable>)[ROW_GROUP_API_TABLE_STORY_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+    expect(canvasElement.textContent).toContain("Alice Johnson");
+
+    await clickExpandIcon(canvasElement, 0);
+
+    const api = getRowGroupApiStoryTable().getAPI();
+    api.collapseAll();
+    api.expandDepth(0);
+    await new Promise((r) => setTimeout(r, 400));
+    const mid = getVisibleRowCount(canvasElement);
+    expect(mid).toBeGreaterThan(3);
+    expect(canvasElement.textContent).toContain("Frontend Team");
+    expect(canvasElement.textContent).not.toContain("Alice Johnson");
   },
 };
 

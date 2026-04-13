@@ -38,6 +38,8 @@ export interface TableAPIContext {
   expandedRows: Map<string, number>;
   collapsedRows: Map<string, number>;
   expandedDepths: Set<number>;
+  clearExpandedRows: () => void;
+  clearCollapsedRows: () => void;
   rowStateMap: Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
   cellRegistry?: Map<string, { updateContent: (value: any) => void }>;
@@ -230,27 +232,48 @@ export class TableAPIImpl {
       },
 
       expandAll: () => {
+        context.clearExpandedRows();
+        context.clearCollapsedRows();
         context.expandedDepthsManager?.expandAll();
       },
 
       collapseAll: () => {
+        context.clearExpandedRows();
+        context.clearCollapsedRows();
         context.expandedDepthsManager?.collapseAll();
       },
 
       expandDepth: (depth: number) => {
+        context.clearExpandedRows();
+        context.clearCollapsedRows();
         context.expandedDepthsManager?.expandDepth(depth);
       },
 
       collapseDepth: (depth: number) => {
+        context.clearExpandedRows();
+        context.clearCollapsedRows();
         context.expandedDepthsManager?.collapseDepth(depth);
       },
 
       toggleDepth: (depth: number) => {
+        context.clearExpandedRows();
+        context.clearCollapsedRows();
         context.expandedDepthsManager?.toggleDepth(depth);
       },
 
       setExpandedDepths: (depths: Set<number>) => {
-        context.expandedDepths = depths;
+        context.clearExpandedRows();
+        context.clearCollapsedRows();
+        const mgr = context.expandedDepthsManager;
+        if (mgr) {
+          const max = context.config.rowGrouping?.length ?? 0;
+          const next =
+            max === 0
+              ? new Set<number>()
+              : new Set([...depths].filter((d) => Number.isInteger(d) && d >= 0 && d < max));
+          mgr.setExpandedDepths(next);
+          return;
+        }
         context.onRender();
       },
 
