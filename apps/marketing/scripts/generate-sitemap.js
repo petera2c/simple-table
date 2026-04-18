@@ -9,7 +9,8 @@ const __dirname = dirname(__filename);
 
 const baseUrl = "https://www.simple-table.com";
 
-// Function to get all Next.js routes from the app directory
+// Static routes under src/app (including blog/*/page.tsx) are discovered automatically.
+// Dynamic segments like [framework] are excluded here and merged in via frameworkHubRoutes.
 async function getNextJsRoutes() {
   const appDir = resolve(__dirname, "../src/app");
   const routes = await glob("**/page.{tsx,jsx,js,ts}", { cwd: appDir });

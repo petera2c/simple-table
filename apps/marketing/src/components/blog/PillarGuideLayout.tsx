@@ -36,8 +36,9 @@ export default function PillarGuideLayout({ post, hubId, children }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BlogLayout>
-        <header className="mb-8 rounded-xl bg-linear-to-r from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950 p-6 md:p-8">
+      {/* Hero sits above the shadow card; body stays inside BlogLayout for consistent card chrome */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-8 pb-2">
+        <header className="rounded-xl bg-linear-to-r from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950 p-6 md:p-8 shadow-sm border border-gray-100/80 dark:border-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
             {post.createdAt} · {fw.label} · Integration guide
           </p>
@@ -46,7 +47,9 @@ export default function PillarGuideLayout({ post, hubId, children }: Props) {
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl">{post.description}</p>
         </header>
+      </div>
 
+      <BlogLayout>
         <article className="prose prose-gray dark:prose-invert max-w-none space-y-8">{children}</article>
 
         <section className="mt-12 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-6">
