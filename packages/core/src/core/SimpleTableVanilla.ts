@@ -270,7 +270,15 @@ export class SimpleTableVanilla {
         const refs = this.domManager.getRefs();
         const header = refs.mainHeaderRef.current;
         const body = refs.mainBodyRef.current;
-        (header as any)?.__renderHeaderCells?.(scrollLeft);
+        const sel = this.selectionManager;
+        const liveSelection =
+          sel && (this.config.selectableCells || this.config.selectableColumns)
+            ? {
+                columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
+                selectedColumns: sel.getSelectedColumns(),
+              }
+            : undefined;
+        (header as any)?.__renderHeaderCells?.(scrollLeft, liveSelection);
         (body as any)?.__renderBodyCells?.(scrollLeft);
       },
     });

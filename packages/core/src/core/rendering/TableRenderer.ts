@@ -496,8 +496,8 @@ export class TableRenderer {
         deps.selectionManager?.isWarningFlashing(cell) || false,
       handleMouseDown: (cell: any) =>
         deps.selectionManager?.handleMouseDown(cell),
-      handleMouseOver: (cell: any) =>
-        deps.selectionManager?.handleMouseOver(cell),
+      handleMouseOver: (cell: any, clientX: number, clientY: number) =>
+        deps.selectionManager?.handleMouseOver(cell, clientX, clientY),
       isRowSelected: (rowId: string) =>
         deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
       canExpandRowGroup: deps.config.canExpandRowGroup,
