@@ -29,6 +29,11 @@ import {
   devextremeGridVsSimpleTablePost,
   kendoreactGridVsSimpleTablePost,
   smartGridVsSimpleTablePost,
+  vueNuxtDataGridPillarPost,
+  angularDataGridPillarPost,
+  sveltekitDataTablePillarPost,
+  solidjsDataGridPillarPost,
+  vanillaDataGridPillarPost,
 } from "@/constants/blogPosts";
 import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import {
@@ -75,9 +80,9 @@ export const SEO_STRINGS = {
   blog: {
     title: "Data Grid Blog: Tutorials, Comparisons & Best Practices",
     description:
-      "Data grid and table tutorials, library comparisons, and best practices for React and beyond. Topics include Simple Table, AG Grid alternatives, TanStack Table, bundle size, accessibility, and responsive JavaScript grids with TypeScript.",
+      "Data grid and table tutorials, library comparisons, and stack-specific guides for React, Vue, Nuxt, Angular, Svelte, SvelteKit, Solid, and vanilla TypeScript. Topics include Simple Table, AG Grid alternatives, TanStack Table, bundle size, accessibility, and responsive JavaScript grids.",
     keywords:
-      "data grid blog, javascript data grid, react table blog, react table tutorial, simple-table, vue data grid, angular data grid, svelte table, solid table, react-table, react-grid, data-grid, datagrid, react data grid, table, spreadsheet, typescript table, data visualization, ag grid alternative, best react table, multi-framework table",
+      "data grid blog, javascript data grid, vue data grid, angular data grid, svelte table, solid table, vanilla typescript table, react table tutorial, simple-table, react-grid, data-grid, datagrid, typescript table, ag grid alternative, multi-framework table",
   },
   blogPosts: {
     replicatingGojiberryUI: {
@@ -826,6 +831,61 @@ export const SEO_STRINGS = {
         "commercial react grid",
         "best react table 2026",
         "free react data grid",
+      ],
+    },
+    vueNuxtDataGridPillar: {
+      title: vueNuxtDataGridPillarPost.title,
+      description: vueNuxtDataGridPillarPost.description,
+      keywords: [
+        "vue data grid",
+        "vue 3 table",
+        "nuxt data table",
+        "@simple-table/vue",
+        "vue composition api table",
+        "nuxt 3 data grid",
+        "simple table vue",
+      ],
+    },
+    angularDataGridPillar: {
+      title: angularDataGridPillarPost.title,
+      description: angularDataGridPillarPost.description,
+      keywords: [
+        "angular data grid",
+        "angular table component",
+        "@simple-table/angular",
+        "angular standalone component table",
+        "typescript angular grid",
+      ],
+    },
+    sveltekitDataTablePillar: {
+      title: sveltekitDataTablePillarPost.title,
+      description: sveltekitDataTablePillarPost.description,
+      keywords: [
+        "svelte data table",
+        "sveltekit grid",
+        "@simple-table/svelte",
+        "svelte table component",
+      ],
+    },
+    solidjsDataGridPillar: {
+      title: solidjsDataGridPillarPost.title,
+      description: solidjsDataGridPillarPost.description,
+      keywords: [
+        "solidjs table",
+        "solid data grid",
+        "@simple-table/solid",
+        "solidjs datagrid",
+      ],
+    },
+    vanillaDataGridPillar: {
+      title: vanillaDataGridPillarPost.title,
+      description: vanillaDataGridPillarPost.description,
+      keywords: [
+        "vanilla javascript data grid",
+        "typescript table no framework",
+        "simple-table-core",
+        "vanilla js datagrid",
+        "framework agnostic table",
       ],
     },
   },

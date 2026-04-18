@@ -7,6 +7,7 @@ import { faCode, faBox, faStar, faEnvelope } from "@fortawesome/free-solid-svg-i
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useGitHubStars } from "@/hooks/useGitHubStars";
 import React, { Suspense, useState } from "react";
@@ -272,6 +273,21 @@ export default function HomeContent() {
             </motion.h2>
 
             <motion.p
+              className="text-base md:text-lg text-center text-gray-500 dark:text-gray-400 mb-3 max-w-3xl mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+            >
+              One shared{" "}
+              <code className="text-sm text-gray-700 dark:text-gray-300">simple-table-core</code>{" "}
+              engine—six official npm adapters. Browse{" "}
+              <Link href="/frameworks" className="text-blue-600 dark:text-blue-400 hover:underline">
+                framework setup hubs
+              </Link>{" "}
+              for install commands and StackBlitz.
+            </motion.p>
+
+            <motion.p
               className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-5xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -399,6 +415,25 @@ export default function HomeContent() {
               <FrameworkIcon framework={fw} size={16} />
               {FRAMEWORK_LABELS[fw]}
             </button>
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="flex justify-center flex-wrap gap-2 mb-16"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.95 }}
+          aria-label="Framework integration hubs"
+        >
+          {FRAMEWORKS.map((fw) => (
+            <Link
+              key={`hub-${fw}`}
+              href={`/frameworks/${fw}`}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+            >
+              <FrameworkIcon framework={fw} size={14} />
+              {FRAMEWORK_LABELS[fw]} hub
+            </Link>
           ))}
         </motion.div>
 

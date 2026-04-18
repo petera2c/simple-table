@@ -79,6 +79,12 @@ const clickCell = async (
   await new Promise((r) => setTimeout(r, 150));
 };
 
+/** Synthetic events must set clientX/clientY — SelectionManager resolves the cell from pointer position. */
+const centerCoords = (el: HTMLElement) => {
+  const r = el.getBoundingClientRect();
+  return { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
+};
+
 const selectCellRange = async (
   canvasElement: HTMLElement,
   startRow: number,
@@ -89,8 +95,13 @@ const selectCellRange = async (
   const startCell = getCellElement(canvasElement, startRow, startCol);
   const endCell = getCellElement(canvasElement, endRow, endCol);
   if (!startCell || !endCell) return;
+  const startPt = centerCoords(startCell);
   startCell.dispatchEvent(
-    new MouseEvent("mousedown", { bubbles: true, cancelable: true }),
+    new MouseEvent("mousedown", {
+      bubbles: true,
+      cancelable: true,
+      ...startPt,
+    }),
   );
   await new Promise((r) => setTimeout(r, 10));
   const minRow = Math.min(startRow, endRow);
@@ -101,15 +112,21 @@ const selectCellRange = async (
     for (let col = minCol; col <= maxCol; col++) {
       const cell = getCellElement(canvasElement, row, col);
       if (cell) {
+        const pt = centerCoords(cell);
         cell.dispatchEvent(
-          new MouseEvent("mouseover", { bubbles: true, cancelable: true }),
+          new MouseEvent("mouseover", {
+            bubbles: true,
+            cancelable: true,
+            ...pt,
+          }),
         );
         await new Promise((r) => setTimeout(r, 5));
       }
     }
   }
+  const endPt = centerCoords(endCell);
   endCell.dispatchEvent(
-    new MouseEvent("mouseup", { bubbles: true, cancelable: true }),
+    new MouseEvent("mouseup", { bubbles: true, cancelable: true, ...endPt }),
   );
   await new Promise((r) => setTimeout(r, 200));
 };

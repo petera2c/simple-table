@@ -21,6 +21,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.simple-table.com/blog/angular-data-grid-simple-table</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.simple-table.com/blog/ant-design-table-vs-simple-table</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -191,6 +196,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.simple-table.com/blog/solidjs-data-grid-simple-table</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/blog/sveltekit-data-table-simple-table</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.simple-table.com/blog/tabulator-alternatives-react-2026</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -202,6 +217,16 @@
   </url>
   <url>
     <loc>https://www.simple-table.com/blog/tanstack-table-vs-simple-table-headless-batteries-included</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/blog/vanilla-typescript-data-grid-simple-table-core</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simple-table.com/blog/vue-nuxt-data-grid-simple-table</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

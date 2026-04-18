@@ -389,8 +389,63 @@ export const smartGridVsSimpleTablePost: BlogPostMetadata = {
   updatedAt: "2026-02-05",
 };
 
+export const vueNuxtDataGridPillarPost: BlogPostMetadata = {
+  title: "Vue 3 & Nuxt Data Grid: Install and Run Simple Table",
+  description:
+    "Set up a Vue 3 or Nuxt data grid with @simple-table/vue: npm install, global styles, Composition API usage, SSR notes, and links to the integration hub and StackBlitz.",
+  slug: "vue-nuxt-data-grid-simple-table",
+  tags: ["vue", "nuxt", "data-grid", "tutorials"],
+  createdAt: "2026-04-18",
+  updatedAt: "2026-04-18",
+};
+
+export const angularDataGridPillarPost: BlogPostMetadata = {
+  title: "Angular Data Grid with Simple Table: Standalone Components & TypeScript",
+  description:
+    "Use @simple-table/angular in modern Angular apps: install peers, import styles once, bootstrap a standalone-friendly data grid, and jump to docs or StackBlitz from the hub.",
+  slug: "angular-data-grid-simple-table",
+  tags: ["angular", "data-grid", "tutorials", "typescript"],
+  createdAt: "2026-04-18",
+  updatedAt: "2026-04-18",
+};
+
+export const sveltekitDataTablePillarPost: BlogPostMetadata = {
+  title: "Svelte & SvelteKit Data Table: Simple Table Adapter Guide",
+  description:
+    "Build a Svelte or SvelteKit data table with @simple-table/svelte—stylesheet import, component usage, and the same core features as other adapters.",
+  slug: "sveltekit-data-table-simple-table",
+  tags: ["svelte", "sveltekit", "data-grid", "tutorials"],
+  createdAt: "2026-04-18",
+  updatedAt: "2026-04-18",
+};
+
+export const solidjsDataGridPillarPost: BlogPostMetadata = {
+  title: "SolidJS Data Grid: Simple Table Setup and Patterns",
+  description:
+    "Integrate @simple-table/solid for a reactive SolidJS table: install line, styles, fine-grained reactivity with the official adapter, plus hub and quick-start links.",
+  slug: "solidjs-data-grid-simple-table",
+  tags: ["solid", "solidjs", "data-grid", "tutorials"],
+  createdAt: "2026-04-18",
+  updatedAt: "2026-04-18",
+};
+
+export const vanillaDataGridPillarPost: BlogPostMetadata = {
+  title: "Vanilla TypeScript Data Grid: simple-table-core Without a Framework",
+  description:
+    "Use SimpleTableVanilla from simple-table-core for framework-free UIs: npm package, CSS import, minimal bootstrap, and when to reach for adapters instead.",
+  slug: "vanilla-typescript-data-grid-simple-table-core",
+  tags: ["vanilla", "typescript", "data-grid", "tutorials"],
+  createdAt: "2026-04-18",
+  updatedAt: "2026-04-18",
+};
+
 // Array of all blog posts using the individual objects
 export const BLOG_POSTS: BlogPostMetadata[] = [
+  vueNuxtDataGridPillarPost,
+  angularDataGridPillarPost,
+  sveltekitDataTablePillarPost,
+  solidjsDataGridPillarPost,
+  vanillaDataGridPillarPost,
   devextremeGridVsSimpleTablePost,
   kendoreactGridVsSimpleTablePost,
   smartGridVsSimpleTablePost,
@@ -447,3 +502,11 @@ export const searchBlogPosts = (query: string): BlogPostMetadata[] => {
       post.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery))
   );
 };
+
+/** End-of-article cross-stack callout on posts that target the React ecosystem. */
+export function shouldShowOtherFrameworksCallout(slug: string): boolean {
+  if (!slug) return false;
+  const post = getBlogPostBySlug(slug);
+  if (!post) return false;
+  return post.tags.includes("react");
+}
