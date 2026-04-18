@@ -8,15 +8,17 @@ import type Cell from "../../types/Cell";
 export function calculateNearestCell(
   clientX: number,
   clientY: number,
+  root: Document | HTMLElement = document,
 ): Cell | null {
-  const tableContainer = document.querySelector(".st-body-container");
+  const searchRoot: ParentNode = root;
+  const tableContainer = searchRoot.querySelector(".st-body-container");
   if (!tableContainer) return null;
 
   const rect = tableContainer.getBoundingClientRect();
   const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
   const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
 
-  const cellElements = document.querySelectorAll<HTMLElement>(
+  const cellElements = searchRoot.querySelectorAll<HTMLElement>(
     ".st-cell[data-row-index][data-col-index][data-row-id]:not(.st-selection-cell)",
   );
   if (cellElements.length === 0) return null;
@@ -112,6 +114,7 @@ export function calculateNearestCell(
 export function getCellFromMousePosition(
   clientX: number,
   clientY: number,
+  root: Document | HTMLElement = document,
 ): Cell | null {
   const element = document.elementFromPoint(clientX, clientY);
   if (!element) return null;
@@ -119,6 +122,9 @@ export function getCellFromMousePosition(
   const cellElement = element.closest(".st-cell");
 
   if (cellElement instanceof HTMLElement) {
+    if (!root.contains(cellElement)) {
+      return calculateNearestCell(clientX, clientY, root);
+    }
     const rowIndex = parseInt(
       cellElement.getAttribute("data-row-index") || "-1",
       10,
@@ -134,7 +140,7 @@ export function getCellFromMousePosition(
     }
   }
 
-  return calculateNearestCell(clientX, clientY);
+  return calculateNearestCell(clientX, clientY, root);
 }
 
 /**

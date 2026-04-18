@@ -484,20 +484,20 @@ export class TableRenderer {
       loadingStateRenderer: deps.config.loadingStateRenderer,
       errorStateRenderer: deps.config.errorStateRenderer,
       emptyStateRenderer: deps.config.emptyStateRenderer,
-      getBorderClass: (cell: any) =>
+      getBorderClass: (cell) =>
         deps.selectionManager?.getBorderClass(cell) || "",
-      isSelected: (cell: any) =>
+      isSelected: (cell) =>
         deps.selectionManager?.isSelected(cell) || false,
-      isInitialFocusedCell: (cell: any) =>
+      isInitialFocusedCell: (cell) =>
         deps.selectionManager?.isInitialFocusedCell(cell) || false,
-      isCopyFlashing: (cell: any) =>
+      isCopyFlashing: (cell) =>
         deps.selectionManager?.isCopyFlashing(cell) || false,
-      isWarningFlashing: (cell: any) =>
+      isWarningFlashing: (cell) =>
         deps.selectionManager?.isWarningFlashing(cell) || false,
-      handleMouseDown: (cell: any) =>
+      handleMouseDown: (cell) =>
         deps.selectionManager?.handleMouseDown(cell),
-      handleMouseOver: (cell: any) =>
-        deps.selectionManager?.handleMouseOver(cell),
+      handleMouseOver: (cell, clientX: number, clientY: number) =>
+        deps.selectionManager?.handleMouseOver(cell, clientX, clientY),
       isRowSelected: (rowId: string) =>
         deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
       canExpandRowGroup: deps.config.canExpandRowGroup,

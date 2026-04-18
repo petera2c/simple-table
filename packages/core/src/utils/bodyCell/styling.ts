@@ -302,8 +302,9 @@ export const createBodyCellElement = (
       context.handleMouseDown(cellData);
     };
 
-    const handleMouseOver = () => {
-      context.handleMouseOver(cellData);
+    const handleMouseOver = (event: Event) => {
+      const e = event as MouseEvent;
+      context.handleMouseOver(cellData, e.clientX, e.clientY);
     };
 
     addTrackedEventListener(cellElement, "mousedown", handleMouseDown);

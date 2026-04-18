@@ -99,7 +99,7 @@ export interface CellRenderContext {
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
   handleRowSelect?: (rowId: string, checked: boolean) => void;
   handleMouseDown: (cell: CellData) => void;
-  handleMouseOver: (cell: CellData) => void;
+  handleMouseOver: (cell: CellData, clientX: number, clientY: number) => void;
 
   // Refs and state setters
   cellRegistry?: Map<string, CellRegistryEntry>;

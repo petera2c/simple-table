@@ -15,7 +15,6 @@ import { computeSelectionRange } from "./selectionRangeUtils";
 import {
   getCellFromMousePosition as getCellFromMousePositionUtil,
   handleAutoScroll as handleAutoScrollUtil,
-  calculateNearestCell as calculateNearestCellUtil,
 } from "./mouseUtils";
 import { getHeaderLeafIndices, flattenAllHeaders } from "../../utils/headerUtils";
 
@@ -959,7 +958,12 @@ export class SelectionManager {
       if (colIndex < 0 || Number.isNaN(colIndex)) continue;
 
       const header = byAccessor.get(accessor);
-      if (!header) continue;
+      if (!header) {
+        for (const cls of SelectionManager.HEADER_SELECTION_CLASSES) {
+          el.classList.remove(cls);
+        }
+        continue;
+      }
 
       const isSelectionColumn =
         Boolean(header.isSelectionColumn) && Boolean(this.config.enableRowSelection);
@@ -1409,20 +1413,17 @@ export class SelectionManager {
   }
 
   /**
-   * Calculate the nearest cell to a given mouse position
-   */
-  private calculateNearestCell(clientX: number, clientY: number): Cell | null {
-    return calculateNearestCellUtil(clientX, clientY);
-  }
-
-  /**
    * Get cell from mouse position
    */
   private getCellFromMousePosition(
     clientX: number,
     clientY: number,
   ): Cell | null {
-    return getCellFromMousePositionUtil(clientX, clientY);
+    return getCellFromMousePositionUtil(
+      clientX,
+      clientY,
+      this.config.tableRoot ?? document,
+    );
   }
 
   /**
@@ -1533,12 +1534,20 @@ export class SelectionManager {
   }
 
   /**
-   * Handle mouse over a cell during selection drag
+   * Handle mouse over a cell during selection drag.
+   * Uses the pointer position to resolve the cell under the cursor (same as continuousScroll)
+   * so virtualization/recycled DOM does not apply stale cellData from the firing element.
    */
-  handleMouseOver({ colIndex, rowIndex, rowId }: Cell): void {
+  handleMouseOver(
+    cellFromElement: Cell,
+    clientX: number,
+    clientY: number,
+  ): void {
     if (!this.config.selectableCells) return;
     if (this.isSelecting && this.startCell) {
-      this.updateSelectionRange(this.startCell, { colIndex, rowIndex, rowId });
+      const resolved =
+        this.getCellFromMousePosition(clientX, clientY) ?? cellFromElement;
+      this.updateSelectionRange(this.startCell, resolved);
     }
   }
 }

@@ -1,5 +1,4 @@
 import React, { ReactNode, useState, useEffect, useMemo } from "react";
-import NextLink from "next/link";
 import { Typography, Table, Space, Card, Button, Tooltip, Alert } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +6,6 @@ import PageWrapper from "@/components/PageWrapper";
 import { ALL_FEATURES, getFeatureStatus } from "@/constants/comparisonFeatures";
 import { FEATURE_LABELS } from "@/constants/featureLabels";
 import { FeatureStatusBadge } from "@/components/CommonFeatures";
-import { SIMPLE_TABLE_MULTI_FRAMEWORK_TAGLINE } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO } from "@/constants/packageInfo";
 
 const { Title, Paragraph, Text, Link } = Typography;
@@ -25,8 +23,6 @@ interface ComparisonLayoutProps {
   competitorPackage: string; // Package key like "agGrid"
   performanceMetrics: PerformanceMetricsProps;
   summaryContent: ReactNode;
-  /** When true, shows a short note that Simple Table supports multiple frameworks (default: true). */
-  showFrameworksCallout?: boolean;
 }
 
 const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
@@ -37,7 +33,6 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
   competitorPackage,
   performanceMetrics,
   summaryContent,
-  showFrameworksCallout = true,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -115,7 +110,7 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
         align: "center" as const,
       },
     ],
-    [competitorName, isMobile]
+    [competitorName, isMobile],
   );
 
   return (
@@ -138,27 +133,6 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
           </Paragraph>
         </div>
 
-        {showFrameworksCallout ? (
-          <Alert
-            message="Multi-framework data grid"
-            description={
-              <Text>
-                {SIMPLE_TABLE_MULTI_FRAMEWORK_TAGLINE}{" "}
-                <NextLink
-                  href="/frameworks"
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                >
-                  Browse framework setup
-                </NextLink>
-                .
-              </Text>
-            }
-            type="info"
-            showIcon
-            className="mb-8 max-w-3xl mx-auto"
-          />
-        ) : null}
-
         {/* Introduction */}
         <div className="mb-8 text-center">
           <Paragraph className="text-lg text-gray-700 dark:text-gray-300 mb-4">
@@ -167,22 +141,23 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
         </div>
 
         {/* AI Disclaimer */}
-        <Alert
-          message="AI-Assisted Content"
-          description={
-            <Text>
-              This comparison guide was created with AI assistance. While we strive for accuracy, if
-              you notice any incorrect information, please{" "}
-              <Link href="mailto:peter@peteryng.com" strong>
-                contact us
-              </Link>{" "}
-              so we can correct it promptly.
-            </Text>
-          }
-          type="info"
-          showIcon
-          className="mb-8"
-        />
+        <div className="mb-8">
+          <Alert
+            message="AI-Assisted Content"
+            description={
+              <Text>
+                This comparison guide was created with AI assistance. While we strive for accuracy,
+                if you notice any incorrect information, please{" "}
+                <Link href="mailto:peter@peteryng.com" strong>
+                  contact us
+                </Link>{" "}
+                so we can correct it promptly.
+              </Text>
+            }
+            type="info"
+            showIcon
+          />
+        </div>
 
         {/* Comparison Table */}
         <Card

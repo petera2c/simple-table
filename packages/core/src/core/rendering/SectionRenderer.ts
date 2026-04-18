@@ -185,12 +185,28 @@ export class SectionRenderer {
       section.scrollLeft = currentScrollLeft;
     }
 
-    // For main section (not pinned), attach render function for scroll updates
+    // For main section (not pinned), attach render function for scroll updates.
+    // cachedContext is from the last full header render; during vertical drag-scroll the header
+    // may not re-render while selection changes. Callers should pass live selection sets so
+    // calculateHeaderCellClasses does not overwrite st-header-* with stale data (flicker).
     if (!pinned && section) {
-      (section as any).__renderHeaderCells = (scrollLeft: number) => {
-        if (section) {
-          renderHeaderCells(section, absoluteCells, cachedContext, scrollLeft);
-        }
+      (section as any).__renderHeaderCells = (
+        scrollLeft: number,
+        liveSelection?: {
+          columnsWithSelectedCells: Set<number>;
+          selectedColumns: Set<number>;
+        },
+      ) => {
+        if (!section) return;
+        const ctx =
+          liveSelection !== undefined
+            ? {
+                ...cachedContext,
+                columnsWithSelectedCells: liveSelection.columnsWithSelectedCells,
+                selectedColumns: liveSelection.selectedColumns,
+              }
+            : cachedContext;
+        renderHeaderCells(section, absoluteCells, ctx, scrollLeft);
       };
     }
 
