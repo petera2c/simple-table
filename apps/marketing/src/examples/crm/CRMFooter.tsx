@@ -1,4 +1,27 @@
+import { useSyncExternalStore } from "react";
 import type { FooterRendererProps } from "@simple-table/react";
+
+const MOBILE_MQ = "(max-width: 740px)";
+
+function getMobileMq(): MediaQueryList | null {
+  if (typeof window === "undefined") return null;
+  return window.matchMedia(MOBILE_MQ);
+}
+
+function subscribeMobile(cb: () => void) {
+  const mq = getMobileMq();
+  if (!mq) return () => {};
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+
+function getMobileSnapshot(): boolean {
+  return getMobileMq()?.matches ?? false;
+}
+
+function useFooterIsMobile(): boolean {
+  return useSyncExternalStore(subscribeMobile, getMobileSnapshot, () => false);
+}
 
 const CRMCustomFooter = ({
   currentPage,
@@ -15,26 +38,25 @@ const CRMCustomFooter = ({
   isDark,
   setRowsPerPage,
 }: FooterRendererProps & { isDark?: boolean; setRowsPerPage: (rowsPerPage: number) => void }) => {
-  // Generate visible page numbers with current page centered
+  const isMobile = useFooterIsMobile();
+
   const generateVisiblePages = (currentPage: number, totalPages: number): number[] => {
     const maxVisible = 5;
 
     if (totalPages <= maxVisible) {
-      // Show all pages if we have fewer than maxVisible
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
-    // Calculate start and end to center current page
-    let start = currentPage - 2;
-    let end = currentPage + 2;
+    const halfLeft = Math.floor((maxVisible - 1) / 2);
+    const halfRight = Math.ceil((maxVisible - 1) / 2);
+    let start = currentPage - halfLeft;
+    let end = currentPage + halfRight;
 
-    // Adjust if we're near the beginning
     if (start < 1) {
       start = 1;
       end = Math.min(maxVisible, totalPages);
     }
 
-    // Adjust if we're near the end
     if (end > totalPages) {
       end = totalPages;
       start = Math.max(1, totalPages - maxVisible + 1);
@@ -43,7 +65,7 @@ const CRMCustomFooter = ({
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
-  const visiblePages = generateVisiblePages(currentPage, totalPages);
+  const visiblePages = isMobile ? [] : generateVisiblePages(currentPage, totalPages);
 
   const colors = isDark
     ? {
@@ -73,47 +95,69 @@ const CRMCustomFooter = ({
         activeText: "#ea580c",
       };
 
+  const summaryFontSize = isMobile ? "12px" : "14px";
+  const controlFontSize = isMobile ? "12px" : "14px";
+  const pageBtnPadding = isMobile ? "6px 10px" : "8px 16px";
+  const arrowPadding = isMobile ? "6px" : "8px";
+
+  const selectStyle = {
+    border: `1px solid ${colors.inputBorder}`,
+    borderRadius: "6px",
+    padding: isMobile ? "2px 6px" : "4px 8px",
+    fontSize: controlFontSize,
+    backgroundColor: colors.inputBg,
+    color: colors.text,
+    cursor: "pointer" as const,
+    maxWidth: isMobile ? "4.5rem" : undefined,
+  };
+
   return (
     <div
+      className="crm-footer"
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "12px 16px",
         borderTop: `1px solid ${colors.border}`,
         backgroundColor: colors.bg,
       }}
     >
-      {/* Results text */}
-      <p style={{ fontSize: "14px", color: colors.text, margin: 0 }}>
-        Showing <span style={{ fontWeight: "500" }}>{startRow}</span> to{" "}
-        <span style={{ fontWeight: "500" }}>{endRow}</span> of{" "}
-        <span style={{ fontWeight: "500" }}>{totalRows}</span> results
+      <p
+        className="crm-footer__summary"
+        style={{ fontSize: summaryFontSize, color: colors.text, margin: 0, whiteSpace: "nowrap" }}
+      >
+        {isMobile ? (
+          <>
+            <span style={{ fontWeight: 500 }}>{startRow}</span>–
+            <span style={{ fontWeight: 500 }}>{endRow}</span>
+            {" / "}
+            <span style={{ fontWeight: 500 }}>{totalRows}</span>
+          </>
+        ) : (
+          <>
+            Showing <span style={{ fontWeight: "500" }}>{startRow}</span> to{" "}
+            <span style={{ fontWeight: "500" }}>{endRow}</span> of{" "}
+            <span style={{ fontWeight: "500" }}>{totalRows}</span> results
+          </>
+        )}
       </p>
 
-      {/* Controls */}
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        {/* Page size selector */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <label htmlFor="itemsPerPage" style={{ fontSize: "14px", color: colors.text }}>
-            Show:
-          </label>
+      <div className="crm-footer__toolbar">
+        <div
+          className="crm-footer__page-size"
+          style={{ display: "flex", alignItems: "center", gap: isMobile ? 0 : "8px" }}
+        >
+          {!isMobile && (
+            <label htmlFor="itemsPerPage" style={{ fontSize: "14px", color: colors.text }}>
+              Show:
+            </label>
+          )}
           <select
             id="itemsPerPage"
+            aria-label={isMobile ? "Rows per page" : undefined}
             value={rowsPerPage}
             onChange={(event) => {
               setRowsPerPage(parseInt(event.target.value, 10));
               onPageChange(1);
             }}
-            style={{
-              border: `1px solid ${colors.inputBorder}`,
-              borderRadius: "6px",
-              padding: "4px 8px",
-              fontSize: "14px",
-              backgroundColor: colors.inputBg,
-              color: colors.text,
-              cursor: "pointer",
-            }}
+            style={selectStyle}
           >
             <option value="25">25</option>
             <option value="50">50</option>
@@ -121,30 +165,32 @@ const CRMCustomFooter = ({
             <option value="200">200</option>
             <option value="10000">all</option>
           </select>
-          <span style={{ fontSize: "14px", color: colors.text }}>per page</span>
+          {!isMobile && <span style={{ fontSize: "14px", color: colors.text }}>per page</span>}
         </div>
 
-        {/* Pagination */}
         <nav
+          className="crm-footer__pagination"
           style={{
             display: "inline-flex",
             borderRadius: "6px",
             boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+            flexShrink: 0,
+            alignItems: "center",
           }}
         >
-          {/* Previous button */}
           <button
+            type="button"
             onClick={onPrevPage}
             disabled={!hasPrevPage}
             style={{
               display: "inline-flex",
               alignItems: "center",
-              padding: "8px",
+              padding: arrowPadding,
               borderTopLeftRadius: "6px",
               borderBottomLeftRadius: "6px",
               border: `1px solid ${colors.buttonBorder}`,
               backgroundColor: colors.buttonBg,
-              fontSize: "14px",
+              fontSize: controlFontSize,
               fontWeight: "500",
               color: colors.buttonText,
               cursor: hasPrevPage ? "pointer" : "not-allowed",
@@ -154,41 +200,61 @@ const CRMCustomFooter = ({
             ‹
           </button>
 
-          {/* Page buttons */}
-          {visiblePages.map((page) => (
-            <button
-              key={page}
-              onClick={() => onPageChange(page)}
+          {isMobile ? (
+            <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                padding: "8px 16px",
+                justifyContent: "center",
+                padding: pageBtnPadding,
                 border: `1px solid ${colors.buttonBorder}`,
-                backgroundColor: currentPage === page ? colors.activeBg : colors.buttonBg,
-                fontSize: "14px",
-                fontWeight: "500",
-                color: currentPage === page ? colors.activeText : colors.text,
-                cursor: "pointer",
+                backgroundColor: colors.activeBg,
+                fontSize: controlFontSize,
+                fontWeight: 600,
+                color: colors.activeText,
                 marginLeft: "-1px",
+                minWidth: "2.75rem",
               }}
             >
-              {page}
-            </button>
-          ))}
+              {currentPage}/{Math.max(totalPages, 1)}
+            </span>
+          ) : (
+            visiblePages.map((page) => (
+              <button
+                type="button"
+                key={page}
+                onClick={() => onPageChange(page)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: pageBtnPadding,
+                  border: `1px solid ${colors.buttonBorder}`,
+                  backgroundColor: currentPage === page ? colors.activeBg : colors.buttonBg,
+                  fontSize: controlFontSize,
+                  fontWeight: "500",
+                  color: currentPage === page ? colors.activeText : colors.text,
+                  cursor: "pointer",
+                  marginLeft: "-1px",
+                }}
+              >
+                {page}
+              </button>
+            ))
+          )}
 
-          {/* Next button */}
           <button
+            type="button"
             onClick={onNextPage}
             disabled={!hasNextPage}
             style={{
               display: "inline-flex",
               alignItems: "center",
-              padding: "8px",
+              padding: arrowPadding,
               borderTopRightRadius: "6px",
               borderBottomRightRadius: "6px",
               border: `1px solid ${colors.buttonBorder}`,
               backgroundColor: colors.buttonBg,
-              fontSize: "14px",
+              fontSize: controlFontSize,
               fontWeight: "500",
               color: colors.buttonText,
               cursor: hasNextPage ? "pointer" : "not-allowed",
