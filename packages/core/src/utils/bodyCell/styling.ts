@@ -7,41 +7,42 @@ import { addTrackedEventListener } from "./eventTracking";
 import { createEditor } from "./editing";
 import { createCellContent } from "./content";
 
-// Global map for efficient row hover tracking: rowIndex -> Set<HTMLElement>
-const rowCellsMap = new Map<number, Set<HTMLElement>>();
+// Global map for efficient row hover tracking: stable rowId -> Set<HTMLElement>
+// (Visual rowIndex within the viewport slice can change on scroll; rowId does not.)
+const rowCellsMap = new Map<string, Set<HTMLElement>>();
 
 // WeakMap holding a mutable row ref per cell element so click handlers always
 // read the latest row data even when the cell DOM node is reused across renders.
 const cellRowRefMap = new WeakMap<HTMLElement, { current: Row }>();
 
 // Track current hovered row for cleanup
-let currentHoveredRow: number | null = null;
+let currentHoveredRowId: string | null = null;
 
 // Helper to add cell to row tracking
-const trackCellByRow = (rowIndex: number, cellElement: HTMLElement): void => {
-  if (!rowCellsMap.has(rowIndex)) {
-    rowCellsMap.set(rowIndex, new Set());
+const trackCellByRow = (rowId: string, cellElement: HTMLElement): void => {
+  if (!rowCellsMap.has(rowId)) {
+    rowCellsMap.set(rowId, new Set());
   }
-  rowCellsMap.get(rowIndex)!.add(cellElement);
+  rowCellsMap.get(rowId)!.add(cellElement);
 };
 
 // Helper to remove cell from row tracking
 export const untrackCellByRow = (
-  rowIndex: number,
+  rowId: string,
   cellElement: HTMLElement,
 ): void => {
-  const cellSet = rowCellsMap.get(rowIndex);
+  const cellSet = rowCellsMap.get(rowId);
   if (cellSet) {
     cellSet.delete(cellElement);
     if (cellSet.size === 0) {
-      rowCellsMap.delete(rowIndex);
+      rowCellsMap.delete(rowId);
     }
   }
 };
 
 // Helper to set hover state for entire row
-const setRowHoverState = (rowIndex: number, hovered: boolean): void => {
-  const cellSet = rowCellsMap.get(rowIndex);
+const setRowHoverState = (rowId: string, hovered: boolean): void => {
+  const cellSet = rowCellsMap.get(rowId);
   if (cellSet) {
     cellSet.forEach((cell) => {
       if (hovered) {
@@ -374,24 +375,28 @@ export const createBodyCellElement = (
 
   // Row hover handlers - use efficient Map-based tracking
   if (context.useHoverRowBackground) {
-    // Track this cell by row index
-    trackCellByRow(rowIndex, cellElement);
+    const rowIdKey = String(rowId);
+    // Track this cell by stable row id (visual rowIndex changes when the viewport slice shifts)
+    trackCellByRow(rowIdKey, cellElement);
 
     const handleMouseEnter = () => {
       // Clear previous hovered row if different
-      if (currentHoveredRow !== null && currentHoveredRow !== rowIndex) {
-        setRowHoverState(currentHoveredRow, false);
+      if (
+        currentHoveredRowId !== null &&
+        currentHoveredRowId !== rowIdKey
+      ) {
+        setRowHoverState(currentHoveredRowId, false);
       }
       // Set hover state for current row
-      setRowHoverState(rowIndex, true);
-      currentHoveredRow = rowIndex;
+      setRowHoverState(rowIdKey, true);
+      currentHoveredRowId = rowIdKey;
     };
 
     const handleMouseLeave = () => {
       // Remove hover state
-      setRowHoverState(rowIndex, false);
-      if (currentHoveredRow === rowIndex) {
-        currentHoveredRow = null;
+      setRowHoverState(rowIdKey, false);
+      if (currentHoveredRowId === rowIdKey) {
+        currentHoveredRowId = null;
       }
     };
 

@@ -642,10 +642,7 @@ export class SimpleTableVanilla {
               : undefined,
         });
 
-        if (
-          this.config.shouldPaginate &&
-          previousTheme.rowHeight !== this.customTheme.rowHeight
-        ) {
+        if (this.config.shouldPaginate && previousTheme.rowHeight !== this.customTheme.rowHeight) {
           this.currentPage = 1;
         }
 

@@ -283,13 +283,10 @@ export const renderBodyCells = (
   // Remove cells that are no longer visible
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
-      // Untrack from row hover map before removing
-      const rowIndex = parseInt(
-        element.getAttribute("data-row-index") || "-1",
-        10,
-      );
-      if (rowIndex >= 0) {
-        untrackCellByRow(rowIndex, element);
+      // Untrack from row hover map before removing (stable row id; visual row index can change on scroll)
+      const rowIdAttr = element.getAttribute("data-row-id");
+      if (rowIdAttr) {
+        untrackCellByRow(rowIdAttr, element);
       }
       element.remove();
       renderedCells.delete(cellId);
