@@ -197,9 +197,12 @@ const HeaderRendererDemo = ({
     }
   };
 
-  // Custom header component using the new components prop
+  // Custom header layout + styling. Use the column label as React text (same idea as
+  // packages/examples/react header-renderer demo). Do not put core's `components.labelContent`
+  // in JSX unless it is a React element: before the adapter maps slots, it is a live DOM
+  // node — truthy so `|| header.label` never runs, and React will not render raw Nodes.
   const createHeaderRenderer = (key: string, label: string) => {
-    return ({ components, header }: HeaderRendererProps) => {
+    return (_props: HeaderRendererProps) => {
       const colors = getThemeColors(theme);
 
       return (
@@ -212,7 +215,7 @@ const HeaderRendererDemo = ({
             color: colors.baseColor,
             fontWeight: 600,
             fontSize: "14px",
-            padding: "4px 0",
+            padding: "4px 12px",
             transition: "all 0.2s ease",
           }}
           onClick={() => handleSort(key)}
@@ -225,9 +228,7 @@ const HeaderRendererDemo = ({
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          <span style={{ display: "flex", alignItems: "center" }}>
-            {components?.labelContent || header.label}
-          </span>
+          <span style={{ display: "flex", alignItems: "center" }}>{label}</span>
           <span
             style={{
               fontSize: "12px",
@@ -274,16 +275,22 @@ const HeaderRendererDemo = ({
         type: "number",
         isSortable: true,
         filterable: true,
-        headerRenderer: ({ components }: HeaderRendererProps) => {
-          return (
-            <>
-              {components?.labelContent}
-              {components?.sortIcon}
-              {components?.filterIcon}
-              {components?.collapseIcon}
-            </>
-          );
-        },
+        headerRenderer: ({ components, header }: HeaderRendererProps) => (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: 4,
+              flexWrap: "wrap",
+            }}
+          >
+            {components?.labelContent ?? <span>{header.label}</span>}
+            {components?.sortIcon}
+            {components?.filterIcon}
+            {components?.collapseIcon}
+          </div>
+        ),
         align: "right",
       },
       {
