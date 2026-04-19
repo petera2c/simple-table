@@ -1,0 +1,91 @@
+// Self-contained demo table setup for this example.
+import type { SolidHeaderObject } from "@simple-table/solid";
+
+
+export const collapsibleColumnsData = [
+  { id: 1, name: "Alice Thompson", region: "North America", q1Sales: 245000, q2Sales: 289000, q3Sales: 312000, q4Sales: 298000, totalSales: 1144000, avgQuarterly: 286000, jan: 78000, feb: 82000, mar: 85000, apr: 89000, may: 95000, jun: 105000, jul: 98000, aug: 102000, sep: 112000, oct: 108000, nov: 95000, dec: 95000, avgMonthly: 95333, bestMonth: 112000, softwareSales: 456000, hardwareSales: 342000, servicesSales: 346000, topCategory: "Software", categoryCount: 3 },
+  { id: 2, name: "Marcus Chen", region: "Asia Pacific", q1Sales: 189000, q2Sales: 234000, q3Sales: 287000, q4Sales: 276000, totalSales: 986000, avgQuarterly: 246500, jan: 58000, feb: 62000, mar: 69000, apr: 72000, may: 78000, jun: 84000, jul: 89000, aug: 95000, sep: 103000, oct: 98000, nov: 89000, dec: 89000, avgMonthly: 82166, bestMonth: 103000, softwareSales: 398000, hardwareSales: 298000, servicesSales: 290000, topCategory: "Software", categoryCount: 3 },
+  { id: 3, name: "Sofia Rodriguez", region: "Europe", q1Sales: 198000, q2Sales: 245000, q3Sales: 267000, q4Sales: 289000, totalSales: 999000, avgQuarterly: 249750, jan: 62000, feb: 66000, mar: 70000, apr: 78000, may: 82000, jun: 85000, jul: 85000, aug: 88000, sep: 94000, oct: 96000, nov: 97000, dec: 96000, avgMonthly: 83250, bestMonth: 97000, softwareSales: 389000, hardwareSales: 312000, servicesSales: 298000, topCategory: "Software", categoryCount: 3 },
+  { id: 4, name: "David Kim", region: "North America", q1Sales: 167000, q2Sales: 198000, q3Sales: 234000, q4Sales: 267000, totalSales: 866000, avgQuarterly: 216500, jan: 52000, feb: 55000, mar: 60000, apr: 63000, may: 66000, jun: 69000, jul: 75000, aug: 78000, sep: 81000, oct: 87000, nov: 89000, dec: 91000, avgMonthly: 72166, bestMonth: 91000, softwareSales: 346000, hardwareSales: 267000, servicesSales: 253000, topCategory: "Software", categoryCount: 3 },
+  { id: 5, name: "Emma Wilson", region: "Australia", q1Sales: 134000, q2Sales: 167000, q3Sales: 198000, q4Sales: 234000, totalSales: 733000, avgQuarterly: 183250, jan: 42000, feb: 45000, mar: 47000, apr: 52000, may: 55000, jun: 60000, jul: 63000, aug: 66000, sep: 69000, oct: 75000, nov: 78000, dec: 81000, avgMonthly: 61083, bestMonth: 81000, softwareSales: 293000, hardwareSales: 220000, servicesSales: 220000, topCategory: "Software", categoryCount: 3 },
+  { id: 6, name: "James Anderson", region: "South America", q1Sales: 156000, q2Sales: 178000, q3Sales: 201000, q4Sales: 223000, totalSales: 758000, avgQuarterly: 189500, jan: 48000, feb: 52000, mar: 56000, apr: 58000, may: 60000, jun: 60000, jul: 65000, aug: 67000, sep: 69000, oct: 72000, nov: 75000, dec: 76000, avgMonthly: 63166, bestMonth: 76000, softwareSales: 303000, hardwareSales: 227000, servicesSales: 228000, topCategory: "Software", categoryCount: 3 },
+  { id: 7, name: "Lisa Chang", region: "Asia Pacific", q1Sales: 145000, q2Sales: 178000, q3Sales: 201000, q4Sales: 234000, totalSales: 758000, avgQuarterly: 189500, jan: 45000, feb: 48000, mar: 52000, apr: 58000, may: 60000, jun: 60000, jul: 65000, aug: 67000, sep: 69000, oct: 75000, nov: 78000, dec: 81000, avgMonthly: 63166, bestMonth: 81000, softwareSales: 303000, hardwareSales: 227000, servicesSales: 228000, topCategory: "Software", categoryCount: 3 },
+  { id: 8, name: "Michael Brown", region: "Europe", q1Sales: 178000, q2Sales: 201000, q3Sales: 234000, q4Sales: 256000, totalSales: 869000, avgQuarterly: 217250, jan: 56000, feb: 60000, mar: 62000, apr: 65000, may: 67000, jun: 69000, jul: 75000, aug: 78000, sep: 81000, oct: 83000, nov: 86000, dec: 87000, avgMonthly: 72416, bestMonth: 87000, softwareSales: 347000, hardwareSales: 260000, servicesSales: 262000, topCategory: "Software", categoryCount: 3 },
+  { id: 9, name: "Sarah Johnson", region: "North America", q1Sales: 201000, q2Sales: 234000, q3Sales: 267000, q4Sales: 289000, totalSales: 991000, avgQuarterly: 247750, jan: 63000, feb: 67000, mar: 71000, apr: 75000, may: 78000, jun: 81000, jul: 85000, aug: 89000, sep: 93000, oct: 95000, nov: 97000, dec: 97000, avgMonthly: 82583, bestMonth: 97000, softwareSales: 396000, hardwareSales: 297000, servicesSales: 298000, topCategory: "Software", categoryCount: 3 },
+  { id: 10, name: "Robert Davis", region: "Australia", q1Sales: 123000, q2Sales: 145000, q3Sales: 167000, q4Sales: 189000, totalSales: 624000, avgQuarterly: 156000, jan: 38000, feb: 42000, mar: 43000, apr: 46000, may: 48000, jun: 51000, jul: 53000, aug: 56000, sep: 58000, oct: 60000, nov: 63000, dec: 66000, avgMonthly: 52000, bestMonth: 66000, softwareSales: 249000, hardwareSales: 187000, servicesSales: 188000, topCategory: "Software", categoryCount: 3 },
+  { id: 11, name: "Jennifer Martinez", region: "South America", q1Sales: 134000, q2Sales: 156000, q3Sales: 178000, q4Sales: 201000, totalSales: 669000, avgQuarterly: 167250, jan: 42000, feb: 45000, mar: 47000, apr: 50000, may: 52000, jun: 54000, jul: 57000, aug: 59000, sep: 62000, oct: 65000, nov: 67000, dec: 69000, avgMonthly: 55750, bestMonth: 69000, softwareSales: 267000, hardwareSales: 201000, servicesSales: 201000, topCategory: "Software", categoryCount: 3 },
+  { id: 12, name: "Christopher Lee", region: "Europe", q1Sales: 167000, q2Sales: 189000, q3Sales: 212000, q4Sales: 234000, totalSales: 802000, avgQuarterly: 200500, jan: 52000, feb: 55000, mar: 60000, apr: 61000, may: 63000, jun: 65000, jul: 68000, aug: 71000, sep: 73000, oct: 76000, nov: 78000, dec: 80000, avgMonthly: 66833, bestMonth: 80000, softwareSales: 320000, hardwareSales: 241000, servicesSales: 241000, topCategory: "Software", categoryCount: 3 },
+];
+
+const fmt = (accessor: string) => ({ row }: { row: Record<string, unknown> }) =>
+  `$${((row[accessor] as number) || 0).toLocaleString()}`;
+
+const monthCol = (accessor: string, label: string): SolidHeaderObject => ({
+  accessor,
+  label,
+  width: 100,
+  showWhen: "parentExpanded" as const,
+  isSortable: true,
+  align: "right",
+  type: "number",
+  cellRenderer: fmt(accessor),
+});
+
+export const collapsibleColumnsHeaders: SolidHeaderObject[] = [
+  { accessor: "id", label: "ID", width: 60, isSortable: true },
+  { accessor: "name", label: "Sales Rep", minWidth: 150, width: "1fr", isSortable: true },
+  { accessor: "region", label: "Region", width: 140, isSortable: true },
+  {
+    accessor: "quarterlySales",
+    label: "Quarterly Sales",
+    width: 500,
+    collapsible: true,
+    collapseDefault: true,
+    children: [
+      { accessor: "totalSales", label: "Total Sales", width: 140, showWhen: "parentCollapsed" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("totalSales") },
+      { accessor: "q1Sales", label: "Q1", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q1Sales") },
+      { accessor: "q2Sales", label: "Q2", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q2Sales") },
+      { accessor: "q3Sales", label: "Q3", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q3Sales") },
+      { accessor: "q4Sales", label: "Q4", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q4Sales") },
+    ],
+  },
+  {
+    accessor: "monthlyPerformance",
+    label: "Monthly Performance",
+    width: 800,
+    collapsible: true,
+    collapseDefault: true,
+    children: [
+      { accessor: "avgMonthly", label: "Avg Monthly", width: 130, showWhen: "parentCollapsed" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("avgMonthly") },
+      { accessor: "bestMonth", label: "Best Month", width: 130, showWhen: "parentCollapsed" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("bestMonth") },
+      monthCol("jan", "Jan"), monthCol("feb", "Feb"), monthCol("mar", "Mar"),
+      monthCol("apr", "Apr"), monthCol("may", "May"), monthCol("jun", "Jun"),
+      monthCol("jul", "Jul"), monthCol("aug", "Aug"), monthCol("sep", "Sep"),
+      monthCol("oct", "Oct"), monthCol("nov", "Nov"), monthCol("dec", "Dec"),
+    ],
+  },
+  {
+    accessor: "productCategories",
+    label: "Product Categories",
+    width: 450,
+    collapsible: true,
+    collapseDefault: true,
+    children: [
+      { accessor: "topCategory", label: "Top Category", width: 140, showWhen: "parentCollapsed" as const, isSortable: true, type: "string" },
+      { accessor: "softwareSales", label: "Software", width: 130, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("softwareSales") },
+      { accessor: "hardwareSales", label: "Hardware", width: 130, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("hardwareSales") },
+      { accessor: "servicesSales", label: "Services", width: 130, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("servicesSales") },
+    ],
+  },
+];
+
+export const collapsibleColumnsConfig = {
+  headers: collapsibleColumnsHeaders,
+  rows: collapsibleColumnsData,
+  tableProps: {
+    columnResizing: true,
+    editColumns: true,
+    selectableCells: true,
+    columnReordering: true,
+  },
+} as const;

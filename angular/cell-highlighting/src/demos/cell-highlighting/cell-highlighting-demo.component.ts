@@ -1,0 +1,29 @@
+import { Component, Input } from "@angular/core";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import { cellHighlightingConfig } from "./cell-highlighting.demo-data";
+import "@simple-table/angular/styles.css";
+
+@Component({
+  selector: "cell-highlighting-demo",
+  standalone: true,
+  imports: [SimpleTableComponent],
+  template: `
+    <simple-table
+      [rows]="rows"
+      [defaultHeaders]="headers"
+      [height]="height"
+      [theme]="theme"
+      [selectableCells]="selectableCells"
+      [selectableColumns]="selectableColumns"
+    ></simple-table>
+  `,
+})
+export class CellHighlightingDemoComponent {
+  @Input() height: string | number = "400px";
+  @Input() theme?: Theme;
+
+  readonly rows: Row[] = cellHighlightingConfig.rows;
+  readonly headers: AngularHeaderObject[] = cellHighlightingConfig.headers;
+  readonly selectableCells = cellHighlightingConfig.tableProps.selectableCells;
+  readonly selectableColumns = cellHighlightingConfig.tableProps.selectableColumns;
+}
