@@ -158,6 +158,25 @@ export class SimpleTableVanilla {
     ].filter((el): el is HTMLDivElement => el !== null);
   }
 
+  private getHeaderContainers(): HTMLElement[] {
+    const refs = this.domManager.getRefs();
+    return [
+      refs.mainHeaderRef.current,
+      refs.pinnedLeftHeaderRef.current,
+      refs.pinnedRightHeaderRef.current,
+    ].filter((el): el is HTMLDivElement => el !== null);
+  }
+
+  /**
+   * All cell-bearing containers — body sections AND header sections — that the
+   * animation coordinator needs to inspect. Headers participate in FLIP for
+   * column reorder so their cells slide to their new slot rather than
+   * teleporting.
+   */
+  private getAnimatableContainers(): HTMLElement[] {
+    return [...this.getBodyContainers(), ...this.getHeaderContainers()];
+  }
+
   /**
    * Capture pre-change cell positions for the FLIP animation, including
    * conceptual positions for cells outside the virtualization viewport so
@@ -173,7 +192,7 @@ export class SimpleTableVanilla {
    */
   private captureAnimationSnapshot(): void {
     this.animationCoordinator.captureSnapshot({
-      containers: this.getBodyContainers(),
+      containers: this.getAnimatableContainers(),
       preLayouts: this.renderOrchestrator.getCurrentBodyLayouts(),
     });
   }
@@ -634,7 +653,7 @@ export class SimpleTableVanilla {
     // that fire on each `dragover` swap — runs play so columns being
     // displaced by the drag slide smoothly to their new slots.
     if (source !== "scroll-raf") {
-      this.animationCoordinator.play({ containers: this.getBodyContainers() });
+      this.animationCoordinator.play({ containers: this.getAnimatableContainers() });
     }
   }
 

@@ -481,6 +481,647 @@ export const SimpleThreeByThreeCenterToRightSwap = {
   },
 };
 
+/**
+ * Regression test: HEADER cells must FLIP-animate during a column reorder
+ * the same way body cells do. Header cells live in their own per-section
+ * tracking registry (separate WeakMap from body cells) and used to be
+ * invisible to the AnimationCoordinator, so on a reorder they would teleport
+ * while the body cells underneath them slid into place.
+ *
+ * For each of five chained programmatic reorders the test:
+ *   1. Snapshots every header cell's `style.left` BEFORE the update.
+ *   2. Calls `table.update({ defaultHeaders })` then synchronously reads
+ *      the FLIP "First" frame transform on every header.
+ *   3. Asserts the inverse `transform-X` equals `oldLeft − newLeft` (±1.5px),
+ *      that headers whose index didn't change have no transform, and that
+ *      swapped headers carry opposite-sign transforms (one slid left, one
+ *      slid right).
+ *   4. After SETTLE_PAUSE asserts no leftover transforms or transitions
+ *      remain on any header cell.
+ */
+export const HeaderCellsAnimateOnColumnReorder = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "a", label: "A", width: 120 },
+      { accessor: "b", label: "B", width: 120 },
+      { accessor: "c", label: "C", width: 120 },
+    ];
+    const rows: Row[] = [
+      { id: 1, a: "A1", b: "B1", c: "C1" },
+      { id: 2, a: "A2", b: "B2", c: "C2" },
+      { id: 3, a: "A3", b: "B3", c: "C3" },
+    ];
+    const result = renderVanillaTable(headers, rows, {
+      height: "240px",
+      animations: true,
+      animationDuration: SLOW_DURATION,
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    });
+    setTable(result.table);
+    result.h2.textContent = `Header cells animate on column reorder · ${SLOW_DURATION}ms`;
+    addParagraph(
+      result.wrapper,
+      "Headers must slide horizontally to their new slots in lockstep with " +
+        "the body cells underneath them. The play function chains five " +
+        "reorders and asserts header FLIP correctness on each.",
+      result.tableContainer,
+    );
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await sleep(BEAT);
+
+    const ACCESSORS = ["a", "b", "c"] as const;
+    const table = getTable();
+
+    const findHeaderCell = (accessor: string): HTMLElement | null => {
+      return canvasElement.querySelector<HTMLElement>(
+        `.st-header-cell[data-accessor="${accessor}"]`,
+      );
+    };
+
+    /**
+     * For a single reorder step: snapshot pre-update header lefts, apply the
+     * new column order, and synchronously verify each header's FLIP "First"
+     * frame matches `oldLeft − newLeft`. Then wait past the slide and
+     * verify no header is stuck mid-transform.
+     */
+    const runHeaderReorderStep = async (
+      stepLabel: string,
+      nextAccessors: string[],
+    ): Promise<void> => {
+      const beforeLefts = new Map<string, number>();
+      const beforeIndexByAccessor = new Map<string, number>();
+      const currentHeaders = table.getAPI().getHeaders();
+      currentHeaders.forEach((h, i) => beforeIndexByAccessor.set(h.accessor as string, i));
+
+      for (const accessor of ACCESSORS) {
+        const headerCell = findHeaderCell(accessor);
+        expect(headerCell, `[${stepLabel}] missing pre header ${accessor}`).toBeTruthy();
+        beforeLefts.set(accessor, parseFloat(headerCell!.style.left || "0"));
+      }
+
+      const headersByAccessor = new Map(currentHeaders.map((h) => [h.accessor as string, h]));
+      const nextHeaders = nextAccessors.map((acc) => {
+        const h = headersByAccessor.get(acc);
+        if (!h) throw new Error(`[${stepLabel}] header "${acc}" missing`);
+        return h;
+      });
+      const nextIndexByAccessor = new Map<string, number>(
+        nextAccessors.map((acc, i) => [acc, i]),
+      );
+
+      // CRITICAL: trigger the update and read the FLIP "First" frame
+      // synchronously. Awaiting any RAF here would only ever surface
+      // translate3d(0,0,0) — the destination state.
+      table.update({ defaultHeaders: nextHeaders });
+
+      interface HeaderSample {
+        accessor: string;
+        oldLeft: number;
+        newLeft: number;
+        txX: number;
+        moved: boolean;
+      }
+      const samples: HeaderSample[] = [];
+      for (const accessor of ACCESSORS) {
+        const headerCell = findHeaderCell(accessor);
+        expect(headerCell, `[${stepLabel}] missing post header ${accessor}`).toBeTruthy();
+        const newLeft = parseFloat(headerCell!.style.left || "0");
+        const txX = parseTranslateX(headerCell!.style.transform);
+        samples.push({
+          accessor,
+          oldLeft: beforeLefts.get(accessor)!,
+          newLeft,
+          txX,
+          moved:
+            beforeIndexByAccessor.get(accessor) !== nextIndexByAccessor.get(accessor),
+        });
+      }
+
+      const summary = samples
+        .map(
+          (s) =>
+            `[${s.accessor}] old=${s.oldLeft} new=${s.newLeft} ` +
+            `expectedDx=${s.oldLeft - s.newLeft} actualDx=${s.txX}`,
+        )
+        .join(" | ");
+
+      for (const s of samples) {
+        const expected = s.oldLeft - s.newLeft;
+        if (Math.abs(s.txX - expected) >= 1.5) {
+          throw new Error(`[${stepLabel}] header FLIP dx mismatch. ${summary}`);
+        }
+      }
+
+      const stillSamples = samples.filter((s) => !s.moved);
+      for (const s of stillSamples) {
+        expect(s.txX, `[${stepLabel}] still header ${s.accessor} should have no tx`).toBe(0);
+      }
+
+      const movedSamples = samples.filter((s) => s.moved);
+      expect(
+        movedSamples.length,
+        `[${stepLabel}] expected at least 2 headers to move`,
+      ).toBeGreaterThanOrEqual(2);
+
+      const movedDirections = new Set(
+        movedSamples.map((s) => Math.sign(s.txX)).filter((v) => v !== 0),
+      );
+      expect(
+        movedDirections.size,
+        `[${stepLabel}] swapped headers should have opposite-sign transforms`,
+      ).toBe(2);
+
+      // Once play()'s RAF has fired, moved headers should report the
+      // transform transition CSS — that's what actually drives the slide.
+      await tickFrames(2);
+      for (const s of movedSamples) {
+        const headerCell = findHeaderCell(s.accessor);
+        expect(
+          headerCell!.style.transition,
+          `[${stepLabel}] header ${s.accessor} should be transitioning transform`,
+        ).toContain("transform");
+      }
+
+      await sleep(SETTLE_PAUSE);
+
+      for (const accessor of ACCESSORS) {
+        const headerCell = findHeaderCell(accessor);
+        const t = headerCell!.style.transform;
+        expect(
+          t === "" || t === "none",
+          `[${stepLabel}] header ${accessor} stuck mid-transform`,
+        ).toBe(true);
+      }
+
+      const ghosts = canvasElement.querySelectorAll(`[data-animating-out="true"]`);
+      expect(ghosts.length, `[${stepLabel}] retained ghosts leaked`).toBe(0);
+    };
+
+    // Sanity check the starting layout: A | B | C left-to-right.
+    const aL = parseFloat(findHeaderCell("a")!.style.left || "0");
+    const bL = parseFloat(findHeaderCell("b")!.style.left || "0");
+    const cL = parseFloat(findHeaderCell("c")!.style.left || "0");
+    expect(aL).toBeLessThan(bL);
+    expect(bL).toBeLessThan(cL);
+
+    await runHeaderReorderStep("1/5 swap B↔C → A · C · B", ["a", "c", "b"]);
+    await sleep(BEAT);
+    await runHeaderReorderStep("2/5 swap A↔C → C · A · B", ["c", "a", "b"]);
+    await sleep(BEAT);
+    await runHeaderReorderStep("3/5 swap C↔B → B · A · C", ["b", "a", "c"]);
+    await sleep(BEAT);
+    await runHeaderReorderStep("4/5 swap A↔C → B · C · A", ["b", "c", "a"]);
+    await sleep(BEAT);
+    await runHeaderReorderStep("5/5 reset → A · B · C", ["a", "b", "c"]);
+
+    // Final state: headers back to original positions.
+    expect(parseFloat(findHeaderCell("a")!.style.left || "0")).toBe(aL);
+    expect(parseFloat(findHeaderCell("b")!.style.left || "0")).toBe(bL);
+    expect(parseFloat(findHeaderCell("c")!.style.left || "0")).toBe(cL);
+  },
+};
+
+/**
+ * Drag-and-drop variant of {@link HeaderCellsAnimateOnColumnReorder}. The
+ * regression we're guarding against is a setup where body cells animate on
+ * every dragover but header cells teleport because the AnimationCoordinator
+ * has never been told about the header containers.
+ */
+export const HeaderCellsAnimateDuringDragReorder = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "a", label: "A", width: 120 },
+      { accessor: "b", label: "B", width: 120 },
+      { accessor: "c", label: "C", width: 120 },
+    ];
+    const rows: Row[] = [
+      { id: 1, a: "A1", b: "B1", c: "C1" },
+      { id: 2, a: "A2", b: "B2", c: "C2" },
+      { id: 3, a: "A3", b: "B3", c: "C3" },
+    ];
+    const result = renderVanillaTable(headers, rows, {
+      height: "240px",
+      animations: true,
+      animationDuration: SLOW_DURATION,
+      columnReordering: true,
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    });
+    setTable(result.table);
+    result.h2.textContent = `Header cells animate during drag reorder · ${SLOW_DURATION}ms`;
+    addParagraph(
+      result.wrapper,
+      "Drag the B header onto the C header. The B and C HEADER cells should " +
+        "slide past each other on every dragover — not snap into place when " +
+        "you release.",
+      result.tableContainer,
+    );
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await sleep(BEAT);
+
+    const ACCESSORS = ["a", "b", "c"] as const;
+
+    const findHeaderCell = (accessor: string): HTMLElement | null =>
+      canvasElement.querySelector<HTMLElement>(
+        `.st-header-cell[data-accessor="${accessor}"]`,
+      );
+
+    const findHeaderLabel = (accessor: string): HTMLElement => {
+      const cell = findHeaderCell(accessor);
+      const label = cell?.querySelector<HTMLElement>(".st-header-label");
+      if (!label) throw new Error(`Header label for "${accessor}" not found`);
+      return label;
+    };
+
+    const beforeLefts = new Map<string, number>();
+    for (const accessor of ACCESSORS) {
+      const headerCell = findHeaderCell(accessor);
+      expect(headerCell, `missing pre header ${accessor}`).toBeTruthy();
+      beforeLefts.set(accessor, parseFloat(headerCell!.style.left || "0"));
+    }
+    const aLBefore = beforeLefts.get("a")!;
+    const bLBefore = beforeLefts.get("b")!;
+    const cLBefore = beforeLefts.get("c")!;
+    expect(aLBefore).toBeLessThan(bLBefore);
+    expect(bLBefore).toBeLessThan(cLBefore);
+
+    const sourceLabel = findHeaderLabel("b");
+    const targetLabel = findHeaderLabel("c");
+    const targetCell = targetLabel.closest(".st-header-cell") ?? targetLabel;
+
+    /**
+     * Latch the first time we see a header cell carrying a non-zero
+     * translate transform or an active `transition: transform` CSS — the
+     * tell-tale signs of an in-flight FLIP.
+     */
+    let sawHeaderFlipDuringDrag = false;
+    const sampleHeaders = () => {
+      if (sawHeaderFlipDuringDrag) return;
+      for (const accessor of ACCESSORS) {
+        const headerCell = findHeaderCell(accessor);
+        if (!headerCell) continue;
+        const tx = parseTranslateX(headerCell.style.transform);
+        if (Math.abs(tx) > 0.5) {
+          sawHeaderFlipDuringDrag = true;
+          return;
+        }
+        if (headerCell.style.transition.includes("transform")) {
+          sawHeaderFlipDuringDrag = true;
+          return;
+        }
+      }
+    };
+
+    const sourceRect = sourceLabel.getBoundingClientRect();
+    const targetRect = targetLabel.getBoundingClientRect();
+    const startX = sourceRect.left + sourceRect.width / 2;
+    const startY = sourceRect.top + sourceRect.height / 2;
+    const endX = targetRect.left + targetRect.width / 2;
+    const endY = targetRect.top + targetRect.height / 2;
+
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/plain", "column-drag");
+    dataTransfer.effectAllowed = "move";
+
+    sourceLabel.dispatchEvent(
+      new DragEvent("dragstart", {
+        bubbles: true,
+        cancelable: true,
+        clientX: startX,
+        clientY: startY,
+        dataTransfer,
+      }),
+    );
+
+    const steps = 8;
+    for (let i = 0; i <= steps; i++) {
+      const progress = i / steps;
+      const x = startX + (endX - startX) * progress;
+      const y = startY + (endY - startY) * progress;
+      targetCell.dispatchEvent(
+        new DragEvent("dragover", {
+          bubbles: true,
+          cancelable: true,
+          clientX: x,
+          clientY: y,
+          screenX: x,
+          screenY: y,
+          dataTransfer,
+        }),
+      );
+      // Wait a few RAFs (long enough to outlast the 50ms drag throttle so a
+      // throttled swap can fire and the resulting FLIP can paint its first
+      // frame before we sample).
+      for (let frame = 0; frame < 4; frame++) {
+        await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+        sampleHeaders();
+        if (sawHeaderFlipDuringDrag) break;
+      }
+    }
+
+    // Snapshot the assertion BEFORE dragend so a post-drop play can't sneak
+    // in and falsely satisfy "saw a FLIP".
+    const sawHeaderFlipBeforeDragEnd = sawHeaderFlipDuringDrag;
+
+    targetCell.dispatchEvent(
+      new DragEvent("drop", {
+        bubbles: true,
+        cancelable: true,
+        clientX: endX,
+        clientY: endY,
+        dataTransfer,
+      }),
+    );
+    sourceLabel.dispatchEvent(
+      new DragEvent("dragend", {
+        bubbles: true,
+        cancelable: true,
+        clientX: endX,
+        clientY: endY,
+        dataTransfer,
+      }),
+    );
+
+    await sleep(120);
+
+    const afterLefts = new Map<string, number>();
+    for (const accessor of ACCESSORS) {
+      const headerCell = findHeaderCell(accessor);
+      expect(headerCell, `missing post header ${accessor}`).toBeTruthy();
+      afterLefts.set(accessor, parseFloat(headerCell!.style.left || "0"));
+    }
+    const aLAfter = afterLefts.get("a")!;
+    const bLAfter = afterLefts.get("b")!;
+    const cLAfter = afterLefts.get("c")!;
+
+    if (Math.abs(bLAfter - cLBefore) >= 1.5 || Math.abs(cLAfter - bLBefore) >= 1.5) {
+      throw new Error(
+        `Expected drag to swap header B↔C. ` +
+          `B left: ${bLBefore} → ${bLAfter} (expected ~${cLBefore}). ` +
+          `C left: ${cLBefore} → ${cLAfter} (expected ~${bLBefore}). ` +
+          `A left: ${aLBefore} → ${aLAfter} (expected unchanged).`,
+      );
+    }
+
+    expect(
+      sawHeaderFlipBeforeDragEnd,
+      "Header cells should FLIP-animate during drag-and-drop column " +
+        "reorder on every dragover swap (no header transform / transition " +
+        "was observed between dragstart and dragend).",
+    ).toBe(true);
+
+    await sleep(SETTLE_PAUSE);
+    for (const accessor of ACCESSORS) {
+      const headerCell = findHeaderCell(accessor);
+      const t = headerCell!.style.transform;
+      expect(t === "" || t === "none", `header ${accessor} stuck transform`).toBe(true);
+    }
+    const ghosts = canvasElement.querySelectorAll(`[data-animating-out="true"]`);
+    expect(ghosts.length).toBe(0);
+  },
+};
+
+/**
+ * Regression test: while a drag-reorder swap is animating, dragover events
+ * targeting the still-animating cells must NOT keep firing additional
+ * swaps. Previously, the moving header would slide back under the user's
+ * cursor, the browser would re-fire dragover on it, and the column order
+ * would oscillate visibly (a fast back-and-forth flicker).
+ *
+ * The fix: in-flight cells get `pointer-events: none` so the browser's
+ * hit-testing skips them. dispatchEvent bypasses hit-testing, so this test
+ * resolves the cursor's target via `document.elementFromPoint` (which DOES
+ * honor pointer-events: none) — i.e. simulates what the browser would do.
+ *
+ * Asserts:
+ *   1. Headers that move have `pointer-events: none` while in flight.
+ *   2. The unchanged header keeps default pointer-events.
+ *   3. After many dragover events sustained at the same screen point during
+ *      the animation, the column order does NOT oscillate (at most one swap
+ *      from the starting state, never the original-→-swapped-→-original
+ *      ping-pong the regression produced).
+ *   4. After the animation settles, pointer-events on the previously-moving
+ *      headers is restored to default.
+ */
+export const HeaderDragDoesNotFlickerDuringAnimation = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "a", label: "A", width: 120 },
+      { accessor: "b", label: "B", width: 120 },
+      { accessor: "c", label: "C", width: 120 },
+    ];
+    const rows: Row[] = [
+      { id: 1, a: "A1", b: "B1", c: "C1" },
+      { id: 2, a: "A2", b: "B2", c: "C2" },
+      { id: 3, a: "A3", b: "B3", c: "C3" },
+    ];
+    const result = renderVanillaTable(headers, rows, {
+      height: "240px",
+      animations: true,
+      animationDuration: SLOW_DURATION,
+      columnReordering: true,
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    });
+    setTable(result.table);
+    result.h2.textContent = `Drag does not flicker mid-animation · ${SLOW_DURATION}ms`;
+    addParagraph(
+      result.wrapper,
+      "After a drag-triggered swap starts animating, the moving header " +
+        "cells should ignore further dragover events until the slide " +
+        "settles — otherwise the column order ping-pongs as the animating " +
+        "headers slide back and forth under the cursor.",
+      result.tableContainer,
+    );
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await sleep(BEAT);
+
+    const ACCESSORS = ["a", "b", "c"] as const;
+    const table = getTable();
+
+    const findHeaderCell = (accessor: string): HTMLElement | null =>
+      canvasElement.querySelector<HTMLElement>(
+        `.st-header-cell[data-accessor="${accessor}"]`,
+      );
+
+    const findHeaderLabel = (accessor: string): HTMLElement => {
+      const cell = findHeaderCell(accessor);
+      const label = cell?.querySelector<HTMLElement>(".st-header-label");
+      if (!label) throw new Error(`Header label for "${accessor}" not found`);
+      return label;
+    };
+
+    const currentOrder = (): string =>
+      table
+        .getAPI()
+        .getHeaders()
+        .map((h) => String(h.accessor))
+        .join(",");
+
+    const initialOrder = currentOrder();
+    expect(initialOrder).toBe("a,b,c");
+
+    const sourceLabel = findHeaderLabel("b");
+    const targetLabel = findHeaderLabel("c");
+    const sourceRect = sourceLabel.getBoundingClientRect();
+    const targetRect = targetLabel.getBoundingClientRect();
+
+    const startX = sourceRect.left + sourceRect.width / 2;
+    const startY = sourceRect.top + sourceRect.height / 2;
+    const targetX = targetRect.left + targetRect.width / 2;
+    const targetY = targetRect.top + targetRect.height / 2;
+
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/plain", "column-drag");
+    dataTransfer.effectAllowed = "move";
+
+    sourceLabel.dispatchEvent(
+      new DragEvent("dragstart", {
+        bubbles: true,
+        cancelable: true,
+        clientX: startX,
+        clientY: startY,
+        dataTransfer,
+      }),
+    );
+
+    // First dragover triggers the swap. The throttle doesn't gate this
+    // call (throttleLastCallTime starts at 0).
+    targetLabel.dispatchEvent(
+      new DragEvent("dragover", {
+        bubbles: true,
+        cancelable: true,
+        clientX: targetX,
+        clientY: targetY,
+        screenX: targetX,
+        screenY: targetY,
+        dataTransfer,
+      }),
+    );
+
+    // Wait a few RAFs so play() has run startTransition and applied
+    // pointer-events: none to the moving cells.
+    await tickFrames(3);
+
+    const orderAfterFirstSwap = currentOrder();
+    expect(
+      orderAfterFirstSwap,
+      "first dragover should have triggered B↔C swap",
+    ).toBe("a,c,b");
+
+    // The moving headers (B and C) should be hit-test-disabled.
+    const cellA = findHeaderCell("a")!;
+    const cellB = findHeaderCell("b")!;
+    const cellC = findHeaderCell("c")!;
+    expect(
+      cellB.style.pointerEvents,
+      "header B should be pointer-events: none mid-FLIP",
+    ).toBe("none");
+    expect(
+      cellC.style.pointerEvents,
+      "header C should be pointer-events: none mid-FLIP",
+    ).toBe("none");
+    expect(
+      cellA.style.pointerEvents,
+      "header A did not move and should keep default pointer-events",
+    ).not.toBe("none");
+
+    /**
+     * Sustained dragover storm: while the FLIP is in flight, simulate the
+     * cursor sitting at the screen point where C visually sits right after
+     * the swap (which is exactly C's pre-swap position, i.e. `targetX`).
+     * Use elementFromPoint to resolve the target the way the browser
+     * would — this honors pointer-events: none, so animating headers will
+     * not be returned by hit-testing.
+     *
+     * We collect every column order observed during the storm. With the
+     * fix, the order should remain `a,c,b` for the duration. Without it,
+     * the cursor's hit target would re-resolve to one of the animating
+     * headers and re-trigger swaps, producing the visible flicker
+     * `a,b,c ↔ a,c,b` we want to guard against.
+     */
+    const ordersDuringStorm = new Set<string>();
+    const cursorX = targetX;
+    const cursorY = targetY;
+    const stormSteps = 12;
+    for (let i = 0; i < stormSteps; i++) {
+      const target = document.elementFromPoint(cursorX, cursorY);
+      if (target) {
+        // Walk up to the .st-header-cell ancestor (or use whatever element
+        // we hit — body cells, the section, etc — the dragover handler is
+        // attached per header cell, so non-header targets are no-ops).
+        const eventTarget = target as HTMLElement;
+        eventTarget.dispatchEvent(
+          new DragEvent("dragover", {
+            bubbles: true,
+            cancelable: true,
+            clientX: cursorX,
+            clientY: cursorY,
+            screenX: cursorX,
+            screenY: cursorY,
+            dataTransfer,
+          }),
+        );
+      }
+      // Outlast the 50ms drag throttle so any swap that *could* fire would.
+      await new Promise((r) => setTimeout(r, 60));
+      ordersDuringStorm.add(currentOrder());
+    }
+
+    // The flicker regression manifests as the column order ping-ponging
+    // back to the original ("a,b,c") and then back to the swapped order
+    // multiple times during the storm. With pointer-events: none on the
+    // animating cells, the hit-testing should never resolve to those
+    // cells, so no further swaps fire and the order stays pinned at the
+    // first swap.
+    expect(
+      ordersDuringStorm.size,
+      `column order should not oscillate during animation ` +
+        `(saw orders: ${Array.from(ordersDuringStorm).join(" | ")})`,
+    ).toBe(1);
+    expect(
+      Array.from(ordersDuringStorm)[0],
+      `expected order to stay pinned at "a,c,b" during the storm`,
+    ).toBe("a,c,b");
+
+    // Release the drag so the dragend cleanup runs.
+    sourceLabel.dispatchEvent(
+      new DragEvent("dragend", {
+        bubbles: true,
+        cancelable: true,
+        clientX: cursorX,
+        clientY: cursorY,
+        dataTransfer,
+      }),
+    );
+
+    await sleep(SETTLE_PAUSE);
+
+    // After the slide finishes, pointer-events on the previously animating
+    // cells should be restored so the user can keep interacting.
+    for (const accessor of ACCESSORS) {
+      const headerCell = findHeaderCell(accessor)!;
+      expect(
+        headerCell.style.pointerEvents === "" ||
+          headerCell.style.pointerEvents === "auto",
+        `header ${accessor} pointer-events not restored after settle ` +
+          `(was "${headerCell.style.pointerEvents}")`,
+      ).toBe(true);
+    }
+
+    // Final order should still be the single swap from the original — no
+    // late flicker after the animation settled.
+    expect(currentOrder()).toBe("a,c,b");
+  },
+};
+
 export const ReorderWithoutAnimations = {
   render: () => {
     const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {

@@ -1,4 +1,24 @@
-import { getRenderedCells } from "../utils/bodyCell/eventTracking";
+import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/eventTracking";
+import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
+
+/**
+ * The renderer keeps two independent per-container WeakMaps of rendered cells —
+ * one for body sections, one for header sections — because the two render
+ * pipelines are otherwise unrelated. The animation coordinator just wants
+ * "every cell currently mounted in this container", so we transparently merge
+ * both registries here. A given container only ever appears in one registry
+ * (body or header), so the merge is effectively a single lookup that picks the
+ * non-empty side.
+ */
+const collectRenderedCells = (container: HTMLElement): Map<string, HTMLElement> => {
+  const body = getBodyRenderedCells(container);
+  const header = getHeaderRenderedCells(container);
+  if (body.size === 0) return header;
+  if (header.size === 0) return body;
+  const merged = new Map<string, HTMLElement>(body);
+  header.forEach((el, id) => merged.set(id, el));
+  return merged;
+};
 
 export interface AnimationCoordinatorOptions {
   duration?: number;
@@ -119,7 +139,7 @@ export class AnimationCoordinator {
       if (!container) continue;
 
       // 1. DOM-rendered cells: read live position (handles in-flight transforms).
-      const cells = getRenderedCells(container);
+      const cells = collectRenderedCells(container);
       cells.forEach((element, cellId) => {
         if (!next.has(cellId)) {
           next.set(cellId, this.readPosition(cellId, element));
@@ -285,7 +305,7 @@ export class AnimationCoordinator {
       }
 
       // Active cells: incoming + persistent.
-      const cells = getRenderedCells(container);
+      const cells = collectRenderedCells(container);
       cells.forEach((element, cellId) => consider(element, cellId, false));
     }
 
@@ -358,6 +378,16 @@ export class AnimationCoordinator {
   private startTransition(cellId: string, element: HTMLElement, isRetained: boolean): void {
     element.style.transition = `transform ${this.duration}ms ${this.easing}`;
     element.style.transform = "translate3d(0, 0, 0)";
+    // Suppress hit-testing on cells that are mid-slide. Without this, an
+    // animating header sliding under a dragging cursor will keep firing
+    // dragover events on whichever animating cell the cursor is currently
+    // intersecting, causing rapid back-and-forth swaps (visible flicker
+    // during drag-and-drop reorder). Restored in finishElement once the
+    // transition resolves. Retained (outgoing) cells already had pointer
+    // events suppressed in retainCell.
+    if (!isRetained) {
+      element.style.pointerEvents = "none";
+    }
 
     const transitionEndHandler = (event: TransitionEvent) => {
       if (event.propertyName !== "transform") return;
@@ -407,6 +437,9 @@ export class AnimationCoordinator {
     element.style.transition = "";
     element.style.transform = "";
     element.style.willChange = "";
+    // Re-enable hit-testing now that the cell has settled. See
+    // startTransition for the rationale.
+    element.style.pointerEvents = "";
   }
 
   private isCellRetained(element: HTMLElement): boolean {
