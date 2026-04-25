@@ -228,6 +228,259 @@ export const ProgrammaticReorderAnimation = {
   },
 };
 
+/**
+ * Simplest possible reorder animation test: a 3 columns × 3 rows table.
+ *
+ * Step 1 is the straightforward case — move the center column (B) to the
+ * rightmost position by swapping B and C via
+ * `table.update({ defaultHeaders: [...] })`. After that animation settles,
+ * the play function chains four more reorders (5 total) so we exercise:
+ *
+ *   - Pairwise neighbour swaps (B↔C, A↔B).
+ *   - Long-distance swaps (first ↔ last column).
+ *   - A "rotate back to original" reset.
+ *
+ * For every step we synchronously read the FLIP "First" frame and assert
+ * that each cell's inverse `transform-X` exactly matches `oldLeft − newLeft`
+ * (≤ 1.5px tolerance), then wait past `SLOW_DURATION` and assert no leftover
+ * transforms and no retained ghosts before moving on to the next step.
+ *
+ * Expected FLIP behaviour for each reorder:
+ *   - Cells whose `left` increases slide RIGHT, so their inverse transform-X
+ *     is NEGATIVE (`oldLeft − newLeft < 0`).
+ *   - Cells whose `left` decreases slide LEFT, so their inverse transform-X
+ *     is POSITIVE (`oldLeft − newLeft > 0`).
+ *   - Cells whose column index is unchanged have no transform.
+ */
+export const SimpleThreeByThreeCenterToRightSwap = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "a", label: "A", width: 120 },
+      { accessor: "b", label: "B", width: 120 },
+      { accessor: "c", label: "C", width: 120 },
+    ];
+    const rows: Row[] = [
+      { id: 1, a: "A1", b: "B1", c: "C1" },
+      { id: 2, a: "A2", b: "B2", c: "C2" },
+      { id: 3, a: "A3", b: "B3", c: "C3" },
+    ];
+    const result = renderVanillaTable(headers, rows, {
+      height: "240px",
+      animations: true,
+      animationDuration: SLOW_DURATION,
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    });
+    setTable(result.table);
+    result.h2.textContent = `Simplest 3×3 column swap · move center → right · ${SLOW_DURATION}ms`;
+
+    const findByAccessor = (accessor: string): HeaderObject => {
+      const h = result.table.getAPI().getHeaders().find((x) => x.accessor === accessor);
+      if (!h) throw new Error(`Missing header "${accessor}"`);
+      return h;
+    };
+    const setOrder = (accessors: string[]): void => {
+      result.table.update({ defaultHeaders: accessors.map(findByAccessor) });
+    };
+
+    addControlPanel(
+      result.wrapper,
+      [
+        {
+          heading: "Reorder steps",
+          buttons: [
+            { label: "1 · A · C · B (swap B ↔ C)", onClick: () => setOrder(["a", "c", "b"]) },
+            { label: "2 · C · A · B (swap A ↔ C)", onClick: () => setOrder(["c", "a", "b"]) },
+            { label: "3 · B · A · C (swap C ↔ B)", onClick: () => setOrder(["b", "a", "c"]) },
+            { label: "4 · B · C · A (swap A ↔ C)", onClick: () => setOrder(["b", "c", "a"]) },
+            { label: "5 · A · B · C (reset)", onClick: () => setOrder(["a", "b", "c"]) },
+          ],
+        },
+      ],
+      result.tableContainer,
+    );
+
+    addParagraph(
+      result.wrapper,
+      "Three rows, three columns. The play function runs five sequential reorders, " +
+        "each waiting past the previous animation before the next begins. Watch the " +
+        "cells slide horizontally to their new positions — every cell starts at its " +
+        "previous on-screen pixel position rather than from a shared edge.",
+      result.tableContainer,
+    );
+
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await sleep(BEAT);
+
+    const ROW_INDICES = [0, 1, 2];
+    const ACCESSORS = ["a", "b", "c"];
+    const table = getTable();
+
+    /**
+     * Capture pre-update lefts, apply the new column order, synchronously
+     * read each cell's FLIP "First" frame transform, and assert it exactly
+     * matches `oldLeft − newLeft`. Then wait past the slide and assert
+     * everything settled cleanly. Verifies that columns whose index didn't
+     * change have no transform, and that columns that swap have opposite-
+     * sign transforms (one slid left, the other slid right).
+     */
+    const runReorderStep = async (
+      stepLabel: string,
+      nextAccessors: string[],
+    ): Promise<void> => {
+      const beforeLefts = new Map<string, number>();
+      const beforeIndexByAccessor = new Map<string, number>();
+      const currentHeaders = table.getAPI().getHeaders();
+      currentHeaders.forEach((h, i) => beforeIndexByAccessor.set(h.accessor as string, i));
+
+      for (const row of ROW_INDICES) {
+        for (const accessor of ACCESSORS) {
+          const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+          expect(cell, `[${stepLabel}] missing pre cell r${row}.${accessor}`).toBeTruthy();
+          beforeLefts.set(`${row}:${accessor}`, parseFloat(cell!.style.left || "0"));
+        }
+      }
+
+      const headersByAccessor = new Map(currentHeaders.map((h) => [h.accessor as string, h]));
+      const nextHeaders = nextAccessors.map((acc) => {
+        const h = headersByAccessor.get(acc);
+        if (!h) throw new Error(`[${stepLabel}] header "${acc}" missing`);
+        return h;
+      });
+      const nextIndexByAccessor = new Map<string, number>(
+        nextAccessors.map((acc, i) => [acc, i]),
+      );
+
+      // CRITICAL: trigger the update and read the FLIP "First" frame
+      // *synchronously*. play() sets `transform: translate3d(dx, dy, 0)`
+      // synchronously then schedules a RAF that resets to translate3d(0,0,0)
+      // and applies the transition CSS. Awaiting any RAF here would only
+      // ever surface the destination (0,0,0).
+      table.update({ defaultHeaders: nextHeaders });
+
+      interface Sample {
+        row: number;
+        accessor: string;
+        oldLeft: number;
+        newLeft: number;
+        txX: number;
+        moved: boolean;
+      }
+      const samples: Sample[] = [];
+      for (const row of ROW_INDICES) {
+        for (const accessor of ACCESSORS) {
+          const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+          expect(cell, `[${stepLabel}] missing post cell r${row}.${accessor}`).toBeTruthy();
+          const newLeft = parseFloat(cell!.style.left || "0");
+          const txX = parseTranslateX(cell!.style.transform);
+          samples.push({
+            row,
+            accessor,
+            oldLeft: beforeLefts.get(`${row}:${accessor}`)!,
+            newLeft,
+            txX,
+            moved:
+              beforeIndexByAccessor.get(accessor) !== nextIndexByAccessor.get(accessor),
+          });
+        }
+      }
+
+      const summary = samples
+        .map(
+          (s) =>
+            `[r${s.row}.${s.accessor}] old=${s.oldLeft} new=${s.newLeft} ` +
+            `expectedDx=${s.oldLeft - s.newLeft} actualDx=${s.txX}`,
+        )
+        .join(" | ");
+
+      for (const s of samples) {
+        const expected = s.oldLeft - s.newLeft;
+        if (Math.abs(s.txX - expected) >= 1.5) {
+          throw new Error(`[${stepLabel}] FLIP dx mismatch. ${summary}`);
+        }
+      }
+
+      const stillSamples = samples.filter((s) => !s.moved);
+      for (const s of stillSamples) {
+        expect(s.newLeft, `[${stepLabel}] still col ${s.accessor} should not move`).toBe(
+          s.oldLeft,
+        );
+        expect(s.txX, `[${stepLabel}] still col ${s.accessor} should have no tx`).toBe(0);
+      }
+
+      const movedSamples = samples.filter((s) => s.moved);
+      expect(
+        movedSamples.length,
+        `[${stepLabel}] expected at least 2 columns to move`,
+      ).toBeGreaterThanOrEqual(6); // 2 cols × 3 rows
+
+      const movedAccessors = new Set(movedSamples.map((s) => s.accessor));
+      const movedDirections = new Set(
+        movedSamples.map((s) => Math.sign(s.txX)).filter((v) => v !== 0),
+      );
+      expect(
+        movedDirections.size,
+        `[${stepLabel}] swapped cols should have opposite-sign transforms`,
+      ).toBe(2);
+
+      // Once play()'s RAF has fired, the moving cells should report a
+      // transform transition (still cells don't need one).
+      await tickFrames(2);
+      for (const accessor of movedAccessors) {
+        for (const row of ROW_INDICES) {
+          const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+          expect(
+            cell!.style.transition,
+            `[${stepLabel}] r${row}.${accessor} should be transitioning transform`,
+          ).toContain("transform");
+        }
+      }
+
+      await sleep(SETTLE_PAUSE);
+
+      for (const row of ROW_INDICES) {
+        for (const accessor of ACCESSORS) {
+          const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+          const t = cell!.style.transform;
+          expect(t === "" || t === "none", `[${stepLabel}] r${row}.${accessor} stuck`).toBe(true);
+        }
+      }
+
+      const ghosts = canvasElement.querySelectorAll(`[data-animating-out="true"]`);
+      expect(ghosts.length, `[${stepLabel}] retained ghosts leaked`).toBe(0);
+    };
+
+    // Sanity check the starting layout: A | B | C in increasing left order.
+    const aL = parseFloat(findCellByRowAndAccessor(canvasElement, 0, "a")!.style.left || "0");
+    const bL = parseFloat(findCellByRowAndAccessor(canvasElement, 0, "b")!.style.left || "0");
+    const cL = parseFloat(findCellByRowAndAccessor(canvasElement, 0, "c")!.style.left || "0");
+    expect(aL).toBeLessThan(bL);
+    expect(bL).toBeLessThan(cL);
+
+    // Five chained reorders. Each step waits past the previous animation
+    // (SETTLE_PAUSE inside runReorderStep) before the next one begins.
+    await runReorderStep("1/5 swap B↔C → A · C · B", ["a", "c", "b"]);
+    await sleep(BEAT);
+    await runReorderStep("2/5 swap A↔C → C · A · B", ["c", "a", "b"]);
+    await sleep(BEAT);
+    await runReorderStep("3/5 swap C↔B → B · A · C", ["b", "a", "c"]);
+    await sleep(BEAT);
+    await runReorderStep("4/5 swap A↔C → B · C · A", ["b", "c", "a"]);
+    await sleep(BEAT);
+    await runReorderStep("5/5 reset → A · B · C", ["a", "b", "c"]);
+
+    // Final state should match the original layout exactly.
+    const aLAfter = parseFloat(findCellByRowAndAccessor(canvasElement, 0, "a")!.style.left || "0");
+    const bLAfter = parseFloat(findCellByRowAndAccessor(canvasElement, 0, "b")!.style.left || "0");
+    const cLAfter = parseFloat(findCellByRowAndAccessor(canvasElement, 0, "c")!.style.left || "0");
+    expect(aLAfter).toBe(aL);
+    expect(bLAfter).toBe(bL);
+    expect(cLAfter).toBe(cL);
+  },
+};
+
 export const ReorderWithoutAnimations = {
   render: () => {
     const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
@@ -679,6 +932,263 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
       const o = cell.style.opacity;
       expect(o === "" || o === "1").toBe(true);
     });
+  },
+};
+
+/**
+ * Drag-and-drop column reorder must FLIP-animate the displaced body cells
+ * (and header cells) on EVERY `dragover` swap — not just on the final
+ * `dragend`. Visually: while the user drags column B sideways, column C
+ * should glide left to make room as soon as B's center crosses C's center,
+ * the same way a programmatic `table.update({ defaultHeaders })` swap
+ * animates.
+ *
+ * How the host pulls this off:
+ *   - The drag handler (`headerCell/dragging.ts`) calls
+ *     `context.onTableHeaderDragEnd(newHeaders)` from inside `dragover` once
+ *     the cursor has moved enough to trigger a swap. That callback resolves
+ *     to `setHeaders(newHeaders)` + `onRender()`.
+ *   - `setHeaders` first calls `captureAnimationSnapshot()` (no live-drag
+ *     skip), then mutates the headers. The next render commits cells to
+ *     their new absolute positions.
+ *   - `render()`'s final `play()` consumes the snapshot, computes the
+ *     pre→post deltas, and FLIPs every cell that moved — including the one
+ *     in the column the user is dragging.
+ *
+ * This test renders a 3 cols × 3 rows table and dispatches the drag
+ * sequence inline so it can poll the cells between `dragover` events and
+ * assert that a FLIP transform or `transition: transform` was observed
+ * BEFORE `dragend` ever fires. Asserting only "saw FLIP within N ms
+ * after dragend" wouldn't distinguish the desired behaviour from a
+ * single settle animation that runs only on drop.
+ */
+export const DragAndDropColumnReorderShouldAnimate = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "a", label: "A", width: 120 },
+      { accessor: "b", label: "B", width: 120 },
+      { accessor: "c", label: "C", width: 120 },
+    ];
+    const rows: Row[] = [
+      { id: 1, a: "A1", b: "B1", c: "C1" },
+      { id: 2, a: "A2", b: "B2", c: "C2" },
+      { id: 3, a: "A3", b: "B3", c: "C3" },
+    ];
+    const result = renderVanillaTable(headers, rows, {
+      height: "240px",
+      animations: true,
+      animationDuration: SLOW_DURATION,
+      columnReordering: true,
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    });
+    setTable(result.table);
+    result.h2.textContent = `Drag-and-drop column reorder should animate on every dragover · ${SLOW_DURATION}ms`;
+    addParagraph(
+      result.wrapper,
+      "Drag the B header onto the C header in this 3×3 table. As soon as B " +
+        "crosses C, the B and C columns should smoothly slide past each " +
+        "other — not snap into place when you release.",
+      result.tableContainer,
+    );
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await sleep(BEAT);
+
+    const ROW_INDICES = [0, 1, 2];
+    const ACCESSORS = ["a", "b", "c"];
+
+    const findHeaderLabel = (accessor: string): HTMLElement => {
+      const cell = canvasElement.querySelector(
+        `.st-header-cell[data-accessor="${accessor}"], .st-header-cell #header-${accessor}`,
+      );
+      const labelHost =
+        cell?.closest(".st-header-cell") ??
+        canvasElement.querySelector(`#header-${accessor}`)?.closest(".st-header-cell");
+      const label = labelHost?.querySelector<HTMLElement>(".st-header-label");
+      if (!label) {
+        const headers = canvasElement.querySelectorAll<HTMLElement>(".st-header-cell");
+        for (const h of Array.from(headers)) {
+          const text = h.querySelector(".st-header-label-text")?.textContent?.trim() ?? "";
+          if (text.toLowerCase() === accessor.toLowerCase()) {
+            const l = h.querySelector<HTMLElement>(".st-header-label");
+            if (l) return l;
+          }
+        }
+        throw new Error(`Header label for "${accessor}" not found`);
+      }
+      return label;
+    };
+
+    const beforeLefts = new Map<string, number>();
+    for (const row of ROW_INDICES) {
+      for (const accessor of ACCESSORS) {
+        const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+        expect(cell, `missing pre cell r${row}.${accessor}`).toBeTruthy();
+        beforeLefts.set(`${row}:${accessor}`, parseFloat(cell!.style.left || "0"));
+      }
+    }
+    const aLBefore = beforeLefts.get("0:a")!;
+    const bLBefore = beforeLefts.get("0:b")!;
+    const cLBefore = beforeLefts.get("0:c")!;
+    expect(aLBefore).toBeLessThan(bLBefore);
+    expect(bLBefore).toBeLessThan(cLBefore);
+
+    const sourceLabel = findHeaderLabel("b");
+    const targetLabel = findHeaderLabel("c");
+    const targetCell = targetLabel.closest(".st-header-cell") ?? targetLabel;
+
+    /**
+     * Watch every body cell for a FLIP "First" frame: a non-zero translate
+     * `transform` and/or a `transition: transform …` set on the inline
+     * style. Latches `true` on the first hit so callers can poll cheaply.
+     */
+    let sawFlipDuringDrag = false;
+    const sampleAllCells = () => {
+      if (sawFlipDuringDrag) return;
+      for (const row of ROW_INDICES) {
+        for (const accessor of ACCESSORS) {
+          const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+          if (!cell) continue;
+          const tx = parseTranslateX(cell.style.transform);
+          if (Math.abs(tx) > 0.5) {
+            sawFlipDuringDrag = true;
+            return;
+          }
+          if (cell.style.transition.includes("transform")) {
+            sawFlipDuringDrag = true;
+            return;
+          }
+        }
+      }
+    };
+
+    const sourceRect = sourceLabel.getBoundingClientRect();
+    const targetRect = targetLabel.getBoundingClientRect();
+    const startX = sourceRect.left + sourceRect.width / 2;
+    const startY = sourceRect.top + sourceRect.height / 2;
+    const endX = targetRect.left + targetRect.width / 2;
+    const endY = targetRect.top + targetRect.height / 2;
+
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/plain", "column-drag");
+    dataTransfer.effectAllowed = "move";
+
+    sourceLabel.dispatchEvent(
+      new DragEvent("dragstart", {
+        bubbles: true,
+        cancelable: true,
+        clientX: startX,
+        clientY: startY,
+        dataTransfer,
+      }),
+    );
+
+    // Sweep the cursor from B's center to C's center across N steps. After
+    // each `dragover` we wait a few animation frames (long enough to
+    // outlast the drag throttle and let the FLIP "First" frame paint) and
+    // sample the cells. We deliberately stop sampling BEFORE dispatching
+    // `dragend` so the assertion can't be satisfied by a post-drop FLIP.
+    const steps = 8;
+    for (let i = 0; i <= steps; i++) {
+      const progress = i / steps;
+      const x = startX + (endX - startX) * progress;
+      const y = startY + (endY - startY) * progress;
+      targetCell.dispatchEvent(
+        new DragEvent("dragover", {
+          bubbles: true,
+          cancelable: true,
+          clientX: x,
+          clientY: y,
+          screenX: x,
+          screenY: y,
+          dataTransfer,
+        }),
+      );
+      // The drag handler throttles swaps at DRAG_THROTTLE_LIMIT (50ms).
+      // Wait a few RAFs (~64ms at 60fps) so a throttled swap can fire and
+      // the resulting FLIP can paint its first frame before we sample.
+      for (let frame = 0; frame < 4; frame++) {
+        await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+        sampleAllCells();
+        if (sawFlipDuringDrag) break;
+      }
+    }
+
+    // Snapshot the assertion BEFORE dragend so a post-drop FLIP can't sneak
+    // in and falsely satisfy "saw a FLIP".
+    const sawFlipBeforeDragEnd = sawFlipDuringDrag;
+
+    targetCell.dispatchEvent(
+      new DragEvent("drop", {
+        bubbles: true,
+        cancelable: true,
+        clientX: endX,
+        clientY: endY,
+        dataTransfer,
+      }),
+    );
+    sourceLabel.dispatchEvent(
+      new DragEvent("dragend", {
+        bubbles: true,
+        cancelable: true,
+        clientX: endX,
+        clientY: endY,
+        dataTransfer,
+      }),
+    );
+
+    // Give the post-dragend setTimeout(10) + render + any final FLIP a
+    // chance to fire so the after-state we measure below is settled.
+    await sleep(120);
+
+    const afterLefts = new Map<string, number>();
+    for (const row of ROW_INDICES) {
+      for (const accessor of ACCESSORS) {
+        const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+        expect(cell, `missing post cell r${row}.${accessor}`).toBeTruthy();
+        afterLefts.set(`${row}:${accessor}`, parseFloat(cell!.style.left || "0"));
+      }
+    }
+
+    const aLAfter = afterLefts.get("0:a")!;
+    const bLAfter = afterLefts.get("0:b")!;
+    const cLAfter = afterLefts.get("0:c")!;
+
+    // Sanity check: B and C actually swapped (the drag did its job).
+    if (Math.abs(bLAfter - cLBefore) >= 1.5 || Math.abs(cLAfter - bLBefore) >= 1.5) {
+      throw new Error(
+        `Expected drag to swap B↔C. ` +
+          `B left: ${bLBefore} → ${bLAfter} (expected ~${cLBefore}). ` +
+          `C left: ${cLBefore} → ${cLAfter} (expected ~${bLBefore}). ` +
+          `A left: ${aLBefore} → ${aLAfter} (expected unchanged).`,
+      );
+    }
+
+    // The regression assertion: a FLIP transform / transition must have
+    // been observed on at least one body cell while `dragover` events were
+    // still firing — i.e. before `dragend` was dispatched. A "settle on
+    // drop" implementation would fail this because no cell would carry a
+    // non-zero transform until `dragend` triggers the final play.
+    expect(
+      sawFlipBeforeDragEnd,
+      "Drag-and-drop column reorder should FLIP-animate body cells on " +
+        "every dragover swap (no transform / transition was observed " +
+        "between dragstart and dragend).",
+    ).toBe(true);
+
+    // After SETTLE_PAUSE, all animations (if any) should have cleaned up.
+    await sleep(SETTLE_PAUSE);
+    for (const row of ROW_INDICES) {
+      for (const accessor of ACCESSORS) {
+        const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
+        const t = cell!.style.transform;
+        expect(t === "" || t === "none", `r${row}.${accessor} stuck transform`).toBe(true);
+      }
+    }
+    const ghosts = canvasElement.querySelectorAll(`[data-animating-out="true"]`);
+    expect(ghosts.length).toBe(0);
   },
 };
 
