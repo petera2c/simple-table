@@ -10,6 +10,7 @@ import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
+import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
 import {
@@ -29,6 +30,7 @@ import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/Table
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 
 export interface RenderContext {
+  animationCoordinator?: AnimationCoordinator;
   cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
   collapsedRows: Map<string, number>;
@@ -133,6 +135,11 @@ export class RenderOrchestrator {
 
   getLastProcessedResult(): ProcessRowsResult | null {
     return this.lastProcessedResult;
+  }
+
+  /** See {@link TableRenderer.getCurrentBodyLayouts}. */
+  getCurrentBodyLayouts(): Map<HTMLElement, Map<string, CellPosition>> {
+    return this.tableRenderer.getCurrentBodyLayouts();
   }
 
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
@@ -730,6 +737,7 @@ export class RenderOrchestrator {
 
   private buildRendererDeps(effectiveHeaders: HeaderObject[], context: RenderContext) {
     return {
+      animationCoordinator: context.animationCoordinator,
       config: context.config,
       customTheme: context.customTheme,
       resolvedIcons: context.resolvedIcons,

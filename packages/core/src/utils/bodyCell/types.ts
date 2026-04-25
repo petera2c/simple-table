@@ -24,6 +24,12 @@ export interface AbsoluteBodyCell {
   rowIndex: number;
   colIndex: number;
   rowId: string;
+  /**
+   * Position-independent stable key (mirror of `tableRow.stableRowKey`),
+   * used to compute the cell DOM `id` and the animation snapshot key when
+   * `getRowId` is provided. Falls back to `rowId` (positional) when absent.
+   */
+  stableRowKey?: string;
   displayRowNumber: number;
   depth: number;
   isOdd: boolean;

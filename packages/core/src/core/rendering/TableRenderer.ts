@@ -22,10 +22,12 @@ import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
+import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection } from "../../utils/generalUtils";
 
 export interface TableRendererDeps {
+  animationCoordinator?: AnimationCoordinator;
   cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
   collapsedRows: Map<string, number>;
@@ -105,6 +107,11 @@ export class TableRenderer {
 
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
     this.sectionRenderer.invalidateCache(type);
+  }
+
+  /** See {@link SectionRenderer.getCurrentBodyLayouts}. */
+  getCurrentBodyLayouts(): Map<HTMLElement, Map<string, CellPosition>> {
+    return this.sectionRenderer.getCurrentBodyLayouts();
   }
 
   renderHeader(
@@ -518,6 +525,10 @@ export class TableRenderer {
     // Track which sections should exist (like React's component list)
     const sectionsToKeep: HTMLElement[] = [];
 
+    // Skip animation hookup during the position-only fast path on scroll —
+    // outgoing/incoming cells must not be animated when the user is scrolling.
+    const animationCoordinator = deps.positionOnlyBody ? undefined : deps.animationCoordinator;
+
     if (pinnedLeftHeaders.length > 0) {
       const leftSection = this.sectionRenderer.renderBodySection({
         headers: deps.effectiveHeaders,
@@ -534,6 +545,7 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        animationCoordinator,
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
@@ -557,6 +569,7 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        animationCoordinator,
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
@@ -581,6 +594,7 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        animationCoordinator,
       });
       deps.pinnedRightRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);

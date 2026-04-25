@@ -5,6 +5,7 @@ import Row from "../types/Row";
 import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
 import RowState from "../types/RowState";
 
+import { AnimationCoordinator } from "../managers/AnimationCoordinator";
 import { AutoScaleManager } from "../managers/AutoScaleManager";
 import { DimensionManager } from "../managers/DimensionManager";
 import { ScrollManager } from "../managers/ScrollManager";
@@ -77,6 +78,8 @@ export class SimpleTableVanilla {
   private headerRegistry: Map<string, any> = new Map();
   private rowIndexMap: Map<string | number, number> = new Map();
 
+  private animationCoordinator: AnimationCoordinator;
+
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
   private scrollManager: ScrollManager | null = null;
@@ -117,6 +120,15 @@ export class SimpleTableVanilla {
     this.domManager = new DOMManager();
     this.renderOrchestrator = new RenderOrchestrator();
 
+    this.animationCoordinator = new AnimationCoordinator();
+    this.animationCoordinator.setEnabled(config.animations ?? true);
+    if (config.animationDuration !== undefined) {
+      this.animationCoordinator.setDuration(config.animationDuration);
+    }
+    if (config.animationEasing !== undefined) {
+      this.animationCoordinator.setEasing(config.animationEasing);
+    }
+
     this.rebuildRowIndexMap();
     this.initializeManagers();
   }
@@ -134,6 +146,27 @@ export class SimpleTableVanilla {
       });
       const rowIdKey = rowIdToString(rowIdArray);
       this.rowIndexMap.set(rowIdKey, index);
+    });
+  }
+
+  private getBodyContainers(): HTMLElement[] {
+    const refs = this.domManager.getRefs();
+    return [
+      refs.mainBodyRef.current,
+      refs.pinnedLeftRef.current,
+      refs.pinnedRightRef.current,
+    ].filter((el): el is HTMLDivElement => el !== null);
+  }
+
+  /**
+   * Capture pre-change cell positions for the FLIP animation, including
+   * conceptual positions for cells outside the virtualization viewport so
+   * incoming cells can animate from off-screen on column reorder/sort.
+   */
+  private captureAnimationSnapshot(): void {
+    this.animationCoordinator.captureSnapshot({
+      containers: this.getBodyContainers(),
+      preLayouts: this.renderOrchestrator.getCurrentBodyLayouts(),
     });
   }
 
@@ -171,6 +204,7 @@ export class SimpleTableVanilla {
     });
 
     this.sortManager.subscribe((state) => {
+      this.captureAnimationSnapshot();
       this.render("sortManager");
     });
 
@@ -501,9 +535,16 @@ export class SimpleTableVanilla {
         }
       },
       setHeaders: (headers: HeaderObject[]) => {
+        // Skip animation snapshot during a live header drag — the cells should
+        // follow the pointer immediately rather than tween between drag steps.
+        const isLiveDrag = this.draggedHeaderRef.current !== null;
+        if (!isLiveDrag) {
+          this.captureAnimationSnapshot();
+        }
         this.headers = deepClone(headers);
         this.renderOrchestrator.invalidateCache("header");
       },
+      animationCoordinator: this.animationCoordinator,
       setCollapsedHeaders: (headers: Set<Accessor>) => {
         this.collapsedHeaders = headers;
       },
@@ -579,11 +620,26 @@ export class SimpleTableVanilla {
       this.getRenderState(),
       this.mergedColumnEditorConfig,
     );
+
+    // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
+    if (source !== "scroll-raf") {
+      this.animationCoordinator.play({ containers: this.getBodyContainers() });
+    }
   }
 
   update(config: Partial<SimpleTableConfig>): void {
     this.isUpdating = true;
     this.config = { ...this.config, ...config };
+
+    if (config.animations !== undefined) {
+      this.animationCoordinator.setEnabled(config.animations);
+    }
+    if (config.animationDuration !== undefined) {
+      this.animationCoordinator.setDuration(config.animationDuration);
+    }
+    if (config.animationEasing !== undefined) {
+      this.animationCoordinator.setEasing(config.animationEasing);
+    }
 
     if (config.rows !== undefined) {
       this.localRows = [...config.rows];
@@ -599,6 +655,13 @@ export class SimpleTableVanilla {
     }
 
     if (config.defaultHeaders !== undefined) {
+      // Snapshot before mutating headers so the FLIP `play` at the end of the
+      // ensuing render can inverse-transform from the old layout. Skipped during
+      // a live header drag (drag handles its own positioning).
+      const isLiveDrag = this.draggedHeaderRef.current !== null;
+      if (!isLiveDrag) {
+        this.captureAnimationSnapshot();
+      }
       this.headers = [...config.defaultHeaders];
       this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
 
@@ -696,6 +759,7 @@ export class SimpleTableVanilla {
     this.scrollbarVisibilityManager?.destroy();
     this.expandedDepthsManager?.destroy();
     this.ariaAnnouncementManager?.destroy();
+    this.animationCoordinator.destroy();
 
     this.renderOrchestrator.cleanup();
     this.domManager.destroy(this.container);
@@ -749,6 +813,12 @@ export class SimpleTableVanilla {
       filterManager: this.filterManager,
       onRender: () => this.render("columnEditor-onRender"),
       setHeaders: (headers: HeaderObject[]) => {
+        // Skip animation snapshot during a live header drag — the cells should
+        // follow the pointer immediately rather than tween between drag steps.
+        const isLiveDrag = this.draggedHeaderRef.current !== null;
+        if (!isLiveDrag) {
+          this.captureAnimationSnapshot();
+        }
         this.headers = deepClone(headers);
         this.renderOrchestrator.invalidateCache("header");
       },

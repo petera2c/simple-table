@@ -20,6 +20,7 @@ import {
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
+import type { AnimationCoordinator, CellPosition } from "../managers/AnimationCoordinator";
 
 // Re-export types for backward compatibility
 export type {
@@ -243,6 +244,13 @@ const renderRowSeparators = (
 
 // Main render function. When allRows is provided, separators are built from the full row list (including nested grid rows).
 // When positionOnly is true (e.g. scroll-driven), only positions are updated; content and separators are skipped for performance.
+//
+// `fullCellLayout` (when provided) maps every cell id this section knows about
+// — including rows currently outside the virtualized band — to its destination
+// position in the new state. The animation coordinator uses it so cells that
+// exit the visible band on sort can slide to their off-screen `top` before
+// being removed. Without it, cells leaving the band would be torn down with
+// nowhere to slide to and would simply pop out.
 export const renderBodyCells = (
   container: HTMLElement,
   cells: AbsoluteBodyCell[],
@@ -250,6 +258,8 @@ export const renderBodyCells = (
   scrollLeft: number = 0,
   allRows?: TableRow[],
   positionOnly?: boolean,
+  animationCoordinator?: AnimationCoordinator,
+  fullCellLayout?: Map<string, CellPosition>,
 ): void => {
   // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
   const viewportWidth = context.pinned
@@ -268,26 +278,79 @@ export const renderBodyCells = (
   const renderedCells = getRenderedCells(container);
   const renderedSeparators = getRenderedSeparators(container);
 
-  // Build set of cell IDs that should be visible
+  // Build set of cell IDs that should be visible.
+  // We prefer `stableRowKey` so the same DOM cell survives a sort (so FLIP
+  // can animate the cell to its new row position rather than tearing it
+  // down and creating a fresh node in place).
   const visibleCellIds = new Set(
     cellsToRender.map((cell) =>
-      getCellId({ accessor: cell.header.accessor, rowId: cell.rowId }),
+      getCellId({
+        accessor: cell.header.accessor,
+        rowId: cell.stableRowKey ?? cell.rowId,
+      }),
     ),
   );
+
+  // Layout map covering every cell this section knows about (visible rows
+  // AND rows currently outside the virtualized band). The animation
+  // coordinator uses it to find a post-change "destination" for cells
+  // exiting the band so they can slide out to that off-screen position
+  // before being removed.
+  //
+  // Prefer the caller-provided full layout (computed from the section
+  // snapshot config so it covers every row); otherwise fall back to a
+  // band-only layout derived from `cells`.
+  let newCellLayout: Map<string, CellPosition> | null = null;
+  if (animationCoordinator) {
+    if (fullCellLayout) {
+      newCellLayout = fullCellLayout;
+    } else {
+      newCellLayout = new Map<string, CellPosition>();
+      for (const cell of cells) {
+        const cellId = getCellId({
+          accessor: cell.header.accessor,
+          rowId: cell.stableRowKey ?? cell.rowId,
+        });
+        newCellLayout.set(cellId, {
+          left: cell.left,
+          top: cell.top,
+          width: cell.width,
+          height: cell.height,
+        });
+      }
+    }
+  }
 
   // Get unique row indices for separator visibility (use full row list when provided so nested rows get separators)
   const visibleRowIndices = allRows?.length
     ? new Set(allRows.map((r) => r.position))
     : new Set(cellsToRender.map((cell) => cell.rowIndex));
 
-  // Remove cells that are no longer visible
+  // Remove cells that are no longer visible. When the coordinator wants to
+  // animate a cell off-screen, we hand it off instead of removing.
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
-      // Untrack from row hover map before removing (stable row id; visual row index can change on scroll)
+      // Untrack from row hover map (the live row no longer owns this DOM node)
       const rowIdAttr = element.getAttribute("data-row-id");
       if (rowIdAttr) {
         untrackCellByRow(rowIdAttr, element);
       }
+
+      const newPos = newCellLayout?.get(cellId);
+      if (animationCoordinator && animationCoordinator.shouldRetain(cellId) && newPos) {
+        // Slide the cell to its new conceptual position (which may be
+        // off-screen — the body's overflow clip handles the visual cutoff)
+        // and remove it once the slide completes.
+        animationCoordinator.retainCell({
+          cellId,
+          element,
+          container,
+          newPosition: newPos,
+        });
+        renderedCells.delete(cellId);
+        return;
+      }
+
       element.remove();
       renderedCells.delete(cellId);
     }
@@ -313,7 +376,7 @@ export const renderBodyCells = (
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({
       accessor: cell.header.accessor,
-      rowId: cell.rowId,
+      rowId: cell.stableRowKey ?? cell.rowId,
     });
 
     if (!renderedCells.has(cellId)) {
@@ -358,8 +421,13 @@ export const renderBodyCells = (
     }
   });
 
-  // Second pass: batch create new cells
+  // Second pass: batch create new cells. If the snapshot captured this cell's
+  // pre-change position (e.g. the row was off-screen pre-sort and is now in
+  // the band), play() will FLIP it from there — no extra hook needed here.
   cellsToCreate.forEach(({ cell, cellId }) => {
+    // If a retained out-animating ghost still occupies this cellId, drop it so
+    // the new "real" cell can take ownership of the id without DOM duplication.
+    animationCoordinator?.discardRetainedIfPresent(cellId, container);
     const cellElement = createBodyCellElement(cell, context);
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);

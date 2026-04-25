@@ -25,6 +25,9 @@ import { IconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 
 export interface SimpleTableProps {
+  animations?: boolean; // Flag for animating cells on sort and programmatic column reorder (default: true)
+  animationDuration?: number; // Cell animation duration in ms (default: 240). Honored only when `animations` is true.
+  animationEasing?: string; // Cell animation CSS easing function (default: cubic-bezier(0.2, 0.8, 0.2, 1)). Honored only when `animations` is true.
   autoExpandColumns?: boolean; // Flag for converting pixel widths to proportional fr units that fill table width
   canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update

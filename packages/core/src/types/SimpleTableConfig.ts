@@ -24,6 +24,9 @@ import { VanillaIconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 
 export interface SimpleTableConfig {
+  animations?: boolean;
+  animationDuration?: number;
+  animationEasing?: string;
   autoExpandColumns?: boolean;
   canExpandRowGroup?: (row: Row) => boolean;
   cellUpdateFlash?: boolean;

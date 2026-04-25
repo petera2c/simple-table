@@ -4,6 +4,7 @@ import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
 import {
   generateRowId,
+  generateStableRowKey,
   rowIdToString,
   getNestedRows,
   isRowExpanded,
@@ -69,6 +70,17 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         rowIndexPath,
         groupingKey: undefined,
       });
+      const stableRowKey =
+        generateStableRowKey({
+          getRowId,
+          row,
+          depth: 0,
+          index,
+          rowPath,
+          rowIndexPath,
+          groupingKey: undefined,
+          parentStableKey: null,
+        }) ?? undefined;
 
       return {
         row,
@@ -81,6 +93,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         rowIndexPath,
         absoluteRowIndex: index,
         isLastGroupRow: false,
+        stableRowKey,
       };
     });
 
@@ -106,7 +119,8 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
     currentDepth: number,
     parentIdPath: (string | number)[] = [],
     parentIndexPath: number[] = [],
-    parentIndices: number[] = []
+    parentIndices: number[] = [],
+    parentStableKey: string | null = null
   ): void => {
     currentRows.forEach((row, index) => {
       const currentGroupingKey = rowGrouping[currentDepth];
@@ -124,6 +138,17 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         rowIndexPath,
         groupingKey: currentGroupingKey,
       });
+      const stableRowKey =
+        generateStableRowKey({
+          getRowId,
+          row,
+          depth: currentDepth,
+          index,
+          rowPath,
+          rowIndexPath,
+          groupingKey: currentGroupingKey,
+          parentStableKey,
+        }) ?? undefined;
 
       const currentRowIndex = result.length;
 
@@ -139,6 +164,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         rowIndexPath,
         absoluteRowIndex: position,
         parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
+        stableRowKey,
       };
       result.push(mainRow);
       paginatableRowsBuilder.push(mainRow);
@@ -253,10 +279,14 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         } else if (nestedRows.length > 0) {
           const nestedIdPath = [...rowPath, currentGroupingKey];
           const nestedIndexPath = [...rowIndexPath];
-          processRows(nestedRows, currentDepth + 1, nestedIdPath, nestedIndexPath, [
-            ...parentIndices,
-            currentRowIndex,
-          ]);
+          processRows(
+            nestedRows,
+            currentDepth + 1,
+            nestedIdPath,
+            nestedIndexPath,
+            [...parentIndices, currentRowIndex],
+            stableRowKey ?? null
+          );
         }
       }
 
