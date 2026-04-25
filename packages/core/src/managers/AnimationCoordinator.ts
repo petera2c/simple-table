@@ -44,7 +44,7 @@ interface InFlightCell {
   isRetained: boolean;
 }
 
-const DEFAULT_DURATION = 240;
+const DEFAULT_DURATION = 2000;
 const DEFAULT_EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 const MIN_DELTA = 0.5;
 const SAFETY_TIMEOUT_SLACK = 80;
@@ -309,8 +309,12 @@ export class AnimationCoordinator {
       cells.forEach((element, cellId) => consider(element, cellId, false));
     }
 
-    // FLIP "First" frame: apply inverse transforms synchronously so the next
-    // paint shows cells at their old positions.
+    // FLIP "First" frame: apply inverse transforms synchronously so cells
+    // appear at their old positions. We then need the browser to actually
+    // PAINT this inverted state before we trigger the transition — otherwise
+    // both the inverted write and the identity write happen before the same
+    // paint, the browser only ever paints the identity state, and the
+    // transition fires from identity → identity (no visual movement).
     for (const { cellId, element, dx, dy } of pending) {
       this.cancelInFlight(cellId);
       element.style.transition = "none";
@@ -320,11 +324,19 @@ export class AnimationCoordinator {
 
     if (pending.length === 0) return;
 
+    // Double RAF: rAF #1 callback runs BEFORE the next paint, so the browser
+    // hasn't yet committed the inverted transform to a painted frame. rAF #2
+    // is scheduled from inside #1 and fires AFTER #1's frame has painted —
+    // so by the time `startTransition` runs, the browser's last painted
+    // computed transform is `translate3d(dx, dy, 0)` and the new write to
+    // `translate3d(0, 0, 0)` triggers a real interpolation.
     requestAnimationFrame(() => {
-      for (const { cellId, element, isRetained } of pending) {
-        if (!element.isConnected) continue;
-        this.startTransition(cellId, element, isRetained);
-      }
+      requestAnimationFrame(() => {
+        for (const { cellId, element, isRetained } of pending) {
+          if (!element.isConnected) continue;
+          this.startTransition(cellId, element, isRetained);
+        }
+      });
     });
   }
 

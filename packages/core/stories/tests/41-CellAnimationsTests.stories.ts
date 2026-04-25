@@ -211,10 +211,26 @@ export const ProgrammaticReorderAnimation = {
     const b = swapped.findIndex((h) => h.accessor === "city");
     [swapped[a], swapped[b]] = [swapped[b], swapped[a]];
     table.update({ defaultHeaders: swapped });
-    await tickFrames(2);
+    // 5 RAFs ≈ 80ms — past the double-rAF FLIP "First"/"Play" handoff and
+    // into the active transition, well before SETTLE_PAUSE elapses.
+    await tickFrames(5);
     const animating = Array.from(
       canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell"),
-    ).filter((el) => el.style.transition.includes("transform"));
+    ).filter((el) => {
+      // Inline transform during the FLIP "First" sync window OR computed
+      // transform during the active CSS transition. We require evidence the
+      // browser is actually interpolating — assigning `transition: transform …`
+      // is not enough on its own (a cell that snaps from identity → identity
+      // would otherwise appear "animating").
+      const inlineTx = parseTranslateX(el.style.transform);
+      if (Math.abs(inlineTx) > 0.5) return true;
+      const computed = window.getComputedStyle(el).transform;
+      if (!computed || computed === "none") return false;
+      const m = computed.match(/matrix\(([^)]+)\)/);
+      if (!m) return false;
+      const parts = m[1].split(",").map((p) => parseFloat(p.trim()));
+      return parts.length >= 6 && (Math.abs(parts[4]) > 0.5 || Math.abs(parts[5]) > 0.5);
+    });
     expect(animating.length).toBeGreaterThan(0);
     await sleep(SETTLE_PAUSE);
 
@@ -765,14 +781,26 @@ export const HeaderCellsAnimateDuringDragReorder = {
       for (const accessor of ACCESSORS) {
         const headerCell = findHeaderCell(accessor);
         if (!headerCell) continue;
+        // Inline transform during the FLIP "First" sync window.
         const tx = parseTranslateX(headerCell.style.transform);
         if (Math.abs(tx) > 0.5) {
           sawHeaderFlipDuringDrag = true;
           return;
         }
-        if (headerCell.style.transition.includes("transform")) {
-          sawHeaderFlipDuringDrag = true;
-          return;
+        // Computed transform during the active CSS transition. This is what
+        // proves the browser is genuinely interpolating — not just that we
+        // ASSIGNED `transition: transform …` (which can sit there on a cell
+        // that snaps if the FLIP "First" frame is lost).
+        const computed = window.getComputedStyle(headerCell).transform;
+        if (computed && computed !== "none") {
+          const m = computed.match(/matrix\(([^)]+)\)/);
+          if (m) {
+            const parts = m[1].split(",").map((p) => parseFloat(p.trim()));
+            if (parts.length >= 6 && (Math.abs(parts[4]) > 0.5 || Math.abs(parts[5]) > 0.5)) {
+              sawHeaderFlipDuringDrag = true;
+              return;
+            }
+          }
         }
       }
     };
@@ -1697,9 +1725,19 @@ export const DragAndDropColumnReorderShouldAnimate = {
             sawFlipDuringDrag = true;
             return;
           }
-          if (cell.style.transition.includes("transform")) {
-            sawFlipDuringDrag = true;
-            return;
+          // Computed transform during the active CSS transition (proves the
+          // browser is interpolating, not just that the transition style was
+          // assigned). See the matching comment in `sampleHeaders` above.
+          const computed = window.getComputedStyle(cell).transform;
+          if (computed && computed !== "none") {
+            const m = computed.match(/matrix\(([^)]+)\)/);
+            if (m) {
+              const parts = m[1].split(",").map((p) => parseFloat(p.trim()));
+              if (parts.length >= 6 && (Math.abs(parts[4]) > 0.5 || Math.abs(parts[5]) > 0.5)) {
+                sawFlipDuringDrag = true;
+                return;
+              }
+            }
           }
         }
       }
