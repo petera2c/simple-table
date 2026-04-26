@@ -36,7 +36,7 @@ const SERVER_TYPES = [
 // Generate realistic infrastructure monitoring data
 const generateInfrastructureData = (): Row[] => {
   const rows: Row[] = [];
-  const totalRows = 1000;
+  const totalRows = 200;
 
   for (let i = 0; i < totalRows; i++) {
     // Random datacenter

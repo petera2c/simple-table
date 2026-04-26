@@ -44,7 +44,7 @@ const generateManufacturingData = (): Row[] => {
   const rows: Row[] = [];
 
   // Generate data for hierarchical structure - 1,000 base rows with ~10 children each
-  const totalRows = 1000;
+  const totalRows = 200;
   const rowsPerProductLine = Math.ceil(totalRows / productLines.length);
 
   productLines.forEach((productLine, lineIndex) => {
@@ -81,12 +81,12 @@ const generateManufacturingData = (): Row[] => {
           statusRandom < 0.7
             ? "Running"
             : statusRandom < 0.8
-            ? "Scheduled Maintenance"
-            : statusRandom < 0.9
-            ? "Unplanned Downtime"
-            : statusRandom < 0.95
-            ? "Idle"
-            : "Setup";
+              ? "Scheduled Maintenance"
+              : statusRandom < 0.9
+                ? "Unplanned Downtime"
+                : statusRandom < 0.95
+                  ? "Idle"
+                  : "Setup";
 
         stations.push({
           id: stationId,

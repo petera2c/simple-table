@@ -2,7 +2,7 @@ import { useEffect, RefObject } from "react";
 import type { TableAPI, Row, CellValue } from "@simple-table/react";
 
 /** Slightly slower than frame budget so live updates + scroll rarely pile on one rAF. */
-const TICK_MS = 50;
+const TICK_MS = 10;
 const ROWS_PER_TICK = 3;
 
 type MetricSlot = 0 | 1 | 2 | 3 | 4 | 5 | 6;

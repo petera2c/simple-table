@@ -40,7 +40,7 @@ export default function InfrastructureExample({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: height ? height : "70dvh",
+          height: height ? height : "60dvh",
           fontSize: "16px",
           color: "#666",
         }}
@@ -57,7 +57,7 @@ export default function InfrastructureExample({
       columnResizing
       defaultHeaders={HEADERS}
       editColumns
-      height={height ? height : "70dvh"}
+      height={height ? height : "60dvh"}
       icons={icons}
       rows={data}
       selectableCells
