@@ -632,6 +632,12 @@ input {
 
 .st-cell {
   border: var(--st-border-width) solid transparent;
+  /* Stack above .st-row-separator so a cell mid-FLIP slides in front of the
+     static border lines instead of being bisected by them. Both elements are
+     position:absolute siblings with z-index:auto, so DOM order otherwise puts
+     separators on top. Statically the separator never overlaps a cell, so
+     this only changes paint during animation. */
+  z-index: 1;
 }
 
 /* Remove browser default focus ring when Tab moves focus to a cell; selection styling indicates focus */
