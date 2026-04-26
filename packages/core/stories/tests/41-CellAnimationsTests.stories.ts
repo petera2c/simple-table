@@ -112,8 +112,7 @@ export const ProgrammaticReorderAnimation = {
     const originalHeaders = createHeaders();
     const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
       height: "400px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
     });
     setTable(result.table);
     result.h2.textContent = `Programmatic column reorder · ${SLOW_DURATION}ms per step`;
@@ -282,8 +281,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
     ];
     const result = renderVanillaTable(headers, rows, {
       height: "240px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     });
     setTable(result.table);
@@ -524,8 +522,7 @@ export const HeaderCellsAnimateOnColumnReorder = {
     ];
     const result = renderVanillaTable(headers, rows, {
       height: "240px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     });
     setTable(result.table);
@@ -712,8 +709,7 @@ export const HeaderCellsAnimateDuringDragReorder = {
     ];
     const result = renderVanillaTable(headers, rows, {
       height: "240px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
       columnReordering: true,
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     });
@@ -940,8 +936,7 @@ export const HeaderDragDoesNotFlickerDuringAnimation = {
     ];
     const result = renderVanillaTable(headers, rows, {
       height: "240px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
       columnReordering: true,
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     });
@@ -1136,7 +1131,7 @@ export const ReorderWithoutAnimations = {
   render: () => {
     const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
       height: "400px",
-      animations: false,
+      animations: { enabled: false },
     });
     setTable(result.table);
     result.h2.textContent = "Programmatic column reorder (animations: off, default)";
@@ -1191,8 +1186,7 @@ export const SortAnimationDemo = {
   render: () => {
     const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
       height: "400px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     });
     setTable(result.table);
@@ -1299,7 +1293,7 @@ export const AnimationsPropWiring = {
   render: () => {
     const { wrapper, h2 } = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
       height: "400px",
-      animations: true,
+      animations: { enabled: true },
     });
     h2.textContent = "Smoke: animations prop accepted";
     addParagraph(wrapper, "Verifies the animations prop is plumbed through without error.");
@@ -1331,8 +1325,7 @@ export const ReorderAnimatesFromPreviousPositionPerCell = {
   render: () => {
     const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
       height: "400px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
     });
     setTable(result.table);
     result.h2.textContent = "Reorder animates from each cell's previous position";
@@ -1469,8 +1462,7 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
     }));
     const result = renderVanillaTable(headers, rows, {
       height: "300px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     });
     setTable(result.table);
@@ -1649,8 +1641,7 @@ export const DragAndDropColumnReorderShouldAnimate = {
     ];
     const result = renderVanillaTable(headers, rows, {
       height: "240px",
-      animations: true,
-      animationDuration: SLOW_DURATION,
+      animations: { enabled: true, duration: SLOW_DURATION },
       columnReordering: true,
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     });

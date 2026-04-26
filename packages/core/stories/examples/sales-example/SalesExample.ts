@@ -9,7 +9,7 @@ import { SALES_HEADERS } from "./sales-headers";
 import salesData from "./sales-data.json";
 
 export const salesExampleDefaults = {
-  animations: true,
+  animations: { enabled: true },
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,

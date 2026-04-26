@@ -121,16 +121,20 @@ export class SimpleTableVanilla {
     this.renderOrchestrator = new RenderOrchestrator();
 
     this.animationCoordinator = new AnimationCoordinator();
-    this.animationCoordinator.setEnabled(config.animations ?? true);
-    if (config.animationDuration !== undefined) {
-      this.animationCoordinator.setDuration(config.animationDuration);
-    }
-    if (config.animationEasing !== undefined) {
-      this.animationCoordinator.setEasing(config.animationEasing);
-    }
+    this.applyAnimationsConfig(config.animations);
 
     this.rebuildRowIndexMap();
     this.initializeManagers();
+  }
+
+  private applyAnimationsConfig(animations: SimpleTableConfig["animations"]): void {
+    this.animationCoordinator.setEnabled(animations?.enabled ?? true);
+    if (animations?.duration !== undefined) {
+      this.animationCoordinator.setDuration(animations.duration);
+    }
+    if (animations?.easing !== undefined) {
+      this.animationCoordinator.setEasing(animations.easing);
+    }
   }
 
   private rebuildRowIndexMap(): void {
@@ -668,13 +672,7 @@ export class SimpleTableVanilla {
     this.config = { ...this.config, ...config };
 
     if (config.animations !== undefined) {
-      this.animationCoordinator.setEnabled(config.animations);
-    }
-    if (config.animationDuration !== undefined) {
-      this.animationCoordinator.setDuration(config.animationDuration);
-    }
-    if (config.animationEasing !== undefined) {
-      this.animationCoordinator.setEasing(config.animationEasing);
+      this.applyAnimationsConfig(config.animations);
     }
 
     if (config.rows !== undefined) {

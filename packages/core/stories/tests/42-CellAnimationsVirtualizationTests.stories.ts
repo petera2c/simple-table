@@ -2,7 +2,7 @@
  * CELL ANIMATIONS — VIRTUALIZATION & SCALE TESTS (slow & visible)
  *
  * Stress-tests the FLIP animation coordinator at scale (500 rows × 30 cols
- * in a constrained viewport) with `animationDuration` cranked up so the
+ * in a constrained viewport) with `animations.duration` cranked up so the
  * play function is *visible* when watched in Storybook. Each play function
  * runs many sequential interactions with explicit pauses between them so
  * you can see each animation phase fire.
@@ -136,8 +136,7 @@ const renderConstrainedTable = (
     defaultHeaders: headers,
     rows: data,
     height: `${VIEWPORT_HEIGHT}px`,
-    animations: true,
-    animationDuration: SLOW_DURATION,
+    animations: { enabled: true, duration: SLOW_DURATION },
     ...options,
   });
   table.mount();
@@ -404,7 +403,7 @@ export const SlowColumnReorderMarathon = {
     announce(status, "Step 1/2 · Reversing all columns…");
     table.update({ defaultHeaders: [...original].reverse() });
     // 5 RAFs ≈ 80ms — well past the double-rAF FLIP "First"/"Play" handoff
-    // and into the active transition window (animationDuration=1500ms).
+    // and into the active transition window (animations.duration=1500ms).
     await tickFrames(5);
     expect(countActuallyAnimating(canvasElement)).toBeGreaterThan(50);
     await sleep(SETTLE_PAUSE);
@@ -649,7 +648,7 @@ export const ReorderAtMultipleScrollPositions = {
       table.update({ defaultHeaders: order });
       // Wait long enough for the FLIP `play` RAF to fire and the browser to
       // start interpolating, but well short of SLOW_DURATION so cells are
-      // still mid-flight. 5 RAFs ≈ 80ms, vs. animationDuration=1500ms.
+      // still mid-flight. 5 RAFs ≈ 80ms, vs. animations.duration=1500ms.
       await tickFrames(5);
 
       // Strict computed-style check: cells must have a non-identity transform
