@@ -38,6 +38,7 @@ import {
   faInbox,
   faUpDown,
   faGear,
+  faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
@@ -206,6 +207,12 @@ export const docSections: DocSection[] = [
         label: "Cell Clicking",
         path: "/docs/cell-clicking",
         icon: faHandPointer,
+      },
+      {
+        id: "animations",
+        label: "Animations",
+        path: "/docs/animations",
+        icon: faWandMagicSparkles,
       },
     ],
   },

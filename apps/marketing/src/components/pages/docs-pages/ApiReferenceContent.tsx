@@ -26,6 +26,7 @@ import {
   ON_ROW_GROUP_EXPAND_PROPS,
   HEADER_RENDERER_PROPS,
   COLUMN_EDITOR_ROW_RENDERER_PROPS,
+  ANIMATIONS_CONFIG_PROPS,
   ENUM_OPTION_PROPS,
   AGGREGATION_CONFIG_PROPS,
   CHART_OPTIONS_PROPS,
@@ -164,6 +165,10 @@ const ApiReferenceContent = () => {
       >
         All union type values and object type properties used in SimpleTable.
       </motion.p>
+
+      <div style={{ scrollMarginTop: `${HEADER_HEIGHT}px` }} id="animations-config">
+        <PropTable props={ANIMATIONS_CONFIG_PROPS} title="AnimationsConfig" />
+      </div>
 
       <div style={{ scrollMarginTop: `${HEADER_HEIGHT}px` }} id="enum-option">
         <PropTable props={ENUM_OPTION_PROPS} title="EnumOption" />

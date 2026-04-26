@@ -1,5 +1,43 @@
 import type { PropInfo } from "./types";
 
+export const ANIMATIONS_CONFIG_PROPS: PropInfo[] = [
+  {
+    key: "enabled",
+    name: "enabled",
+    required: false,
+    description:
+      "Master toggle for animations. When false, no other field has effect and cells snap to their new positions instantly. Defaults to true.",
+    type: "boolean",
+    example: `// Disable animations entirely
+animations={{ enabled: false }}`,
+  },
+  {
+    key: "duration",
+    name: "duration",
+    required: false,
+    description:
+      "Animation duration in milliseconds. Applies to every animated cell. Defaults to 240ms.",
+    type: "number",
+    example: `// Snappier 160ms transitions
+animations={{ duration: 160 }}
+
+// Slower, more dramatic 400ms transitions
+animations={{ duration: 400 }}`,
+  },
+  {
+    key: "easing",
+    name: "easing",
+    required: false,
+    description:
+      "CSS easing function applied to the transform transition. Accepts any valid CSS timing function (cubic-bezier, ease, linear, etc.). Defaults to cubic-bezier(0.2, 0.8, 0.2, 1).",
+    type: "string",
+    example: `animations={{
+  duration: 280,
+  easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" // bouncy
+}}`,
+  },
+];
+
 export const ENUM_OPTION_PROPS: PropInfo[] = [
   {
     key: "label",

@@ -68,6 +68,26 @@ customTheme={{
 }}`,
   },
   {
+    key: "animations",
+    name: "animations",
+    required: false,
+    description:
+      "Configures animations on sort, programmatic column reorder, drag-driven column reorder, and column visibility changes. Animations are enabled by default with sensible motion settings and automatically respect the user's prefers-reduced-motion setting. Pass an object to override the duration, easing, or to disable animations entirely.",
+    type: "AnimationsConfig",
+    link: "#animations-config",
+    example: `// Default behavior (animations on, 240ms, smooth easing)
+// No prop required.
+
+// Custom timing
+animations={{
+  duration: 320,
+  easing: "ease-out",
+}}
+
+// Disable animations
+animations={{ enabled: false }}`,
+  },
+  {
     key: "cellUpdateFlash",
     name: "cellUpdateFlash",
     required: false,

@@ -994,6 +994,13 @@ export const SEO_STRINGS = {
     keywords:
       "simple-table, data-grid, datagrid, data table, column sorting, table sorting, typescript table, data management, javascript data grid",
   },
+  animations: {
+    title: "Animations in Simple Table Data Grid",
+    description:
+      "Smooth animations on sort, column reorder, and column visibility changes, on by default in Simple Table. GPU-accelerated, virtualization-aware, and respects prefers-reduced-motion. Customize duration and easing or disable entirely.",
+    keywords:
+      "simple-table, data-grid, datagrid, data table, animations, table animations, sort animations, column reorder animations, prefers-reduced-motion, typescript table, javascript data grid",
+  },
   columnVisibility: {
     title: "Column Visibility in Simple Table Data Grid",
     description:

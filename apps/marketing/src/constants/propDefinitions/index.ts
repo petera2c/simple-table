@@ -27,6 +27,7 @@ export {
 
 // Config props (aggregation, sort, filter, chart)
 export {
+  ANIMATIONS_CONFIG_PROPS,
   ENUM_OPTION_PROPS,
   AGGREGATION_CONFIG_PROPS,
   CHART_OPTIONS_PROPS,

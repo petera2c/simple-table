@@ -24,6 +24,7 @@ import {
   faBolt,
   faFileCode,
   faMobileAlt,
+  faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -246,6 +247,12 @@ export default function FeaturesSection() {
               title: "Theme Builder Tool",
               desc: "Visual theme customization",
               link: "/theme-builder",
+            },
+            {
+              icon: faWandMagicSparkles,
+              title: "Animations",
+              desc: "Smooth transitions on sort, reorder, and visibility changes",
+              link: "/docs/animations",
             },
           ].map((item, index) => (
             <Link key={index} href={item.link}>

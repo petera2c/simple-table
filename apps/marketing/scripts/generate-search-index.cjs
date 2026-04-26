@@ -127,6 +127,7 @@ function getSectionName(docPath) {
     "/docs/cell-highlighting": "Cell Features",
     "/docs/cell-renderer": "Cell Features",
     "/docs/cell-clicking": "Cell Features",
+    "/docs/animations": "Cell Features",
     "/docs/header-renderer": "Advanced Features",
     "/docs/footer-renderer": "Advanced Features",
     "/docs/pagination": "Advanced Features",
@@ -313,6 +314,13 @@ function getSEOMetadata(docId) {
         "Handle cell click events in your react-table with Simple Table. Add interactive cell behavior to your datagrid or data table with TypeScript support.",
       keywords:
         "simple-table, react-table, react-grid, data-grid, datagrid, data table, cell clicking, cell events, interactive table, cell interactions, typescript table, onclick handlers",
+    },
+    animations: {
+      title: "Animations in Simple Table React Grid",
+      description:
+        "Smooth animations on sort, column reorder, and column visibility changes in your react-table with Simple Table. GPU-accelerated, virtualization-aware, and respects prefers-reduced-motion. Customize duration and easing or disable entirely.",
+      keywords:
+        "simple-table, react-table, react-grid, data-grid, datagrid, data table, animations, table animations, sort animations, column reorder animations, prefers-reduced-motion, typescript table",
     },
     "header-renderer": {
       title: "Custom Header Renderers with Simple Table",
