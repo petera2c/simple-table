@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Row } from "@simple-table/react";
 
-export function useSalesData(rowCount?: number) {
+export function useSalesData() {
   const [data, setData] = useState<Row[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,9 +26,7 @@ export function useSalesData(rowCount?: number) {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `https://www.simple-table.com/api/data/sales?rowCount=${rowCount}`
-        );
+        const response = await fetch("https://www.simple-table.com/api/data/sales");
         if (response.ok) {
           const data = await response.json();
           const processedData = processData(data);
@@ -45,7 +43,7 @@ export function useSalesData(rowCount?: number) {
     };
 
     fetchData();
-  }, [rowCount]);
+  }, []);
 
   return { data, isLoading };
 }

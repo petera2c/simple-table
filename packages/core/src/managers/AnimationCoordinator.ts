@@ -1,20 +1,38 @@
 import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/eventTracking";
 import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
 
-const DEFAULT_DURATION = 300;
-const DEFAULT_EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+const DEFAULT_DURATION = 400;
+/**
+ * Easing for incoming + persistent cells. Decelerating curve: the cell
+ * approaches its final position smoothly. The visible portion of an
+ * INCOMING slide is the last leg of the journey (cell entering the
+ * viewport and settling into its final spot), so a decelerating curve
+ * reads naturally as the cell "arriving".
+ */
+const DEFAULT_EASING = "ease-out";
+/**
+ * Easing for outgoing (retained) cells. Accelerating curve: the cell
+ * leaves slowly and exits quickly. The visible portion of an outgoing
+ * slide is the first leg of the journey (cell at its old position,
+ * sliding toward the viewport edge), so back-loading spatial progress
+ * keeps the cell on-screen for most of the animation instead of flicking
+ * off in the first frame.
+ */
+const OUTGOING_EASING = "ease-in";
 const MIN_DELTA = 0.5;
 const SAFETY_TIMEOUT_SLACK = 80;
 const RETAINED_CLASS = "st-cell-animating-out";
 const RETAINED_ATTR = "data-animating-out";
 
 /**
- * Compression factor for the off-screen portion of the FLIP journey. Larger
- * values squeeze the off-screen overshoot more aggressively (cells with very
- * different conceptual destinations end up closer in slide distance); smaller
- * values give more visual spread. Tuned so that a row sorting to the bottom
- * of a typical 500-row dataset slides ~1.7× viewport while preserving the
- * sense that it's heading "really far".
+ * Curve-shape factor for the off-screen portion of the FLIP journey. Larger
+ * values squeeze cells in the medium-distance regime more aggressively
+ * while still letting truly-extreme cells fan out near the asymptote;
+ * smaller values flatten the curve so most off-screen cells pile up near
+ * the asymptote (loses the "this row is going further than that one"
+ * signal). Does NOT change the asymptote — that's controlled by
+ * `maxOvershoot` inside `scaleFlipDistance` (currently `clientSize`,
+ * giving an asymptote of ~2× viewport).
  */
 const OFFSCREEN_COMPRESSION_FACTOR = 10;
 
@@ -52,6 +70,32 @@ export interface CellPosition {
 interface CellSnapshot {
   left: number;
   top: number;
+  /**
+   * The cell's `style.top` at capture time (pre-render). Stored alongside the
+   * visual position so {@link play} can detect cells whose logical destination
+   * didn't actually move during this render and let their in-flight transition
+   * continue uninterrupted instead of cancelling + restarting it (which would
+   * freeze the cell for 2 rAFs and reset the easing curve, producing a
+   * perceptible velocity discontinuity even though the position is preserved).
+   */
+  styleTop: number;
+  styleLeft: number;
+  /**
+   * True when `top`/`left` was read from a live DOM element (via
+   * `getBoundingClientRect` for in-flight cells, or `style.top`/`left`
+   * otherwise). False when it came from `preLayouts`, which provides
+   * conceptual positions for off-screen rows.
+   *
+   * `play()` uses this flag to skip {@link scaleFlipDistance} compression for
+   * DOM-derived snapshots — those positions are already real visual positions
+   * (bounded to the viewport for in-flight cells, or to the cell's current
+   * style for non-in-flight ones), and compressing them re-positions the cell
+   * away from where the user is currently seeing it. Compression is only
+   * appropriate for preLayout entries, where `top` may be tens of thousands
+   * of pixels off-screen and an uncompressed FLIP would leave the cell
+   * invisible until the last few percent of the animation.
+   */
+  fromDom: boolean;
 }
 
 interface InFlightCell {
@@ -90,6 +134,18 @@ export class AnimationCoordinator {
   /** Outgoing cells the renderer handed off; keyed per container so play() finds them. */
   private retainedCells: Map<HTMLElement, Map<string, HTMLElement>> = new Map();
   private prefersReducedMotion: boolean;
+  /**
+   * Per-render cache of scroller layout metrics. Reading
+   * `scrollHeight`/`clientHeight`/etc. after a style mutation forces a sync
+   * layout flush; without this cache, scaleFlipDistance() forces a fresh
+   * flush for every cell in the retain/play loops, turning a single sort
+   * into hundreds of layout passes (observed: 513ms in `msRemove` for ~287
+   * cells, growing across consecutive sorts as DOM size grows). The cache
+   * is cleared at the boundaries of a render cycle (captureSnapshot start
+   * and play end / cancel) since column count and section heights are
+   * stable within a single sort.
+   */
+  private scrollerMetricsCache: WeakMap<HTMLElement, ScrollerMetrics> = new WeakMap();
 
   constructor(opts: AnimationCoordinatorOptions = {}) {
     this.duration = opts.duration ?? DEFAULT_DURATION;
@@ -126,6 +182,26 @@ export class AnimationCoordinator {
   }
 
   /**
+   * Read scroller layout metrics for `container`, caching the result for the
+   * remainder of the current render cycle. Subsequent calls in the same
+   * cycle (e.g. for every cell in a retain or play loop) skip the DOM read,
+   * which would otherwise force a synchronous layout flush after each style
+   * mutation in the loop.
+   */
+  private getScrollerMetrics(container: HTMLElement): ScrollerMetrics {
+    let metrics = this.scrollerMetricsCache.get(container);
+    if (!metrics) {
+      metrics = readScrollerMetrics(container);
+      this.scrollerMetricsCache.set(container, metrics);
+    }
+    return metrics;
+  }
+
+  private clearScrollerMetricsCache(): void {
+    this.scrollerMetricsCache = new WeakMap();
+  }
+
+  /**
    * Capture pre-change positions for cells we may want to animate.
    *
    * @param args.containers Body containers; rendered cells are read from the DOM.
@@ -142,6 +218,11 @@ export class AnimationCoordinator {
       this.snapshot = null;
       return;
     }
+
+    // New render cycle starting — drop any scroller-metric cache from the
+    // previous cycle so retainCell/play see fresh dimensions if the table
+    // (or surrounding layout) actually resized between runs.
+    this.clearScrollerMetricsCache();
 
     const next = new Map<string, CellSnapshot>();
 
@@ -173,7 +254,21 @@ export class AnimationCoordinator {
       if (preLayout) {
         preLayout.forEach((pos, cellId) => {
           if (!next.has(cellId)) {
-            next.set(cellId, { left: pos.left, top: pos.top });
+            // preLayouts entries are conceptual destinations for off-screen
+            // rows that aren't in the DOM. styleTop/styleLeft mirror the
+            // logical position itself — that way the "skip cells whose
+            // logical destination didn't change" check works for cells that
+            // come INTO the DOM via this codepath without misclassifying them.
+            // fromDom=false signals to play() that this position is conceptual
+            // (potentially tens of thousands of pixels off-screen) and should
+            // be compressed via scaleFlipDistance.
+            next.set(cellId, {
+              left: pos.left,
+              top: pos.top,
+              styleTop: pos.top,
+              styleLeft: pos.left,
+              fromDom: false,
+            });
           }
         });
       }
@@ -221,18 +316,19 @@ export class AnimationCoordinator {
     // scaling also gives cells with very different conceptual destinations
     // visibly different slide distances, so they fan out instead of marching
     // off-screen in lockstep.
+    const metrics = this.getScrollerMetrics(container);
     const clippedTop = scaleFlipDistance(
       newPosition.top,
       oldTop,
       newPosition.height,
-      container,
+      metrics,
       "y",
     );
     const clippedLeft = scaleFlipDistance(
       newPosition.left,
       oldLeft,
       newPosition.width,
-      container,
+      metrics,
       "x",
     );
 
@@ -265,6 +361,33 @@ export class AnimationCoordinator {
     element.style.pointerEvents = "none";
 
     map.set(cellId, element);
+  }
+
+  /**
+   * Take ownership of a retained (outgoing) ghost element so the renderer can
+   * promote it back to a live cell — rather than tearing it down and creating
+   * a fresh node — when its row becomes visible again. Returns the element
+   * with its retained-only attributes/state stripped, or `null` if no ghost
+   * is currently retained for this id in the container.
+   *
+   * Reusing the ghost preserves DOM continuity: the next play() step reads
+   * the cell's mid-flight visual position from the snapshot (captured before
+   * the render) and FLIPs it from there to its new live destination, so the
+   * row glides instead of disappearing and a freshly created replacement
+   * doesn't pop into existence at a clipped FLIP entry point.
+   */
+  claimRetainedForReuse(cellId: string, container: HTMLElement): HTMLElement | null {
+    const map = this.retainedCells.get(container);
+    if (!map) return null;
+    const element = map.get(cellId);
+    if (!element) return null;
+    this.cancelInFlight(cellId);
+    map.delete(cellId);
+    element.classList.remove(RETAINED_CLASS);
+    element.removeAttribute(RETAINED_ATTR);
+    element.id = cellId;
+    element.style.pointerEvents = "";
+    return element;
   }
 
   /**
@@ -333,22 +456,61 @@ export class AnimationCoordinator {
       const currentLeft = parsePx(element.style.left);
       const currentTop = parsePx(element.style.top);
 
-      // For incoming cells (newly created live cells), scale the FLIP
-      // "before" position so cells sliding in from far off-screen take a
-      // bounded but proportional journey on each axis. Without scaling, a
-      // row whose pre-sort conceptual top was 14970 sliding to currentTop=0
-      // would start ~15k pixels below the viewport — with ease-out it stays
-      // off-screen for most of the animation, leaving the viewport empty
-      // until the last few percent. The horizontal axis has the same
-      // failure mode for far-column reorders. Retained cells already had
-      // their style.top/left scaled at retainCell time, so we don't re-scale
-      // here.
-      const beforeTopClipped = isRetained
-        ? before.top
-        : scaleFlipDistance(before.top, currentTop, element.offsetHeight || 0, container, "y");
-      const beforeLeftClipped = isRetained
-        ? before.left
-        : scaleFlipDistance(before.left, currentLeft, element.offsetWidth || 0, container, "x");
+      // If this cell is already animating toward the same logical destination
+      // (style.top/left unchanged across the captureSnapshot → render boundary),
+      // leave the in-flight transition running. Restarting it would freeze the
+      // cell for 2 rAFs, reset the easing curve back to its fast start, and
+      // produce a visible velocity discontinuity — exactly the "jump" users see
+      // when triggering a sort while another sort is mid-animation. The new
+      // FLIP transform would be identical to the live computed transform
+      // anyway, so the cancel + restart adds nothing but a stutter.
+      if (
+        !isRetained &&
+        this.inFlight.has(cellId) &&
+        Math.abs(before.styleTop - currentTop) < MIN_DELTA &&
+        Math.abs(before.styleLeft - currentLeft) < MIN_DELTA
+      ) {
+        seen.add(cellId);
+        return;
+      }
+
+      // For incoming cells whose snapshot came from `preLayouts` (a row that
+      // wasn't in the DOM at capture, so we only have its conceptual logical
+      // position), scale the FLIP "before" position so cells sliding in from
+      // far off-screen take a bounded but proportional journey on each axis.
+      // Without scaling, a row whose pre-sort conceptual top was 14970 sliding
+      // to currentTop=0 would start ~15k pixels below the viewport — with
+      // ease-out it stays off-screen for most of the animation, leaving the
+      // viewport empty until the last few percent.
+      //
+      // For DOM-derived snapshots (live + retained, `before.fromDom === true`)
+      // we skip scaling entirely. Their `before.top` was read from a real DOM
+      // element — for in-flight cells via `getBoundingClientRect` (so it is
+      // already the cell's real visual position bounded to the viewport), and
+      // for non-in-flight cells via `style.top` (likewise already a real visual
+      // position, since no transform is in play). Compressing these would move
+      // the cell to a position OTHER than where the user is currently seeing
+      // it, producing a 100–700 px positional snap on every interruption sort.
+      // Retained cells already had their style.top/left scaled at retainCell
+      // time, so we wouldn't re-scale them either.
+      // For preLayout cells we need the cell's own size; prefer the inline
+      // style (no layout) over offsetHeight/offsetWidth (forces layout).
+      const skipScale = isRetained || before.fromDom;
+      const cellHeight = skipScale
+        ? 0
+        : parsePx(element.style.height) || element.offsetHeight || 0;
+      const cellWidth = skipScale
+        ? 0
+        : parsePx(element.style.width) || element.offsetWidth || 0;
+      const playMetrics = skipScale ? null : this.getScrollerMetrics(container);
+      const beforeTopClipped =
+        skipScale || !playMetrics
+          ? before.top
+          : scaleFlipDistance(before.top, currentTop, cellHeight, playMetrics, "y");
+      const beforeLeftClipped =
+        skipScale || !playMetrics
+          ? before.left
+          : scaleFlipDistance(before.left, currentLeft, cellWidth, playMetrics, "x");
 
       const dx = beforeLeftClipped - currentLeft;
       const dy = beforeTopClipped - currentTop;
@@ -369,12 +531,16 @@ export class AnimationCoordinator {
       // Retained (outgoing) cells animate first so we collect them.
       const retained = this.retainedCells.get(container);
       if (retained) {
-        retained.forEach((element, cellId) => consider(element, cellId, true, container));
+        retained.forEach((element, cellId) => {
+          consider(element, cellId, true, container);
+        });
       }
 
       // Active cells: incoming + persistent.
       const cells = collectRenderedCells(container);
-      cells.forEach((element, cellId) => consider(element, cellId, false, container));
+      cells.forEach((element, cellId) => {
+        consider(element, cellId, false, container);
+      });
     }
 
     // FLIP "First" frame: apply inverse transforms synchronously so cells
@@ -415,6 +581,7 @@ export class AnimationCoordinator {
    */
   cancel(): void {
     this.snapshot = null;
+    this.clearScrollerMetricsCache();
     const entries = Array.from(this.inFlight.entries());
     this.inFlight.clear();
     for (const [cellId, entry] of entries) {
@@ -436,6 +603,8 @@ export class AnimationCoordinator {
   }
 
   private readPosition(cellId: string, element: HTMLElement): CellSnapshot {
+    const styleTop = parsePx(element.style.top);
+    const styleLeft = parsePx(element.style.left);
     const inFlight = this.inFlight.get(cellId);
     if (inFlight) {
       const rect = element.getBoundingClientRect();
@@ -445,18 +614,30 @@ export class AnimationCoordinator {
         return {
           left: rect.left - parentRect.left + parent.scrollLeft,
           top: rect.top - parentRect.top + parent.scrollTop,
+          styleTop,
+          styleLeft,
+          fromDom: true,
         };
       }
-      return { left: rect.left, top: rect.top };
+      return { left: rect.left, top: rect.top, styleTop, styleLeft, fromDom: true };
     }
     return {
-      left: parsePx(element.style.left),
-      top: parsePx(element.style.top),
+      left: styleLeft,
+      top: styleTop,
+      styleTop,
+      styleLeft,
+      fromDom: true,
     };
   }
 
   private startTransition(cellId: string, element: HTMLElement, isRetained: boolean): void {
-    element.style.transition = `transform ${this.duration}ms ${this.easing}`;
+    // Outgoing (retained) cells use an ease-in curve so the visible portion
+    // of their slide (cell at its old visible position → viewport edge) is
+    // back-loaded in time. Incoming + persistent cells stay on the
+    // configured easing (defaults to a punchy ease-out that decelerates them
+    // smoothly into their final visible position).
+    const easing = isRetained ? OUTGOING_EASING : this.easing;
+    element.style.transition = `transform ${this.duration}ms ${easing}`;
     element.style.transform = "translate3d(0, 0, 0)";
     // Suppress hit-testing on cells that are mid-slide. Without this, an
     // animating header sliding under a dragging cursor will keep firing
@@ -573,18 +754,36 @@ type FlipAxis = "x" | "y";
  * (`.st-body-container`) is the *vertical* scroller. Header sections only
  * scroll horizontally.
  */
+type ScrollerMetrics = {
+  clientHeight: number;
+  scrollHeight: number;
+  scrollTop: number;
+  clientWidth: number;
+  scrollWidth: number;
+  scrollLeft: number;
+};
+
+const readScrollerMetrics = (container: HTMLElement): ScrollerMetrics => {
+  const yScroller = container.parentElement;
+  return {
+    clientHeight: yScroller ? yScroller.clientHeight : 0,
+    scrollHeight: yScroller ? yScroller.scrollHeight : 0,
+    scrollTop: yScroller ? yScroller.scrollTop : 0,
+    clientWidth: container.clientWidth,
+    scrollWidth: container.scrollWidth,
+    scrollLeft: container.scrollLeft,
+  };
+};
+
 const scaleFlipDistance = (
   distantPos: number,
   anchorPos: number,
   cellSize: number,
-  container: HTMLElement,
+  metrics: ScrollerMetrics,
   axis: FlipAxis,
 ): number => {
-  const scroller: HTMLElement | null = axis === "y" ? container.parentElement : container;
-  if (!scroller) return distantPos;
-
-  const clientSize = axis === "y" ? scroller.clientHeight : scroller.clientWidth;
-  const scrollSize = axis === "y" ? scroller.scrollHeight : scroller.scrollWidth;
+  const clientSize = axis === "y" ? metrics.clientHeight : metrics.clientWidth;
+  const scrollSize = axis === "y" ? metrics.scrollHeight : metrics.scrollWidth;
   if (clientSize <= 0 || scrollSize <= clientSize) return distantPos;
 
   const delta = distantPos - anchorPos;
@@ -602,7 +801,7 @@ const scaleFlipDistance = (
   // off-screen position "disappears" mid-animation: |delta| exceeds
   // visibleRange, so the compression below pulls the visible end-point past
   // the section's overflow clip and the cell is never painted.)
-  const scrollOffset = axis === "y" ? scroller.scrollTop : scroller.scrollLeft;
+  const scrollOffset = axis === "y" ? metrics.scrollTop : metrics.scrollLeft;
   if (distantPos >= scrollOffset - cellBuffer && distantPos <= scrollOffset + clientSize) {
     return distantPos;
   }

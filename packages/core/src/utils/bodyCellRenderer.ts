@@ -425,9 +425,18 @@ export const renderBodyCells = (
   // pre-change position (e.g. the row was off-screen pre-sort and is now in
   // the band), play() will FLIP it from there — no extra hook needed here.
   cellsToCreate.forEach(({ cell, cellId }) => {
-    // If a retained out-animating ghost still occupies this cellId, drop it so
-    // the new "real" cell can take ownership of the id without DOM duplication.
-    animationCoordinator?.discardRetainedIfPresent(cellId, container);
+    // If a retained out-animating ghost still owns this cellId, claim it back
+    // as the live cell instead of discarding + creating a fresh node. This
+    // keeps the DOM element continuous — the snapshot captured the ghost's
+    // mid-flight visual position pre-render, and play() will FLIP from there
+    // to the new live destination, preventing the "cell disappears, another
+    // teleports in" effect when a sort fires during another sort's animation.
+    const claimed = animationCoordinator?.claimRetainedForReuse(cellId, container);
+    if (claimed) {
+      updateBodyCellElement(claimed, cell, context);
+      renderedCells.set(cellId, claimed);
+      return;
+    }
     const cellElement = createBodyCellElement(cell, context);
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);

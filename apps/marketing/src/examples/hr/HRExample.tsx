@@ -8,17 +8,15 @@ import { useHRData } from "./useHRData";
 export default function HRExample({
   height = 500,
   icons,
-  rowCount = 1000,
   rowHeight = 48,
   theme,
 }: {
   height: number | null;
   icons?: ReactIconsConfig;
-  rowCount?: number;
   rowHeight?: number;
   theme?: Theme;
 }) {
-  const { data: fetchedData, isLoading } = useHRData(rowCount);
+  const { data: fetchedData, isLoading } = useHRData();
   const [data, setData] = useState(fetchedData);
 
   // Update local data when fetched data changes

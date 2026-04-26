@@ -549,7 +549,17 @@ export class TableRenderer {
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
-      container.appendChild(leftSection as HTMLElement);
+      // Only append if not already a child — calling appendChild on a node
+      // already in the same parent triggers a detach + reinsert per the DOM
+      // spec, which cancels every CSS transition on its descendants and
+      // snaps their computed transforms to the inline value. With cell
+      // animations running for ~4s, that means a follow-up sort during the
+      // first sort's animation would visually teleport every animating cell
+      // to its destination instead of FLIP-tweening from the in-flight
+      // visual position.
+      if (leftSection.parentElement !== container) {
+        container.appendChild(leftSection as HTMLElement);
+      }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("left");
     }
@@ -573,7 +583,9 @@ export class TableRenderer {
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
-      container.appendChild(mainSection as HTMLElement);
+      if (mainSection.parentElement !== container) {
+        container.appendChild(mainSection as HTMLElement);
+      }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("main");
     }
@@ -598,7 +610,9 @@ export class TableRenderer {
       });
       deps.pinnedRightRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
-      container.appendChild(rightSection as HTMLElement);
+      if (rightSection.parentElement !== container) {
+        container.appendChild(rightSection as HTMLElement);
+      }
     }
 
     // Render sticky parents if enabled

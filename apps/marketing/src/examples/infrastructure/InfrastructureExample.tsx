@@ -11,15 +11,13 @@ export default function InfrastructureExample({
   height,
   icons,
   theme,
-  rowCount = 1000,
 }: {
   height?: string | number;
   icons?: ReactIconsConfig;
   theme?: Theme;
-  rowCount?: number;
 }) {
   const tableRef = useRef<TableAPI | null>(null);
-  const { data, isLoading } = useInfrastructureData(rowCount);
+  const { data, isLoading } = useInfrastructureData();
   const [isMobile, setIsMobile] = useState(false);
 
   // Use the hook for live metrics updates

@@ -10,16 +10,14 @@ import { useMusicData } from "./useMusicData";
 export default function MusicExample({
   height,
   icons,
-  rowCount = 1000,
   theme,
 }: {
   height?: string | number;
   icons?: ReactIconsConfig;
-  rowCount?: number;
   theme?: Theme;
 }) {
   const tableRef = useRef<TableAPI | null>(null);
-  const { data, isLoading } = useMusicData(rowCount);
+  const { data, isLoading } = useMusicData();
 
   if (isLoading) {
     return (

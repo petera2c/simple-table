@@ -144,11 +144,10 @@ const generateHRData = (): Row[] => {
   ];
   const statuses = ["Active", "On Leave", "Probation", "Contract", "Terminated"];
 
-  let rowId = 0;
   const rows: Row[] = [];
 
-  // Generate a flat list of 10,000 employees
-  const totalEmployees = 10000;
+  // Generate a flat list of 1,000 employees
+  const totalEmployees = 1000;
 
   for (let i = 0; i < totalEmployees; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -163,12 +162,12 @@ const generateHRData = (): Row[] => {
       position.includes("Senior") || position.includes("Lead")
         ? 1.5
         : position.includes("Manager") || position.includes("Director")
-        ? 2
-        : position.includes("Head") || position.includes("Executive")
-        ? 2.5
-        : position.includes("Intern")
-        ? 0.5
-        : 1;
+          ? 2
+          : position.includes("Head") || position.includes("Executive")
+            ? 2.5
+            : position.includes("Intern")
+              ? 0.5
+              : 1;
     const salary = Math.floor(salaryBase * salaryMultiplier) * 1000;
     const status = statuses[Math.floor(Math.random() * statuses.length)];
 
@@ -184,7 +183,7 @@ const generateHRData = (): Row[] => {
     // Calculate years of service based on hire date
     const yearsOfService =
       Math.round(
-        ((new Date().getTime() - new Date(hireDate).getTime()) / (1000 * 60 * 60 * 24 * 365)) * 10
+        ((new Date().getTime() - new Date(hireDate).getTime()) / (1000 * 60 * 60 * 24 * 365)) * 10,
       ) / 10;
 
     // Generate random email
@@ -207,16 +206,16 @@ const generateHRData = (): Row[] => {
         department.includes("Engineering")
           ? "Engineer"
           : department.includes("Marketing")
-          ? "Marketer"
-          : department.includes("Sales")
-          ? "Representative"
-          : department.includes("Finance")
-          ? "Analyst"
-          : department.includes("HR")
-          ? "Specialist"
-          : department.includes("Operations")
-          ? "Manager"
-          : "Agent"
+            ? "Marketer"
+            : department.includes("Sales")
+              ? "Representative"
+              : department.includes("Finance")
+                ? "Analyst"
+                : department.includes("HR")
+                  ? "Specialist"
+                  : department.includes("Operations")
+                    ? "Manager"
+                    : "Agent"
       }`,
       email,
       hireDate,
