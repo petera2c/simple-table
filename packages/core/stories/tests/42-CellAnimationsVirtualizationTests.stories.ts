@@ -93,7 +93,7 @@ const COLUMN_WIDTH = 220;
 const VIEWPORT_WIDTH = 800;
 const VIEWPORT_HEIGHT = 500;
 /** Slow on purpose so each animation is easy to follow when watching. */
-const SLOW_DURATION = 15000;
+const SLOW_DURATION = 1500;
 /** A pause that comfortably outlasts SLOW_DURATION so the animation finishes. */
 const SETTLE_PAUSE = SLOW_DURATION + 400;
 /** A short pause to let the user appreciate a new state before the next step. */
