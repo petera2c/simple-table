@@ -1083,22 +1083,19 @@ export class SectionRenderer {
       // (so expand icon can animate) and remove only cells no longer visible.
       this.bodyCellsCache.clear();
     } else if (type === "header") {
+      // Only clear the calculated cells cache so we recompute layout for new header order/widths.
+      // Do NOT clear rendered cell elements: renderHeaderCells reuses cells by accessor and updates
+      // position/classes in place. Tearing down cells on every drag swap caused visible flicker
+      // because each `dragover` recreated all 11 header cells (debug session 65665a, H6).
       this.headerCellsCache.clear();
-      // Clear rendered cell elements from all header sections
-      this.headerSections.forEach((section) => {
-        cleanupHeaderCellRendering(section);
-      });
     } else if (type === "context") {
       this.contextCache.clear();
       // Recompute absolute header layout from current effectiveHeaders; otherwise
       // cached AbsoluteCell.header refs drift from live objects (sort/resize bug).
       this.headerCellsCache.clear();
-      // Clear header rendered elements so sort indicators etc. update.
-      // Do NOT clear body rendered elements: renderBodyCells will update existing cells
-      // in place (e.g. selection classes, expand icon state) so expand icon can animate.
-      this.headerSections.forEach((section) => {
-        cleanupHeaderCellRendering(section);
-      });
+      // Do NOT clear rendered header cells: renderHeaderCells refreshes icons (sort/filter)
+      // in place via per-cell iconState tracking on dataset. See `renderHeaderCells`
+      // existing-cell branch in `headerCellRenderer.ts`.
     }
   }
 

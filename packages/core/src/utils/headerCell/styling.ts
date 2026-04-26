@@ -263,29 +263,12 @@ export const getLastHeaderIndex = (absoluteCells: AbsoluteCell[]): number => {
   return Math.max(...absoluteCells.map((c) => c.colIndex));
 };
 
-// Update an existing header cell element with current state
-export const updateHeaderCellElement = (
+/** Replace sort/filter/collapse icons on an existing header cell, preserving label/drag handlers. */
+export const refreshHeaderCellIcons = (
   cellElement: HTMLElement,
-  cell: AbsoluteCell,
+  header: AbsoluteCell["header"],
   context: HeaderRenderContext,
-  isLastMainAutoExpandColumn: boolean,
 ): void => {
-  const { header } = cell;
-
-  // Update classes to reflect current state
-  cellElement.className = calculateHeaderCellClasses(
-    cell,
-    context,
-    isLastMainAutoExpandColumn,
-  );
-
-  // Update position (may have changed due to column resize or scroll)
-  cellElement.style.left = `${cell.left}px`;
-  cellElement.style.top = `${cell.top}px`;
-  cellElement.style.width = `${cell.width}px`;
-  cellElement.style.height = `${cell.height}px`;
-
-  // Update icons (sort/filter/collapse) - remove old ones and create new ones
   const oldSortIcon = cellElement.querySelector('.st-icon-container[aria-label*="Sort"]');
   const oldFilterIcon = cellElement.querySelector('.st-icon-container[aria-label*="Filter"]');
   const oldCollapseIcon = cellElement.querySelector(".st-expand-icon-container");
@@ -294,12 +277,10 @@ export const updateHeaderCellElement = (
   oldFilterIcon?.remove();
   oldCollapseIcon?.remove();
 
-  // Recreate icons with current state
   const sortIcon = createSortIcon(header, context);
   const filterIcon = createFilterIcon(header, context);
   const collapseIcon = createCollapseIcon(header, context);
 
-  // Insert icons in the correct position based on alignment
   if (!header.headerRenderer && header.align === "right") {
     if (collapseIcon) cellElement.insertBefore(collapseIcon, cellElement.firstChild);
     if (filterIcon) cellElement.insertBefore(filterIcon, cellElement.firstChild);
@@ -328,4 +309,27 @@ export const updateHeaderCellElement = (
       }
     }
   }
+};
+
+// Update an existing header cell element with current state
+export const updateHeaderCellElement = (
+  cellElement: HTMLElement,
+  cell: AbsoluteCell,
+  context: HeaderRenderContext,
+  isLastMainAutoExpandColumn: boolean,
+): void => {
+  const { header } = cell;
+
+  cellElement.className = calculateHeaderCellClasses(
+    cell,
+    context,
+    isLastMainAutoExpandColumn,
+  );
+
+  cellElement.style.left = `${cell.left}px`;
+  cellElement.style.top = `${cell.top}px`;
+  cellElement.style.width = `${cell.width}px`;
+  cellElement.style.height = `${cell.height}px`;
+
+  refreshHeaderCellIcons(cellElement, header, context);
 };
