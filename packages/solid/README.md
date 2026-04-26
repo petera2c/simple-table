@@ -30,15 +30,16 @@ Simple Table is available for the most popular frameworks:
 npm install @simple-table/solid
 ```
 
-**Peer dependencies:** `solid-js >=1.0.0`
+**Peer dependencies:** `solid-js >=1.0.0` (works with Solid Start and any Vite-based Solid app)
 
 **[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
 ## Building with Solid
 
+- Signals-friendly API; updates flow through Solid's fine-grained reactivity
 - Use Solid components for cell renderers, header renderers, footer renderers, and more
 - Access the imperative `TableAPI` via a ref callback for sorting, filtering, pagination, export, and more
-- Types and APIs are exported from this package
+- Types and APIs are exported from this package; works with Solid Start, Vite, and TypeScript strict mode
 
 ## Features
 

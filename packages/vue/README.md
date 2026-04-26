@@ -30,15 +30,16 @@ Simple Table is available for the most popular frameworks:
 npm install @simple-table/vue
 ```
 
-**Peer dependencies:** `vue >=3.0.0`
+**Peer dependencies:** `vue >=3.0.0` (works with Nuxt 3+ and Vite-based Vue apps)
 
 **[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
 ## Building with Vue
 
+- First-class `<script setup>` and Composition API ergonomics — `ref`, `reactive`, `computed`, and `watch` work the way you expect
 - Use Vue components for cell renderers, header renderers, footer renderers, and more
 - Access the imperative `TableAPI` via a template ref for sorting, filtering, pagination, export, and more
-- Types and APIs are exported from this package
+- Types and APIs are exported from this package; works with Vite, Nuxt 3+, and `<script setup lang="ts">`
 
 ## Features
 

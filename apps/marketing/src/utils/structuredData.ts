@@ -47,6 +47,27 @@ export function buildFaqPageJsonLd(
   };
 }
 
+export interface BreadcrumbItem {
+  name: string;
+  /** Path or absolute URL for the breadcrumb item. Relative paths are resolved against SITE. */
+  url: string;
+}
+
+export function buildBreadcrumbListJsonLd(items: BreadcrumbItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url.startsWith("http")
+        ? item.url
+        : `${SITE}${item.url.startsWith("/") ? item.url : `/${item.url}`}`,
+    })),
+  };
+}
+
 export function buildFrameworkHubSoftwareJsonLd(input: {
   name: string;
   description: string;

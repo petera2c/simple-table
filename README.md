@@ -26,7 +26,25 @@ Simple Table provides first-class adapters for the most popular frameworks:
 
 ## Quick Start
 
+Pick the install for your stack:
+
 ```bash
+# React
+npm install @simple-table/react
+
+# Vue 3 / Nuxt
+npm install @simple-table/vue
+
+# Angular 17+
+npm install @simple-table/angular
+
+# Svelte / SvelteKit
+npm install @simple-table/svelte
+
+# Solid / Solid Start
+npm install @simple-table/solid
+
+# Vanilla JS / TypeScript / web components
 npm install simple-table-core
 ```
 

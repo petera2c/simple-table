@@ -260,48 +260,24 @@ export default function HomeContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              The Simple Data Grid
+              The Simple Data Grid for React, Vue, Angular, Svelte, Solid, and TypeScript
             </motion.h1>
 
-            <motion.h2
-              className="text-2xl md:text-3xl font-semibold text-gray-700 dark:text-gray-200 mb-4"
+            <motion.p
+              className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              Powerful, Multi-Framework and Production-Ready
-            </motion.h2>
-
-            <motion.p
-              className="text-base md:text-lg text-center text-gray-500 dark:text-gray-400 mb-3 max-w-3xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-            >
-              One shared{" "}
-              <code className="text-sm text-gray-700 dark:text-gray-300">simple-table-core</code>{" "}
-              engine—six official npm adapters. Browse{" "}
-              <Link href="/frameworks" className="text-blue-600 dark:text-blue-400 hover:underline">
-                framework setup hubs
-              </Link>{" "}
-              for install commands and StackBlitz.
-            </motion.p>
-
-            <motion.p
-              className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-5xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              A highly customizable data grid for React, Vue, Angular, Svelte, Solid, and vanilla
-              TypeScript. Ship faster with 30+ features in a tiny, lightweight package.
+              One engine, six adapters. Ship production-ready tables with 30+ features in a tiny,
+              lightweight package.
             </motion.p>
 
             <motion.div
               className={`${isMobile ? "flex flex-col gap-4" : "flex justify-center gap-4"}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Button
                 className="hover:scale-105 transition-transform"

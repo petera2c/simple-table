@@ -30,13 +30,14 @@ Simple Table is available for the most popular frameworks:
 npm install @simple-table/react
 ```
 
-**Peer dependencies:** `react >=18.0.0`, `react-dom >=18.0.0`
+**Peer dependencies:** `react >=18.0.0`, `react-dom >=18.0.0` (works with React 19, Next.js, Remix, and Vite)
 
 **[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
 ## Building with React
 
 - Use React components for cell renderers, header renderers, footer renderers, and more
+- Works with React 18+, React 19, Next.js (Pages and App Router), Remix, and Vite
 - Access the full imperative `TableAPI` via a ref for sorting, filtering, pagination, export, and more
 - Types and APIs are exported from this package
 

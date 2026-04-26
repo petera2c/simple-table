@@ -14,10 +14,15 @@ import {
   getFrameworkHubFaqItems,
   getFrameworkHubWhyParagraph,
 } from "@/constants/frameworkHubSeoContent";
+import {
+  FRAMEWORK_COMPETITORS,
+  FRAMEWORK_ELEVATOR_PITCH,
+} from "@/constants/frameworkCompetitors";
 import type { Framework } from "@/providers/FrameworkProvider";
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
+import AIVisibilityEnhancer from "@/components/AIVisibilityEnhancer";
 import {
   buildFaqPageJsonLd,
   buildFrameworkHubSoftwareJsonLd,
@@ -46,8 +51,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Framework hub" };
   }
   const fw = FRAMEWORK_HUB_BY_ID[raw];
+  const competitors = FRAMEWORK_COMPETITORS[raw];
   const title = `${fw.label} data grid setup | Simple Table`;
-  const description = `Install ${fw.npmPackage} for ${fw.label}: npm command, styles import, peers (${fw.peerSummary}), FAQs, pillar guide, and links to runnable examples and docs.`;
+  const description = `Install ${fw.npmPackage} for ${fw.label}: npm command, styles import, peers (${fw.peerSummary}), FAQs, pillar guide, and links to runnable examples and docs. Free MIT alternative to ${competitors.slice(0, 3).join(", ")}.`;
+  const lowerLabel = fw.label.toLowerCase();
   return {
     title,
     description,
@@ -55,8 +62,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       fw.npmPackage,
       "simple-table",
       "data grid",
-      `${fw.label.toLowerCase()} table`,
+      `${lowerLabel} table`,
+      `${lowerLabel} data grid`,
+      `${lowerLabel} data table`,
+      `${lowerLabel} grid component`,
       "typescript",
+      ...competitors.map((c) => `${c} alternative`),
     ],
     openGraph: {
       title,
@@ -87,6 +98,8 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
   const pillarHref = `/blog/${pillarSlug}`;
   const faqItems = getFrameworkHubFaqItems(raw);
   const why = getFrameworkHubWhyParagraph(raw);
+  const competitors = FRAMEWORK_COMPETITORS[raw];
+  const elevatorPitch = FRAMEWORK_ELEVATOR_PITCH[raw];
 
   const softwareLd = buildFrameworkHubSoftwareJsonLd({
     name: `Simple Table (${fw.label})`,
@@ -182,6 +195,38 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
           </section>
 
           <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              Simple Table vs other {fw.label} data grids
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              {elevatorPitch}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              If you have evaluated any of the libraries below, Simple Table is a drop-in MIT
+              alternative that ships virtualization, pinning, grouping, and inline editing without a
+              Pro license:
+            </p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700 dark:text-gray-300">
+              {competitors.map((name) => (
+                <li
+                  key={name}
+                  className="rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-2 bg-gray-50 dark:bg-gray-900/40"
+                >
+                  {name} alternative
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-sm">
+              <Link
+                href={pillarHref}
+                className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+              >
+                See the full {fw.label} comparison →
+              </Link>
+            </p>
+          </section>
+
+          <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">FAQ</h2>
             <dl className="space-y-4">
               {faqItems.map((item) => (
@@ -234,6 +279,7 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
             </div>
           </section>
         </div>
+        <AIVisibilityEnhancer pageType="framework-hub" framework={raw} />
       </BlogLayout>
     </>
   );

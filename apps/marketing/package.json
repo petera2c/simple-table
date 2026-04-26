@@ -13,7 +13,6 @@
     "analyze": "ANALYZE=true next build --webpack",
     "start": "next start",
     "lint": "next lint",
-    "generate-sitemap": "node scripts/generate-sitemap.js",
     "generate-sales-data": "tsx scripts/generate-sales-data.ts",
     "generate-billing-data": "tsx scripts/generate-billing-data.ts",
     "generate-manufacturing-data": "tsx scripts/generate-manufacturing-data.ts",
@@ -24,7 +23,7 @@
     "generate-all-data": "pnpm run generate-sales-data && pnpm run generate-billing-data && pnpm run generate-manufacturing-data && pnpm run generate-infrastructure-data && pnpm run generate-hr-data && pnpm run generate-crm-data && pnpm run generate-music-data",
     "copy-to-txt": "node scripts/copy-to-txt.js",
     "generate-search-index": "node scripts/generate-search-index.cjs",
-    "publish": "pnpm install && pnpm run copy-to-txt && pnpm run generate-sitemap && git add . && git commit -m \"$npm_config_message\" && git push"
+    "publish": "pnpm install && pnpm run copy-to-txt && git add . && git commit -m \"$npm_config_message\" && git push"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.23.0",
@@ -74,9 +73,7 @@
     "eslint": "^9",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
-    "glob": "^11.0.3",
     "node-fetch": "^3.3.2",
-    "sitemap": "^8.0.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript-eslint": "^8.24.1"

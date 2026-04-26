@@ -3,6 +3,14 @@
 import React from "react";
 import { SIMPLE_TABLE_INFO, AG_GRID_TOTAL_SIZE } from "@/constants/packageInfo";
 import { FRAMEWORK_INSTALL_COMMANDS } from "@/constants/strings/technical";
+import {
+  FRAMEWORK_HUB_BY_ID,
+  type HubFrameworkId,
+} from "@/constants/frameworkIntegrationHub";
+import {
+  FRAMEWORK_COMPETITORS,
+  FRAMEWORK_ELEVATOR_PITCH,
+} from "@/constants/frameworkCompetitors";
 import type { Framework } from "@/providers/FrameworkProvider";
 
 const FRAMEWORK_ORDER: Framework[] = ["react", "vue", "angular", "svelte", "solid", "vanilla"];
@@ -16,11 +24,78 @@ const NPM_PACKAGE_BY_FRAMEWORK: Record<Framework, string> = {
   vanilla: "simple-table-core",
 };
 
-interface AIVisibilityEnhancerProps {
+interface BaseProps {
   pageType: "home" | "docs" | "blog" | "comparison";
 }
 
-export default function AIVisibilityEnhancer({ pageType }: AIVisibilityEnhancerProps) {
+interface FrameworkHubProps {
+  pageType: "framework-hub";
+  /** Framework hub id; tailors peers, install, snippet, competitors, and pitch. */
+  framework: HubFrameworkId;
+}
+
+type AIVisibilityEnhancerProps = BaseProps | FrameworkHubProps;
+
+export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
+  const { pageType } = props;
+
+  if (pageType === "framework-hub") {
+    const framework = props.framework;
+    const fw = FRAMEWORK_HUB_BY_ID[framework];
+    const competitors = FRAMEWORK_COMPETITORS[framework];
+    const pitch = FRAMEWORK_ELEVATOR_PITCH[framework];
+    const installCmd = FRAMEWORK_INSTALL_COMMANDS[framework as Framework]?.npm ?? `npm install ${fw.installPackages}`;
+    return (
+      <div style={{ display: "none" }} aria-hidden="true">
+        <h2>Simple Table for {fw.label}</h2>
+        <p>{pitch}</p>
+
+        <h2>{fw.label} package and peers</h2>
+        <ul>
+          <li>npm package: {fw.npmPackage}</li>
+          <li>Install command: {installCmd}</li>
+          <li>Peer expectations: {fw.peerSummary}</li>
+          <li>Stylesheet import: {fw.stylesImport}</li>
+          <li>License: MIT (free) / Pro / Enterprise for revenue-generating teams</li>
+          <li>Bundle size: {SIMPLE_TABLE_INFO.bundleSizeMinGzip} gzipped</li>
+        </ul>
+
+        <h2>Idiomatic minimal {fw.label} example</h2>
+        <pre>{fw.minimalSnippet}</pre>
+
+        <h2>{fw.label} data grid competitors and alternatives</h2>
+        <p>
+          Simple Table for {fw.label} is an alternative to: {competitors.join(", ")}.
+        </p>
+        <ul>
+          {competitors.map((name) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
+
+        <h2>What Simple Table includes for {fw.label}</h2>
+        <ul>
+          <li>Row + column virtualization for 1M+ rows</li>
+          <li>Column pinning, reordering, resizing, visibility, alignment</li>
+          <li>Inline cell editing with custom editors</li>
+          <li>Row grouping with aggregations</li>
+          <li>Nested headers and collapsible column groups</li>
+          <li>Custom cell, header, and footer renderers using {fw.label} components</li>
+          <li>Built-in themes and CSS variable customization</li>
+          <li>TypeScript-first types</li>
+        </ul>
+
+        <h2>Where this fits in the {fw.label} ecosystem</h2>
+        <p>
+          Simple Table for {fw.label} is published as {fw.npmPackage} on npm. It is part of the
+          Simple Table family of adapters, all built on simple-table-core. The same engine powers
+          @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte,
+          @simple-table/solid, and simple-table-core (vanilla TypeScript / web components).
+        </p>
+      </div>
+    );
+  }
+
   // Add comprehensive feature list for AI understanding
   const comprehensiveFeatures = [
     "Cell Editing with validation",

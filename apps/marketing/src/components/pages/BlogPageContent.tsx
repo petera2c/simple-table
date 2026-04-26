@@ -1,10 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { SearchOutlined, CalendarOutlined, TagOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { BLOG_POSTS, searchBlogPosts, BlogPostMetadata } from "@/constants/blogPosts";
+import {
+  BLOG_POSTS,
+  searchBlogPosts,
+  BlogPostMetadata,
+  getPostFrameworkId,
+} from "@/constants/blogPosts";
+import {
+  FRAMEWORK_HUB_BY_ID,
+  FRAMEWORK_HUB_IDS,
+  type HubFrameworkId,
+} from "@/constants/frameworkIntegrationHub";
 import PageWrapper from "@/components/PageWrapper";
+
+type FrameworkFilter = HubFrameworkId | "all";
 
 function BlogCard({ post }: { post: BlogPostMetadata }) {
   return (
@@ -50,38 +62,57 @@ function BlogCard({ post }: { post: BlogPostMetadata }) {
   );
 }
 
-export default function BlogPageContent() {
+interface BlogPageContentProps {
+  /** Optional framework to pre-filter on. Used by /blog/topic/[framework] landing pages. */
+  initialFramework?: FrameworkFilter;
+  /** Hide the framework filter chips. Used by per-framework landing pages where the filter is fixed. */
+  hideFrameworkFilter?: boolean;
+  /** Optional H1 override for landing pages. */
+  heading?: string;
+  /** Optional intro paragraph override. */
+  intro?: string;
+}
+
+export default function BlogPageContent({
+  initialFramework = "all",
+  hideFrameworkFilter = false,
+  heading,
+  intro,
+}: BlogPageContentProps = {}) {
   const [searchQuery, setSearchQuery] = useState("");
-  // Sort blog posts by date (newest first)
-  const sortedBlogPosts = [...BLOG_POSTS].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  const [frameworkFilter, setFrameworkFilter] = useState<FrameworkFilter>(initialFramework);
+
+  const sortedBlogPosts = useMemo(
+    () =>
+      [...BLOG_POSTS].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ),
+    []
   );
-  const [filteredPosts, setFilteredPosts] = useState<BlogPostMetadata[]>(sortedBlogPosts);
+
+  const visiblePosts = useMemo<BlogPostMetadata[]>(() => {
+    const trimmed = searchQuery.trim();
+    const base = trimmed === "" ? sortedBlogPosts : searchBlogPosts(trimmed);
+    const sortedBase = [...base].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    if (frameworkFilter === "all") return sortedBase;
+    return sortedBase.filter((post) => getPostFrameworkId(post.slug) === frameworkFilter);
+  }, [searchQuery, frameworkFilter, sortedBlogPosts]);
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
-    if (value.trim() === "") {
-      setFilteredPosts(sortedBlogPosts);
-    } else {
-      const searchResults = searchBlogPosts(value);
-      // Sort search results by date too (newest first)
-      const sortedSearchResults = searchResults.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      setFilteredPosts(sortedSearchResults);
-    }
   };
 
   return (
     <PageWrapper>
-      {/* Header */}
       <header className="text-center mb-12">
         <h1 className="text-gray-900 dark:text-gray-100 mb-4 text-4xl font-bold">
-          Simple Table Blog
+          {heading ?? "Simple Table Blog"}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-8">
-          Tutorials and comparisons for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript—with
-          Simple Table across every stack.
+          {intro ??
+            "Tutorials and comparisons for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript—with Simple Table across every stack."}
         </p>
 
         <div className="max-w-md mx-auto">
@@ -96,25 +127,61 @@ export default function BlogPageContent() {
             <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
         </div>
+
+        {!hideFrameworkFilter ? (
+          <div
+            className="mt-6 flex flex-wrap items-center justify-center gap-2"
+            role="tablist"
+            aria-label="Filter posts by framework"
+          >
+            {(["all", ...FRAMEWORK_HUB_IDS] as FrameworkFilter[]).map((id) => {
+              const label =
+                id === "all" ? "All frameworks" : FRAMEWORK_HUB_BY_ID[id as HubFrameworkId].label;
+              const active = frameworkFilter === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setFrameworkFilter(id)}
+                  className={
+                    active
+                      ? "px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white"
+                      : "px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                  }
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </header>
 
-      {/* Search Results Info */}
-      {searchQuery && (
+      {(searchQuery || frameworkFilter !== "all") && (
         <div className="mb-8">
           <span className="text-gray-600 dark:text-gray-400">
-            {filteredPosts.length > 0
-              ? `Found ${filteredPosts.length} post${
-                  filteredPosts.length === 1 ? "" : "s"
-                } matching "${searchQuery}"`
-              : `No posts found matching "${searchQuery}"`}
+            {visiblePosts.length > 0
+              ? `Showing ${visiblePosts.length} post${visiblePosts.length === 1 ? "" : "s"}${
+                  searchQuery ? ` matching "${searchQuery}"` : ""
+                }${
+                  frameworkFilter !== "all"
+                    ? ` for ${FRAMEWORK_HUB_BY_ID[frameworkFilter as HubFrameworkId].label}`
+                    : ""
+                }`
+              : `No posts found${searchQuery ? ` matching "${searchQuery}"` : ""}${
+                  frameworkFilter !== "all"
+                    ? ` for ${FRAMEWORK_HUB_BY_ID[frameworkFilter as HubFrameworkId].label}`
+                    : ""
+                }`}
           </span>
         </div>
       )}
 
-      {/* Blog Posts Grid */}
-      {filteredPosts.length > 0 ? (
+      {visiblePosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
-          {filteredPosts.map((post) => (
+          {visiblePosts.map((post) => (
             <BlogCard key={post.slug} post={post} />
           ))}
         </div>
