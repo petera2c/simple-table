@@ -197,6 +197,17 @@ export class AnimationCoordinator {
     newPosition: CellPosition;
   }): void {
     const { cellId, element, container, newPosition } = args;
+    const oldTop = parsePx(element.style.top);
+
+    // Scale the visual destination so the slide journey is bounded but
+    // proportional to the true conceptual journey. Without scaling, a row
+    // sorted from position 0 to position 499 of a virtualized 500-row table
+    // would try to slide ~16k pixels in the animation window — under
+    // ease-out it crosses the 500px viewport in the first ~30ms and the
+    // cell appears to teleport. The scaling also gives cells with very
+    // different conceptual destinations visibly different slide distances,
+    // so they fan out instead of marching off-screen in lockstep.
+    const clippedTop = scaleFlipDistance(newPosition.top, oldTop, newPosition.height, container);
 
     let map = this.retainedCells.get(container);
     if (!map) {
@@ -220,7 +231,7 @@ export class AnimationCoordinator {
     element.setAttribute(RETAINED_ATTR, "true");
 
     element.style.left = `${newPosition.left}px`;
-    element.style.top = `${newPosition.top}px`;
+    element.style.top = `${clippedTop}px`;
     element.style.width = `${newPosition.width}px`;
     element.style.height = `${newPosition.height}px`;
     // Disable pointer events on departing cells so they don't intercept clicks.
@@ -254,12 +265,19 @@ export class AnimationCoordinator {
     this.snapshot = null;
 
     if (!this.isEnabled() || !snapshot) {
-      // Nothing to play; clean up any leftover retained cells.
+      // Nothing to play. Drop only retained cells that aren't already
+      // mid-animation; in-flight ghosts have a transition running and will
+      // clean themselves up on transitionend. Wiping them here would kill
+      // the slide-out for renders triggered by ResizeObserver / scrollbar
+      // visibility / dimension recompute that fire during an animation.
       this.retainedCells.forEach((map) => {
-        map.forEach((element) => element.remove());
-        map.clear();
+        map.forEach((element, cellId) => {
+          if (!this.inFlight.has(cellId)) {
+            element.remove();
+            map.delete(cellId);
+          }
+        });
       });
-      this.retainedCells.clear();
       return;
     }
 
@@ -273,7 +291,12 @@ export class AnimationCoordinator {
     const pending: Pending[] = [];
     const seen = new Set<string>();
 
-    const consider = (element: HTMLElement, cellId: string, isRetained: boolean) => {
+    const consider = (
+      element: HTMLElement,
+      cellId: string,
+      isRetained: boolean,
+      container: HTMLElement,
+    ) => {
       if (seen.has(cellId)) return;
       const before = snapshot.get(cellId);
       if (!before) return;
@@ -282,8 +305,21 @@ export class AnimationCoordinator {
 
       const currentLeft = parsePx(element.style.left);
       const currentTop = parsePx(element.style.top);
+
+      // For incoming cells (newly created live cells), scale the FLIP
+      // "before" position so cells sliding in from far off-screen take a
+      // bounded but proportional journey. Without scaling, a row whose
+      // pre-sort conceptual top was 14970 sliding to currentTop=0 would
+      // start ~15k pixels below the viewport — with ease-out it stays
+      // off-screen for most of the animation, leaving the viewport empty
+      // until the last few percent. Retained cells already had their
+      // style.top scaled at retainCell time, so we don't re-scale here.
+      const beforeTopClipped = isRetained
+        ? before.top
+        : scaleFlipDistance(before.top, currentTop, element.offsetHeight || 0, container);
+
       const dx = before.left - currentLeft;
-      const dy = before.top - currentTop;
+      const dy = beforeTopClipped - currentTop;
       if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) {
         // No visual movement — if this was a retained cell with no movement
         // (a degenerate case), still drop it so we don't leak DOM.
@@ -301,12 +337,12 @@ export class AnimationCoordinator {
       // Retained (outgoing) cells animate first so we collect them.
       const retained = this.retainedCells.get(container);
       if (retained) {
-        retained.forEach((element, cellId) => consider(element, cellId, true));
+        retained.forEach((element, cellId) => consider(element, cellId, true, container));
       }
 
       // Active cells: incoming + persistent.
       const cells = collectRenderedCells(container);
-      cells.forEach((element, cellId) => consider(element, cellId, false));
+      cells.forEach((element, cellId) => consider(element, cellId, false, container));
     }
 
     // FLIP "First" frame: apply inverse transforms synchronously so cells
@@ -463,6 +499,78 @@ const parsePx = (value: string): number => {
   if (!value) return 0;
   const parsed = parseFloat(value);
   return Number.isFinite(parsed) ? parsed : 0;
+};
+
+/**
+ * Compression factor for the off-screen portion of the FLIP journey. Larger
+ * values squeeze the off-screen overshoot more aggressively (cells with very
+ * different conceptual destinations end up closer in slide distance); smaller
+ * values give more visual spread. Tuned so that a row sorting to the bottom
+ * of a typical 500-row dataset slides ~1.7× viewport while preserving the
+ * sense that it's heading "really far".
+ */
+const OFFSCREEN_COMPRESSION_FACTOR = 10;
+
+/**
+ * Scale a FLIP journey so the visible slide is bounded but its length is
+ * proportional to the cell's true conceptual journey, preserving the sign
+ * and a clear sense of "this cell is going further than that one".
+ *
+ * Returns the new `top` to assign to the FLIP endpoint (the outgoing ghost's
+ * `style.top`, or the snapshot `before.top` for an incoming cell).
+ *
+ * The journey is split into two regimes:
+ *
+ *   1. **In-viewport range** (|delta| ≤ viewportHeight + cellHeight):
+ *      The cell is sliding to/from a position inside or just past the visible
+ *      band, so we use the true delta untouched. Small reorders, partial-move
+ *      sorts and persistent in-viewport cells are unaffected.
+ *
+ *   2. **Off-screen overshoot** (|delta| > visibleRange):
+ *      The cell is sliding to/from a far conceptual position that's invisible
+ *      anyway. We let the slide overshoot the visible edge by an amount that
+ *      grows with the true delta but smoothly asymptotes at `maxOvershoot`,
+ *      so cells with vastly different true journeys still slide *different*
+ *      distances (no piling-up), and cells with truly extreme conceptual
+ *      positions (e.g. a million pixels) stay bounded.
+ *
+ * The asymptotic formula is `maxOvershoot * extra / (extra + visibleRange * k)`
+ * which is 0 when `extra = 0`, approaches `maxOvershoot` as `extra → ∞`, and
+ * has no discontinuity at the boundary.
+ *
+ * No-op when the section's parent does not scroll vertically (small datasets,
+ * header sections).
+ */
+const scaleFlipDistance = (
+  distantTop: number,
+  anchorTop: number,
+  cellHeight: number,
+  container: HTMLElement,
+): number => {
+  const scroller = container.parentElement;
+  if (!scroller) return distantTop;
+  const clientHeight = scroller.clientHeight;
+  if (clientHeight <= 0 || scroller.scrollHeight <= clientHeight) return distantTop;
+
+  const delta = distantTop - anchorTop;
+  const absDelta = Math.abs(delta);
+  if (absDelta === 0) return distantTop;
+
+  const cellBuffer = cellHeight > 0 ? cellHeight : 0;
+  // Threshold below which we pass the journey through unchanged. Cells whose
+  // true delta fits within the visible band + one cell of overshoot are
+  // already on-screen and don't need scaling.
+  const visibleRange = clientHeight + cellBuffer;
+  if (absDelta <= visibleRange) return distantTop;
+
+  // Off-screen extra distance, smoothly compressed and asymptotic to
+  // `maxOvershoot`. With maxOvershoot = clientHeight, the longest possible
+  // visible slide is ~2× viewport height (visibleRange + maxOvershoot).
+  const maxOvershoot = clientHeight;
+  const extra = absDelta - visibleRange;
+  const compressed = (maxOvershoot * extra) / (extra + visibleRange * OFFSCREEN_COMPRESSION_FACTOR);
+  const scaledMagnitude = visibleRange + compressed;
+  return anchorTop + Math.sign(delta) * scaledMagnitude;
 };
 
 const readPrefersReducedMotion = (): boolean => {

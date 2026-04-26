@@ -290,7 +290,10 @@ export const SimpleThreeByThreeCenterToRightSwap = {
     result.h2.textContent = `Simplest 3×3 column swap · move center → right · ${SLOW_DURATION}ms`;
 
     const findByAccessor = (accessor: string): HeaderObject => {
-      const h = result.table.getAPI().getHeaders().find((x) => x.accessor === accessor);
+      const h = result.table
+        .getAPI()
+        .getHeaders()
+        .find((x) => x.accessor === accessor);
       if (!h) throw new Error(`Missing header "${accessor}"`);
       return h;
     };
@@ -342,10 +345,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
      * change have no transform, and that columns that swap have opposite-
      * sign transforms (one slid left, the other slid right).
      */
-    const runReorderStep = async (
-      stepLabel: string,
-      nextAccessors: string[],
-    ): Promise<void> => {
+    const runReorderStep = async (stepLabel: string, nextAccessors: string[]): Promise<void> => {
       const beforeLefts = new Map<string, number>();
       const beforeIndexByAccessor = new Map<string, number>();
       const currentHeaders = table.getAPI().getHeaders();
@@ -365,9 +365,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
         if (!h) throw new Error(`[${stepLabel}] header "${acc}" missing`);
         return h;
       });
-      const nextIndexByAccessor = new Map<string, number>(
-        nextAccessors.map((acc, i) => [acc, i]),
-      );
+      const nextIndexByAccessor = new Map<string, number>(nextAccessors.map((acc, i) => [acc, i]));
 
       // CRITICAL: trigger the update and read the FLIP "First" frame
       // *synchronously*. play() sets `transform: translate3d(dx, dy, 0)`
@@ -397,8 +395,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
             oldLeft: beforeLefts.get(`${row}:${accessor}`)!,
             newLeft,
             txX,
-            moved:
-              beforeIndexByAccessor.get(accessor) !== nextIndexByAccessor.get(accessor),
+            moved: beforeIndexByAccessor.get(accessor) !== nextIndexByAccessor.get(accessor),
           });
         }
       }
@@ -420,9 +417,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
 
       const stillSamples = samples.filter((s) => !s.moved);
       for (const s of stillSamples) {
-        expect(s.newLeft, `[${stepLabel}] still col ${s.accessor} should not move`).toBe(
-          s.oldLeft,
-        );
+        expect(s.newLeft, `[${stepLabel}] still col ${s.accessor} should not move`).toBe(s.oldLeft);
         expect(s.txX, `[${stepLabel}] still col ${s.accessor} should have no tx`).toBe(0);
       }
 
@@ -584,9 +579,7 @@ export const HeaderCellsAnimateOnColumnReorder = {
         if (!h) throw new Error(`[${stepLabel}] header "${acc}" missing`);
         return h;
       });
-      const nextIndexByAccessor = new Map<string, number>(
-        nextAccessors.map((acc, i) => [acc, i]),
-      );
+      const nextIndexByAccessor = new Map<string, number>(nextAccessors.map((acc, i) => [acc, i]));
 
       // CRITICAL: trigger the update and read the FLIP "First" frame
       // synchronously. Awaiting any RAF here would only ever surface
@@ -611,8 +604,7 @@ export const HeaderCellsAnimateOnColumnReorder = {
           oldLeft: beforeLefts.get(accessor)!,
           newLeft,
           txX,
-          moved:
-            beforeIndexByAccessor.get(accessor) !== nextIndexByAccessor.get(accessor),
+          moved: beforeIndexByAccessor.get(accessor) !== nextIndexByAccessor.get(accessor),
         });
       }
 
@@ -743,9 +735,7 @@ export const HeaderCellsAnimateDuringDragReorder = {
     const ACCESSORS = ["a", "b", "c"] as const;
 
     const findHeaderCell = (accessor: string): HTMLElement | null =>
-      canvasElement.querySelector<HTMLElement>(
-        `.st-header-cell[data-accessor="${accessor}"]`,
-      );
+      canvasElement.querySelector<HTMLElement>(`.st-header-cell[data-accessor="${accessor}"]`);
 
     const findHeaderLabel = (accessor: string): HTMLElement => {
       const cell = findHeaderCell(accessor);
@@ -975,9 +965,7 @@ export const HeaderDragDoesNotFlickerDuringAnimation = {
     const table = getTable();
 
     const findHeaderCell = (accessor: string): HTMLElement | null =>
-      canvasElement.querySelector<HTMLElement>(
-        `.st-header-cell[data-accessor="${accessor}"]`,
-      );
+      canvasElement.querySelector<HTMLElement>(`.st-header-cell[data-accessor="${accessor}"]`);
 
     const findHeaderLabel = (accessor: string): HTMLElement => {
       const cell = findHeaderCell(accessor);
@@ -1039,23 +1027,18 @@ export const HeaderDragDoesNotFlickerDuringAnimation = {
     await tickFrames(3);
 
     const orderAfterFirstSwap = currentOrder();
-    expect(
-      orderAfterFirstSwap,
-      "first dragover should have triggered B↔C swap",
-    ).toBe("a,c,b");
+    expect(orderAfterFirstSwap, "first dragover should have triggered B↔C swap").toBe("a,c,b");
 
     // The moving headers (B and C) should be hit-test-disabled.
     const cellA = findHeaderCell("a")!;
     const cellB = findHeaderCell("b")!;
     const cellC = findHeaderCell("c")!;
-    expect(
-      cellB.style.pointerEvents,
-      "header B should be pointer-events: none mid-FLIP",
-    ).toBe("none");
-    expect(
-      cellC.style.pointerEvents,
-      "header C should be pointer-events: none mid-FLIP",
-    ).toBe("none");
+    expect(cellB.style.pointerEvents, "header B should be pointer-events: none mid-FLIP").toBe(
+      "none",
+    );
+    expect(cellC.style.pointerEvents, "header C should be pointer-events: none mid-FLIP").toBe(
+      "none",
+    );
     expect(
       cellA.style.pointerEvents,
       "header A did not move and should keep default pointer-events",
@@ -1137,8 +1120,7 @@ export const HeaderDragDoesNotFlickerDuringAnimation = {
     for (const accessor of ACCESSORS) {
       const headerCell = findHeaderCell(accessor)!;
       expect(
-        headerCell.style.pointerEvents === "" ||
-          headerCell.style.pointerEvents === "auto",
+        headerCell.style.pointerEvents === "" || headerCell.style.pointerEvents === "auto",
         `header ${accessor} pointer-events not restored after settle ` +
           `(was "${headerCell.style.pointerEvents}")`,
       ).toBe(true);
@@ -1572,12 +1554,10 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
     // After play()'s RAF fires, transitions are applied — and only on
     // transform, never on opacity.
     await tickFrames(2);
-    canvasElement
-      .querySelectorAll<HTMLElement>(`[data-animating-out="true"]`)
-      .forEach((el) => {
-        expect(el.style.transition).toContain("transform");
-        expect(el.style.transition).not.toContain("opacity");
-      });
+    canvasElement.querySelectorAll<HTMLElement>(`[data-animating-out="true"]`).forEach((el) => {
+      expect(el.style.transition).toContain("transform");
+      expect(el.style.transition).not.toContain("opacity");
+    });
 
     await sleep(SETTLE_PAUSE);
 
@@ -1591,9 +1571,7 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
     expect(afterIds.has("1")).toBe(false);
 
     // No leftover ghosts, transforms, or transitions on settled cells.
-    const leftoverGhosts = canvasElement.querySelectorAll(
-      `[data-animating-out="true"]`,
-    );
+    const leftoverGhosts = canvasElement.querySelectorAll(`[data-animating-out="true"]`);
     expect(leftoverGhosts.length).toBe(0);
     canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell").forEach((cell) => {
       const t = cell.style.transform;

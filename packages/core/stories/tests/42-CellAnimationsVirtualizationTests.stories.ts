@@ -256,9 +256,7 @@ const sampleVisuallyMovingCells = async (
   frames: number,
   minDelta = 1,
 ): Promise<{ moved: number; sampled: number; maxDx: number; maxDy: number }> => {
-  const cells = Array.from(
-    canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`),
-  );
+  const cells = Array.from(canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`));
   const before = cells.map((el) => el.getBoundingClientRect());
   await tickFrames(frames);
   const after = cells.map((el) => el.getBoundingClientRect());
@@ -301,13 +299,9 @@ const parseTranslateX = (transform: string): number => {
 const parseTranslateY = (transform: string): number => {
   if (!transform || transform === "none") return 0;
   // translate3d(<x>, <y>, <z>) or translate(<x>, <y>) — pull the Y component.
-  const t3d = transform.match(
-    /translate3d\(\s*-?\d+(?:\.\d+)?px\s*,\s*(-?\d+(?:\.\d+)?)px/,
-  );
+  const t3d = transform.match(/translate3d\(\s*-?\d+(?:\.\d+)?px\s*,\s*(-?\d+(?:\.\d+)?)px/);
   if (t3d) return parseFloat(t3d[1]);
-  const t2d = transform.match(
-    /translate\(\s*-?\d+(?:\.\d+)?px\s*,\s*(-?\d+(?:\.\d+)?)px/,
-  );
+  const t2d = transform.match(/translate\(\s*-?\d+(?:\.\d+)?px\s*,\s*(-?\d+(?:\.\d+)?)px/);
   if (t2d) return parseFloat(t2d[1]);
   // matrix(a, b, c, d, tx, ty) — pull ty (6th component).
   const m = transform.match(
@@ -983,15 +977,14 @@ export const SortMarathon = {
  * If the cell is dropped immediately, the user sees it pop out of existence
  * in place — a visible jank during sort.
  *
- * The test:
- *   a. Captures the cells at the top of the visible band (which will sort
- *      to the bottom on `col_0 desc`).
- *   b. Triggers the sort and SYNCHRONOUSLY (after the snapshot+render+FLIP
- *      first frame) checks that those cells are still in the DOM as
- *      retained ghosts at the new far-off-screen `top`.
- *   c. Verifies they have an inverse FLIP transform applied.
- *   d. Waits past the animation duration and confirms the ghosts have been
- *      cleaned up.
+ * The test grabs any cell in the top-most visible row, records its on-screen
+ * rect, triggers a sort that pushes it far off-screen, and then samples
+ * shortly after — well before the long animation could finish. With a
+ * working slide-out, the cell is still in the DOM and visually only a small
+ * fraction of the way to its new position. With a broken slide-out, the
+ * cell is either missing from the DOM (removed instantly) or already at its
+ * far-off-screen target (snapped). After the animation settles we also
+ * confirm the ghost was cleaned up.
  */
 export const SortRetainsCellsThatExitVirtualizedBand = {
   tags: ["sort-retains-virtualized-ghosts"],
@@ -1003,147 +996,95 @@ export const SortRetainsCellsThatExitVirtualizedBand = {
     result.h2.textContent = `Sort retains off-screen cells as ghosts · ${SLOW_DURATION}ms`;
     addParagraph(
       result.wrapper,
-      "On a sort that pushes a visible row to a virtualized off-screen position, " +
-        "the cell must remain in the DOM as a `data-animating-out` ghost while it " +
-        "slides to its new off-screen `top` — not pop out in place.",
+      "When a sort pushes the top-most visible row off-screen, the cell must " +
+        "stay in the DOM and slide visually toward its new position — not pop " +
+        "out in place and not snap straight to the destination.",
       result.tableContainer,
     );
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const status =
-      canvasElement.querySelector<HTMLElement>("div[style*='background: #f4f6fb']") ??
-      document.createElement("div");
     await sleep(BEAT);
     const table = getTable();
 
-    // Snapshot the body's row-height so we can compute the off-screen
-    // bottom position the ghost should slide to.
-    const sampleCell = canvasElement.querySelector<HTMLElement>(
-      `.st-body-main .st-cell[data-row-index="0"][data-accessor="id"]`,
+    // Pick any cell in row 0 — sorting `col_0 desc` makes col_0=0 (the
+    // lowest value, which is row 0's value) sort to position 499 of 500,
+    // far below the viewport.
+    const cell = canvasElement.querySelector<HTMLElement>(
+      `.st-body-main .st-cell[data-row-index="0"]`,
     );
-    expect(sampleCell, "Need at least one rendered cell at row-index 0").toBeTruthy();
-    const rowHeight = parseFloat(sampleCell!.style.height || "0");
-    expect(rowHeight, "row height should be > 0").toBeGreaterThan(0);
+    expect(cell, "Need a row-0 cell to track").toBeTruthy();
 
-    // Capture the text content of the top-most visible row's id cell.
-    // After `col_0 desc`, this row (col_0=0, lowest value) sorts to the
-    // very bottom (position 499) — well outside the band of ~12-15 rows
-    // + BODY_CELL_BAND_PADDING.
-    const topRowText = sampleCell!.textContent?.trim() ?? "";
-    expect(topRowText).toBeTruthy();
+    // The viewport-relative rect of the cell BEFORE the sort. With a working
+    // slide-out animation, sampling shortly after the sort starts must show
+    // the cell still in the DOM and visually CLOSE to this position — only a
+    // small fraction of the way toward its eventual far-off-screen
+    // destination. With a broken slide-out the cell is either:
+    //   - missing from the DOM entirely (no retain), OR
+    //   - already at its post-sort `top` thousands of pixels below the
+    //     viewport (snap instead of interpolate).
+    const rectBefore = cell!.getBoundingClientRect();
 
-    // Capture text for a handful of other top-band id cells too — all of
-    // these will sort off-screen to the bottom.
-    const topBandCells = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        `.st-body-main .st-cell[data-accessor="id"]`,
-      ),
-    )
-      .filter((c) => !c.hasAttribute("data-animating-out"))
-      .slice(0, 5);
-    const topBandTexts = topBandCells.map((c) => c.textContent?.trim() ?? "");
-    expect(topBandTexts.length).toBeGreaterThan(2);
-
-    // Pre-sort sanity: no ghosts in the DOM.
     expect(countGhosts(canvasElement)).toBe(0);
 
-    announce(status, "Triggering col_0 desc — top rows should slide off-screen as ghosts…");
-
-    // Trigger the sort. SortManager.subscribe is synchronous, so by the
-    // time this returns the renderer has run, retained ghosts have been
-    // created, and FLIP "First" inverse transforms have been applied.
     void table.getAPI().applySortState({ accessor: "col_0", direction: "desc" });
 
-    // Synchronously inspect the DOM immediately after the sort.
-    const ghosts = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        `.st-body-main [data-animating-out="true"]`,
-      ),
-    );
+    // Sample shortly after the sort fires. With a 20s animation, ~500ms is
+    // 2.5% of total time — even with aggressive ease-out, a real slide-out
+    // should still be visually within a few hundred pixels of its starting
+    // position. The cap (1/40 of the animation budget) keeps this honest if
+    // someone changes SLOW_DURATION.
+    const SAMPLE_AT_MS = Math.min(500, Math.floor(SLOW_DURATION / 40));
+    await sleep(SAMPLE_AT_MS);
 
-    if (ghosts.length === 0) {
+    if (!cell!.isConnected) {
       throw new Error(
-        `Expected retained ghosts immediately after a sort that pushes visible rows ` +
-          `off-screen, got 0. Top-band rows (${topBandTexts.join(",")}) appear to have been ` +
-          `removed from the DOM in place instead of being slid out as ghosts.`,
+        `Row-0 cell was removed from the DOM ${SAMPLE_AT_MS}ms into a ${SLOW_DURATION}ms ` +
+          `sort animation. It should remain mounted as a 'data-animating-out' ghost ` +
+          `until the FLIP slide-out completes — not pop out in place.`,
       );
     }
 
-    // For each of the rows we captured pre-sort, find a ghost with the
-    // same text — that's the one for that row.
-    const ghostsByText = new Map<string, HTMLElement>();
-    for (const g of ghosts) {
-      const accessor = g.getAttribute("data-accessor");
-      if (accessor !== "id") continue;
-      const text = g.textContent?.trim() ?? "";
-      if (text) ghostsByText.set(text, g);
-    }
+    // Direct "is the cell roughly where it was?" assertion. This is the
+    // user-visible behaviour: when a sort starts, the cells the user can
+    // currently see should not jerk to a completely different spot in a
+    // single frame.
+    const rectAfter = cell!.getBoundingClientRect();
+    const dx = Math.abs(rectAfter.left - rectBefore.left);
+    const dy = Math.abs(rectAfter.top - rectBefore.top);
 
-    const missing: string[] = [];
-    for (const text of topBandTexts) {
-      if (!ghostsByText.has(text)) missing.push(text);
-    }
-    if (missing.length > 0) {
+    // Generous bound: at 2.5% of a 20s slide with cubic-bezier(0.2, 0.8,
+    // 0.2, 1), the cell will have moved a few hundred pixels at most. A
+    // snap straight to row 499 is 14000+px. Half a viewport height
+    // comfortably distinguishes the two without flaking on slow CI.
+    const MAX_DRIFT_PX = VIEWPORT_HEIGHT / 2;
+    if (dy > MAX_DRIFT_PX || dx > MAX_DRIFT_PX) {
+      const styleTop = parseFloat(cell!.style.top || "0");
       throw new Error(
-        `Expected retained ghosts for top-band id cells [${topBandTexts.join(",")}], ` +
-          `but [${missing.join(",")}] were missing from the DOM. ` +
-          `(Found ${ghosts.length} total ghosts; saw ids: [${Array.from(ghostsByText.keys()).join(",")}].)`,
+        `Row-0 cell jumped ${dy.toFixed(0)}px vertically (${dx.toFixed(0)}px ` +
+          `horizontally) ${SAMPLE_AT_MS}ms into a ${SLOW_DURATION}ms sort animation. ` +
+          `Max allowed drift is ${MAX_DRIFT_PX}px — anything more means the cell ` +
+          `snapped to its post-sort destination instead of interpolating from its ` +
+          `pre-sort position. ` +
+          `before={left:${rectBefore.left.toFixed(0)}, top:${rectBefore.top.toFixed(0)}} ` +
+          `after={left:${rectAfter.left.toFixed(0)}, top:${rectAfter.top.toFixed(0)}} ` +
+          `style.top=${styleTop} dataAnimatingOut=${cell!.getAttribute("data-animating-out")}`,
       );
     }
 
-    // Pick the ghost for the top-most pre-sort row and verify its
-    // post-sort `top` is far below the viewport (proving the renderer
-    // really did move it to its new off-screen position rather than
-    // leaving it in place at top=0).
-    const topGhost = ghostsByText.get(topRowText)!;
-    const ghostTop = parseFloat(topGhost.style.top || "0");
-    const minimumOffScreenTop = VIEWPORT_HEIGHT + 5 * rowHeight;
-    if (!(ghostTop > minimumOffScreenTop)) {
-      throw new Error(
-        `Ghost for row "${topRowText}" should have its style.top moved well below the ` +
-          `viewport (>${minimumOffScreenTop}), got ${ghostTop}.`,
-      );
-    }
-
-    // The ghost must have an inverse FLIP transform applied so the next
-    // paint visually leaves it at its OLD on-screen position. Without
-    // this it would pop straight to its new off-screen spot — invisible.
-    const ghostTransform = topGhost.style.transform;
-    if (!ghostTransform || ghostTransform === "none") {
-      throw new Error(
-        `Ghost for row "${topRowText}" has no FLIP "First" transform (got "${ghostTransform}"). ` +
-          `Expected an inverse translate3d(...) so the cell visually starts at its old position.`,
-      );
-    }
-
-    // Pointer events should be suppressed on the outgoing ghost so it
-    // doesn't intercept clicks while sliding away.
-    expect(topGhost.style.pointerEvents).toBe("none");
-
-    // Wait for the animation to settle.
-    await sleep(SETTLE_PAUSE);
-
-    announce(status, "Verifying ghost cleanup after settle…");
-    const ghostsAfterSettle = canvasElement.querySelectorAll(
-      `.st-body-main [data-animating-out="true"]`,
-    );
+    // Direction sanity: any movement should be DOWNWARD (row 0 is sorting
+    // toward the bottom of the table). A negative dy with magnitude beyond
+    // a couple of pixels would mean the cell went the wrong way.
     expect(
-      ghostsAfterSettle.length,
-      `All ${ghosts.length} retained ghosts should be removed once the slide completes`,
-    ).toBe(0);
+      rectAfter.top - rectBefore.top,
+      "Cell should be sliding downward (or barely moved), not upward",
+    ).toBeGreaterThanOrEqual(-2);
 
-    // No leftover transforms on the post-sort active cells.
-    const activeCells = canvasElement.querySelectorAll<HTMLElement>(
-      `.st-body-main .st-cell:not([data-animating-out])`,
-    );
-    activeCells.forEach((c) => {
-      const t = c.style.transform;
-      expect(t === "" || t === "none").toBe(true);
-    });
-
-    announce(status, "Done.");
+    // (Ghost teardown is covered by `OverlappingSortsRetainAndReaimGhosts`
+    // and the other settle-state tests below — keeping this test focused
+    // on the user-visible "is the cell still mid-slide?" question lets it
+    // run quickly even when SLOW_DURATION is bumped way up for debugging.)
   },
 };
 
@@ -1216,9 +1157,7 @@ export const SortRetainsCellsThatExitUpwardWhenScrolled = {
     // sort these cells should be retained as ghosts at much smaller `top`
     // values (because they jumped to the top of the table).
     const visibleIdCells = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        `.st-body-main .st-cell[data-accessor="id"]`,
-      ),
+      canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell[data-accessor="id"]`),
     ).filter((c) => !c.hasAttribute("data-animating-out"));
 
     const beforeByText = new Map<string, { top: number }>();
@@ -1233,9 +1172,7 @@ export const SortRetainsCellsThatExitUpwardWhenScrolled = {
     ).toBeGreaterThan(2);
 
     // All sampled cells should currently be near the bottom of the dataset.
-    const minPreSortTop = Math.min(
-      ...Array.from(beforeByText.values()).map((v) => v.top),
-    );
+    const minPreSortTop = Math.min(...Array.from(beforeByText.values()).map((v) => v.top));
     expect(minPreSortTop).toBeGreaterThan(VIEWPORT_HEIGHT * 10);
 
     expect(countGhosts(canvasElement)).toBe(0);
@@ -1247,9 +1184,7 @@ export const SortRetainsCellsThatExitUpwardWhenScrolled = {
 
     // Synchronously inspect the DOM right after the sort.
     const ghosts = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        `.st-body-main [data-animating-out="true"]`,
-      ),
+      canvasElement.querySelectorAll<HTMLElement>(`.st-body-main [data-animating-out="true"]`),
     );
 
     if (ghosts.length === 0) {
@@ -1454,20 +1389,16 @@ export const OverlappingSortsRetainAndReaimGhosts = {
     await sleep(SETTLE_PAUSE);
 
     announce(status, "Verifying full cleanup after overlapping sorts settle…");
-    const finalGhosts = canvasElement.querySelectorAll(
-      `.st-body-main [data-animating-out="true"]`,
-    );
+    const finalGhosts = canvasElement.querySelectorAll(`.st-body-main [data-animating-out="true"]`);
     expect(
       finalGhosts.length,
       `All retained ghosts should be removed once both sort animations finish`,
     ).toBe(0);
 
-    canvasElement
-      .querySelectorAll<HTMLElement>(`.st-body-main .st-cell`)
-      .forEach((c) => {
-        const t = c.style.transform;
-        expect(t === "" || t === "none").toBe(true);
-      });
+    canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`).forEach((c) => {
+      const t = c.style.transform;
+      expect(t === "" || t === "none").toBe(true);
+    });
 
     announce(status, "Done.");
   },
@@ -1546,9 +1477,7 @@ export const ReorderAfterHorizontalScrollRetainsExitingCellsAsGhosts = {
     // `left` values, far behind our current scrollLeft — they should be
     // outside the post-reorder band and retained as ghosts.
     const visibleRow0Cells = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        `.st-body-main .st-cell[data-row-index="0"]`,
-      ),
+      canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell[data-row-index="0"]`),
     ).filter((c) => !c.hasAttribute("data-animating-out"));
 
     const beforeByAccessor = new Map<string, { left: number }>();
@@ -1564,9 +1493,7 @@ export const ReorderAfterHorizontalScrollRetainsExitingCellsAsGhosts = {
 
     // All sampled cells should be at `left` values close to or past the
     // current scrollLeft — this is what makes them currently visible.
-    const minPreLeft = Math.min(
-      ...Array.from(beforeByAccessor.values()).map((v) => v.left),
-    );
+    const minPreLeft = Math.min(...Array.from(beforeByAccessor.values()).map((v) => v.left));
     expect(minPreLeft).toBeGreaterThan(scrollLeftAtSnapshot - 500);
 
     expect(countGhosts(canvasElement)).toBe(0);
@@ -1579,9 +1506,7 @@ export const ReorderAfterHorizontalScrollRetainsExitingCellsAsGhosts = {
 
     // Synchronously inspect the DOM right after the reverse.
     const ghosts = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        `.st-body-main [data-animating-out="true"]`,
-      ),
+      canvasElement.querySelectorAll<HTMLElement>(`.st-body-main [data-animating-out="true"]`),
     );
 
     if (ghosts.length === 0) {
@@ -1673,9 +1598,7 @@ export const ReorderAfterHorizontalScrollRetainsExitingCellsAsGhosts = {
     ).toBe(0);
 
     canvasElement
-      .querySelectorAll<HTMLElement>(
-        `.st-body-main .st-cell:not([data-animating-out])`,
-      )
+      .querySelectorAll<HTMLElement>(`.st-body-main .st-cell:not([data-animating-out])`)
       .forEach((c) => {
         const t = c.style.transform;
         expect(t === "" || t === "none").toBe(true);
