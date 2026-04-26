@@ -1,6 +1,23 @@
 import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/eventTracking";
 import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
 
+const DEFAULT_DURATION = 300;
+const DEFAULT_EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+const MIN_DELTA = 0.5;
+const SAFETY_TIMEOUT_SLACK = 80;
+const RETAINED_CLASS = "st-cell-animating-out";
+const RETAINED_ATTR = "data-animating-out";
+
+/**
+ * Compression factor for the off-screen portion of the FLIP journey. Larger
+ * values squeeze the off-screen overshoot more aggressively (cells with very
+ * different conceptual destinations end up closer in slide distance); smaller
+ * values give more visual spread. Tuned so that a row sorting to the bottom
+ * of a typical 500-row dataset slides ~1.7× viewport while preserving the
+ * sense that it's heading "really far".
+ */
+const OFFSCREEN_COMPRESSION_FACTOR = 10;
+
 /**
  * The renderer keeps two independent per-container WeakMaps of rendered cells —
  * one for body sections, one for header sections — because the two render
@@ -43,13 +60,6 @@ interface InFlightCell {
   transitionEndHandler: (event: TransitionEvent) => void;
   isRetained: boolean;
 }
-
-const DEFAULT_DURATION = 240;
-const DEFAULT_EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
-const MIN_DELTA = 0.5;
-const SAFETY_TIMEOUT_SLACK = 80;
-const RETAINED_CLASS = "st-cell-animating-out";
-const RETAINED_ATTR = "data-animating-out";
 
 /**
  * FLIP-style animation coordinator for body cells with virtualization awareness.
@@ -211,8 +221,20 @@ export class AnimationCoordinator {
     // scaling also gives cells with very different conceptual destinations
     // visibly different slide distances, so they fan out instead of marching
     // off-screen in lockstep.
-    const clippedTop = scaleFlipDistance(newPosition.top, oldTop, newPosition.height, container, "y");
-    const clippedLeft = scaleFlipDistance(newPosition.left, oldLeft, newPosition.width, container, "x");
+    const clippedTop = scaleFlipDistance(
+      newPosition.top,
+      oldTop,
+      newPosition.height,
+      container,
+      "y",
+    );
+    const clippedLeft = scaleFlipDistance(
+      newPosition.left,
+      oldLeft,
+      newPosition.width,
+      container,
+      "x",
+    );
 
     let map = this.retainedCells.get(container);
     if (!map) {
@@ -511,16 +533,6 @@ const parsePx = (value: string): number => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
-/**
- * Compression factor for the off-screen portion of the FLIP journey. Larger
- * values squeeze the off-screen overshoot more aggressively (cells with very
- * different conceptual destinations end up closer in slide distance); smaller
- * values give more visual spread. Tuned so that a row sorting to the bottom
- * of a typical 500-row dataset slides ~1.7× viewport while preserving the
- * sense that it's heading "really far".
- */
-const OFFSCREEN_COMPRESSION_FACTOR = 10;
-
 type FlipAxis = "x" | "y";
 
 /**
@@ -568,8 +580,7 @@ const scaleFlipDistance = (
   container: HTMLElement,
   axis: FlipAxis,
 ): number => {
-  const scroller: HTMLElement | null =
-    axis === "y" ? container.parentElement : container;
+  const scroller: HTMLElement | null = axis === "y" ? container.parentElement : container;
   if (!scroller) return distantPos;
 
   const clientSize = axis === "y" ? scroller.clientHeight : scroller.clientWidth;
@@ -592,10 +603,7 @@ const scaleFlipDistance = (
   // visibleRange, so the compression below pulls the visible end-point past
   // the section's overflow clip and the cell is never painted.)
   const scrollOffset = axis === "y" ? scroller.scrollTop : scroller.scrollLeft;
-  if (
-    distantPos >= scrollOffset - cellBuffer &&
-    distantPos <= scrollOffset + clientSize
-  ) {
+  if (distantPos >= scrollOffset - cellBuffer && distantPos <= scrollOffset + clientSize) {
     return distantPos;
   }
 

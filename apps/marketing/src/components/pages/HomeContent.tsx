@@ -260,7 +260,7 @@ export default function HomeContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              The Simple Data Grid for React, Vue, Angular, Svelte, Solid, and TypeScript
+              The Data Grid for React, Vue, Angular, Svelte, Solid, and Vanilla TypeScript
             </motion.h1>
 
             <motion.p
@@ -269,8 +269,8 @@ export default function HomeContent() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              One engine, six adapters. Ship production-ready tables with 30+ features in a tiny,
-              lightweight package.
+              A lightweight data grid with sorting, filtering, virtualization, column pinning, row
+              grouping, inline editing, and much more.
             </motion.p>
 
             <motion.div
