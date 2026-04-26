@@ -1178,12 +1178,12 @@ export const ReorderWithoutAnimations = {
     table.update({ defaultHeaders: reversed });
 
     await new Promise((r) => setTimeout(r, 50));
-    const cells = canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell");
+    const cells = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell"),
+    );
     expect(cells.length).toBeGreaterThan(0);
-    cells.forEach((cell) => {
-      const t = cell.style.transform;
-      expect(t === "" || t === "none").toBe(true);
-    });
+    const stuck = cells.filter((c) => c.style.transform && c.style.transform !== "none");
+    expect(stuck.length, "cells with leftover transform").toBe(0);
   },
 };
 
@@ -1283,12 +1283,12 @@ export const SortAnimationDemo = {
       void table.getAPI().applySortState(sort);
       await sleep(SETTLE_PAUSE);
 
-      const cells = canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell");
+      const cells = Array.from(
+        canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell"),
+      );
       expect(cells.length).toBeGreaterThan(0);
-      cells.forEach((cell) => {
-        const t = cell.style.transform;
-        expect(t === "" || t === "none").toBe(true);
-      });
+      const stuck = cells.filter((c) => c.style.transform && c.style.transform !== "none");
+      expect(stuck.length, `cells with leftover transform after sort by ${sort.accessor}`).toBe(0);
       const ghosts = canvasElement.querySelectorAll(`.st-body-main [data-animating-out="true"]`);
       expect(ghosts.length).toBe(0);
     }
@@ -1530,15 +1530,19 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
 
     // Outgoing cells should be retained as ghosts (with non-zero translate)
     // sliding to their new off-screen positions.
-    const ghostsImmediately = canvasElement.querySelectorAll<HTMLElement>(
-      `[data-animating-out="true"]`,
+    const ghostsImmediately = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(`[data-animating-out="true"]`),
     );
     expect(ghostsImmediately.length).toBeGreaterThan(0);
-    ghostsImmediately.forEach((el) => {
-      expect(el.style.transform).toContain("translate");
-      // No fades. We only ever touched transform.
-      expect(el.style.opacity === "" || el.style.opacity === "1").toBe(true);
-    });
+    const ghostsMissingTranslate = ghostsImmediately.filter(
+      (el) => !el.style.transform.includes("translate"),
+    );
+    expect(ghostsMissingTranslate.length, "ghosts without a translate transform").toBe(0);
+    // No fades — we only ever touched transform.
+    const ghostsWithFade = ghostsImmediately.filter(
+      (el) => el.style.opacity !== "" && el.style.opacity !== "1",
+    );
+    expect(ghostsWithFade.length, "ghosts with non-1 opacity (should not fade)").toBe(0);
 
     // Incoming cells (new ids that weren't in the DOM pre-sort) should also
     // carry a non-zero FLIP "First" translate, sliding in from off-screen.
@@ -1546,18 +1550,35 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
       canvasElement.querySelectorAll<HTMLElement>('.st-body-main [data-accessor="id"]'),
     ).filter((el) => !beforeIds.has((el.textContent ?? "").trim()));
     expect(incomingImmediately.length).toBeGreaterThan(0);
-    for (const el of incomingImmediately) {
-      expect(el.style.transform).toContain("translate");
-      expect(el.style.opacity === "" || el.style.opacity === "1").toBe(true);
-    }
+    const incomingMissingTranslate = incomingImmediately.filter(
+      (el) => !el.style.transform.includes("translate"),
+    );
+    expect(
+      incomingMissingTranslate.length,
+      "incoming cells without a translate FLIP transform",
+    ).toBe(0);
+    const incomingWithFade = incomingImmediately.filter(
+      (el) => el.style.opacity !== "" && el.style.opacity !== "1",
+    );
+    expect(incomingWithFade.length, "incoming cells with non-1 opacity").toBe(0);
 
     // After play()'s RAF fires, transitions are applied — and only on
     // transform, never on opacity.
     await tickFrames(2);
-    canvasElement.querySelectorAll<HTMLElement>(`[data-animating-out="true"]`).forEach((el) => {
-      expect(el.style.transition).toContain("transform");
-      expect(el.style.transition).not.toContain("opacity");
-    });
+    const ghostsAfterPlay = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(`[data-animating-out="true"]`),
+    );
+    const ghostsMissingTransformTransition = ghostsAfterPlay.filter(
+      (el) => !el.style.transition.includes("transform"),
+    );
+    expect(
+      ghostsMissingTransformTransition.length,
+      "ghosts whose transition does not target transform",
+    ).toBe(0);
+    const ghostsWithOpacityTransition = ghostsAfterPlay.filter((el) =>
+      el.style.transition.includes("opacity"),
+    );
+    expect(ghostsWithOpacityTransition.length, "ghosts whose transition targets opacity").toBe(0);
 
     await sleep(SETTLE_PAUSE);
 
@@ -1573,12 +1594,17 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
     // No leftover ghosts, transforms, or transitions on settled cells.
     const leftoverGhosts = canvasElement.querySelectorAll(`[data-animating-out="true"]`);
     expect(leftoverGhosts.length).toBe(0);
-    canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell").forEach((cell) => {
-      const t = cell.style.transform;
-      expect(t === "" || t === "none").toBe(true);
-      const o = cell.style.opacity;
-      expect(o === "" || o === "1").toBe(true);
-    });
+    const settledCells = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell"),
+    );
+    const stuckSettled = settledCells.filter(
+      (c) => c.style.transform && c.style.transform !== "none",
+    );
+    expect(stuckSettled.length, "settled cells with leftover transform").toBe(0);
+    const fadedSettled = settledCells.filter(
+      (c) => c.style.opacity !== "" && c.style.opacity !== "1",
+    );
+    expect(fadedSettled.length, "settled cells with non-1 opacity").toBe(0);
   },
 };
 

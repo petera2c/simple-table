@@ -44,7 +44,7 @@ interface InFlightCell {
   isRetained: boolean;
 }
 
-const DEFAULT_DURATION = 2000;
+const DEFAULT_DURATION = 240;
 const DEFAULT_EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 const MIN_DELTA = 0.5;
 const SAFETY_TIMEOUT_SLACK = 80;

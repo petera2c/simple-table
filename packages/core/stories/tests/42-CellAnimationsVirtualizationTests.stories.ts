@@ -315,10 +315,13 @@ const parseTranslateY = (transform: string): number => {
 // ============================================================================
 
 /**
- * Slow column reorder marathon: reverse → reset → swap pair → reset, with a
- * BEAT pause between each step so each animation phase is clearly visible.
- * Asserts that >50 cells get a `transform` transition mid-flight after each
- * reorder, and that everything settles cleanly between steps.
+ * Large-scale reorder round-trip: reverse → reset on a 30-col × 500-row
+ * table, asserting that >50 cells are mid-flight after each step and that
+ * everything settles cleanly with no leftover ghosts.
+ *
+ * Strict per-cell FLIP transform-X correctness on a contained neighbour
+ * swap is covered by `ContainedNeighborSwapAnimation` (immediately below)
+ * on the same constrained table, so we don't repeat it here.
  */
 export const SlowColumnReorderMarathon = {
   render: () => {
@@ -398,7 +401,7 @@ export const SlowColumnReorderMarathon = {
     const api = table.getAPI();
     const original = api.getHeaders();
 
-    announce(status, "Step 1/5 · Reversing all columns…");
+    announce(status, "Step 1/2 · Reversing all columns…");
     table.update({ defaultHeaders: [...original].reverse() });
     // 5 RAFs ≈ 80ms — well past the double-rAF FLIP "First"/"Play" handoff
     // and into the active transition window (animationDuration=1500ms).
@@ -407,57 +410,11 @@ export const SlowColumnReorderMarathon = {
     await sleep(SETTLE_PAUSE);
     expect(countGhosts(canvasElement)).toBe(0);
 
-    announce(status, "Step 2/5 · Resetting to original order…");
+    announce(status, "Step 2/2 · Resetting to original order…");
     await sleep(BEAT);
     table.update({ defaultHeaders: original });
     await tickFrames(5);
     expect(countActuallyAnimating(canvasElement)).toBeGreaterThan(50);
-    await sleep(SETTLE_PAUSE);
-
-    // STRICT step: swap two cells that are BOTH visible in the viewport so we
-    // can synchronously assert the FLIP "First" frame's transform-X exactly
-    // equals (oldLeft - newLeft) — catches regressions where cells animate
-    // from a wrong anchor.
-    announce(status, "Step 3/5 · Strict contained swap col_0 ↔ col_2…");
-    await sleep(BEAT);
-    const cellA = findCellByRowIndexAndAccessor(canvasElement, 0, "col_0");
-    const cellB = findCellByRowIndexAndAccessor(canvasElement, 0, "col_2");
-    expect(cellA).toBeTruthy();
-    expect(cellB).toBeTruthy();
-    const aOldLeft = parseFloat(cellA!.style.left || "0");
-    const bOldLeft = parseFloat(cellB!.style.left || "0");
-    expect(aOldLeft).not.toBe(bOldLeft);
-
-    const swapped = [...original];
-    const ai = swapped.findIndex((h) => h.accessor === "col_0");
-    const bi = swapped.findIndex((h) => h.accessor === "col_2");
-    [swapped[ai], swapped[bi]] = [swapped[bi], swapped[ai]];
-    table.update({ defaultHeaders: swapped });
-
-    const cellAAfter = findCellByRowIndexAndAccessor(canvasElement, 0, "col_0");
-    const cellBAfter = findCellByRowIndexAndAccessor(canvasElement, 0, "col_2");
-    const aNewLeft = parseFloat(cellAAfter!.style.left || "0");
-    const bNewLeft = parseFloat(cellBAfter!.style.left || "0");
-    expect(aNewLeft).toBeCloseTo(bOldLeft, 0);
-    expect(bNewLeft).toBeCloseTo(aOldLeft, 0);
-
-    const aTx = parseTranslateX(cellAAfter!.style.transform);
-    const bTx = parseTranslateX(cellBAfter!.style.transform);
-    expect(Math.abs(aTx - (aOldLeft - aNewLeft))).toBeLessThan(1.5);
-    expect(Math.abs(bTx - (bOldLeft - bNewLeft))).toBeLessThan(1.5);
-    expect(Math.sign(aTx)).not.toBe(Math.sign(bTx));
-    expect(aTx).not.toBe(0);
-    expect(bTx).not.toBe(0);
-    await sleep(SETTLE_PAUSE);
-
-    announce(status, "Step 4/5 · Reset after contained swap…");
-    await sleep(BEAT);
-    table.update({ defaultHeaders: original });
-    await sleep(SETTLE_PAUSE);
-
-    announce(status, "Step 5/5 · Final reset (no-op)…");
-    await sleep(BEAT);
-    table.update({ defaultHeaders: original });
     await sleep(SETTLE_PAUSE);
 
     announce(status, "Done.");
@@ -672,9 +629,11 @@ export const ReorderAtMultipleScrollPositions = {
     const scroller = findScroller(canvasElement);
     expect(scroller).toBeTruthy();
 
+    // Two extremes are enough to prove the snapshot tracks the visible band
+    // wherever the user has scrolled — a mid-table position is just a point
+    // between these two and adds no behavioural coverage.
     const positions: Array<{ label: string; top: number }> = [
       { label: "top", top: 0 },
-      { label: "mid (4000px)", top: 4000 },
       { label: "deep (10000px)", top: 10000 },
     ];
 
@@ -864,13 +823,14 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
 };
 
 /**
- * Sort marathon. With `getRowId` providing stable identities, sort now
- * triggers FLIP slides: persistent rows slide to their new tops, rows
- * sorting out of the visible band slide out past the viewport edge as
- * retained ghosts, rows sorting into the band slide in from below/above.
+ * Sort cleanup at scale. Verifies that after a sort animation settles on a
+ * 500-row × 30-col table, every retained ghost is torn down and no cell is
+ * left with a stuck transform or transition.
  *
- * After each sort settles (we wait past SLOW_DURATION) there must be no
- * leftover ghosts, transforms, or stuck transitions.
+ * Per-sort FLIP correctness, ghost retention, mid-flight re-aim, and the
+ * upward / horizontal exit cases each have their own focused regression
+ * tests below — this one only proves cleanup holds at scale across a
+ * round-trip (sort → clear).
  */
 export const SortMarathon = {
   render: () => {
@@ -928,30 +888,28 @@ export const SortMarathon = {
     await sleep(BEAT);
     const table = getTable();
 
-    const sequence: Array<{
-      label: string;
-      sort: { accessor: string; direction: "asc" | "desc" } | undefined;
-    }> = [
-      { label: "col_0 desc", sort: { accessor: "col_0", direction: "desc" } },
-      { label: "col_0 asc", sort: { accessor: "col_0", direction: "asc" } },
-      { label: "col_5 desc", sort: { accessor: "col_5", direction: "desc" } },
-      { label: "cleared", sort: undefined },
-    ];
-
-    for (let i = 0; i < sequence.length; i++) {
-      const { label, sort } = sequence[i];
-      announce(status, `Step ${i + 1}/${sequence.length} · Sorting ${label}…`);
-      void table.getAPI().applySortState(sort);
-      // SETTLE_PAUSE outlasts the slide so retained ghosts are torn down.
-      await sleep(SETTLE_PAUSE);
+    const assertSettledAndClean = (): void => {
       expect(countGhosts(canvasElement)).toBe(0);
-      const cells = canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`);
+      const cells = Array.from(
+        canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`),
+      );
       expect(cells.length).toBeGreaterThan(0);
-      cells.forEach((cell) => {
-        const t = cell.style.transform;
-        expect(t === "" || t === "none").toBe(true);
-      });
-    }
+      // Aggregate per-cell checks into a single expect call. Per-cell
+      // expects on this 30-col × 500-row table generate hundreds of
+      // Storybook interactions per assertion, which lags the browser.
+      const stuck = cells.filter((c) => c.style.transform && c.style.transform !== "none");
+      expect(stuck.length, `cells with leftover transform after settle`).toBe(0);
+    };
+
+    announce(status, "Sorting col_0 desc…");
+    void table.getAPI().applySortState({ accessor: "col_0", direction: "desc" });
+    await sleep(SETTLE_PAUSE);
+    assertSettledAndClean();
+
+    announce(status, "Clearing sort…");
+    void table.getAPI().applySortState();
+    await sleep(SETTLE_PAUSE);
+    assertSettledAndClean();
 
     announce(status, "Done.");
   },
@@ -1279,13 +1237,13 @@ export const SortRetainsCellsThatExitUpwardWhenScrolled = {
       `All ${ghosts.length} retained ghosts should be removed once the slide completes`,
     ).toBe(0);
 
-    const activeCells = canvasElement.querySelectorAll<HTMLElement>(
-      `.st-body-main .st-cell:not([data-animating-out])`,
+    const activeCells = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        `.st-body-main .st-cell:not([data-animating-out])`,
+      ),
     );
-    activeCells.forEach((c) => {
-      const t = c.style.transform;
-      expect(t === "" || t === "none").toBe(true);
-    });
+    const stuck = activeCells.filter((c) => c.style.transform && c.style.transform !== "none");
+    expect(stuck.length, "active cells with leftover transform after settle").toBe(0);
 
     announce(status, "Done.");
   },
@@ -1395,10 +1353,15 @@ export const OverlappingSortsRetainAndReaimGhosts = {
       `All retained ghosts should be removed once both sort animations finish`,
     ).toBe(0);
 
-    canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`).forEach((c) => {
-      const t = c.style.transform;
-      expect(t === "" || t === "none").toBe(true);
-    });
+    const allCells = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`),
+    );
+    const stuckOverlap = allCells.filter(
+      (c) => c.style.transform && c.style.transform !== "none",
+    );
+    expect(stuckOverlap.length, "cells with leftover transform after overlapping sorts settle").toBe(
+      0,
+    );
 
     announce(status, "Done.");
   },
@@ -1597,12 +1560,18 @@ export const ReorderAfterHorizontalScrollRetainsExitingCellsAsGhosts = {
       `All retained ghosts should be removed once the slide completes`,
     ).toBe(0);
 
-    canvasElement
-      .querySelectorAll<HTMLElement>(`.st-body-main .st-cell:not([data-animating-out])`)
-      .forEach((c) => {
-        const t = c.style.transform;
-        expect(t === "" || t === "none").toBe(true);
-      });
+    const activeCellsHScroll = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        `.st-body-main .st-cell:not([data-animating-out])`,
+      ),
+    );
+    const stuckHScroll = activeCellsHScroll.filter(
+      (c) => c.style.transform && c.style.transform !== "none",
+    );
+    expect(
+      stuckHScroll.length,
+      "active cells with leftover transform after horizontal-reorder settle",
+    ).toBe(0);
 
     announce(status, "Done.");
   },

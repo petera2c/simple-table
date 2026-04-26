@@ -191,9 +191,15 @@ export class SimpleTableVanilla {
    * than snapping into place.
    */
   private captureAnimationSnapshot(): void {
+    // Skip the (potentially large) full-section pre-layout build when
+    // animations are disabled — captureSnapshot would discard the result
+    // anyway, but the argument is evaluated eagerly before the bail-out.
+    const preLayouts = this.animationCoordinator.isEnabled()
+      ? this.renderOrchestrator.getCurrentBodyLayouts()
+      : undefined;
     this.animationCoordinator.captureSnapshot({
       containers: this.getAnimatableContainers(),
-      preLayouts: this.renderOrchestrator.getCurrentBodyLayouts(),
+      preLayouts,
     });
   }
 
