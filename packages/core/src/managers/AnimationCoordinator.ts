@@ -198,16 +198,21 @@ export class AnimationCoordinator {
   }): void {
     const { cellId, element, container, newPosition } = args;
     const oldTop = parsePx(element.style.top);
+    const oldLeft = parsePx(element.style.left);
 
-    // Scale the visual destination so the slide journey is bounded but
-    // proportional to the true conceptual journey. Without scaling, a row
-    // sorted from position 0 to position 499 of a virtualized 500-row table
-    // would try to slide ~16k pixels in the animation window — under
-    // ease-out it crosses the 500px viewport in the first ~30ms and the
-    // cell appears to teleport. The scaling also gives cells with very
-    // different conceptual destinations visibly different slide distances,
-    // so they fan out instead of marching off-screen in lockstep.
-    const clippedTop = scaleFlipDistance(newPosition.top, oldTop, newPosition.height, container);
+    // Scale the visual destination on each axis so the slide journey is
+    // bounded but proportional to the true conceptual journey. Without
+    // scaling, a row sorted from position 0 to position 499 of a virtualized
+    // 500-row table would try to slide ~16k pixels vertically in the
+    // animation window — under ease-out it crosses the 500px viewport in the
+    // first ~30ms and the cell appears to teleport. The same problem exists
+    // horizontally: a column moved across a virtualized 30-column table can
+    // need to slide ~6k pixels and would look identically broken. The
+    // scaling also gives cells with very different conceptual destinations
+    // visibly different slide distances, so they fan out instead of marching
+    // off-screen in lockstep.
+    const clippedTop = scaleFlipDistance(newPosition.top, oldTop, newPosition.height, container, "y");
+    const clippedLeft = scaleFlipDistance(newPosition.left, oldLeft, newPosition.width, container, "x");
 
     let map = this.retainedCells.get(container);
     if (!map) {
@@ -230,7 +235,7 @@ export class AnimationCoordinator {
     element.classList.add(RETAINED_CLASS);
     element.setAttribute(RETAINED_ATTR, "true");
 
-    element.style.left = `${newPosition.left}px`;
+    element.style.left = `${clippedLeft}px`;
     element.style.top = `${clippedTop}px`;
     element.style.width = `${newPosition.width}px`;
     element.style.height = `${newPosition.height}px`;
@@ -308,17 +313,22 @@ export class AnimationCoordinator {
 
       // For incoming cells (newly created live cells), scale the FLIP
       // "before" position so cells sliding in from far off-screen take a
-      // bounded but proportional journey. Without scaling, a row whose
-      // pre-sort conceptual top was 14970 sliding to currentTop=0 would
-      // start ~15k pixels below the viewport — with ease-out it stays
+      // bounded but proportional journey on each axis. Without scaling, a
+      // row whose pre-sort conceptual top was 14970 sliding to currentTop=0
+      // would start ~15k pixels below the viewport — with ease-out it stays
       // off-screen for most of the animation, leaving the viewport empty
-      // until the last few percent. Retained cells already had their
-      // style.top scaled at retainCell time, so we don't re-scale here.
+      // until the last few percent. The horizontal axis has the same
+      // failure mode for far-column reorders. Retained cells already had
+      // their style.top/left scaled at retainCell time, so we don't re-scale
+      // here.
       const beforeTopClipped = isRetained
         ? before.top
-        : scaleFlipDistance(before.top, currentTop, element.offsetHeight || 0, container);
+        : scaleFlipDistance(before.top, currentTop, element.offsetHeight || 0, container, "y");
+      const beforeLeftClipped = isRetained
+        ? before.left
+        : scaleFlipDistance(before.left, currentLeft, element.offsetWidth || 0, container, "x");
 
-      const dx = before.left - currentLeft;
+      const dx = beforeLeftClipped - currentLeft;
       const dy = beforeTopClipped - currentTop;
       if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) {
         // No visual movement — if this was a retained cell with no movement
@@ -511,17 +521,21 @@ const parsePx = (value: string): number => {
  */
 const OFFSCREEN_COMPRESSION_FACTOR = 10;
 
+type FlipAxis = "x" | "y";
+
 /**
- * Scale a FLIP journey so the visible slide is bounded but its length is
- * proportional to the cell's true conceptual journey, preserving the sign
- * and a clear sense of "this cell is going further than that one".
+ * Scale a FLIP journey along a given axis so the visible slide is bounded
+ * but its length is proportional to the cell's true conceptual journey,
+ * preserving the sign and a clear sense of "this cell is going further than
+ * that one".
  *
- * Returns the new `top` to assign to the FLIP endpoint (the outgoing ghost's
- * `style.top`, or the snapshot `before.top` for an incoming cell).
+ * Returns the new coordinate to assign to the FLIP endpoint (the outgoing
+ * ghost's `style.top` / `style.left`, or the snapshot `before.top` /
+ * `before.left` for an incoming cell).
  *
  * The journey is split into two regimes:
  *
- *   1. **In-viewport range** (|delta| ≤ viewportHeight + cellHeight):
+ *   1. **In-viewport range** (|delta| ≤ viewportSize + cellSize):
  *      The cell is sliding to/from a position inside or just past the visible
  *      band, so we use the true delta untouched. Small reorders, partial-move
  *      sorts and persistent in-viewport cells are unaffected.
@@ -538,57 +552,67 @@ const OFFSCREEN_COMPRESSION_FACTOR = 10;
  * which is 0 when `extra = 0`, approaches `maxOvershoot` as `extra → ∞`, and
  * has no discontinuity at the boundary.
  *
- * No-op when the section's parent does not scroll vertically (small datasets,
- * header sections).
+ * No-op when there's no scrolling along the requested axis (small datasets,
+ * pinned panes, or header sections in the vertical case).
+ *
+ * Vertical and horizontal use different scrollers because the table's layout
+ * splits scrolling responsibilities: the body section element (`.st-body-main`
+ * and pinned variants) is the *horizontal* scroller, while its parent
+ * (`.st-body-container`) is the *vertical* scroller. Header sections only
+ * scroll horizontally.
  */
 const scaleFlipDistance = (
-  distantTop: number,
-  anchorTop: number,
-  cellHeight: number,
+  distantPos: number,
+  anchorPos: number,
+  cellSize: number,
   container: HTMLElement,
+  axis: FlipAxis,
 ): number => {
-  const scroller = container.parentElement;
-  if (!scroller) return distantTop;
-  const clientHeight = scroller.clientHeight;
-  if (clientHeight <= 0 || scroller.scrollHeight <= clientHeight) return distantTop;
+  const scroller: HTMLElement | null =
+    axis === "y" ? container.parentElement : container;
+  if (!scroller) return distantPos;
 
-  const delta = distantTop - anchorTop;
+  const clientSize = axis === "y" ? scroller.clientHeight : scroller.clientWidth;
+  const scrollSize = axis === "y" ? scroller.scrollHeight : scroller.scrollWidth;
+  if (clientSize <= 0 || scrollSize <= clientSize) return distantPos;
+
+  const delta = distantPos - anchorPos;
   const absDelta = Math.abs(delta);
-  if (absDelta === 0) return distantTop;
+  if (absDelta === 0) return distantPos;
 
-  const cellBuffer = cellHeight > 0 ? cellHeight : 0;
+  const cellBuffer = cellSize > 0 ? cellSize : 0;
 
-  // If `distantTop` is itself inside the visible viewport, it's a real visible
+  // If `distantPos` is itself inside the visible viewport, it's a real visible
   // position (a surviving cell's actual previous spot, or a real new spot we
   // want a retained ghost to slide into) — not a far-off conceptual one.
   // Compressing it would pull the cell AWAY from the viewport edge and hide
   // the only on-screen portion of the journey. Pass it through unchanged.
-  // (Without this guard, a cell sliding from a visible row to an off-screen
-  // row "disappears" mid-animation: |delta| exceeds visibleRange, so the
-  // compression below pulls the visible end-point past the body's overflow
-  // clip and the cell is never painted.)
-  const scrollTop = scroller.scrollTop;
+  // (Without this guard, a cell sliding from a visible position to an
+  // off-screen position "disappears" mid-animation: |delta| exceeds
+  // visibleRange, so the compression below pulls the visible end-point past
+  // the section's overflow clip and the cell is never painted.)
+  const scrollOffset = axis === "y" ? scroller.scrollTop : scroller.scrollLeft;
   if (
-    distantTop >= scrollTop - cellBuffer &&
-    distantTop <= scrollTop + clientHeight
+    distantPos >= scrollOffset - cellBuffer &&
+    distantPos <= scrollOffset + clientSize
   ) {
-    return distantTop;
+    return distantPos;
   }
 
   // Threshold below which we pass the journey through unchanged. Cells whose
   // true delta fits within the visible band + one cell of overshoot are
   // already on-screen and don't need scaling.
-  const visibleRange = clientHeight + cellBuffer;
-  if (absDelta <= visibleRange) return distantTop;
+  const visibleRange = clientSize + cellBuffer;
+  if (absDelta <= visibleRange) return distantPos;
 
   // Off-screen extra distance, smoothly compressed and asymptotic to
-  // `maxOvershoot`. With maxOvershoot = clientHeight, the longest possible
-  // visible slide is ~2× viewport height (visibleRange + maxOvershoot).
-  const maxOvershoot = clientHeight;
+  // `maxOvershoot`. With maxOvershoot = clientSize, the longest possible
+  // visible slide is ~2× viewport size (visibleRange + maxOvershoot).
+  const maxOvershoot = clientSize;
   const extra = absDelta - visibleRange;
   const compressed = (maxOvershoot * extra) / (extra + visibleRange * OFFSCREEN_COMPRESSION_FACTOR);
   const scaledMagnitude = visibleRange + compressed;
-  return anchorTop + Math.sign(delta) * scaledMagnitude;
+  return anchorPos + Math.sign(delta) * scaledMagnitude;
 };
 
 const readPrefersReducedMotion = (): boolean => {

@@ -14,6 +14,7 @@ export const basicExampleDefaults = {
   selectableCells: true,
   columnReordering: true,
   height: "500px",
+  useOddEvenRowBackground: true,
 };
 
 export function createBasicData(rowLength: number): Row[] {

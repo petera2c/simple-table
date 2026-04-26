@@ -714,6 +714,12 @@ export class SectionRenderer {
           })
         : rowIndex * rowHeight;
 
+      // Derive odd/even from the row's absolute table position rather than
+      // its index in the rendered (virtualized) slice. The slice index changes
+      // every time the user scrolls, which would otherwise flip a row's
+      // odd/even class as soon as it's reused for a different visible row.
+      const isOdd = tableRow.position % 2 === 1;
+
       leafHeaders.forEach((header, leafIndex) => {
         const position = headerPositions.get(header.accessor);
         const colIndex = startColIndex + leafIndex;
@@ -726,7 +732,7 @@ export class SectionRenderer {
           stableRowKey: tableRow.stableRowKey,
           displayRowNumber: tableRow.displayPosition,
           depth: tableRow.depth,
-          isOdd: rowIndex % 2 === 1,
+          isOdd,
           tableRow,
           left: position?.left ?? 0,
           top: topPosition,
@@ -932,8 +938,10 @@ export class SectionRenderer {
       for (const c of cached.cells) {
         const ri = positionToVisualIndex.get(c.tableRow.position);
         if (ri === undefined) continue;
-        if (c.rowIndex !== ri || c.isOdd !== (ri % 2 === 1)) {
-          out.push({ ...c, rowIndex: ri, isOdd: ri % 2 === 1 });
+        // isOdd is derived from c.tableRow.position upstream and is stable
+        // across viewport scrolls — only the visual rowIndex needs remapping.
+        if (c.rowIndex !== ri) {
+          out.push({ ...c, rowIndex: ri });
         } else {
           out.push(c);
         }
@@ -991,8 +999,10 @@ export class SectionRenderer {
     for (const c of cells) {
       const ri = positionToVisualIndex.get(c.tableRow.position);
       if (ri === undefined) continue;
-      if (c.rowIndex !== ri || c.isOdd !== (ri % 2 === 1)) {
-        mapped.push({ ...c, rowIndex: ri, isOdd: ri % 2 === 1 });
+      // isOdd is derived from c.tableRow.position upstream and is stable
+      // across viewport scrolls — only the visual rowIndex needs remapping.
+      if (c.rowIndex !== ri) {
+        mapped.push({ ...c, rowIndex: ri });
       } else {
         mapped.push(c);
       }

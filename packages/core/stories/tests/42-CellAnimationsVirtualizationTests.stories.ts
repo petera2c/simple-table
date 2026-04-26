@@ -93,7 +93,7 @@ const COLUMN_WIDTH = 220;
 const VIEWPORT_WIDTH = 800;
 const VIEWPORT_HEIGHT = 500;
 /** Slow on purpose so each animation is easy to follow when watching. */
-const SLOW_DURATION = 1500;
+const SLOW_DURATION = 15000;
 /** A pause that comfortably outlasts SLOW_DURATION so the animation finishes. */
 const SETTLE_PAUSE = SLOW_DURATION + 400;
 /** A short pause to let the user appreciate a new state before the next step. */
@@ -695,11 +695,22 @@ export const ReorderAtMultipleScrollPositions = {
 };
 
 /**
- * Strict per-cell FLIP correctness check at scale: when reversing 30 columns,
- * every sampled cell's transform on the synchronously-set "First" frame must
- * exactly equal `oldLeft - newLeft`. Catches regressions where the snapshot
- * is captured against the post-mutation layout, where preLayouts overwrites
- * live DOM positions, or where some cells get skipped from the FLIP pass.
+ * Per-cell FLIP correctness check at scale.
+ *
+ * When reversing 30 columns:
+ *   - Cells whose pre-reverse position is currently on-screen (or whose true
+ *     journey fits within ~one viewport) must FLIP exactly to that position
+ *     (`txX === oldLeft - newLeft` to within sub-pixel rounding).
+ *   - Cells whose pre-reverse position is far off-screen are scaled by
+ *     `AnimationCoordinator.scaleFlipDistance` so the visible slide stays
+ *     bounded. For those, we relax the strict equality to: same sign as the
+ *     true journey, magnitude < the true journey, and magnitude inside the
+ *     `[viewport, ~2 × viewport]` band the scaler produces.
+ *
+ * Catches regressions where the snapshot is captured against the post-
+ * mutation layout, where preLayouts overwrites live DOM positions, where
+ * some cells get skipped from the FLIP pass, or where horizontal scaling
+ * collapses the journey too aggressively (e.g. dropping it to 0).
  */
 export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
   render: () => {
@@ -711,8 +722,8 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
     addParagraph(
       result.wrapper,
       "Reverses the columns, then synchronously reads each sampled cell's transform " +
-        "and asserts it equals (oldLeft - newLeft). Cells that move in different " +
-        "directions must produce transforms with opposite signs.",
+        "and asserts on-screen sources FLIP exactly while far off-screen sources " +
+        "are scaled to a bounded but sign-correct slide.",
     );
     return result.wrapper;
   },
@@ -735,11 +746,19 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
     ];
     const ROW_INDEX = 0;
 
-    const beforeLefts = new Map<string, number>();
+    const mainBody = canvasElement.querySelector<HTMLElement>(".st-body-main");
+    expect(mainBody, "Need .st-body-main for viewport bounds").toBeTruthy();
+    const scrollLeftPre = mainBody!.scrollLeft;
+    const clientWidth = mainBody!.clientWidth;
+
+    const beforeLefts = new Map<string, { left: number; width: number }>();
     for (const accessor of sampledAccessors) {
       const cell = findCellByRowIndexAndAccessor(canvasElement, ROW_INDEX, accessor);
       if (!cell) continue;
-      beforeLefts.set(accessor, parseFloat(cell.style.left || "0"));
+      beforeLefts.set(accessor, {
+        left: parseFloat(cell.style.left || "0"),
+        width: cell.offsetWidth || parseFloat(cell.style.width || "0"),
+      });
     }
     if (beforeLefts.size < 2) {
       throw new Error(
@@ -757,21 +776,29 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
       accessor: string;
       oldLeft: number;
       newLeft: number;
+      cellWidth: number;
       txX: number;
       direction: "right" | "left" | "still";
     }> = [];
 
     for (const accessor of sampledAccessors) {
-      if (!beforeLefts.has(accessor)) continue;
+      const before = beforeLefts.get(accessor);
+      if (!before) continue;
       const cell = findCellByRowIndexAndAccessor(canvasElement, ROW_INDEX, accessor);
       if (!cell) continue;
-      const oldLeft = beforeLefts.get(accessor)!;
       const newLeft = parseFloat(cell.style.left || "0");
       const txX = parseTranslateX(cell.style.transform);
       let direction: "right" | "left" | "still" = "still";
-      if (newLeft - oldLeft > 0.5) direction = "right";
-      else if (newLeft - oldLeft < -0.5) direction = "left";
-      samples.push({ accessor, oldLeft, newLeft, txX, direction });
+      if (newLeft - before.left > 0.5) direction = "right";
+      else if (newLeft - before.left < -0.5) direction = "left";
+      samples.push({
+        accessor,
+        oldLeft: before.left,
+        newLeft,
+        cellWidth: before.width,
+        txX,
+        direction,
+      });
     }
 
     const summary = samples
@@ -782,11 +809,63 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
       )
       .join(" | ");
 
+    // Mirror the predicate in `scaleFlipDistance`: a cell is scaled iff its
+    // pre-reverse position is OUTSIDE the live viewport AND the raw journey
+    // exceeds the viewport+cell band. Otherwise the scaler passes through
+    // and the FLIP must equal the true journey exactly.
+    const isScaled = (s: (typeof samples)[number]): boolean => {
+      const buffer = s.cellWidth > 0 ? s.cellWidth : 0;
+      const inViewport =
+        s.oldLeft >= scrollLeftPre - buffer && s.oldLeft <= scrollLeftPre + clientWidth;
+      if (inViewport) return false;
+      const visibleRange = clientWidth + buffer;
+      return Math.abs(s.oldLeft - s.newLeft) > visibleRange;
+    };
+
     for (const s of samples) {
       const expected = s.oldLeft - s.newLeft;
-      if (Math.abs(s.txX - expected) >= 1.5) {
+      if (!isScaled(s)) {
+        if (Math.abs(s.txX - expected) >= 1.5) {
+          throw new Error(
+            `FLIP dx mismatch for "${s.accessor}" (expected ${expected}, got ${s.txX}). ${summary}`,
+          );
+        }
+        continue;
+      }
+
+      // Scaled cells: the visible slide is bounded by the scaler. Magnitude
+      // must be (a) sign-correct, (b) at least one viewport (since the
+      // scaler floor is `visibleRange` before the asymptotic overshoot is
+      // added), (c) strictly less than the unscaled journey, and (d)
+      // bounded above by `visibleRange + maxOvershoot ≈ 2× clientWidth`
+      // plus a small slack for cell-buffer math.
+      const expectedSign = Math.sign(expected);
+      const actualSign = Math.sign(s.txX);
+      if (expectedSign !== 0 && actualSign !== expectedSign) {
         throw new Error(
-          `FLIP dx mismatch for "${s.accessor}" (expected ${expected}, got ${s.txX}). ${summary}`,
+          `FLIP dx sign wrong for scaled "${s.accessor}" (expected sign ${expectedSign}, got ${actualSign}). ${summary}`,
+        );
+      }
+      const absTx = Math.abs(s.txX);
+      const absExpected = Math.abs(expected);
+      const visibleRange = clientWidth + s.cellWidth;
+      if (absTx >= absExpected) {
+        throw new Error(
+          `Scaled FLIP dx for "${s.accessor}" should be smaller than the unscaled journey ` +
+            `(|tx|=${absTx} vs |expected|=${absExpected}). ${summary}`,
+        );
+      }
+      if (absTx < visibleRange - 1) {
+        throw new Error(
+          `Scaled FLIP dx for "${s.accessor}" should be at least one viewport (~${visibleRange}px), ` +
+            `got |tx|=${absTx}. ${summary}`,
+        );
+      }
+      const maxAllowed = clientWidth * 2 + s.cellWidth + 50;
+      if (absTx > maxAllowed) {
+        throw new Error(
+          `Scaled FLIP dx for "${s.accessor}" exceeds the bounded slide window ` +
+            `(|tx|=${absTx} > maxAllowed=${maxAllowed}). ${summary}`,
         );
       }
     }
@@ -814,6 +893,18 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
             `FLIP transform-X must be positive, got ${s.txX}. ${summary}`,
         );
       }
+    }
+
+    // The whole point of horizontal scaling is to bound far-column journeys.
+    // Verify at least one of the sampled cells actually got scaled — without
+    // this the test would silently regress to "pure FLIP" if scaling is
+    // disabled or the predicate breaks.
+    const scaledCount = samples.filter(isScaled).length;
+    if (scaledCount === 0) {
+      throw new Error(
+        `Expected at least one sampled cell to be scaled (oldLeft outside viewport ` +
+          `with |dx| > viewport+cellWidth). samples: ${summary}`,
+      );
     }
 
     await sleep(SETTLE_PAUSE);
@@ -1356,12 +1447,11 @@ export const OverlappingSortsRetainAndReaimGhosts = {
     const allCells = Array.from(
       canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`),
     );
-    const stuckOverlap = allCells.filter(
-      (c) => c.style.transform && c.style.transform !== "none",
-    );
-    expect(stuckOverlap.length, "cells with leftover transform after overlapping sorts settle").toBe(
-      0,
-    );
+    const stuckOverlap = allCells.filter((c) => c.style.transform && c.style.transform !== "none");
+    expect(
+      stuckOverlap.length,
+      "cells with leftover transform after overlapping sorts settle",
+    ).toBe(0);
 
     announce(status, "Done.");
   },

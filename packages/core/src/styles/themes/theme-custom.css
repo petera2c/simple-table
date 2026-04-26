@@ -21,10 +21,11 @@
   --st-footer-background-color: var(--st-white);
   --st-last-group-row-separator-border-color: #e5e7eb;
 
-  /* Row colors - Clean white background, subtle hover */
+  /* Row colors - Clean white background; when useOddEvenRowBackground is on,
+   * even rows pick up a very subtle off-white band for readable striping. */
   --st-odd-row-background-color: var(--st-white);
-  --st-even-row-background-color: var(--st-white);
-  --st-hover-row-background-color: #f9fafb;
+  --st-even-row-background-color: #fafafa;
+  --st-hover-row-background-color: #f3f4f6;
   --st-selected-row-background-color: #eff6ff;
 
   /* Column colors - No alternating columns by default */
