@@ -44,7 +44,7 @@ interface InFlightCell {
   isRetained: boolean;
 }
 
-const DEFAULT_DURATION = 240;
+const DEFAULT_DURATION = 240000;
 const DEFAULT_EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 const MIN_DELTA = 0.5;
 const SAFETY_TIMEOUT_SLACK = 80;
@@ -557,6 +557,24 @@ const scaleFlipDistance = (
   if (absDelta === 0) return distantTop;
 
   const cellBuffer = cellHeight > 0 ? cellHeight : 0;
+
+  // If `distantTop` is itself inside the visible viewport, it's a real visible
+  // position (a surviving cell's actual previous spot, or a real new spot we
+  // want a retained ghost to slide into) — not a far-off conceptual one.
+  // Compressing it would pull the cell AWAY from the viewport edge and hide
+  // the only on-screen portion of the journey. Pass it through unchanged.
+  // (Without this guard, a cell sliding from a visible row to an off-screen
+  // row "disappears" mid-animation: |delta| exceeds visibleRange, so the
+  // compression below pulls the visible end-point past the body's overflow
+  // clip and the cell is never painted.)
+  const scrollTop = scroller.scrollTop;
+  if (
+    distantTop >= scrollTop - cellBuffer &&
+    distantTop <= scrollTop + clientHeight
+  ) {
+    return distantTop;
+  }
+
   // Threshold below which we pass the journey through unchanged. Cells whose
   // true delta fits within the visible band + one cell of overshoot are
   // already on-screen and don't need scaling.
