@@ -292,7 +292,34 @@ export const rowIdToString = (rowId: (string | number)[]): string => {
 };
 
 /**
- * Generate a position-independent stable row key when `getRowId` is provided.
+ * Fallback stable-key store used when the consumer does not supply `getRowId`.
+ *
+ * Keyed on the row object reference, so any two renders/sorts that share the
+ * same row instance will resolve to the same key. `[...rows].sort(...)` and
+ * filter operations both preserve references, so this is sufficient to keep
+ * cell identity (and therefore FLIP sort animations) stable without requiring
+ * the consumer to provide `getRowId`.
+ *
+ * Entries are weakly held; they are cleaned up automatically when the row
+ * object is no longer referenced.
+ */
+const fallbackStableKeyByRow = new WeakMap<object, string>();
+let fallbackStableKeyCounter = 0;
+
+const getFallbackStableKey = (row: Row): string => {
+  if (row && typeof row === "object") {
+    const existing = fallbackStableKeyByRow.get(row);
+    if (existing !== undefined) return existing;
+    const next = `__row_${++fallbackStableKeyCounter}`;
+    fallbackStableKeyByRow.set(row, next);
+    return next;
+  }
+  // Primitive rows are unusual but tolerate them by stringifying.
+  return `__row_p_${String(row)}`;
+};
+
+/**
+ * Generate a position-independent stable row key.
  *
  * Unlike `generateRowId`, the stable key never includes positional indices, so
  * it survives sort/filter operations. It is used as the basis for the cell DOM
@@ -300,11 +327,11 @@ export const rowIdToString = (rowId: (string | number)[]): string => {
  * element to be reused for the same logical row across re-orders (enabling
  * FLIP-based sort animations).
  *
- * For nested rows the parent's stable key is included as a prefix so siblings
- * of different parents do not collide.
- *
- * Returns `null` when `getRowId` is not provided (callers fall back to the
- * positional rowId string in that case).
+ * When `getRowId` is provided, the key is derived from the user-supplied id.
+ * When it is not, the key falls back to the row object's identity (via a
+ * WeakMap) so animations still work for plain row arrays. For nested rows the
+ * parent's stable key is included as a prefix so siblings of different parents
+ * do not collide.
  */
 export const generateStableRowKey = (params: {
   getRowId?: GetRowId;
@@ -315,24 +342,26 @@ export const generateStableRowKey = (params: {
   rowIndexPath: number[];
   groupingKey?: string;
   parentStableKey?: string | null;
-}): string | null => {
+}): string => {
   const { getRowId } = params;
-  if (!getRowId) return null;
 
-  const customId = getRowId({
-    row: params.row,
-    depth: params.depth,
-    index: params.index,
-    rowPath: params.rowPath,
-    rowIndexPath: params.rowIndexPath,
-    groupingKey: params.groupingKey,
-  });
+  const baseKey = getRowId
+    ? String(
+        getRowId({
+          row: params.row,
+          depth: params.depth,
+          index: params.index,
+          rowPath: params.rowPath,
+          rowIndexPath: params.rowIndexPath,
+          groupingKey: params.groupingKey,
+        }),
+      )
+    : getFallbackStableKey(params.row);
 
-  const customIdStr = String(customId);
   const parts: string[] = [];
   if (params.parentStableKey) parts.push(params.parentStableKey);
   if (params.groupingKey && params.depth > 0) parts.push(params.groupingKey);
-  parts.push(customIdStr);
+  parts.push(baseKey);
   return parts.join("/");
 };
 
@@ -465,17 +494,16 @@ export const flattenRowsWithGrouping = ({
         groupingKey: currentGroupingKey,
       });
 
-      const stableRowKey =
-        generateStableRowKey({
-          getRowId,
-          row,
-          depth: currentDepth,
-          index,
-          rowPath,
-          rowIndexPath,
-          groupingKey: currentGroupingKey,
-          parentStableKey,
-        }) ?? undefined;
+      const stableRowKey = generateStableRowKey({
+        getRowId,
+        row,
+        depth: currentDepth,
+        index,
+        rowPath,
+        rowIndexPath,
+        groupingKey: currentGroupingKey,
+        parentStableKey,
+      });
 
       // Determine if this is the last row in a group
       const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
@@ -636,7 +664,7 @@ export const flattenRowsWithGrouping = ({
             nestedIdPath,
             nestedIndexPath,
             [...parentIndices, currentRowIndex],
-            stableRowKey ?? null,
+            stableRowKey,
           );
         }
       }

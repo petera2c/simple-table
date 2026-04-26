@@ -42,7 +42,7 @@ export function renderBasicExample(args?: Partial<UniversalVanillaArgs>): HTMLEl
     { accessor: "role", label: "Role", width: 150, isSortable: true, filterable: true },
   ];
   const options = { ...defaultVanillaArgs, ...basicExampleDefaults, ...args };
-  const { wrapper, h2 } = renderVanillaTable(headers, createBasicData(100), {
+  const { wrapper, h2 } = renderVanillaTable(headers, createBasicData(10), {
     ...options,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
   });

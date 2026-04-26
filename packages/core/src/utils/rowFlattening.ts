@@ -70,17 +70,16 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         rowIndexPath,
         groupingKey: undefined,
       });
-      const stableRowKey =
-        generateStableRowKey({
-          getRowId,
-          row,
-          depth: 0,
-          index,
-          rowPath,
-          rowIndexPath,
-          groupingKey: undefined,
-          parentStableKey: null,
-        }) ?? undefined;
+      const stableRowKey = generateStableRowKey({
+        getRowId,
+        row,
+        depth: 0,
+        index,
+        rowPath,
+        rowIndexPath,
+        groupingKey: undefined,
+        parentStableKey: null,
+      });
 
       return {
         row,
@@ -138,17 +137,16 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         rowIndexPath,
         groupingKey: currentGroupingKey,
       });
-      const stableRowKey =
-        generateStableRowKey({
-          getRowId,
-          row,
-          depth: currentDepth,
-          index,
-          rowPath,
-          rowIndexPath,
-          groupingKey: currentGroupingKey,
-          parentStableKey,
-        }) ?? undefined;
+      const stableRowKey = generateStableRowKey({
+        getRowId,
+        row,
+        depth: currentDepth,
+        index,
+        rowPath,
+        rowIndexPath,
+        groupingKey: currentGroupingKey,
+        parentStableKey,
+      });
 
       const currentRowIndex = result.length;
 
@@ -285,7 +283,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
             nestedIdPath,
             nestedIndexPath,
             [...parentIndices, currentRowIndex],
-            stableRowKey ?? null
+            stableRowKey
           );
         }
       }
