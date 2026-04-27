@@ -446,6 +446,8 @@ export class RenderOrchestrator {
           currentTableRows: processedResult.currentTableRows,
           paginatedHeightOffsets: processedResult.paginatedHeightOffsets,
           heightMap: processedResult.heightMap,
+          allFlattenedRows: processedResult.allFlattenedRows,
+          pageStartIndex: processedResult.pageStartIndex,
         };
       } else {
         this.processRowsScrollReuseKey = null;

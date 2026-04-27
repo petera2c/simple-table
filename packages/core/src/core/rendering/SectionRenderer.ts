@@ -55,6 +55,13 @@ export interface BodySectionParams {
   fullTableRows?: TableRow[];
   renderedStartIndex?: number;
   renderedEndIndex?: number;
+  /** Full pre-pagination flattened rows (used by animation snapshot to include
+   * off-page rows so cross-page sort can FLIP cells in/out from off-screen). */
+  allFlattenedRows?: TableRow[];
+  /** Global flattened-list index where the current page starts. Used to offset
+   * absolute positions in {@link allFlattenedRows} so on-page rows align with
+   * the page-relative DOM positions while off-page rows fall above/below. */
+  pageStartIndex?: number;
   /** When provided, body cell renderer hands outgoing cells to the coordinator
    * for FLIP-style out-animation instead of removing them immediately. */
   animationCoordinator?: AnimationCoordinator;
@@ -91,6 +98,11 @@ interface BodySectionSnapshotConfig {
   rowHeight: number;
   heightOffsets?: Array<[number, number]>;
   customTheme?: any;
+  /** When > 0, each row's `position` is treated as a global flattened-list
+   * index and shifted by this amount when computing `top`. This lets the
+   * snapshot include off-page rows (positioned above/below the viewport)
+   * for paginated tables. */
+  pageStartIndex?: number;
 }
 
 /**
@@ -104,15 +116,28 @@ function computeFullSectionLayout(
 ): Map<string, CellPosition> {
   const layout = new Map<string, CellPosition>();
   const dataRows = config.rows.filter((r) => !r.nestedTable && !r.stateIndicator);
+  const usingGlobalPositions = config.pageStartIndex !== undefined;
   for (const tableRow of dataRows) {
-    const top = config.customTheme
-      ? calculateRowTopPosition({
-          position: tableRow.position,
-          rowHeight: config.rowHeight,
-          heightOffsets: config.heightOffsets,
-          customTheme: config.customTheme,
-        })
-      : tableRow.position * config.rowHeight;
+    let top: number;
+    if (usingGlobalPositions) {
+      // Snapshot covers the full pre-pagination dataset; convert each row's
+      // global flattened-list index into a viewport-relative offset so that
+      // on-page rows align with the DOM (which uses page-relative `position`)
+      // and off-page rows fall above (negative `top`) or below the viewport.
+      // Skipping the heightOffsets/customTheme path is intentional here: the
+      // off-page positions don't need to honor expanded nested-row heights —
+      // they only need to be "off-screen" so cells can FLIP in/out of view.
+      top = (tableRow.position - (config.pageStartIndex ?? 0)) * config.rowHeight;
+    } else {
+      top = config.customTheme
+        ? calculateRowTopPosition({
+            position: tableRow.position,
+            rowHeight: config.rowHeight,
+            heightOffsets: config.heightOffsets,
+            customTheme: config.customTheme,
+          })
+        : tableRow.position * config.rowHeight;
+    }
     const rowKey = tableRow.stableRowKey ?? rowIdToString(tableRow.rowId);
     for (const header of config.headerPositions) {
       const cellId = getCellId({
@@ -290,6 +315,8 @@ export class SectionRenderer {
       fullTableRows,
       renderedStartIndex,
       renderedEndIndex,
+      allFlattenedRows,
+      pageStartIndex,
       animationCoordinator,
     } = params;
 
@@ -359,14 +386,23 @@ export class SectionRenderer {
     // needs them to FLIP cells that were never in the DOM (rows that slide
     // into view from off-screen) or that won't be in the DOM after the
     // change (rows that slide out of view).
+    // Prefer the pre-pagination flattened list so the snapshot covers off-page
+    // rows too — paginated tables that re-sort across the whole dataset need
+    // those rows present in the snapshot to FLIP cells in/out from off-screen.
+    // When pagination is off, allFlattenedRows is identical to fullTableRows
+    // and pageStartIndex is 0, so the math collapses to the legacy behavior.
+    const snapshotRows = allFlattenedRows ?? fullTableRows ?? rows;
+    const snapshotPageStartIndex =
+      allFlattenedRows !== undefined ? (pageStartIndex ?? 0) : undefined;
     this.captureSnapshotConfig(
       sectionKey,
       filteredHeaders,
       collapsedHeaders,
-      fullTableRows ?? rows,
+      snapshotRows,
       rowHeight,
       heightOffsets,
       context.customTheme ?? DEFAULT_CUSTOM_THEME,
+      snapshotPageStartIndex,
     );
 
     // The post-render full layout maps every cell id (visible OR off-screen)
@@ -1166,6 +1202,7 @@ export class SectionRenderer {
     rowHeight: number,
     heightOffsets?: Array<[number, number]>,
     customTheme?: any,
+    pageStartIndex?: number,
   ): void {
     const leafHeaders = this.getLeafHeaders(headers, collapsedHeaders);
     const headerPositions: Array<{ accessor: Accessor; left: number; width: number }> = [];
@@ -1181,6 +1218,7 @@ export class SectionRenderer {
       rowHeight,
       heightOffsets,
       customTheme,
+      pageStartIndex,
     });
   }
 

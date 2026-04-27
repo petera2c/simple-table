@@ -545,6 +545,8 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        allFlattenedRows: processedResult.allFlattenedRows,
+        pageStartIndex: processedResult.pageStartIndex,
         animationCoordinator,
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
@@ -579,6 +581,8 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        allFlattenedRows: processedResult.allFlattenedRows,
+        pageStartIndex: processedResult.pageStartIndex,
         animationCoordinator,
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
@@ -606,6 +610,8 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        allFlattenedRows: processedResult.allFlattenedRows,
+        pageStartIndex: processedResult.pageStartIndex,
         animationCoordinator,
       });
       deps.pinnedRightRef.current = rightSection as HTMLDivElement;

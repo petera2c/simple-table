@@ -37,6 +37,7 @@ export default function ManufacturingExample({
       columnResizing
       columnReordering
       defaultHeaders={HEADERS}
+      getRowId={({ row }) => String(row.id)}
       height={height ? `${height}px` : "70dvh"}
       icons={icons}
       rowGrouping={["stations"]}

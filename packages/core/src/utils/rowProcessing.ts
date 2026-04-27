@@ -40,6 +40,14 @@ export interface ProcessRowsResult {
   partiallyVisibleRows: TableRow[];
   paginatedHeightOffsets: HeightOffsets | undefined;
   heightMap: CumulativeHeightMap | undefined;
+  /** Pre-pagination flattened rows (each row's `position` is its global index).
+   * Used by animation snapshot to include off-page rows so cross-page sort can
+   * FLIP cells in/out from off-screen. */
+  allFlattenedRows: TableRow[];
+  /** Global flattened-list index where the current page starts. 0 when no
+   * pagination is active. Used by animation snapshot to convert global
+   * positions into page-relative `top` values. */
+  pageStartIndex: number;
 }
 
 function applyPagination(
@@ -112,6 +120,17 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
     shouldPaginate,
     serverSidePagination,
   );
+
+  // Compute the global flattened-list index where the current page starts so
+  // the animation snapshot can map every row's pre-pagination position into
+  // a page-relative `top` (on-page rows align with DOM, off-page rows fall
+  // above/below the viewport). 0 when pagination is off (or server-side).
+  let pageStartIndex = 0;
+  if (shouldPaginate && !serverSidePagination) {
+    const startParentIndex = (currentPage - 1) * rowsPerPage;
+    pageStartIndex =
+      startParentIndex === 0 ? 0 : (parentEndPositions[startParentIndex - 1] ?? 0);
+  }
 
   const paginatedHeightOffsets =
     !heightOffsets || heightOffsets.length === 0 || !shouldPaginate || serverSidePagination
@@ -200,6 +219,8 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
     partiallyVisibleRows,
     paginatedHeightOffsets,
     heightMap,
+    allFlattenedRows: flattenedRows,
+    pageStartIndex,
   };
 }
 
@@ -208,6 +229,8 @@ export interface ProcessRowsScrollReuseBase {
   currentTableRows: TableRow[];
   paginatedHeightOffsets: HeightOffsets | undefined;
   heightMap: CumulativeHeightMap | undefined;
+  allFlattenedRows: TableRow[];
+  pageStartIndex: number;
 }
 
 /**
@@ -296,5 +319,7 @@ export function recomputeProcessRowsViewport(
     partiallyVisibleRows,
     paginatedHeightOffsets,
     heightMap,
+    allFlattenedRows: base.allFlattenedRows,
+    pageStartIndex: base.pageStartIndex,
   };
 }

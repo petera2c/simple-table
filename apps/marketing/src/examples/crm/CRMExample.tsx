@@ -60,6 +60,7 @@ const CRMExampleComponent = ({
           headerHeight: 48,
           rowHeight: 92,
         }}
+        getRowId={({ row }) => String(row.id)}
         height={height ? `${height}px` : "70dvh"}
         icons={icons}
         onCellEdit={handleCellEdit}

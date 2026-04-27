@@ -40,6 +40,7 @@ export default function BillingExample({
       columnResizing
       defaultHeaders={HEADERS}
       editColumns
+      getRowId={({ row }) => String(row.id)}
       height={height ? `${height}px` : "70dvh"}
       icons={icons}
       initialSortColumn="amount"

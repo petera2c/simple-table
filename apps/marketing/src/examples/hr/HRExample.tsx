@@ -62,6 +62,7 @@ export default function HRExample({
       columnReordering
       columnResizing
       defaultHeaders={HEADERS}
+      getRowId={({ row }) => String(row.id)}
       icons={icons}
       onCellEdit={handleCellEdit}
       customTheme={{
