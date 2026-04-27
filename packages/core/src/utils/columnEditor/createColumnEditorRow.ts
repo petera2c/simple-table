@@ -330,7 +330,13 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
       const iconShowsExpanded = shouldAnimateExpandIcon ? wasExpandedForIcon : shouldExpand;
 
       const expandIcon = document.createElement("div");
-      expandIcon.className = `st-collapsible-header-icon st-expand-icon-container ${
+      // NOTE: deliberately not using `st-collapsible-header-icon` here. That class
+      // applies a 180° rotation when expanded (used for in-table column-group
+      // collapsing where siblings sit horizontally). In the popout, children
+      // appear vertically below the parent, so we want the generic
+      // `.st-expand-icon-container.expanded` 90° rotation (chevron points down)
+      // — same behavior as body-row expand icons.
+      expandIcon.className = `st-column-editor-expand-icon st-expand-icon-container ${
         iconShowsExpanded ? "expanded" : "collapsed"
       }`;
       expandIcon.setAttribute("role", "button");

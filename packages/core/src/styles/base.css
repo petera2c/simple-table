@@ -1268,6 +1268,15 @@ input {
   transform: rotate(0deg);
 }
 
+/* Column-editor popout expand chevron — vertical expansion (children listed
+ * below the parent), so it relies on the generic `.st-expand-icon-container`
+ * 90° rotation rule. This class only provides cursor + flex centering. */
+.st-column-editor-expand-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
 .st-nested-headers {
   display: flex;
   flex-direction: column;
