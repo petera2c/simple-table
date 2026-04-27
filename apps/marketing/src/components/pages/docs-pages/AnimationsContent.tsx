@@ -93,8 +93,8 @@ const AnimationsContent = () => {
       >
         Cells smoothly slide between positions when the table&apos;s logical state changes —
         sorting, reordering columns, or toggling column visibility — instead of teleporting.
-        Animations are enabled by default, GPU-accelerated, and virtualization-aware so cells
-        slide in from the viewport edge when they enter and out to the edge when they leave.
+        Animations are enabled by default, GPU-accelerated, and virtualization-aware so cells slide
+        in from the viewport edge when they enter and out to the edge when they leave.
       </motion.p>
 
       <motion.div
@@ -103,7 +103,7 @@ const AnimationsContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <LivePreview demoId="animations" height="500px" Preview={AnimationsDemo} />
+        <LivePreview demoId="animations" height="400px" Preview={AnimationsDemo} />
       </motion.div>
 
       <motion.div
@@ -141,23 +141,23 @@ const AnimationsContent = () => {
             header or you change the sort programmatically.
           </li>
           <li>
-            <strong>Column reorder during drag.</strong> As the user drags a column header over
-            its neighbors, the displaced columns slide smoothly out of the way. The actively
-            dragged column itself follows the pointer (it is intentionally not animated, so the
-            cursor never fights the transition).
+            <strong>Column reorder during drag.</strong> As the user drags a column header over its
+            neighbors, the displaced columns slide smoothly out of the way. The actively dragged
+            column itself follows the pointer (it is intentionally not animated, so the cursor never
+            fights the transition).
           </li>
           <li>
             <strong>Programmatic column reorder.</strong> Updating{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">defaultHeaders</code>
-            {" "}or calling{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">defaultHeaders</code>{" "}
+            or calling{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
               tableRef.applyPinnedState
-            </code>
-            {" "}animates every cell to its new column position.
+            </code>{" "}
+            animates every cell to its new column position.
           </li>
           <li>
-            <strong>Column visibility changes.</strong> Showing or hiding a column from the
-            column editor reflows the remaining columns with the same slide.
+            <strong>Column visibility changes.</strong> Showing or hiding a column from the column
+            editor reflows the remaining columns with the same slide.
           </li>
         </ul>
 
@@ -173,12 +173,12 @@ const AnimationsContent = () => {
               animations.
             </li>
             <li>
-              <strong>The actively dragged column.</strong> The column under the user&apos;s
-              pointer follows the cursor instantly. Only the columns being displaced animate.
+              <strong>The actively dragged column.</strong> The column under the user&apos;s pointer
+              follows the cursor instantly. Only the columns being displaced animate.
             </li>
             <li>
-              <strong>Cell content updates.</strong> Cells update text and other content
-              instantly. The existing{" "}
+              <strong>Cell content updates.</strong> Cells update text and other content instantly.
+              The existing{" "}
               <Link
                 href="/docs/cell-renderer"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -288,9 +288,9 @@ const AnimationsContent = () => {
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
             window.matchMedia(&quot;(prefers-reduced-motion: reduce)&quot;)
           </code>{" "}
-          on initialization and falls back to instant updates whenever the user has reduced
-          motion enabled at the OS or browser level. You don&apos;t need to do anything special —
-          this is handled automatically and overrides the{" "}
+          on initialization and falls back to instant updates whenever the user has reduced motion
+          enabled at the OS or browser level. You don&apos;t need to do anything special — this is
+          handled automatically and overrides the{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">enabled</code> flag.
         </p>
       </motion.div>
