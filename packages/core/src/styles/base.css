@@ -369,9 +369,9 @@ input {
 }
 .st-row.hovered .st-cell-editing,
 .st-row.hovered
-  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
-    .st-cell-column-selected
-  ):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 /* Separate hover background for sub-cells */
@@ -396,9 +396,9 @@ input {
 /* Selected row hover state - should override selected background when hovering */
 .st-row.selected.hovered .st-cell-editing,
 .st-row.selected.hovered
-  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(
-    .st-cell-column-selected
-  ):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
+    .st-cell-column-selected-first
+  ) {
   background-color: var(--st-hover-row-background-color);
 }
 
@@ -601,8 +601,7 @@ input {
 .st-resizeable .st-body-pinned-right .st-cell-content,
 .st-resizeable .st-sticky-section-right .st-cell-content {
   padding-left: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) +
-      var(--st-resize-handle-container-width)
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
   padding-right: var(--st-cell-padding);
 }
@@ -614,8 +613,7 @@ input {
 .st-resizeable .st-sticky-section-main .st-cell-content {
   padding-left: var(--st-cell-padding);
   padding-right: calc(
-    var(--st-cell-padding) + var(--st-spacing-small) +
-      var(--st-resize-handle-container-width)
+    var(--st-cell-padding) + var(--st-spacing-small) + var(--st-resize-handle-container-width)
   );
 }
 
@@ -858,7 +856,12 @@ input {
   display: flex;
   align-items: center;
   border-top: var(--st-border-width) solid var(--st-border-color);
-  height: 12px;
+  /* Container content area = height - border-top.
+     Visible bar thickness = host / scrollbar height (below).
+     Padding above + below the bar = content area - bar thickness, split
+     evenly by align-items: center. Currently: 13 - 1 = 12px content,
+     8px bar -> 2px padding top + 2px padding bottom. */
+  height: 13px;
   width: 100%;
   background-color: var(--st-scrollbar-bg-color);
 }
@@ -874,17 +877,43 @@ input {
   border-left: var(--st-border-width) solid var(--st-border-color);
 }
 .st-horizontal-scrollbar-left,
-.st-horizontal-scrollbar-right {
-  height: 100%;
+.st-horizontal-scrollbar-right,
+.st-horizontal-scrollbar-middle {
+  height: 8px;
+  /* Suppress vertical scrolling on these elements. The inner sentinel <div>
+     is 0.3px tall purely to give the host a horizontal scrollWidth wider
+     than its clientWidth (so the horizontal scrollbar appears). When the
+     host has no spare vertical content area (e.g. host height ==
+     scrollbar height), that 0.3px sentinel triggers a phantom vertical
+     scrollbar reservation, which eats into clientWidth and desyncs the
+     horizontal thumb's drag math from the actual scrollable range. Forcing
+     overflow-y: hidden removes that possibility entirely. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* `scrollbar-color` is inherited from `.simple-table-root`. When set to a
+     non-`auto` value, Chromium switches the element to standard CSS
+     scrollbar mode and ignores the `::-webkit-scrollbar` pseudo rules
+     below. Resetting to `auto` re-enables the WebKit pseudo styling so
+     the scrollbar is rendered at exactly the height we specify. */
+  scrollbar-color: auto;
 }
 .st-horizontal-scrollbar-middle {
   flex-grow: 1;
-  min-height: 11px;
 }
 .st-horizontal-scrollbar-left > div,
 .st-horizontal-scrollbar-right > div,
 .st-horizontal-scrollbar-middle > div {
   height: 0.3px;
+}
+
+/* Match the host height exactly: bar fills the host with no internal gap,
+   and the host is centered inside the container's content area, producing
+   the symmetric top/bottom padding around the bar. Keep this in sync with
+   the host height above. */
+.st-horizontal-scrollbar-left::-webkit-scrollbar,
+.st-horizontal-scrollbar-right::-webkit-scrollbar,
+.st-horizontal-scrollbar-middle::-webkit-scrollbar {
+  height: 8px;
 }
 
 .st-footer {
@@ -926,8 +955,7 @@ input {
   background-color: transparent;
   border: none;
   border-radius: var(--st-border-radius);
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 .st-next-prev-btn {
   fill: var(--st-next-prev-btn-color);
@@ -954,8 +982,7 @@ input {
   color: var(--st-page-btn-color);
   border: none;
   border-radius: var(--st-border-radius);
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1004,8 +1031,7 @@ input {
   font-size: 0.875rem;
 }
 .editable-cell-input:focus {
-  border: var(--st-border-width) solid
-    var(--st-editable-cell-focus-border-color);
+  border: var(--st-border-width) solid var(--st-editable-cell-focus-border-color);
 }
 .st-column-editor {
   display: flex;
@@ -1375,8 +1401,7 @@ input {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-cell-color);
   font-weight: var(--st-font-weight-bold);
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-group-header:hover {
@@ -1548,8 +1573,7 @@ input {
   padding: var(--st-spacing-small) var(--st-spacing-medium);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   color: var(--st-cell-color);
   font-size: 0.9em;
 }
@@ -1650,8 +1674,7 @@ input {
   width: 24px;
   border-radius: 50%;
   cursor: pointer;
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   font-size: 0.9em;
 }
 
@@ -1685,8 +1708,7 @@ input {
   padding: 12px 8px;
   border-radius: var(--st-border-radius);
   cursor: pointer;
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-datepicker-month:hover,
@@ -1713,8 +1735,7 @@ input {
   border-radius: var(--st-border-radius);
   padding: 6px 12px;
   cursor: pointer;
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   color: var(--st-cell-color);
 }
 
@@ -1750,8 +1771,7 @@ input {
   color: var(--st-cell-color);
   font-family: inherit;
   outline: none;
-  transition: border-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-filter-input:focus {
@@ -1775,8 +1795,7 @@ input {
   font-family: inherit;
   cursor: pointer;
   outline: none;
-  transition: border-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-filter-select:focus {
@@ -1802,8 +1821,7 @@ input {
   font-family: inherit;
   appearance: none;
   -webkit-appearance: none;
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 /* Keyboard only — avoids a stuck ring after mouse click (especially on bordered Clear) */
 .st-filter-button:focus {
@@ -1867,8 +1885,7 @@ input {
   appearance: none;
   -webkit-appearance: none;
   text-align: left;
-  transition: border-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
 .st-custom-select-trigger:focus {
@@ -1916,8 +1933,7 @@ input {
   flex-shrink: 0;
   padding: var(--st-spacing-small);
   cursor: pointer;
-  transition: background-color var(--st-transition-duration)
-    var(--st-transition-ease);
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2062,18 +2078,18 @@ input {
 /* Maintain column borders on hover */
 .st-column-borders
   .st-row.hovered
-  .st-cell:not(.st-last-column):not(.st-cell-selected):not(
-    .st-cell-selected-first
-  ):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 
 /* Maintain column borders on selected row hover */
 .st-column-borders
   .st-row.selected.hovered
-  .st-cell:not(.st-last-column):not(.st-cell-selected):not(
-    .st-cell-selected-first
-  ):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
+  .st-cell:not(.st-last-column):not(.st-cell-selected):not(.st-cell-selected-first):not(
+    .st-cell-column-selected
+  ):not(.st-cell-column-selected-first) {
   box-shadow: var(--st-border-width) 0 0 0 var(--st-border-color);
 }
 

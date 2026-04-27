@@ -10,7 +10,18 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
-
+export const v3_4_2: ChangelogEntry = {
+  version: "3.4.2",
+  date: "2026-04-26",
+  title: "Horizontal Scrollbar Bug Fixes",
+  description: "Horizontal scrollbar bug fixes.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "Horizontal scrollbar bug fixes.",
+    },
+  ],
+};
 export const v3_4_0: ChangelogEntry = {
   version: "3.4.0",
   date: "2026-04-26",

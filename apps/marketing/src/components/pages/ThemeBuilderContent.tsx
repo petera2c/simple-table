@@ -1380,7 +1380,8 @@ function SalesExample({
     isUsingPagination: true,
     rowHeight,
   });
-  const howManyRowsCanFit = containerHeight ? Math.floor(containerHeight / rowHeight) : 10;
+  const containerHeight2 = (containerHeight || 0) + 80;
+  const howManyRowsCanFit = containerHeight2 ? Math.floor(containerHeight2 / rowHeight) : 10;
 
   // Fetch sales data from API and process it
   useEffect(() => {
@@ -1428,7 +1429,7 @@ function SalesExample({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: containerHeight ? `${containerHeight}px` : "70dvh",
+          height: containerHeight ? `${containerHeight}px` : "60dvh",
           fontSize: "16px",
           color: "#666",
         }}
@@ -1457,6 +1458,7 @@ function SalesExample({
       theme="custom"
       useOddEvenRowBackground
       selectableColumns
+      height={containerHeight2 ? `${containerHeight2}px` : "60dvh"}
     />
   );
 }
