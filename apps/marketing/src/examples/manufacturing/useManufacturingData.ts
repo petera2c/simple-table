@@ -17,6 +17,7 @@ export function useManufacturingData() {
       } catch {
         const response = await fetch("/data/manufacturing-data.json");
         const data = await response.json();
+        console.log("data", data.length);
         setData(data);
       } finally {
         setIsLoading(false);

@@ -163,7 +163,7 @@ const generateMonthlyData = (startMonth: number, amount: number): Record<string,
 // Calculate revenue recognition
 const calculateRevenueRecognition = (
   amount: number,
-  createdDate: Date
+  createdDate: Date,
 ): { recognizedRevenue: number; deferredRevenue: number } => {
   const diffMonths =
     currentDate.getMonth() -
@@ -232,7 +232,7 @@ const generateBillingData = (): AccountData[] => {
   // Calculate accounts needed for ~18,000 total leaf rows (charges)
   // Average: ~10 invoices per account * 3.5 charges per invoice (1-6 range) = 35 charges per account
   // 18,000 / 35 ≈ 300 accounts
-  const accountCount = 300;
+  const accountCount = 10;
 
   for (let a = 0; a < accountCount; a++) {
     // Generate account data
@@ -313,7 +313,7 @@ const generateBillingData = (): AccountData[] => {
         // Calculate revenue recognition
         const { recognizedRevenue, deferredRevenue } = calculateRevenueRecognition(
           chargeAmount,
-          invoiceCreatedDate
+          invoiceCreatedDate,
         );
 
         // Generate monthly distribution for this charge - only 2024 data
@@ -372,7 +372,7 @@ async function saveDataToFile(): Promise<void> {
     });
   });
   console.log(
-    `Generated ${data.length} accounts with ~${totalRows} total rows (including invoices and charges)`
+    `Generated ${data.length} accounts with ~${totalRows} total rows (including invoices and charges)`,
   );
 
   const filePath = path.join(__dirname, "../public/data/billing-data.json");

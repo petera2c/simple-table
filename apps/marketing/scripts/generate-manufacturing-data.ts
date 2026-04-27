@@ -44,7 +44,7 @@ const generateManufacturingData = (): Row[] => {
   const rows: Row[] = [];
 
   // Generate data for hierarchical structure - 1,000 base rows with ~10 children each
-  const totalRows = 200;
+  const totalRows = 10;
   const rowsPerProductLine = Math.ceil(totalRows / productLines.length);
 
   productLines.forEach((productLine, lineIndex) => {

@@ -313,7 +313,7 @@ function generateRealisticSaleRecord(repData: SalesRep, rowId: number): SaleReco
 }
 
 // Generate realistic dataset
-function generateRealisticSalesDataset(numRecords: number = 10000): SaleRecord[] {
+function generateRealisticSalesDataset(numRecords: number = 200): SaleRecord[] {
   const data: SaleRecord[] = [];
 
   for (let i = 0; i < numRecords; i++) {
