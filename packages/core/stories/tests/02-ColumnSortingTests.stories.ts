@@ -97,16 +97,25 @@ const clickColumnHeader = async (canvasElement: HTMLElement, label: string) => {
   await new Promise((r) => setTimeout(r, 500));
 };
 
+// Cells in the body use absolute positioning (`style.top`/`style.left`)
+// and survive sorts via `stableRowKey`, so the DOM order returned by
+// `querySelectorAll` is the original *creation* order — not the visual
+// sorted order. Sort by visual position (top first, then left for any
+// horizontal tiebreakers) before reading text so the array reflects what
+// the user actually sees.
 const getColumnData = (canvasElement: HTMLElement, accessor: string) => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return [];
-  const cells = bodyContainer.querySelectorAll(`[data-accessor="${accessor}"]`);
+  const cells = bodyContainer.querySelectorAll<HTMLElement>(`[data-accessor="${accessor}"]`);
   return Array.from(cells)
-    .map((cell) => {
-      const content = cell.querySelector(".st-cell-content");
-      return content?.textContent?.trim() || "";
-    })
-    .filter((text) => text.length > 0);
+    .map((cell) => ({
+      top: parseFloat(cell.style.top || "0"),
+      left: parseFloat(cell.style.left || "0"),
+      text: cell.querySelector(".st-cell-content")?.textContent?.trim() || "",
+    }))
+    .filter(({ text }) => text.length > 0)
+    .sort((a, b) => a.top - b.top || a.left - b.left)
+    .map(({ text }) => text);
 };
 
 const verifyAscendingOrder = (data: string[], dataType = "string") => {

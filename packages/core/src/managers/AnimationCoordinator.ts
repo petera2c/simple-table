@@ -81,19 +81,23 @@ interface CellSnapshot {
   styleTop: number;
   styleLeft: number;
   /**
-   * True when `top`/`left` was read from a live DOM element (via
-   * `getBoundingClientRect` for in-flight cells, or `style.top`/`left`
-   * otherwise). False when it came from `preLayouts`, which provides
-   * conceptual positions for off-screen rows.
+   * True only when `top`/`left` was read from `getBoundingClientRect` of a
+   * cell that was already mid-flight at capture time. In that case the
+   * snapshot is the cell's *real visual* position — already bounded by the
+   * viewport (the rect of an off-screen translated cell never reports a
+   * value outside the parent's overflow region the user can see) — so
+   * compressing it via {@link scaleFlipDistance} would re-position the cell
+   * away from where the user is currently seeing it, producing a
+   * 100–700 px positional snap on every interruption sort.
    *
-   * `play()` uses this flag to skip {@link scaleFlipDistance} compression for
-   * DOM-derived snapshots — those positions are already real visual positions
-   * (bounded to the viewport for in-flight cells, or to the cell's current
-   * style for non-in-flight ones), and compressing them re-positions the cell
-   * away from where the user is currently seeing it. Compression is only
-   * appropriate for preLayout entries, where `top` may be tens of thousands
-   * of pixels off-screen and an uncompressed FLIP would leave the cell
-   * invisible until the last few percent of the animation.
+   * False for everything else: preLayout entries (conceptual positions for
+   * off-screen rows that are tens of thousands of pixels off-screen) AND
+   * non-in-flight DOM cells (whose `style.top`/`left` is the *logical*
+   * destination position, not a viewport-bounded visual one — a column at
+   * index 29 in a wide table can legitimately have `style.left = 6480` even
+   * though it is way off-screen). Both cases need scaling so an unscaled
+   * FLIP doesn't leave the cell invisible until the last few percent of
+   * the animation.
    */
   fromDom: boolean;
 }
@@ -474,27 +478,33 @@ export class AnimationCoordinator {
         return;
       }
 
-      // For incoming cells whose snapshot came from `preLayouts` (a row that
-      // wasn't in the DOM at capture, so we only have its conceptual logical
-      // position), scale the FLIP "before" position so cells sliding in from
-      // far off-screen take a bounded but proportional journey on each axis.
-      // Without scaling, a row whose pre-sort conceptual top was 14970 sliding
-      // to currentTop=0 would start ~15k pixels below the viewport — with
-      // ease-out it stays off-screen for most of the animation, leaving the
-      // viewport empty until the last few percent.
+      // Scale the FLIP "before" position so cells sliding in from far
+      // off-screen take a bounded but proportional journey on each axis.
+      // Without scaling, a row whose pre-sort conceptual top was 14970
+      // sliding to currentTop=0 would start ~15k pixels below the viewport
+      // — with ease-out it stays off-screen for most of the animation,
+      // leaving the viewport empty until the last few percent. Same
+      // failure mode horizontally for far-column reorders.
       //
-      // For DOM-derived snapshots (live + retained, `before.fromDom === true`)
-      // we skip scaling entirely. Their `before.top` was read from a real DOM
-      // element — for in-flight cells via `getBoundingClientRect` (so it is
-      // already the cell's real visual position bounded to the viewport), and
-      // for non-in-flight cells via `style.top` (likewise already a real visual
-      // position, since no transform is in play). Compressing these would move
-      // the cell to a position OTHER than where the user is currently seeing
-      // it, producing a 100–700 px positional snap on every interruption sort.
-      // Retained cells already had their style.top/left scaled at retainCell
-      // time, so we wouldn't re-scale them either.
-      // For preLayout cells we need the cell's own size; prefer the inline
-      // style (no layout) over offsetHeight/offsetWidth (forces layout).
+      // Two cases skip scaling:
+      //
+      // 1. Retained (outgoing) cells — `retainCell` already scaled their
+      //    `style.top/left` at hand-off time, so we'd be double-scaling.
+      //
+      // 2. `before.fromDom === true` snapshots, which `readPosition` only
+      //    sets for cells that were *already mid-flight* at capture. Their
+      //    `before.top/left` came from `getBoundingClientRect`, so it is
+      //    the cell's real visual position bounded to the viewport.
+      //    Compressing it would re-position the cell away from where the
+      //    user is currently seeing it, producing a 100–700 px positional
+      //    snap on every interruption sort.
+      //
+      // Non-in-flight DOM cells fall through to the scaling path: their
+      // `style.top/left` is the *logical* destination (potentially tens
+      // of thousands of pixels off-screen for far columns), same regime
+      // as preLayout entries. For these we need the cell's own size;
+      // prefer the inline style (no layout) over offsetHeight/offsetWidth
+      // (forces layout).
       const skipScale = isRetained || before.fromDom;
       const cellHeight = skipScale
         ? 0
@@ -621,12 +631,17 @@ export class AnimationCoordinator {
       }
       return { left: rect.left, top: rect.top, styleTop, styleLeft, fromDom: true };
     }
+    // Non-in-flight branch: style.top/left is the cell's *logical*
+    // destination, not a viewport-bounded visual position. For columns far
+    // off-screen this can be tens of thousands of pixels away from the
+    // current viewport — same regime as a preLayout entry — so we leave
+    // fromDom=false and let play() compress the FLIP via scaleFlipDistance.
     return {
       left: styleLeft,
       top: styleTop,
       styleTop,
       styleLeft,
-      fromDom: true,
+      fromDom: false,
     };
   }
 
