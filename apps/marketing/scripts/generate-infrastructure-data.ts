@@ -33,13 +33,10 @@ const SERVER_TYPES = [
   { name: "ML Compute", baseCpu: 80, baseMemory: 75 },
 ];
 
-// Server status options
-const STATUS_OPTIONS = ["online", "warning", "critical", "maintenance", "offline"];
-
 // Generate realistic infrastructure monitoring data
 const generateInfrastructureData = (): Row[] => {
   const rows: Row[] = [];
-  const totalRows = 10000;
+  const totalRows = 200;
 
   for (let i = 0; i < totalRows; i++) {
     // Random datacenter
@@ -54,13 +51,13 @@ const generateInfrastructureData = (): Row[] => {
     // CPU usage - based on server type with variation
     const cpuUsage = Math.min(
       100,
-      Math.max(0, Math.round((serverType.baseCpu + (Math.random() - 0.5) * 40) * 10) / 10)
+      Math.max(0, Math.round((serverType.baseCpu + (Math.random() - 0.5) * 40) * 10) / 10),
     );
 
     // Memory usage - based on server type with variation
     const memoryUsage = Math.min(
       100,
-      Math.max(0, Math.round((serverType.baseMemory + (Math.random() - 0.5) * 30) * 10) / 10)
+      Math.max(0, Math.round((serverType.baseMemory + (Math.random() - 0.5) * 30) * 10) / 10),
     );
 
     // Disk usage - random but realistic
@@ -86,8 +83,8 @@ const generateInfrastructureData = (): Row[] => {
       status === "critical"
         ? Math.floor(Math.random() * 5) + 1
         : status === "warning"
-        ? Math.floor(Math.random() * 3)
-        : 0;
+          ? Math.floor(Math.random() * 3)
+          : 0;
 
     // Last ping timestamp - recent
     const lastPing = new Date(Date.now() - Math.random() * 300000); // Within last 5 minutes

@@ -11,15 +11,13 @@ export default function InfrastructureExample({
   height,
   icons,
   theme,
-  rowCount = 1000,
 }: {
   height?: string | number;
   icons?: ReactIconsConfig;
   theme?: Theme;
-  rowCount?: number;
 }) {
   const tableRef = useRef<TableAPI | null>(null);
-  const { data, isLoading } = useInfrastructureData(rowCount);
+  const { data, isLoading } = useInfrastructureData();
   const [isMobile, setIsMobile] = useState(false);
 
   // Use the hook for live metrics updates
@@ -42,7 +40,7 @@ export default function InfrastructureExample({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: height ? height : "70dvh",
+          height: height ? height : "60dvh",
           fontSize: "16px",
           color: "#666",
         }}
@@ -59,7 +57,7 @@ export default function InfrastructureExample({
       columnResizing
       defaultHeaders={HEADERS}
       editColumns
-      height={height ? height : "70dvh"}
+      height={height ? height : "60dvh"}
       icons={icons}
       rows={data}
       selectableCells

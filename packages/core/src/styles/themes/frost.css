@@ -19,9 +19,10 @@
   --st-footer-background-color: #f8faff;
   --st-last-group-row-separator-border-color: #c5d1dd;
 
-  /* Row colors */
+  /* Row colors - Crisp white with a faint icy band on even rows when the
+   * useOddEvenRowBackground option is enabled. */
   --st-odd-row-background-color: #ffffff;
-  --st-even-row-background-color: #ffffff;
+  --st-even-row-background-color: #f4f8fc;
   --st-hover-row-background-color: #e5effe;
   --st-selected-row-background-color: #d4e4fd;
 

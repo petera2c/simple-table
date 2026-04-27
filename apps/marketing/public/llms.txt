@@ -1,0 +1,71 @@
+# Simple Table
+
+> A free, MIT-licensed data grid for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. One shared simple-table-core engine; six official npm adapters. Ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, inline cell editing, custom renderers, and themeable CSS variables.
+
+Simple Table is positioned as a feature-complete free alternative to AG Grid (Enterprise), MUI X Data Grid (Pro), Handsontable, Tabulator, and TanStack Table. The core engine is framework-agnostic and runs the same logic across every adapter.
+
+## Frameworks and packages
+
+- React — `@simple-table/react` — peer: React 18+, works with Next.js (App Router and Pages), Remix, Vite. https://www.simple-table.com/frameworks/react
+- Vue — `@simple-table/vue` — peer: Vue 3+, works with Nuxt 3/4 and Vite. https://www.simple-table.com/frameworks/vue
+- Angular — `@simple-table/angular` — peer: Angular 17+ (standalone components), works with Angular CLI and Analog. https://www.simple-table.com/frameworks/angular
+- Svelte — `@simple-table/svelte` — peer: Svelte 4 / Svelte 5 (runes), works with SvelteKit and Vite. https://www.simple-table.com/frameworks/svelte
+- Solid — `@simple-table/solid` — peer: solid-js 1+, works with Solid Start and Vite. https://www.simple-table.com/frameworks/solid
+- Vanilla TypeScript / Web Components — `simple-table-core` — no peer; bring-your-own DOM glue. https://www.simple-table.com/frameworks/vanilla
+
+## Install
+
+- npm install @simple-table/react
+- npm install @simple-table/vue
+- npm install @simple-table/angular
+- npm install @simple-table/svelte
+- npm install @simple-table/solid
+- npm install simple-table-core
+
+## Pillar guides
+
+- React — Best free React data grid 2026: https://www.simple-table.com/blog/best-free-react-data-grid-2026
+- Vue / Nuxt — https://www.simple-table.com/blog/vue-nuxt-data-grid-simple-table
+- Angular — https://www.simple-table.com/blog/angular-data-grid-simple-table
+- SvelteKit — https://www.simple-table.com/blog/sveltekit-data-table-simple-table
+- Solid.js — https://www.simple-table.com/blog/solidjs-data-grid-simple-table
+- Vanilla TypeScript — https://www.simple-table.com/blog/vanilla-typescript-data-grid-simple-table-core
+
+## Comparisons (React-focused, vs. cross-stack incumbents)
+
+- vs AG Grid: https://www.simple-table.com/comparisons/simple-table-vs-ag-grid
+- vs Handsontable: https://www.simple-table.com/comparisons/simple-table-vs-handsontable
+- vs TanStack Table: https://www.simple-table.com/comparisons/simple-table-vs-tanstack
+- vs Material React Table: https://www.simple-table.com/comparisons/simple-table-vs-material-react
+- vs Ant Design Table: https://www.simple-table.com/comparisons/simple-table-vs-ant-design
+- vs Tabulator: https://www.simple-table.com/comparisons/simple-table-vs-tabulator
+- vs Syncfusion Grid: https://www.simple-table.com/comparisons/simple-table-vs-syncfusion
+
+## Stack-native alternatives Simple Table competes with
+
+- React: AG Grid React, TanStack Table, MUI X Data Grid, Material React Table, react-data-grid, Handsontable React, Kendo React Grid
+- Vue: Vuetify v-data-table, PrimeVue DataTable, Vue Good Table, Element Plus el-table, Naive UI n-data-table, Quasar QTable, AG Grid Vue
+- Angular: AG Grid Angular, ngx-datatable, PrimeNG Table, Angular Material MatTable, Kendo UI for Angular Grid, DevExtreme Angular Grid
+- Svelte: svelte-headless-table, SVAR DataGrid, Flowbite-Svelte Table, Carbon Components Svelte DataTable
+- Solid: TanStack Solid Table, Kobalte Table primitive
+- Vanilla: Tabulator, Grid.js, jSpreadsheet, Handsontable Community, Webix DataTable, DataTables (jQuery)
+
+## License
+
+- Source-available, MIT for pre-revenue and bootstrapped projects.
+- Pro / Enterprise tiers available for revenue-generating teams.
+- License: https://www.simple-table.com/legal/license
+- Pricing: https://www.simple-table.com/pricing
+
+## Documentation
+
+- Quick start: https://www.simple-table.com/docs/quick-start
+- Installation: https://www.simple-table.com/docs/installation
+- Full feature list: https://www.simple-table.com/docs/api-reference
+- Examples (CRM, HR, billing, manufacturing, infrastructure, music, sales): https://www.simple-table.com/examples
+- Theme builder: https://www.simple-table.com/theme-builder
+
+## Source
+
+- GitHub: https://github.com/petera2c/simple-table
+- npm org: https://www.npmjs.com/org/simple-table

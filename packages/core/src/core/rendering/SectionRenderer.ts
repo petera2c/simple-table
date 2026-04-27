@@ -13,7 +13,9 @@ import {
 } from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
+import { getCellId } from "../../utils/cellUtils";
 import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
+import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
 import {
   calculateTotalHeight,
   calculateRowTopPosition,
@@ -53,6 +55,9 @@ export interface BodySectionParams {
   fullTableRows?: TableRow[];
   renderedStartIndex?: number;
   renderedEndIndex?: number;
+  /** When provided, body cell renderer hands outgoing cells to the coordinator
+   * for FLIP-style out-animation instead of removing them immediately. */
+  animationCoordinator?: AnimationCoordinator;
 }
 
 interface BodyCellsCacheEntry {
@@ -68,6 +73,61 @@ interface BodyCellsCacheEntry {
     bandEnd?: number;
     fullTableRowsRef?: TableRow[];
   };
+}
+
+/**
+ * Per-section snapshot of just enough state to recompute every cell position
+ * (left × top for every row × every leaf header) on demand. Used by the
+ * animation coordinator: it needs positions for off-screen rows so cells
+ * sliding in or out of the visible band have a real "from" / "to" point.
+ *
+ * Rebuilt on every body section render so it always reflects the layout the
+ * user is currently looking at — i.e. when captureAnimationSnapshot fires
+ * before the next render runs, this represents the *pre-change* layout.
+ */
+interface BodySectionSnapshotConfig {
+  rows: TableRow[];
+  headerPositions: Array<{ accessor: Accessor; left: number; width: number }>;
+  rowHeight: number;
+  heightOffsets?: Array<[number, number]>;
+  customTheme?: any;
+}
+
+/**
+ * Compute every cell position (every row × every leaf header) implied by a
+ * snapshot config. Used both for FLIP "First" snapshots (pre-change layout)
+ * and to feed the renderer the post-change layout for cells that exit the
+ * visible band — the off-screen `top` is what we want them to slide *to*.
+ */
+function computeFullSectionLayout(
+  config: BodySectionSnapshotConfig,
+): Map<string, CellPosition> {
+  const layout = new Map<string, CellPosition>();
+  const dataRows = config.rows.filter((r) => !r.nestedTable && !r.stateIndicator);
+  for (const tableRow of dataRows) {
+    const top = config.customTheme
+      ? calculateRowTopPosition({
+          position: tableRow.position,
+          rowHeight: config.rowHeight,
+          heightOffsets: config.heightOffsets,
+          customTheme: config.customTheme,
+        })
+      : tableRow.position * config.rowHeight;
+    const rowKey = tableRow.stableRowKey ?? rowIdToString(tableRow.rowId);
+    for (const header of config.headerPositions) {
+      const cellId = getCellId({
+        accessor: header.accessor,
+        rowId: rowKey,
+      });
+      layout.set(cellId, {
+        left: header.left,
+        top,
+        width: header.width,
+        height: config.rowHeight,
+      });
+    }
+  }
+  return layout;
 }
 
 const BODY_CELL_BAND_PADDING = 28;
@@ -96,6 +156,7 @@ export class SectionRenderer {
   private bodyCellsCache: Map<string, BodyCellsCacheEntry> = new Map();
   private headerCellsCache: Map<string, HeaderCellsCacheEntry> = new Map();
   private contextCache: Map<string, ContextCacheEntry> = new Map();
+  private bodySectionSnapshots: Map<string, BodySectionSnapshotConfig> = new Map();
 
   // Track the next colIndex for each section after rendering
   private nextColIndexMap: Map<string, number> = new Map();
@@ -229,6 +290,7 @@ export class SectionRenderer {
       fullTableRows,
       renderedStartIndex,
       renderedEndIndex,
+      animationCoordinator,
     } = params;
 
     const sectionKey = pinned || "main";
@@ -291,6 +353,31 @@ export class SectionRenderer {
       renderedEndIndex,
     );
 
+    // Cache just enough state to recompute the position of every cell in this
+    // section (including off-screen rows) for animation snapshots. The
+    // animation coordinator reads these on captureAnimationSnapshot and
+    // needs them to FLIP cells that were never in the DOM (rows that slide
+    // into view from off-screen) or that won't be in the DOM after the
+    // change (rows that slide out of view).
+    this.captureSnapshotConfig(
+      sectionKey,
+      filteredHeaders,
+      collapsedHeaders,
+      fullTableRows ?? rows,
+      rowHeight,
+      heightOffsets,
+      context.customTheme ?? DEFAULT_CUSTOM_THEME,
+    );
+
+    // The post-render full layout maps every cell id (visible OR off-screen)
+    // to its destination in the *new* state. The body cell renderer hands
+    // this to the animation coordinator so cells exiting the visible band
+    // can slide to their off-screen post-change position before being torn
+    // down — instead of just disappearing in place.
+    const fullCellLayout = animationCoordinator
+      ? this.getFullSectionLayout(sectionKey)
+      : null;
+
     const dataRowCount = rows.filter((r) => !r.nestedTable && !r.stateIndicator).length;
     const maxColIndex =
       absoluteCells.length > 0 && dataRowCount > 0
@@ -314,6 +401,8 @@ export class SectionRenderer {
       currentScrollLeft,
       rows,
       positionOnly,
+      animationCoordinator,
+      fullCellLayout ?? undefined,
     );
 
     // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
@@ -625,6 +714,12 @@ export class SectionRenderer {
           })
         : rowIndex * rowHeight;
 
+      // Derive odd/even from the row's absolute table position rather than
+      // its index in the rendered (virtualized) slice. The slice index changes
+      // every time the user scrolls, which would otherwise flip a row's
+      // odd/even class as soon as it's reused for a different visible row.
+      const isOdd = tableRow.position % 2 === 1;
+
       leafHeaders.forEach((header, leafIndex) => {
         const position = headerPositions.get(header.accessor);
         const colIndex = startColIndex + leafIndex;
@@ -634,9 +729,10 @@ export class SectionRenderer {
           rowIndex,
           colIndex,
           rowId: rowIdToString(tableRow.rowId),
+          stableRowKey: tableRow.stableRowKey,
           displayRowNumber: tableRow.displayPosition,
           depth: tableRow.depth,
-          isOdd: rowIndex % 2 === 1,
+          isOdd,
           tableRow,
           left: position?.left ?? 0,
           top: topPosition,
@@ -842,8 +938,10 @@ export class SectionRenderer {
       for (const c of cached.cells) {
         const ri = positionToVisualIndex.get(c.tableRow.position);
         if (ri === undefined) continue;
-        if (c.rowIndex !== ri || c.isOdd !== (ri % 2 === 1)) {
-          out.push({ ...c, rowIndex: ri, isOdd: ri % 2 === 1 });
+        // isOdd is derived from c.tableRow.position upstream and is stable
+        // across viewport scrolls — only the visual rowIndex needs remapping.
+        if (c.rowIndex !== ri) {
+          out.push({ ...c, rowIndex: ri });
         } else {
           out.push(c);
         }
@@ -901,8 +999,10 @@ export class SectionRenderer {
     for (const c of cells) {
       const ri = positionToVisualIndex.get(c.tableRow.position);
       if (ri === undefined) continue;
-      if (c.rowIndex !== ri || c.isOdd !== (ri % 2 === 1)) {
-        mapped.push({ ...c, rowIndex: ri, isOdd: ri % 2 === 1 });
+      // isOdd is derived from c.tableRow.position upstream and is stable
+      // across viewport scrolls — only the visual rowIndex needs remapping.
+      if (c.rowIndex !== ri) {
+        mapped.push({ ...c, rowIndex: ri });
       } else {
         mapped.push(c);
       }
@@ -993,22 +1093,19 @@ export class SectionRenderer {
       // (so expand icon can animate) and remove only cells no longer visible.
       this.bodyCellsCache.clear();
     } else if (type === "header") {
+      // Only clear the calculated cells cache so we recompute layout for new header order/widths.
+      // Do NOT clear rendered cell elements: renderHeaderCells reuses cells by accessor and updates
+      // position/classes in place. Tearing down cells on every drag swap caused visible flicker
+      // because each `dragover` recreated all 11 header cells (debug session 65665a, H6).
       this.headerCellsCache.clear();
-      // Clear rendered cell elements from all header sections
-      this.headerSections.forEach((section) => {
-        cleanupHeaderCellRendering(section);
-      });
     } else if (type === "context") {
       this.contextCache.clear();
       // Recompute absolute header layout from current effectiveHeaders; otherwise
       // cached AbsoluteCell.header refs drift from live objects (sort/resize bug).
       this.headerCellsCache.clear();
-      // Clear header rendered elements so sort indicators etc. update.
-      // Do NOT clear body rendered elements: renderBodyCells will update existing cells
-      // in place (e.g. selection classes, expand icon state) so expand icon can animate.
-      this.headerSections.forEach((section) => {
-        cleanupHeaderCellRendering(section);
-      });
+      // Do NOT clear rendered header cells: renderHeaderCells refreshes icons (sort/filter)
+      // in place via per-cell iconState tracking on dataset. See `renderHeaderCells`
+      // existing-cell branch in `headerCellRenderer.ts`.
     }
   }
 
@@ -1019,12 +1116,81 @@ export class SectionRenderer {
     return this.nextColIndexMap.get(sectionKey) ?? 0;
   }
 
+  /**
+   * Build a per-section layout map covering every cell in the dataset (every
+   * row × every leaf header), not just the cells in the current virtualization
+   * band. Used by the animation coordinator: it needs positions for off-screen
+   * rows so that:
+   *
+   *   - Cells that newly enter the visible band (e.g. row sorted from bottom
+   *     to top) can FLIP in from their actual pre-change off-screen `top`.
+   *   - Cells that leave the visible band (e.g. row sorted from top to
+   *     bottom) can be retained and slid to their actual post-change
+   *     off-screen `top` before being removed.
+   *
+   * The body container clips overflow so cells whose interpolated position
+   * falls outside the viewport simply aren't painted — the animation looks
+   * like a slide in from / out to the viewport edge.
+   */
+  getCurrentBodyLayouts(): Map<HTMLElement, Map<string, CellPosition>> {
+    const out = new Map<HTMLElement, Map<string, CellPosition>>();
+    this.bodySectionSnapshots.forEach((config, sectionKey) => {
+      const section = this.bodySections.get(sectionKey);
+      if (!section) return;
+      out.set(section, computeFullSectionLayout(config));
+    });
+    return out;
+  }
+
+  /**
+   * Compute every cell position the section currently knows about (every row
+   * × every leaf header), including positions for off-screen rows, by using
+   * the most recent snapshot config for `sectionKey`. Returns null if no
+   * snapshot has been captured for this section yet.
+   */
+  getFullSectionLayout(sectionKey: string): Map<string, CellPosition> | null {
+    const config = this.bodySectionSnapshots.get(sectionKey);
+    return config ? computeFullSectionLayout(config) : null;
+  }
+
+  /**
+   * Refresh the per-section snapshot config so getCurrentBodyLayouts can
+   * recompute positions for any row × column combination the section
+   * currently knows about.
+   */
+  private captureSnapshotConfig(
+    sectionKey: string,
+    headers: HeaderObject[],
+    collapsedHeaders: Set<Accessor>,
+    rows: TableRow[],
+    rowHeight: number,
+    heightOffsets?: Array<[number, number]>,
+    customTheme?: any,
+  ): void {
+    const leafHeaders = this.getLeafHeaders(headers, collapsedHeaders);
+    const headerPositions: Array<{ accessor: Accessor; left: number; width: number }> = [];
+    let currentLeft = 0;
+    for (const header of leafHeaders) {
+      const width = typeof header.width === "number" ? header.width : 150;
+      headerPositions.push({ accessor: header.accessor, left: currentLeft, width });
+      currentLeft += width;
+    }
+    this.bodySectionSnapshots.set(sectionKey, {
+      rows,
+      headerPositions,
+      rowHeight,
+      heightOffsets,
+      customTheme,
+    });
+  }
+
   cleanup(): void {
     this.headerSections.clear();
     this.bodySections.clear();
     this.bodyCellsCache.clear();
     this.headerCellsCache.clear();
     this.contextCache.clear();
+    this.bodySectionSnapshots.clear();
     this.nextColIndexMap.clear();
   }
 }

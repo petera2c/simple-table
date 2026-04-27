@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "3.0.13",
+  "version": "3.2.0",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/src/index.d.ts",
@@ -81,7 +81,7 @@
       "path": "dist/cjs/index.js"
     }
   ],
-  "description": "Simple Table: A lightweight, free framework-agnostic data grid and table component with TypeScript support, sorting, filtering, and virtualization. Works with vanilla JS, React, Vue, Angular, and more.",
+  "description": "Simple Table: A lightweight, free framework-agnostic data grid and table component with TypeScript support, sorting, filtering, and virtualization. Works with vanilla JS/TypeScript, React, Vue, Angular, Svelte, and Solid.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
@@ -100,6 +100,30 @@
     "data-table",
     "data table",
     "grid",
-    "table"
+    "table",
+    "vanilla js data grid",
+    "vanilla javascript table",
+    "typescript data grid",
+    "typescript data table",
+    "framework agnostic table",
+    "framework agnostic data grid",
+    "headless data grid",
+    "web components grid",
+    "javascript data grid",
+    "javascript table",
+    "ag-grid alternative",
+    "tabulator alternative",
+    "handsontable alternative",
+    "grid.js alternative",
+    "jspreadsheet alternative",
+    "free data grid",
+    "mit data grid",
+    "lightweight data grid",
+    "virtualized table",
+    "virtual scrolling table",
+    "sorting filtering grid",
+    "row pinning",
+    "column pinning",
+    "tree data grid"
   ]
 }

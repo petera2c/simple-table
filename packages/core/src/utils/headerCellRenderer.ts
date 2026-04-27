@@ -12,6 +12,7 @@ import {
   createHeaderCellElement,
   calculateHeaderCellClasses,
   getLastHeaderIndex,
+  refreshHeaderCellIcons,
 } from "./headerCell/styling";
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
@@ -151,6 +152,22 @@ export const renderHeaderCells = (
         const isCollapsed = context.collapsedHeaders.has(cell.header.accessor);
         updateHeaderCollapseIconState(cellElement, isCollapsed, cell.header.label);
       }
+
+      // Refresh sort/filter icons in place when this column's sort or filter state changed
+      // (cells are no longer torn down on header/context invalidation, so we must replace
+      // icons here when context state advances). Tracked per-cell on dataset to avoid
+      // unnecessary DOM churn on scroll/reorder where sort/filter haven't changed.
+      const sortStateForCell =
+        context.sort && context.sort.key.accessor === cell.header.accessor
+          ? context.sort.direction
+          : "none";
+      const filterStateForCell =
+        context.filters && context.filters[cell.header.accessor as any] ? "1" : "0";
+      const iconStateKey = `${sortStateForCell}|${filterStateForCell}`;
+      if (cellElement.dataset.stIconState !== iconStateKey) {
+        refreshHeaderCellIcons(cellElement, cell.header, context);
+        cellElement.dataset.stIconState = iconStateKey;
+      }
     }
   });
 
@@ -161,6 +178,15 @@ export const renderHeaderCells = (
       context,
       isLastMainAutoExpandColumn,
     );
+    // Seed icon-state dataset so the existing-cell branch doesn't refresh icons
+    // unnecessarily on the next render (icons are already current on freshly created cells).
+    const sortStateForCell =
+      context.sort && context.sort.key.accessor === cell.header.accessor
+        ? context.sort.direction
+        : "none";
+    const filterStateForCell =
+      context.filters && context.filters[cell.header.accessor as any] ? "1" : "0";
+    cellElement.dataset.stIconState = `${sortStateForCell}|${filterStateForCell}`;
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
     positionCache.set(cellId, {

@@ -17,7 +17,7 @@
     "build:angular": "turbo run build --filter=@simple-table/angular",
     "build:marketing-stack": "pnpm run build:core && pnpm run build:react",
     "build:marketing": "turbo run build --filter=simple-table-marketing",
-    "generate-marketing-public": "pnpm --filter simple-table-marketing run copy-to-txt && pnpm --filter simple-table-marketing run generate-sitemap",
+    "generate-marketing-public": "pnpm --filter simple-table-marketing run copy-to-txt",
     "watch:react-adapter": "pnpm --filter @simple-table/react run preview",
     "dev:marketing": "turbo run dev --filter=simple-table-marketing",
     "dev:marketing:watch": "sh -c 'pnpm --filter @simple-table/react run preview & pnpm --filter simple-table-marketing run dev & wait'",

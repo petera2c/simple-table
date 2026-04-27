@@ -109,6 +109,25 @@ export const FRAMEWORK_HUB_BY_ID: Record<HubFrameworkId, FrameworkHubEntry> =
 
 export const FRAMEWORK_HUB_IDS = FRAMEWORK_HUB_ENTRIES.map((e) => e.id);
 
+export type ExampleSlug =
+  | "billing"
+  | "crm"
+  | "hr"
+  | "infrastructure"
+  | "manufacturing"
+  | "music"
+  | "sales";
+
+export const EXAMPLE_SLUGS: ExampleSlug[] = [
+  "billing",
+  "crm",
+  "hr",
+  "infrastructure",
+  "manufacturing",
+  "music",
+  "sales",
+];
+
 /** Human-readable list for marketing copy (matches common site phrasing). */
 export const SIMPLE_TABLE_FRAMEWORKS_SHORT =
   "React, Vue, Angular, Svelte, Solid, and vanilla TypeScript";

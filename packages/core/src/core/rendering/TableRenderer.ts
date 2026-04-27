@@ -22,10 +22,12 @@ import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
+import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection } from "../../utils/generalUtils";
 
 export interface TableRendererDeps {
+  animationCoordinator?: AnimationCoordinator;
   cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
   collapsedRows: Map<string, number>;
@@ -105,6 +107,11 @@ export class TableRenderer {
 
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
     this.sectionRenderer.invalidateCache(type);
+  }
+
+  /** See {@link SectionRenderer.getCurrentBodyLayouts}. */
+  getCurrentBodyLayouts(): Map<HTMLElement, Map<string, CellPosition>> {
+    return this.sectionRenderer.getCurrentBodyLayouts();
   }
 
   renderHeader(
@@ -518,6 +525,10 @@ export class TableRenderer {
     // Track which sections should exist (like React's component list)
     const sectionsToKeep: HTMLElement[] = [];
 
+    // Skip animation hookup during the position-only fast path on scroll —
+    // outgoing/incoming cells must not be animated when the user is scrolling.
+    const animationCoordinator = deps.positionOnlyBody ? undefined : deps.animationCoordinator;
+
     if (pinnedLeftHeaders.length > 0) {
       const leftSection = this.sectionRenderer.renderBodySection({
         headers: deps.effectiveHeaders,
@@ -534,10 +545,21 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        animationCoordinator,
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
-      container.appendChild(leftSection as HTMLElement);
+      // Only append if not already a child — calling appendChild on a node
+      // already in the same parent triggers a detach + reinsert per the DOM
+      // spec, which cancels every CSS transition on its descendants and
+      // snaps their computed transforms to the inline value. With cell
+      // animations running for ~4s, that means a follow-up sort during the
+      // first sort's animation would visually teleport every animating cell
+      // to its destination instead of FLIP-tweening from the in-flight
+      // visual position.
+      if (leftSection.parentElement !== container) {
+        container.appendChild(leftSection as HTMLElement);
+      }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("left");
     }
@@ -557,10 +579,13 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        animationCoordinator,
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
-      container.appendChild(mainSection as HTMLElement);
+      if (mainSection.parentElement !== container) {
+        container.appendChild(mainSection as HTMLElement);
+      }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("main");
     }
@@ -581,10 +606,13 @@ export class TableRenderer {
         fullTableRows: processedResult.currentTableRows,
         renderedStartIndex: processedResult.renderedStartIndex,
         renderedEndIndex: processedResult.renderedEndIndex,
+        animationCoordinator,
       });
       deps.pinnedRightRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
-      container.appendChild(rightSection as HTMLElement);
+      if (rightSection.parentElement !== container) {
+        container.appendChild(rightSection as HTMLElement);
+      }
     }
 
     // Render sticky parents if enabled

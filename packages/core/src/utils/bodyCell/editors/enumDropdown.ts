@@ -43,9 +43,7 @@ export const createEnumDropdown = (
 
   options.forEach((option: EnumOption, index: number) => {
     const optionElement = document.createElement("div");
-    optionElement.className = `st-dropdown-item ${
-      currentValue === option.value ? "selected" : ""
-    }`;
+    optionElement.className = `st-dropdown-item ${currentValue === option.value ? "selected" : ""}`;
     optionElement.textContent = option.label;
     optionElement.setAttribute("role", "option");
     optionElement.setAttribute("aria-selected", String(currentValue === option.value));
@@ -91,7 +89,10 @@ export const createEnumDropdown = (
   optionElements.forEach((el) => wrapper.appendChild(el));
 
   // Get the cell element as trigger (use getCellId for consistency with body cell IDs)
-  const cellId = getCellId({ accessor: header.accessor, rowId: cell.rowId });
+  const cellId = getCellId({
+    accessor: header.accessor,
+    rowId: cell.stableRowKey ?? cell.rowId,
+  });
   const cellElement = document.getElementById(cellId) as HTMLElement;
 
   // Create and show dropdown

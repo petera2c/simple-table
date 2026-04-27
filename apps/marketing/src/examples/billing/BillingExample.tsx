@@ -8,16 +8,14 @@ export default function BillingExample({
   height,
   icons,
   onGridReady,
-  rowCount = 1000,
   theme,
 }: {
   height: number | null;
   icons?: ReactIconsConfig;
   onGridReady?: () => void;
-  rowCount?: number;
   theme?: Theme;
 }) {
-  const { data, isLoading } = useBillingData(rowCount);
+  const { data, isLoading } = useBillingData();
 
   if (isLoading) {
     return (

@@ -1,4 +1,7 @@
-import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
+import {
+  SIMPLE_TABLE_FRAMEWORKS_SHORT,
+  type HubFrameworkId,
+} from "@/constants/frameworkIntegrationHub";
 
 export interface BlogPostMetadata {
   title: string;
@@ -8,6 +11,30 @@ export interface BlogPostMetadata {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * Map blog tag values to canonical framework hub ids. Keep both the framework
+ * id and common ecosystem aliases (nuxt -> vue, sveltekit -> svelte, solidjs ->
+ * solid) so cross-stack callouts can detect the post's framework focus from tags
+ * alone.
+ */
+const FRAMEWORK_TAG_TO_HUB_ID: Record<string, HubFrameworkId> = {
+  react: "react",
+  "next.js": "react",
+  nextjs: "react",
+  remix: "react",
+  vue: "vue",
+  vue3: "vue",
+  nuxt: "vue",
+  angular: "angular",
+  svelte: "svelte",
+  sveltekit: "svelte",
+  solid: "solid",
+  solidjs: "solid",
+  vanilla: "vanilla",
+  "vanilla-js": "vanilla",
+  "vanilla-typescript": "vanilla",
+};
 
 // Individual blog post objects that can be reused
 export const freeAlternativeToAgGridPost: BlogPostMetadata = {
@@ -439,8 +466,567 @@ export const vanillaDataGridPillarPost: BlogPostMetadata = {
   updatedAt: "2026-04-18",
 };
 
+// ============================================================================
+// Framework-specific competitor comparison posts (Tier 2)
+// ============================================================================
+
+// Angular
+export const simpleTableVsAgGridAngularPost: BlogPostMetadata = {
+  title: "Simple Table vs AG Grid Angular: Free MIT Data Grid for Angular 17/18/19",
+  description:
+    "AG Grid Angular charges per developer for grouping, pivoting, and master-detail. Simple Table for Angular ships virtualization, pinning, grouping, and editing free under MIT—with idiomatic standalone-component support.",
+  slug: "simple-table-vs-ag-grid-angular",
+  tags: ["angular", "comparison", "alternatives", "ag-grid"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsNgxDatatablePost: BlogPostMetadata = {
+  title: "Simple Table vs ngx-datatable: A Modern Alternative for Angular 17+",
+  description:
+    "ngx-datatable's Angular 17+ standalone story is dated. Simple Table for Angular is signals-friendly, MIT-licensed, and ships pinning, grouping with aggregations, virtualization, and inline editing in the box.",
+  slug: "simple-table-vs-ngx-datatable",
+  tags: ["angular", "comparison", "alternatives", "ngx-datatable"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsPrimeNgTablePost: BlogPostMetadata = {
+  title: "Simple Table vs PrimeNG Table: Lightweight Angular Data Grid Comparison",
+  description:
+    "PrimeNG Table is great if you already use PrimeNG. Simple Table for Angular is a smaller, focused alternative when DataTable is your only PrimeNG component—same virtualization, pinning, grouping, and editing in MIT.",
+  slug: "simple-table-vs-primeng-table",
+  tags: ["angular", "comparison", "alternatives", "primeng"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsAngularMaterialTablePost: BlogPostMetadata = {
+  title: "Simple Table vs Angular Material Table (mat-table): Beyond MDC Primitives",
+  description:
+    "Angular Material's mat-table is composable but you build virtualization, pinning, grouping, and editing yourself. Simple Table for Angular ships all of that in MIT—works alongside Material themes via CSS variables.",
+  slug: "simple-table-vs-angular-material-table",
+  tags: ["angular", "comparison", "alternatives", "angular-material"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsKendoGridAngularPost: BlogPostMetadata = {
+  title: "Simple Table vs Kendo Grid for Angular: $649+ Commercial vs Free MIT",
+  description:
+    "Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular is free under MIT with virtualization, pinning, grouping, and editing built in—no license keys, no commercial paperwork.",
+  slug: "simple-table-vs-kendo-grid-angular",
+  tags: ["angular", "comparison", "alternatives", "kendo-ui", "pricing"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const agGridAlternativesAngularPost: BlogPostMetadata = {
+  title: "AG Grid Alternatives: Best Free Angular Data Grids in 2026",
+  description:
+    "Looking for AG Grid Angular alternatives? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material mat-table, and others. Free, MIT, signals-friendly options without enterprise licensing.",
+  slug: "ag-grid-alternatives-free-angular-data-grids-2026",
+  tags: ["angular", "alternatives", "comparison", "ag-grid"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Vue
+export const simpleTableVsVuetifyDataTablePost: BlogPostMetadata = {
+  title: "Simple Table vs Vuetify v-data-table: Focused Vue 3 Data Grid Comparison",
+  description:
+    "Vuetify v-data-table requires the full Vuetify runtime + Material theme. Simple Table for Vue is a focused MIT data grid that works in Composition API + <script setup>, Nuxt 3/4, and Vite without a design system tax.",
+  slug: "simple-table-vs-vuetify-data-table",
+  tags: ["vue", "comparison", "alternatives", "vuetify"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsPrimeVueDatatablePost: BlogPostMetadata = {
+  title: "Simple Table vs PrimeVue DataTable: Lightweight Vue 3 Data Grid",
+  description:
+    "PrimeVue DataTable bundles in PrimeVue's runtime + theme + PrimeIcons. Simple Table for Vue is a focused MIT alternative for Vue 3 / Nuxt with virtualization, pinning, grouping, and editing in one library.",
+  slug: "simple-table-vs-primevue-datatable",
+  tags: ["vue", "comparison", "alternatives", "primevue"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsVueGoodTablePost: BlogPostMetadata = {
+  title: "Simple Table vs Vue Good Table Next: Vue 3 Data Grid Comparison",
+  description:
+    "Vue Good Table is straightforward but doesn't ship row virtualization or column pinning. Simple Table for Vue covers those plus grouping with aggregations and inline editing—same MIT license, modern Composition API.",
+  slug: "simple-table-vs-vue-good-table",
+  tags: ["vue", "comparison", "alternatives", "vue-good-table"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsElementPlusTablePost: BlogPostMetadata = {
+  title: "Simple Table vs Element Plus Table: Standalone Vue Data Grid",
+  description:
+    "Element Plus's el-table is fine if Element Plus is your design system. Simple Table for Vue is a smaller standalone alternative when you only need a focused, virtualized data grid with grouping and editing.",
+  slug: "simple-table-vs-element-plus-table",
+  tags: ["vue", "comparison", "alternatives", "element-plus"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsNaiveUiTablePost: BlogPostMetadata = {
+  title: "Simple Table vs Naive UI Data Table: Focused Vue 3 Data Grid",
+  description:
+    "Naive UI's data-table is a great component-library grid. Simple Table for Vue is a smaller, focused MIT alternative with built-in virtualization, pinning, grouping with aggregations, and inline editing.",
+  slug: "simple-table-vs-naive-ui-table",
+  tags: ["vue", "comparison", "alternatives", "naive-ui"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const agGridAlternativesVuePost: BlogPostMetadata = {
+  title: "AG Grid Alternatives: Best Free Vue 3 Data Grids in 2026",
+  description:
+    "Looking for AG Grid Vue alternatives? Compare Simple Table for Vue, Vuetify, PrimeVue, Vue Good Table, Element Plus, and Naive UI. Free, MIT, Composition-API-friendly options without enterprise licensing.",
+  slug: "ag-grid-alternatives-free-vue-data-grids-2026",
+  tags: ["vue", "alternatives", "comparison", "ag-grid"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Svelte
+export const simpleTableVsSvelteHeadlessTablePost: BlogPostMetadata = {
+  title: "Simple Table vs svelte-headless-table: Batteries-Included vs Headless Svelte Grid",
+  description:
+    "svelte-headless-table is great primitives. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one MIT package—Svelte 4 and Svelte 5 ready.",
+  slug: "simple-table-vs-svelte-headless-table",
+  tags: ["svelte", "sveltekit", "comparison", "alternatives", "svelte-headless-table"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsSvarDatagridPost: BlogPostMetadata = {
+  title: "Simple Table vs SVAR DataGrid: Free MIT Svelte Data Grid Comparison",
+  description:
+    "SVAR DataGrid for Svelte is feature-rich but bundles in SVAR's component ecosystem. Simple Table for Svelte is a smaller, focused MIT alternative with virtualization, pinning, grouping, and editing built in.",
+  slug: "simple-table-vs-svar-datagrid",
+  tags: ["svelte", "sveltekit", "comparison", "alternatives", "svar-datagrid"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsFlowbiteSvelteTablePost: BlogPostMetadata = {
+  title: "Simple Table vs Flowbite Svelte Table: Real Data Grid Features in Svelte",
+  description:
+    "Flowbite Svelte's Table is a styled HTML table—great for static data. Simple Table for Svelte adds virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing.",
+  slug: "simple-table-vs-flowbite-svelte-table",
+  tags: ["svelte", "sveltekit", "comparison", "alternatives", "flowbite-svelte"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const bestFreeSvelteDataGridPost: BlogPostMetadata = {
+  title: "Best Free Svelte Data Grid in 2026: Top SvelteKit Table Libraries Compared",
+  description:
+    "Compare the best free Svelte data grids in 2026: Simple Table for Svelte, svelte-headless-table, SVAR DataGrid, Flowbite Svelte Table, and more. Bundle size, features, Svelte 5 support, and licensing.",
+  slug: "best-free-svelte-data-grid-2026",
+  tags: ["svelte", "sveltekit", "comparison", "alternatives", "best-practices"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Solid
+export const simpleTableVsTanstackSolidTablePost: BlogPostMetadata = {
+  title: "Simple Table vs TanStack Solid Table: Batteries-Included vs Headless SolidJS Grid",
+  description:
+    "TanStack Solid Table gives you headless primitives—you wire the UI. Simple Table for Solid is batteries-included with virtualization, pinning, grouping, and editing on top of fine-grained Solid signals.",
+  slug: "simple-table-vs-tanstack-solid-table",
+  tags: ["solid", "solidjs", "comparison", "alternatives", "tanstack-table"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsKobalteGridPost: BlogPostMetadata = {
+  title: "Simple Table vs Kobalte Grid: SolidJS Data Grid Comparison",
+  description:
+    "Kobalte focuses on accessible UI primitives. Simple Table for Solid is a complete data grid with virtualization, pinning, grouping with aggregations, and inline editing—built on Solid signals.",
+  slug: "simple-table-vs-kobalte-grid",
+  tags: ["solid", "solidjs", "comparison", "alternatives", "kobalte"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const bestSolidJsDataGridPost: BlogPostMetadata = {
+  title: "Best SolidJS Data Grid in 2026: Free Solid-Start Table Libraries Compared",
+  description:
+    "Compare the best free SolidJS data grids in 2026: Simple Table for Solid, TanStack Solid Table, Kobalte, and more. Bundle size, features, fine-grained reactivity, and Solid-Start support.",
+  slug: "best-solidjs-data-grid-2026",
+  tags: ["solid", "solidjs", "comparison", "alternatives", "best-practices"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Vanilla
+export const simpleTableCoreVsTabulatorPost: BlogPostMetadata = {
+  title: "simple-table-core vs Tabulator: TypeScript-First Vanilla JS Data Grid",
+  description:
+    "Tabulator is the workhorse vanilla JS grid. simple-table-core is the modern TypeScript-first alternative—strict types, ESM-first packaging, and the same engine that powers React/Vue/Angular/Svelte/Solid.",
+  slug: "simple-table-vs-tabulator-vanilla-js",
+  tags: ["vanilla", "vanilla-typescript", "comparison", "alternatives", "tabulator"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsJspreadsheetPost: BlogPostMetadata = {
+  title: "simple-table-core vs Jspreadsheet: Data Grid vs Spreadsheet for Vanilla JS",
+  description:
+    "Jspreadsheet is a spreadsheet UI in JavaScript. simple-table-core is a TypeScript-first data grid focused on virtualization, pinning, grouping, and editing—different tools for different jobs.",
+  slug: "simple-table-vs-jspreadsheet",
+  tags: ["vanilla", "vanilla-typescript", "comparison", "alternatives", "jspreadsheet"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsGridJsPost: BlogPostMetadata = {
+  title: "simple-table-core vs Grid.js: When You Outgrow a Read-Only Vanilla Grid",
+  description:
+    "Grid.js is great for simple read-only tables. simple-table-core is what you reach for when you need virtualization for 100k+ rows, column pinning, row grouping, and inline editing in vanilla TypeScript.",
+  slug: "simple-table-vs-grid-js",
+  tags: ["vanilla", "vanilla-typescript", "comparison", "alternatives", "grid-js"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const simpleTableVsHandsontableVanillaPost: BlogPostMetadata = {
+  title: "simple-table-core vs Handsontable (Vanilla JS): MIT Data Grid vs Commercial Spreadsheet",
+  description:
+    "Handsontable's non-commercial license blocks production SaaS use. simple-table-core is MIT-licensed for any context and ships virtualization, pinning, grouping, and editing in vanilla TypeScript.",
+  slug: "simple-table-vs-handsontable-vanilla",
+  tags: ["vanilla", "vanilla-typescript", "comparison", "alternatives", "handsontable"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const bestVanillaJsDataGridPost: BlogPostMetadata = {
+  title: "Best Vanilla JavaScript Data Grid in 2026: Free Framework-Agnostic Tables Compared",
+  description:
+    "Compare the best free vanilla JS / TypeScript data grids in 2026: simple-table-core, Tabulator, Jspreadsheet, Grid.js, Handsontable, and more. Bundle size, TypeScript support, and licensing.",
+  slug: "best-vanilla-js-data-grid-2026",
+  tags: ["vanilla", "vanilla-typescript", "comparison", "alternatives", "best-practices"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Tier 2 — framework-mirrored tutorial posts (column resizing, row selection,
+// filtering, column pinning, tree data) per non-React stack.
+
+// Angular
+export const angularTableColumnResizingPost: BlogPostMetadata = {
+  title: "Angular Table Column Resizing: Implementation Guide & Best Libraries (2026)",
+  description:
+    "Add resizable columns to your Angular data grid. Compare AG Grid Angular, ngx-datatable, PrimeNG, mat-table, and Simple Table for Angular—with code samples and pitfalls to avoid.",
+  slug: "angular-table-column-resizing-guide",
+  tags: ["angular", "tutorials", "features", "column-resizing"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const angularGridRowSelectionPost: BlogPostMetadata = {
+  title: "Angular Grid Row Selection: Single, Multi, and Checkbox Patterns (2026)",
+  description:
+    "Implement single, multi, and checkbox row selection in Angular tables. Compare AG Grid Angular, ngx-datatable, PrimeNG, and Simple Table for Angular with signals-friendly examples.",
+  slug: "angular-grid-row-selection-guide",
+  tags: ["angular", "tutorials", "features", "row-selection"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const angularGridFilteringPost: BlogPostMetadata = {
+  title: "Angular Grid Filtering: Column Filters, Quick Filters, and Custom Predicates",
+  description:
+    "Add column filters, quick search, and custom predicates to your Angular data grid. Idiomatic standalone-component examples with Simple Table for Angular and a comparison to PrimeNG / AG Grid.",
+  slug: "angular-grid-filtering-implementation",
+  tags: ["angular", "tutorials", "features", "filtering"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const angularGridColumnPinningPost: BlogPostMetadata = {
+  title: "Angular Grid Column Pinning: Freeze Left and Right Columns (2026)",
+  description:
+    "Pin Angular table columns to the left or right with sticky headers. Compare AG Grid Angular, PrimeNG, and Simple Table for Angular—with signals-friendly examples.",
+  slug: "angular-grid-column-pinning-tutorial",
+  tags: ["angular", "tutorials", "features", "column-pinning"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const angularTreeDataTablesPost: BlogPostMetadata = {
+  title: "Angular Tree Data Tables: Hierarchical Rows with Expand / Collapse (2026)",
+  description:
+    "Render hierarchical / tree data in an Angular table with expand and collapse. Compare PrimeNG TreeTable, AG Grid, and Simple Table for Angular—with signals-friendly examples.",
+  slug: "angular-tree-data-tables",
+  tags: ["angular", "tutorials", "features", "tree-data"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Vue
+export const vueTableColumnResizingPost: BlogPostMetadata = {
+  title: "Vue 3 Table Column Resizing: Implementation Guide & Best Libraries (2026)",
+  description:
+    "Add resizable columns to your Vue 3 data grid. Compare Vuetify, PrimeVue, Element Plus, and Simple Table for Vue with idiomatic Composition API examples.",
+  slug: "vue-table-column-resizing-guide",
+  tags: ["vue", "tutorials", "features", "column-resizing"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vueGridRowSelectionPost: BlogPostMetadata = {
+  title: "Vue 3 Grid Row Selection: Single, Multi, and Checkbox Patterns (2026)",
+  description:
+    "Implement single, multi, and checkbox row selection in Vue 3 tables. Idiomatic Composition API examples with Simple Table for Vue and a comparison to PrimeVue / Vuetify.",
+  slug: "vue-grid-row-selection-guide",
+  tags: ["vue", "tutorials", "features", "row-selection"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vueGridFilteringPost: BlogPostMetadata = {
+  title: "Vue 3 Grid Filtering: Column Filters, Quick Filters, and Custom Predicates",
+  description:
+    "Add column filters, quick search, and custom predicates to your Vue 3 data grid. Composition API examples with Simple Table for Vue and a comparison to PrimeVue / Vuetify.",
+  slug: "vue-grid-filtering-implementation",
+  tags: ["vue", "tutorials", "features", "filtering"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vueGridColumnPinningPost: BlogPostMetadata = {
+  title: "Vue 3 Grid Column Pinning: Freeze Left and Right Columns (2026)",
+  description:
+    "Pin Vue 3 table columns to the left or right with sticky headers. Compare PrimeVue, Vuetify, Element Plus, and Simple Table for Vue—with idiomatic Composition API examples.",
+  slug: "vue-grid-column-pinning-tutorial",
+  tags: ["vue", "tutorials", "features", "column-pinning"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vueTreeDataTablesPost: BlogPostMetadata = {
+  title: "Vue 3 Tree Data Tables: Hierarchical Rows with Expand / Collapse (2026)",
+  description:
+    "Render hierarchical / tree data in a Vue 3 table with expand and collapse. Compare PrimeVue TreeTable, Element Plus, and Simple Table for Vue with idiomatic Composition API examples.",
+  slug: "vue-tree-data-tables",
+  tags: ["vue", "tutorials", "features", "tree-data"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Svelte
+export const svelteGridColumnResizingPost: BlogPostMetadata = {
+  title: "Svelte Grid Column Resizing: Implementation Guide & Best Libraries (2026)",
+  description:
+    "Add resizable columns to your SvelteKit data grid. Compare svelte-headless-table, SVAR DataGrid, and Simple Table for Svelte—with Svelte 4 and Svelte 5 / runes examples.",
+  slug: "svelte-grid-column-resizing-guide",
+  tags: ["svelte", "sveltekit", "tutorials", "features", "column-resizing"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const svelteGridRowSelectionPost: BlogPostMetadata = {
+  title: "Svelte Grid Row Selection: Single, Multi, and Checkbox Patterns (2026)",
+  description:
+    "Implement single, multi, and checkbox row selection in Svelte tables. Compare svelte-headless-table, SVAR DataGrid, and Simple Table for Svelte—with Svelte 5 / runes examples.",
+  slug: "svelte-grid-row-selection-guide",
+  tags: ["svelte", "sveltekit", "tutorials", "features", "row-selection"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const svelteGridFilteringPost: BlogPostMetadata = {
+  title: "Svelte Grid Filtering: Column Filters, Quick Filters, and Custom Predicates",
+  description:
+    "Add column filters, quick search, and custom predicates to your SvelteKit data grid. Svelte 5 / runes examples with Simple Table for Svelte and a comparison to svelte-headless-table.",
+  slug: "svelte-grid-filtering-implementation",
+  tags: ["svelte", "sveltekit", "tutorials", "features", "filtering"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const svelteGridColumnPinningPost: BlogPostMetadata = {
+  title: "Svelte Grid Column Pinning: Freeze Left and Right Columns (2026)",
+  description:
+    "Pin Svelte table columns to the left or right with sticky headers. Compare svelte-headless-table, SVAR DataGrid, and Simple Table for Svelte—with Svelte 5 / runes examples.",
+  slug: "svelte-grid-column-pinning-tutorial",
+  tags: ["svelte", "sveltekit", "tutorials", "features", "column-pinning"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const svelteTreeDataTablesPost: BlogPostMetadata = {
+  title: "Svelte Tree Data Tables: Hierarchical Rows with Expand / Collapse (2026)",
+  description:
+    "Render hierarchical / tree data in a SvelteKit table with expand and collapse. Compare svelte-headless-table, SVAR DataGrid, and Simple Table for Svelte—with Svelte 5 / runes examples.",
+  slug: "svelte-tree-data-tables",
+  tags: ["svelte", "sveltekit", "tutorials", "features", "tree-data"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Solid
+export const solidGridColumnResizingPost: BlogPostMetadata = {
+  title: "SolidJS Grid Column Resizing: Implementation Guide (2026)",
+  description:
+    "Add resizable columns to your SolidJS data grid. Compare TanStack Solid Table and Simple Table for Solid—signals-native examples for Solid-Start.",
+  slug: "solidjs-grid-column-resizing-guide",
+  tags: ["solid", "solidjs", "tutorials", "features", "column-resizing"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const solidGridRowSelectionPost: BlogPostMetadata = {
+  title: "SolidJS Grid Row Selection: Single, Multi, and Checkbox Patterns (2026)",
+  description:
+    "Implement single, multi, and checkbox row selection in SolidJS tables. Compare TanStack Solid Table and Simple Table for Solid with signals-native examples.",
+  slug: "solidjs-grid-row-selection-guide",
+  tags: ["solid", "solidjs", "tutorials", "features", "row-selection"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const solidGridFilteringPost: BlogPostMetadata = {
+  title: "SolidJS Grid Filtering: Column Filters, Quick Filters, and Custom Predicates",
+  description:
+    "Add column filters, quick search, and custom predicates to your SolidJS data grid. Signals-native examples with Simple Table for Solid and a comparison to TanStack Solid Table.",
+  slug: "solidjs-grid-filtering-implementation",
+  tags: ["solid", "solidjs", "tutorials", "features", "filtering"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const solidGridColumnPinningPost: BlogPostMetadata = {
+  title: "SolidJS Grid Column Pinning: Freeze Left and Right Columns (2026)",
+  description:
+    "Pin SolidJS table columns to the left or right with sticky headers. Compare TanStack Solid Table and Simple Table for Solid with signals-native examples.",
+  slug: "solidjs-grid-column-pinning-tutorial",
+  tags: ["solid", "solidjs", "tutorials", "features", "column-pinning"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const solidTreeDataTablesPost: BlogPostMetadata = {
+  title: "SolidJS Tree Data Tables: Hierarchical Rows with Expand / Collapse (2026)",
+  description:
+    "Render hierarchical / tree data in a SolidJS table with expand and collapse. Compare TanStack Solid Table and Simple Table for Solid with signals-native examples.",
+  slug: "solidjs-tree-data-tables",
+  tags: ["solid", "solidjs", "tutorials", "features", "tree-data"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+// Vanilla JavaScript / TypeScript
+export const vanillaGridColumnResizingPost: BlogPostMetadata = {
+  title: "Vanilla JS Grid Column Resizing: TypeScript Implementation Guide (2026)",
+  description:
+    "Add resizable columns to a vanilla TypeScript data grid. Compare Tabulator, Grid.js, and simple-table-core—with strict TypeScript and ESM-first examples.",
+  slug: "vanilla-js-grid-column-resizing-guide",
+  tags: ["vanilla", "vanilla-typescript", "tutorials", "features", "column-resizing"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vanillaGridRowSelectionPost: BlogPostMetadata = {
+  title: "Vanilla JS Grid Row Selection: TypeScript Patterns for Single & Multi Select (2026)",
+  description:
+    "Implement single, multi, and checkbox row selection in a vanilla TypeScript data grid. Compare Tabulator, Grid.js, and simple-table-core with strict TypeScript examples.",
+  slug: "vanilla-js-grid-row-selection-guide",
+  tags: ["vanilla", "vanilla-typescript", "tutorials", "features", "row-selection"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vanillaGridFilteringPost: BlogPostMetadata = {
+  title: "Vanilla JS Grid Filtering: Column Filters, Quick Filters, and Custom Predicates",
+  description:
+    "Add column filters, quick search, and custom predicates to a vanilla TypeScript data grid. Compare Tabulator, Grid.js, and simple-table-core with strict TypeScript examples.",
+  slug: "vanilla-js-grid-filtering-implementation",
+  tags: ["vanilla", "vanilla-typescript", "tutorials", "features", "filtering"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vanillaGridColumnPinningPost: BlogPostMetadata = {
+  title: "Vanilla JS Grid Column Pinning: Freeze Left and Right Columns in TypeScript (2026)",
+  description:
+    "Pin vanilla TypeScript table columns to the left or right with sticky headers. Compare Tabulator and simple-table-core with strict TypeScript examples.",
+  slug: "vanilla-js-grid-column-pinning-tutorial",
+  tags: ["vanilla", "vanilla-typescript", "tutorials", "features", "column-pinning"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
+export const vanillaTreeDataTablesPost: BlogPostMetadata = {
+  title: "Vanilla JS Tree Data Tables: Hierarchical Rows in TypeScript (2026)",
+  description:
+    "Render hierarchical / tree data in a vanilla TypeScript table with expand and collapse. Compare Tabulator and simple-table-core with strict TypeScript examples.",
+  slug: "vanilla-js-tree-data-tables",
+  tags: ["vanilla", "vanilla-typescript", "tutorials", "features", "tree-data"],
+  createdAt: "2026-04-26",
+  updatedAt: "2026-04-26",
+};
+
 // Array of all blog posts using the individual objects
 export const BLOG_POSTS: BlogPostMetadata[] = [
+  // Tier 2 framework-specific competitor comparisons
+  simpleTableVsAgGridAngularPost,
+  simpleTableVsNgxDatatablePost,
+  simpleTableVsPrimeNgTablePost,
+  simpleTableVsAngularMaterialTablePost,
+  simpleTableVsKendoGridAngularPost,
+  agGridAlternativesAngularPost,
+  simpleTableVsVuetifyDataTablePost,
+  simpleTableVsPrimeVueDatatablePost,
+  simpleTableVsVueGoodTablePost,
+  simpleTableVsElementPlusTablePost,
+  simpleTableVsNaiveUiTablePost,
+  agGridAlternativesVuePost,
+  simpleTableVsSvelteHeadlessTablePost,
+  simpleTableVsSvarDatagridPost,
+  simpleTableVsFlowbiteSvelteTablePost,
+  bestFreeSvelteDataGridPost,
+  simpleTableVsTanstackSolidTablePost,
+  simpleTableVsKobalteGridPost,
+  bestSolidJsDataGridPost,
+  simpleTableCoreVsTabulatorPost,
+  simpleTableVsJspreadsheetPost,
+  simpleTableVsGridJsPost,
+  simpleTableVsHandsontableVanillaPost,
+  bestVanillaJsDataGridPost,
+  // Tier 2 framework-mirrored tutorials
+  angularTableColumnResizingPost,
+  angularGridRowSelectionPost,
+  angularGridFilteringPost,
+  angularGridColumnPinningPost,
+  angularTreeDataTablesPost,
+  vueTableColumnResizingPost,
+  vueGridRowSelectionPost,
+  vueGridFilteringPost,
+  vueGridColumnPinningPost,
+  vueTreeDataTablesPost,
+  svelteGridColumnResizingPost,
+  svelteGridRowSelectionPost,
+  svelteGridFilteringPost,
+  svelteGridColumnPinningPost,
+  svelteTreeDataTablesPost,
+  solidGridColumnResizingPost,
+  solidGridRowSelectionPost,
+  solidGridFilteringPost,
+  solidGridColumnPinningPost,
+  solidTreeDataTablesPost,
+  vanillaGridColumnResizingPost,
+  vanillaGridRowSelectionPost,
+  vanillaGridFilteringPost,
+  vanillaGridColumnPinningPost,
+  vanillaTreeDataTablesPost,
+  // Pillar guides
   vueNuxtDataGridPillarPost,
   angularDataGridPillarPost,
   sveltekitDataTablePillarPost,
@@ -503,10 +1089,27 @@ export const searchBlogPosts = (query: string): BlogPostMetadata[] => {
   );
 };
 
-/** End-of-article cross-stack callout on posts that target the React ecosystem. */
-export function shouldShowOtherFrameworksCallout(slug: string): boolean {
-  if (!slug) return false;
+/**
+ * Detect the canonical framework hub id a blog post targets from its tags.
+ * Returns the first match in tag order, so primary frameworks should appear
+ * before ecosystem aliases (e.g. tag a Nuxt post with both "vue" and "nuxt").
+ */
+export function getPostFrameworkId(slug: string): HubFrameworkId | null {
+  if (!slug) return null;
   const post = getBlogPostBySlug(slug);
-  if (!post) return false;
-  return post.tags.includes("react");
+  if (!post) return null;
+  for (const tag of post.tags) {
+    const id = FRAMEWORK_TAG_TO_HUB_ID[tag.toLowerCase()];
+    if (id) return id;
+  }
+  return null;
+}
+
+/**
+ * End-of-article cross-stack callout. Shown on every framework-tagged post so
+ * Angular/Vue/Svelte/Solid/Vanilla readers also see hub links for the other
+ * stacks (not just React readers).
+ */
+export function shouldShowOtherFrameworksCallout(slug: string): boolean {
+  return getPostFrameworkId(slug) !== null;
 }

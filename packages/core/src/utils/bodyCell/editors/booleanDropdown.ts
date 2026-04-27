@@ -87,7 +87,10 @@ export const createBooleanDropdown = (
   content.appendChild(falseOption);
 
   // Get the cell element as trigger (use getCellId for consistency with body cell IDs)
-  const cellId = getCellId({ accessor: header.accessor, rowId: cell.rowId });
+  const cellId = getCellId({
+    accessor: header.accessor,
+    rowId: cell.stableRowKey ?? cell.rowId,
+  });
   const cellElement = document.getElementById(cellId) as HTMLElement;
 
   // Create and show dropdown

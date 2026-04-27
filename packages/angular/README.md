@@ -36,10 +36,10 @@ npm install @simple-table/angular
 
 ## Building with Angular
 
-- Standalone `SimpleTableComponent` with the `<simple-table>` selector
+- Standalone `SimpleTableComponent` with the `<simple-table>` selector — drop it into the `imports` array of any Angular 17+ standalone component
 - Use Angular components for cell renderers, header renderers, footer renderers, and more
 - Access the imperative `TableAPI` via `(tableReady)` output or `@ViewChild` for sorting, filtering, pagination, export, and more
-- Types and APIs are exported from this package
+- Types and APIs are exported from this package; works with Ivy, signals, and TypeScript strict mode
 
 ## Features
 

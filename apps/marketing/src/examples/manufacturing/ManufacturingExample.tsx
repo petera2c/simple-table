@@ -7,15 +7,13 @@ import { useManufacturingData } from "./useManufacturingData";
 export default function ManufacturingExample({
   height,
   icons,
-  rowCount = 1000,
   theme,
 }: {
   height: number | null;
   icons?: ReactIconsConfig;
-  rowCount?: number;
   theme?: Theme;
 }) {
-  const { data, isLoading } = useManufacturingData(rowCount);
+  const { data, isLoading } = useManufacturingData();
 
   if (isLoading) {
     return (

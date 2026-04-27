@@ -30,12 +30,13 @@ Simple Table is available for the most popular frameworks:
 npm install @simple-table/svelte
 ```
 
-**Peer dependencies:** `svelte >=4.0.0`
+**Peer dependencies:** `svelte >=4.0.0` (Svelte 5 with runes is fully supported, plus SvelteKit)
 
 **[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
 ## Building with Svelte
 
+- Works with Svelte 4 and Svelte 5 (runes); SvelteKit is fully supported
 - Use Svelte components for cell renderers, header renderers, footer renderers, and more
 - Access the imperative `TableAPI` via `bind:this` for sorting, filtering, pagination, export, and more
 - Types and APIs are exported from this package

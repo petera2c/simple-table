@@ -32,6 +32,16 @@ const data = () => [
   { id: 2, name: "Bob" },
 ];
 
+// Larger dataset so we can verify alternating classes across multiple rows
+const stripedData = () => [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Carol" },
+  { id: 4, name: "Dave" },
+  { id: 5, name: "Eve" },
+  { id: 6, name: "Frank" },
+];
+
 export const ThemeLight = {
   render: () => {
     const { wrapper } = renderVanillaTable(headers, data(), {
@@ -178,10 +188,11 @@ export const UseHoverRowBackground = {
 };
 
 export const UseOddEvenRowBackground = {
+  tags: ["odd-even-row-background"],
   render: () => {
-    const { wrapper } = renderVanillaTable(headers, data(), {
+    const { wrapper } = renderVanillaTable(headers, stripedData(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
-      height: "250px",
+      height: "400px",
       useOddEvenRowBackground: true,
     });
     return wrapper;
@@ -190,13 +201,118 @@ export const UseOddEvenRowBackground = {
     await waitForTable();
     const root = canvasElement.querySelector(".simple-table-root") as HTMLElement | null;
     expect(root).toBeTruthy();
-    const hasOddEvenClass =
-      root!.classList.contains("odd-even-row-background") ||
-      root!.classList.contains("use-odd-even-rows") ||
-      root!.getAttribute("data-odd-even") === "true" ||
-      root!.className.includes("odd-even") ||
-      root!.className.includes("striped");
-    expect(hasOddEvenClass || root !== null).toBe(true);
+
+    // The feature applies "st-cell-odd-row" / "st-cell-even-row" classes to
+    // every body cell. Sanity-check that each rendered row has the expected
+    // class and that adjacent rows alternate.
+    const allBodyCells = canvasElement.querySelectorAll<HTMLElement>(
+      ".st-body-container .st-cell[data-row-index]",
+    );
+    expect(allBodyCells.length).toBeGreaterThan(0);
+
+    // Group cells by their row index so we can verify per-row class consistency.
+    const cellsByRow = new Map<number, HTMLElement[]>();
+    allBodyCells.forEach((cell) => {
+      const idx = Number(cell.getAttribute("data-row-index"));
+      if (!cellsByRow.has(idx)) cellsByRow.set(idx, []);
+      cellsByRow.get(idx)!.push(cell);
+    });
+
+    const sortedRowIndices = Array.from(cellsByRow.keys()).sort((a, b) => a - b);
+    expect(sortedRowIndices.length).toBeGreaterThanOrEqual(4);
+
+    let oddRowCount = 0;
+    let evenRowCount = 0;
+
+    sortedRowIndices.forEach((rowIndex) => {
+      const cells = cellsByRow.get(rowIndex)!;
+      // 0-based: rowIndex 0 is visually the 1st row → "odd" (1-based);
+      //          rowIndex 1 is visually the 2nd row → "even" (1-based).
+      const expectedClass =
+        rowIndex % 2 === 0 ? "st-cell-odd-row" : "st-cell-even-row";
+      const forbiddenClass =
+        rowIndex % 2 === 0 ? "st-cell-even-row" : "st-cell-odd-row";
+
+      cells.forEach((cell) => {
+        expect(cell.classList.contains(expectedClass)).toBe(true);
+        expect(cell.classList.contains(forbiddenClass)).toBe(false);
+      });
+
+      if (expectedClass === "st-cell-odd-row") oddRowCount++;
+      else evenRowCount++;
+    });
+
+    // Both classes must actually appear in the rendered output, otherwise
+    // the alternating background effect cannot occur.
+    expect(oddRowCount).toBeGreaterThan(0);
+    expect(evenRowCount).toBeGreaterThan(0);
+  },
+};
+
+export const UseOddEvenRowBackgroundDisabled = {
+  tags: ["odd-even-row-background"],
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, stripedData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "400px",
+      useOddEvenRowBackground: false,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // When the flag is off, no body cell should carry the alternating-row classes.
+    const oddCells = canvasElement.querySelectorAll(
+      ".st-body-container .st-cell.st-cell-odd-row",
+    );
+    const evenCells = canvasElement.querySelectorAll(
+      ".st-body-container .st-cell.st-cell-even-row",
+    );
+    expect(oddCells.length).toBe(0);
+    expect(evenCells.length).toBe(0);
+  },
+};
+
+// Visual-effect test: with a theme that defines distinct odd/even colors
+// (e.g. "light"), enabling useOddEvenRowBackground must actually produce
+// different computed background colors between adjacent rows. This guards
+// against regressions where the class is applied but the styling does not
+// resolve (e.g. due to broken selectors or specificity issues).
+export const UseOddEvenRowBackgroundVisualEffect = {
+  tags: ["odd-even-row-background"],
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, stripedData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "400px",
+      theme: "light",
+      useOddEvenRowBackground: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const cellRow0 = canvasElement.querySelector<HTMLElement>(
+      '.st-body-container .st-cell[data-row-index="0"]',
+    );
+    const cellRow1 = canvasElement.querySelector<HTMLElement>(
+      '.st-body-container .st-cell[data-row-index="1"]',
+    );
+    expect(cellRow0).toBeTruthy();
+    expect(cellRow1).toBeTruthy();
+
+    expect(cellRow0!.classList.contains("st-cell-odd-row")).toBe(true);
+    expect(cellRow1!.classList.contains("st-cell-even-row")).toBe(true);
+
+    const bg0 = window.getComputedStyle(cellRow0!).backgroundColor;
+    const bg1 = window.getComputedStyle(cellRow1!).backgroundColor;
+    // Both must resolve to a real, visible color (not "transparent" / empty).
+    expect(bg0).toBeTruthy();
+    expect(bg1).toBeTruthy();
+    expect(bg0).not.toBe("rgba(0, 0, 0, 0)");
+    expect(bg1).not.toBe("rgba(0, 0, 0, 0)");
+    // And the two row colors must actually differ — that's the whole point.
+    expect(bg0).not.toBe(bg1);
   },
 };
 

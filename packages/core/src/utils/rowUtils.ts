@@ -48,7 +48,7 @@ export const calculateNestedGridHeight = ({
 
 /**
  * Calculate the final wrapper height for a nested grid, accounting for custom heights
- * 
+ *
  * @param calculatedHeight - The default calculated height based on child rows
  * @param customHeight - Optional custom height from nestedTable config (e.g., "200px" or 200)
  * @param customTheme - Custom theme configuration for padding
@@ -65,9 +65,10 @@ export const calculateFinalNestedGridHeight = ({
 }): number => {
   // If a custom height is specified, add padding to get the wrapper height
   if (customHeight) {
-    const heightValue = typeof customHeight === "string" 
-      ? parseFloat(customHeight) // Parse "200px" to 200
-      : customHeight;
+    const heightValue =
+      typeof customHeight === "string"
+        ? parseFloat(customHeight) // Parse "200px" to 200
+        : customHeight;
     return heightValue + customTheme.nestedGridPaddingTop + customTheme.nestedGridPaddingBottom;
   }
 
@@ -78,7 +79,7 @@ export const calculateFinalNestedGridHeight = ({
 /**
  * Calculate the inner height for a nested SimpleTable component
  * This accounts for the padding that's applied to the wrapper
- * 
+ *
  * @param calculatedHeight - The total height of the nested grid row (from calculateNestedGridHeight)
  * @param customHeight - Optional custom height from nestedTable config (e.g., "200px")
  * @param customTheme - Custom theme configuration for padding
@@ -99,7 +100,8 @@ export const calculateNestedTableHeight = ({
   }
 
   // Otherwise, calculate from the parent's calculated height minus padding
-  const innerHeight = calculatedHeight - customTheme.nestedGridPaddingTop - customTheme.nestedGridPaddingBottom;
+  const innerHeight =
+    calculatedHeight - customTheme.nestedGridPaddingTop - customTheme.nestedGridPaddingBottom;
   return `${innerHeight}px`;
 };
 
@@ -290,6 +292,80 @@ export const rowIdToString = (rowId: (string | number)[]): string => {
 };
 
 /**
+ * Fallback stable-key store used when the consumer does not supply `getRowId`.
+ *
+ * Keyed on the row object reference, so any two renders/sorts that share the
+ * same row instance will resolve to the same key. `[...rows].sort(...)` and
+ * filter operations both preserve references, so this is sufficient to keep
+ * cell identity (and therefore FLIP sort animations) stable without requiring
+ * the consumer to provide `getRowId`.
+ *
+ * Entries are weakly held; they are cleaned up automatically when the row
+ * object is no longer referenced.
+ */
+const fallbackStableKeyByRow = new WeakMap<object, string>();
+let fallbackStableKeyCounter = 0;
+
+const getFallbackStableKey = (row: Row): string => {
+  if (row && typeof row === "object") {
+    const existing = fallbackStableKeyByRow.get(row);
+    if (existing !== undefined) return existing;
+    const next = `__row_${++fallbackStableKeyCounter}`;
+    fallbackStableKeyByRow.set(row, next);
+    return next;
+  }
+  // Primitive rows are unusual but tolerate them by stringifying.
+  return `__row_p_${String(row)}`;
+};
+
+/**
+ * Generate a position-independent stable row key.
+ *
+ * Unlike `generateRowId`, the stable key never includes positional indices, so
+ * it survives sort/filter operations. It is used as the basis for the cell DOM
+ * `id` and the animation coordinator's snapshot key, allowing the same DOM
+ * element to be reused for the same logical row across re-orders (enabling
+ * FLIP-based sort animations).
+ *
+ * When `getRowId` is provided, the key is derived from the user-supplied id.
+ * When it is not, the key falls back to the row object's identity (via a
+ * WeakMap) so animations still work for plain row arrays. For nested rows the
+ * parent's stable key is included as a prefix so siblings of different parents
+ * do not collide.
+ */
+export const generateStableRowKey = (params: {
+  getRowId?: GetRowId;
+  row: Row;
+  depth: number;
+  index: number;
+  rowPath: (string | number)[];
+  rowIndexPath: number[];
+  groupingKey?: string;
+  parentStableKey?: string | null;
+}): string => {
+  const { getRowId } = params;
+
+  const baseKey = getRowId
+    ? String(
+        getRowId({
+          row: params.row,
+          depth: params.depth,
+          index: params.index,
+          rowPath: params.rowPath,
+          rowIndexPath: params.rowIndexPath,
+          groupingKey: params.groupingKey,
+        }),
+      )
+    : getFallbackStableKey(params.row);
+
+  const parts: string[] = [];
+  if (params.parentStableKey) parts.push(params.parentStableKey);
+  if (params.groupingKey && params.depth > 0) parts.push(params.groupingKey);
+  parts.push(baseKey);
+  return parts.join("/");
+};
+
+/**
  * Get nested rows from a row based on the grouping path
  */
 export const getNestedRows = (row: Row, groupingKey: string): Row[] => {
@@ -390,6 +466,7 @@ export const flattenRowsWithGrouping = ({
     parentIdPath: (string | number)[] = [],
     parentIndexPath: number[] = [],
     parentIndices: number[] = [],
+    parentStableKey: string | null = null,
   ): number => {
     let position = parentPosition;
     let displayPosition = parentDisplayPosition;
@@ -417,6 +494,17 @@ export const flattenRowsWithGrouping = ({
         groupingKey: currentGroupingKey,
       });
 
+      const stableRowKey = generateStableRowKey({
+        getRowId,
+        row,
+        depth: currentDepth,
+        index,
+        rowPath,
+        rowIndexPath,
+        groupingKey: currentGroupingKey,
+        parentStableKey,
+      });
+
       // Determine if this is the last row in a group
       const isLastGroupRow = currentDepth === 0 && index === currentRows.length - 1;
 
@@ -436,6 +524,7 @@ export const flattenRowsWithGrouping = ({
         rowIndexPath,
         absoluteRowIndex: position,
         parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
+        stableRowKey,
       };
 
       result.push(tableRow);
@@ -472,7 +561,7 @@ export const flattenRowsWithGrouping = ({
             expandableHeader.nestedTable.customTheme?.rowHeight || rowHeight;
           const nestedGridHeaderHeight =
             expandableHeader.nestedTable.customTheme?.headerHeight || headerHeight;
-          
+
           // First calculate the default height based on child rows
           const calculatedHeight = calculateNestedGridHeight({
             childRowCount: nestedRows.length,
@@ -575,6 +664,7 @@ export const flattenRowsWithGrouping = ({
             nestedIdPath,
             nestedIndexPath,
             [...parentIndices, currentRowIndex],
+            stableRowKey,
           );
         }
       }

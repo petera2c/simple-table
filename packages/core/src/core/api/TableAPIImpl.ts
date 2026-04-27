@@ -102,25 +102,63 @@ export class TableAPIImpl {
       queueMicrotask(flushPendingUpdateData);
     };
 
+    /**
+     * Cache `Row → currently-rendered TableRow` keyed by the rowsToRender array
+     * reference. The cell registry is keyed off each rendered row's positional
+     * `rowId` (which changes after sort/filter), but consumers of `updateData`
+     * pass `rowIndex` as the index into the unsorted `localRows`. This map lets
+     * us resolve the row's *current* display rowId so the registry lookup hits
+     * regardless of sort/filter state.
+     */
+    let displayedTableRowCache: {
+      rowsRef: TableRow[];
+      map: WeakMap<Row, TableRow>;
+    } | null = null;
+    const getDisplayedTableRow = (row: Row): TableRow | undefined => {
+      const processed = context.getCachedProcessedResult?.();
+      const rowsToRender = processed?.rowsToRender;
+      if (!rowsToRender || rowsToRender.length === 0) return undefined;
+      if (!displayedTableRowCache || displayedTableRowCache.rowsRef !== rowsToRender) {
+        const map = new WeakMap<Row, TableRow>();
+        for (const tableRow of rowsToRender) {
+          if (tableRow.row) map.set(tableRow.row, tableRow);
+        }
+        displayedTableRowCache = { rowsRef: rowsToRender, map };
+      }
+      return displayedTableRowCache.map.get(row);
+    };
+
     return {
       updateData: (props: UpdateDataProps) => {
         const { rowIndex, accessor, newValue } = props;
         if (rowIndex >= 0 && rowIndex < context.localRows.length) {
           const row = context.localRows[rowIndex] as any;
           row[accessor] = newValue;
-          const rowPath = [rowIndex];
-          const rowIdArray: (string | number)[] = context.config.getRowId
-            ? [
-                rowIndex,
-                context.config.getRowId({
-                  row: context.localRows[rowIndex],
-                  depth: 0,
-                  index: rowIndex,
-                  rowPath,
-                  rowIndexPath: rowPath,
-                }),
-              ]
-            : [rowIndex];
+
+          // Prefer the row's *current* rendered rowId (post sort/filter) so the
+          // cell registry key matches what `styling.ts` registered. Falls back
+          // to the positional rowId for the unsorted/unfiltered case where the
+          // row may not yet be present in `rowsToRender` (e.g. virtualized off
+          // screen — registry lookup will simply miss, which is correct).
+          const displayedRow = getDisplayedTableRow(row);
+          let rowIdArray: (string | number)[];
+          if (displayedRow) {
+            rowIdArray = displayedRow.rowId;
+          } else {
+            const rowPath = [rowIndex];
+            rowIdArray = context.config.getRowId
+              ? [
+                  rowIndex,
+                  context.config.getRowId({
+                    row,
+                    depth: 0,
+                    index: rowIndex,
+                    rowPath,
+                    rowIndexPath: rowPath,
+                  }),
+                ]
+              : [rowIndex];
+          }
           const key = `${rowIdArray.join("-")}-${accessor}`;
           pendingUpdateDataByKey.set(key, newValue);
           scheduleUpdateDataFlush();

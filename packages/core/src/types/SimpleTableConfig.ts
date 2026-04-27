@@ -22,8 +22,10 @@ import { GetRowId } from "./GetRowId";
 import { ColumnEditorConfig } from "./ColumnEditorConfig";
 import { VanillaIconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
+import { AnimationsConfig } from "./AnimationsConfig";
 
 export interface SimpleTableConfig {
+  animations?: AnimationsConfig;
   autoExpandColumns?: boolean;
   canExpandRowGroup?: (row: Row) => boolean;
   cellUpdateFlash?: boolean;

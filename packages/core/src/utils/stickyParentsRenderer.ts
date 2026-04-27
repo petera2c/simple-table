@@ -287,6 +287,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
         rowIndex: tableRow.position,
         colIndex,
         rowId: rowIdToString(tableRow.rowId),
+        stableRowKey: tableRow.stableRowKey,
         displayRowNumber: tableRow.displayPosition,
         depth: tableRow.depth,
         isOdd: tableRow.position % 2 === 1,

@@ -89,6 +89,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() initialSortDirection?: SimpleTableAngularProps["initialSortDirection"];
   @Input() expandAll?: SimpleTableAngularProps["expandAll"];
   @Input() autoExpandColumns?: SimpleTableAngularProps["autoExpandColumns"];
+  @Input() animations?: SimpleTableAngularProps["animations"];
 
   /** Emits the TableAPI once the table has mounted. */
   @Output() tableReady = new EventEmitter<TableAPI>();
@@ -104,7 +105,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
 
     this.instance = new SimpleTableVanilla(
       container,
-      buildVanillaConfig(this.getProps(), this.appRef, this.envInjector)
+      buildVanillaConfig(this.getProps(), this.appRef, this.envInjector),
     ) as unknown as TableInstance;
     this.instance.mount();
 
@@ -112,9 +113,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(): void {
-    this.instance?.update(
-      buildVanillaConfig(this.getProps(), this.appRef, this.envInjector)
-    );
+    this.instance?.update(buildVanillaConfig(this.getProps(), this.appRef, this.envInjector));
   }
 
   ngOnDestroy(): void {
@@ -134,21 +133,27 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     if (this.footerRenderer !== undefined) props.footerRenderer = this.footerRenderer;
-    if (this.loadingStateRenderer !== undefined) props.loadingStateRenderer = this.loadingStateRenderer;
+    if (this.loadingStateRenderer !== undefined)
+      props.loadingStateRenderer = this.loadingStateRenderer;
     if (this.errorStateRenderer !== undefined) props.errorStateRenderer = this.errorStateRenderer;
     if (this.emptyStateRenderer !== undefined) props.emptyStateRenderer = this.emptyStateRenderer;
-    if (this.tableEmptyStateRenderer !== undefined) props.tableEmptyStateRenderer = this.tableEmptyStateRenderer;
+    if (this.tableEmptyStateRenderer !== undefined)
+      props.tableEmptyStateRenderer = this.tableEmptyStateRenderer;
     if (this.headerDropdown !== undefined) props.headerDropdown = this.headerDropdown;
     if (this.columnEditorConfig !== undefined) props.columnEditorConfig = this.columnEditorConfig;
     if (this.onCellClick !== undefined) props.onCellClick = this.onCellClick;
     if (this.onCellEdit !== undefined) props.onCellEdit = this.onCellEdit;
     if (this.onSortChange !== undefined) props.onSortChange = this.onSortChange;
     if (this.onFilterChange !== undefined) props.onFilterChange = this.onFilterChange;
-    if (this.onRowSelectionChange !== undefined) props.onRowSelectionChange = this.onRowSelectionChange;
+    if (this.onRowSelectionChange !== undefined)
+      props.onRowSelectionChange = this.onRowSelectionChange;
     if (this.onRowGroupExpand !== undefined) props.onRowGroupExpand = this.onRowGroupExpand;
-    if (this.onColumnOrderChange !== undefined) props.onColumnOrderChange = this.onColumnOrderChange;
-    if (this.onColumnVisibilityChange !== undefined) props.onColumnVisibilityChange = this.onColumnVisibilityChange;
-    if (this.onColumnWidthChange !== undefined) props.onColumnWidthChange = this.onColumnWidthChange;
+    if (this.onColumnOrderChange !== undefined)
+      props.onColumnOrderChange = this.onColumnOrderChange;
+    if (this.onColumnVisibilityChange !== undefined)
+      props.onColumnVisibilityChange = this.onColumnVisibilityChange;
+    if (this.onColumnWidthChange !== undefined)
+      props.onColumnWidthChange = this.onColumnWidthChange;
     if (this.onPageChange !== undefined) props.onPageChange = this.onPageChange;
     if (this.onLoadMore !== undefined) props.onLoadMore = this.onLoadMore;
     if (this.onGridReady !== undefined) props.onGridReady = this.onGridReady;
@@ -160,29 +165,36 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.getRowId !== undefined) props.getRowId = this.getRowId;
     if (this.shouldPaginate !== undefined) props.shouldPaginate = this.shouldPaginate;
     if (this.rowsPerPage !== undefined) props.rowsPerPage = this.rowsPerPage;
-    if (this.serverSidePagination !== undefined) props.serverSidePagination = this.serverSidePagination;
+    if (this.serverSidePagination !== undefined)
+      props.serverSidePagination = this.serverSidePagination;
     if (this.totalRowCount !== undefined) props.totalRowCount = this.totalRowCount;
     if (this.height !== undefined) props.height = this.height;
     if (this.maxHeight !== undefined) props.maxHeight = this.maxHeight;
     if (this.columnResizing !== undefined) props.columnResizing = this.columnResizing;
     if (this.columnReordering !== undefined) props.columnReordering = this.columnReordering;
     if (this.editColumns !== undefined) props.editColumns = this.editColumns;
-    if (this.editColumnsInitOpen !== undefined) props.editColumnsInitOpen = this.editColumnsInitOpen;
+    if (this.editColumnsInitOpen !== undefined)
+      props.editColumnsInitOpen = this.editColumnsInitOpen;
     if (this.selectableCells !== undefined) props.selectableCells = this.selectableCells;
     if (this.selectableColumns !== undefined) props.selectableColumns = this.selectableColumns;
-    if (this.enableHeaderEditing !== undefined) props.enableHeaderEditing = this.enableHeaderEditing;
+    if (this.enableHeaderEditing !== undefined)
+      props.enableHeaderEditing = this.enableHeaderEditing;
     if (this.onHeaderEdit !== undefined) props.onHeaderEdit = this.onHeaderEdit;
     if (this.customTheme !== undefined) props.customTheme = this.customTheme;
     if (this.icons !== undefined) props.icons = this.icons;
-    if (this.externalFilterHandling !== undefined) props.externalFilterHandling = this.externalFilterHandling;
-    if (this.externalSortHandling !== undefined) props.externalSortHandling = this.externalSortHandling;
+    if (this.externalFilterHandling !== undefined)
+      props.externalFilterHandling = this.externalFilterHandling;
+    if (this.externalSortHandling !== undefined)
+      props.externalSortHandling = this.externalSortHandling;
     if (this.columnBorders !== undefined) props.columnBorders = this.columnBorders;
     if (this.rowButtons !== undefined) props.rowButtons = this.rowButtons;
     if (this.hideFooter !== undefined) props.hideFooter = this.hideFooter;
     if (this.initialSortColumn !== undefined) props.initialSortColumn = this.initialSortColumn;
-    if (this.initialSortDirection !== undefined) props.initialSortDirection = this.initialSortDirection;
+    if (this.initialSortDirection !== undefined)
+      props.initialSortDirection = this.initialSortDirection;
     if (this.expandAll !== undefined) props.expandAll = this.expandAll;
     if (this.autoExpandColumns !== undefined) props.autoExpandColumns = this.autoExpandColumns;
+    if (this.animations !== undefined) props.animations = this.animations;
 
     return props;
   }

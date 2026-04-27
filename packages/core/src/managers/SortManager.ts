@@ -160,10 +160,13 @@ export class SortManager {
 
   updateSort(props?: { accessor: Accessor; direction?: SortDirection }): void {
     if (!props) {
+      // Route through computeSortedRows so grouped tables still see aggregated
+      // values when sort is cleared. With the aggregation cache this is ~free
+      // when nothing else has changed.
       this.state = {
         ...this.state,
         sort: null,
-        sortedRows: this.config.tableRows,
+        sortedRows: this.computeSortedRows(this.config.tableRows, null),
       };
       this.config.onSortChange?.(null);
       this.notifySubscribers();

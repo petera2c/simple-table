@@ -5,6 +5,7 @@ import Row from "../types/Row";
 import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
 import RowState from "../types/RowState";
 
+import { AnimationCoordinator } from "../managers/AnimationCoordinator";
 import { AutoScaleManager } from "../managers/AutoScaleManager";
 import { DimensionManager } from "../managers/DimensionManager";
 import { ScrollManager } from "../managers/ScrollManager";
@@ -77,6 +78,8 @@ export class SimpleTableVanilla {
   private headerRegistry: Map<string, any> = new Map();
   private rowIndexMap: Map<string | number, number> = new Map();
 
+  private animationCoordinator: AnimationCoordinator;
+
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
   private scrollManager: ScrollManager | null = null;
@@ -117,8 +120,21 @@ export class SimpleTableVanilla {
     this.domManager = new DOMManager();
     this.renderOrchestrator = new RenderOrchestrator();
 
+    this.animationCoordinator = new AnimationCoordinator();
+    this.applyAnimationsConfig(config.animations);
+
     this.rebuildRowIndexMap();
     this.initializeManagers();
+  }
+
+  private applyAnimationsConfig(animations: SimpleTableConfig["animations"]): void {
+    this.animationCoordinator.setEnabled(animations?.enabled ?? true);
+    if (animations?.duration !== undefined) {
+      this.animationCoordinator.setDuration(animations.duration);
+    }
+    if (animations?.easing !== undefined) {
+      this.animationCoordinator.setEasing(animations.easing);
+    }
   }
 
   private rebuildRowIndexMap(): void {
@@ -134,6 +150,60 @@ export class SimpleTableVanilla {
       });
       const rowIdKey = rowIdToString(rowIdArray);
       this.rowIndexMap.set(rowIdKey, index);
+    });
+  }
+
+  private getBodyContainers(): HTMLElement[] {
+    const refs = this.domManager.getRefs();
+    return [
+      refs.mainBodyRef.current,
+      refs.pinnedLeftRef.current,
+      refs.pinnedRightRef.current,
+    ].filter((el): el is HTMLDivElement => el !== null);
+  }
+
+  private getHeaderContainers(): HTMLElement[] {
+    const refs = this.domManager.getRefs();
+    return [
+      refs.mainHeaderRef.current,
+      refs.pinnedLeftHeaderRef.current,
+      refs.pinnedRightHeaderRef.current,
+    ].filter((el): el is HTMLDivElement => el !== null);
+  }
+
+  /**
+   * All cell-bearing containers — body sections AND header sections — that the
+   * animation coordinator needs to inspect. Headers participate in FLIP for
+   * column reorder so their cells slide to their new slot rather than
+   * teleporting.
+   */
+  private getAnimatableContainers(): HTMLElement[] {
+    return [...this.getBodyContainers(), ...this.getHeaderContainers()];
+  }
+
+  /**
+   * Capture pre-change cell positions for the FLIP animation, including
+   * conceptual positions for cells outside the virtualization viewport so
+   * incoming cells can animate from off-screen on column reorder/sort. The
+   * `play` step that runs at the end of the next render consumes this
+   * snapshot to inverse-transform cells from their old visual positions and
+   * tween them to their new ones.
+   *
+   * Called on every layout-affecting state change — including the chain of
+   * mid-drag `setHeaders` calls that fire on each `dragover` swap — so that
+   * displaced columns slide smoothly out of the dragged column's way rather
+   * than snapping into place.
+   */
+  private captureAnimationSnapshot(): void {
+    // Skip the (potentially large) full-section pre-layout build when
+    // animations are disabled — captureSnapshot would discard the result
+    // anyway, but the argument is evaluated eagerly before the bail-out.
+    const preLayouts = this.animationCoordinator.isEnabled()
+      ? this.renderOrchestrator.getCurrentBodyLayouts()
+      : undefined;
+    this.animationCoordinator.captureSnapshot({
+      containers: this.getAnimatableContainers(),
+      preLayouts,
     });
   }
 
@@ -171,6 +241,7 @@ export class SimpleTableVanilla {
     });
 
     this.sortManager.subscribe((state) => {
+      this.captureAnimationSnapshot();
       this.render("sortManager");
     });
 
@@ -501,9 +572,14 @@ export class SimpleTableVanilla {
         }
       },
       setHeaders: (headers: HeaderObject[]) => {
+        // Snapshot on every header change — including the chain of `setHeaders`
+        // calls that fire while a header is being dragged — so each `dragover`
+        // swap FLIP-animates the displaced columns smoothly out of the way.
+        this.captureAnimationSnapshot();
         this.headers = deepClone(headers);
         this.renderOrchestrator.invalidateCache("header");
       },
+      animationCoordinator: this.animationCoordinator,
       setCollapsedHeaders: (headers: Set<Accessor>) => {
         this.collapsedHeaders = headers;
       },
@@ -579,11 +655,25 @@ export class SimpleTableVanilla {
       this.getRenderState(),
       this.mergedColumnEditorConfig,
     );
+
+    // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
+    // Position-only scroll renders deliberately skip play so out-going /
+    // in-coming cells aren't FLIP-tweened during vertical scrolls. Every
+    // other render — including the chain of mid-drag `setHeaders` renders
+    // that fire on each `dragover` swap — runs play so columns being
+    // displaced by the drag slide smoothly to their new slots.
+    if (source !== "scroll-raf") {
+      this.animationCoordinator.play({ containers: this.getAnimatableContainers() });
+    }
   }
 
   update(config: Partial<SimpleTableConfig>): void {
     this.isUpdating = true;
     this.config = { ...this.config, ...config };
+
+    if (config.animations !== undefined) {
+      this.applyAnimationsConfig(config.animations);
+    }
 
     if (config.rows !== undefined) {
       this.localRows = [...config.rows];
@@ -599,6 +689,11 @@ export class SimpleTableVanilla {
     }
 
     if (config.defaultHeaders !== undefined) {
+      // Snapshot before mutating headers so the FLIP `play` at the end of the
+      // ensuing render can inverse-transform from the old layout to the new
+      // one — works the same whether the caller is reordering programmatically
+      // or via an in-flight header drag.
+      this.captureAnimationSnapshot();
       this.headers = [...config.defaultHeaders];
       this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
 
@@ -696,6 +791,7 @@ export class SimpleTableVanilla {
     this.scrollbarVisibilityManager?.destroy();
     this.expandedDepthsManager?.destroy();
     this.ariaAnnouncementManager?.destroy();
+    this.animationCoordinator.destroy();
 
     this.renderOrchestrator.cleanup();
     this.domManager.destroy(this.container);
@@ -749,6 +845,9 @@ export class SimpleTableVanilla {
       filterManager: this.filterManager,
       onRender: () => this.render("columnEditor-onRender"),
       setHeaders: (headers: HeaderObject[]) => {
+        // Snapshot on every header change so column visibility / reordering
+        // from the column editor smoothly FLIPs into place.
+        this.captureAnimationSnapshot();
         this.headers = deepClone(headers);
         this.renderOrchestrator.invalidateCache("header");
       },

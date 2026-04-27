@@ -1,5 +1,34 @@
 [
   {
-    "name": "quick-start"
+    "name": "quick-start",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
+  },
+  {
+    "name": "billing",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
+  },
+  {
+    "name": "crm",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
+  },
+  {
+    "name": "hr",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
+  },
+  {
+    "name": "infrastructure",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
+  },
+  {
+    "name": "manufacturing",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
+  },
+  {
+    "name": "music",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
+  },
+  {
+    "name": "sales",
+    "frameworks": ["react", "vue", "angular", "svelte", "solid", "vanilla"]
   }
 ]

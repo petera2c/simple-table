@@ -23,8 +23,10 @@ import { GetRowId } from "./GetRowId";
 import { ColumnEditorConfig } from "./ColumnEditorConfig";
 import { IconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
+import { AnimationsConfig } from "./AnimationsConfig";
 
 export interface SimpleTableProps {
+  animations?: AnimationsConfig; // Cell animation configuration (FLIP-style on sort and programmatic column reorder). Defaults: enabled=true, duration=240ms, easing=cubic-bezier(0.2, 0.8, 0.2, 1).
   autoExpandColumns?: boolean; // Flag for converting pixel widths to proportional fr units that fill table width
   canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update

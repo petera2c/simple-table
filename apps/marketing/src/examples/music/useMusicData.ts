@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Row } from "@simple-table/react";
 
-export function useMusicData(rowCount?: number) {
+export function useMusicData() {
   const [data, setData] = useState<Row[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -9,9 +9,7 @@ export function useMusicData(rowCount?: number) {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `https://www.simple-table.com/api/data/music?rowCount=${rowCount}`
-        );
+        const response = await fetch("https://www.simple-table.com/api/data/music");
         if (response.ok) {
           const data = await response.json();
           setData(data);
@@ -26,7 +24,7 @@ export function useMusicData(rowCount?: number) {
     };
 
     fetchData();
-  }, [rowCount]);
+  }, []);
 
   return { data, isLoading };
 }

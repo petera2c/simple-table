@@ -126,7 +126,7 @@ export const attachDragHandlers = (
   header: HeaderObject,
   context: HeaderRenderContext,
 ) => {
-  const { columnReordering, draggedHeaderRef, hoveredHeaderRef, headers } = context;
+  const { columnReordering, draggedHeaderRef, hoveredHeaderRef } = context;
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
   if (!columnReordering || header.disableReorder || isSelectionColumn) return;
@@ -161,9 +161,15 @@ export const attachDragHandlers = (
     const dragEvent = event as DragEvent;
     dragEvent.preventDefault();
 
-    if (!headers || !draggedHeaderRef.current) return;
+    if (!draggedHeaderRef.current) return;
 
     throttle(() => {
+      // Read live headers (not the closure snapshot from attach time): cells are reused
+      // across renders, so the captured `headers` ref drifts after each reorder. Using
+      // live headers here ensures every swap is computed against the current state.
+      const liveHeaders = context.getHeaders();
+      if (!liveHeaders) return;
+
       const { screenX, screenY } = dragEvent;
       const distance = Math.sqrt(
         Math.pow(screenX - prevDraggingPosition.screenX, 2) +
@@ -184,15 +190,15 @@ export const attachDragHandlers = (
 
       if (isCrossSectionDrag) {
         const result = insertHeaderAcrossSections({
-          headers,
+          headers: liveHeaders,
           draggedHeader,
           hoveredHeader: header,
         });
         newHeaders = result.newHeaders;
         emergencyBreak = result.emergencyBreak;
       } else {
-        const draggedHeaderIndexPath = getHeaderIndexPath(headers, draggedHeader.accessor);
-        const hoveredHeaderIndexPath = getHeaderIndexPath(headers, header.accessor);
+        const draggedHeaderIndexPath = getHeaderIndexPath(liveHeaders, draggedHeader.accessor);
+        const hoveredHeaderIndexPath = getHeaderIndexPath(liveHeaders, header.accessor);
 
         if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) return;
 
@@ -218,7 +224,7 @@ export const attachDragHandlers = (
           return;
         }
 
-        const result = swapHeaders(headers, draggedHeaderIndexPath, targetHoveredIndexPath);
+        const result = swapHeaders(liveHeaders, draggedHeaderIndexPath, targetHoveredIndexPath);
         newHeaders = result.newHeaders;
         emergencyBreak = result.emergencyBreak;
       }
@@ -226,7 +232,7 @@ export const attachDragHandlers = (
       if (
         header.accessor === draggedHeader.accessor ||
         distance < 10 ||
-        JSON.stringify(newHeaders) === JSON.stringify(headers) ||
+        JSON.stringify(newHeaders) === JSON.stringify(liveHeaders) ||
         emergencyBreak
       ) {
         return;
@@ -255,7 +261,7 @@ export const attachDragHandlers = (
 
       setPrevUpdateTime(now);
       setPrevDraggingPosition({ screenX, screenY });
-      setPrevHeaders(headers);
+      setPrevHeaders(liveHeaders);
 
       context.onTableHeaderDragEnd(newHeaders);
     }, DRAG_THROTTLE_LIMIT);

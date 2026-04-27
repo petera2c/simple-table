@@ -13,6 +13,15 @@ type TableRow = {
   // Example: [1, "stores", 5] or [1, "stores", 5, "STORE-101"]
   // Use rowIdToString(rowId) to convert to string for Map keys
   rowId: (string | number)[];
+  /**
+   * Position-independent identity for the row, used as the basis for the
+   * cell DOM `id` and the animation coordinator's snapshot key. When
+   * `getRowId` is provided, this is `String(customId)` (optionally prefixed
+   * by grouping keys for nested rows). Lets the same DOM cell survive a
+   * sort, so FLIP can animate the row to its new position. Falls back to
+   * the positional rowId string when `getRowId` is absent.
+   */
+  stableRowKey?: string;
   // Path to reach this row using row IDs (when getRowId is provided)
   // Example: ['REG-1', 'stores', 'STORE-101'] means find region with id='REG-1', then its stores, then store with id='STORE-101'
   rowPath?: (string | number)[];

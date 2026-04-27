@@ -15,6 +15,10 @@ const rowCellsMap = new Map<string, Set<HTMLElement>>();
 // read the latest row data even when the cell DOM node is reused across renders.
 const cellRowRefMap = new WeakMap<HTMLElement, { current: Row }>();
 
+// Per-element registry key so we can re-key entries when a cell is reused
+// for a different row across sort/scroll without leaving stale entries behind.
+const cellRegistryKeyMap = new WeakMap<HTMLElement, string>();
+
 // Track current hovered row for cleanup
 let currentHoveredRowId: string | null = null;
 
@@ -27,10 +31,7 @@ const trackCellByRow = (rowId: string, cellElement: HTMLElement): void => {
 };
 
 // Helper to remove cell from row tracking
-export const untrackCellByRow = (
-  rowId: string,
-  cellElement: HTMLElement,
-): void => {
+export const untrackCellByRow = (rowId: string, cellElement: HTMLElement): void => {
   const cellSet = rowCellsMap.get(rowId);
   if (cellSet) {
     cellSet.delete(cellElement);
@@ -55,15 +56,12 @@ const setRowHoverState = (rowId: string, hovered: boolean): void => {
 };
 
 // Calculate cell class names based on current state
-const calculateBodyCellClasses = (
-  cell: AbsoluteBodyCell,
-  context: CellRenderContext,
-): string => {
+const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderContext): string => {
   const { header, rowIndex, colIndex, rowId, depth, isOdd } = cell;
 
-  const isSelectionColumn =
-    header.isSelectionColumn && context.enableRowSelection;
-  const clickable = Boolean(header?.isEditable) || Boolean(context.onCellClick && !isSelectionColumn);
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
+  const clickable =
+    Boolean(header?.isEditable) || Boolean(context.onCellClick && !isSelectionColumn);
 
   // Calculate selection states
   const cellData: CellData = { rowIndex, colIndex, rowId };
@@ -85,24 +83,14 @@ const calculateBodyCellClasses = (
   const isLastColumnInSection = (() => {
     if (!context.columnBorders) return false;
 
-    const pinnedLeftColumns = context.headers.filter(
-      (h) => h.pinned === "left",
-    );
+    const pinnedLeftColumns = context.headers.filter((h) => h.pinned === "left");
     const mainColumns = context.headers.filter((h) => !h.pinned);
-    const pinnedRightColumns = context.headers.filter(
-      (h) => h.pinned === "right",
-    );
+    const pinnedRightColumns = context.headers.filter((h) => h.pinned === "right");
 
     if (header.pinned === "left") {
-      return (
-        pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor ===
-        header.accessor
-      );
+      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
     } else if (header.pinned === "right") {
-      return (
-        pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor ===
-        header.accessor
-      );
+      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
     } else {
       return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
     }
@@ -136,20 +124,12 @@ const calculateBodyCellClasses = (
         ? "st-cell-warning-flash-first"
         : "st-cell-warning-flash"
       : "",
-    context.useOddColumnBackground
-      ? colIndex % 2 === 0
-        ? "even-column"
-        : "odd-column"
-      : "",
+    context.useOddColumnBackground ? (colIndex % 2 === 0 ? "even-column" : "odd-column") : "",
     isSelectionColumn ? "st-selection-cell" : "",
     hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : "",
     isLastColumnInSection ? "st-last-column" : "",
     isSubCell ? "st-sub-cell" : "",
-    context.useOddEvenRowBackground
-      ? isOdd
-        ? "st-cell-even-row"
-        : "st-cell-odd-row"
-      : "",
+    context.useOddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
     context.isRowSelected?.(rowId) ? "st-cell-selected-row" : "",
   ]
     .filter(Boolean)
@@ -163,8 +143,7 @@ export const createBodyCellElement = (
 ): HTMLElement => {
   const { header, row, rowIndex, colIndex, rowId } = cell;
 
-  const isSelectionColumn =
-    header.isSelectionColumn && context.enableRowSelection;
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
   // Calculate cell data for state checks
   const cellData: CellData = { rowIndex, colIndex, rowId };
@@ -175,15 +154,15 @@ export const createBodyCellElement = (
   // Create cell element
   const cellElement = document.createElement("div");
   cellElement.className = classNames;
-  cellElement.id = getCellId({ accessor: header.accessor, rowId });
+  cellElement.id = getCellId({
+    accessor: header.accessor,
+    rowId: cell.stableRowKey ?? rowId,
+  });
   cellElement.setAttribute("role", "gridcell");
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
   // ARIA: 1-based row index in the full grid (matches main: position + maxHeaderDepth + 1)
   const maxHeaderDepth = context.maxHeaderDepth ?? 1;
-  cellElement.setAttribute(
-    "aria-rowindex",
-    String(cell.tableRow.position + maxHeaderDepth + 1),
-  );
+  cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
 
   // Set data attributes for selection manager to query
@@ -204,9 +183,7 @@ export const createBodyCellElement = (
 
   // Determine if this column type uses dropdown editing
   const isEditInDropdown =
-    header.type === "boolean" ||
-    header.type === "date" ||
-    header.type === "enum";
+    header.type === "boolean" || header.type === "date" || header.type === "enum";
 
   const renderCellContent = () => {
     // For dropdown editors, keep the normal cell content visible
@@ -259,15 +236,22 @@ export const createBodyCellElement = (
 
   renderCellContent();
 
+  // Mutable row ref so handlers (and the cell registry's `updateContent`)
+  // always read the latest row data even when this DOM cell is reused across
+  // renders (sort, scroll). Set before registering so the registry uses it.
+  const rowRef = { current: row as Row };
+  cellRowRefMap.set(cellElement, rowRef);
+
   // Register cell in registry for direct updates
   const registerCellInRegistry = () => {
     if (context.cellRegistry && !isSelectionColumn) {
       const key = `${rowId}-${header.accessor}`;
+      cellRegistryKeyMap.set(cellElement, key);
       context.cellRegistry.set(key, {
         updateContent: (newValue: CellValue) => {
           if (!isEditing) {
-            // Update the row data
-            setNestedValue(row, header.accessor, newValue);
+            // Always write to the current row (DOM cell may be reused).
+            setNestedValue(rowRef.current, header.accessor, newValue);
 
             // Re-render cell content
             renderCellContent();
@@ -275,15 +259,10 @@ export const createBodyCellElement = (
             // Add update flash animation
             if (context.cellUpdateFlash) {
               cellElement.classList.add(
-                isInitialFocused
-                  ? "st-cell-updating-first"
-                  : "st-cell-updating",
+                isInitialFocused ? "st-cell-updating-first" : "st-cell-updating",
               );
               setTimeout(() => {
-                cellElement.classList.remove(
-                  "st-cell-updating-first",
-                  "st-cell-updating",
-                );
+                cellElement.classList.remove("st-cell-updating-first", "st-cell-updating");
               }, 800);
             }
           }
@@ -321,11 +300,7 @@ export const createBodyCellElement = (
     }
 
     // Start editing on F2 or Enter
-    if (
-      (keyEvent.key === "F2" || keyEvent.key === "Enter") &&
-      header.isEditable &&
-      !isEditing
-    ) {
+    if ((keyEvent.key === "F2" || keyEvent.key === "Enter") && header.isEditable && !isEditing) {
       keyEvent.preventDefault();
       isEditing = true;
       renderCellContent();
@@ -343,11 +318,6 @@ export const createBodyCellElement = (
   };
 
   addTrackedEventListener(cellElement, "dblclick", handleDoubleClick);
-
-  // Mutable row ref so click handler always reads the latest row data
-  // even when updateBodyCellElement re-uses this DOM element with new rows.
-  const rowRef = { current: row as Row };
-  cellRowRefMap.set(cellElement, rowRef);
 
   // Cell click callback
   if (context.onCellClick && !isSelectionColumn) {
@@ -376,26 +346,25 @@ export const createBodyCellElement = (
   // Row hover handlers - use efficient Map-based tracking
   if (context.useHoverRowBackground) {
     const rowIdKey = String(rowId);
-    // Track this cell by stable row id (visual rowIndex changes when the viewport slice shifts)
+    // Track this cell by row id (re-keyed in updateBodyCellElement when the
+    // DOM cell is reused for a different row across sort/scroll).
     trackCellByRow(rowIdKey, cellElement);
 
+    // The handlers must read the *current* row id from the DOM so they
+    // reference the correct row when this cell is reused after a sort.
     const handleMouseEnter = () => {
-      // Clear previous hovered row if different
-      if (
-        currentHoveredRowId !== null &&
-        currentHoveredRowId !== rowIdKey
-      ) {
+      const currentRowId = cellElement.getAttribute("data-row-id") ?? rowIdKey;
+      if (currentHoveredRowId !== null && currentHoveredRowId !== currentRowId) {
         setRowHoverState(currentHoveredRowId, false);
       }
-      // Set hover state for current row
-      setRowHoverState(rowIdKey, true);
-      currentHoveredRowId = rowIdKey;
+      setRowHoverState(currentRowId, true);
+      currentHoveredRowId = currentRowId;
     };
 
     const handleMouseLeave = () => {
-      // Remove hover state
-      setRowHoverState(rowIdKey, false);
-      if (currentHoveredRowId === rowIdKey) {
+      const currentRowId = cellElement.getAttribute("data-row-id") ?? rowIdKey;
+      setRowHoverState(currentRowId, false);
+      if (currentHoveredRowId === currentRowId) {
         currentHoveredRowId = null;
       }
     };
@@ -408,10 +377,7 @@ export const createBodyCellElement = (
 };
 
 // Lightweight position-only update for scroll operations
-export const updateBodyCellPosition = (
-  cellElement: HTMLElement,
-  cell: AbsoluteBodyCell,
-): void => {
+export const updateBodyCellPosition = (cellElement: HTMLElement, cell: AbsoluteBodyCell): void => {
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;
   cellElement.style.width = `${cell.width}px`;
@@ -444,12 +410,19 @@ export const updateBodyCellElement = (
   cellElement.setAttribute("data-row-index", String(rowIndex));
   cellElement.setAttribute("data-col-index", String(colIndex));
   const maxHeaderDepth = context.maxHeaderDepth ?? 1;
-  cellElement.setAttribute(
-    "aria-rowindex",
-    String(cell.tableRow.position + maxHeaderDepth + 1),
-  );
+  cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
-  cellElement.setAttribute("data-row-id", String(rowId));
+
+  // Re-key the row hover map when this cell is reused for a different row
+  // (happens after a sort because the cell DOM node now survives via
+  // `stableRowKey`). Without this, hovering would highlight the wrong row.
+  const previousRowId = cellElement.getAttribute("data-row-id");
+  const nextRowId = String(rowId);
+  if (previousRowId && previousRowId !== nextRowId) {
+    untrackCellByRow(previousRowId, cellElement);
+    trackCellByRow(nextRowId, cellElement);
+  }
+  cellElement.setAttribute("data-row-id", nextRowId);
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
 
   // Keep the mutable row ref current so click handlers read fresh data.
@@ -458,13 +431,32 @@ export const updateBodyCellElement = (
     existingRowRef.current = cell.row as Row;
   }
 
+  // Re-key the cell registry entry when this DOM cell is reused for a
+  // different row. The registry maps `${positionalRowId}-${accessor}` →
+  // updateContent for the cell currently rendering that row, so consumers
+  // (clipboard paste, programmatic API) can address rows by their current
+  // position. Without this swap, sort would leave stale entries pointing
+  // at the wrong rows.
+  if (context.cellRegistry && !cell.header.isSelectionColumn) {
+    const previousKey = cellRegistryKeyMap.get(cellElement);
+    const nextKey = `${cell.rowId}-${cell.header.accessor}`;
+    if (previousKey !== nextKey) {
+      if (previousKey) {
+        const previousEntry = context.cellRegistry.get(previousKey);
+        if (previousEntry) {
+          context.cellRegistry.delete(previousKey);
+          context.cellRegistry.set(nextKey, previousEntry);
+        }
+      }
+      cellRegistryKeyMap.set(cellElement, nextKey);
+    }
+  }
+
   // Update cell content (important for sorting/filtering where row data changes).
   // Skip full content replace for expandable cells so the expand icon DOM node is preserved;
   // then updateExpandIconState can toggle its class and the CSS transition will run.
   if (!cell.header.expandable) {
-    const contentSpan = cellElement.querySelector(
-      ".st-cell-content",
-    ) as HTMLElement;
+    const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
     if (contentSpan) {
       contentSpan.innerHTML = "";
       createCellContent(cell, context, contentSpan);

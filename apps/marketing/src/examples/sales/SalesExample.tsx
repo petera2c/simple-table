@@ -9,16 +9,14 @@ export default function SalesExample({
   height,
   icons,
   onGridReady,
-  rowCount = 1000,
   theme,
 }: {
   height?: string | number | null;
   icons?: ReactIconsConfig;
   onGridReady?: () => void;
-  rowCount?: number;
   theme?: Theme;
 }) {
-  const { data: fetchedData, isLoading } = useSalesData(rowCount);
+  const { data: fetchedData, isLoading } = useSalesData();
   const [data, setData] = useState(fetchedData);
   const [isMobile, setIsMobile] = useState(false);
 
