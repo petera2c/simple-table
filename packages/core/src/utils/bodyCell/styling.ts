@@ -376,12 +376,20 @@ export const createBodyCellElement = (
   return cellElement;
 };
 
-// Lightweight position-only update for scroll operations
+// Lightweight position-only update for scroll operations. Honors the
+// `data-st-accordion-grow` marker so the in-flight accordion size doesn't
+// snap back to the final value during scroll-RAF position updates that
+// happen to fire mid-animation.
 export const updateBodyCellPosition = (cellElement: HTMLElement, cell: AbsoluteBodyCell): void => {
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;
-  cellElement.style.width = `${cell.width}px`;
-  cellElement.style.height = `${cell.height}px`;
+  const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
+  if (accordionGrowAxis !== "horizontal") {
+    cellElement.style.width = `${cell.width}px`;
+  }
+  if (accordionGrowAxis !== "vertical") {
+    cellElement.style.height = `${cell.height}px`;
+  }
 };
 
 // Update an existing body cell element with current state
@@ -400,11 +408,21 @@ export const updateBodyCellElement = (
   const isInitialFocused = context.isInitialFocusedCell(cellData);
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
 
-  // Update position (may have changed due to column resize or scroll)
+  // Update position (may have changed due to column resize or scroll). When
+  // an accordion grow is in flight on this cell (between the initial 0-size
+  // write and the 2× rAF that writes the final size), skip the size write
+  // for the active axis so subsequent same-tick renders (e.g. the
+  // microtask-batched onRender after a chevron toggle) don't trample the
+  // inline 0 before the CSS transition can pick it up.
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;
-  cellElement.style.width = `${cell.width}px`;
-  cellElement.style.height = `${cell.height}px`;
+  const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
+  if (accordionGrowAxis !== "horizontal") {
+    cellElement.style.width = `${cell.width}px`;
+  }
+  if (accordionGrowAxis !== "vertical") {
+    cellElement.style.height = `${cell.height}px`;
+  }
 
   // Update data attributes and ARIA (matches main: position + maxHeaderDepth + 1)
   cellElement.setAttribute("data-row-index", String(rowIndex));

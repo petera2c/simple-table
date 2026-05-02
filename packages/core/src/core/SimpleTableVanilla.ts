@@ -23,6 +23,13 @@ import AriaAnnouncementManager from "../hooks/ariaAnnouncements";
 import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
 import { deepClone } from "../utils/generalUtils";
+import {
+  ACCORDION_ANIMATION_CLASS,
+  ACCORDION_CLEANUP_BUFFER_MS,
+  ACCORDION_DURATION_VAR,
+  ACCORDION_EASING_VAR,
+  type AccordionAxis,
+} from "../utils/accordionAnimation";
 
 import {
   TableInitializer,
@@ -99,6 +106,17 @@ export class SimpleTableVanilla {
   private scrollEndTimeoutId: number | null = null;
   private lastScrollTop: number = 0;
   private isUpdating: boolean = false;
+
+  /**
+   * Active accordion axis for the next render. Set by row/column collapse-
+   * expand mutators (see {@link beginAccordionAnimation}) and consumed by the
+   * cell renderers via the render context. Cleared in {@link render} after
+   * each render so subsequent non-accordion renders (sort, scroll, etc.)
+   * don't re-trigger the size transitions.
+   */
+  private pendingAccordionAxis: AccordionAxis = null;
+  /** Pending timeout id used to remove the accordion CSS class. */
+  private accordionCleanupTimerId: number | null = null;
 
   constructor(container: HTMLElement, config: SimpleTableConfig) {
     this.container = container;
@@ -207,6 +225,45 @@ export class SimpleTableVanilla {
     });
   }
 
+  /**
+   * Open the accordion animation window for the next render: capture a FLIP
+   * snapshot, mark the active axis so cell renderers initialize incoming
+   * cells at zero size, and add the CSS class that enables the size
+   * transitions on `.st-cell` / `.st-header-cell`.
+   *
+   * The CSS class is removed after `duration + ACCORDION_CLEANUP_BUFFER_MS`
+   * so non-accordion renders don't keep transitioning size on subsequent
+   * inline-style writes.
+   *
+   * No-op when animations are disabled (which already includes the
+   * prefers-reduced-motion check via {@link AnimationCoordinator.isEnabled}).
+   */
+  private beginAccordionAnimation(axis: AccordionAxis): void {
+    if (!this.animationCoordinator.isEnabled()) return;
+    if (axis === null) return;
+    this.captureAnimationSnapshot();
+    this.pendingAccordionAxis = axis;
+
+    const duration = this.animationCoordinator.getDuration();
+    const easing = this.animationCoordinator.getEasing();
+    // Apply to `.simple-table-root` (not the user-supplied outer container) so
+    // the CSS scope and the test/marketing surface match the documented root.
+    const root = this.domManager.getElements()?.rootElement ?? this.container;
+    root.style.setProperty(ACCORDION_DURATION_VAR, `${duration}ms`);
+    root.style.setProperty(ACCORDION_EASING_VAR, easing);
+    root.classList.add(ACCORDION_ANIMATION_CLASS);
+
+    if (this.accordionCleanupTimerId !== null) {
+      window.clearTimeout(this.accordionCleanupTimerId);
+    }
+    this.accordionCleanupTimerId = window.setTimeout(() => {
+      root.classList.remove(ACCORDION_ANIMATION_CLASS);
+      root.style.removeProperty(ACCORDION_DURATION_VAR);
+      root.style.removeProperty(ACCORDION_EASING_VAR);
+      this.accordionCleanupTimerId = null;
+    }, duration + ACCORDION_CLEANUP_BUFFER_MS);
+  }
+
   private initializeManagers(): void {
     this.ariaAnnouncementManager = new AriaAnnouncementManager();
     this.ariaAnnouncementManager.subscribe((message) => {
@@ -219,6 +276,7 @@ export class SimpleTableVanilla {
       this.config.rowGrouping,
     );
     this.expandedDepthsManager.subscribe((depths) => {
+      this.beginAccordionAnimation("vertical");
       this.expandedDepths = depths;
       this.render("expandedDepthsManager");
     });
@@ -523,6 +581,7 @@ export class SimpleTableVanilla {
   private getRenderContext(): RenderContext {
     const refs = this.domManager.getRefs();
     return {
+      accordionAxis: this.pendingAccordionAxis,
       config: this.config,
       customTheme: this.customTheme,
       resolvedIcons: this.resolvedIcons,
@@ -581,11 +640,13 @@ export class SimpleTableVanilla {
       },
       animationCoordinator: this.animationCoordinator,
       setCollapsedHeaders: (headers: Set<Accessor>) => {
+        this.beginAccordionAnimation("horizontal");
         this.collapsedHeaders = headers;
       },
       setCollapsedRows: (
         rowsOrUpdater: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>),
       ) => {
+        this.beginAccordionAnimation("vertical");
         this.collapsedRows =
           typeof rowsOrUpdater === "function" ? rowsOrUpdater(this.collapsedRows) : rowsOrUpdater;
         this.render("expansion");
@@ -593,6 +654,7 @@ export class SimpleTableVanilla {
       setExpandedRows: (
         rowsOrUpdater: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>),
       ) => {
+        this.beginAccordionAnimation("vertical");
         this.expandedRows =
           typeof rowsOrUpdater === "function" ? rowsOrUpdater(this.expandedRows) : rowsOrUpdater;
         this.render("expansion");
@@ -655,6 +717,12 @@ export class SimpleTableVanilla {
       this.getRenderState(),
       this.mergedColumnEditorConfig,
     );
+
+    // Accordion axis is one-shot per collapse/expand toggle: clear it after
+    // the render that consumed it so subsequent renders (sort, scroll,
+    // resize, etc.) don't apply zero-size initial styles to cells they
+    // happen to create.
+    this.pendingAccordionAxis = null;
 
     // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
     // Position-only scroll renders deliberately skip play so out-going /
@@ -777,6 +845,14 @@ export class SimpleTableVanilla {
       clearTimeout(this.scrollEndTimeoutId);
       this.scrollEndTimeoutId = null;
     }
+    if (this.accordionCleanupTimerId !== null) {
+      window.clearTimeout(this.accordionCleanupTimerId);
+      this.accordionCleanupTimerId = null;
+    }
+    const root = this.domManager.getElements()?.rootElement ?? this.container;
+    root.classList.remove(ACCORDION_ANIMATION_CLASS);
+    root.style.removeProperty(ACCORDION_DURATION_VAR);
+    root.style.removeProperty(ACCORDION_EASING_VAR);
 
     this.dimensionManager?.destroy();
     this.scrollManager?.destroy();

@@ -118,8 +118,16 @@ export const renderHeaderCells = (
       if (positionChanged) {
         cellElement.style.left = `${cell.left}px`;
         cellElement.style.top = `${cell.top}px`;
-        cellElement.style.width = `${cell.width}px`;
-        cellElement.style.height = `${cell.height}px`;
+        // Honor the accordion grow marker so a same-tick re-render after a
+        // column collapse/expand toggle doesn't snap the cell to its final
+        // size before the CSS transition picks up the 0 → final tween.
+        const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
+        if (accordionGrowAxis !== "horizontal") {
+          cellElement.style.width = `${cell.width}px`;
+        }
+        if (accordionGrowAxis !== "vertical") {
+          cellElement.style.height = `${cell.height}px`;
+        }
         positionCache.set(cellId, {
           left: cell.left,
           top: cell.top,
@@ -171,6 +179,19 @@ export const renderHeaderCells = (
     }
   });
 
+  // Accordion expand: when the active animation axis is set AND the cell has
+  // no snapshot entry, the column just appeared because its parent
+  // collapsible header expanded. Initialize the cell at zero size in the
+  // animation axis and schedule the real size on the next two rAFs so the
+  // CSS `transition: width/height` on `.st-accordion-animating` grows it
+  // from zero. Mirrors the body-cell path so columns and rows share one
+  // accordion mechanism.
+  const accordionAxis =
+    context.animationCoordinator && context.accordionAxis
+      ? context.accordionAxis
+      : null;
+  const accordionGrowFromZero: Array<{ element: HTMLElement; cell: AbsoluteCell }> = [];
+
   // Second pass: batch create new cells (seed position cache so next update doesn't read DOM)
   cellsToCreate.forEach(({ cell, cellId, isLastMainAutoExpandColumn }) => {
     const cellElement = createHeaderCellElement(
@@ -187,6 +208,21 @@ export const renderHeaderCells = (
     const filterStateForCell =
       context.filters && context.filters[cell.header.accessor as any] ? "1" : "0";
     cellElement.dataset.stIconState = `${sortStateForCell}|${filterStateForCell}`;
+
+    if (
+      accordionAxis &&
+      context.animationCoordinator &&
+      !context.animationCoordinator.hasSnapshotEntry(cellId)
+    ) {
+      if (accordionAxis === "vertical") {
+        cellElement.style.height = "0px";
+      } else {
+        cellElement.style.width = "0px";
+      }
+      cellElement.dataset.stAccordionGrow = accordionAxis;
+      accordionGrowFromZero.push({ element: cellElement, cell });
+    }
+
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
     positionCache.set(cellId, {
@@ -200,6 +236,22 @@ export const renderHeaderCells = (
   // Single DOM operation to add all new cells
   if (fragment.childNodes.length > 0) {
     container.appendChild(fragment);
+  }
+
+  if (accordionAxis && accordionGrowFromZero.length > 0) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        for (const { element, cell } of accordionGrowFromZero) {
+          if (!element.isConnected) continue;
+          if (accordionAxis === "vertical") {
+            element.style.height = `${cell.height}px`;
+          } else {
+            element.style.width = `${cell.width}px`;
+          }
+          delete element.dataset.stAccordionGrow;
+        }
+      });
+    });
   }
 
   // Store scroll position for future reference

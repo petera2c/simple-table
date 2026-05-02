@@ -11,6 +11,7 @@ import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
+import type { AccordionAxis } from "../../utils/accordionAnimation";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
 import {
@@ -30,6 +31,14 @@ import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/Table
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 
 export interface RenderContext {
+  /**
+   * Active accordion animation axis for this render. Set on row-grouping or
+   * nested-column collapse/expand toggles (see
+   * {@link SimpleTableVanilla.beginAccordionAnimation}). Cell renderers use it
+   * to initialize incoming cells at zero size in the named axis so the CSS
+   * size transition can grow them while sibling cells FLIP into place.
+   */
+  accordionAxis?: AccordionAxis;
   animationCoordinator?: AnimationCoordinator;
   cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
@@ -739,6 +748,7 @@ export class RenderOrchestrator {
 
   private buildRendererDeps(effectiveHeaders: HeaderObject[], context: RenderContext) {
     return {
+      accordionAxis: context.accordionAxis,
       animationCoordinator: context.animationCoordinator,
       config: context.config,
       customTheme: context.customTheme,

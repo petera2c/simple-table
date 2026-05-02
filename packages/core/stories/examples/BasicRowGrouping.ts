@@ -417,6 +417,9 @@ export const basicRowGroupingExampleDefaults = {
   rowGrouping: ["divisions", "departments"] as const,
   enableStickyParents: true,
   height: "400px",
+  // Accordion expand/collapse: incoming child rows start at height 0 and
+  // CSS-transition to the configured rowHeight while sibling rows FLIP-shift.
+  animations: { enabled: true, duration: 240 },
 };
 
 export function renderBasicRowGroupingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {

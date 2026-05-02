@@ -16,6 +16,9 @@ export const collapsibleColumnsExampleDefaults = {
   selectableCells: true,
   columnReordering: true,
   height: "400px",
+  // Accordion expand/collapse: incoming column cells start at width 0 and
+  // CSS-transition to their final width while surviving columns FLIP-shift.
+  animations: { enabled: true, duration: 240 },
 };
 
 // Sample data showcasing quarterly sales performance - perfect for collapsible columns (same as main)

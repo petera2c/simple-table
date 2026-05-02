@@ -1461,6 +1461,30 @@ input {
   pointer-events: none;
 }
 
+/*
+ * Accordion animation window for nested-column and row-grouping collapse/expand.
+ *
+ * Active for one collapse/expand operation: SimpleTableVanilla adds the
+ * `st-accordion-animating` class plus inline `--st-accordion-duration` /
+ * `--st-accordion-easing` custom properties on the table root, then removes
+ * them once the animation ends.
+ *
+ * The transition applies to `width`/`height` only — `transform` is driven by
+ * the FLIP `AnimationCoordinator` with its own inline transition string, and
+ * transitioning `top`/`left` here would race with that. `overflow: hidden` is
+ * needed so cell content is clipped while the cell shrinks/grows from zero
+ * size in the active axis.
+ */
+.st-accordion-animating .st-cell,
+.st-accordion-animating .st-header-cell {
+  transition:
+    width var(--st-accordion-duration, var(--st-transition-duration))
+      var(--st-accordion-easing, var(--st-transition-ease)),
+    height var(--st-accordion-duration, var(--st-transition-duration))
+      var(--st-accordion-easing, var(--st-transition-ease));
+  overflow: hidden;
+}
+
 /* Cell update animation */
 @keyframes cell-flash {
   0% {

@@ -424,6 +424,18 @@ export const renderBodyCells = (
   // Second pass: batch create new cells. If the snapshot captured this cell's
   // pre-change position (e.g. the row was off-screen pre-sort and is now in
   // the band), play() will FLIP it from there — no extra hook needed here.
+  //
+  // Accordion expand: when the active animation axis is set AND this cell has
+  // no snapshot entry, it just appeared because its parent grouping
+  // row/header expanded. We initialize the cell at zero size in the
+  // animation axis and schedule the real size on the next two rAFs so the
+  // CSS `transition: width/height` on `.st-accordion-animating` grows it
+  // from zero to its final size. Sibling rows/cells continue to FLIP into
+  // their new positions in parallel via {@link AnimationCoordinator.play}.
+  const accordionAxis =
+    animationCoordinator && context.accordionAxis ? context.accordionAxis : null;
+  const accordionGrowFromZero: Array<{ element: HTMLElement; cell: AbsoluteBodyCell }> = [];
+
   cellsToCreate.forEach(({ cell, cellId }) => {
     // If a retained out-animating ghost still owns this cellId, claim it back
     // as the live cell instead of discarding + creating a fresh node. This
@@ -438,6 +450,24 @@ export const renderBodyCells = (
       return;
     }
     const cellElement = createBodyCellElement(cell, context);
+
+    if (
+      accordionAxis &&
+      animationCoordinator &&
+      !animationCoordinator.hasSnapshotEntry(cellId)
+    ) {
+      if (accordionAxis === "vertical") {
+        cellElement.style.height = "0px";
+      } else {
+        cellElement.style.width = "0px";
+      }
+      // Marker so any same-tick re-render (e.g. microtask-batched onRender
+      // after a chevron toggle) won't overwrite the 0 before the CSS
+      // transition has read it. Cleared once the final size is written.
+      cellElement.dataset.stAccordionGrow = accordionAxis;
+      accordionGrowFromZero.push({ element: cellElement, cell });
+    }
+
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
   });
@@ -445,6 +475,27 @@ export const renderBodyCells = (
   // Single DOM operation to add all new cells
   if (fragment.childNodes.length > 0) {
     container.appendChild(fragment);
+  }
+
+  // Schedule the accordion size growth on the next two rAFs. The first frame
+  // commits the zero-size paint; the second writes the final size, and the
+  // `.st-accordion-animating` CSS class transitions `width`/`height` between
+  // them. Mirrors the double-rAF pattern in `bodyCell/expansion.ts` for
+  // chevron rotation.
+  if (accordionAxis && accordionGrowFromZero.length > 0) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        for (const { element, cell } of accordionGrowFromZero) {
+          if (!element.isConnected) continue;
+          if (accordionAxis === "vertical") {
+            element.style.height = `${cell.height}px`;
+          } else {
+            element.style.width = `${cell.width}px`;
+          }
+          delete element.dataset.stAccordionGrow;
+        }
+      });
+    });
   }
 
   // Render separators for visible rows (skip when positionOnly; row boundaries unchanged on horizontal scroll)

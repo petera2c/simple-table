@@ -134,6 +134,14 @@ export class AnimationCoordinator {
   private easing: string;
   /** Pre-change positions for any cell we want to consider for animation. */
   private snapshot: Map<string, CellSnapshot> | null = null;
+  /**
+   * One-shot synthetic origins for incoming cells that have no entry in the
+   * captured snapshot (e.g. rows/columns that did not exist in the pre-render
+   * state because they were inside a collapsed group). Used by accordion
+   * animations so a newly-visible cell unfolds from its parent's position
+   * rather than appearing in place. Cleared at the end of {@link play}.
+   */
+  private incomingOrigins: Map<string, CellPosition> | null = null;
   private inFlight: Map<string, InFlightCell> = new Map();
   /** Outgoing cells the renderer handed off; keyed per container so play() finds them. */
   private retainedCells: Map<HTMLElement, Map<string, HTMLElement>> = new Map();
@@ -183,6 +191,32 @@ export class AnimationCoordinator {
 
   isInFlight(cellId: string): boolean {
     return this.inFlight.has(cellId);
+  }
+
+  getDuration(): number {
+    return this.duration;
+  }
+
+  getEasing(): string {
+    return this.easing;
+  }
+
+  /**
+   * Register synthetic pre-change origins for incoming cells that did not
+   * exist in the captured snapshot. {@link play} consults this map before
+   * giving up on a cell that has no `before` snapshot entry; matching cells
+   * FLIP from the override origin to their final position.
+   *
+   * The map is consumed by the next `play()` call and cleared, so callers
+   * must set it after `captureSnapshot` and before the render that creates
+   * the corresponding cells.
+   */
+  setIncomingOrigins(origins: Map<string, CellPosition> | null): void {
+    if (!this.isEnabled()) {
+      this.incomingOrigins = null;
+      return;
+    }
+    this.incomingOrigins = origins && origins.size > 0 ? origins : null;
   }
 
   /**
@@ -286,6 +320,16 @@ export class AnimationCoordinator {
    * keep it for an out-animation.
    */
   shouldRetain(cellId: string): boolean {
+    return Boolean(this.snapshot?.has(cellId));
+  }
+
+  /**
+   * Whether the captured snapshot has an entry for the given cellId. The
+   * accordion expand path uses this to detect "newly visible" cells (no
+   * pre-change layout) so it can initialize them at zero size and let the
+   * CSS transition grow them to full size.
+   */
+  hasSnapshotEntry(cellId: string): boolean {
     return Boolean(this.snapshot?.has(cellId));
   }
 
@@ -416,7 +460,9 @@ export class AnimationCoordinator {
    */
   play(args: { containers: Array<HTMLElement | null | undefined> }): void {
     const snapshot = this.snapshot;
+    const incomingOrigins = this.incomingOrigins;
     this.snapshot = null;
+    this.incomingOrigins = null;
 
     if (!this.isEnabled() || !snapshot) {
       // Nothing to play. Drop only retained cells that aren't already
@@ -452,7 +498,24 @@ export class AnimationCoordinator {
       container: HTMLElement,
     ) => {
       if (seen.has(cellId)) return;
-      const before = snapshot.get(cellId);
+      let before = snapshot.get(cellId);
+      // Accordion incoming origin: if this is an active (non-retained) cell
+      // that has no snapshot entry but a synthetic origin was supplied (e.g.
+      // a row that just appeared because its parent grouping row expanded),
+      // use the origin as a virtual pre-change position so the cell FLIPs
+      // from the parent's slot rather than appearing in place.
+      if (!before && !isRetained && incomingOrigins) {
+        const origin = incomingOrigins.get(cellId);
+        if (origin) {
+          before = {
+            left: origin.left,
+            top: origin.top,
+            styleTop: origin.top,
+            styleLeft: origin.left,
+            fromDom: false,
+          };
+        }
+      }
       if (!before) return;
       // Skip cells with an open inline editor (animating breaks input focus).
       if (element.querySelector(".st-cell-editing")) return;
@@ -591,6 +654,7 @@ export class AnimationCoordinator {
    */
   cancel(): void {
     this.snapshot = null;
+    this.incomingOrigins = null;
     this.clearScrollerMetricsCache();
     const entries = Array.from(this.inFlight.entries());
     this.inFlight.clear();

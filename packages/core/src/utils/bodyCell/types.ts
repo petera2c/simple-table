@@ -8,6 +8,7 @@ import type RowState from "../../types/RowState";
 import type { RowButton } from "../../types/RowButton";
 import type { CustomTheme } from "../../types/CustomTheme";
 import type { HeightOffsets } from "../infiniteScrollUtils";
+import type { AccordionAxis } from "../accordionAnimation";
 import type {
   VanillaEmptyStateRenderer,
   VanillaErrorStateRenderer,
@@ -137,4 +138,13 @@ export interface CellRenderContext {
 
   // Pinned section
   pinned?: "left" | "right";
+
+  /**
+   * When set, this render is the post-state pass of a row-grouping (vertical)
+   * or nested-column (horizontal) expand/collapse. Newly-created cells whose
+   * cellId has no entry in the animation snapshot start at zero size in the
+   * named axis so the CSS transition can grow them to their final size while
+   * sibling rows/cells FLIP into their new positions.
+   */
+  accordionAxis?: AccordionAxis;
 }

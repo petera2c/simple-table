@@ -328,8 +328,17 @@ export const updateHeaderCellElement = (
 
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;
-  cellElement.style.width = `${cell.width}px`;
-  cellElement.style.height = `${cell.height}px`;
+  // Honor the in-flight accordion grow marker (see body-cell counterpart in
+  // ./styling/updateBodyCellElement). Without this, a same-tick re-render
+  // after a column collapse/expand toggle would overwrite the inline 0 size
+  // before the CSS transition picks it up.
+  const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
+  if (accordionGrowAxis !== "horizontal") {
+    cellElement.style.width = `${cell.width}px`;
+  }
+  if (accordionGrowAxis !== "vertical") {
+    cellElement.style.height = `${cell.height}px`;
+  }
 
   refreshHeaderCellIcons(cellElement, header, context);
 };

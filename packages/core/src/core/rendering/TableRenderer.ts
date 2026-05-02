@@ -23,10 +23,13 @@ import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
+import type { AccordionAxis } from "../../utils/accordionAnimation";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection } from "../../utils/generalUtils";
 
 export interface TableRendererDeps {
+  /** Accordion animation axis for the in-flight collapse/expand. See {@link RenderContext.accordionAxis}. */
+  accordionAxis?: AccordionAxis;
   animationCoordinator?: AnimationCoordinator;
   cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
@@ -276,6 +279,8 @@ export class TableRenderer {
       mainBodyRef: deps.mainBodyRef,
       pinnedLeftRef: deps.pinnedLeftRef,
       pinnedRightRef: deps.pinnedRightRef,
+      accordionAxis: deps.accordionAxis,
+      animationCoordinator: deps.animationCoordinator,
     };
 
     const pinnedLeftHeaders = deps.effectiveHeaders.filter(
@@ -509,6 +514,7 @@ export class TableRenderer {
         deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
       canExpandRowGroup: deps.config.canExpandRowGroup,
       isLoading: deps.internalIsLoading,
+      accordionAxis: deps.accordionAxis,
     };
 
     const pinnedLeftHeaders = deps.effectiveHeaders.filter(
