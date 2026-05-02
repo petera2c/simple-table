@@ -76,7 +76,8 @@ export const renderHeaderCells = (
   // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
   const viewportWidth = context.pinned
     ? context.containerWidth
-    : (context.mainSectionContainerWidth ?? (context.containerWidth ||
+    : (context.mainSectionContainerWidth ??
+      (context.containerWidth ||
         container.parentElement?.clientWidth ||
         container.clientWidth ||
         0));
@@ -108,9 +109,7 @@ export const renderHeaderCells = (
   const removalAccordionAxis =
     context.animationCoordinator && context.accordionAxis ? context.accordionAxis : null;
   const visibleAccessorsAfterChange =
-    removalAccordionAxis === "horizontal"
-      ? collectVisibleHeaderAccessors(context.headers)
-      : null;
+    removalAccordionAxis === "horizontal" ? collectVisibleHeaderAccessors(context.headers) : null;
 
   // Remove cells that are no longer visible (and from position cache)
   let removedAnyHeaderCell = false;
@@ -123,13 +122,7 @@ export const renderHeaderCells = (
       // element.remove() so the moving header teleports into the
       // destination section.
       const accessor = element.getAttribute("data-accessor") ?? "";
-      const movedToOtherSection =
-        visibleAccessorsAfterChange?.has(accessor) ?? false;
-      // #region agent log
-      try {
-        fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'POST-FIX-PIN',location:'headerCellRenderer.ts:remove-decision',message:'header cell remove decision',data:{cellId,accessor,container:container.className,removalAccordionAxis,movedToOtherSection,decision:(removalAccordionAxis==='horizontal'&&!movedToOtherSection&&context.animationCoordinator?.shouldRetain(cellId))?'shrink-out':'remove'},timestamp:Date.now()})}).catch(()=>{});
-      } catch {}
-      // #endregion
+      const movedToOtherSection = visibleAccessorsAfterChange?.has(accessor) ?? false;
       if (
         removalAccordionAxis === "horizontal" &&
         context.animationCoordinator &&
@@ -212,11 +205,7 @@ export const renderHeaderCells = (
       }
 
       // Update classes when context changes (e.g. column selection → st-header-selected)
-      const newClassNames = calculateHeaderCellClasses(
-        cell,
-        context,
-        isLastMainAutoExpandColumn,
-      );
+      const newClassNames = calculateHeaderCellClasses(cell, context, isLastMainAutoExpandColumn);
       if (cellElement.className !== newClassNames) {
         cellElement.className = newClassNames;
       }
@@ -253,26 +242,12 @@ export const renderHeaderCells = (
   // from zero. Mirrors the body-cell path so columns and rows share one
   // accordion mechanism.
   const accordionAxis =
-    context.animationCoordinator && context.accordionAxis
-      ? context.accordionAxis
-      : null;
+    context.animationCoordinator && context.accordionAxis ? context.accordionAxis : null;
   const accordionGrowFromZero: Array<{ element: HTMLElement; cell: AbsoluteCell }> = [];
 
   // Second pass: batch create new cells (seed position cache so next update doesn't read DOM)
   cellsToCreate.forEach(({ cell, cellId, isLastMainAutoExpandColumn }) => {
-    // #region agent log
-    if (context.animationCoordinator) {
-      try {
-        const hasSnap = context.animationCoordinator.hasSnapshotEntry(cellId);
-        fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H1-H5',location:'headerCellRenderer.ts:create',message:'header cell created',data:{cellId,container:container.className,hasSnapshotEntry:hasSnap,accordionAxis},timestamp:Date.now()})}).catch(()=>{});
-      } catch {}
-    }
-    // #endregion
-    const cellElement = createHeaderCellElement(
-      cell,
-      context,
-      isLastMainAutoExpandColumn,
-    );
+    const cellElement = createHeaderCellElement(cell, context, isLastMainAutoExpandColumn);
     // Seed icon-state dataset so the existing-cell branch doesn't refresh icons
     // unnecessarily on the next render (icons are already current on freshly created cells).
     const sortStateForCell =

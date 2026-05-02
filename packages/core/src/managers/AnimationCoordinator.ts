@@ -378,21 +378,6 @@ export class AnimationCoordinator {
     }
 
     this.snapshot = next.size > 0 ? next : null;
-    // #region agent log
-    try {
-      const perContainer: Array<{ container: string; size: number; sample: string[] }> = [];
-      for (const c of args.containers) {
-        if (!c) continue;
-        const cells = collectRenderedCells(c);
-        perContainer.push({
-          container: c.className || c.tagName,
-          size: cells.size,
-          sample: Array.from(cells.keys()).slice(0, 5),
-        });
-      }
-      fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H1-H5',location:'AnimationCoordinator.ts:captureSnapshot',message:'snapshot captured',data:{snapshotSize:this.snapshot?.size ?? 0, perContainer},timestamp:Date.now()})}).catch(()=>{});
-    } catch {}
-    // #endregion
   }
 
   /**
@@ -465,13 +450,7 @@ export class AnimationCoordinator {
     // visibly different slide distances, so they fan out instead of marching
     // off-screen in lockstep.
     const metrics = this.getScrollerMetrics(container);
-    const clippedTop = scaleFlipDistance(
-      newPosition.top,
-      oldTop,
-      newPosition.height,
-      metrics,
-      "y",
-    );
+    const clippedTop = scaleFlipDistance(newPosition.top, oldTop, newPosition.height, metrics, "y");
     const clippedLeft = scaleFlipDistance(
       newPosition.left,
       oldLeft,
@@ -509,11 +488,6 @@ export class AnimationCoordinator {
     element.style.pointerEvents = "none";
 
     map.set(cellId, element);
-    // #region agent log
-    try {
-      fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H2-H3',location:'AnimationCoordinator.ts:retainCell',message:'retained outgoing cell',data:{cellId,container:container.className,oldTop,oldLeft,newTop:newPosition.top,newLeft:newPosition.left,clippedTop,clippedLeft},timestamp:Date.now()})}).catch(()=>{});
-    } catch {}
-    // #endregion
   }
 
   /**
@@ -695,9 +669,7 @@ export class AnimationCoordinator {
     // container's page origin only changes at layout boundaries, so it's
     // safe to share within a single play.
     const containerOriginCache = new Map<HTMLElement, { left: number; top: number }>();
-    const getPlayContainerOrigin = (
-      element: HTMLElement,
-    ): { left: number; top: number } => {
+    const getPlayContainerOrigin = (element: HTMLElement): { left: number; top: number } => {
       let cached = containerOriginCache.get(element);
       if (!cached) {
         const rect = element.getBoundingClientRect();
@@ -745,11 +717,6 @@ export class AnimationCoordinator {
         }
       }
       if (!before) {
-        // #region agent log
-        try {
-          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H5',location:'AnimationCoordinator.ts:play.consider.no-before',message:'incoming cell has no snapshot entry (no FLIP origin)',data:{cellId,container:container.className,isRetained},timestamp:Date.now()})}).catch(()=>{});
-        } catch {}
-        // #endregion
         return;
       }
       // Cross-container snapshot: the cell was rendered in a different
@@ -760,16 +727,7 @@ export class AnimationCoordinator {
       // the destination cell renderer treats this as a fresh cell and
       // grows it from width 0 via the accordion path while the source
       // section's renderer shrinks the old cell to width 0.
-      if (
-        !isRetained &&
-        before.sourceContainer !== null &&
-        before.sourceContainer !== container
-      ) {
-        // #region agent log
-        try {
-          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'POST-FIX',location:'AnimationCoordinator.ts:play.consider.cross-container-skip',message:'skipping cross-container FLIP',data:{cellId,fromContainer:(before.sourceContainer as HTMLElement).className,toContainer:container.className},timestamp:Date.now()})}).catch(()=>{});
-        } catch {}
-        // #endregion
+      if (!isRetained && before.sourceContainer !== null && before.sourceContainer !== container) {
         seen.add(cellId);
         return;
       }
@@ -825,12 +783,8 @@ export class AnimationCoordinator {
       // prefer the inline style (no layout) over offsetHeight/offsetWidth
       // (forces layout).
       const skipScale = isRetained || before.fromDom;
-      const cellHeight = skipScale
-        ? 0
-        : parsePx(element.style.height) || element.offsetHeight || 0;
-      const cellWidth = skipScale
-        ? 0
-        : parsePx(element.style.width) || element.offsetWidth || 0;
+      const cellHeight = skipScale ? 0 : parsePx(element.style.height) || element.offsetHeight || 0;
+      const cellWidth = skipScale ? 0 : parsePx(element.style.width) || element.offsetWidth || 0;
       const playMetrics = skipScale ? null : this.getScrollerMetrics(container);
       const beforeTopClipped =
         skipScale || !playMetrics
@@ -885,11 +839,6 @@ export class AnimationCoordinator {
 
       pending.push({ cellId, element, dx, dy, isRetained });
       seen.add(cellId);
-      // #region agent log
-      try {
-        fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H6',location:'AnimationCoordinator.ts:play.consider.pending',message:'cell will FLIP (with container-shift correction)',data:{cellId,container:container.className,isRetained,beforeTop:before.top,beforeLeft:before.left,currentTop,currentLeft,dxRaw,dyRaw,containerShiftX,containerShiftY,dx,dy,fromDom:before.fromDom},timestamp:Date.now()})}).catch(()=>{});
-      } catch {}
-      // #endregion
     };
 
     for (const container of args.containers) {

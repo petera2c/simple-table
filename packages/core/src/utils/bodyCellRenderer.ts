@@ -13,10 +13,7 @@ import {
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
 import { isRowExpanded } from "./rowUtils";
-import {
-  applyRowSeparatorSectionWidth,
-  createRowSeparator,
-} from "./rowSeparatorRenderer";
+import { applyRowSeparatorSectionWidth, createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
@@ -37,14 +34,9 @@ export type {
 export { cleanupBodyCellRendering } from "./bodyCell/eventTracking";
 
 // Track rendered separators per container
-const renderedSeparatorsMap = new WeakMap<
-  HTMLElement,
-  Map<number, HTMLElement>
->();
+const renderedSeparatorsMap = new WeakMap<HTMLElement, Map<number, HTMLElement>>();
 
-const getRenderedSeparators = (
-  container: HTMLElement,
-): Map<number, HTMLElement> => {
+const getRenderedSeparators = (container: HTMLElement): Map<number, HTMLElement> => {
   if (!renderedSeparatorsMap.has(container)) {
     renderedSeparatorsMap.set(container, new Map());
   }
@@ -104,14 +96,9 @@ interface SeparatorMetadata {
   sectionWidthPx?: number;
 }
 
-const separatorMetadataMap = new WeakMap<
-  HTMLElement,
-  Map<number, SeparatorMetadata>
->();
+const separatorMetadataMap = new WeakMap<HTMLElement, Map<number, SeparatorMetadata>>();
 
-const getSeparatorMetadata = (
-  container: HTMLElement,
-): Map<number, SeparatorMetadata> => {
+const getSeparatorMetadata = (container: HTMLElement): Map<number, SeparatorMetadata> => {
   if (!separatorMetadataMap.has(container)) {
     separatorMetadataMap.set(container, new Map());
   }
@@ -139,10 +126,7 @@ const renderRowSeparators = (
   const sectionWidthPx = ((): number | undefined => {
     const w = context.pinned
       ? (context.containerWidth ?? container.clientWidth ?? 0)
-      : (context.mainSectionContainerWidth ??
-        context.containerWidth ??
-        container.clientWidth ??
-        0);
+      : (context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
     return w > 0 ? w : undefined;
   })();
 
@@ -187,13 +171,11 @@ const renderRowSeparators = (
         prevCell: prevRowFirstCell,
       });
     }
-    boundariesFromRows = rowBoundaries.map(
-      ({ rowIndex, firstCell, prevCell }) => ({
-        rowIndex,
-        position: firstCell.tableRow.position,
-        displayStrongBorder: prevCell?.tableRow?.isLastGroupRow ?? false,
-      }),
-    );
+    boundariesFromRows = rowBoundaries.map(({ rowIndex, firstCell, prevCell }) => ({
+      rowIndex,
+      position: firstCell.tableRow.position,
+      displayStrongBorder: prevCell?.tableRow?.isLastGroupRow ?? false,
+    }));
   }
 
   if (boundariesFromRows.length === 0) return;
@@ -291,10 +273,7 @@ export const renderBodyCells = (
   // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
   const viewportWidth = context.pinned
     ? (context.containerWidth ?? container.clientWidth ?? 0)
-    : (context.mainSectionContainerWidth ??
-      context.containerWidth ??
-      container.clientWidth ??
-      0);
+    : (context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
 
   // For pinned sections, always render all cells (they don't scroll horizontally)
   // For main section, only render visible cells based on scroll position
@@ -414,13 +393,7 @@ export const renderBodyCells = (
         animationCoordinator.shouldRetain(cellId)
       ) {
         const accessor = element.getAttribute("data-accessor") ?? "";
-        const movedToOtherSection =
-          visibleAccessorsAfterChange?.has(accessor) ?? false;
-        // #region agent log
-        try {
-          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'POST-FIX-PIN',location:'bodyCellRenderer.ts:remove-decision',message:'body cell remove decision',data:{cellId,accessor,container:container.className,movedToOtherSection,decision:movedToOtherSection?'teleport':'shrink-out'},timestamp:Date.now()})}).catch(()=>{});
-        } catch {}
-        // #endregion
+        const movedToOtherSection = visibleAccessorsAfterChange?.has(accessor) ?? false;
         if (!movedToOtherSection) {
           animationCoordinator.shrinkOutCell({
             cellId,
@@ -440,13 +413,6 @@ export const renderBodyCells = (
         // reflow around the change.
       }
 
-      // #region agent log
-      if (animationCoordinator) {
-        try {
-          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H2-H3',location:'bodyCellRenderer.ts:remove-no-retain',message:'body cell removed without retain (no FLIP-out)',data:{cellId,container:container.className,shouldRetain:animationCoordinator.shouldRetain(cellId),hasNewPos:Boolean(newPos),newCellLayoutSize:newCellLayout?.size ?? 0,accordionAxis},timestamp:Date.now()})}).catch(()=>{});
-        } catch {}
-      }
-      // #endregion
       element.remove();
       renderedCells.delete(cellId);
     }
@@ -488,11 +454,7 @@ export const renderBodyCells = (
         updateBodyCellElement(cellElement, cell, context);
 
         // Sync row selection checkbox when context changes (e.g. select-all)
-        if (
-          cell.header.isSelectionColumn &&
-          context.enableRowSelection &&
-          context.isRowSelected
-        ) {
+        if (cell.header.isSelectionColumn && context.enableRowSelection && context.isRowSelected) {
           const checked = context.isRowSelected(cell.rowId);
           updateCheckboxElement(cellElement, checked);
         }
@@ -500,10 +462,8 @@ export const renderBodyCells = (
         // Sync expand/collapse icon direction when expanded state changes (e.g. nested grids)
         if (cell.header.expandable) {
           const expandedDepthsSet = new Set(context.expandedDepths);
-          const currentExpandedRows =
-            context.getExpandedRows?.() ?? context.expandedRows;
-          const currentCollapsedRows =
-            context.getCollapsedRows?.() ?? context.collapsedRows;
+          const currentExpandedRows = context.getExpandedRows?.() ?? context.expandedRows;
+          const currentCollapsedRows = context.getCollapsedRows?.() ?? context.collapsedRows;
           const currentIsExpanded = isRowExpanded(
             cell.rowId,
             cell.depth,
@@ -604,12 +564,6 @@ export const renderBodyCells = (
 
   // Render separators for visible rows (skip when positionOnly; row boundaries unchanged on horizontal scroll)
   if (!positionOnly) {
-    renderRowSeparators(
-      container,
-      cellsToRender,
-      context,
-      renderedSeparators,
-      allRows,
-    );
+    renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
   }
 };
