@@ -322,7 +322,6 @@ export class SectionRenderer {
 
     const sectionKey = pinned || "main";
     let section = this.bodySections.get(sectionKey);
-    let isNewSection = false;
 
     if (!section) {
       section = document.createElement("div");
@@ -334,7 +333,6 @@ export class SectionRenderer {
             : "st-body-main";
       section.setAttribute("role", "rowgroup");
       this.bodySections.set(sectionKey, section);
-      isNewSection = true;
     }
 
     const filteredHeaders = headers.filter((h) => {

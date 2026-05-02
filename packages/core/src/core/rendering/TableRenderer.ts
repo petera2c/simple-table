@@ -557,7 +557,7 @@ export class TableRenderer {
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
-      // Only append if not already a child — calling appendChild on a node
+      // Only insert if not already a child — calling appendChild on a node
       // already in the same parent triggers a detach + reinsert per the DOM
       // spec, which cancels every CSS transition on its descendants and
       // snaps their computed transforms to the inline value. With cell
@@ -565,8 +565,18 @@ export class TableRenderer {
       // first sort's animation would visually teleport every animating cell
       // to its destination instead of FLIP-tweening from the in-flight
       // visual position.
+      //
+      // Use insertBefore at position 0 (rather than appendChild) so the new
+      // pinned-left body section lands at the start of the body container.
+      // The body container is a flex row; .st-body-main has flex-grow: 1
+      // and consumes all available width, so a leftSection appended after
+      // an already-present main section is visually pushed past the scroll
+      // viewport — the user sees the pinned header but the pinned cells
+      // appear missing. Header sections avoid this by always re-appending
+      // to fix document order; body sections can't because that would
+      // cancel running cell transitions.
       if (leftSection.parentElement !== container) {
-        container.appendChild(leftSection as HTMLElement);
+        container.insertBefore(leftSection as HTMLElement, container.firstChild);
       }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("left");
@@ -593,8 +603,20 @@ export class TableRenderer {
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
+      // Insert main BEFORE any already-present pinned-right body section so
+      // the [left, main, right] document order is preserved when main goes
+      // from empty (all columns pinned) to populated. Same flex-layout
+      // reasoning as the leftSection insertion above: appending main after
+      // an already-present pinned-right would push main behind right and
+      // confuse the visible layout. Existing children are intentionally
+      // not moved so in-flight cell transitions aren't cancelled.
       if (mainSection.parentElement !== container) {
-        container.appendChild(mainSection as HTMLElement);
+        const existingRight = deps.pinnedRightRef.current;
+        if (existingRight && existingRight.parentElement === container) {
+          container.insertBefore(mainSection as HTMLElement, existingRight);
+        } else {
+          container.appendChild(mainSection as HTMLElement);
+        }
       }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("main");
