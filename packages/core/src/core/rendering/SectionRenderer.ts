@@ -25,6 +25,7 @@ import {
   createNestedGridSpacer,
   type NestedGridRowRenderContext,
 } from "../../utils/nestedGridRowRenderer";
+import { calculateFinalNestedGridHeight } from "../../utils/rowUtils";
 import { createStateRow, type StateRowRenderContext } from "../../utils/stateRowRenderer";
 
 export interface HeaderSectionParams {
@@ -186,13 +187,44 @@ export class SectionRenderer {
   // Track the next colIndex for each section after rendering
   private nextColIndexMap: Map<string, number> = new Map();
 
-  // State row elements per section (key: sectionKey, value: Map<position, HTMLElement>)
-  private stateRowsMap: Map<string, Map<number, HTMLElement>> = new Map();
+  // State row elements per section.
+  // Keyed by the row's stable id (rowIdToString(tableRow.rowId)) rather than its
+  // numeric `position`, because `position` shifts whenever an unrelated row
+  // above expands/collapses — keying by position would tear down and rebuild
+  // the same loading/error/empty row on every shift, defeating animations.
+  private stateRowsMap: Map<
+    string,
+    Map<
+      string,
+      {
+        element: HTMLElement;
+        lastTop: number;
+        lastPosition: number;
+      }
+    >
+  > = new Map();
 
-  // Nested grid row elements per section (key: sectionKey, value: Map<position, { element, cleanup? }>)
+  // Nested grid row elements per section.
+  // Keyed by the parent row's stable id (rowIdToString(tableRow.rowId)) rather than
+  // its `position`, because `position` shifts whenever rows above expand/collapse —
+  // keying by position caused the same nested SimpleTable to be torn down and rebuilt
+  // every render, defeating any sliding animation.
   private nestedGridRowsMap: Map<
     string,
-    Map<number, { element: HTMLElement; cleanup?: () => void }>
+    Map<
+      string,
+      {
+        element: HTMLElement;
+        cleanup?: () => void;
+        lastPosition: number;
+        // Track the last numeric top/height we wrote so we can compare against the
+        // *intent* of the next render rather than against `style.transform` strings,
+        // which browsers can normalize ("translate3d(0, 99px, 0)" ↔ "translate3d(0px,
+        // 99px, 0px)") and falsely flag as "changed" on idle re-renders.
+        lastTop: number;
+        lastWrapperHeight: number;
+      }
+    >
   > = new Map();
 
   renderHeaderSection(params: HeaderSectionParams): HTMLElement {
@@ -440,11 +472,24 @@ export class SectionRenderer {
     );
 
     // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
-    this.renderNestedGridRows(section, sectionKey, rows, pinned, cachedContext);
+    this.renderNestedGridRows(
+      section,
+      sectionKey,
+      rows,
+      pinned,
+      cachedContext,
+      animationCoordinator,
+    );
 
     // Render state indicator rows (loading/error/empty) as full-width rows – only in main (non-pinned) section
     if (!pinned) {
-      this.renderStateRows(section, sectionKey, rows, cachedContext);
+      this.renderStateRows(
+        section,
+        sectionKey,
+        rows,
+        cachedContext,
+        animationCoordinator,
+      );
     }
 
     // For main section (not pinned), attach render function for scroll updates (used by SectionScrollController.onMainSectionScrollLeft)
@@ -472,9 +517,28 @@ export class SectionRenderer {
     rows: TableRow[],
     pinned: "left" | "right" | undefined,
     context: CellRenderContext,
+    animationCoordinator: AnimationCoordinator | undefined,
   ): void {
+    // Inline transition string driven by the user's configured animations:
+    //   - Matches the body-cell FLIP duration/easing so a row's nested grid
+    //     animates in lockstep with the cells above and below it.
+    //   - Empty when the coordinator is disabled (e.g. animations.enabled=false
+    //     or prefers-reduced-motion) so position updates snap as expected.
+    // We *only* attach this transition when the renderer is already updating
+    // an existing nested-grid-row's transform/height (so the change has a
+    // "before" value to interpolate from). Newly-created rows assign their
+    // transform synchronously before paint and we leave the transition empty,
+    // letting them appear at their destination immediately.
+    const animationsActive = animationCoordinator?.isEnabled() ?? false;
+    const transitionStyle = animationsActive
+      ? `transform ${animationCoordinator!.getDuration()}ms ${animationCoordinator!.getEasing()}, height ${animationCoordinator!.getDuration()}ms ${animationCoordinator!.getEasing()}`
+      : "";
     const nestedRows = rows.filter((r) => r.nestedTable);
-    const currentPositions = new Set(nestedRows.map((r) => r.position));
+    // Identify nested rows by their parent's stable rowId path, NOT by `position`
+    // (which is just the index into the flattened-rows array and shifts whenever
+    // an unrelated row above expands/collapses — that shift was making us drop
+    // and recreate the nested SimpleTable instance every time).
+    const currentKeys = new Set(nestedRows.map((r) => rowIdToString(r.rowId)));
 
     let map = this.nestedGridRowsMap.get(sectionKey);
     if (!map) {
@@ -482,12 +546,12 @@ export class SectionRenderer {
       this.nestedGridRowsMap.set(sectionKey, map);
     }
 
-    // Remove nested row elements that are no longer in the list
-    map.forEach((entry, position) => {
-      if (!currentPositions.has(position)) {
+    // Remove nested row elements that no longer have a matching parent in the list.
+    map.forEach((entry, key) => {
+      if (!currentKeys.has(key)) {
         entry.cleanup?.();
         entry.element.remove();
-        map!.delete(position);
+        map!.delete(key);
       }
     });
 
@@ -505,13 +569,73 @@ export class SectionRenderer {
     };
 
     nestedRows.forEach((tableRow) => {
-      const position = tableRow.position;
-      const existing = map!.get(position);
+      const stableKey = rowIdToString(tableRow.rowId);
+      const existing = map!.get(stableKey);
 
       if (existing) {
-        // Already rendered for this position; could update if needed (e.g. height/position changed)
+        // Same nested table is still expanded for the same parent row, but its
+        // visual position and/or wrapper height may have changed because rows
+        // above expanded/collapsed (or a sibling's child data just resolved
+        // and grew the layout). Update the inline transform/height on the
+        // existing element rather than tearing it down — keeping the same DOM
+        // node lets the inline CSS transition interpolate smoothly to the new
+        // position in lockstep with the body-cell FLIP.
+        const newTop = calculateRowTopPosition({
+          position: tableRow.position,
+          rowHeight: context.rowHeight,
+          heightOffsets: context.heightOffsets,
+          customTheme: context.customTheme ?? ({} as any),
+        });
+        const newWrapperHeight = calculateFinalNestedGridHeight({
+          calculatedHeight: tableRow.nestedTable!.calculatedHeight,
+          customHeight: tableRow.nestedTable!.expandableHeader.nestedTable?.height,
+          customTheme: context.customTheme ?? ({} as any),
+        });
+        const transformChanged = existing.lastTop !== newTop;
+        const heightChanged = existing.lastWrapperHeight !== newWrapperHeight;
+        if (transformChanged || heightChanged) {
+          existing.element.style.transition = transitionStyle;
+          if (transformChanged) {
+            existing.element.style.transform = `translate3d(0, ${newTop}px, 0)`;
+          }
+          if (heightChanged) {
+            existing.element.style.height = `${newWrapperHeight}px`;
+          }
+          existing.lastTop = newTop;
+          existing.lastWrapperHeight = newWrapperHeight;
+        }
+        existing.element.dataset.index = String(tableRow.position);
+        existing.lastPosition = tableRow.position;
         return;
       }
+
+      // Decide the initial visual height for a freshly-created nested grid row:
+      //   - If a state row existed at the same flattened position this render
+      //     replaced (lazy-load case: loading row → resolved nested table),
+      //     start at `rowHeight` so the wrapper appears to "grow" out of the
+      //     state row that just disappeared.
+      //   - Otherwise (eager-load: parent expanded with data already present)
+      //     start at 0 so it appears to unfold from the parent row directly,
+      //     in lockstep with the body cells below it sliding down by the full
+      //     wrapper height (FLIP delta = wrapperHeight in that case).
+      // The state-row map is keyed by the same stable rowId as the nested-grid
+      // row that replaces it (both share `[...rowPath, currentGroupingKey]`),
+      // so a hit here means the just-resolved data is replacing a loading row.
+      const stateRowMapForSection = this.stateRowsMap.get(sectionKey);
+      const replacedStateRow =
+        !!stateRowMapForSection && stateRowMapForSection.has(stableKey);
+      const initialHeight = replacedStateRow ? context.rowHeight : 0;
+      const finalWrapperHeight = calculateFinalNestedGridHeight({
+        calculatedHeight: tableRow.nestedTable!.calculatedHeight,
+        customHeight: tableRow.nestedTable!.expandableHeader.nestedTable?.height,
+        customTheme: context.customTheme ?? ({} as any),
+      });
+      const finalTop = calculateRowTopPosition({
+        position: tableRow.position,
+        rowHeight: context.rowHeight,
+        heightOffsets: context.heightOffsets,
+        customTheme: context.customTheme ?? ({} as any),
+      });
 
       if (pinned) {
         const spacer = createNestedGridSpacer(tableRow, {
@@ -519,16 +643,58 @@ export class SectionRenderer {
           heightOffsets: context.heightOffsets,
           customTheme: context.customTheme ?? ({} as any),
         });
+        // Same growth treatment for pinned spacers so left/right pinned
+        // sections stay vertically aligned with the main section's nested row.
+        if (animationsActive && initialHeight !== finalWrapperHeight) {
+          spacer.style.height = `${initialHeight}px`;
+        }
         section.appendChild(spacer);
-        map!.set(position, { element: spacer });
+        map!.set(stableKey, {
+          element: spacer,
+          lastPosition: tableRow.position,
+          lastTop: finalTop,
+          lastWrapperHeight: finalWrapperHeight,
+        });
+        if (animationsActive && initialHeight !== finalWrapperHeight) {
+          // 2x rAF so the browser commits the initial height frame before we
+          // flip in the transition + final height — without this the change
+          // collapses into a single paint and there's nothing to animate.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              spacer.style.transition = transitionStyle;
+              spacer.style.height = `${finalWrapperHeight}px`;
+            });
+          });
+        }
       } else {
         nestedContext.depth = tableRow.depth > 0 ? tableRow.depth - 1 : 0;
         const { element, cleanup } = createNestedGridRow(
           tableRow,
           nestedContext,
         );
+        // Override the height that createNestedGridRow set so we can grow into
+        // the final value on the next frame. Overflow:hidden keeps the inner
+        // SimpleTable visually clipped while the wrapper expands.
+        if (animationsActive && initialHeight !== finalWrapperHeight) {
+          element.style.height = `${initialHeight}px`;
+          element.style.overflow = "hidden";
+        }
         section.appendChild(element);
-        map!.set(position, { element, cleanup });
+        map!.set(stableKey, {
+          element,
+          cleanup,
+          lastPosition: tableRow.position,
+          lastTop: finalTop,
+          lastWrapperHeight: finalWrapperHeight,
+        });
+        if (animationsActive && initialHeight !== finalWrapperHeight) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              element.style.transition = transitionStyle;
+              element.style.height = `${finalWrapperHeight}px`;
+            });
+          });
+        }
       }
     });
   }
@@ -538,9 +704,10 @@ export class SectionRenderer {
     sectionKey: string,
     rows: TableRow[],
     context: CellRenderContext,
+    animationCoordinator: AnimationCoordinator | undefined,
   ): void {
     const stateRows = rows.filter((r) => r.stateIndicator);
-    const currentPositions = new Set(stateRows.map((r) => r.position));
+    const currentKeys = new Set(stateRows.map((r) => rowIdToString(r.rowId)));
 
     let map = this.stateRowsMap.get(sectionKey);
     if (!map) {
@@ -548,11 +715,20 @@ export class SectionRenderer {
       this.stateRowsMap.set(sectionKey, map);
     }
 
-    // Remove state row elements that are no longer in the list
-    map.forEach((element, position) => {
-      if (!currentPositions.has(position)) {
-        element.remove();
-        map!.delete(position);
+    // The transition mirrors the one used for nested-grid rows so the state
+    // row, the nested-grid row that eventually replaces it, and the body
+    // cells around it all interpolate over the same window/easing.
+    const animationsActive = animationCoordinator?.isEnabled() ?? false;
+    const transitionStyle = animationsActive
+      ? `transform ${animationCoordinator!.getDuration()}ms ${animationCoordinator!.getEasing()}, height ${animationCoordinator!.getDuration()}ms ${animationCoordinator!.getEasing()}`
+      : "";
+
+    // Remove state rows that no longer exist in the flattened list (typically
+    // because their parent collapsed or transitioned to error/empty/data).
+    map.forEach((entry, key) => {
+      if (!currentKeys.has(key)) {
+        entry.element.remove();
+        map!.delete(key);
       }
     });
 
@@ -567,34 +743,62 @@ export class SectionRenderer {
     };
 
     stateRows.forEach((tableRow, i) => {
-      const position = tableRow.position;
-      const existing = map!.get(position);
-
-      if (existing) {
-        // Update position in case it changed
-        const top = calculateRowTopPosition({
-          position,
-          rowHeight: context.rowHeight,
-          heightOffsets: context.heightOffsets,
-          customTheme: context.customTheme ?? ({} as any),
-        });
-        existing.style.transform = `translate3d(0, ${top}px, 0)`;
-        return;
-      }
-
-      const rowElement = createStateRow(tableRow, { ...stateContext, index: i });
-      // Position the state row correctly
-      const top = calculateRowTopPosition({
-        position,
+      const stableKey = rowIdToString(tableRow.rowId);
+      const newTop = calculateRowTopPosition({
+        position: tableRow.position,
         rowHeight: context.rowHeight,
         heightOffsets: context.heightOffsets,
         customTheme: context.customTheme ?? ({} as any),
       });
+
+      const existing = map!.get(stableKey);
+      if (existing) {
+        // Existing state row — update its position when rows above expand or
+        // collapse so it slides in lockstep with body cells (no transition
+        // reset when the position is unchanged).
+        if (existing.lastTop !== newTop) {
+          existing.element.style.transition = transitionStyle;
+          existing.element.style.transform = `translate3d(0, ${newTop}px, 0)`;
+          existing.lastTop = newTop;
+        }
+        existing.lastPosition = tableRow.position;
+        return;
+      }
+
+      const rowElement = createStateRow(tableRow, {
+        ...stateContext,
+        index: i,
+      });
       rowElement.style.position = "absolute";
-      rowElement.style.transform = `translate3d(0, ${top}px, 0)`;
+      rowElement.style.transform = `translate3d(0, ${newTop}px, 0)`;
       rowElement.style.width = "100%";
-      section.appendChild(rowElement);
-      map!.set(position, rowElement);
+
+      if (animationsActive) {
+        // Grow the state row in from height 0 so it appears to unfold out of
+        // the parent row (matching the grow-in used for fresh nested-grid
+        // rows). Overflow:hidden keeps the inner content clipped while the
+        // wrapper expands to its final rowHeight.
+        rowElement.style.height = "0px";
+        rowElement.style.overflow = "hidden";
+        section.appendChild(rowElement);
+        // 2x rAF: the browser must paint the initial height=0 frame before
+        // the transition starts, otherwise the change collapses into one
+        // paint and there's nothing to animate from.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            rowElement.style.transition = transitionStyle;
+            rowElement.style.height = `${context.rowHeight}px`;
+          });
+        });
+      } else {
+        section.appendChild(rowElement);
+      }
+
+      map!.set(stableKey, {
+        element: rowElement,
+        lastTop: newTop,
+        lastPosition: tableRow.position,
+      });
     });
   }
 
@@ -850,6 +1054,25 @@ export class SectionRenderer {
       "containerWidth",
     ];
     let hash = keys.map((k) => `${k}:${context[k]}`).join("|");
+
+    // Include heightOffsets so contexts captured for body sections invalidate
+    // when nested tables expand/collapse above an existing nested row. Without
+    // this, the cached context's stale heightOffsets is reused and rows below
+    // expanding/collapsing nested tables compute the wrong absolute top — the
+    // already-expanded nested table animates to a position that includes a
+    // phantom contribution from the previous layout, producing a visible gap
+    // during the loading phase before the new nested table has resolved.
+    const offsets = context.heightOffsets;
+    if (Array.isArray(offsets) && offsets.length > 0) {
+      let offsetsSig = "";
+      for (let i = 0; i < offsets.length; i++) {
+        const entry = offsets[i];
+        offsetsSig += `${entry[0]}:${entry[1]};`;
+      }
+      hash += `|offsets:${offsetsSig}`;
+    } else {
+      hash += `|offsets:none`;
+    }
 
     // Include sort state in hash for header context
     if (context.sort) {

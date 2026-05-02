@@ -1485,6 +1485,17 @@ input {
   overflow: hidden;
 }
 
+/*
+ * Nested grid rows position themselves with `transform: translate3d(0, Ypx, 0)`
+ * (not `style.top`), so the FLIP-style cell coordinator doesn't drive them.
+ * SectionRenderer applies an inline transition on transform/height when it
+ * updates an existing nested-grid-row in place (because an unrelated row
+ * above expanded/collapsed, or a sibling's child data resolved and changed
+ * total layout height) — that lets the inline-style update interpolate
+ * instead of snapping. Initial creation deliberately writes the transform
+ * without a transition so the row appears at its destination immediately.
+ */
+
 /* Cell update animation */
 @keyframes cell-flash {
   0% {

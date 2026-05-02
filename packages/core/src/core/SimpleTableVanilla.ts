@@ -720,6 +720,12 @@ export class SimpleTableVanilla {
           | Map<string | number, any>
           | ((prev: Map<string | number, any>) => Map<string | number, any>),
       ) => {
+        // Capture a snapshot before mutating the row-state map so body cells
+        // around the appearing/disappearing state row FLIP into their new
+        // positions in sync with the state row's grow-in/out animation.
+        // Without this, the state row would expand smoothly but every other
+        // row would snap, producing a visual desync.
+        this.beginAccordionAnimation("vertical");
         this.rowStateMap =
           typeof mapOrUpdater === "function" ? mapOrUpdater(this.rowStateMap) : mapOrUpdater;
         this.render("rowStateMap");
@@ -806,6 +812,17 @@ export class SimpleTableVanilla {
     }
 
     if (config.rows !== undefined) {
+      // Snapshot before swapping the rows reference so the FLIP `play` at the
+      // end of the ensuing render can interpolate every cell from its old
+      // visual spot to its new one. Without this, callers like the dynamic
+      // nested-table example (which calls update({ rows }) once a child fetch
+      // resolves to swap a loading-state row out for a nested-grid row) would
+      // see body cells around the change snap instead of slide.
+      // Skip until after the first render so initial mount doesn't try to
+      // animate from an empty snapshot.
+      if (this.firstRenderDone) {
+        this.captureAnimationSnapshot();
+      }
       this.localRows = [...config.rows];
       this.rebuildRowIndexMap();
 

@@ -169,11 +169,11 @@ const INITIAL_COMPANIES: DynamicCompany[] = [
 ];
 
 const DIVISION_HEADERS: HeaderObject[] = [
-  { accessor: "divisionName", label: "Division", width: 200 },
-  { accessor: "revenue", label: "Revenue", width: 120 },
-  { accessor: "profitMargin", label: "Profit Margin", width: 130 },
-  { accessor: "headcount", label: "Headcount", width: 110, type: "number" },
-  { accessor: "location", label: "Location", width: 180 },
+  { accessor: "divisionName", label: "Division", width: 200, isSortable: true },
+  { accessor: "revenue", label: "Revenue", width: 120, isSortable: true },
+  { accessor: "profitMargin", label: "Profit Margin", width: 130, isSortable: true },
+  { accessor: "headcount", label: "Headcount", width: 110, type: "number", isSortable: true },
+  { accessor: "location", label: "Location", width: 180, isSortable: true },
 ];
 
 const COMPANY_HEADERS: HeaderObject[] = [
@@ -182,15 +182,16 @@ const COMPANY_HEADERS: HeaderObject[] = [
     label: "Company",
     width: 200,
     expandable: true,
+    isSortable: true,
     nestedTable: {
       defaultHeaders: DIVISION_HEADERS,
       expandAll: false,
       autoExpandColumns: true,
     },
   },
-  { accessor: "industry", label: "Industry", width: 150 },
-  { accessor: "revenue", label: "Revenue", width: 120 },
-  { accessor: "employees", label: "Employees", width: 120, type: "number" },
+  { accessor: "industry", label: "Industry", width: 150, isSortable: true },
+  { accessor: "revenue", label: "Revenue", width: 120, isSortable: true },
+  { accessor: "employees", label: "Employees", width: 120, type: "number", isSortable: true },
 ];
 
 function stateBlock(message: string, color: string): HTMLElement {
@@ -203,7 +204,7 @@ function stateBlock(message: string, color: string): HTMLElement {
 }
 
 export const dynamicNestedTableExampleDefaults = {
-  height: "460px",
+  height: "900px",
   expandAll: false,
   autoExpandColumns: true,
 };
