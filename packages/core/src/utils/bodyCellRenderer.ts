@@ -89,9 +89,14 @@ const getVisibleBodyCells = (
   return visibleCells;
 };
 
-// Track separator metadata to avoid unnecessary updates
+// Track separator metadata to avoid unnecessary updates.
+// `topPx` is the actual rendered top pixel (after `heightOffsets` is applied);
+// caching the array `position` alone is insufficient because expanding a
+// nested-table row changes `heightOffsets`, which shifts the top px of every
+// separator below the expansion point without changing their `position`.
 interface SeparatorMetadata {
   position: number;
+  topPx: number;
   displayStrongBorder: boolean;
   sectionWidthPx?: number;
 }
@@ -185,6 +190,17 @@ const renderRowSeparators = (
     // Get cached metadata
     const cachedMetadata = separatorMetadata.get(rowIndex);
 
+    // Compute the actual top pixel for this separator. We compare against the
+    // cached pixel value (not the array `position`) because expanding a
+    // nested-table row mutates `heightOffsets` and shifts the visual top of
+    // every separator below the expansion point without changing `position`.
+    const topPx = calculateSeparatorTopPosition({
+      position,
+      rowHeight: context.rowHeight,
+      heightOffsets: context.heightOffsets,
+      customTheme: context.customTheme ?? DEFAULT_CUSTOM_THEME,
+    });
+
     // Check if separator needs to be created or updated
     if (!renderedSeparators.has(rowIndex)) {
       // Create new separator
@@ -204,6 +220,7 @@ const renderRowSeparators = (
       // Cache metadata
       separatorMetadata.set(rowIndex, {
         position,
+        topPx,
         displayStrongBorder,
         sectionWidthPx,
       });
@@ -213,7 +230,7 @@ const renderRowSeparators = (
 
       const needsUpdate =
         !cachedMetadata ||
-        cachedMetadata.position !== position ||
+        cachedMetadata.topPx !== topPx ||
         cachedMetadata.displayStrongBorder !== displayStrongBorder ||
         cachedMetadata.sectionWidthPx !== sectionWidthPx;
 
@@ -229,20 +246,15 @@ const renderRowSeparators = (
           }
         }
 
-        // Update position only if it changed
-        if (!cachedMetadata || cachedMetadata.position !== position) {
-          const topPosition = calculateSeparatorTopPosition({
-            position,
-            rowHeight: context.rowHeight,
-            heightOffsets: context.heightOffsets,
-            customTheme: context.customTheme ?? DEFAULT_CUSTOM_THEME,
-          });
-          separator.style.transform = `translate3d(0, ${topPosition}px, 0)`;
+        // Update transform only if the rendered top pixel changed
+        if (!cachedMetadata || cachedMetadata.topPx !== topPx) {
+          separator.style.transform = `translate3d(0, ${topPx}px, 0)`;
         }
 
         // Update cached metadata
         separatorMetadata.set(rowIndex, {
           position,
+          topPx,
           displayStrongBorder,
           sectionWidthPx,
         });
