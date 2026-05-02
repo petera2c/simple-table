@@ -23,6 +23,14 @@ const MIN_DELTA = 0.5;
 const SAFETY_TIMEOUT_SLACK = 80;
 const RETAINED_CLASS = "st-cell-animating-out";
 const RETAINED_ATTR = "data-animating-out";
+/**
+ * Marker on retained ghost cells whose only animation is a CSS-driven
+ * width/height shrink (no FLIP transform). The `play()` per-cell loop must
+ * skip them — its retained-cell branch removes any cell with a zero FLIP
+ * delta immediately, which would tear the ghost out of the DOM before the
+ * accordion CSS transition can play.
+ */
+const SHRINKING_OUT_ATTR = "data-shrinking-out";
 
 /**
  * Curve-shape factor for the off-screen portion of the FLIP journey. Larger
@@ -68,6 +76,42 @@ export interface CellPosition {
 }
 
 interface CellSnapshot {
+  /**
+   * The container element the cell was rendered in at snapshot time. Used by
+   * the renderer to detect cross-container moves (e.g. pin / unpin shifts a
+   * column from `.st-body-main` to `.st-body-pinned-left`): the snapshot's
+   * `left`/`top` are in the source container's coordinate frame, so a FLIP
+   * applied in the destination container would slide the cell from a wrong
+   * visual origin. When the renderer sees the cell ended up in a different
+   * container, it treats it as a fresh cell (accordion grow from 0) instead
+   * of trying to FLIP across coordinate frames.
+   *
+   * `null` for `preLayouts` entries (conceptual positions for off-screen
+   * rows) — those are used only for in-band FLIP-in animations on sort,
+   * never for cross-container detection.
+   */
+  sourceContainer: HTMLElement | null;
+  /**
+   * Page-coord origin of {@link sourceContainer} captured at snapshot time
+   * (`getBoundingClientRect().left/top`). Combined with the container's
+   * page origin at {@link play} time, lets the FLIP delta compensate for
+   * the container's OWN shift on the page — which happens when an
+   * adjacent section changes width (e.g. pin/unpin moves the main body
+   * sideways because the pinned-left section just grew/shrank).
+   *
+   * Without this correction the inverse transform is computed only in
+   * container-local style coordinates, so siblings whose style.left
+   * shrunk to fill the gap left behind end up visually starting at
+   * (newContainerLeft + newStyleLeft + |reflow|) — i.e. roughly TWICE
+   * the visible reflow distance — and the user sees them slide much
+   * further than the column actually moved.
+   *
+   * Zero for `preLayouts` entries (no live container at capture time);
+   * those are conceptual destinations and the layout-shift correction
+   * doesn't apply.
+   */
+  sourceContainerLeft: number;
+  sourceContainerTop: number;
   left: number;
   top: number;
   /**
@@ -267,11 +311,23 @@ export class AnimationCoordinator {
     for (const container of args.containers) {
       if (!container) continue;
 
+      // Read the container's page-coord origin ONCE per container per
+      // capture so every cell snapshot in this container shares the same
+      // anchor. Used by play() to correct the FLIP delta for the
+      // container's own shift between capture and play (e.g. main body
+      // slides sideways when pinned-left resizes during a pin/unpin).
+      const containerRect = container.getBoundingClientRect();
+      const containerLeft = containerRect.left;
+      const containerTop = containerRect.top;
+
       // 1. DOM-rendered cells: read live position (handles in-flight transforms).
       const cells = collectRenderedCells(container);
       cells.forEach((element, cellId) => {
         if (!next.has(cellId)) {
-          next.set(cellId, this.readPosition(cellId, element));
+          next.set(
+            cellId,
+            this.readPosition(cellId, element, container, containerLeft, containerTop),
+          );
         }
       });
 
@@ -280,7 +336,10 @@ export class AnimationCoordinator {
       if (retained) {
         retained.forEach((element, cellId) => {
           if (!next.has(cellId)) {
-            next.set(cellId, this.readPosition(cellId, element));
+            next.set(
+              cellId,
+              this.readPosition(cellId, element, container, containerLeft, containerTop),
+            );
           }
         });
       }
@@ -300,7 +359,13 @@ export class AnimationCoordinator {
             // fromDom=false signals to play() that this position is conceptual
             // (potentially tens of thousands of pixels off-screen) and should
             // be compressed via scaleFlipDistance.
+            //
+            // sourceContainer is null and the container origins are 0:
+            // play() interprets this as "no container-shift correction".
             next.set(cellId, {
+              sourceContainer: null,
+              sourceContainerLeft: 0,
+              sourceContainerTop: 0,
               left: pos.left,
               top: pos.top,
               styleTop: pos.top,
@@ -313,6 +378,21 @@ export class AnimationCoordinator {
     }
 
     this.snapshot = next.size > 0 ? next : null;
+    // #region agent log
+    try {
+      const perContainer: Array<{ container: string; size: number; sample: string[] }> = [];
+      for (const c of args.containers) {
+        if (!c) continue;
+        const cells = collectRenderedCells(c);
+        perContainer.push({
+          container: c.className || c.tagName,
+          size: cells.size,
+          sample: Array.from(cells.keys()).slice(0, 5),
+        });
+      }
+      fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H1-H5',location:'AnimationCoordinator.ts:captureSnapshot',message:'snapshot captured',data:{snapshotSize:this.snapshot?.size ?? 0, perContainer},timestamp:Date.now()})}).catch(()=>{});
+    } catch {}
+    // #endregion
   }
 
   /**
@@ -331,6 +411,26 @@ export class AnimationCoordinator {
    */
   hasSnapshotEntry(cellId: string): boolean {
     return Boolean(this.snapshot?.has(cellId));
+  }
+
+  /**
+   * True when the snapshot has an entry for `cellId` AND the cell was
+   * rendered in `currentContainer` at snapshot time. Returns false when the
+   * cell came from a different container (cross-section pin/unpin) — its
+   * snapshot position is in another container's coordinate frame, so a
+   * FLIP applied locally would slide from a wrong visual origin and the
+   * destination renderer should treat the cell as fresh (accordion grow
+   * from 0 instead).
+   *
+   * Snapshot entries with `sourceContainer === null` (preLayouts /
+   * conceptual positions) are treated as same-container so the existing
+   * sort/reorder FLIP-from-off-screen behavior is preserved.
+   */
+  hasSnapshotEntryInContainer(cellId: string, currentContainer: HTMLElement): boolean {
+    const entry = this.snapshot?.get(cellId);
+    if (!entry) return false;
+    if (entry.sourceContainer === null) return true;
+    return entry.sourceContainer === currentContainer;
   }
 
   /**
@@ -409,6 +509,11 @@ export class AnimationCoordinator {
     element.style.pointerEvents = "none";
 
     map.set(cellId, element);
+    // #region agent log
+    try {
+      fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H2-H3',location:'AnimationCoordinator.ts:retainCell',message:'retained outgoing cell',data:{cellId,container:container.className,oldTop,oldLeft,newTop:newPosition.top,newLeft:newPosition.left,clippedTop,clippedLeft},timestamp:Date.now()})}).catch(()=>{});
+    } catch {}
+    // #endregion
   }
 
   /**
@@ -429,6 +534,23 @@ export class AnimationCoordinator {
     if (!map) return null;
     const element = map.get(cellId);
     if (!element) return null;
+    // Shrink-out ghosts have width/height pinned to 0 by inline style and
+    // are mid-CSS-transition; reclaiming them and snapping the size back to
+    // the final value via `updateBodyCellElement` would jump the cell from
+    // 0 → final in one frame instead of growing it. Tear the ghost down so
+    // the renderer creates a fresh cell. Also drop the snapshot entry the
+    // ghost contributed in `captureSnapshot` (retained-cell branch); that
+    // entry's positions were the cell's pre-shrink layout, but the user
+    // perceives the column as "newly appearing" — `hasSnapshotEntryInContainer`
+    // would otherwise return true and the renderer would skip the
+    // accordion grow-from-0 path.
+    if (element.hasAttribute(SHRINKING_OUT_ATTR)) {
+      this.cancelInFlight(cellId);
+      map.delete(cellId);
+      this.snapshot?.delete(cellId);
+      element.remove();
+      return null;
+    }
     this.cancelInFlight(cellId);
     map.delete(cellId);
     element.classList.remove(RETAINED_CLASS);
@@ -436,6 +558,82 @@ export class AnimationCoordinator {
     element.id = cellId;
     element.style.pointerEvents = "";
     return element;
+  }
+
+  /**
+   * Hand off a cell that the renderer would otherwise remove for an accordion
+   * shrink-out (column hide / pin-out from this section): the cell stays in
+   * place and its size in the named axis is animated to zero by the
+   * `.st-accordion-animating` CSS transition (width/height). Removed from the
+   * DOM after the transition completes.
+   *
+   * Used when there is no destination position for the cell in the current
+   * section's post-render layout — either because the column was hidden or
+   * because it moved to a different pinned section. In the moved-section
+   * case, the destination section creates a fresh cell that grows from zero
+   * width via the existing accordion incoming-cell path, so the visual
+   * effect is a synchronized shrink-here / grow-there pair rather than a
+   * cross-container slide (which would require translating coordinates
+   * between two different container coordinate frames).
+   */
+  shrinkOutCell(args: {
+    cellId: string;
+    element: HTMLElement;
+    container: HTMLElement;
+    axis: "horizontal" | "vertical";
+  }): void {
+    const { cellId, element, container, axis } = args;
+    // Tear down any previous in-flight transition for this id (FLIP from a
+    // prior sort, or an earlier shrink-out that's somehow still tracked) so
+    // we don't leak its cleanup timeout when we overwrite the inFlight slot.
+    this.cancelInFlight(cellId);
+    let map = this.retainedCells.get(container);
+    if (!map) {
+      map = new Map();
+      this.retainedCells.set(container, map);
+    }
+
+    // Drop a stale ghost with the same id to avoid leaking DOM (e.g. user
+    // toggles the same column on and off rapidly during the animation).
+    const existing = map.get(cellId);
+    if (existing && existing !== element) {
+      this.cancelInFlight(cellId);
+      existing.remove();
+    }
+
+    if (element.id) element.removeAttribute("id");
+    element.classList.add(RETAINED_CLASS);
+    element.setAttribute(RETAINED_ATTR, "true");
+    element.setAttribute(SHRINKING_OUT_ATTR, "true");
+    element.style.pointerEvents = "none";
+    if (axis === "horizontal") {
+      element.style.width = "0px";
+    } else {
+      element.style.height = "0px";
+    }
+
+    map.set(cellId, element);
+
+    // The accordion CSS transition (width/height) is on `.st-cell` /
+    // `.st-header-cell` while `.st-accordion-animating` is set on the root.
+    // We don't get a `transitionend` handle to it from the FLIP transform
+    // listener, so use a duration-based timeout for cleanup.
+    const cleanupTimeout = window.setTimeout(() => {
+      const m = this.retainedCells.get(container);
+      if (m && m.get(cellId) === element) {
+        m.delete(cellId);
+      }
+      element.remove();
+    }, this.duration + SAFETY_TIMEOUT_SLACK);
+
+    // Reuse the inFlight bookkeeping so cancel() and discardRetainedIfPresent
+    // can tear the timeout down cleanly.
+    this.inFlight.set(cellId, {
+      element,
+      cleanupTimeout,
+      transitionEndHandler: () => {},
+      isRetained: true,
+    });
   }
 
   /**
@@ -490,6 +688,24 @@ export class AnimationCoordinator {
     };
     const pending: Pending[] = [];
     const seen = new Set<string>();
+    // Per-play page-coord origin cache for each container we touch. Reading
+    // `getBoundingClientRect()` once per container per play call lets every
+    // cell in the consider() loop subtract the SAME container shift from
+    // its FLIP delta without re-paying the layout cost N times. The
+    // container's page origin only changes at layout boundaries, so it's
+    // safe to share within a single play.
+    const containerOriginCache = new Map<HTMLElement, { left: number; top: number }>();
+    const getPlayContainerOrigin = (
+      element: HTMLElement,
+    ): { left: number; top: number } => {
+      let cached = containerOriginCache.get(element);
+      if (!cached) {
+        const rect = element.getBoundingClientRect();
+        cached = { left: rect.left, top: rect.top };
+        containerOriginCache.set(element, cached);
+      }
+      return cached;
+    };
 
     const consider = (
       element: HTMLElement,
@@ -498,6 +714,15 @@ export class AnimationCoordinator {
       container: HTMLElement,
     ) => {
       if (seen.has(cellId)) return;
+      // Shrink-out ghosts are driven entirely by the accordion CSS
+      // width/height transition — they don't move position so the FLIP
+      // transform delta would be 0, and the retained-no-delta branch
+      // below removes the cell instantly. Mark seen and skip so the
+      // shrink animation gets to play out.
+      if (isRetained && element.hasAttribute(SHRINKING_OUT_ATTR)) {
+        seen.add(cellId);
+        return;
+      }
       let before = snapshot.get(cellId);
       // Accordion incoming origin: if this is an active (non-retained) cell
       // that has no snapshot entry but a synthetic origin was supplied (e.g.
@@ -508,6 +733,9 @@ export class AnimationCoordinator {
         const origin = incomingOrigins.get(cellId);
         if (origin) {
           before = {
+            sourceContainer: null,
+            sourceContainerLeft: 0,
+            sourceContainerTop: 0,
             left: origin.left,
             top: origin.top,
             styleTop: origin.top,
@@ -516,7 +744,35 @@ export class AnimationCoordinator {
           };
         }
       }
-      if (!before) return;
+      if (!before) {
+        // #region agent log
+        try {
+          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H5',location:'AnimationCoordinator.ts:play.consider.no-before',message:'incoming cell has no snapshot entry (no FLIP origin)',data:{cellId,container:container.className,isRetained},timestamp:Date.now()})}).catch(()=>{});
+        } catch {}
+        // #endregion
+        return;
+      }
+      // Cross-container snapshot: the cell was rendered in a different
+      // container at snapshot time (e.g. pin/unpin moved a column from
+      // `.st-body-main` to `.st-body-pinned-left`). The snapshot's
+      // left/top are in the other container's coordinate frame, so a
+      // FLIP applied here would slide from a visually wrong origin. Skip;
+      // the destination cell renderer treats this as a fresh cell and
+      // grows it from width 0 via the accordion path while the source
+      // section's renderer shrinks the old cell to width 0.
+      if (
+        !isRetained &&
+        before.sourceContainer !== null &&
+        before.sourceContainer !== container
+      ) {
+        // #region agent log
+        try {
+          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'POST-FIX',location:'AnimationCoordinator.ts:play.consider.cross-container-skip',message:'skipping cross-container FLIP',data:{cellId,fromContainer:(before.sourceContainer as HTMLElement).className,toContainer:container.className},timestamp:Date.now()})}).catch(()=>{});
+        } catch {}
+        // #endregion
+        seen.add(cellId);
+        return;
+      }
       // Skip cells with an open inline editor (animating breaks input focus).
       if (element.querySelector(".st-cell-editing")) return;
 
@@ -585,8 +841,41 @@ export class AnimationCoordinator {
           ? before.left
           : scaleFlipDistance(before.left, currentLeft, cellWidth, playMetrics, "x");
 
-      const dx = beforeLeftClipped - currentLeft;
-      const dy = beforeTopClipped - currentTop;
+      // Container-shift correction. The FLIP delta above is computed in
+      // container-local style coordinates, but the inverse transform is
+      // applied in page coordinates. When the container itself moved on
+      // the page between snapshot and play (e.g. main body shifts right
+      // because pinned-left just grew during a pin), the cell's visual
+      // page position post-render = newContainerLeft + currentLeft, but
+      // its visual pre-render position was oldContainerLeft + before.left.
+      // The needed visual delta is therefore:
+      //
+      //   dx_visual = (oldContainerLeft + before.left) - (newContainerLeft + currentLeft)
+      //             = (before.left - currentLeft) - (newContainerLeft - oldContainerLeft)
+      //             = dx_styleSpace - containerShift
+      //
+      // Without subtracting `containerShift`, siblings whose style.left
+      // shrunk to fill the gap left by a pinned-out column appear to
+      // animate roughly twice the actual visible reflow distance.
+      //
+      // Skipped for snapshots with no source container (preLayouts /
+      // synthetic incoming origins): those are conceptual positions that
+      // never had a real container anchor.
+      let containerShiftX = 0;
+      let containerShiftY = 0;
+      if (before.sourceContainer !== null) {
+        // Cross-container case is rejected above; here sourceContainer
+        // either equals `container` (siblings reflowing in their own
+        // section) or is the same container for a retained ghost.
+        const playOrigin = getPlayContainerOrigin(container);
+        containerShiftX = playOrigin.left - before.sourceContainerLeft;
+        containerShiftY = playOrigin.top - before.sourceContainerTop;
+      }
+
+      const dxRaw = beforeLeftClipped - currentLeft;
+      const dyRaw = beforeTopClipped - currentTop;
+      const dx = dxRaw - containerShiftX;
+      const dy = dyRaw - containerShiftY;
       if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) {
         // No visual movement — if this was a retained cell with no movement
         // (a degenerate case), still drop it so we don't leak DOM.
@@ -596,6 +885,11 @@ export class AnimationCoordinator {
 
       pending.push({ cellId, element, dx, dy, isRetained });
       seen.add(cellId);
+      // #region agent log
+      try {
+        fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H6',location:'AnimationCoordinator.ts:play.consider.pending',message:'cell will FLIP (with container-shift correction)',data:{cellId,container:container.className,isRetained,beforeTop:before.top,beforeLeft:before.left,currentTop,currentLeft,dxRaw,dyRaw,containerShiftX,containerShiftY,dx,dy,fromDom:before.fromDom},timestamp:Date.now()})}).catch(()=>{});
+      } catch {}
+      // #endregion
     };
 
     for (const container of args.containers) {
@@ -676,7 +970,13 @@ export class AnimationCoordinator {
     this.cancel();
   }
 
-  private readPosition(cellId: string, element: HTMLElement): CellSnapshot {
+  private readPosition(
+    cellId: string,
+    element: HTMLElement,
+    sourceContainer: HTMLElement,
+    sourceContainerLeft: number,
+    sourceContainerTop: number,
+  ): CellSnapshot {
     const styleTop = parsePx(element.style.top);
     const styleLeft = parsePx(element.style.left);
     const inFlight = this.inFlight.get(cellId);
@@ -686,6 +986,9 @@ export class AnimationCoordinator {
       if (parent) {
         const parentRect = parent.getBoundingClientRect();
         return {
+          sourceContainer,
+          sourceContainerLeft,
+          sourceContainerTop,
           left: rect.left - parentRect.left + parent.scrollLeft,
           top: rect.top - parentRect.top + parent.scrollTop,
           styleTop,
@@ -693,7 +996,16 @@ export class AnimationCoordinator {
           fromDom: true,
         };
       }
-      return { left: rect.left, top: rect.top, styleTop, styleLeft, fromDom: true };
+      return {
+        sourceContainer,
+        sourceContainerLeft,
+        sourceContainerTop,
+        left: rect.left,
+        top: rect.top,
+        styleTop,
+        styleLeft,
+        fromDom: true,
+      };
     }
     // Non-in-flight branch: style.top/left is the cell's *logical*
     // destination, not a viewport-bounded visual position. For columns far
@@ -701,6 +1013,9 @@ export class AnimationCoordinator {
     // current viewport — same regime as a preLayout entry — so we leave
     // fromDom=false and let play() compress the FLIP via scaleFlipDistance.
     return {
+      sourceContainer,
+      sourceContainerLeft,
+      sourceContainerTop,
       left: styleLeft,
       top: styleTop,
       styleTop,

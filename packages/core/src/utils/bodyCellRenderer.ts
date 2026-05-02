@@ -20,6 +20,7 @@ import {
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
+import type HeaderObject from "../types/HeaderObject";
 import type { AnimationCoordinator, CellPosition } from "../managers/AnimationCoordinator";
 
 // Re-export types for backward compatibility
@@ -48,6 +49,32 @@ const getRenderedSeparators = (
     renderedSeparatorsMap.set(container, new Map());
   }
   return renderedSeparatorsMap.get(container)!;
+};
+
+/**
+ * Collects every accessor that will still appear somewhere in the rendered
+ * header tree after the current change. Used during accordion-horizontal
+ * renders so the source section can distinguish between:
+ *
+ *   - Column hidden (accessor missing → shrink-out the outgoing cell)
+ *   - Column moved to a different pinned section (accessor still present →
+ *     drop the outgoing cell so it teleports into the destination)
+ *
+ * Walks the full tree (including children) and skips entries with
+ * `hide` or `excludeFromRender`. Cheap and only invoked when an accordion
+ * window is active, so it doesn't run on plain sort/scroll renders.
+ */
+const collectVisibleLeafAccessors = (headers: HeaderObject[]): Set<string> => {
+  const visible = new Set<string>();
+  const walk = (list: HeaderObject[]): void => {
+    for (const header of list) {
+      if (header.hide || header.excludeFromRender) continue;
+      visible.add(String(header.accessor));
+      if (header.children?.length) walk(header.children);
+    }
+  };
+  walk(headers);
+  return visible;
 };
 
 // Helper to filter visible cells based on horizontal scroll
@@ -321,6 +348,25 @@ export const renderBodyCells = (
     }
   }
 
+  // Active accordion axis (set on hide/show/pin/unpin renders). When this
+  // is "horizontal", outgoing cells whose column has no destination in any
+  // post-change section (true hide) shrink their width to 0 in place via
+  // the `.st-accordion-animating` CSS transition. Outgoing cells whose
+  // column merely moved to a different section (pin / unpin) are removed
+  // immediately so the column appears to teleport into its new section
+  // without an extra shrink-then-grow leg, while sibling cells in both
+  // sections still FLIP-shift to reflow around the change.
+  const accordionAxis =
+    animationCoordinator && context.accordionAxis ? context.accordionAxis : null;
+  // Set of accessor strings that are still visible somewhere in the
+  // post-change header tree. Used to distinguish "column moved sections"
+  // (still visible, just elsewhere) from "column hidden" (gone entirely)
+  // when deciding shrink-out vs teleport for an outgoing cell. Built once
+  // per render only when the accordion-horizontal window is active so the
+  // tree walk doesn't run on plain sort/scroll renders.
+  const visibleAccessorsAfterChange =
+    accordionAxis === "horizontal" ? collectVisibleLeafAccessors(context.headers) : null;
+
   // Get unique row indices for separator visibility (use full row list when provided so nested rows get separators)
   const visibleRowIndices = allRows?.length
     ? new Set(allRows.map((r) => r.position))
@@ -351,6 +397,56 @@ export const renderBodyCells = (
         return;
       }
 
+      // Accordion-horizontal shrink-out: the column truly disappeared from
+      // the table (hide/excludeFromRender). Hand the cell off to the
+      // coordinator to shrink its width to 0 in place via the active
+      // accordion CSS transition, then remove.
+      //
+      // If the column merely moved to a different pinned section, the
+      // accessor is still visible somewhere in the post-change tree — fall
+      // through to the plain `element.remove()` below so the moving column
+      // teleports into the destination section while siblings FLIP-shift
+      // around it. (Per product behavior: the moving column itself does not
+      // animate; only the columns adjusting to make room do.)
+      if (
+        animationCoordinator &&
+        accordionAxis === "horizontal" &&
+        animationCoordinator.shouldRetain(cellId)
+      ) {
+        const accessor = element.getAttribute("data-accessor") ?? "";
+        const movedToOtherSection =
+          visibleAccessorsAfterChange?.has(accessor) ?? false;
+        // #region agent log
+        try {
+          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'POST-FIX-PIN',location:'bodyCellRenderer.ts:remove-decision',message:'body cell remove decision',data:{cellId,accessor,container:container.className,movedToOtherSection,decision:movedToOtherSection?'teleport':'shrink-out'},timestamp:Date.now()})}).catch(()=>{});
+        } catch {}
+        // #endregion
+        if (!movedToOtherSection) {
+          animationCoordinator.shrinkOutCell({
+            cellId,
+            element,
+            container,
+            axis: accordionAxis,
+          });
+          renderedCells.delete(cellId);
+          return;
+        }
+        // Cross-section move: fall through to plain element.remove() below.
+        // The destination section will create a full-size cell (the snapshot
+        // is in a different container, so play.consider skips the FLIP and
+        // the create path skips the grow-from-0 because hasSnapshotEntry is
+        // true). End result: the moving column teleports into its new
+        // section while siblings in both sections still FLIP-shift to
+        // reflow around the change.
+      }
+
+      // #region agent log
+      if (animationCoordinator) {
+        try {
+          fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H2-H3',location:'bodyCellRenderer.ts:remove-no-retain',message:'body cell removed without retain (no FLIP-out)',data:{cellId,container:container.className,shouldRetain:animationCoordinator.shouldRetain(cellId),hasNewPos:Boolean(newPos),newCellLayoutSize:newCellLayout?.size ?? 0,accordionAxis},timestamp:Date.now()})}).catch(()=>{});
+        } catch {}
+      }
+      // #endregion
       element.remove();
       renderedCells.delete(cellId);
     }
@@ -432,8 +528,6 @@ export const renderBodyCells = (
   // CSS `transition: width/height` on `.st-accordion-animating` grows it
   // from zero to its final size. Sibling rows/cells continue to FLIP into
   // their new positions in parallel via {@link AnimationCoordinator.play}.
-  const accordionAxis =
-    animationCoordinator && context.accordionAxis ? context.accordionAxis : null;
   const accordionGrowFromZero: Array<{ element: HTMLElement; cell: AbsoluteBodyCell }> = [];
 
   cellsToCreate.forEach(({ cell, cellId }) => {
@@ -454,6 +548,16 @@ export const renderBodyCells = (
     if (
       accordionAxis &&
       animationCoordinator &&
+      // Only grow from zero on a TRUE expand: there is no snapshot entry
+      // anywhere for this cellId (e.g. row group expand revealed a new
+      // cell, or a column was unhidden / shown for the first time).
+      //
+      // For cross-section moves (pin / unpin), the snapshot has the cell
+      // in the SOURCE container. We deliberately skip the grow-from-0
+      // here so the moving column teleports into the destination at full
+      // size; play.consider's cross-container check skips the FLIP, so
+      // the cell simply appears at its new position. Sibling columns in
+      // both sections still FLIP-shift to reflow.
       !animationCoordinator.hasSnapshotEntry(cellId)
     ) {
       if (accordionAxis === "vertical") {

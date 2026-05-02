@@ -17,9 +17,33 @@ import {
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
 import { hasCollapsibleChildren } from "./collapseUtils";
+import type HeaderObject from "../types/HeaderObject";
 
 // Re-export types for backward compatibility
 export type { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
+
+/**
+ * Collects every accessor still present in the post-change header tree so
+ * the source section can distinguish "column hidden" (accessor missing →
+ * shrink-out the outgoing header cell) from "column moved sections"
+ * (accessor still present → drop it so it teleports into the destination).
+ *
+ * Walks the full tree (including children) and skips entries with
+ * `hide` or `excludeFromRender`. Mirrors the body-cell helper of the same
+ * shape so columns reach a consistent decision in both header and body.
+ */
+const collectVisibleHeaderAccessors = (headers: HeaderObject[]): Set<string> => {
+  const visible = new Set<string>();
+  const walk = (list: HeaderObject[]): void => {
+    for (const header of list) {
+      if (header.hide || header.excludeFromRender) continue;
+      visible.add(String(header.accessor));
+      if (header.children?.length) walk(header.children);
+    }
+  };
+  walk(headers);
+  return visible;
+};
 
 // Re-export cleanup function
 export { cleanupHeaderCellRendering } from "./headerCell/eventTracking";
@@ -73,12 +97,54 @@ export const renderHeaderCells = (
 
   const positionCache = getHeaderPositionCache(container);
 
+  // Active accordion axis for hide/show/pin/unpin renders (set by
+  // SimpleTableVanilla.beginAccordionAnimation via the render context).
+  // When "horizontal" and the column is being TRULY hidden (not just
+  // moved to another pinned section), outgoing header cells shrink to 0
+  // width via the `.st-accordion-animating` CSS transition instead of
+  // popping out. Columns that just changed pinned section teleport
+  // (plain remove + plain create at full size in the destination) while
+  // siblings still FLIP-shift to reflow.
+  const removalAccordionAxis =
+    context.animationCoordinator && context.accordionAxis ? context.accordionAxis : null;
+  const visibleAccessorsAfterChange =
+    removalAccordionAxis === "horizontal"
+      ? collectVisibleHeaderAccessors(context.headers)
+      : null;
+
   // Remove cells that are no longer visible (and from position cache)
   let removedAnyHeaderCell = false;
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
       positionCache.delete(cellId);
-      element.remove();
+      // Accordion shrink-out: only when the column is fully hidden in
+      // the post-change tree. For cross-section moves (pin/unpin), the
+      // accessor is still visible somewhere — fall through to plain
+      // element.remove() so the moving header teleports into the
+      // destination section.
+      const accessor = element.getAttribute("data-accessor") ?? "";
+      const movedToOtherSection =
+        visibleAccessorsAfterChange?.has(accessor) ?? false;
+      // #region agent log
+      try {
+        fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'POST-FIX-PIN',location:'headerCellRenderer.ts:remove-decision',message:'header cell remove decision',data:{cellId,accessor,container:container.className,removalAccordionAxis,movedToOtherSection,decision:(removalAccordionAxis==='horizontal'&&!movedToOtherSection&&context.animationCoordinator?.shouldRetain(cellId))?'shrink-out':'remove'},timestamp:Date.now()})}).catch(()=>{});
+      } catch {}
+      // #endregion
+      if (
+        removalAccordionAxis === "horizontal" &&
+        context.animationCoordinator &&
+        !movedToOtherSection &&
+        context.animationCoordinator.shouldRetain(cellId)
+      ) {
+        context.animationCoordinator.shrinkOutCell({
+          cellId,
+          element,
+          container,
+          axis: removalAccordionAxis,
+        });
+      } else {
+        element.remove();
+      }
       renderedCells.delete(cellId);
       removedAnyHeaderCell = true;
     }
@@ -194,6 +260,14 @@ export const renderHeaderCells = (
 
   // Second pass: batch create new cells (seed position cache so next update doesn't read DOM)
   cellsToCreate.forEach(({ cell, cellId, isLastMainAutoExpandColumn }) => {
+    // #region agent log
+    if (context.animationCoordinator) {
+      try {
+        const hasSnap = context.animationCoordinator.hasSnapshotEntry(cellId);
+        fetch('http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8cee78'},body:JSON.stringify({sessionId:'8cee78',hypothesisId:'H1-H5',location:'headerCellRenderer.ts:create',message:'header cell created',data:{cellId,container:container.className,hasSnapshotEntry:hasSnap,accordionAxis},timestamp:Date.now()})}).catch(()=>{});
+      } catch {}
+    }
+    // #endregion
     const cellElement = createHeaderCellElement(
       cell,
       context,
@@ -212,6 +286,14 @@ export const renderHeaderCells = (
     if (
       accordionAxis &&
       context.animationCoordinator &&
+      // Only grow from zero on a TRUE expand (no snapshot entry anywhere
+      // for this cellId — e.g. the column was just unhidden, or a parent
+      // collapsible header just expanded). For cross-section moves
+      // (pin / unpin), the snapshot has the cell in the SOURCE container,
+      // so this returns false and the destination cell is created at
+      // full size, teleporting into place. play.consider's
+      // cross-container check then skips the FLIP, while sibling cells
+      // in both sections continue to FLIP-shift around the moving column.
       !context.animationCoordinator.hasSnapshotEntry(cellId)
     ) {
       if (accordionAxis === "vertical") {
