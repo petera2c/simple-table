@@ -26,6 +26,8 @@ import type { AnimationCoordinator, CellPosition } from "../../managers/Animatio
 import type { AccordionAxis } from "../../utils/accordionAnimation";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection } from "../../utils/generalUtils";
+import type TableRow from "../../types/TableRow";
+import { rowIdToString } from "../../utils/rowUtils";
 
 export interface TableRendererDeps {
   /** Accordion animation axis for the in-flight collapse/expand. See {@link RenderContext.accordionAxis}. */
@@ -670,6 +672,27 @@ export class TableRenderer {
       // (main hides scrollbars and does not reserve the gutter).
       const scrollbarWidth = container.offsetWidth - container.clientWidth;
 
+      const stickySectionColStart = {
+        left: 0,
+        main:
+          pinnedLeftHeaders.length > 0 ? this.sectionRenderer.getNextColIndex("left") : 0,
+        right:
+          mainHeaders.length > 0
+            ? this.sectionRenderer.getNextColIndex("main")
+            : pinnedLeftHeaders.length > 0
+              ? this.sectionRenderer.getNextColIndex("left")
+              : 0,
+      };
+
+      const rowsForBodyCellIndices = rowsToRender.filter(
+        (r: TableRow) => !r.nestedTable && !r.stateIndicator,
+      );
+      const stickyBodyRowIndexByRowKey = new Map<string, number>();
+      rowsForBodyCellIndices.forEach((tr: TableRow, rowIndex: number) => {
+        const key = tr.stableRowKey ?? rowIdToString(tr.rowId);
+        stickyBodyRowIndexByRowKey.set(key, rowIndex);
+      });
+
       // Create sticky parents container
       this.stickyParentsContainer = createStickyParentsContainer(
         {
@@ -683,6 +706,8 @@ export class TableRenderer {
           scrollTop,
           scrollbarWidth,
           stickyParents: processedResult.stickyParents,
+          stickySectionColStart,
+          stickyBodyRowIndexByRowKey,
         },
         {
           collapsedHeaders: deps.collapsedHeaders,

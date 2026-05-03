@@ -284,14 +284,12 @@ input {
   left: 0;
   display: flex;
   z-index: 10;
-  pointer-events: none;
 }
 
 .st-sticky-section-left,
 .st-sticky-section-main,
 .st-sticky-section-right {
   overflow: hidden;
-  pointer-events: none;
 }
 
 .st-sticky-section-left {

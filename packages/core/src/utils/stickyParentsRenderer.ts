@@ -24,6 +24,16 @@ export interface StickyParentsContainerProps {
   scrollTop: number;
   scrollbarWidth: number;
   stickyParents: TableRow[];
+  /**
+   * Global `colIndex` of the first leaf column in each sticky strip section,
+   * matching {@link SectionRenderer} body sections (pinned left, main, right).
+   */
+  stickySectionColStart: { left: number; main: number; right: number };
+  /**
+   * Row key (`stableRowKey` ?? `rowIdToString(rowId)`) → body slice `rowIndex`
+   * for the current `rowsToRender` band, so selection matches virtualized body cells.
+   */
+  stickyBodyRowIndexByRowKey: Map<string, number>;
 }
 
 export interface StickyParentsRenderContext {
@@ -199,6 +209,10 @@ interface StickySectionParams {
   width?: number;
   scrollSyncGroup?: string;
   sectionScrollController?: SectionScrollController | null;
+  /** Global column index for the first leaf in this section (same as body `startColIndex`). */
+  startColIndex: number;
+  /** Aligns sticky cell `rowIndex` with virtualized body rows for selection. */
+  resolveBodyRowIndex: (tableRow: TableRow) => number;
 }
 
 // Create a sticky section (cells use absolute positioning like main body)
@@ -218,6 +232,8 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     width,
     scrollSyncGroup,
     sectionScrollController,
+    startColIndex,
+    resolveBodyRowIndex,
   } = params;
   const section = document.createElement("div");
   section.className = pinned ? `st-sticky-section-${pinned}` : "st-sticky-section-main";
@@ -279,12 +295,13 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     rowContainer.setAttribute("data-index", String(tableRow.position));
 
     // Create cells for this row (absolute positioning, same as main body)
-    leafHeaders.forEach((header, colIndex) => {
+    leafHeaders.forEach((header, leafIndex) => {
       const position = headerPositions.get(header.accessor);
+      const colIndex = startColIndex + leafIndex;
       const cell: AbsoluteBodyCell = {
         header,
         row: tableRow.row,
-        rowIndex: tableRow.position,
+        rowIndex: resolveBodyRowIndex(tableRow),
         colIndex,
         rowId: rowIdToString(tableRow.rowId),
         stableRowKey: tableRow.stableRowKey,
@@ -340,9 +357,14 @@ export const createStickyParentsContainer = (
   props: StickyParentsContainerProps,
   context: StickyParentsRenderContext,
 ): HTMLElement | null => {
-  const { stickyParents } = props;
+  const { stickyParents, stickySectionColStart, stickyBodyRowIndexByRowKey } = props;
 
   if (stickyParents.length === 0) return null;
+
+  const resolveBodyRowIndex = (tableRow: TableRow): number => {
+    const key = tableRow.stableRowKey ?? rowIdToString(tableRow.rowId);
+    return stickyBodyRowIndexByRowKey.get(key) ?? tableRow.position;
+  };
 
   // Calculate tree transition offset
   const { treeTransitionOffset, offsetStartIndex } = calculateTreeTransitionOffset(
@@ -402,6 +424,8 @@ export const createStickyParentsContainer = (
       width: props.pinnedLeftWidth,
       scrollSyncGroup: "pinned-left",
       sectionScrollController,
+      startColIndex: stickySectionColStart.left,
+      resolveBodyRowIndex,
     });
     container.appendChild(leftSection);
   }
@@ -420,6 +444,8 @@ export const createStickyParentsContainer = (
     stickyParents,
     treeTransitionOffset,
     sectionScrollController,
+    startColIndex: stickySectionColStart.main,
+    resolveBodyRowIndex,
   });
   container.appendChild(centerSection);
 
@@ -440,6 +466,8 @@ export const createStickyParentsContainer = (
       width: props.pinnedRightWidth,
       scrollSyncGroup: "pinned-right",
       sectionScrollController,
+      startColIndex: stickySectionColStart.right,
+      resolveBodyRowIndex,
     });
     container.appendChild(rightSection);
   }
