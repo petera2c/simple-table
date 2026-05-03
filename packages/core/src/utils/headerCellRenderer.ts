@@ -166,6 +166,10 @@ export const renderHeaderCells = (
     } else {
       // Use cached position to detect change (avoid DOM reads / layout thrash)
       const cellElement = renderedCells.get(cellId)!;
+      // Keep grid column index in sync when columns reorder / pin / hide so
+      // SelectionManager.syncHeaderSelectionClasses (reads aria-colindex) matches
+      // body cells' data-col-index.
+      cellElement.setAttribute("aria-colindex", String(cell.colIndex + 1));
       const cached = positionCache.get(cellId);
       const positionChanged =
         !cached ||

@@ -291,12 +291,23 @@ export const createBodyCellElement = (
       event.preventDefault();
       const target = event.target as HTMLElement;
       if (target.closest(".st-expand-icon-container")) return;
-      context.handleMouseDown(cellData);
+      const domRi = parseInt(cellElement.getAttribute("data-row-index") ?? "-1", 10);
+      const domCi = parseInt(cellElement.getAttribute("data-col-index") ?? "-1", 10);
+      const domRid = cellElement.getAttribute("data-row-id");
+      if (domRi < 0 || domCi < 0 || domRid === null) return;
+      context.handleMouseDown({ rowIndex: domRi, colIndex: domCi, rowId: domRid });
     };
 
     const handleMouseOver = (event: Event) => {
       const e = event as MouseEvent;
-      context.handleMouseOver(cellData, e.clientX, e.clientY);
+      const domRi = parseInt(cellElement.getAttribute("data-row-index") ?? "-1", 10);
+      const domCi = parseInt(cellElement.getAttribute("data-col-index") ?? "-1", 10);
+      const domRid = cellElement.getAttribute("data-row-id");
+      const cellFromEl =
+        domRi >= 0 && domCi >= 0 && domRid !== null
+          ? { rowIndex: domRi, colIndex: domCi, rowId: domRid }
+          : cellData;
+      context.handleMouseOver(cellFromEl, e.clientX, e.clientY);
     };
 
     addTrackedEventListener(cellElement, "mousedown", handleMouseDown);
@@ -343,11 +354,13 @@ export const createBodyCellElement = (
 
       const currentRow = cellLiveRefMap.get(cellElement)?.row ?? row;
       const currentValue = getNestedValue(currentRow, header.accessor);
+      const clickRi = parseInt(cellElement.getAttribute("data-row-index") ?? String(rowIndex), 10);
+      const clickCi = parseInt(cellElement.getAttribute("data-col-index") ?? String(colIndex), 10);
       context.onCellClick?.({
         accessor: header.accessor,
-        colIndex,
+        colIndex: clickCi,
         row: currentRow,
-        rowIndex,
+        rowIndex: clickRi,
         value: currentValue,
       });
     };

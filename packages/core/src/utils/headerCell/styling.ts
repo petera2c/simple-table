@@ -318,7 +318,7 @@ export const updateHeaderCellElement = (
   context: HeaderRenderContext,
   isLastMainAutoExpandColumn: boolean,
 ): void => {
-  const { header } = cell;
+  const { header, colIndex } = cell;
 
   cellElement.className = calculateHeaderCellClasses(
     cell,
@@ -328,6 +328,7 @@ export const updateHeaderCellElement = (
 
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;
+  cellElement.setAttribute("aria-colindex", String(colIndex + 1));
   // Honor the in-flight accordion grow marker (see body-cell counterpart in
   // ./styling/updateBodyCellElement). Without this, a same-tick re-render
   // after a column collapse/expand toggle would overwrite the inline 0 size
