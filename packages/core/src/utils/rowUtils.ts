@@ -366,6 +366,33 @@ export const generateStableRowKey = (params: {
 };
 
 /**
+ * Canonical string key for per-row expandable UI state: {@link expandedRows},
+ * {@link collapsedRows}, and entries in {@link rowStateMap} (loading/error/empty).
+ *
+ * Mirrors {@link TableRow.stableRowKey} whenever it is defined so expand state survives
+ * sort/filter reorder while positional `rowId` indices change.
+ * Falls back to {@link rowIdToString}(rowId) for synthetic rows without a stable key.
+ */
+export const expandStateKey = (tableRow: {
+  stableRowKey?: string;
+  rowId: (string | number)[];
+}): string => {
+  if (tableRow.stableRowKey) return tableRow.stableRowKey;
+  return rowIdToString(tableRow.rowId);
+};
+
+/**
+ * Stable identity for full-width chrome rows (nested grid, loading/error state)
+ * under an expanded parent. Parent {@link expandStateKey} survives sort; path-based
+ * `rowId` does not, so SectionRenderer must key DOM maps on this instead.
+ */
+export const nestedChromeRowKey = (
+  parentExpandStateKey: string | number,
+  groupingKey: string | undefined,
+): string =>
+  `${String(parentExpandStateKey)}\u001Fnested-chrome\u001F${String(groupingKey ?? "")}`;
+
+/**
  * Get nested rows from a row based on the grouping path
  */
 export const getNestedRows = (row: Row, groupingKey: string): Row[] => {
@@ -388,7 +415,8 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
 
 /**
  * Determine if a row is expanded based on expandedDepths and manual row overrides
- * @param rowId - The ID of the row to check
+ * @param expandStateRowId - Canonical key for expandable row state ({@link expandStateKey}).
+ * Matches keys in expandedRows/collapsedRows (stable across sort/filter when stableRowKey is used).
  * @param depth - The depth level of the row (0-indexed)
  * @param expandedDepths - Set of depth levels that are expanded
  * @param expandedRows - Map of row IDs to their depths for rows that user wants expanded
@@ -396,13 +424,13 @@ export const hasNestedRows = (row: Row, groupingKey?: string): boolean => {
  * @returns true if the row is expanded, false otherwise
  */
 export const isRowExpanded = (
-  rowId: string | number,
+  expandStateRowId: string | number,
   depth: number,
   expandedDepths: Set<number>,
   expandedRows: Map<string, number>,
   collapsedRows: Map<string, number>,
 ): boolean => {
-  const rowIdStr = String(rowId);
+  const rowIdStr = String(expandStateRowId);
   const isManuallyExpanded = expandedRows.has(rowIdStr) && expandedRows.get(rowIdStr) === depth;
   const isManuallyCollapsed = collapsedRows.has(rowIdStr) && collapsedRows.get(rowIdStr) === depth;
 
@@ -532,12 +560,12 @@ export const flattenRowsWithGrouping = ({
       position++;
       displayPosition++;
 
-      // Convert row ID array to string for use as Map/Set key
-      const rowIdKey = rowIdToString(rowId);
+      // Sort/filter-stable key for expand/collapse/row-state maps (see expandStateKey).
+      const rowExpandKey = expandStateKey(tableRow);
 
       // Check if row should be expanded
       const isExpanded = isRowExpanded(
-        rowIdKey,
+        rowExpandKey,
         currentDepth,
         expandedDepths,
         expandedRows,
@@ -546,7 +574,7 @@ export const flattenRowsWithGrouping = ({
 
       // If row is expanded and has nested data for the current grouping level
       if (isExpanded && currentDepth < rowGrouping.length) {
-        const rowState = rowStateMap?.get(rowIdKey);
+        const rowState = rowStateMap?.get(rowExpandKey);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
         // Check if any header with expandable=true has a nestedTable configuration
@@ -588,6 +616,7 @@ export const flattenRowsWithGrouping = ({
             rowId: nestedGridRowPath, // Nested grid uses path as ID
             rowPath: nestedGridRowPath,
             rowIndexPath,
+            stableRowKey: nestedChromeRowKey(rowExpandKey, currentGroupingKey),
             nestedTable: {
               parentRow: row,
               expandableHeader,
@@ -618,8 +647,9 @@ export const flattenRowsWithGrouping = ({
               rowId: stateRowPath, // State indicator uses path as ID
               rowPath: stateRowPath,
               rowIndexPath,
+              stableRowKey: nestedChromeRowKey(rowExpandKey, currentGroupingKey),
               stateIndicator: {
-                parentRowId: rowIdKey,
+                parentRowId: rowExpandKey,
                 parentRow: row,
                 state: rowState,
               },

@@ -6,7 +6,9 @@ import TableRow from "../types/TableRow";
 import { flattenAllHeaders } from "../utils/headerUtils";
 import {
   generateRowId,
-  rowIdToString,
+  generateStableRowKey,
+  expandStateKey,
+  nestedChromeRowKey,
   getNestedRows,
   isRowExpanded,
   calculateNestedGridHeight,
@@ -214,6 +216,17 @@ export class RowManager {
           groupingKey: undefined,
         });
 
+        const stableRowKey = generateStableRowKey({
+          getRowId: this.config.getRowId,
+          row,
+          depth: 0,
+          index,
+          rowPath,
+          rowIndexPath,
+          groupingKey: undefined,
+          parentStableKey: null,
+        });
+
         return {
           row,
           depth: 0,
@@ -225,6 +238,7 @@ export class RowManager {
           rowIndexPath,
           absoluteRowIndex: index,
           isLastGroupRow: false,
+          stableRowKey,
         };
       });
       
@@ -250,7 +264,8 @@ export class RowManager {
       currentDepth: number,
       parentIdPath: (string | number)[] = [],
       parentIndexPath: number[] = [],
-      parentIndices: number[] = []
+      parentIndices: number[] = [],
+      parentStableKey: string | null = null
     ): void => {
       currentRows.forEach((row, index) => {
         const currentGroupingKey = rowGrouping[currentDepth];
@@ -269,6 +284,17 @@ export class RowManager {
           groupingKey: currentGroupingKey,
         });
 
+        const stableRowKey = generateStableRowKey({
+          getRowId: this.config.getRowId,
+          row,
+          depth: currentDepth,
+          index,
+          rowPath,
+          rowIndexPath,
+          groupingKey: currentGroupingKey,
+          parentStableKey,
+        });
+
         const isLastGroupRow = currentDepth === 0;
         const currentRowIndex = result.length;
 
@@ -284,16 +310,17 @@ export class RowManager {
           rowIndexPath,
           absoluteRowIndex: position,
           parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
+          stableRowKey,
         };
         result.push(mainRow);
         paginatableRowsBuilder.push(mainRow);
 
         displayPosition++;
 
-        const rowIdKey = rowIdToString(rowId);
+        const rowExpandKey = expandStateKey(mainRow);
 
         const isExpanded = isRowExpanded(
-          rowIdKey,
+          rowExpandKey,
           currentDepth,
           this.state.expandedDepths,
           this.state.expandedRows,
@@ -301,7 +328,7 @@ export class RowManager {
         );
 
         if (isExpanded && currentDepth < rowGrouping.length) {
-          const rowState = this.state.rowStateMap?.get(rowIdKey);
+          const rowState = this.state.rowStateMap?.get(rowExpandKey);
           const nestedRows = getNestedRows(row, currentGroupingKey);
 
           const expandableHeader = this.config.headers.find((h) => h.expandable && h.nestedTable);
@@ -332,6 +359,7 @@ export class RowManager {
             heightOffsets.push([nestedGridPosition, extraHeight]);
 
             const nestedGridRowPath = [...rowPath, currentGroupingKey];
+            const nestedDomKey = nestedChromeRowKey(rowExpandKey, currentGroupingKey);
             result.push({
               row: {},
               depth: currentDepth + 1,
@@ -342,6 +370,7 @@ export class RowManager {
               rowId: nestedGridRowPath,
               rowPath: nestedGridRowPath,
               rowIndexPath,
+              stableRowKey: nestedDomKey,
               nestedTable: {
                 parentRow: row,
                 expandableHeader,
@@ -369,8 +398,9 @@ export class RowManager {
                 rowId: stateRowPath,
                 rowPath: stateRowPath,
                 rowIndexPath,
+                stableRowKey: nestedChromeRowKey(rowExpandKey, currentGroupingKey),
                 stateIndicator: {
-                  parentRowId: rowIdKey,
+                  parentRowId: rowExpandKey,
                   parentRow: row,
                   state: rowState,
                 },
@@ -401,7 +431,7 @@ export class RowManager {
             processRows(nestedRows, currentDepth + 1, nestedIdPath, nestedIndexPath, [
               ...parentIndices,
               currentRowIndex,
-            ]);
+            ], stableRowKey);
           }
         }
 
@@ -411,7 +441,7 @@ export class RowManager {
       });
     };
 
-    processRows(rows, 0, [], [], []);
+    processRows(rows, 0, [], [], [], null);
 
     return {
       flattenedRows: result,

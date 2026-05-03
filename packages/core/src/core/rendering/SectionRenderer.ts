@@ -12,7 +12,7 @@ import {
   cleanupBodyCellRendering,
 } from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
-import { rowIdToString } from "../../utils/rowUtils";
+import { rowIdToString, expandStateKey, calculateFinalNestedGridHeight } from "../../utils/rowUtils";
 import { getCellId } from "../../utils/cellUtils";
 import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
@@ -25,7 +25,6 @@ import {
   createNestedGridSpacer,
   type NestedGridRowRenderContext,
 } from "../../utils/nestedGridRowRenderer";
-import { calculateFinalNestedGridHeight } from "../../utils/rowUtils";
 import { createStateRow, type StateRowRenderContext } from "../../utils/stateRowRenderer";
 
 export interface HeaderSectionParams {
@@ -188,10 +187,8 @@ export class SectionRenderer {
   private nextColIndexMap: Map<string, number> = new Map();
 
   // State row elements per section.
-  // Keyed by the row's stable id (rowIdToString(tableRow.rowId)) rather than its
-  // numeric `position`, because `position` shifts whenever an unrelated row
-  // above expands/collapses — keying by position would tear down and rebuild
-  // the same loading/error/empty row on every shift, defeating animations.
+  // Keyed by {@link expandStateKey}(tableRow) (state rows carry a sort-stable
+  // stableRowKey) rather than numeric `position` or path-based rowId.
   private stateRowsMap: Map<
     string,
     Map<
@@ -205,10 +202,9 @@ export class SectionRenderer {
   > = new Map();
 
   // Nested grid row elements per section.
-  // Keyed by the parent row's stable id (rowIdToString(tableRow.rowId)) rather than
-  // its `position`, because `position` shifts whenever rows above expand/collapse —
-  // keying by position caused the same nested SimpleTable to be torn down and rebuilt
-  // every render, defeating any sliding animation.
+  // Keyed by {@link expandStateKey}(tableRow) (nested/state rows carry a sort-stable
+  // stableRowKey) rather than path-based rowId, which includes indices that change
+  // after sort — mismatches tore down the nested SimpleTable and killed slide animations.
   private nestedGridRowsMap: Map<
     string,
     Map<
@@ -534,11 +530,7 @@ export class SectionRenderer {
       ? `transform ${animationCoordinator!.getDuration()}ms ${animationCoordinator!.getEasing()}, height ${animationCoordinator!.getDuration()}ms ${animationCoordinator!.getEasing()}`
       : "";
     const nestedRows = rows.filter((r) => r.nestedTable);
-    // Identify nested rows by their parent's stable rowId path, NOT by `position`
-    // (which is just the index into the flattened-rows array and shifts whenever
-    // an unrelated row above expands/collapses — that shift was making us drop
-    // and recreate the nested SimpleTable instance every time).
-    const currentKeys = new Set(nestedRows.map((r) => rowIdToString(r.rowId)));
+    const currentKeys = new Set(nestedRows.map((r) => expandStateKey(r)));
 
     let map = this.nestedGridRowsMap.get(sectionKey);
     if (!map) {
@@ -569,7 +561,7 @@ export class SectionRenderer {
     };
 
     nestedRows.forEach((tableRow) => {
-      const stableKey = rowIdToString(tableRow.rowId);
+      const stableKey = expandStateKey(tableRow);
       const existing = map!.get(stableKey);
 
       if (existing) {
@@ -707,7 +699,7 @@ export class SectionRenderer {
     animationCoordinator: AnimationCoordinator | undefined,
   ): void {
     const stateRows = rows.filter((r) => r.stateIndicator);
-    const currentKeys = new Set(stateRows.map((r) => rowIdToString(r.rowId)));
+    const currentKeys = new Set(stateRows.map((r) => expandStateKey(r)));
 
     let map = this.stateRowsMap.get(sectionKey);
     if (!map) {
@@ -743,7 +735,7 @@ export class SectionRenderer {
     };
 
     stateRows.forEach((tableRow, i) => {
-      const stableKey = rowIdToString(tableRow.rowId);
+      const stableKey = expandStateKey(tableRow);
       const newTop = calculateRowTopPosition({
         position: tableRow.position,
         rowHeight: context.rowHeight,

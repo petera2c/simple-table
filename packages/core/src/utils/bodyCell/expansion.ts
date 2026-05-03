@@ -1,6 +1,6 @@
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
-import { isRowExpanded, rowIdToString } from "../rowUtils";
+import { isRowExpanded, expandStateKey } from "../rowUtils";
 import { cellLiveRefMap } from "./styling";
 
 // Create expand/collapse icon container for row grouping
@@ -36,12 +36,11 @@ export const createExpandIcon = (
 
     // The `cell` object captured in this closure is from the render that
     // created the DOM node. After a later sort/filter the same cell DOM is
-    // reused (via stableRowKey), so the closure's `cell.rowId` becomes stale:
-    // it carries the row's PRE-SORT positional rowId, while `flattenRows`
-    // rebuilds rowIds from the new positions on every render. To keep
-    // `setExpandedRows` / `isRowExpanded` in sync with what the renderer
-    // computes, we resolve the LIVE rowId at click time from the cell DOM's
-    // live ref (kept current by `updateBodyCellElement`).
+    // reused (via stableRowKey), so the closure's positional `cell.rowId` string
+    // can desync from freshly computed rowIds. We read the LIVE `tableRow`
+    // from the cell DOM's live ref (updated in `updateBodyCellElement`) and
+    // derive the expand-state key with `expandStateKey` so toggles match
+    // `flattenRows` / `isRowExpanded` after reorder.
     //
     // We deliberately keep the closure's `row`, `rowIndexPath`, and `rowPath`
     // for the consumer callback below: `rowIndexPath` is documented across
@@ -54,14 +53,14 @@ export const createExpandIcon = (
     const cellElement = outerContainer.closest<HTMLElement>("[data-row-id]");
     const liveRef = cellElement ? cellLiveRefMap.get(cellElement) : undefined;
     const liveTableRow = liveRef?.tableRow ?? cell.tableRow;
-    const rowId = rowIdToString(liveTableRow.rowId);
+    const expandRowKey = expandStateKey(liveTableRow);
     const depth = liveTableRow.depth;
 
     const expandedDepthsSet = new Set(context.expandedDepths);
     const currentExpandedRows = context.getExpandedRows ? context.getExpandedRows() : context.expandedRows;
     const currentCollapsedRows = context.getCollapsedRows ? context.getCollapsedRows() : context.collapsedRows;
     const currentIsExpanded = isRowExpanded(
-      rowId,
+      expandRowKey,
       depth,
       expandedDepthsSet,
       currentExpandedRows,
@@ -74,30 +73,30 @@ export const createExpandIcon = (
       // Collapse
       context.setCollapsedRows((prev) => {
         const next = new Map(prev);
-        next.set(rowId, depth);
+        next.set(expandRowKey, depth);
         return next;
       });
       context.setExpandedRows((prev) => {
         const next = new Map(prev);
-        next.delete(rowId);
+        next.delete(expandRowKey);
         return next;
       });
       // Clear row state
       context.setRowStateMap((prevMap) => {
         const newMap = new Map(prevMap);
-        newMap.delete(rowId);
+        newMap.delete(expandRowKey);
         return newMap;
       });
     } else {
       // Expand
       context.setExpandedRows((prev) => {
         const next = new Map(prev);
-        next.set(rowId, depth);
+        next.set(expandRowKey, depth);
         return next;
       });
       context.setCollapsedRows((prev) => {
         const next = new Map(prev);
-        next.delete(rowId);
+        next.delete(expandRowKey);
         return next;
       });
     }
@@ -110,8 +109,8 @@ export const createExpandIcon = (
         setTimeout(() => {
           context.setRowStateMap((prev) => {
             const newMap = new Map(prev);
-            const currentState = newMap.get(rowId) || {};
-            newMap.set(rowId, { ...currentState, loading, triggerSection });
+            const currentState = newMap.get(expandRowKey) || {};
+            newMap.set(expandRowKey, { ...currentState, loading, triggerSection });
             return newMap;
           });
         }, 0);
@@ -120,8 +119,8 @@ export const createExpandIcon = (
       const setError = (error: string | null) => {
         context.setRowStateMap((prev) => {
           const newMap = new Map(prev);
-          const currentState = newMap.get(rowId) || {};
-          newMap.set(rowId, { ...currentState, error, loading: false, triggerSection });
+          const currentState = newMap.get(expandRowKey) || {};
+          newMap.set(expandRowKey, { ...currentState, error, loading: false, triggerSection });
           return newMap;
         });
       };
@@ -129,8 +128,8 @@ export const createExpandIcon = (
       const setEmpty = (isEmpty: boolean, message?: string) => {
         context.setRowStateMap((prev) => {
           const newMap = new Map(prev);
-          const currentState = newMap.get(rowId) || {};
-          newMap.set(rowId, { ...currentState, isEmpty, loading: false, triggerSection });
+          const currentState = newMap.get(expandRowKey) || {};
+          newMap.set(expandRowKey, { ...currentState, isEmpty, loading: false, triggerSection });
           return newMap;
         });
       };

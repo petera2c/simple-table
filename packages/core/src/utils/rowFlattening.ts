@@ -5,8 +5,9 @@ import TableRow from "../types/TableRow";
 import {
   generateRowId,
   generateStableRowKey,
-  rowIdToString,
   getNestedRows,
+  expandStateKey,
+  nestedChromeRowKey,
   isRowExpanded,
   calculateNestedGridHeight,
   calculateFinalNestedGridHeight,
@@ -169,10 +170,11 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
 
       displayPosition++;
 
-      const rowIdKey = rowIdToString(rowId);
+      /** Sort/filter-stable key — {@link expandedRows} uses this instead of positional rowId. */
+      const rowExpandKey = expandStateKey({ stableRowKey, rowId });
 
       const isExpanded = isRowExpanded(
-        rowIdKey,
+        rowExpandKey,
         currentDepth,
         expandedDepths,
         expandedRows,
@@ -180,7 +182,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
       );
 
       if (isExpanded && currentDepth < rowGrouping.length) {
-        const rowState = rowStateMap?.get(rowIdKey);
+        const rowState = rowStateMap?.get(rowExpandKey);
         const nestedRows = getNestedRows(row, currentGroupingKey);
 
         const expandableHeader = headers.find((h) => h.expandable && h.nestedTable);
@@ -221,6 +223,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
             rowId: nestedGridRowPath,
             rowPath: nestedGridRowPath,
             rowIndexPath,
+            stableRowKey: nestedChromeRowKey(rowExpandKey, currentGroupingKey),
             nestedTable: {
               parentRow: row,
               expandableHeader,
@@ -248,8 +251,9 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
               rowId: stateRowPath,
               rowPath: stateRowPath,
               rowIndexPath,
+              stableRowKey: nestedChromeRowKey(rowExpandKey, currentGroupingKey),
               stateIndicator: {
-                parentRowId: rowIdKey,
+                parentRowId: rowExpandKey,
                 parentRow: row,
                 state: rowState,
               },

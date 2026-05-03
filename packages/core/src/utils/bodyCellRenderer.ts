@@ -12,7 +12,7 @@ import {
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
-import { isRowExpanded } from "./rowUtils";
+import { isRowExpanded, expandStateKey } from "./rowUtils";
 import { applyRowSeparatorSectionWidth, createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
@@ -477,7 +477,7 @@ export const renderBodyCells = (
           const currentExpandedRows = context.getExpandedRows?.() ?? context.expandedRows;
           const currentCollapsedRows = context.getCollapsedRows?.() ?? context.collapsedRows;
           const currentIsExpanded = isRowExpanded(
-            cell.rowId,
+            expandStateKey(cell.tableRow),
             cell.depth,
             expandedDepthsSet,
             currentExpandedRows,
