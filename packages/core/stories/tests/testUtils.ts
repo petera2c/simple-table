@@ -69,6 +69,21 @@ export const waitForTable = async (timeout = 5000): Promise<void> => {
   throw new Error("Table did not render within timeout");
 };
 
+/** Poll until predicate returns true or timeout (reduces flake vs fixed setTimeout). */
+export async function waitUntil(
+  predicate: () => boolean,
+  options?: { timeoutMs?: number; intervalMs?: number },
+): Promise<void> {
+  const timeoutMs = options?.timeoutMs ?? 5000;
+  const intervalMs = options?.intervalMs ?? 50;
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (predicate()) return;
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+  throw new Error("waitUntil timed out");
+}
+
 export const validateBasicTableStructure = async (canvasElement: HTMLElement): Promise<void> => {
   await waitForTable();
 
