@@ -193,6 +193,8 @@ input {
 .st-header-container.st-header-scroll-padding::after {
   content: "";
   display: block;
+  /* `*` does not target ::after; border-box keeps the bottom border inside the flex line. */
+  box-sizing: border-box;
   width: var(--st-after-width, default-width);
   flex-shrink: 0;
   background-color: var(--st-header-background-color);

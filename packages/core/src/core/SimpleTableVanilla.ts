@@ -486,6 +486,9 @@ export class SimpleTableVanilla {
 
       this.scrollbarVisibilityManager.subscribe((isScrollable) => {
         this.isMainSectionScrollable = isScrollable;
+        if (refs.tableBodyContainerRef.current) {
+          this.scrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
+        }
         this.render("scrollbarVisibilityManager");
       });
     }

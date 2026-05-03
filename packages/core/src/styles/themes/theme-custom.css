@@ -16,8 +16,8 @@
   --st-scrollbar-thumb-color: #d1d5db;
   --st-scrollbar-width: thin;
 
-  /* Base/Structural colors - Very subtle borders */
-  --st-border-color: #f3f4f6;
+  /* Base/Structural colors - aligned with modern-light (gray-200) */
+  --st-border-color: #e5e7eb;
   --st-footer-background-color: var(--st-white);
   --st-last-group-row-separator-border-color: #e5e7eb;
 

@@ -666,10 +666,9 @@ export class TableRenderer {
 
       // Get scroll state
       const scrollTop = deps.mainBodyRef.current?.scrollTop ?? 0;
-      const scrollbarWidth = deps.mainBodyRef.current
-        ? deps.mainBodyRef.current.offsetWidth -
-          deps.mainBodyRef.current.clientWidth
-        : 0;
+      // Vertical scrollbar gutter lives on `.st-body-container`, not `.st-body-main`
+      // (main hides scrollbars and does not reserve the gutter).
+      const scrollbarWidth = container.offsetWidth - container.clientWidth;
 
       // Create sticky parents container
       this.stickyParentsContainer = createStickyParentsContainer(
