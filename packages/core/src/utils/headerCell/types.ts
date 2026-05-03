@@ -57,6 +57,8 @@ export interface HeaderRenderContext {
   onSort: (accessor: Accessor) => void;
   onTableHeaderDragEnd: (headers: HeaderObject[]) => void;
   pinned?: "left" | "right";
+  /** Mirrors body context: pinned strip width for cache invalidation when only section width changes. */
+  pinnedSectionWidthPx?: number;
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   reverse: boolean;

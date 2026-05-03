@@ -289,6 +289,7 @@ export class SectionRenderer {
       `header-${sectionKey}`,
       context,
       pinned,
+      sectionWidth,
     );
 
     // Render with current scrollLeft to preserve scroll position during re-renders
@@ -451,6 +452,7 @@ export class SectionRenderer {
       `body-${sectionKey}`,
       context,
       pinned,
+      sectionWidth,
     );
 
     // Render with current scrollLeft to preserve scroll position during re-renders.
@@ -504,7 +506,7 @@ export class SectionRenderer {
       };
     }
 
-    return section;
+    return section!;
   }
 
   private renderNestedGridRows(
@@ -1134,6 +1136,13 @@ export class SectionRenderer {
         .join(",")}`;
     }
 
+    if (context.pinned) {
+      hash += `|pinned:${context.pinned}`;
+    }
+    if (context.pinnedSectionWidthPx !== undefined) {
+      hash += `|pinnedSectionWidthPx:${context.pinnedSectionWidthPx}`;
+    }
+
     return hash;
   }
 
@@ -1306,21 +1315,28 @@ export class SectionRenderer {
     cacheKey: string,
     context: T,
     pinned?: "left" | "right",
+    sectionWidth?: number,
   ): T {
     const cached = this.contextCache.get(cacheKey);
-    const contextHash = this.createContextHash(context);
+    const pinnedSectionWidthPx =
+      pinned === "left" || pinned === "right" ? sectionWidth : undefined;
+    const newContext = {
+      ...context,
+      pinned,
+      pinnedSectionWidthPx,
+    } as T;
+    const contextHash = this.createContextHash(newContext);
 
     if (cached && cached.deps.contextHash === contextHash) {
       return cached.context as T;
     }
 
-    const newContext = { ...context, pinned };
     this.contextCache.set(cacheKey, {
       context: newContext,
       deps: { contextHash },
     });
 
-    return newContext as T;
+    return newContext;
   }
 
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {

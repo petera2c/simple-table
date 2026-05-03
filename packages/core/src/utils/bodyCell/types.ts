@@ -138,6 +138,8 @@ export interface CellRenderContext {
 
   // Pinned section
   pinned?: "left" | "right";
+  /** Pinned section viewport width (px); used for row separators so they match the section, not the full table. */
+  pinnedSectionWidthPx?: number;
 
   /**
    * When set, this render is the post-state pass of a row-grouping (vertical)

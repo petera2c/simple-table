@@ -128,10 +128,26 @@ const renderRowSeparators = (
   // Get separator metadata cache
   const separatorMetadata = getSeparatorMetadata(container);
 
+  const pinnedContentRight =
+    context.pinned && cells.length > 0
+      ? cells.reduce((m, c) => Math.max(m, c.left + c.width), 0)
+      : 0;
+
   const sectionWidthPx = ((): number | undefined => {
-    const w = context.pinned
-      ? (context.containerWidth ?? container.clientWidth ?? 0)
-      : (context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
+    if (context.pinned) {
+      const viewportW =
+        typeof context.pinnedSectionWidthPx === "number" &&
+        context.pinnedSectionWidthPx > 0
+          ? context.pinnedSectionWidthPx
+          : container.clientWidth;
+      const w = Math.max(viewportW, pinnedContentRight);
+      return w > 0 ? w : undefined;
+    }
+    const w =
+      context.mainSectionContainerWidth ??
+      context.containerWidth ??
+      container.clientWidth ??
+      0;
     return w > 0 ? w : undefined;
   })();
 
