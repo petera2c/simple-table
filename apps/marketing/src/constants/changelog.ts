@@ -10,20 +10,8 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
-export const v3_4_2: ChangelogEntry = {
-  version: "3.4.2",
-  date: "2026-04-26",
-  title: "Horizontal Scrollbar Bug Fixes",
-  description: "Horizontal scrollbar bug fixes.",
-  changes: [
-    {
-      type: "bugfix",
-      description: "Horizontal scrollbar bug fixes.",
-    },
-  ],
-};
-export const v3_5_1: ChangelogEntry = {
-  version: "3.5.1",
+export const v3_5_2: ChangelogEntry = {
+  version: "3.5.2",
   date: "2026-05-03",
   title: "Animation improvements & fixes",
   description: "Animation polish and scroll/layout bug fixes.",
@@ -79,6 +67,19 @@ export const v3_5_1: ChangelogEntry = {
       type: "bugfix",
       description:
         "Selection used stale col/row indices after hide/reorder; header aria-colindex now matches body columns.",
+    },
+  ],
+};
+
+export const v3_4_2: ChangelogEntry = {
+  version: "3.4.2",
+  date: "2026-04-26",
+  title: "Horizontal Scrollbar Bug Fixes",
+  description: "Horizontal scrollbar bug fixes.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "Horizontal scrollbar bug fixes.",
     },
   ],
 };
@@ -1652,7 +1653,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
-  v3_5_1,
+  v3_5_2,
   v3_4_2,
   v3_4_0,
   v3_0_4,

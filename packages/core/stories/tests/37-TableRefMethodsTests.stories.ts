@@ -12,7 +12,7 @@ import { expect } from "@storybook/test";
 import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import type Cell from "../../src/types/Cell";
 import { rowIdToString } from "../../src/utils/rowUtils";
-import { waitForTable } from "./testUtils";
+import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
@@ -199,9 +199,8 @@ export const ToggleColumnEditorApplyColumnVisibility = {
     const editor = canvasElement.querySelector(".st-column-editor-popout");
     expect(editor).toBeTruthy();
     await api.applyColumnVisibility({ name: false });
-    await new Promise((r) => setTimeout(r, 100));
-    const nameColAfter = canvasElement.querySelector('.st-cell[data-accessor="name"]');
-    expect(nameColAfter).toBeFalsy();
+    // Column hide uses accordion shrink-out (~400ms + slack) before cells leave the DOM.
+    await waitUntil(() => !canvasElement.querySelector('.st-cell[data-accessor="name"]'));
   },
 };
 
@@ -481,11 +480,9 @@ export const ResetColumnsViaAPI = {
     await waitForTable();
     const api = getTable(canvasElement).getAPI();
     await api.applyColumnVisibility({ name: false });
-    await new Promise((r) => setTimeout(r, 200));
-    expect(canvasElement.querySelector('.st-cell[data-accessor="name"]')).toBeFalsy();
+    await waitUntil(() => !canvasElement.querySelector('.st-cell[data-accessor="name"]'));
     api.resetColumns();
-    await new Promise((r) => setTimeout(r, 250));
-    expect(canvasElement.querySelector('.st-cell[data-accessor="name"]')).toBeTruthy();
+    await waitUntil(() => !!canvasElement.querySelector('.st-cell[data-accessor="name"]'));
   },
 };
 
