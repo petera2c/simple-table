@@ -1,6 +1,7 @@
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
-import { isRowExpanded } from "../rowUtils";
+import { isRowExpanded, rowIdToString } from "../rowUtils";
+import { cellLiveRefMap } from "./styling";
 
 // Create expand/collapse icon container for row grouping
 // Uses the icon from context.icons.expand (configured by user or default)
@@ -33,9 +34,29 @@ export const createExpandIcon = (
   const handleToggle = (event: Event) => {
     event.stopPropagation();
 
-    const { rowId, depth } = cell;
+    // The `cell` object captured in this closure is from the render that
+    // created the DOM node. After a later sort/filter the same cell DOM is
+    // reused (via stableRowKey), so the closure's `cell.rowId` becomes stale:
+    // it carries the row's PRE-SORT positional rowId, while `flattenRows`
+    // rebuilds rowIds from the new positions on every render. To keep
+    // `setExpandedRows` / `isRowExpanded` in sync with what the renderer
+    // computes, we resolve the LIVE rowId at click time from the cell DOM's
+    // live ref (kept current by `updateBodyCellElement`).
+    //
+    // We deliberately keep the closure's `row`, `rowIndexPath`, and `rowPath`
+    // for the consumer callback below: `rowIndexPath` is documented across
+    // every framework demo as the index into the consumer's source-data array
+    // (e.g. `rows[rowIndexPath[0]] = { ...rows[rowIndexPath[0]], children }`),
+    // and the consumer's array is not reordered by sort. Using the live
+    // post-sort positional index here would silently write nested data into
+    // the wrong row. The closure still carries the source index because the
+    // cell DOM was created during the pre-sort initial render.
+    const cellElement = outerContainer.closest<HTMLElement>("[data-row-id]");
+    const liveRef = cellElement ? cellLiveRefMap.get(cellElement) : undefined;
+    const liveTableRow = liveRef?.tableRow ?? cell.tableRow;
+    const rowId = rowIdToString(liveTableRow.rowId);
+    const depth = liveTableRow.depth;
 
-    // Recalculate current expanded state dynamically to avoid stale closure
     const expandedDepthsSet = new Set(context.expandedDepths);
     const currentExpandedRows = context.getExpandedRows ? context.getExpandedRows() : context.expandedRows;
     const currentCollapsedRows = context.getCollapsedRows ? context.getCollapsedRows() : context.collapsedRows;
@@ -47,7 +68,6 @@ export const createExpandIcon = (
       currentCollapsedRows,
     );
 
-    // Determine the new state after toggle
     const willBeExpanded = !currentIsExpanded;
 
     if (currentIsExpanded) {
@@ -115,7 +135,6 @@ export const createExpandIcon = (
         });
       };
 
-      // Create a synthetic event object
       const syntheticEvent = {
         stopPropagation: () => {},
         preventDefault: () => {},

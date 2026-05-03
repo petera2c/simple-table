@@ -1,5 +1,6 @@
 import CellValue from "../../types/CellValue";
 import type Row from "../../types/Row";
+import type TableRow from "../../types/TableRow";
 import { getCellId } from "../cellUtils";
 import { getNestedValue, setNestedValue } from "../rowUtils";
 import { AbsoluteBodyCell, CellData, CellRenderContext } from "./types";
@@ -11,9 +12,17 @@ import { createCellContent } from "./content";
 // (Visual rowIndex within the viewport slice can change on scroll; rowId does not.)
 const rowCellsMap = new Map<string, Set<HTMLElement>>();
 
-// WeakMap holding a mutable row ref per cell element so click handlers always
-// read the latest row data even when the cell DOM node is reused across renders.
-const cellRowRefMap = new WeakMap<HTMLElement, { current: Row }>();
+// WeakMap holding a mutable row + tableRow ref per cell element so click
+// handlers (cell click, chevron expand) always read the latest data even when
+// the cell DOM node is reused across renders. The chevron handler in
+// `createExpandIcon` looks this up via `closest('[data-row-id]')` to avoid
+// stale-closure rowIds after sort/filter/reorder reuses the same DOM cell for
+// a row whose positional rowId has changed.
+export interface CellLiveRef {
+  row: Row;
+  tableRow: TableRow;
+}
+export const cellLiveRefMap = new WeakMap<HTMLElement, CellLiveRef>();
 
 // Per-element registry key so we can re-key entries when a cell is reused
 // for a different row across sort/scroll without leaving stale entries behind.
@@ -236,11 +245,14 @@ export const createBodyCellElement = (
 
   renderCellContent();
 
-  // Mutable row ref so handlers (and the cell registry's `updateContent`)
-  // always read the latest row data even when this DOM cell is reused across
-  // renders (sort, scroll). Set before registering so the registry uses it.
-  const rowRef = { current: row as Row };
-  cellRowRefMap.set(cellElement, rowRef);
+  // Mutable row + tableRow ref so handlers (and the cell registry's
+  // `updateContent`) always read the latest data even when this DOM cell is
+  // reused across renders (sort, scroll). Set before registering so the
+  // registry uses it. The chevron's click handler reads tableRow from this
+  // ref via the cell DOM element so it sees the current rowId/rowIndexPath
+  // after a sort instead of the stale closure values captured at create time.
+  const liveRef: CellLiveRef = { row: row as Row, tableRow: cell.tableRow };
+  cellLiveRefMap.set(cellElement, liveRef);
 
   // Register cell in registry for direct updates
   const registerCellInRegistry = () => {
@@ -251,7 +263,7 @@ export const createBodyCellElement = (
         updateContent: (newValue: CellValue) => {
           if (!isEditing) {
             // Always write to the current row (DOM cell may be reused).
-            setNestedValue(rowRef.current, header.accessor, newValue);
+            setNestedValue(liveRef.row, header.accessor, newValue);
 
             // Re-render cell content
             renderCellContent();
@@ -329,7 +341,7 @@ export const createBodyCellElement = (
         return;
       }
 
-      const currentRow = cellRowRefMap.get(cellElement)?.current ?? row;
+      const currentRow = cellLiveRefMap.get(cellElement)?.row ?? row;
       const currentValue = getNestedValue(currentRow, header.accessor);
       context.onCellClick?.({
         accessor: header.accessor,
@@ -443,10 +455,17 @@ export const updateBodyCellElement = (
   cellElement.setAttribute("data-row-id", nextRowId);
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
 
-  // Keep the mutable row ref current so click handlers read fresh data.
-  const existingRowRef = cellRowRefMap.get(cellElement);
-  if (existingRowRef) {
-    existingRowRef.current = cell.row as Row;
+  // Keep the mutable row + tableRow ref current so click handlers read fresh
+  // data. The chevron handler reads tableRow.rowId / rowIndexPath / rowPath
+  // from this ref so toggling expansion after a sort uses the row's CURRENT
+  // positional rowId (matching what flattenRows / isRowExpanded compute) and
+  // not the pre-sort rowId captured in the create-time closure.
+  const existingRef = cellLiveRefMap.get(cellElement);
+  if (existingRef) {
+    existingRef.row = cell.row as Row;
+    existingRef.tableRow = cell.tableRow;
+  } else {
+    cellLiveRefMap.set(cellElement, { row: cell.row as Row, tableRow: cell.tableRow });
   }
 
   // Re-key the cell registry entry when this DOM cell is reused for a
