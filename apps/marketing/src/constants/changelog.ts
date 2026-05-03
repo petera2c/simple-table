@@ -22,16 +22,15 @@ export const v3_4_2: ChangelogEntry = {
     },
   ],
 };
-export const v3_5_0: ChangelogEntry = {
-  version: "3.5.0",
+export const v3_5_1: ChangelogEntry = {
+  version: "3.5.1",
   date: "2026-05-03",
   title: "Animation improvements & fixes",
   description: "Animation polish and scroll/layout bug fixes.",
   changes: [
     {
       type: "improvement",
-      description:
-        "Row grouping expand/collapse animates row heights instead of snapping.",
+      description: "Row grouping expand/collapse animates row heights instead of snapping.",
     },
     {
       type: "improvement",
@@ -40,8 +39,7 @@ export const v3_5_0: ChangelogEntry = {
     },
     {
       type: "improvement",
-      description:
-        "Scroll fast path keeps row separators in sync with cells—no visual lag.",
+      description: "Scroll fast path keeps row separators in sync with cells—no visual lag.",
     },
     {
       type: "bugfix",
@@ -75,8 +73,7 @@ export const v3_5_0: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description:
-        "Fast hovers stacked tooltip timeouts—duplicate/stray header tooltips.",
+      description: "Fast hovers stacked tooltip timeouts—duplicate/stray header tooltips.",
     },
     {
       type: "bugfix",
@@ -1655,7 +1652,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
-  v3_5_0,
+  v3_5_1,
   v3_4_2,
   v3_4_0,
   v3_0_4,

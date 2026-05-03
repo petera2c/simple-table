@@ -44,7 +44,7 @@ export const defaultVanillaArgs: UniversalVanillaArgs = {
   selectableCells: false,
   selectableColumns: false,
   shouldPaginate: false,
-  theme: "modern-light" ,
+  theme: "modern-light" as Theme,
   useHoverRowBackground: true,
   useOddColumnBackground: false,
   useOddEvenRowBackground: false,

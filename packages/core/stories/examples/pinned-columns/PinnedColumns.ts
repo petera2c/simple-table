@@ -5,6 +5,7 @@ import { renderVanillaTable } from "../../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 import { generateRetailSalesData } from "../../data/retail-data";
 import { RETAIL_SALES_HEADERS } from "../../data/retail-data";
+import type { Theme } from "../../../src/index";
 
 export const pinnedColumnsExampleDefaults = {
   rowGrouping: ["stores"] as const,
@@ -14,7 +15,7 @@ export const pinnedColumnsExampleDefaults = {
   editColumns: true,
   height: "calc(100dvh - 112px)",
   enableStickyParents: true,
-  theme: "modern-dark",
+  theme: "modern-dark" as Theme,
 };
 
 export function renderPinnedColumnsExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
