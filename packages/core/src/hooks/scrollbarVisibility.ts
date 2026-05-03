@@ -72,9 +72,15 @@ export class ScrollbarVisibilityManager {
     if (!this.headerContainer) return;
 
     if (this.isMainSectionScrollable) {
+      // Measure the live vertical scrollbar gutter on the body container. The
+      // width passed in at construction is often 0 (measured before overflow).
+      const live =
+        this.mainSection != null
+          ? this.mainSection.offsetWidth - this.mainSection.clientWidth
+          : this.scrollbarWidth;
+      this.scrollbarWidth = live;
       this.headerContainer.classList.add("st-header-scroll-padding");
-      // Change width of the ::after div to the scrollbarWidth
-      this.headerContainer.style.setProperty("--st-after-width", `${this.scrollbarWidth}px`);
+      this.headerContainer.style.setProperty("--st-after-width", `${live}px`);
     } else {
       this.headerContainer.classList.remove("st-header-scroll-padding");
     }

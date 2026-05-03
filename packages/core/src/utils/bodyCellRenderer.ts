@@ -12,14 +12,12 @@ import {
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
-import { isRowExpanded } from "./rowUtils";
-import {
-  applyRowSeparatorSectionWidth,
-  createRowSeparator,
-} from "./rowSeparatorRenderer";
+import { isRowExpanded, expandStateKey } from "./rowUtils";
+import { applyRowSeparatorSectionWidth, createRowSeparator } from "./rowSeparatorRenderer";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
+import type HeaderObject from "../types/HeaderObject";
 import type { AnimationCoordinator, CellPosition } from "../managers/AnimationCoordinator";
 
 // Re-export types for backward compatibility
@@ -36,18 +34,39 @@ export type {
 export { cleanupBodyCellRendering } from "./bodyCell/eventTracking";
 
 // Track rendered separators per container
-const renderedSeparatorsMap = new WeakMap<
-  HTMLElement,
-  Map<number, HTMLElement>
->();
+const renderedSeparatorsMap = new WeakMap<HTMLElement, Map<number, HTMLElement>>();
 
-const getRenderedSeparators = (
-  container: HTMLElement,
-): Map<number, HTMLElement> => {
+const getRenderedSeparators = (container: HTMLElement): Map<number, HTMLElement> => {
   if (!renderedSeparatorsMap.has(container)) {
     renderedSeparatorsMap.set(container, new Map());
   }
   return renderedSeparatorsMap.get(container)!;
+};
+
+/**
+ * Collects every accessor that will still appear somewhere in the rendered
+ * header tree after the current change. Used during accordion-horizontal
+ * renders so the source section can distinguish between:
+ *
+ *   - Column hidden (accessor missing → shrink-out the outgoing cell)
+ *   - Column moved to a different pinned section (accessor still present →
+ *     drop the outgoing cell so it teleports into the destination)
+ *
+ * Walks the full tree (including children) and skips entries with
+ * `hide` or `excludeFromRender`. Cheap and only invoked when an accordion
+ * window is active, so it doesn't run on plain sort/scroll renders.
+ */
+const collectVisibleLeafAccessors = (headers: HeaderObject[]): Set<string> => {
+  const visible = new Set<string>();
+  const walk = (list: HeaderObject[]): void => {
+    for (const header of list) {
+      if (header.hide || header.excludeFromRender) continue;
+      visible.add(String(header.accessor));
+      if (header.children?.length) walk(header.children);
+    }
+  };
+  walk(headers);
+  return visible;
 };
 
 // Helper to filter visible cells based on horizontal scroll
@@ -70,21 +89,21 @@ const getVisibleBodyCells = (
   return visibleCells;
 };
 
-// Track separator metadata to avoid unnecessary updates
+// Track separator metadata to avoid unnecessary updates.
+// `topPx` is the actual rendered top pixel (after `heightOffsets` is applied);
+// caching the array `position` alone is insufficient because expanding a
+// nested-table row changes `heightOffsets`, which shifts the top px of every
+// separator below the expansion point without changing their `position`.
 interface SeparatorMetadata {
   position: number;
+  topPx: number;
   displayStrongBorder: boolean;
   sectionWidthPx?: number;
 }
 
-const separatorMetadataMap = new WeakMap<
-  HTMLElement,
-  Map<number, SeparatorMetadata>
->();
+const separatorMetadataMap = new WeakMap<HTMLElement, Map<number, SeparatorMetadata>>();
 
-const getSeparatorMetadata = (
-  container: HTMLElement,
-): Map<number, SeparatorMetadata> => {
+const getSeparatorMetadata = (container: HTMLElement): Map<number, SeparatorMetadata> => {
   if (!separatorMetadataMap.has(container)) {
     separatorMetadataMap.set(container, new Map());
   }
@@ -109,13 +128,22 @@ const renderRowSeparators = (
   // Get separator metadata cache
   const separatorMetadata = getSeparatorMetadata(container);
 
+  const pinnedContentRight =
+    context.pinned && cells.length > 0
+      ? cells.reduce((m, c) => Math.max(m, c.left + c.width), 0)
+      : 0;
+
   const sectionWidthPx = ((): number | undefined => {
-    const w = context.pinned
-      ? (context.containerWidth ?? container.clientWidth ?? 0)
-      : (context.mainSectionContainerWidth ??
-        context.containerWidth ??
-        container.clientWidth ??
-        0);
+    if (context.pinned) {
+      const viewportW =
+        typeof context.pinnedSectionWidthPx === "number" && context.pinnedSectionWidthPx > 0
+          ? context.pinnedSectionWidthPx
+          : container.clientWidth;
+      const w = Math.max(viewportW, pinnedContentRight);
+      return w > 0 ? w : undefined;
+    }
+    const w =
+      context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0;
     return w > 0 ? w : undefined;
   })();
 
@@ -160,13 +188,11 @@ const renderRowSeparators = (
         prevCell: prevRowFirstCell,
       });
     }
-    boundariesFromRows = rowBoundaries.map(
-      ({ rowIndex, firstCell, prevCell }) => ({
-        rowIndex,
-        position: firstCell.tableRow.position,
-        displayStrongBorder: prevCell?.tableRow?.isLastGroupRow ?? false,
-      }),
-    );
+    boundariesFromRows = rowBoundaries.map(({ rowIndex, firstCell, prevCell }) => ({
+      rowIndex,
+      position: firstCell.tableRow.position,
+      displayStrongBorder: prevCell?.tableRow?.isLastGroupRow ?? false,
+    }));
   }
 
   if (boundariesFromRows.length === 0) return;
@@ -175,6 +201,17 @@ const renderRowSeparators = (
   boundariesFromRows.forEach(({ rowIndex, position, displayStrongBorder }) => {
     // Get cached metadata
     const cachedMetadata = separatorMetadata.get(rowIndex);
+
+    // Compute the actual top pixel for this separator. We compare against the
+    // cached pixel value (not the array `position`) because expanding a
+    // nested-table row mutates `heightOffsets` and shifts the visual top of
+    // every separator below the expansion point without changing `position`.
+    const topPx = calculateSeparatorTopPosition({
+      position,
+      rowHeight: context.rowHeight,
+      heightOffsets: context.heightOffsets,
+      customTheme: context.customTheme ?? DEFAULT_CUSTOM_THEME,
+    });
 
     // Check if separator needs to be created or updated
     if (!renderedSeparators.has(rowIndex)) {
@@ -195,6 +232,7 @@ const renderRowSeparators = (
       // Cache metadata
       separatorMetadata.set(rowIndex, {
         position,
+        topPx,
         displayStrongBorder,
         sectionWidthPx,
       });
@@ -204,7 +242,7 @@ const renderRowSeparators = (
 
       const needsUpdate =
         !cachedMetadata ||
-        cachedMetadata.position !== position ||
+        cachedMetadata.topPx !== topPx ||
         cachedMetadata.displayStrongBorder !== displayStrongBorder ||
         cachedMetadata.sectionWidthPx !== sectionWidthPx;
 
@@ -220,20 +258,15 @@ const renderRowSeparators = (
           }
         }
 
-        // Update position only if it changed
-        if (!cachedMetadata || cachedMetadata.position !== position) {
-          const topPosition = calculateSeparatorTopPosition({
-            position,
-            rowHeight: context.rowHeight,
-            heightOffsets: context.heightOffsets,
-            customTheme: context.customTheme ?? DEFAULT_CUSTOM_THEME,
-          });
-          separator.style.transform = `translate3d(0, ${topPosition}px, 0)`;
+        // Update transform only if the rendered top pixel changed
+        if (!cachedMetadata || cachedMetadata.topPx !== topPx) {
+          separator.style.transform = `translate3d(0, ${topPx}px, 0)`;
         }
 
         // Update cached metadata
         separatorMetadata.set(rowIndex, {
           position,
+          topPx,
           displayStrongBorder,
           sectionWidthPx,
         });
@@ -264,10 +297,7 @@ export const renderBodyCells = (
   // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
   const viewportWidth = context.pinned
     ? (context.containerWidth ?? container.clientWidth ?? 0)
-    : (context.mainSectionContainerWidth ??
-      context.containerWidth ??
-      container.clientWidth ??
-      0);
+    : (context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
 
   // For pinned sections, always render all cells (they don't scroll horizontally)
   // For main section, only render visible cells based on scroll position
@@ -321,6 +351,25 @@ export const renderBodyCells = (
     }
   }
 
+  // Active accordion axis (set on hide/show/pin/unpin renders). When this
+  // is "horizontal", outgoing cells whose column has no destination in any
+  // post-change section (true hide) shrink their width to 0 in place via
+  // the `.st-accordion-animating` CSS transition. Outgoing cells whose
+  // column merely moved to a different section (pin / unpin) are removed
+  // immediately so the column appears to teleport into its new section
+  // without an extra shrink-then-grow leg, while sibling cells in both
+  // sections still FLIP-shift to reflow around the change.
+  const accordionAxis =
+    animationCoordinator && context.accordionAxis ? context.accordionAxis : null;
+  // Set of accessor strings that are still visible somewhere in the
+  // post-change header tree. Used to distinguish "column moved sections"
+  // (still visible, just elsewhere) from "column hidden" (gone entirely)
+  // when deciding shrink-out vs teleport for an outgoing cell. Built once
+  // per render only when the accordion-horizontal window is active so the
+  // tree walk doesn't run on plain sort/scroll renders.
+  const visibleAccessorsAfterChange =
+    accordionAxis === "horizontal" ? collectVisibleLeafAccessors(context.headers) : null;
+
   // Get unique row indices for separator visibility (use full row list when provided so nested rows get separators)
   const visibleRowIndices = allRows?.length
     ? new Set(allRows.map((r) => r.position))
@@ -349,6 +398,43 @@ export const renderBodyCells = (
         });
         renderedCells.delete(cellId);
         return;
+      }
+
+      // Accordion-horizontal shrink-out: the column truly disappeared from
+      // the table (hide/excludeFromRender). Hand the cell off to the
+      // coordinator to shrink its width to 0 in place via the active
+      // accordion CSS transition, then remove.
+      //
+      // If the column merely moved to a different pinned section, the
+      // accessor is still visible somewhere in the post-change tree — fall
+      // through to the plain `element.remove()` below so the moving column
+      // teleports into the destination section while siblings FLIP-shift
+      // around it. (Per product behavior: the moving column itself does not
+      // animate; only the columns adjusting to make room do.)
+      if (
+        animationCoordinator &&
+        accordionAxis === "horizontal" &&
+        animationCoordinator.shouldRetain(cellId)
+      ) {
+        const accessor = element.getAttribute("data-accessor") ?? "";
+        const movedToOtherSection = visibleAccessorsAfterChange?.has(accessor) ?? false;
+        if (!movedToOtherSection) {
+          animationCoordinator.shrinkOutCell({
+            cellId,
+            element,
+            container,
+            axis: accordionAxis,
+          });
+          renderedCells.delete(cellId);
+          return;
+        }
+        // Cross-section move: fall through to plain element.remove() below.
+        // The destination section will create a full-size cell (the snapshot
+        // is in a different container, so play.consider skips the FLIP and
+        // the create path skips the grow-from-0 because hasSnapshotEntry is
+        // true). End result: the moving column teleports into its new
+        // section while siblings in both sections still FLIP-shift to
+        // reflow around the change.
       }
 
       element.remove();
@@ -392,11 +478,7 @@ export const renderBodyCells = (
         updateBodyCellElement(cellElement, cell, context);
 
         // Sync row selection checkbox when context changes (e.g. select-all)
-        if (
-          cell.header.isSelectionColumn &&
-          context.enableRowSelection &&
-          context.isRowSelected
-        ) {
+        if (cell.header.isSelectionColumn && context.enableRowSelection && context.isRowSelected) {
           const checked = context.isRowSelected(cell.rowId);
           updateCheckboxElement(cellElement, checked);
         }
@@ -404,12 +486,10 @@ export const renderBodyCells = (
         // Sync expand/collapse icon direction when expanded state changes (e.g. nested grids)
         if (cell.header.expandable) {
           const expandedDepthsSet = new Set(context.expandedDepths);
-          const currentExpandedRows =
-            context.getExpandedRows?.() ?? context.expandedRows;
-          const currentCollapsedRows =
-            context.getCollapsedRows?.() ?? context.collapsedRows;
+          const currentExpandedRows = context.getExpandedRows?.() ?? context.expandedRows;
+          const currentCollapsedRows = context.getCollapsedRows?.() ?? context.collapsedRows;
           const currentIsExpanded = isRowExpanded(
-            cell.rowId,
+            expandStateKey(cell.tableRow),
             cell.depth,
             expandedDepthsSet,
             currentExpandedRows,
@@ -424,6 +504,16 @@ export const renderBodyCells = (
   // Second pass: batch create new cells. If the snapshot captured this cell's
   // pre-change position (e.g. the row was off-screen pre-sort and is now in
   // the band), play() will FLIP it from there — no extra hook needed here.
+  //
+  // Accordion expand: when the active animation axis is set AND this cell has
+  // no snapshot entry, it just appeared because its parent grouping
+  // row/header expanded. We initialize the cell at zero size in the
+  // animation axis and schedule the real size on the next two rAFs so the
+  // CSS `transition: width/height` on `.st-accordion-animating` grows it
+  // from zero to its final size. Sibling rows/cells continue to FLIP into
+  // their new positions in parallel via {@link AnimationCoordinator.play}.
+  const accordionGrowFromZero: Array<{ element: HTMLElement; cell: AbsoluteBodyCell }> = [];
+
   cellsToCreate.forEach(({ cell, cellId }) => {
     // If a retained out-animating ghost still owns this cellId, claim it back
     // as the live cell instead of discarding + creating a fresh node. This
@@ -438,6 +528,34 @@ export const renderBodyCells = (
       return;
     }
     const cellElement = createBodyCellElement(cell, context);
+
+    if (
+      accordionAxis &&
+      animationCoordinator &&
+      // Only grow from zero on a TRUE expand: there is no snapshot entry
+      // anywhere for this cellId (e.g. row group expand revealed a new
+      // cell, or a column was unhidden / shown for the first time).
+      //
+      // For cross-section moves (pin / unpin), the snapshot has the cell
+      // in the SOURCE container. We deliberately skip the grow-from-0
+      // here so the moving column teleports into the destination at full
+      // size; play.consider's cross-container check skips the FLIP, so
+      // the cell simply appears at its new position. Sibling columns in
+      // both sections still FLIP-shift to reflow.
+      !animationCoordinator.hasSnapshotEntry(cellId)
+    ) {
+      if (accordionAxis === "vertical") {
+        cellElement.style.height = "0px";
+      } else {
+        cellElement.style.width = "0px";
+      }
+      // Marker so any same-tick re-render (e.g. microtask-batched onRender
+      // after a chevron toggle) won't overwrite the 0 before the CSS
+      // transition has read it. Cleared once the final size is written.
+      cellElement.dataset.stAccordionGrow = accordionAxis;
+      accordionGrowFromZero.push({ element: cellElement, cell });
+    }
+
     fragment.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
   });
@@ -447,14 +565,29 @@ export const renderBodyCells = (
     container.appendChild(fragment);
   }
 
+  // Schedule the accordion size growth on the next two rAFs. The first frame
+  // commits the zero-size paint; the second writes the final size, and the
+  // `.st-accordion-animating` CSS class transitions `width`/`height` between
+  // them. Mirrors the double-rAF pattern in `bodyCell/expansion.ts` for
+  // chevron rotation.
+  if (accordionAxis && accordionGrowFromZero.length > 0) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        for (const { element, cell } of accordionGrowFromZero) {
+          if (!element.isConnected) continue;
+          if (accordionAxis === "vertical") {
+            element.style.height = `${cell.height}px`;
+          } else {
+            element.style.width = `${cell.width}px`;
+          }
+          delete element.dataset.stAccordionGrow;
+        }
+      });
+    });
+  }
+
   // Render separators for visible rows (skip when positionOnly; row boundaries unchanged on horizontal scroll)
   if (!positionOnly) {
-    renderRowSeparators(
-      container,
-      cellsToRender,
-      context,
-      renderedSeparators,
-      allRows,
-    );
+    renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
   }
 };

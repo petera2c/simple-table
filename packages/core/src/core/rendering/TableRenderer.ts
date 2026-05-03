@@ -23,10 +23,15 @@ import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
+import type { AccordionAxis } from "../../utils/accordionAnimation";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection } from "../../utils/generalUtils";
+import type TableRow from "../../types/TableRow";
+import { rowIdToString } from "../../utils/rowUtils";
 
 export interface TableRendererDeps {
+  /** Accordion animation axis for the in-flight collapse/expand. See {@link RenderContext.accordionAxis}. */
+  accordionAxis?: AccordionAxis;
   animationCoordinator?: AnimationCoordinator;
   cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
@@ -58,7 +63,7 @@ export interface TableRendererDeps {
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
   pinnedRightRef: { current: HTMLDivElement | null };
-  positionOnlyBody?: boolean; /** When true, body sections use position-only updates for existing cells (scroll performance). */
+  positionOnlyBody?: boolean; /** When true, scroll path updates cell geometry only (no full content/selection refresh); row separators still sync. */
   resolvedIcons: any;
   rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, any>;
@@ -276,6 +281,8 @@ export class TableRenderer {
       mainBodyRef: deps.mainBodyRef,
       pinnedLeftRef: deps.pinnedLeftRef,
       pinnedRightRef: deps.pinnedRightRef,
+      accordionAxis: deps.accordionAxis,
+      animationCoordinator: deps.animationCoordinator,
     };
 
     const pinnedLeftHeaders = deps.effectiveHeaders.filter(
@@ -509,6 +516,7 @@ export class TableRenderer {
         deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
       canExpandRowGroup: deps.config.canExpandRowGroup,
       isLoading: deps.internalIsLoading,
+      accordionAxis: deps.accordionAxis,
     };
 
     const pinnedLeftHeaders = deps.effectiveHeaders.filter(
@@ -551,7 +559,7 @@ export class TableRenderer {
       });
       deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
-      // Only append if not already a child — calling appendChild on a node
+      // Only insert if not already a child — calling appendChild on a node
       // already in the same parent triggers a detach + reinsert per the DOM
       // spec, which cancels every CSS transition on its descendants and
       // snaps their computed transforms to the inline value. With cell
@@ -559,8 +567,18 @@ export class TableRenderer {
       // first sort's animation would visually teleport every animating cell
       // to its destination instead of FLIP-tweening from the in-flight
       // visual position.
+      //
+      // Use insertBefore at position 0 (rather than appendChild) so the new
+      // pinned-left body section lands at the start of the body container.
+      // The body container is a flex row; .st-body-main has flex-grow: 1
+      // and consumes all available width, so a leftSection appended after
+      // an already-present main section is visually pushed past the scroll
+      // viewport — the user sees the pinned header but the pinned cells
+      // appear missing. Header sections avoid this by always re-appending
+      // to fix document order; body sections can't because that would
+      // cancel running cell transitions.
       if (leftSection.parentElement !== container) {
-        container.appendChild(leftSection as HTMLElement);
+        container.insertBefore(leftSection as HTMLElement, container.firstChild);
       }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("left");
@@ -587,8 +605,20 @@ export class TableRenderer {
       });
       deps.mainBodyRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
+      // Insert main BEFORE any already-present pinned-right body section so
+      // the [left, main, right] document order is preserved when main goes
+      // from empty (all columns pinned) to populated. Same flex-layout
+      // reasoning as the leftSection insertion above: appending main after
+      // an already-present pinned-right would push main behind right and
+      // confuse the visible layout. Existing children are intentionally
+      // not moved so in-flight cell transitions aren't cancelled.
       if (mainSection.parentElement !== container) {
-        container.appendChild(mainSection as HTMLElement);
+        const existingRight = deps.pinnedRightRef.current;
+        if (existingRight && existingRight.parentElement === container) {
+          container.insertBefore(mainSection as HTMLElement, existingRight);
+        } else {
+          container.appendChild(mainSection as HTMLElement);
+        }
       }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("main");
@@ -638,10 +668,30 @@ export class TableRenderer {
 
       // Get scroll state
       const scrollTop = deps.mainBodyRef.current?.scrollTop ?? 0;
-      const scrollbarWidth = deps.mainBodyRef.current
-        ? deps.mainBodyRef.current.offsetWidth -
-          deps.mainBodyRef.current.clientWidth
-        : 0;
+      // Vertical scrollbar gutter lives on `.st-body-container`, not `.st-body-main`
+      // (main hides scrollbars and does not reserve the gutter).
+      const scrollbarWidth = container.offsetWidth - container.clientWidth;
+
+      const stickySectionColStart = {
+        left: 0,
+        main:
+          pinnedLeftHeaders.length > 0 ? this.sectionRenderer.getNextColIndex("left") : 0,
+        right:
+          mainHeaders.length > 0
+            ? this.sectionRenderer.getNextColIndex("main")
+            : pinnedLeftHeaders.length > 0
+              ? this.sectionRenderer.getNextColIndex("left")
+              : 0,
+      };
+
+      const rowsForBodyCellIndices = rowsToRender.filter(
+        (r: TableRow) => !r.nestedTable && !r.stateIndicator,
+      );
+      const stickyBodyRowIndexByRowKey = new Map<string, number>();
+      rowsForBodyCellIndices.forEach((tr: TableRow, rowIndex: number) => {
+        const key = tr.stableRowKey ?? rowIdToString(tr.rowId);
+        stickyBodyRowIndexByRowKey.set(key, rowIndex);
+      });
 
       // Create sticky parents container
       this.stickyParentsContainer = createStickyParentsContainer(
@@ -656,6 +706,8 @@ export class TableRenderer {
           scrollTop,
           scrollbarWidth,
           stickyParents: processedResult.stickyParents,
+          stickySectionColStart,
+          stickyBodyRowIndexByRowKey,
         },
         {
           collapsedHeaders: deps.collapsedHeaders,

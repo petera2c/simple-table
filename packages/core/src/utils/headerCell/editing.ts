@@ -96,8 +96,19 @@ export const createLabelContent = (
     let tooltipTimeout: ReturnType<typeof setTimeout> | null = null;
     
     const showTooltip = () => {
+      // Rapid mouseenter schedules multiple timeouts; cancel the previous one
+      // and drop any tooltip this closure still owns before scheduling again.
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+        tooltipTimeout = null;
+      }
+      if (tooltipElement) {
+        tooltipElement.parentElement?.removeChild(tooltipElement);
+        tooltipElement = null;
+      }
       tooltipTimeout = setTimeout(() => {
         if (!labelTextSpan.isConnected) {
+          tooltipTimeout = null;
           return;
         }
         const rect = labelTextSpan.getBoundingClientRect();
@@ -130,6 +141,7 @@ export const createLabelContent = (
           const tableRoot = labelTextSpan.closest(".simple-table-root") as HTMLElement | null;
           (tableRoot || document.body).appendChild(tooltipElement);
         }
+        tooltipTimeout = null;
       }, 500);
     };
     

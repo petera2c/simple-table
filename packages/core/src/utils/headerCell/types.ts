@@ -3,6 +3,8 @@ import SortColumn from "../../types/SortColumn";
 import { TableFilterState, FilterCondition } from "../../types/FilterTypes";
 import { IconsConfig } from "../../types/IconsConfig";
 import Row from "../../types/Row";
+import type { AccordionAxis } from "../accordionAnimation";
+import type { AnimationCoordinator } from "../../managers/AnimationCoordinator";
 
 type SetStateAction<T> = T | ((prevState: T) => T);
 type Dispatch<A> = (value: A) => void;
@@ -55,6 +57,8 @@ export interface HeaderRenderContext {
   onSort: (accessor: Accessor) => void;
   onTableHeaderDragEnd: (headers: HeaderObject[]) => void;
   pinned?: "left" | "right";
+  /** Mirrors body context: pinned strip width for cache invalidation when only section width changes. */
+  pinnedSectionWidthPx?: number;
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   reverse: boolean;
@@ -70,4 +74,20 @@ export interface HeaderRenderContext {
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   sort: SortColumn | null;
+
+  /**
+   * Active accordion animation axis (parallel to {@link CellRenderContext.accordionAxis}).
+   * Used so newly-visible header cells (e.g. children of a just-expanded
+   * collapsible header) start at zero width and CSS-transition to their
+   * final width.
+   */
+  accordionAxis?: AccordionAxis;
+
+  /**
+   * Animation coordinator (when enabled). The header renderer uses
+   * {@link AnimationCoordinator.hasSnapshotEntry} to detect cells that did
+   * not exist in the pre-render layout — those are the incoming cells
+   * driving the unfold animation.
+   */
+  animationCoordinator?: AnimationCoordinator;
 }

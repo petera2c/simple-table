@@ -14,6 +14,7 @@ export const pinnedColumnsExampleDefaults = {
   editColumns: true,
   height: "calc(100dvh - 112px)",
   enableStickyParents: true,
+  theme: "modern-dark",
 };
 
 export function renderPinnedColumnsExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {

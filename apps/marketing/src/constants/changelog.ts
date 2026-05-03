@@ -22,6 +22,69 @@ export const v3_4_2: ChangelogEntry = {
     },
   ],
 };
+export const v3_5_0: ChangelogEntry = {
+  version: "3.5.0",
+  date: "2026-05-03",
+  title: "Animation improvements & fixes",
+  description: "Animation polish and scroll/layout bug fixes.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Row grouping expand/collapse animates row heights instead of snapping.",
+    },
+    {
+      type: "improvement",
+      description:
+        "Column hide/show and pin/unpin animate horizontally; pure reorders still FLIP (tracks last painted columns vs in-place editor mutations).",
+    },
+    {
+      type: "improvement",
+      description:
+        "Scroll fast path keeps row separators in sync with cells—no visual lag.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Nested tables: unstable keys broke slide animations after sort/sibling expand; expand chevrons could toggle wrong row after sort—stable keys + live DOM refs.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Nested-row expansion shifted rows vertically but separators cached only flatten index—stuck wrong until another redraw.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Pinned-left body was appended after main in flex—pinned cells sat past the viewport; fixes DOM insert order for left/main/right.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Pinned viewport width missing from render cache—separators/layout could mismatch the pinned strip.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Scrollbar gutter measured on wrong element misaligned header filler; header height no longer adds stray border padding.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Sticky overlay blocked clicks; sticky column indices didn’t match virtualized body cells—selection drifted.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Fast hovers stacked tooltip timeouts—duplicate/stray header tooltips.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Selection used stale col/row indices after hide/reorder; header aria-colindex now matches body columns.",
+    },
+  ],
+};
 export const v3_4_0: ChangelogEntry = {
   version: "3.4.0",
   date: "2026-04-26",
@@ -1592,6 +1655,8 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_5_0,
+  v3_4_2,
   v3_4_0,
   v3_0_4,
   v3_0_0,

@@ -1,8 +1,4 @@
 import HeaderObject from "../types/HeaderObject";
-import {
-  CSS_VAR_BORDER_WIDTH,
-  DEFAULT_BORDER_WIDTH,
-} from "../consts/general-consts";
 
 export interface DimensionManagerConfig {
   effectiveHeaders: HeaderObject[];
@@ -71,19 +67,8 @@ export class DimensionManager {
   }
 
   private calculateHeaderHeight(maxHeaderDepth: number): number {
-    let borderWidth = DEFAULT_BORDER_WIDTH;
-    if (typeof window !== "undefined") {
-      const rootElement = document.documentElement;
-      const computedStyle = getComputedStyle(rootElement);
-      const borderWidthValue = computedStyle.getPropertyValue(CSS_VAR_BORDER_WIDTH).trim();
-      if (borderWidthValue) {
-        const parsed = parseFloat(borderWidthValue);
-        if (!isNaN(parsed)) {
-          borderWidth = parsed;
-        }
-      }
-    }
-    return maxHeaderDepth * (this.config.headerHeight ?? this.config.rowHeight) + borderWidth;
+    // Match SectionRenderer: `maxHeaderDepth * headerHeight` (no extra border px on container).
+    return maxHeaderDepth * (this.config.headerHeight ?? this.config.rowHeight);
   }
 
   private convertHeightToPixels(heightValue: string | number): number {

@@ -15,11 +15,12 @@ type TableRow = {
   rowId: (string | number)[];
   /**
    * Position-independent identity for the row, used as the basis for the
-   * cell DOM `id` and the animation coordinator's snapshot key. When
-   * `getRowId` is provided, this is `String(customId)` (optionally prefixed
-   * by grouping keys for nested rows). Lets the same DOM cell survive a
-   * sort, so FLIP can animate the row to its new position. Falls back to
-   * the positional rowId string when `getRowId` is absent.
+   * cell DOM `id`, the animation coordinator's snapshot key, and **expand /
+   * collapse / row-loading state maps** ({@link expandStateKey}).
+   *
+   * Sort/filter reorder leaves this unchanged while positional `rowId` changes,
+   * so nested rows stay expanded after sort when this is supplied (via `getRowId`
+   * or WeakMap-backed fallback identities).
    */
   stableRowKey?: string;
   // Path to reach this row using row IDs (when getRowId is provided)

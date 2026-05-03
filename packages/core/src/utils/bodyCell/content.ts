@@ -1,7 +1,7 @@
 import HeaderObject from "../../types/HeaderObject";
 import CellValue from "../../types/CellValue";
 import { formatDate } from "../formatters";
-import { getNestedValue, hasNestedRows, isRowExpanded as getIsRowExpanded } from "../rowUtils";
+import { getNestedValue, hasNestedRows, expandStateKey, isRowExpanded as getIsRowExpanded } from "../rowUtils";
 import { createLineAreaChart } from "../charts/createLineAreaChart";
 import { createBarChart } from "../charts/createBarChart";
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
@@ -127,8 +127,9 @@ export const createCellContent = (
 
   if (shouldShowExpandIcon) {
     const expandedDepthsSet = new Set(context.expandedDepths);
+    const expandRowKey = expandStateKey(cell.tableRow);
     const isExpanded = getIsRowExpanded(
-      rowId,
+      expandRowKey,
       depth,
       expandedDepthsSet,
       context.expandedRows,

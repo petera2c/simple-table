@@ -1,5 +1,6 @@
 import CellValue from "../../types/CellValue";
 import type Row from "../../types/Row";
+import type TableRow from "../../types/TableRow";
 import { getCellId } from "../cellUtils";
 import { getNestedValue, setNestedValue } from "../rowUtils";
 import { AbsoluteBodyCell, CellData, CellRenderContext } from "./types";
@@ -11,9 +12,17 @@ import { createCellContent } from "./content";
 // (Visual rowIndex within the viewport slice can change on scroll; rowId does not.)
 const rowCellsMap = new Map<string, Set<HTMLElement>>();
 
-// WeakMap holding a mutable row ref per cell element so click handlers always
-// read the latest row data even when the cell DOM node is reused across renders.
-const cellRowRefMap = new WeakMap<HTMLElement, { current: Row }>();
+// WeakMap holding a mutable row + tableRow ref per cell element so click
+// handlers (cell click, chevron expand) always read the latest data even when
+// the cell DOM node is reused across renders. The chevron handler in
+// `createExpandIcon` looks this up via `closest('[data-row-id]')` to avoid
+// stale-closure rowIds after sort/filter/reorder reuses the same DOM cell for
+// a row whose positional rowId has changed.
+export interface CellLiveRef {
+  row: Row;
+  tableRow: TableRow;
+}
+export const cellLiveRefMap = new WeakMap<HTMLElement, CellLiveRef>();
 
 // Per-element registry key so we can re-key entries when a cell is reused
 // for a different row across sort/scroll without leaving stale entries behind.
@@ -236,11 +245,14 @@ export const createBodyCellElement = (
 
   renderCellContent();
 
-  // Mutable row ref so handlers (and the cell registry's `updateContent`)
-  // always read the latest row data even when this DOM cell is reused across
-  // renders (sort, scroll). Set before registering so the registry uses it.
-  const rowRef = { current: row as Row };
-  cellRowRefMap.set(cellElement, rowRef);
+  // Mutable row + tableRow ref so handlers (and the cell registry's
+  // `updateContent`) always read the latest data even when this DOM cell is
+  // reused across renders (sort, scroll). Set before registering so the
+  // registry uses it. The chevron's click handler reads tableRow from this
+  // ref via the cell DOM element so it sees the current rowId/rowIndexPath
+  // after a sort instead of the stale closure values captured at create time.
+  const liveRef: CellLiveRef = { row: row as Row, tableRow: cell.tableRow };
+  cellLiveRefMap.set(cellElement, liveRef);
 
   // Register cell in registry for direct updates
   const registerCellInRegistry = () => {
@@ -251,7 +263,7 @@ export const createBodyCellElement = (
         updateContent: (newValue: CellValue) => {
           if (!isEditing) {
             // Always write to the current row (DOM cell may be reused).
-            setNestedValue(rowRef.current, header.accessor, newValue);
+            setNestedValue(liveRef.row, header.accessor, newValue);
 
             // Re-render cell content
             renderCellContent();
@@ -279,12 +291,23 @@ export const createBodyCellElement = (
       event.preventDefault();
       const target = event.target as HTMLElement;
       if (target.closest(".st-expand-icon-container")) return;
-      context.handleMouseDown(cellData);
+      const domRi = parseInt(cellElement.getAttribute("data-row-index") ?? "-1", 10);
+      const domCi = parseInt(cellElement.getAttribute("data-col-index") ?? "-1", 10);
+      const domRid = cellElement.getAttribute("data-row-id");
+      if (domRi < 0 || domCi < 0 || domRid === null) return;
+      context.handleMouseDown({ rowIndex: domRi, colIndex: domCi, rowId: domRid });
     };
 
     const handleMouseOver = (event: Event) => {
       const e = event as MouseEvent;
-      context.handleMouseOver(cellData, e.clientX, e.clientY);
+      const domRi = parseInt(cellElement.getAttribute("data-row-index") ?? "-1", 10);
+      const domCi = parseInt(cellElement.getAttribute("data-col-index") ?? "-1", 10);
+      const domRid = cellElement.getAttribute("data-row-id");
+      const cellFromEl =
+        domRi >= 0 && domCi >= 0 && domRid !== null
+          ? { rowIndex: domRi, colIndex: domCi, rowId: domRid }
+          : cellData;
+      context.handleMouseOver(cellFromEl, e.clientX, e.clientY);
     };
 
     addTrackedEventListener(cellElement, "mousedown", handleMouseDown);
@@ -329,13 +352,15 @@ export const createBodyCellElement = (
         return;
       }
 
-      const currentRow = cellRowRefMap.get(cellElement)?.current ?? row;
+      const currentRow = cellLiveRefMap.get(cellElement)?.row ?? row;
       const currentValue = getNestedValue(currentRow, header.accessor);
+      const clickRi = parseInt(cellElement.getAttribute("data-row-index") ?? String(rowIndex), 10);
+      const clickCi = parseInt(cellElement.getAttribute("data-col-index") ?? String(colIndex), 10);
       context.onCellClick?.({
         accessor: header.accessor,
-        colIndex,
+        colIndex: clickCi,
         row: currentRow,
-        rowIndex,
+        rowIndex: clickRi,
         value: currentValue,
       });
     };
@@ -376,12 +401,20 @@ export const createBodyCellElement = (
   return cellElement;
 };
 
-// Lightweight position-only update for scroll operations
+// Lightweight position-only update for scroll operations. Honors the
+// `data-st-accordion-grow` marker so the in-flight accordion size doesn't
+// snap back to the final value during scroll-RAF position updates that
+// happen to fire mid-animation.
 export const updateBodyCellPosition = (cellElement: HTMLElement, cell: AbsoluteBodyCell): void => {
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;
-  cellElement.style.width = `${cell.width}px`;
-  cellElement.style.height = `${cell.height}px`;
+  const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
+  if (accordionGrowAxis !== "horizontal") {
+    cellElement.style.width = `${cell.width}px`;
+  }
+  if (accordionGrowAxis !== "vertical") {
+    cellElement.style.height = `${cell.height}px`;
+  }
 };
 
 // Update an existing body cell element with current state
@@ -400,11 +433,21 @@ export const updateBodyCellElement = (
   const isInitialFocused = context.isInitialFocusedCell(cellData);
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
 
-  // Update position (may have changed due to column resize or scroll)
+  // Update position (may have changed due to column resize or scroll). When
+  // an accordion grow is in flight on this cell (between the initial 0-size
+  // write and the 2× rAF that writes the final size), skip the size write
+  // for the active axis so subsequent same-tick renders (e.g. the
+  // microtask-batched onRender after a chevron toggle) don't trample the
+  // inline 0 before the CSS transition can pick it up.
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;
-  cellElement.style.width = `${cell.width}px`;
-  cellElement.style.height = `${cell.height}px`;
+  const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
+  if (accordionGrowAxis !== "horizontal") {
+    cellElement.style.width = `${cell.width}px`;
+  }
+  if (accordionGrowAxis !== "vertical") {
+    cellElement.style.height = `${cell.height}px`;
+  }
 
   // Update data attributes and ARIA (matches main: position + maxHeaderDepth + 1)
   cellElement.setAttribute("data-row-index", String(rowIndex));
@@ -425,10 +468,17 @@ export const updateBodyCellElement = (
   cellElement.setAttribute("data-row-id", nextRowId);
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
 
-  // Keep the mutable row ref current so click handlers read fresh data.
-  const existingRowRef = cellRowRefMap.get(cellElement);
-  if (existingRowRef) {
-    existingRowRef.current = cell.row as Row;
+  // Keep the mutable row + tableRow ref current so click handlers read fresh
+  // data. The chevron handler reads tableRow.rowId / rowIndexPath / rowPath
+  // from this ref so toggling expansion after a sort uses the row's CURRENT
+  // positional rowId (matching what flattenRows / isRowExpanded compute) and
+  // not the pre-sort rowId captured in the create-time closure.
+  const existingRef = cellLiveRefMap.get(cellElement);
+  if (existingRef) {
+    existingRef.row = cell.row as Row;
+    existingRef.tableRow = cell.tableRow;
+  } else {
+    cellLiveRefMap.set(cellElement, { row: cell.row as Row, tableRow: cell.tableRow });
   }
 
   // Re-key the cell registry entry when this DOM cell is reused for a

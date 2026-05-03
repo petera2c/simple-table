@@ -1,7 +1,7 @@
 /* Modern Light Theme - Clean, minimal design inspired by contemporary table UIs
  * 
  * Design Philosophy:
- * - Subtle borders (#f3f4f6) for a clean, uncluttered look
+ * - Light gray borders (#e5e7eb) for structure without heavy chrome
  * - White backgrounds with minimal color variation
  * - Hover states instead of alternating row colors
  * - Generous padding (12px) for better readability
@@ -26,8 +26,8 @@
   --st-scrollbar-thumb-color: #d1d5db;
   --st-scrollbar-width: thin;
 
-  /* Base/Structural colors - Very subtle borders */
-  --st-border-color: #f3f4f6;
+  /* Base/Structural colors - Visible but still light (gray-200) */
+  --st-border-color: #e5e7eb;
   --st-footer-background-color: var(--st-white);
   --st-last-group-row-separator-border-color: #e5e7eb;
 
@@ -132,30 +132,30 @@
 
 /* Modern Light theme specific overrides for even cleaner look */
 .theme-modern-light .st-wrapper {
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--st-border-color);
 }
 
 /* Subtle header border */
 .theme-modern-light .st-header-pinned-left,
 .theme-modern-light .st-header-main,
 .theme-modern-light .st-header-pinned-right {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--st-border-color);
 }
 
 /* Remove heavy borders on pinned sections */
 .theme-modern-light .st-header-pinned-left,
 .theme-modern-light .st-body-pinned-left {
-  border-right: 1px solid #f3f4f6;
+  border-right: 1px solid var(--st-border-color);
 }
 
 .theme-modern-light .st-header-pinned-right,
 .theme-modern-light .st-body-pinned-right {
-  border-left: 1px solid #f3f4f6;
+  border-left: 1px solid var(--st-border-color);
 }
 
-/* Cleaner row separators */
+/* Row separators — match grid lines for readable horizontal breaks */
 .theme-modern-light .st-row-separator {
-  background-color: #f9fafb;
+  background-color: var(--st-border-color);
 }
 
 /* Lighter header cell styling */
@@ -178,7 +178,7 @@
 
 /* Modern footer styling */
 .theme-modern-light .st-footer {
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--st-border-color);
   background-color: var(--st-white);
   padding: 12px 16px;
   gap: 12px;
@@ -242,13 +242,13 @@
 
 /* Modern scrollbar */
 .theme-modern-light .st-horizontal-scrollbar-container {
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--st-border-color);
   background-color: #fafafa;
 }
 
 /* Cleaner group headers */
 .theme-modern-light .st-group-header {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--st-border-color);
   font-weight: 500;
 }
 

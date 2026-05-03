@@ -193,6 +193,8 @@ input {
 .st-header-container.st-header-scroll-padding::after {
   content: "";
   display: block;
+  /* `*` does not target ::after; border-box keeps the bottom border inside the flex line. */
+  box-sizing: border-box;
   width: var(--st-after-width, default-width);
   flex-shrink: 0;
   background-color: var(--st-header-background-color);
@@ -282,14 +284,12 @@ input {
   left: 0;
   display: flex;
   z-index: 10;
-  pointer-events: none;
 }
 
 .st-sticky-section-left,
 .st-sticky-section-main,
 .st-sticky-section-right {
   overflow: hidden;
-  pointer-events: none;
 }
 
 .st-sticky-section-left {
@@ -1460,6 +1460,41 @@ input {
   opacity: 0;
   pointer-events: none;
 }
+
+/*
+ * Accordion animation window for nested-column and row-grouping collapse/expand.
+ *
+ * Active for one collapse/expand operation: SimpleTableVanilla adds the
+ * `st-accordion-animating` class plus inline `--st-accordion-duration` /
+ * `--st-accordion-easing` custom properties on the table root, then removes
+ * them once the animation ends.
+ *
+ * The transition applies to `width`/`height` only — `transform` is driven by
+ * the FLIP `AnimationCoordinator` with its own inline transition string, and
+ * transitioning `top`/`left` here would race with that. `overflow: hidden` is
+ * needed so cell content is clipped while the cell shrinks/grows from zero
+ * size in the active axis.
+ */
+.st-accordion-animating .st-cell,
+.st-accordion-animating .st-header-cell {
+  transition:
+    width var(--st-accordion-duration, var(--st-transition-duration))
+      var(--st-accordion-easing, var(--st-transition-ease)),
+    height var(--st-accordion-duration, var(--st-transition-duration))
+      var(--st-accordion-easing, var(--st-transition-ease));
+  overflow: hidden;
+}
+
+/*
+ * Nested grid rows position themselves with `transform: translate3d(0, Ypx, 0)`
+ * (not `style.top`), so the FLIP-style cell coordinator doesn't drive them.
+ * SectionRenderer applies an inline transition on transform/height when it
+ * updates an existing nested-grid-row in place (because an unrelated row
+ * above expanded/collapsed, or a sibling's child data resolved and changed
+ * total layout height) — that lets the inline-style update interpolate
+ * instead of snapping. Initial creation deliberately writes the transform
+ * without a transition so the row appears at its destination immediately.
+ */
 
 /* Cell update animation */
 @keyframes cell-flash {
