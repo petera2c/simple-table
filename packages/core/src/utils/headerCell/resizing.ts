@@ -1,5 +1,5 @@
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { getCellId } from "../cellUtils";
 import { calculateHeaderContentWidth, removeAllFractionalWidths } from "../headerWidthUtils";
 import {
@@ -7,10 +7,7 @@ import {
   getSiblingArray,
   setSiblingArray,
 } from "../../managers/DragHandlerManager";
-import {
-  applyColumnAutoFitWithAutoExpand,
-  handleResizeStart,
-} from "../resizeUtils";
+import { applyColumnAutoFitWithAutoExpand, handleResizeStart } from "../resizeUtils";
 import { updateColumnWidthsInDOM } from "../resizeUtils/domUpdates";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener, throttle } from "./eventTracking";
@@ -21,14 +18,32 @@ const getStyleRoot = (context: HeaderRenderContext): ParentNode | null => {
   return main.closest(".simple-table-root") ?? main;
 };
 
+/** Resize handlers must mutate the live table tree, not a stale `context.headers` snapshot. */
+const findHeaderInTree = (roots: HeaderObject[], accessor: Accessor): HeaderObject | undefined => {
+  for (const h of roots) {
+    if (h.accessor === accessor) return h;
+    if (h.children?.length) {
+      const found = findHeaderInTree(h.children, accessor);
+      if (found) return found;
+    }
+  }
+  return undefined;
+};
+
+const resolveLiveResizeHeader = (
+  context: HeaderRenderContext,
+  headerFromCell: HeaderObject,
+): HeaderObject => {
+  return findHeaderInTree(context.getHeaders(), headerFromCell.accessor) ?? headerFromCell;
+};
+
 export const createResizeHandle = (
   header: HeaderObject,
   context: HeaderRenderContext,
   isLastMainAutoExpandColumn: boolean,
 ): HTMLElement | null => {
   const { columnResizing } = context;
-  const isSelectionColumn =
-    header.isSelectionColumn && context.enableRowSelection;
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
   if (!columnResizing || isSelectionColumn || isLastMainAutoExpandColumn) {
     return null;
@@ -53,14 +68,16 @@ export const createResizeHandle = (
   });
 
   const performAutoFit = () => {
+    const liveHeaders = context.getHeaders();
+    const liveHeader = resolveLiveResizeHeader(context, header);
     const headerCell = document.getElementById(
       getCellId({ accessor: header.accessor, rowId: "header" }),
     );
 
     if (context.autoExpandColumns) {
       applyColumnAutoFitWithAutoExpand({
-        header,
-        headers: context.headers,
+        header: liveHeader,
+        headers: liveHeaders,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         mainBodyRef: context.mainBodyRef,
@@ -69,7 +86,7 @@ export const createResizeHandle = (
         getTargetLeafWidth: (leafHeader) =>
           calculateHeaderContentWidth(leafHeader.accessor, measureOptions(leafHeader)),
       });
-      const next = [...context.headers];
+      const next = [...liveHeaders];
       context.setHeaders(next);
       if (context.onColumnWidthChange) {
         context.onColumnWidthChange(next);
@@ -79,21 +96,17 @@ export const createResizeHandle = (
 
     const contentWidth = calculateHeaderContentWidth(header.accessor, measureOptions(header));
 
-    const path = getHeaderIndexPath(context.headers, header.accessor);
+    const path = getHeaderIndexPath(liveHeaders, liveHeader.accessor);
     if (!path) return;
 
-    const siblings = getSiblingArray(context.headers, path);
+    const siblings = getSiblingArray(liveHeaders, path);
     const headerIndex = path[path.length - 1];
 
     const updatedSiblings = siblings.map((h, i) =>
       i === headerIndex ? { ...h, width: contentWidth } : h,
     );
 
-    const updatedHeaders = setSiblingArray(
-      context.headers,
-      path,
-      updatedSiblings,
-    );
+    const updatedHeaders = setSiblingArray(liveHeaders, path, updatedSiblings);
 
     updatedHeaders.forEach((h) => removeAllFractionalWidths(h));
 
@@ -131,14 +144,16 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
+      const liveHeaders = context.getHeaders();
+      const liveHeader = resolveLiveResizeHeader(context, header);
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         event: event,
         forceUpdate: context.forceUpdate,
-        header,
-        headers: context.headers,
+        header: liveHeader,
+        headers: liveHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
         pinnedLeftRef: context.pinnedLeftRef,
@@ -151,11 +166,7 @@ export const createResizeHandle = (
     }, 10);
   };
 
-  addTrackedEventListener(
-    resizeContainer,
-    "mousedown",
-    handleMouseDown as EventListener,
-  );
+  addTrackedEventListener(resizeContainer, "mousedown", handleMouseDown as EventListener);
 
   const handleTouchStart = (event: Event) => {
     const touchEvent = event as globalThis.TouchEvent;
@@ -164,14 +175,16 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
+      const liveHeaders = context.getHeaders();
+      const liveHeader = resolveLiveResizeHeader(context, header);
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         event: touchEvent as any,
         forceUpdate: context.forceUpdate,
-        header,
-        headers: context.headers,
+        header: liveHeader,
+        headers: liveHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
         pinnedLeftRef: context.pinnedLeftRef,
@@ -186,11 +199,7 @@ export const createResizeHandle = (
 
   addTrackedEventListener(resizeContainer, "touchstart", handleTouchStart);
 
-  addTrackedEventListener(
-    resizeContainer,
-    "dblclick",
-    runAutoFitDebounced as EventListener,
-  );
+  addTrackedEventListener(resizeContainer, "dblclick", runAutoFitDebounced as EventListener);
 
   return resizeContainer;
 };

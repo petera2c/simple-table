@@ -181,8 +181,8 @@ export const attachDragHandlers = (
       const draggedHeader = draggedHeaderRef.current;
       if (!draggedHeader) return;
 
-      const draggedSection = getHeaderSection(draggedHeader);
-      const hoveredSection = getHeaderSection(header);
+      const draggedSection = getHeaderSection(draggedHeader, liveHeaders);
+      const hoveredSection = getHeaderSection(header, liveHeaders);
       const isCrossSectionDrag = draggedSection !== hoveredSection;
 
       let newHeaders: HeaderObject[];

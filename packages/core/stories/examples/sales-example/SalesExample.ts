@@ -14,9 +14,9 @@ export const salesExampleDefaults = {
   columnReordering: true,
   selectableCells: true,
   autoExpandColumns: true,
-  enableRowSelection: true,
   theme: "modern-dark" as const,
   height: "70dvh",
+  editColumns: true,
 };
 
 export function renderSalesExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
