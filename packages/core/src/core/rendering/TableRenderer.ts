@@ -63,7 +63,7 @@ export interface TableRendererDeps {
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
   pinnedRightRef: { current: HTMLDivElement | null };
-  positionOnlyBody?: boolean; /** When true, body sections use position-only updates for existing cells (scroll performance). */
+  positionOnlyBody?: boolean; /** When true, scroll path updates cell geometry only (no full content/selection refresh); row separators still sync. */
   resolvedIcons: any;
   rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, any>;

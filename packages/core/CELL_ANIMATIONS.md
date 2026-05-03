@@ -126,7 +126,7 @@ deps.onRender();
 
 Two performance optimizations interact with animation:
 
-- **`positionOnlyBody`** is set to `true` when `source === "scroll-raf"` and `isScrolling === true` (`SimpleTableVanilla.ts` L568). In this mode `renderBodyCells` only updates positions and skips separator / content work (`bodyCellRenderer.ts` L245–252, L373–381).
+- **`positionOnlyBody`** is set to `true` when `source === "scroll-raf"` and `isScrolling === true` (`SimpleTableVanilla.ts` L568). In this mode `renderBodyCells` avoids full cell refresh (selection, expand chrome, expensive content sync) while still updating **`top`/`left` per cell** and **syncing row separators** with the viewport (`bodyCellRenderer.ts`; separator pass is unconditional).
 - **No-op when scroll range unchanged.** In `RenderOrchestrator` (L495–504), if `verticalScrollFastPath && lastScrollRafPaintedRange.start === renderedStartIndex && ... .end === renderedEndIndex`, the render returns without touching the DOM.
 
 Both must be bypassed for renders that originate from sort, reorder, expand, etc. These are not "scroll" renders, so `positionOnlyBody` will already be `false` for them — but the animation system must explicitly **never** trigger off `scroll-raf` renders.
@@ -255,7 +255,7 @@ A complete catalogue of state changes that should hook the animation coordinator
 | Quick-filter / filter change | `FilterManager` → re-flatten                                              | Surviving rows: `top`. Filtered-out rows: leave.     | `translate3d(0, dy, 0)` + fade-out for leavers                                              | Same pattern as sort plus leaver handling.                                                                                        |
 | Pin / unpin column           | column metadata change → `setHeaders`                                     | Cell migrates between sections                       | Cross-section fade-out / fade-in                                                            | Cannot FLIP across containers.                                                                                                    |
 | Cell content update          | `cellUpdateFlash` path (`bodyCell/styling.ts` L275–278)                   | None geometric                                       | Existing CSS keyframe (`background-color`)                                                  | Already animated; do not touch.                                                                                                   |
-| **Scroll**                   | `scroll-raf` / `positionOnlyBody === true`                                | `top`/`left` per cell                                | **Do nothing.**                                                                             | Explicitly excluded; the coordinator must ignore renders whose source is scroll.                                                  |
+| **Scroll**                   | `scroll-raf` / `positionOnlyBody === true`                                | `top`/`left` per cell; `.st-row-separator` synced    | **Do nothing.**                                                                             | Coordinator ignores scroll; separators still refresh in `renderBodyCells`, not FLIP.                                              |
 
 ### Hook points (for reference, not a design)
 

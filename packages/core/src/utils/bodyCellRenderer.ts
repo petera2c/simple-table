@@ -136,18 +136,14 @@ const renderRowSeparators = (
   const sectionWidthPx = ((): number | undefined => {
     if (context.pinned) {
       const viewportW =
-        typeof context.pinnedSectionWidthPx === "number" &&
-        context.pinnedSectionWidthPx > 0
+        typeof context.pinnedSectionWidthPx === "number" && context.pinnedSectionWidthPx > 0
           ? context.pinnedSectionWidthPx
           : container.clientWidth;
       const w = Math.max(viewportW, pinnedContentRight);
       return w > 0 ? w : undefined;
     }
     const w =
-      context.mainSectionContainerWidth ??
-      context.containerWidth ??
-      container.clientWidth ??
-      0;
+      context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0;
     return w > 0 ? w : undefined;
   })();
 
