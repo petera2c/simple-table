@@ -16,6 +16,7 @@ export const handleResizeWithAutoExpand = ({
   headers,
   initialWidthsMap,
   isParentResize = false,
+  pinnedBodyViewportWidth,
   resizedHeader,
   reverse,
   rootPinned,
@@ -30,6 +31,8 @@ export const handleResizeWithAutoExpand = ({
   headers: HeaderObject[];
   initialWidthsMap: Map<string, number>;
   isParentResize?: boolean;
+  /** When set, caps pinned growth so column sums do not exceed this scrollport (policy max can be wider). */
+  pinnedBodyViewportWidth?: number;
   resizedHeader: HeaderObject;
   reverse: boolean;
   rootPinned: Pinned | undefined;
@@ -37,28 +40,34 @@ export const handleResizeWithAutoExpand = ({
   sectionWidth: number;
   startWidth: number;
 }): void => {
-  // For pinned sections, clamp delta to prevent exceeding max section width
-  // This prevents the drag from causing unwanted auto-scaling of other columns
-  let clampedDelta = delta;
-  if (rootPinned && containerWidth > 0) {
-    // Check if we have both pinned sections
+  /** Sum of leaf widths in this section at drag start (initialWidthsMap is section-scoped). */
+  const pinnedSectionWidthSum = (): number =>
+    Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+
+  /**
+   * Cap positive delta only when it would grow the pinned section's *total* width past policy max.
+   * Do not apply before redistributive resizes (neighbors shrink): total stays the same, so clamping
+   * here would wrongly block growth when the section already sits at max width (e.g. after DOM sync).
+   */
+  const clampPinnedPositiveDeltaIfNetSectionGrows = (positiveDelta: number): number => {
+    if (!rootPinned || containerWidth <= 0 || positiveDelta <= 0) {
+      return positiveDelta;
+    }
     const hasPinnedLeft = headers.some((h) => h.pinned === "left" && !h.hide);
     const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
-
-    // Calculate the max allowed width for this pinned section
-    const maxSectionWidth = getMaxPinnedSectionWidth(containerWidth, hasPinnedLeft, hasPinnedRight);
-
-    const currentSectionWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
-    const newSectionWidth = currentSectionWidth + delta;
-
-    // If growing beyond max section width, clamp the delta
-    if (delta > 0 && newSectionWidth > maxSectionWidth) {
-      clampedDelta = Math.max(0, maxSectionWidth - currentSectionWidth);
-    }
-  }
-
-  // Use clamped delta for all calculations
-  delta = clampedDelta;
+    const policyMax = getMaxPinnedSectionWidth(
+      containerWidth,
+      hasPinnedLeft,
+      hasPinnedRight,
+    );
+    const viewportCap =
+      pinnedBodyViewportWidth != null && pinnedBodyViewportWidth > 0
+        ? pinnedBodyViewportWidth
+        : Number.POSITIVE_INFINITY;
+    const maxSectionWidth = Math.min(policyMax, viewportCap);
+    const headroom = Math.max(0, maxSectionWidth - pinnedSectionWidthSum());
+    return Math.min(positiveDelta, headroom);
+  };
 
   // Special handling for parent header resize (multiple children)
   if (isParentResize && childrenToResize.length > 1) {
@@ -131,6 +140,10 @@ export const handleResizeWithAutoExpand = ({
 
           actualDelta = Math.min(delta, maxPossibleShrinkage);
         }
+      }
+
+      if (delta > 0 && !needsCompensation) {
+        actualDelta = clampPinnedPositiveDeltaIfNetSectionGrows(actualDelta);
       }
 
       // Resize all children proportionally
@@ -230,7 +243,9 @@ export const handleResizeWithAutoExpand = ({
     // In this case, just resize normally to grow/shrink the pinned section itself
     // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
     const minWidth = MIN_COLUMN_WIDTH;
-    resizedHeader.width = Math.max(startWidth + delta, minWidth);
+    const appliedBoundaryDelta =
+      delta > 0 ? clampPinnedPositiveDeltaIfNetSectionGrows(delta) : delta;
+    resizedHeader.width = Math.max(startWidth + appliedBoundaryDelta, minWidth);
     return;
   }
 
@@ -252,7 +267,8 @@ export const handleResizeWithAutoExpand = ({
 
     if (newTotalWidthIfNoCompensation <= effectiveSectionWidth) {
       // We have room to grow without shrinking others
-      resizedHeader.width = startWidth + delta;
+      const appliedRoomDelta = delta > 0 ? clampPinnedPositiveDeltaIfNetSectionGrows(delta) : delta;
+      resizedHeader.width = startWidth + appliedRoomDelta;
       return;
     }
 

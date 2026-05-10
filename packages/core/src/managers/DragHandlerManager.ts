@@ -1,7 +1,9 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
+import type { Pinned } from "../types/Pinned";
 import { deepClone } from "../utils/generalUtils";
 import PreviousValueTracker from "../hooks/previousValue";
 import { validateFullHeaderTreeEssentialOrder } from "../utils/pinnedColumnUtils";
+import { findParentHeader } from "../utils/collapseUtils";
 
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 
@@ -47,9 +49,23 @@ export const setSiblingArray = (
   return headers;
 };
 
-export const getHeaderSection = (header: HeaderObject): "left" | "main" | "right" => {
-  if (header.pinned === "left") return "left";
-  if (header.pinned === "right") return "right";
+/** Pinned side of the root column that owns this header (nested leaves inherit parent pin). */
+const getRootPinnedForSection = (
+  header: HeaderObject,
+  rootHeaders: HeaderObject[],
+): Pinned | undefined => {
+  if (header.pinned) return header.pinned;
+  const parent = findParentHeader(rootHeaders, header.accessor);
+  return parent ? getRootPinnedForSection(parent, rootHeaders) : undefined;
+};
+
+export const getHeaderSection = (
+  header: HeaderObject,
+  rootHeaders: HeaderObject[],
+): "left" | "main" | "right" => {
+  const p = getRootPinnedForSection(header, rootHeaders);
+  if (p === "left") return "left";
+  if (p === "right") return "right";
   return "main";
 };
 
@@ -121,7 +137,7 @@ export function insertHeaderAcrossSections({
   let emergencyBreak = false;
 
   try {
-    const hoveredSection = getHeaderSection(hoveredHeader);
+    const hoveredSection = getHeaderSection(hoveredHeader, newHeaders);
 
     const draggedIndex = newHeaders.findIndex((h) => h.accessor === draggedHeader.accessor);
     const hoveredIndex = newHeaders.findIndex((h) => h.accessor === hoveredHeader.accessor);
@@ -213,8 +229,8 @@ export class DragHandlerManager {
 
     const draggedHeader = this.draggedHeader;
 
-    const draggedSection = getHeaderSection(draggedHeader);
-    const hoveredSection = getHeaderSection(hoveredHeader);
+    const draggedSection = getHeaderSection(draggedHeader, this.config.headers);
+    const hoveredSection = getHeaderSection(hoveredHeader, this.config.headers);
     const isCrossSectionDrag = draggedSection !== hoveredSection;
 
     let newHeaders: HeaderObject[];

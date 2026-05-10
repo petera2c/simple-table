@@ -1,16 +1,17 @@
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { getCellId } from "../cellUtils";
-import { calculateHeaderContentWidth, removeAllFractionalWidths } from "../headerWidthUtils";
+import {
+  calculateHeaderContentWidth,
+  getAllVisibleLeafHeaders,
+  removeAllFractionalWidths,
+} from "../headerWidthUtils";
 import {
   getHeaderIndexPath,
   getSiblingArray,
   setSiblingArray,
 } from "../../managers/DragHandlerManager";
-import {
-  applyColumnAutoFitWithAutoExpand,
-  handleResizeStart,
-} from "../resizeUtils";
+import { applyColumnAutoFitWithAutoExpand, handleResizeStart } from "../resizeUtils";
 import { updateColumnWidthsInDOM } from "../resizeUtils/domUpdates";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener, throttle } from "./eventTracking";
@@ -21,14 +22,41 @@ const getStyleRoot = (context: HeaderRenderContext): ParentNode | null => {
   return main.closest(".simple-table-root") ?? main;
 };
 
+const findHeaderInTree = (roots: HeaderObject[], accessor: Accessor): HeaderObject | undefined => {
+  for (const h of roots) {
+    if (h.accessor === accessor) return h;
+    if (h.children?.length) {
+      const found = findHeaderInTree(h.children, accessor);
+      if (found) return found;
+    }
+  }
+  return undefined;
+};
+
+/** Align storage `width` with painted layout so auto-expand resize math matches the viewport. */
+const syncVisibleLeafWidthsFromDom = (
+  roots: HeaderObject[],
+  collapsedHeaders: Set<Accessor> | undefined,
+): void => {
+  const leaves = getAllVisibleLeafHeaders(roots, collapsedHeaders);
+  for (const leaf of leaves) {
+    const cell = document.getElementById(
+      getCellId({ accessor: leaf.accessor, rowId: "header" }),
+    );
+    const w = cell?.offsetWidth;
+    if (w != null && w > 0) {
+      leaf.width = w;
+    }
+  }
+};
+
 export const createResizeHandle = (
   header: HeaderObject,
   context: HeaderRenderContext,
   isLastMainAutoExpandColumn: boolean,
 ): HTMLElement | null => {
   const { columnResizing } = context;
-  const isSelectionColumn =
-    header.isSelectionColumn && context.enableRowSelection;
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
   if (!columnResizing || isSelectionColumn || isLastMainAutoExpandColumn) {
     return null;
@@ -52,15 +80,27 @@ export const createResizeHandle = (
     styleRoot: getStyleRoot(context),
   });
 
+  /** Auto-expand: mutate canonical storage + DOM-synced widths. Otherwise: effective tree (matches main). */
+  const resolveResizeHeaders = (): { headers: HeaderObject[]; header: HeaderObject } => {
+    if (context.autoExpandColumns) {
+      const storage = context.getHeaders();
+      syncVisibleLeafWidthsFromDom(storage, context.collapsedHeaders);
+      const storageHeader = findHeaderInTree(storage, header.accessor) ?? header;
+      return { headers: storage, header: storageHeader };
+    }
+    return { headers: context.headers, header };
+  };
+
   const performAutoFit = () => {
     const headerCell = document.getElementById(
       getCellId({ accessor: header.accessor, rowId: "header" }),
     );
 
     if (context.autoExpandColumns) {
+      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
       applyColumnAutoFitWithAutoExpand({
-        header,
-        headers: context.headers,
+        header: resizeHeader,
+        headers: resizeHeaders,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         mainBodyRef: context.mainBodyRef,
@@ -69,7 +109,7 @@ export const createResizeHandle = (
         getTargetLeafWidth: (leafHeader) =>
           calculateHeaderContentWidth(leafHeader.accessor, measureOptions(leafHeader)),
       });
-      const next = [...context.headers];
+      const next = [...resizeHeaders];
       context.setHeaders(next);
       if (context.onColumnWidthChange) {
         context.onColumnWidthChange(next);
@@ -89,11 +129,7 @@ export const createResizeHandle = (
       i === headerIndex ? { ...h, width: contentWidth } : h,
     );
 
-    const updatedHeaders = setSiblingArray(
-      context.headers,
-      path,
-      updatedSiblings,
-    );
+    const updatedHeaders = setSiblingArray(context.headers, path, updatedSiblings);
 
     updatedHeaders.forEach((h) => removeAllFractionalWidths(h));
 
@@ -131,14 +167,15 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
+      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         event: event,
         forceUpdate: context.forceUpdate,
-        header,
-        headers: context.headers,
+        header: resizeHeader,
+        headers: resizeHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
         pinnedLeftRef: context.pinnedLeftRef,
@@ -151,11 +188,7 @@ export const createResizeHandle = (
     }, 10);
   };
 
-  addTrackedEventListener(
-    resizeContainer,
-    "mousedown",
-    handleMouseDown as EventListener,
-  );
+  addTrackedEventListener(resizeContainer, "mousedown", handleMouseDown as EventListener);
 
   const handleTouchStart = (event: Event) => {
     const touchEvent = event as globalThis.TouchEvent;
@@ -164,14 +197,15 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
+      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         event: touchEvent as any,
         forceUpdate: context.forceUpdate,
-        header,
-        headers: context.headers,
+        header: resizeHeader,
+        headers: resizeHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
         pinnedLeftRef: context.pinnedLeftRef,
@@ -186,11 +220,7 @@ export const createResizeHandle = (
 
   addTrackedEventListener(resizeContainer, "touchstart", handleTouchStart);
 
-  addTrackedEventListener(
-    resizeContainer,
-    "dblclick",
-    runAutoFitDebounced as EventListener,
-  );
+  addTrackedEventListener(resizeContainer, "dblclick", runAutoFitDebounced as EventListener);
 
   return resizeContainer;
 };

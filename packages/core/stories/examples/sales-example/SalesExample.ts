@@ -9,14 +9,13 @@ import { SALES_HEADERS } from "./sales-headers";
 import salesData from "./sales-data.json";
 
 export const salesExampleDefaults = {
-  animations: { enabled: true },
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,
   autoExpandColumns: true,
-  enableRowSelection: true,
   theme: "modern-dark" as const,
   height: "70dvh",
+  editColumns: true,
 };
 
 export function renderSalesExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
