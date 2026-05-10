@@ -10,6 +10,30 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
+export const v3_5_3: ChangelogEntry = {
+  version: "3.5.3",
+  date: "2026-05-09",
+  title: "Pinned & auto-expand resize fixes",
+  description: "Fixes for nested pinned headers, auto-expand resize math, and viewport-based width caps.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Column drag treats nested headers under a pinned parent as pinned (section detection).",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Auto-expand resize syncs leaf widths from the DOM and uses storage headers so drag math matches layout.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Pinned/main auto-expand width caps use the real pinned strip and main body viewports; positive growth clamps only when the section actually widens.",
+    },
+  ],
+};
+
 export const v3_5_2: ChangelogEntry = {
   version: "3.5.2",
   date: "2026-05-03",
@@ -1653,6 +1677,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_5_3,
   v3_5_2,
   v3_4_2,
   v3_4_0,
