@@ -157,10 +157,7 @@ export const handleResizeStart = ({
           (rootPinned === "right" && idx === 0);
       }
 
-      // Proportional main scaling is for multi-column pinned strips. A single pinned
-      // leaf has no pinned siblings to balance; scaling every main column looks wrong
-      // and destabilizes layouts (e.g. one narrow root wrongly left-pinned beside a wide group in main).
-      if (atBoundary && sectionLeafs.length >= 2) {
+      if (atBoundary) {
         isBoundaryResize = true;
         const mainHeaders = headers.filter((h) => !h.pinned);
         mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
@@ -478,7 +475,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
           (rootPinned === "right" && idx === 0);
       }
 
-      if (atBoundary && sectionLeafs.length >= 2) {
+      if (atBoundary) {
         isBoundaryResize = true;
         const mainHeaders = headers.filter((h) => !h.pinned);
         mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);

@@ -42,12 +42,13 @@ export const handleResizeWithAutoExpand = ({
     Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
 
   /**
-   * Cap positive deltas only when they would grow the pinned section's total width.
-   * Do not apply before redistributive resizes (neighbors shrink), where the net total stays the same.
+   * Cap positive delta only when it would grow the pinned section's *total* width past policy max.
+   * Do not apply before redistributive resizes (neighbors shrink): total stays the same, so clamping
+   * here would wrongly block growth when the section already sits at max width (e.g. after DOM sync).
    */
-  const clampPinnedDeltaIfNetSectionGrows = (positiveGrowDelta: number): number => {
-    if (!rootPinned || containerWidth <= 0 || positiveGrowDelta <= 0) {
-      return positiveGrowDelta;
+  const clampPinnedPositiveDeltaIfNetSectionGrows = (positiveDelta: number): number => {
+    if (!rootPinned || containerWidth <= 0 || positiveDelta <= 0) {
+      return positiveDelta;
     }
     const hasPinnedLeft = headers.some((h) => h.pinned === "left" && !h.hide);
     const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
@@ -57,7 +58,7 @@ export const handleResizeWithAutoExpand = ({
       hasPinnedRight,
     );
     const headroom = Math.max(0, maxSectionWidth - pinnedSectionWidthSum());
-    return Math.min(positiveGrowDelta, headroom);
+    return Math.min(positiveDelta, headroom);
   };
 
   // Special handling for parent header resize (multiple children)
@@ -134,7 +135,7 @@ export const handleResizeWithAutoExpand = ({
       }
 
       if (delta > 0 && !needsCompensation) {
-        actualDelta = clampPinnedDeltaIfNetSectionGrows(actualDelta);
+        actualDelta = clampPinnedPositiveDeltaIfNetSectionGrows(actualDelta);
       }
 
       // Resize all children proportionally
@@ -234,7 +235,8 @@ export const handleResizeWithAutoExpand = ({
     // In this case, just resize normally to grow/shrink the pinned section itself
     // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
     const minWidth = MIN_COLUMN_WIDTH;
-    const appliedBoundaryDelta = delta > 0 ? clampPinnedDeltaIfNetSectionGrows(delta) : delta;
+    const appliedBoundaryDelta =
+      delta > 0 ? clampPinnedPositiveDeltaIfNetSectionGrows(delta) : delta;
     resizedHeader.width = Math.max(startWidth + appliedBoundaryDelta, minWidth);
     return;
   }
@@ -257,7 +259,8 @@ export const handleResizeWithAutoExpand = ({
 
     if (newTotalWidthIfNoCompensation <= effectiveSectionWidth) {
       // We have room to grow without shrinking others
-      const appliedRoomDelta = clampPinnedDeltaIfNetSectionGrows(delta);
+      const appliedRoomDelta =
+        delta > 0 ? clampPinnedPositiveDeltaIfNetSectionGrows(delta) : delta;
       resizedHeader.width = startWidth + appliedRoomDelta;
       return;
     }

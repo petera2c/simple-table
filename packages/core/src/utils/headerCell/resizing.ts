@@ -1,7 +1,11 @@
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { getCellId } from "../cellUtils";
-import { calculateHeaderContentWidth, removeAllFractionalWidths } from "../headerWidthUtils";
+import {
+  calculateHeaderContentWidth,
+  getAllVisibleLeafHeaders,
+  removeAllFractionalWidths,
+} from "../headerWidthUtils";
 import {
   getHeaderIndexPath,
   getSiblingArray,
@@ -18,7 +22,6 @@ const getStyleRoot = (context: HeaderRenderContext): ParentNode | null => {
   return main.closest(".simple-table-root") ?? main;
 };
 
-/** Resize handlers must mutate the live table tree, not a stale `context.headers` snapshot. */
 const findHeaderInTree = (roots: HeaderObject[], accessor: Accessor): HeaderObject | undefined => {
   for (const h of roots) {
     if (h.accessor === accessor) return h;
@@ -30,11 +33,21 @@ const findHeaderInTree = (roots: HeaderObject[], accessor: Accessor): HeaderObje
   return undefined;
 };
 
-const resolveLiveResizeHeader = (
-  context: HeaderRenderContext,
-  headerFromCell: HeaderObject,
-): HeaderObject => {
-  return findHeaderInTree(context.getHeaders(), headerFromCell.accessor) ?? headerFromCell;
+/** Align storage `width` with painted layout so auto-expand resize math matches the viewport. */
+const syncVisibleLeafWidthsFromDom = (
+  roots: HeaderObject[],
+  collapsedHeaders: Set<Accessor> | undefined,
+): void => {
+  const leaves = getAllVisibleLeafHeaders(roots, collapsedHeaders);
+  for (const leaf of leaves) {
+    const cell = document.getElementById(
+      getCellId({ accessor: leaf.accessor, rowId: "header" }),
+    );
+    const w = cell?.offsetWidth;
+    if (w != null && w > 0) {
+      leaf.width = w;
+    }
+  }
 };
 
 export const createResizeHandle = (
@@ -67,17 +80,27 @@ export const createResizeHandle = (
     styleRoot: getStyleRoot(context),
   });
 
+  /** Auto-expand: mutate canonical storage + DOM-synced widths. Otherwise: effective tree (matches main). */
+  const resolveResizeHeaders = (): { headers: HeaderObject[]; header: HeaderObject } => {
+    if (context.autoExpandColumns) {
+      const storage = context.getHeaders();
+      syncVisibleLeafWidthsFromDom(storage, context.collapsedHeaders);
+      const storageHeader = findHeaderInTree(storage, header.accessor) ?? header;
+      return { headers: storage, header: storageHeader };
+    }
+    return { headers: context.headers, header };
+  };
+
   const performAutoFit = () => {
-    const liveHeaders = context.getHeaders();
-    const liveHeader = resolveLiveResizeHeader(context, header);
     const headerCell = document.getElementById(
       getCellId({ accessor: header.accessor, rowId: "header" }),
     );
 
     if (context.autoExpandColumns) {
+      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
       applyColumnAutoFitWithAutoExpand({
-        header: liveHeader,
-        headers: liveHeaders,
+        header: resizeHeader,
+        headers: resizeHeaders,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         mainBodyRef: context.mainBodyRef,
@@ -86,7 +109,7 @@ export const createResizeHandle = (
         getTargetLeafWidth: (leafHeader) =>
           calculateHeaderContentWidth(leafHeader.accessor, measureOptions(leafHeader)),
       });
-      const next = [...liveHeaders];
+      const next = [...resizeHeaders];
       context.setHeaders(next);
       if (context.onColumnWidthChange) {
         context.onColumnWidthChange(next);
@@ -96,17 +119,17 @@ export const createResizeHandle = (
 
     const contentWidth = calculateHeaderContentWidth(header.accessor, measureOptions(header));
 
-    const path = getHeaderIndexPath(liveHeaders, liveHeader.accessor);
+    const path = getHeaderIndexPath(context.headers, header.accessor);
     if (!path) return;
 
-    const siblings = getSiblingArray(liveHeaders, path);
+    const siblings = getSiblingArray(context.headers, path);
     const headerIndex = path[path.length - 1];
 
     const updatedSiblings = siblings.map((h, i) =>
       i === headerIndex ? { ...h, width: contentWidth } : h,
     );
 
-    const updatedHeaders = setSiblingArray(liveHeaders, path, updatedSiblings);
+    const updatedHeaders = setSiblingArray(context.headers, path, updatedSiblings);
 
     updatedHeaders.forEach((h) => removeAllFractionalWidths(h));
 
@@ -144,16 +167,15 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
-      const liveHeaders = context.getHeaders();
-      const liveHeader = resolveLiveResizeHeader(context, header);
+      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         event: event,
         forceUpdate: context.forceUpdate,
-        header: liveHeader,
-        headers: liveHeaders,
+        header: resizeHeader,
+        headers: resizeHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
         pinnedLeftRef: context.pinnedLeftRef,
@@ -175,16 +197,15 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
-      const liveHeaders = context.getHeaders();
-      const liveHeader = resolveLiveResizeHeader(context, header);
+      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
         collapsedHeaders: context.collapsedHeaders,
         containerWidth: context.containerWidth,
         event: touchEvent as any,
         forceUpdate: context.forceUpdate,
-        header: liveHeader,
-        headers: liveHeaders,
+        header: resizeHeader,
+        headers: resizeHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
         pinnedLeftRef: context.pinnedLeftRef,

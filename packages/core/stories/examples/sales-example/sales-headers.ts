@@ -6,6 +6,7 @@ import type { HeaderObject } from "../../../src/index";
 
 export const SALES_HEADERS: HeaderObject[] = [
   {
+    pinned: "left",
     accessor: "repName",
     label: "Sales Representative",
     width: "2fr",
@@ -15,6 +16,7 @@ export const SALES_HEADERS: HeaderObject[] = [
     type: "string",
   },
   {
+    pinned: "left",
     accessor: "salesMetrics",
     label: "Sales Metrics",
     width: 600,
