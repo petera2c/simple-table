@@ -1,0 +1,579 @@
+{
+  "baseUrl": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples",
+  "version": "3.6.2",
+  "generatedAt": "2026-05-16T14:12:44.103Z",
+  "demos": {
+    "quick-start": {
+      "label": "Quick Start",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/quick-start",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/quick-start",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/quick-start",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/quick-start",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/quick-start",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/quick-start"
+      }
+    },
+    "column-filtering": {
+      "label": "Column Filtering",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-filtering",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-filtering",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-filtering",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-filtering",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-filtering",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-filtering"
+      }
+    },
+    "column-sorting": {
+      "label": "Column Sorting",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-sorting",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-sorting",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-sorting",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-sorting",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-sorting",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-sorting"
+      }
+    },
+    "value-formatter": {
+      "label": "Value Formatter",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/value-formatter",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/value-formatter",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/value-formatter",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/value-formatter",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/value-formatter",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/value-formatter"
+      }
+    },
+    "pagination": {
+      "label": "Pagination",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/pagination",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/pagination",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/pagination",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/pagination",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/pagination",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/pagination"
+      }
+    },
+    "column-pinning": {
+      "label": "Column Pinning",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-pinning",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-pinning",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-pinning",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-pinning",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-pinning",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-pinning"
+      }
+    },
+    "column-alignment": {
+      "label": "Column Alignment",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-alignment",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-alignment",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-alignment",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-alignment",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-alignment",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-alignment"
+      }
+    },
+    "column-width": {
+      "label": "Column Width",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-width",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-width",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-width",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-width",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-width",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-width"
+      }
+    },
+    "column-resizing": {
+      "label": "Column Resizing",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-resizing",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-resizing",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-resizing",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-resizing",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-resizing",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-resizing"
+      }
+    },
+    "column-reordering": {
+      "label": "Column Reordering",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-reordering",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-reordering",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-reordering",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-reordering",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-reordering",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-reordering"
+      }
+    },
+    "column-selection": {
+      "label": "Column Selection",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-selection",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-selection",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-selection",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-selection",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-selection",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-selection"
+      }
+    },
+    "column-editing": {
+      "label": "Column Editing",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-editing",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-editing",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-editing",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-editing",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-editing",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-editing"
+      }
+    },
+    "cell-editing": {
+      "label": "Cell Editing",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/cell-editing",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/cell-editing",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/cell-editing",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/cell-editing",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/cell-editing",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/cell-editing"
+      }
+    },
+    "cell-highlighting": {
+      "label": "Cell Highlighting",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/cell-highlighting",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/cell-highlighting",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/cell-highlighting",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/cell-highlighting",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/cell-highlighting",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/cell-highlighting"
+      }
+    },
+    "themes": {
+      "label": "Themes",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/themes",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/themes",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/themes",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/themes",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/themes",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/themes"
+      }
+    },
+    "row-height": {
+      "label": "Row Height",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/row-height",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/row-height",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/row-height",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/row-height",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/row-height",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/row-height"
+      }
+    },
+    "table-height": {
+      "label": "Table Height",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/table-height",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/table-height",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/table-height",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/table-height",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/table-height",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/table-height"
+      }
+    },
+    "quick-filter": {
+      "label": "Quick Filter",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/quick-filter",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/quick-filter",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/quick-filter",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/quick-filter",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/quick-filter",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/quick-filter"
+      }
+    },
+    "nested-headers": {
+      "label": "Nested Headers",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/nested-headers",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/nested-headers",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/nested-headers",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/nested-headers",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/nested-headers",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/nested-headers"
+      }
+    },
+    "external-sort": {
+      "label": "External Sort",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/external-sort",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/external-sort",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/external-sort",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/external-sort",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/external-sort",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/external-sort"
+      }
+    },
+    "external-filter": {
+      "label": "External Filter",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/external-filter",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/external-filter",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/external-filter",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/external-filter",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/external-filter",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/external-filter"
+      }
+    },
+    "loading-state": {
+      "label": "Loading State",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/loading-state",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/loading-state",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/loading-state",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/loading-state",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/loading-state",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/loading-state"
+      }
+    },
+    "infinite-scroll": {
+      "label": "Infinite Scroll",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/infinite-scroll",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/infinite-scroll",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/infinite-scroll",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/infinite-scroll",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/infinite-scroll",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/infinite-scroll"
+      }
+    },
+    "row-selection": {
+      "label": "Row Selection",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/row-selection",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/row-selection",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/row-selection",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/row-selection",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/row-selection",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/row-selection"
+      }
+    },
+    "csv-export": {
+      "label": "CSV Export",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/csv-export",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/csv-export",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/csv-export",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/csv-export",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/csv-export",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/csv-export"
+      }
+    },
+    "programmatic-control": {
+      "label": "Programmatic Control",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/programmatic-control",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/programmatic-control",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/programmatic-control",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/programmatic-control",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/programmatic-control",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/programmatic-control"
+      }
+    },
+    "row-grouping": {
+      "label": "Row Grouping",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/row-grouping",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/row-grouping",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/row-grouping",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/row-grouping",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/row-grouping",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/row-grouping"
+      }
+    },
+    "aggregate-functions": {
+      "label": "Aggregate Functions",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/aggregate-functions",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/aggregate-functions",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/aggregate-functions",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/aggregate-functions",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/aggregate-functions",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/aggregate-functions"
+      }
+    },
+    "collapsible-columns": {
+      "label": "Collapsible Columns",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/collapsible-columns",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/collapsible-columns",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/collapsible-columns",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/collapsible-columns",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/collapsible-columns",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/collapsible-columns"
+      }
+    },
+    "cell-renderer": {
+      "label": "Cell Renderer",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/cell-renderer",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/cell-renderer",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/cell-renderer",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/cell-renderer",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/cell-renderer",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/cell-renderer"
+      }
+    },
+    "header-renderer": {
+      "label": "Header Renderer",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/header-renderer",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/header-renderer",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/header-renderer",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/header-renderer",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/header-renderer",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/header-renderer"
+      }
+    },
+    "footer-renderer": {
+      "label": "Footer Renderer",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/footer-renderer",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/footer-renderer",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/footer-renderer",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/footer-renderer",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/footer-renderer",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/footer-renderer"
+      }
+    },
+    "cell-clicking": {
+      "label": "Cell Clicking",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/cell-clicking",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/cell-clicking",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/cell-clicking",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/cell-clicking",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/cell-clicking",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/cell-clicking"
+      }
+    },
+    "tooltip": {
+      "label": "Tooltip",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/tooltip",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/tooltip",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/tooltip",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/tooltip",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/tooltip",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/tooltip"
+      }
+    },
+    "custom-theme": {
+      "label": "Custom Theme",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/custom-theme",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/custom-theme",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/custom-theme",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/custom-theme",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/custom-theme",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/custom-theme"
+      }
+    },
+    "custom-icons": {
+      "label": "Custom Icons",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/custom-icons",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/custom-icons",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/custom-icons",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/custom-icons",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/custom-icons",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/custom-icons"
+      }
+    },
+    "empty-state": {
+      "label": "Empty State",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/empty-state",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/empty-state",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/empty-state",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/empty-state",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/empty-state",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/empty-state"
+      }
+    },
+    "column-visibility": {
+      "label": "Column Visibility",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-visibility",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-visibility",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-visibility",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-visibility",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-visibility",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-visibility"
+      }
+    },
+    "column-editor-custom-renderer": {
+      "label": "Column Editor Custom Renderer",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/column-editor-custom-renderer",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/column-editor-custom-renderer",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/column-editor-custom-renderer",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/column-editor-custom-renderer",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/column-editor-custom-renderer",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/column-editor-custom-renderer"
+      }
+    },
+    "single-row-children": {
+      "label": "Single Row Children",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/single-row-children",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/single-row-children",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/single-row-children",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/single-row-children",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/single-row-children",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/single-row-children"
+      }
+    },
+    "nested-tables": {
+      "label": "Nested Tables",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/nested-tables",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/nested-tables",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/nested-tables",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/nested-tables",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/nested-tables",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/nested-tables"
+      }
+    },
+    "dynamic-nested-tables": {
+      "label": "Dynamic Nested Tables",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/dynamic-nested-tables",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/dynamic-nested-tables",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/dynamic-nested-tables",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/dynamic-nested-tables",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/dynamic-nested-tables",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/dynamic-nested-tables"
+      }
+    },
+    "dynamic-row-loading": {
+      "label": "Dynamic Row Loading",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/dynamic-row-loading",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/dynamic-row-loading",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/dynamic-row-loading",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/dynamic-row-loading",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/dynamic-row-loading",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/dynamic-row-loading"
+      }
+    },
+    "charts": {
+      "label": "Charts",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/charts",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/charts",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/charts",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/charts",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/charts",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/charts"
+      }
+    },
+    "live-update": {
+      "label": "Live Update",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/live-update",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/live-update",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/live-update",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/live-update",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/live-update",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/live-update"
+      }
+    },
+    "crm": {
+      "label": "CRM",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/crm",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/crm",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/crm",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/crm",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/crm",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/crm"
+      }
+    },
+    "infrastructure": {
+      "label": "Infrastructure",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/infrastructure",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/infrastructure",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/infrastructure",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/infrastructure",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/infrastructure",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/infrastructure"
+      }
+    },
+    "music": {
+      "label": "Music",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/music",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/music",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/music",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/music",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/music",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/music"
+      }
+    },
+    "billing": {
+      "label": "Billing",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/billing",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/billing",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/billing",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/billing",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/billing",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/billing"
+      }
+    },
+    "manufacturing": {
+      "label": "Manufacturing",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/manufacturing",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/manufacturing",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/manufacturing",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/manufacturing",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/manufacturing",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/manufacturing"
+      }
+    },
+    "hr": {
+      "label": "HR",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/hr",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/hr",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/hr",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/hr",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/hr",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/hr"
+      }
+    },
+    "sales": {
+      "label": "Sales",
+      "frameworks": {
+        "react": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/sales",
+        "vue": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/sales",
+        "angular": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/angular/sales",
+        "svelte": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/svelte/sales",
+        "solid": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/solid/sales",
+        "vanilla": "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vanilla/sales"
+      }
+    }
+  }
+}
