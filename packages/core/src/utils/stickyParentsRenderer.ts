@@ -34,6 +34,14 @@ export interface StickyParentsContainerProps {
    * for the current `rowsToRender` band, so selection matches virtualized body cells.
    */
   stickyBodyRowIndexByRowKey: Map<string, number>;
+  /**
+   * When true, the table is in external-scroll mode (scrollParent in use, no
+   * fixed height). The overlay uses native CSS `position: sticky` (handled by
+   * a stylesheet rule) so the browser composites it on the same paint as the
+   * parent scroll. The renderer only needs this flag to neutralize the
+   * overlay's flex column flow contribution via a negative bottom margin.
+   */
+  externalScrollActive?: boolean;
 }
 
 export interface StickyParentsRenderContext {
@@ -400,7 +408,22 @@ export const createStickyParentsContainer = (
   container.className = "st-sticky-top";
   container.style.height = `${stickyHeight}px`;
   container.style.width = containerWidth;
-  container.style.top = `${props.calculatedHeaderHeight}px`;
+  if (props.externalScrollActive) {
+    // External scroll mode: a CSS rule on `.simple-table-root.st-external-scroll
+    // .st-sticky-top` sets `position: sticky` + `top: calc(headerH - padTop)`
+    // using CSS variables, so the browser composites the overlay on the same
+    // paint as the parent scroll (zero JS lag). We don't set inline `top` here
+    // because that would override the CSS rule. We DO neutralize the overlay's
+    // contribution to the flex column flow with a negative bottom margin so
+    // `.st-body-container` (the next sibling) starts where it naturally would.
+    container.style.marginBottom = `${-stickyHeight}px`;
+  } else {
+    // Bounded mode: overlay is removed from flow via `position: absolute`
+    // (set by the base stylesheet) and pinned below the header relative to
+    // `.st-content-wrapper` (the nearest positioned ancestor, which does not
+    // scroll in this mode).
+    container.style.top = `${props.calculatedHeaderHeight}px`;
+  }
 
   // Get current headers (non-pinned)
   const currentHeaders = context.headers.filter((header) => !header.pinned);

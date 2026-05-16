@@ -186,6 +186,21 @@ input {
   z-index: 4;
 }
 
+/* Sticky-parents overlay in external scroll mode: also a native sticky
+   element so the browser composites it on the same paint as the parent
+   scroll (no JS lag). Pinned directly below the sticky header by offsetting
+   the header height and compensating for the scroll parent's padding-top.
+   The renderer sets `margin-bottom: calc(-1 * stickyHeightPx)` inline to
+   neutralize the overlay's contribution to flex column flow so the body
+   container starts where it naturally would — the overlay then visually sits
+   on top of the body's virtualized-out top region. */
+.simple-table-root.st-external-scroll .st-sticky-top {
+  position: sticky;
+  top: calc(
+    var(--st-calculated-header-height, 0px) - var(--st-external-scroll-padding-top, 0px)
+  );
+}
+
 .st-wrapper-container {
   position: relative;
   display: flex;

@@ -415,19 +415,16 @@ export class RenderOrchestrator {
       }
     }
 
-    // Sticky parents rely on `position: sticky` against the nearest scrolling
-    // ancestor — i.e. the body container — which is no longer the scroller in
-    // external scroll mode. Disable the feature when external mode is active
-    // so we don't render visually-broken sticky rows. A one-shot console.warn
-    // is emitted from SimpleTableVanilla when both flags collide.
-    const externalScrollActive = context.externalViewportHeight !== undefined;
-    const effectiveEnableStickyParents =
-      !externalScrollActive && (context.config.enableStickyParents ?? false);
+    // Sticky parents work in both bounded and external-scroll modes. In external
+    // mode the sticky-parents container's `top` is JS-driven by the externally
+    // -aware scrollTop (see TableRenderer.renderBody + stickyParentsRenderer),
+    // so we can pass `enableStickyParents` through unchanged.
+    const enableStickyParents = context.config.enableStickyParents ?? false;
 
     const scrollReuseKey =
       contentHeight === undefined
         ? ""
-        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${effectiveEnableStickyParents}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
+        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${enableStickyParents}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
 
     const scrollReuseEligible =
       Boolean(context.positionOnlyBody) &&
@@ -444,7 +441,7 @@ export class RenderOrchestrator {
         rowHeight: context.customTheme.rowHeight,
         scrollTop: state.scrollTop,
         scrollDirection: state.scrollDirection,
-        enableStickyParents: effectiveEnableStickyParents,
+        enableStickyParents,
         rowGrouping: context.config.rowGrouping,
       });
     } else {
@@ -462,7 +459,7 @@ export class RenderOrchestrator {
         scrollDirection: state.scrollDirection,
         heightOffsets: flattenResult.heightOffsets,
         customTheme: context.customTheme,
-        enableStickyParents: effectiveEnableStickyParents,
+        enableStickyParents,
         rowGrouping: context.config.rowGrouping,
       });
 
@@ -590,6 +587,12 @@ export class RenderOrchestrator {
       );
       rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
       rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
+      // Published so the sticky-parents overlay in external scroll mode can
+      // pin natively (`top: calc(var(--st-calculated-header-height) - var(--st-external-scroll-padding-top))`).
+      rootStyle.setProperty(
+        "--st-calculated-header-height",
+        `${calculatedHeaderHeight}px`,
+      );
 
       const columnResizing = context.config.columnResizing ?? false;
       elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
@@ -606,7 +609,7 @@ export class RenderOrchestrator {
       );
     }
 
-    this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context);
+    this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context, state);
 
     if (verticalScrollFastPath) {
       this.lastScrollRafPaintedRange = {
@@ -678,8 +681,9 @@ export class RenderOrchestrator {
     processedResult: any,
     effectiveHeaders: HeaderObject[],
     context: RenderContext,
+    state: RenderState,
   ): void {
-    const deps = this.buildRendererDeps(effectiveHeaders, context);
+    const deps = this.buildRendererDeps(effectiveHeaders, context, state);
     this.tableRenderer.renderBody(bodyContainer, processedResult, deps);
   }
 
@@ -773,9 +777,18 @@ export class RenderOrchestrator {
     }
   }
 
-  private buildRendererDeps(effectiveHeaders: HeaderObject[], context: RenderContext) {
+  private buildRendererDeps(
+    effectiveHeaders: HeaderObject[],
+    context: RenderContext,
+    state?: RenderState,
+  ) {
     return {
       accordionAxis: context.accordionAxis,
+      // External scroll mode hints — used by TableRenderer.renderBody to pick the
+      // right scrollTop source for the sticky-parents container (the main body
+      // does not scroll in external mode; the parent does).
+      externalScrollActive: context.externalViewportHeight !== undefined,
+      stickyParentsScrollTop: state?.scrollTop,
       animationCoordinator: context.animationCoordinator,
       config: context.config,
       customTheme: context.customTheme,

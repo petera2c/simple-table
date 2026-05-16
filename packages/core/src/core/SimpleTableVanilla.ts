@@ -129,8 +129,6 @@ export class SimpleTableVanilla {
   private bodyContainerMouseLeaveListener: (() => void) | null = null;
   /** Bound scroll handler attached to the body container (internal scroll mode). */
   private bodyContainerScrollListener: ((e: Event) => void) | null = null;
-  /** One-shot warning for sticky-parents limitation under external scroll. */
-  private warnedExternalStickyParents: boolean = false;
   /**
    * When external scroll mode is active we briefly take control of the scroll
    * parent's `overscroll-behavior-y` to neutralize the browser's rubber-band /
@@ -624,8 +622,6 @@ export class SimpleTableVanilla {
         this.dimensionManager.updateConfig({ externalViewportHeight: undefined });
       }
     }
-
-    this.maybeWarnStickyParentsConflict(externalActive);
   }
 
   private ensureBodyScrollListenerAttached(bodyContainer: HTMLElement): void {
@@ -745,18 +741,6 @@ export class SimpleTableVanilla {
     elements.rootElement.style.setProperty(
       "--st-external-scroll-padding-top",
       `${paddingTop}px`,
-    );
-  }
-
-  private maybeWarnStickyParentsConflict(externalActive: boolean): void {
-    if (!externalActive) return;
-    if (!this.config.enableStickyParents) return;
-    if (this.warnedExternalStickyParents) return;
-    this.warnedExternalStickyParents = true;
-    console.warn(
-      "SimpleTable: `enableStickyParents` is not supported when `scrollParent` is in use " +
-        "(external scroll mode). Sticky parent rows will not stick to the viewport. " +
-        "Use `height` or `maxHeight` for sticky parent behavior.",
     );
   }
 
@@ -1236,13 +1220,6 @@ export class SimpleTableVanilla {
         onLoadMore: this.config.onLoadMore,
         infiniteScrollThreshold: this.config.infiniteScrollThreshold ?? 200,
       });
-    }
-
-    if (config.enableStickyParents !== undefined) {
-      this.warnedExternalStickyParents = false;
-      this.maybeWarnStickyParentsConflict(
-        isExternalScrollActive(this.config.scrollParent, this.config.height, this.config.maxHeight),
-      );
     }
 
     this.isUpdating = false;

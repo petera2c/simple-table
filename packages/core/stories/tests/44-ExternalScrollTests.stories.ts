@@ -299,9 +299,9 @@ export const StickyHeaderInExternalScroll = {
 };
 
 // ============================================================================
-// TEST 6: Row grouping works in external scroll mode (and enableStickyParents
-// is safely no-op + warns, since position: sticky parent rows are incompatible
-// with the external scroll containing block).
+// TEST 6: Row grouping with enableStickyParents works in external scroll mode.
+// The sticky-parents container's `top` is JS-driven by the external scrollTop
+// so grouped parent rows pin under the sticky header instead of scrolling away.
 // ============================================================================
 
 const groupedHeaders: HeaderObject[] = [
@@ -327,24 +327,6 @@ const createGroupedRows = (groupCount: number, childrenPerGroup: number) =>
 export const RowGroupingInExternalScroll = {
   tags: ["external-scroll"],
   render: () => {
-    // Capture console.warn so we can assert the enableStickyParents conflict
-    // warning is emitted exactly once.
-    const captured: { warnings: string[] } = { warnings: [] };
-    (
-      window as unknown as { __externalGroupingWarnCapture?: { warnings: string[] } }
-    ).__externalGroupingWarnCapture = captured;
-
-    const previousWarn = console.warn;
-    console.warn = (...args: unknown[]) => {
-      captured.warnings.push(args.map((a) => String(a)).join(" "));
-      previousWarn.apply(console, args as []);
-    };
-    (
-      window as unknown as { __externalGroupingWarnRestore?: () => void }
-    ).__externalGroupingWarnRestore = () => {
-      console.warn = previousWarn;
-    };
-
     const wrapper = document.createElement("div");
     wrapper.style.padding = "1rem";
 
@@ -366,9 +348,6 @@ export const RowGroupingInExternalScroll = {
       getRowId: ({ row }) => String((row as { id?: string }).id),
       rowGrouping: ["children"],
       expandAll: true,
-      // Set deliberately to trigger the warn-and-noop path. The table must
-      // still render grouped rows correctly without any .st-sticky-top
-      // overlay (sticky parents are incompatible with external scroll mode).
       enableStickyParents: true,
       scrollParent: scrollContainer,
     });
@@ -389,22 +368,6 @@ export const RowGroupingInExternalScroll = {
 
     // External scroll mode is active even with rowGrouping configured.
     expect(tableRoot.classList.contains("st-external-scroll")).toBe(true);
-
-    // Grouping warning was emitted because enableStickyParents was set alongside
-    // scrollParent. Exactly one warning, with the expected guidance.
-    const captured = (
-      window as unknown as { __externalGroupingWarnCapture?: { warnings: string[] } }
-    ).__externalGroupingWarnCapture;
-    expect(captured).toBeTruthy();
-    const stickyWarnings = captured!.warnings.filter((w) =>
-      w.includes("`enableStickyParents` is not supported"),
-    );
-    expect(stickyWarnings.length).toBe(1);
-
-    // No sticky-top overlay should be present — the warn-and-noop must skip
-    // building the sticky parents container in external scroll mode.
-    const stickyTopOverlay = canvasElement.querySelector(".st-sticky-top");
-    expect(stickyTopOverlay).toBeNull();
 
     // Virtualization is active: only a subset of the 1050 expanded rows is rendered.
     const renderedBeforeScroll = getRowCount(canvasElement);
@@ -427,16 +390,15 @@ export const RowGroupingInExternalScroll = {
     const expandIcons = bodyContainer.querySelectorAll(".st-expand-icon-container");
     expect(expandIcons.length).toBeGreaterThan(0);
 
-    // Scroll the external container; row virtualization must shift the rendered
-    // window. We expect different row indices to be on screen after a large
-    // scroll, proving the external parent's scroll drives the body windowing.
+    // Scroll the external container deep into the dataset — past the first
+    // group's children so the grouping renderer must pick a sticky ancestor.
     const indicesBefore = new Set(
       Array.from(canvasElement.querySelectorAll(".st-cell[data-row-index]")).map((c) =>
         c.getAttribute("data-row-index"),
       ),
     );
 
-    scrollContainer.scrollTop = 8000; // well past the first viewport
+    scrollContainer.scrollTop = 8000;
     scrollContainer.dispatchEvent(new Event("scroll", { bubbles: true }));
     await new Promise((r) => setTimeout(r, 200));
 
@@ -450,13 +412,29 @@ export const RowGroupingInExternalScroll = {
     const newlyVisible = Array.from(indicesAfter).filter((idx) => !indicesBefore.has(idx));
     expect(newlyVisible.length).toBeGreaterThan(0);
 
-    // Still no sticky parents overlay after scrolling.
-    expect(canvasElement.querySelector(".st-sticky-top")).toBeNull();
+    // After scrolling, enableStickyParents must produce the .st-sticky-top
+    // overlay (this is the user-facing fix — grouped parents pin under the
+    // sticky header rather than scrolling out of view with the table).
+    const stickyTop = canvasElement.querySelector(".st-sticky-top") as HTMLElement | null;
+    expect(stickyTop).not.toBeNull();
 
-    // Restore console.warn so we don't leak the wrapper into the next story.
-    const restore = (
-      window as unknown as { __externalGroupingWarnRestore?: () => void }
-    ).__externalGroupingWarnRestore;
-    restore?.();
+    // The overlay must pin directly under the sticky header. The header is
+    // already proven to pin flush to the parent's outer edge (Test 5), so
+    // the sticky-top's top edge should equal scrollContainerTop + headerHeight
+    // (within a small layout tolerance).
+    const headerContainer = canvasElement.querySelector(".st-header-container") as HTMLElement;
+    const headerRect = headerContainer.getBoundingClientRect();
+    const stickyTopRect = stickyTop!.getBoundingClientRect();
+    expect(Math.abs(stickyTopRect.top - headerRect.bottom)).toBeLessThan(3);
+
+    // The pinned parent row should belong to a group whose children are
+    // currently in view at scrollTop ~ 8000. We don't pin the exact group
+    // number (depends on row height + grouping math), but we *do* assert that
+    // the sticky-top renders at least one parent cell labelled "Group N".
+    const stickyParentCells = Array.from(stickyTop!.querySelectorAll(".st-cell"));
+    const hasPinnedGroupParent = stickyParentCells.some((c) =>
+      /^Group \d+$/.test((c.textContent ?? "").trim()),
+    );
+    expect(hasPinnedGroupParent).toBe(true);
   },
 };

@@ -10,6 +10,27 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
+export const v3_6_1: ChangelogEntry = {
+  version: "3.6.1",
+  date: "2026-05-16",
+  title: "Sticky row-group parents in external scroll",
+  description:
+    "enableStickyParents now works in external scroll mode. Grouped parent rows pin under the sticky header as you scroll past their children, instead of scrolling away with the table. Removes the warn-and-noop guard added in 3.6.0.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "enableStickyParents is now supported alongside scrollParent — pinned grouped parents stay flush under the sticky header in external scroll mode.",
+      link: "/docs/infinite-scroll",
+    },
+    {
+      type: "improvement",
+      description:
+        "Removed the one-shot console.warn that fired when enableStickyParents and scrollParent were combined; the conflict no longer exists.",
+    },
+  ],
+};
+
 export const v3_6_0: ChangelogEntry = {
   version: "3.6.0",
   date: "2026-05-15",
@@ -1721,6 +1742,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_6_1,
   v3_6_0,
   v3_5_3,
   v3_5_2,

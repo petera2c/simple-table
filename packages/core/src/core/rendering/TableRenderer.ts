@@ -33,6 +33,15 @@ export interface TableRendererDeps {
   /** Accordion animation axis for the in-flight collapse/expand. See {@link RenderContext.accordionAxis}. */
   accordionAxis?: AccordionAxis;
   animationCoordinator?: AnimationCoordinator;
+  /**
+   * True when the table is using an external `scrollParent` (no `height`/`maxHeight`).
+   * In this mode the main body container does not scroll — the parent does — so
+   * the sticky-parents container reads its scrollTop from `stickyParentsScrollTop`
+   * (sourced from the table's external-aware state) instead of `mainBodyRef.scrollTop`.
+   */
+  externalScrollActive?: boolean;
+  /** Externally-tracked scrollTop (already translated into table coordinates). */
+  stickyParentsScrollTop?: number;
   cellRegistry: Map<string, any>;
   collapsedHeaders: Set<Accessor>;
   collapsedRows: Map<string, number>;
@@ -666,8 +675,12 @@ export class TableRenderer {
         this.stickyParentsContainer = null;
       }
 
-      // Get scroll state
-      const scrollTop = deps.mainBodyRef.current?.scrollTop ?? 0;
+      // Get scroll state — in external-scroll mode the body container does not
+      // scroll (the parent does), so prefer the externally-aware scrollTop
+      // threaded through deps. Falls back to the body's scrollTop otherwise.
+      const scrollTop = deps.externalScrollActive
+        ? (deps.stickyParentsScrollTop ?? 0)
+        : (deps.mainBodyRef.current?.scrollTop ?? 0);
       // Vertical scrollbar gutter lives on `.st-body-container`, not `.st-body-main`
       // (main hides scrollbars and does not reserve the gutter).
       const scrollbarWidth = container.offsetWidth - container.clientWidth;
@@ -693,7 +706,11 @@ export class TableRenderer {
         stickyBodyRowIndexByRowKey.set(key, rowIndex);
       });
 
-      // Create sticky parents container
+      // Create sticky parents container. The overlay uses native CSS
+      // `position: sticky` in external scroll mode (rule scoped to
+      // `.simple-table-root.st-external-scroll .st-sticky-top` in base.css),
+      // so the renderer only needs to flag the mode — no inline `top`
+      // arithmetic required.
       this.stickyParentsContainer = createStickyParentsContainer(
         {
           calculatedHeaderHeight: dimensionState.calculatedHeaderHeight,
@@ -708,6 +725,7 @@ export class TableRenderer {
           stickyParents: processedResult.stickyParents,
           stickySectionColStart,
           stickyBodyRowIndexByRowKey,
+          externalScrollActive: deps.externalScrollActive,
         },
         {
           collapsedHeaders: deps.collapsedHeaders,
@@ -722,8 +740,20 @@ export class TableRenderer {
       );
 
       if (this.stickyParentsContainer) {
-        sectionsToKeep.push(this.stickyParentsContainer);
-        if (!container.contains(this.stickyParentsContainer)) {
+        // Append the overlay as a sibling of `.st-body-container` inside
+        // `.st-content` (flex-direction: column). This is what lets us use
+        // native `position: sticky` in external scroll mode — the overlay's
+        // nearest scroll ancestor becomes the external scroll parent, so the
+        // browser composites it on the same paint as the scroll itself
+        // (no JS catch-up lag). In bounded mode the overlay remains
+        // `position: absolute` and the offset parent (`.st-content-wrapper`)
+        // does not scroll, so its visual position is unchanged.
+        // `sectionsToKeep` tracks `container`'s children only, so the overlay
+        // does not need to be in it once it lives outside the body container.
+        const contentEl = container.parentElement;
+        if (contentEl && this.stickyParentsContainer.parentElement !== contentEl) {
+          contentEl.insertBefore(this.stickyParentsContainer, container);
+        } else if (!contentEl) {
           container.appendChild(this.stickyParentsContainer);
         }
       }

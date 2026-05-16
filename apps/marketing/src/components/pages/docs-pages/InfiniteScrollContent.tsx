@@ -306,8 +306,8 @@ const InfiniteScrollContent = () => {
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
               enableStickyParents
             </code>{" "}
-            (for sticky row-group headers) is not supported in external scroll mode and will be
-            silently disabled with a one-time warning.
+            (for grouped row parents) works in external scroll mode too — pinned parent rows
+            stay just under the sticky header as you scroll past their children.
           </li>
         </ul>
 

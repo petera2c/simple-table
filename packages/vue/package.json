@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/vue",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/vue/src/index.d.ts",
