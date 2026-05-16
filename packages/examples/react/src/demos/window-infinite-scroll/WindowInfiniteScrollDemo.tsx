@@ -82,8 +82,9 @@ const WindowInfiniteScrollDemo = ({
       >
         This table has no <code>height</code> or <code>maxHeight</code>. It grows to its natural
         size inside the page, and uses the outer scroll container (<code>scrollParent</code>) to
-        drive both row virtualization and <code>onLoadMore</code>. Scroll down — new rows stream
-        in as you approach the bottom.
+        drive both row virtualization and <code>onLoadMore</code>. The header pins to the top of
+        the outer scroll viewport as you scroll. Scroll down — new rows stream in as you approach
+        the bottom.
       </p>
 
       <div

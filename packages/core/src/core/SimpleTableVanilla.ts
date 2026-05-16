@@ -649,6 +649,8 @@ export class SimpleTableVanilla {
       ro.observe(parent as HTMLElement);
       this.externalParentResizeObserver = ro;
     }
+
+    this.recomputeExternalScrollPaddingTop();
   }
 
   private detachExternalScrollWiring(): void {
@@ -669,6 +671,37 @@ export class SimpleTableVanilla {
     }
 
     this.resolvedScrollParent = null;
+
+    // Clear the padding-top CSS variable so a subsequent transition into
+    // bounded-height mode doesn't leave stale offset state on the root.
+    const elements = this.domManager.getElements();
+    if (elements) {
+      elements.rootElement.style.removeProperty("--st-external-scroll-padding-top");
+    }
+  }
+
+  /**
+   * Read the resolved scroll parent's computed `padding-top` and publish it
+   * as `--st-external-scroll-padding-top` on the table root. The sticky
+   * header CSS uses `top: calc(-1 * var(...))` so the header pins flush to
+   * the parent's outer top edge instead of the padding edge, eliminating the
+   * visible gap that CSS sticky would otherwise produce when the consumer
+   * gives the scroll parent any top padding. Re-run on layout changes via
+   * ResizeObserver / window resize.
+   */
+  private recomputeExternalScrollPaddingTop(): void {
+    const elements = this.domManager.getElements();
+    if (!elements) return;
+    const parent = this.resolvedScrollParent;
+    let paddingTop = 0;
+    if (parent && typeof HTMLElement !== "undefined" && parent instanceof HTMLElement) {
+      const cs = getComputedStyle(parent);
+      paddingTop = parseFloat(cs.paddingTop) || 0;
+    }
+    elements.rootElement.style.setProperty(
+      "--st-external-scroll-padding-top",
+      `${paddingTop}px`,
+    );
   }
 
   private maybeWarnStickyParentsConflict(externalActive: boolean): void {
@@ -705,6 +738,7 @@ export class SimpleTableVanilla {
 
   private handleExternalResize(): void {
     this.recomputeExternalViewportHeight();
+    this.recomputeExternalScrollPaddingTop();
     this.render("external-scroll-resize");
   }
 

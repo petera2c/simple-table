@@ -161,6 +161,31 @@ input {
   overflow: hidden;
 }
 
+/* External scroll mode: the table grows to its natural height inside a
+   consumer-owned scroll parent (HTMLElement or window). In this mode the
+   header becomes sticky so it pins to the top of the external scroll
+   viewport as the user scrolls. Relax overflow:hidden on the root so the
+   sticky element's containing block can escape to the external scroll
+   ancestor (CSS `position: sticky` is trapped by the nearest ancestor with
+   non-visible overflow). Trade-off: body content may visually bleed across
+   the rounded bottom corners, which is acceptable for natural-height
+   tables. Consumers wanting strict clipping can set border-radius: 0. */
+.simple-table-root.st-external-scroll {
+  overflow: visible;
+}
+
+.simple-table-root.st-external-scroll .st-header-container {
+  position: sticky;
+  /* When the scroll parent has padding-top, CSS sticky would normally pin the
+     header to the *padding edge*, leaving a visible gap between the container
+     top and the header during scroll. We publish --st-external-scroll-padding-top
+     from SimpleTableVanilla based on the resolved parent's computed padding-top
+     so the sticky offset compensates and the header pins flush to the parent's
+     outer top edge. Default 0px keeps the no-padding case unchanged. */
+  top: calc(-1 * var(--st-external-scroll-padding-top, 0px));
+  z-index: 4;
+}
+
 .st-wrapper-container {
   position: relative;
   display: flex;

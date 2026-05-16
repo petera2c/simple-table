@@ -571,6 +571,16 @@ export class RenderOrchestrator {
         }
       }
 
+      // External scroll mode: toggle the root mode class that opts the header
+      // into `position: sticky` and relaxes `overflow: hidden` on .st-wrapper
+      // so the sticky element can escape to the external scroll ancestor.
+      // Idempotent + re-evaluated each render so flipping between modes (e.g.
+      // user sets `height` later) cleanly removes the class.
+      elements.rootElement.classList.toggle(
+        "st-external-scroll",
+        context.externalViewportHeight !== undefined,
+      );
+
       const { customTheme } = context;
       rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
       rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);

@@ -151,7 +151,8 @@ export function renderWindowInfiniteScrollExample(
     "This table has no <code>height</code> or <code>maxHeight</code> — it grows to fit its rows. " +
     "We pass <code>scrollParent</code> pointing at the outer scrolling box (or " +
     "<code>\"window\"</code> in a regular page) so the table virtualizes rows and fires " +
-    "<code>onLoadMore</code> based on the parent's scroll position. Scroll down to load more.";
+    "<code>onLoadMore</code> based on the parent's scroll position. The header pins to the " +
+    "top of the outer scroll viewport as you scroll. Scroll down to load more.";
   Object.assign(intro.style, {
     fontSize: "15px",
     lineHeight: "1.6",

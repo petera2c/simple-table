@@ -48,7 +48,8 @@ export function renderWindowInfiniteScrollDemo(
   intro.innerHTML =
     "This table has no <code>height</code> or <code>maxHeight</code>. It grows to its natural size inside the page, " +
     "and uses the outer scroll container (<code>scrollParent</code>) to drive both row virtualization and " +
-    "<code>onLoadMore</code>. Scroll down — new rows stream in as you approach the bottom.";
+    "<code>onLoadMore</code>. The header pins to the top of the outer scroll viewport as you scroll. " +
+    "Scroll down — new rows stream in as you approach the bottom.";
   Object.assign(intro.style, {
     fontSize: "15px",
     lineHeight: "1.6",

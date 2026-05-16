@@ -68,9 +68,7 @@ export const ExternalElementVirtualizes = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    const scrollContainer = canvasElement.querySelector(
-      "#external-scroll-host",
-    ) as HTMLElement;
+    const scrollContainer = canvasElement.querySelector("#external-scroll-host") as HTMLElement;
     expect(scrollContainer).toBeTruthy();
 
     const tableRoot = canvasElement.querySelector(".simple-table-root") as HTMLElement;
@@ -98,7 +96,9 @@ export const ExternalScrollFiresOnLoadMore = {
   tags: ["external-scroll"],
   render: () => {
     const captured: { count: number } = { count: 0 };
-    (window as unknown as { __externalLoadMoreCapture?: { count: number } }).__externalLoadMoreCapture = captured;
+    (
+      window as unknown as { __externalLoadMoreCapture?: { count: number } }
+    ).__externalLoadMoreCapture = captured;
 
     const wrapper = document.createElement("div");
     wrapper.style.padding = "1rem";
@@ -218,5 +218,82 @@ export const HeightOverridesScrollParent = {
     // Virtualization is active via the table's own height, so rendered rows are far fewer than 500.
     const rendered = getRowCount(canvasElement);
     expect(rendered).toBeLessThan(200);
+
+    // Sticky header mode is OFF when height takes precedence — no external-scroll class on the root.
+    const tableRoot = canvasElement.querySelector(".simple-table-root") as HTMLElement;
+    expect(tableRoot.classList.contains("st-external-scroll")).toBe(false);
+  },
+};
+
+// ============================================================================
+// TEST 5: Header is sticky to the top of the external scroll viewport
+// ============================================================================
+
+export const StickyHeaderInExternalScroll = {
+  tags: ["external-scroll"],
+  render: () => {
+    const wrapper = document.createElement("div");
+    wrapper.style.padding = "1rem";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.id = "external-scroll-host-sticky";
+    scrollContainer.style.height = "400px";
+    scrollContainer.style.overflow = "auto";
+    scrollContainer.style.border = "1px solid #ccc";
+    scrollContainer.style.padding = "1rem";
+    wrapper.appendChild(scrollContainer);
+
+    const tableContainer = document.createElement("div");
+    scrollContainer.appendChild(tableContainer);
+
+    const table = new SimpleTableVanilla(tableContainer, {
+      defaultHeaders: headers,
+      rows: createRows(2000),
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      scrollParent: scrollContainer,
+    });
+    table.mount();
+    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const scrollContainer = canvasElement.querySelector(
+      "#external-scroll-host-sticky",
+    ) as HTMLElement;
+    expect(scrollContainer).toBeTruthy();
+
+    const tableRoot = canvasElement.querySelector(".simple-table-root") as HTMLElement;
+    expect(tableRoot).toBeTruthy();
+
+    // External scroll mode should opt the root into the sticky-header CSS class.
+    expect(tableRoot.classList.contains("st-external-scroll")).toBe(true);
+
+    const headerContainer = canvasElement.querySelector(".st-header-container") as HTMLElement;
+    expect(headerContainer).toBeTruthy();
+
+    // The CSS class must actually resolve to position: sticky at runtime
+    // (no ancestor with `overflow: hidden` between header and scrollContainer).
+    expect(getComputedStyle(headerContainer).position).toBe("sticky");
+
+    // Before scrolling, the header sits at its natural position inside the
+    // scroll container — that is, below any padding-top the consumer added.
+    // (CSS sticky preserves the element's natural in-flow position; only the
+    // pinned position is offset by our negative-`top` variable.)
+    const containerTop = scrollContainer.getBoundingClientRect().top;
+    const paddingTop = parseFloat(getComputedStyle(scrollContainer).paddingTop) || 0;
+    const headerTopBefore = headerContainer.getBoundingClientRect().top;
+    expect(Math.abs(headerTopBefore - (containerTop + paddingTop))).toBeLessThan(3);
+
+    // Scroll the external container; the header must stay pinned to the
+    // *outer* top edge of the scroll container — not the padding edge — so
+    // there is no visible gap above the header when the parent has padding.
+    scrollContainer.scrollTop = 500;
+    scrollContainer.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 100));
+
+    const headerTopAfter = headerContainer.getBoundingClientRect().top;
+    expect(Math.abs(headerTopAfter - containerTop)).toBeLessThan(3);
   },
 };
